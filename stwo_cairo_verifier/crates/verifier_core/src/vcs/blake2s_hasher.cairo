@@ -4,7 +4,6 @@ use core::box::BoxImpl;
 use crate::BaseField;
 use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use crate::fields::m31::M31Zero;
-use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENETS_IN_MSG: usize = 16;
@@ -55,14 +54,13 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
         // TODO(andrew): Consider handling single column case (used lots due to FRI).
-        let rem = column_values.len() % M31_ELEMENETS_IN_MSG;
-        let last_block_length = match rem {
-            0 => M31_ELEMENETS_IN_MSG,
-            _ => rem,
-        };
 
-        let (mut column_values, last_block) = column_values
-            .split_at(column_values.len() - last_block_length);
+        // If the column values are a multiple of 16, reserve the last block for finalization.
+        let last_block_values = if column_values.len() % M31_ELEMENETS_IN_MSG == 0 {
+            column_values.multi_pop_back::<M31_ELEMENETS_IN_MSG>().unwrap().span()
+        } else {
+            array![].span()
+        };
 
         while let Some(values) = column_values.multi_pop_front::<M31_ELEMENETS_IN_MSG>() {
             let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
@@ -77,6 +75,14 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             byte_count += 64;
             state = blake2s_compress(:state, :byte_count, :msg);
         }
+
+        let (last_block, last_block_length) = if last_block_values.is_empty() {
+            // This means the remaining column values are not empty (loop would have exited) and the
+            // length is less than block size.
+            (column_values, column_values.len())
+        } else {
+            (last_block_values, M31_ELEMENETS_IN_MSG)
+        };
 
         // Padding last column_values with zeros.
         let mut padded_column_values = last_block.into_iter().map(|x| (*x).into()).collect();
