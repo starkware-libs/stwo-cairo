@@ -4,7 +4,6 @@ use core::box::BoxImpl;
 use crate::BaseField;
 use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use crate::fields::m31::M31Zero;
-use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENETS_IN_MSG: usize = 16;
@@ -55,14 +54,13 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
         // functionality here to do all packing and hashing in a single pass.
         // TODO(andrew): Consider handling single column case (used lots due to FRI).
-        let rem = column_values.len() % M31_ELEMENETS_IN_MSG;
-        let last_block_length = match rem {
-            0 => M31_ELEMENETS_IN_MSG,
-            _ => rem,
-        };
 
-        let (mut column_values, last_block) = column_values
-            .split_at(column_values.len() - last_block_length);
+        // If the column values are a multiple of 16, reserve the last block for finalization.
+        let last_block_values = if column_values.len() % M31_ELEMENETS_IN_MSG == 0 {
+            column_values.multi_pop_back::<M31_ELEMENETS_IN_MSG>().unwrap().span()
+        } else {
+            array![].span()
+        };
 
         while let Some(values) = column_values.multi_pop_front::<M31_ELEMENETS_IN_MSG>() {
             let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
@@ -78,21 +76,94 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             state = blake2s_compress(:state, byte_count: byte_count, :msg);
         }
 
-        // Padding last column_values with zeros.
-        let mut padded_column_values = array![];
-        for value in last_block {
-            padded_column_values.append((*value).into());
-        }
-        for _ in 0..M31_ELEMENETS_IN_MSG - last_block_length {
-            padded_column_values.append(0);
-        }
+        let (last_block_values, last_block_length) = if last_block_values.is_empty() {
+            // This means the remaining column values are not empty (loop would have exited) and the
+            // length is less than block size.
+            (column_values, column_values.len())
+        } else {
+            (last_block_values, M31_ELEMENETS_IN_MSG)
+        };
+
+        // Convert M31 values to u32 values.
+        let mut padded_values = last_block_values.into_iter().map(|x| (*x).into()).collect();
+        // Pad with zeros to make the last block a multiple of 16.
+        append_zeros(ref padded_values, M31_ELEMENETS_IN_MSG - last_block_length);
+        let msg = padded_values.span().try_into().unwrap();
 
         byte_count += last_block_length * 4;
-        let msg = *padded_column_values.span().try_into().unwrap();
-        state = blake2s_finalize(:state, byte_count: byte_count, :msg);
+        state = blake2s_finalize(:state, byte_count: byte_count, msg: *msg);
 
         Blake2sHash { hash: state }
     }
+}
+
+/// Appends `count` zeros to the array.
+/// This method consumes less steps (vs simple loop) but introduces more memory holes.
+fn append_zeros(ref arr: Array<u32>, count: u32) {
+    if count == 0 {
+        return;
+    }
+    arr.append(0);
+    if count == 1 {
+        return;
+    }
+    arr.append(0);
+    if count == 2 {
+        return;
+    }
+    arr.append(0);
+    if count == 3 {
+        return;
+    }
+    arr.append(0);
+    if count == 4 {
+        return;
+    }
+    arr.append(0);
+    if count == 5 {
+        return;
+    }
+    arr.append(0);
+    if count == 6 {
+        return;
+    }
+    arr.append(0);
+    if count == 7 {
+        return;
+    }
+    arr.append(0);
+    if count == 8 {
+        return;
+    }
+    arr.append(0);
+    if count == 9 {
+        return;
+    }
+    arr.append(0);
+    if count == 10 {
+        return;
+    }
+    arr.append(0);
+    if count == 11 {
+        return;
+    }
+    arr.append(0);
+    if count == 12 {
+        return;
+    }
+    arr.append(0);
+    if count == 13 {
+        return;
+    }
+    arr.append(0);
+    if count == 14 {
+        return;
+    }
+    arr.append(0);
+    if count == 15 {
+        return;
+    }
+    arr.append(0);
 }
 
 #[derive(Drop, Copy, Debug)]
