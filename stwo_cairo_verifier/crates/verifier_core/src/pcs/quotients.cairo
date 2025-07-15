@@ -193,20 +193,23 @@ fn accumulate_row_quotients(
 
     let mut quotient_accumulator: QM31 = Zero::zero();
 
-    for batch_i in 0..n_batches {
-        let line_coeffs = quotient_constants.line_coeffs[batch_i];
-        let sample_batch_columns_and_values = sample_batches[batch_i].columns_and_values;
-        let batch_size = sample_batch_columns_and_values.len();
-        assert!(batch_size == line_coeffs.len());
+    let mut line_coeffs_list_iter = quotient_constants.line_coeffs.span().into_iter();
+    let mut batch_random_coeffs_iter = quotient_constants.batch_random_coeffs.span().into_iter();
+    let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
+
+    for sample_batch in sample_batches.span() {
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
-        for sample_i in 0..batch_size {
-            let (column_index, _) = sample_batch_columns_and_values[sample_i];
+        let line_coeffs_list = line_coeffs_list_iter.next().unwrap();
+        let mut line_coeffs_iter = line_coeffs_list.span().into_iter();
+
+        for (column_index, _) in sample_batch.columns_and_values.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
             let ComplexConjugateLineCoeffs {
                 alpha_mul_a, alpha_mul_b, alpha_mul_c,
-            } = *line_coeffs[sample_i];
+            } = *line_coeffs_iter.next().unwrap();
+
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
             // evaluated at (domain_point.y, value).
@@ -219,8 +222,8 @@ fn accumulate_row_quotients(
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
         }
 
-        let batch_coeff = *quotient_constants.batch_random_coeffs[batch_i];
-        let denom_inv = *denominator_inverses[batch_i];
+        let batch_coeff = *batch_random_coeffs_iter.next().unwrap();
+        let denom_inv = *denominator_inverses_iter.next().unwrap();
         let quotient = numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
             QM31Trait::fused_mul_add(quotient_accumulator, batch_coeff, quotient);
