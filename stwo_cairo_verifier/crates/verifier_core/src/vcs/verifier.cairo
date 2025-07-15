@@ -129,22 +129,17 @@ impl MerkleVerifierImpl<
                 let node_hashes = if is_first_layer {
                     None
                 } else {
-                    let left_hash =
-                        match fetch_prev_node_hash(
-                            ref prev_layer_hashes, ref hash_witness, current_query * 2,
-                        ) {
-                        Some(val) => val,
-                        None => panic!("{}", MerkleVerificationError::WitnessTooShort),
-                    };
-
-                    let right_hash =
-                        match fetch_prev_node_hash(
-                            ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
-                        ) {
-                        Some(val) => val,
-                        None => panic!("{}", MerkleVerificationError::WitnessTooShort),
-                    };
-
+                    let witness_too_short_error = || panic!(
+                        "{}", MerkleVerificationError::WitnessTooShort,
+                    );
+                    let left_hash = fetch_prev_node_hash(
+                        ref prev_layer_hashes, ref hash_witness, current_query * 2,
+                    )
+                        .unwrap_or_else(witness_too_short_error);
+                    let right_hash = fetch_prev_node_hash(
+                        ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
+                    )
+                        .unwrap_or_else(witness_too_short_error);
                     Some((left_hash.clone(), right_hash.clone()))
                 };
 
