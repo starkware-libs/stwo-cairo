@@ -7,7 +7,7 @@ use super::memory::{MemoryBuilder, MemoryConfig};
 use super::vm_import::VmImportError;
 use super::ProverInput;
 use crate::builtins::BuiltinSegments;
-use crate::relocator::Relocator;
+use crate::relocator::relocate_prover_input_info;
 use crate::test_utils::read_prover_input_info_file;
 use crate::{PublicSegmentContext, StateTransitions};
 
@@ -19,23 +19,18 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
     );
-    let relocator = Relocator::new(
-        prover_input_info.relocatable_memory.clone(),
-        prover_input_info.builtins_segments.clone(),
-    );
 
-    let relocated_memory = relocator.get_relocated_memory();
-    let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
+    let (relocated_memory, relocated_trace, builtins_segments, public_memory_addresses) =
+        relocate_prover_input_info(prover_input_info);
+    info!("Builtin segments: {:?}", builtins_segments);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
+
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
     info!(
         "Opcode counts: {:?}",
         state_transitions.casm_states_by_opcode.counts()
     );
-
-    let builtins_segments = relocator.get_builtin_segments();
-    info!("Builtin segments: {:?}", builtins_segments);
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
@@ -46,8 +41,7 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         state_transitions,
         memory,
         inst_cache,
-        public_memory_addresses: relocator
-            .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
+        public_memory_addresses,
         builtins_segments,
         public_segment_context,
     })

@@ -741,17 +741,14 @@ mod mappings_tests {
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
     use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
-    use stwo::core::fields::m31::M31;
-    use stwo_cairo_common::prover_types::cpu::CasmState;
 
     use crate::adapter::adapter;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
-    use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
     use crate::test_utils::program_from_casm;
     use crate::vm_import::RelocatedTraceEntry;
-    use crate::{casm_state, relocated_trace_entry, ProverInput};
+    use crate::{relocated_trace_entry, ProverInput};
 
     /// Translates a plain casm into a ProverInput by running the program and extracting the memory
     /// and the state transitions.
@@ -1301,33 +1298,6 @@ mod mappings_tests {
 
         matches!(instruction.opcode_extension, OpcodeExtension::QM31Operation);
         assert_eq!(states.qm_31_add_mul_opcode.len(), 1);
-    }
-
-    #[test]
-    fn test_casm_state_from_relocator() {
-        let relocator = create_test_relocator();
-        let encoded_qm_31_add_mul_inst =
-            0b11100000001001010011111111111110101111111111111001000000000000000;
-        let x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);
-
-        let memory_value = MemoryValue::F252([x[0], x[1], x[2], x[3], 0, 0, 0, 0]);
-        let mut memory_builder = MemoryBuilder::new(MemoryConfig::default());
-        memory_builder.set(1, memory_value);
-        memory_builder.set(5, memory_value);
-        memory_builder.set(85, memory_value);
-
-        let state_transitions = StateTransitions::from_iter(
-            relocator
-                .relocate_trace(&get_test_relocatble_trace())
-                .into_iter(),
-            &memory_builder,
-        );
-        assert_eq!(
-            state_transitions.casm_states_by_opcode.qm_31_add_mul_opcode,
-            vec![casm_state!(1, 5, 5), casm_state!(5, 6, 6)]
-        );
-        assert_eq!(state_transitions.final_state, casm_state!(85, 6, 6));
-        assert_eq!(state_transitions.initial_state, casm_state!(1, 5, 5));
     }
 
     #[test]

@@ -326,7 +326,6 @@ pub fn limbs_to_u128(limbs: [u32; 4]) -> u128 {
 mod tests {
 
     use super::*;
-    use crate::relocator::relocator_tests::create_test_relocator;
 
     #[test]
     fn test_memory() {
@@ -426,15 +425,6 @@ mod tests {
         assert_eq!(addr_0_id, expxcted_id_addr_0);
         assert_eq!(addr_1_id, expxcted_id_addr_1);
         assert_eq!(addr_2_id, expxcted_id_addr_2);
-    }
-
-    #[test]
-    fn test_memory_from_relocator() {
-        let relocator = create_test_relocator();
-        let memory: MemoryBuilder =
-            MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
-        assert_eq!(memory.get(1), MemoryValue::Small(1));
-        assert_eq!(memory.get(85), MemoryValue::Small(2));
     }
 
     #[should_panic = "Accessing empty memory cell"]
