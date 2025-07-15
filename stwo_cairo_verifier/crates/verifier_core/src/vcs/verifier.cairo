@@ -155,12 +155,6 @@ impl MerkleVerifierImpl<
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
 
-                assert!(
-                    column_values.len() == n_columns_in_layer,
-                    "{}",
-                    MerkleVerificationError::WitnessTooShort,
-                );
-
                 layer_total_queries
                     .append((current_query, H::hash_node(node_hashes, column_values)));
             }
