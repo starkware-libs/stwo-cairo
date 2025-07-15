@@ -11,6 +11,7 @@ sort-module-level-items = true
 [features]
 poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
 qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
+hash_outputs = ["stwo_cairo_air/hash_outputs"]
 
 [cairo]
 enable-gas = false
