@@ -301,6 +301,8 @@ use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
+#[cfg(feature: "outputs_packing")]
+use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{Air, StarkProof, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
@@ -769,13 +771,21 @@ pub struct CairoProof {
 }
 
 /// The output of a verification.
+#[cfg(not(feature: "outputs_packing"))]
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
     pub output: Array<felt252>,
 }
+#[cfg(feature: "outputs_packing")]
+#[derive(Drop, Serde)]
+pub struct VerificationOutput {
+    pub program_hash: felt252,
+    pub output: Blake2sHash,
+}
 
 /// Given a proof, returns the output of the verifier.
+#[cfg(not(feature: "outputs_packing"))]
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
@@ -790,6 +800,21 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     }
 
     VerificationOutput { program_hash, output }
+}
+
+#[cfg(feature: "outputs_packing")]
+pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
+    // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
+    // f252 prime to yield a felt.
+    let program_hash = construct_f252(
+        hash_memory_section(proof.claim.public_data.public_memory.program),
+    );
+
+    let output_hash = Blake2sHash {
+        hash: hash_memory_section(proof.claim.public_data.public_memory.output),
+    };
+
+    VerificationOutput { program_hash, output: output_hash }
 }
 
 pub fn verify_cairo(proof: CairoProof) {
@@ -2474,6 +2499,7 @@ pub type MemorySection = Array<PubMemoryValue>;
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
+// TODO(Gali): Unite this function with the one in verifier_core in a separate crate.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
