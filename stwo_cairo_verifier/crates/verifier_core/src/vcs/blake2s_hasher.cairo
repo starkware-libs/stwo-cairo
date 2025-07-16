@@ -38,18 +38,14 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
         // decommitment phase.
         if let Some(quadruplet_box) = column_values.try_into() {
-            let [v0, v1, v2, v3]: [M31; 4] = (*quadruplet_box).unbox();
-            let msg = BoxImpl::new(
-                [v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            );
+            let msg = as_u32_block_pad_12(quadruplet_box);
             byte_count += 16;
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
 
         // Special case #2: Single M31 column, queried value decommitment phase, common for PP tree.
         if let Some(singleton_box) = column_values.try_into() {
-            let [v0]: [M31; 1] = (*singleton_box).unbox();
-            let msg = BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            let msg = as_u32_block_pad_15(singleton_box);
             byte_count += 4;
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
         }
@@ -77,16 +73,8 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         }
 
         // Handle the last partial block.
-        let mut padded_values: Array<u32> = column_values
-            .into_iter()
-            .map(|v| (*v).into())
-            .collect();
-        let last_block_length = padded_values.len();
-        for _ in last_block_length..M31_ELEMENTS_IN_MSG {
-            padded_values.append(0);
-        }
-        let msg = *padded_values.span().try_into().unwrap();
-        byte_count += last_block_length * 4;
+        let (msg, last_block_length) = pad_partial_block(column_values);
+        byte_count += last_block_length;
         Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }
 }
@@ -108,6 +96,199 @@ fn as_u32_block(full_block: @Box<[M31; 16]>) -> Box<[u32; 16]> {
             v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
             v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(), v14.into(),
             v15.into(),
+        ],
+    )
+}
+
+/// Converts a partial block of M31 values to a 16-element block of u32 values and the number of
+/// bytes in the partial block (before padding).
+fn pad_partial_block(values: Span<M31>) -> (Box<[u32; 16]>, u32) {
+    if let Some(box8) = values.try_into() {
+        return (as_u32_block_pad_8(box8), 32);
+    }
+    if let Some(box12) = values.try_into() {
+        return (as_u32_block_pad_4(box12), 48);
+    }
+    if let Some(box6) = values.try_into() {
+        return (as_u32_block_pad_10(box6), 24);
+    }
+    if let Some(box2) = values.try_into() {
+        return (as_u32_block_pad_14(box2), 8);
+    }
+    if let Some(box4) = values.try_into() {
+        return (as_u32_block_pad_12(box4), 16);
+    }
+    if let Some(box1) = values.try_into() {
+        return (as_u32_block_pad_15(box1), 4);
+    }
+    if let Some(box3) = values.try_into() {
+        return (as_u32_block_pad_13(box3), 12);
+    }
+    if let Some(box5) = values.try_into() {
+        return (as_u32_block_pad_11(box5), 20);
+    }
+    if let Some(box7) = values.try_into() {
+        return (as_u32_block_pad_9(box7), 28);
+    }
+    if let Some(box9) = values.try_into() {
+        return (as_u32_block_pad_7(box9), 36);
+    }
+    if let Some(box10) = values.try_into() {
+        return (as_u32_block_pad_6(box10), 40);
+    }
+    if let Some(box11) = values.try_into() {
+        return (as_u32_block_pad_5(box11), 44);
+    }
+    if let Some(box13) = values.try_into() {
+        return (as_u32_block_pad_3(box13), 52);
+    }
+    if let Some(box14) = values.try_into() {
+        return (as_u32_block_pad_2(box14), 56);
+    }
+    if let Some(box15) = values.try_into() {
+        return (as_u32_block_pad_1(box15), 60);
+    }
+    panic!("Invalid number of M31 values");
+}
+
+#[inline]
+fn as_u32_block_pad_15(partial_block: @Box<[M31; 1]>) -> Box<[u32; 16]> {
+    let [v0] = partial_block.unbox();
+    BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+}
+
+#[inline]
+fn as_u32_block_pad_14(partial_block: @Box<[M31; 2]>) -> Box<[u32; 16]> {
+    let [v0, v1] = partial_block.unbox();
+    BoxImpl::new([v0.into(), v1.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+}
+
+#[inline]
+fn as_u32_block_pad_13(partial_block: @Box<[M31; 3]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2] = partial_block.unbox();
+    BoxImpl::new([v0.into(), v1.into(), v2.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+}
+
+#[inline]
+fn as_u32_block_pad_12(partial_block: @Box<[M31; 4]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3] = partial_block.unbox();
+    BoxImpl::new([v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+}
+
+#[inline]
+fn as_u32_block_pad_11(partial_block: @Box<[M31; 5]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4] = partial_block.unbox();
+    BoxImpl::new(
+        [v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_10(partial_block: @Box<[M31; 6]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_9(partial_block: @Box<[M31; 7]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_8(partial_block: @Box<[M31; 8]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            0, 0, 0, 0, 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_7(partial_block: @Box<[M31; 9]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), 0, 0, 0, 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_6(partial_block: @Box<[M31; 10]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), 0, 0, 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_5(partial_block: @Box<[M31; 11]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), 0, 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_4(partial_block: @Box<[M31; 12]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), v11.into(), 0, 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_3(partial_block: @Box<[M31; 13]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), 0, 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_2(partial_block: @Box<[M31; 14]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(), 0, 0,
+        ],
+    )
+}
+
+#[inline]
+fn as_u32_block_pad_1(partial_block: @Box<[M31; 15]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14] = partial_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(), v14.into(), 0,
         ],
     )
 }
