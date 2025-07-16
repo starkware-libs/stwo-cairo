@@ -1,5 +1,6 @@
 use core::array::ArrayTrait;
 use core::hash::HashStateTrait;
+use core::num::traits::Zero;
 use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
 use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
@@ -10,6 +11,9 @@ const M31_ELEMENTS_IN_HASH: usize = 8;
 
 /// Equals `(2^31)^4`.
 const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
+
+// Equals `(2^31)^8`
+const M31_SHIFT_POW_8: felt252 = M31_SHIFT_POW_4 * M31_SHIFT_POW_4;
 
 pub impl PoseidonMerkleHasher of MerkleHasher {
     type Hash = felt252;
@@ -60,18 +64,14 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             hash_array.append(word);
         }
 
-        if !column_values.is_empty() {
-            let mut word = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
-                .inner
-                .into();
-
-            for _ in 1..M31_ELEMENTS_IN_HASH {
-                let v = (*column_values.pop_front().unwrap_or(@BaseField { inner: 0 }))
-                    .inner
-                    .into();
-                word = word * M31_SHIFT + v;
+        let remainder_length = column_values.len();
+        if remainder_length > 0 {
+            let mut word: felt252 = Zero::zero();
+            for v in column_values {
+                word = word * M31_SHIFT + (*v.inner).into();
             }
-
+            // Encode number of remainder limbs in bits 248, 249 and 250 of the word.
+            word += remainder_length.into() * M31_SHIFT_POW_8;
             hash_array.append(word);
         }
 
