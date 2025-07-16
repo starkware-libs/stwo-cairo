@@ -751,7 +751,18 @@ fn preprocessed_root_without_pedersen(
     match log_blowup_factor - 1 {
         0 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
             hash: BoxImpl::new(
-                [3874691771, 970201765, 4163136015, 707689571, 3629981039, 3510408166, 807592626, 3264437778],
+                [
+                    3874691771, 970201765, 4163136015, 707689571, 3629981039, 3510408166, 807592626,
+                    3264437778,
+                ],
+            ),
+        },
+        1 => stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash {
+            hash: BoxImpl::new(
+                [
+                    3323262023, 257610396, 3328670936, 1138000641, 1080823562, 3160945075,
+                    1614930663, 1686844672,
+                ],
             ),
         },
         _ => panic!("invalid blowup factor"),
@@ -818,7 +829,9 @@ pub fn verify_cairo(proof: CairoProof) {
     let log_sizes = claim.log_sizes();
 
     // Preprocessed trace.
-    let expected_preprocessed_root = preprocessed_root_without_pedersen(pcs_config.fri_config.log_blowup_factor);
+    let expected_preprocessed_root = preprocessed_root_without_pedersen(
+        pcs_config.fri_config.log_blowup_factor,
+    );
     let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
     assert!(preprocessed_root == expected_preprocessed_root);
     commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
@@ -5803,7 +5816,8 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 Option::Some(
                     components::pedersen_builtin::Component {
                         claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).expect('lib.cairo:4303'),
+                        interaction_claim: (*interaction_claim.pedersen_builtin)
+                            .expect('lib.cairo:4303'),
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
