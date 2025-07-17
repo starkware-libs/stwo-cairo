@@ -346,7 +346,6 @@ pub mod tests {
             assert!(status.success());
         }
 
-        #[ignore = "TODO: move to nightly"]
         #[test]
         fn test_prove_verify_all_opcode_components_from_file() {
             let prover_input_file_path =
