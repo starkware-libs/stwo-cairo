@@ -22,7 +22,7 @@ scarb test
 
 ## Profile tests
 
-Modify [`Scarb.toml`](./Scarb.toml) to use [Starknet Foundary](https://github.com/foundry-rs/starknet-foundry).
+Modify [`Scarb.toml`](./Scarb.toml) to use [Starknet Foundry](https://github.com/foundry-rs/starknet-foundry).
 
 ```diff
 [dev-dependencies]
