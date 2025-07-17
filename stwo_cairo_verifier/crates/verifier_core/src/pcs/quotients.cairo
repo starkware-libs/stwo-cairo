@@ -194,23 +194,14 @@ fn accumulate_row_quotients(
 
     let mut quotient_accumulator: QM31 = Zero::zero();
 
-    let mut sample_constants_iter = quotient_constants.point_constants.span().into_iter();
     let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
 
-    for sample_batch in sample_batches_by_point.span() {
+    for point_constants in quotient_constants.point_constants.span() {
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
-        let PointQuotientConstants {
-            line_coeffs, batch_random_coeffs,
-        } = sample_constants_iter.next().unwrap();
-        let mut line_coeffs_iter = line_coeffs.span().into_iter();
-
-        for (column_index, _) in sample_batch.columns_and_values.span() {
+        for (column_index, line_coeffs) in point_constants.indexed_line_coeffs.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
-
-            let ComplexConjugateLineCoeffs {
-                alpha_mul_a, alpha_mul_b, alpha_mul_c,
-            } = *line_coeffs_iter.next().unwrap();
+            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } = *line_coeffs;
 
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
@@ -227,7 +218,9 @@ fn accumulate_row_quotients(
         let denom_inv = *denominator_inverses_iter.next().unwrap();
         let quotient = numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
-            QM31Trait::fused_mul_add(quotient_accumulator, *batch_random_coeffs, quotient);
+            QM31Trait::fused_mul_add(
+                quotient_accumulator, *point_constants.batch_random_coeffs, quotient,
+            );
     }
 
     quotient_accumulator
@@ -263,8 +256,8 @@ pub struct QuotientConstants {
 /// Holds the precomputed constants for a given evaluation point.
 #[derive(Debug, Drop)]
 pub struct PointQuotientConstants {
-    /// The line coefficients for each quotient numerator term.
-    pub line_coeffs: Array<ComplexConjugateLineCoeffs>,
+    /// Pair of (column index, line coefficients) for every sample.
+    pub indexed_line_coeffs: Array<(usize, ComplexConjugateLineCoeffs)>,
     /// The random coefficients used to linearly combine the batched quotients.
     ///
     /// For each sample batch we compute random_coeff^(number of columns in the batch),
@@ -290,24 +283,23 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
             );
 
             let mut alpha: QM31 = One::one();
-            let mut batch_line_coeffs = array![];
+            let mut indexed_line_coeffs = array![];
 
-            for (_, column_value) in sample_batch.columns_and_values.span() {
+            for (column_idx, column_value) in sample_batch.columns_and_values.span() {
                 alpha = alpha * random_coeff;
-                batch_line_coeffs
+                indexed_line_coeffs
                     .append(
-                        ComplexConjugateLineCoeffsImpl::new(
-                            sample_batch.point, **column_value, alpha,
+                        (
+                            *column_idx,
+                            ComplexConjugateLineCoeffsImpl::new(
+                                sample_batch.point, **column_value, alpha,
+                            ),
                         ),
                     );
             }
 
             point_constants
-                .append(
-                    PointQuotientConstants {
-                        line_coeffs: batch_line_coeffs, batch_random_coeffs: alpha,
-                    },
-                );
+                .append(PointQuotientConstants { indexed_line_coeffs, batch_random_coeffs: alpha });
         }
 
         QuotientConstants { point_constants }
