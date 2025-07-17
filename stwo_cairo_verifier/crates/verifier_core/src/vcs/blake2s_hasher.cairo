@@ -79,13 +79,8 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         }
 
         // Padding last column_values with zeros.
-        let mut padded_column_values = array![];
-        for value in last_block {
-            padded_column_values.append((*value).into());
-        }
-        for _ in last_block_length..M31_ELEMENETS_IN_MSG {
-            padded_column_values.append(0);
-        }
+        let mut padded_column_values = last_block.into_iter().map(|x| (*x).into()).collect();
+        append_padding(ref padded_column_values, M31_ELEMENETS_IN_MSG - last_block_length, 0);
 
         byte_count += last_block_length * 4;
         let msg = *padded_column_values.span().try_into().unwrap();
@@ -93,6 +88,72 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
 
         Blake2sHash { hash: state }
     }
+}
+
+/// Appends `count ∈ [0, 16)` padding values to the array.
+fn append_padding(ref arr: Array<u32>, count: u32, padding_value: u32) {
+    // Avoid AP alignment of this function (prevents memory holes).
+    core::internal::revoke_ap_tracking();
+    if count == 0 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 1 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 2 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 3 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 4 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 5 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 6 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 7 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 8 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 9 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 10 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 11 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 12 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 13 {
+        return;
+    }
+    arr.append(padding_value);
+    if count == 14 {
+        return;
+    }
+    arr.append(padding_value);
 }
 
 #[derive(Drop, Copy, Debug)]
