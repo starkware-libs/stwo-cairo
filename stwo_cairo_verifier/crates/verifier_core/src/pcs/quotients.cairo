@@ -185,8 +185,7 @@ fn accumulate_row_quotients(
 ) -> QM31 {
     let n_batches = sample_batches_by_point.len();
     // TODO(andrew): Unnessesary asserts, remove.
-    assert!(n_batches == quotient_constants.line_coeffs.len());
-    assert!(n_batches == quotient_constants.batch_random_coeffs.len());
+    assert!(n_batches == quotient_constants.point_constants.len());
 
     let denominator_inverses = quotient_denominator_inverses(
         sample_batches_by_point.span(), domain_point,
@@ -195,15 +194,16 @@ fn accumulate_row_quotients(
 
     let mut quotient_accumulator: QM31 = Zero::zero();
 
-    let mut line_coeffs_list_iter = quotient_constants.line_coeffs.span().into_iter();
-    let mut batch_random_coeffs_iter = quotient_constants.batch_random_coeffs.span().into_iter();
+    let mut sample_constants_iter = quotient_constants.point_constants.span().into_iter();
     let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
 
     for sample_batch in sample_batches_by_point.span() {
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
-        let line_coeffs_list = line_coeffs_list_iter.next().unwrap();
-        let mut line_coeffs_iter = line_coeffs_list.span().into_iter();
+        let PointQuotientConstants {
+            line_coeffs, batch_random_coeffs,
+        } = sample_constants_iter.next().unwrap();
+        let mut line_coeffs_iter = line_coeffs.span().into_iter();
 
         for (column_index, _) in sample_batch.columns_and_values.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
@@ -224,11 +224,10 @@ fn accumulate_row_quotients(
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
         }
 
-        let batch_coeff = *batch_random_coeffs_iter.next().unwrap();
         let denom_inv = *denominator_inverses_iter.next().unwrap();
         let quotient = numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
-            QM31Trait::fused_mul_add(quotient_accumulator, batch_coeff, quotient);
+            QM31Trait::fused_mul_add(quotient_accumulator, *batch_random_coeffs, quotient);
     }
 
     quotient_accumulator
@@ -253,16 +252,25 @@ fn quotient_denominator_inverses(
     BatchInvertible::batch_inverse(denominators)
 }
 
-/// Holds the precomputed constant values used in each quotient evaluation.
+/// Holds the precomputed constant values used in each quotient evaluation, grouped evaluation
+/// point.
 #[derive(Debug, Drop)]
 pub struct QuotientConstants {
+    /// The constants for each mask item.
+    pub point_constants: Array<PointQuotientConstants>,
+}
+
+/// Holds the precomputed constants for a given evaluation point.
+#[derive(Debug, Drop)]
+pub struct PointQuotientConstants {
     /// The line coefficients for each quotient numerator term.
-    pub line_coeffs: Array<Array<ComplexConjugateLineCoeffs>>,
+    pub line_coeffs: Array<ComplexConjugateLineCoeffs>,
     /// The random coefficients used to linearly combine the batched quotients.
     ///
     /// For each sample batch we compute random_coeff^(number of columns in the batch),
     /// which is used to linearly combine multiple batches together.
-    pub batch_random_coeffs: Array<QM31>,
+    /// this is the coefficient for this batch of samples.
+    pub batch_random_coeffs: QM31,
 }
 
 #[generate_trait]
@@ -270,8 +278,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
     fn gen(
         sample_batches_by_point: @Array<ColumnSampleBatch>, random_coeff: QM31,
     ) -> QuotientConstants {
-        let mut line_coeffs = array![];
-        let mut batch_random_coeffs = array![];
+        let mut point_constants = array![];
 
         for sample_batch in sample_batches_by_point.span() {
             // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
@@ -295,11 +302,15 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                     );
             }
 
-            batch_random_coeffs.append(alpha);
-            line_coeffs.append(batch_line_coeffs);
+            point_constants
+                .append(
+                    PointQuotientConstants {
+                        line_coeffs: batch_line_coeffs, batch_random_coeffs: alpha,
+                    },
+                );
         }
 
-        QuotientConstants { line_coeffs, batch_random_coeffs }
+        QuotientConstants { point_constants }
     }
 }
 
@@ -339,6 +350,8 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
                 // Check if we've seen the point before.
                 if point_samples.is_null() {
                     point_set.append(*sample.point);
+                } else {
+                    println!("dup at column: {:?}", column);
                 }
 
                 let mut point_samples = point_samples.deref_or(array![]);
