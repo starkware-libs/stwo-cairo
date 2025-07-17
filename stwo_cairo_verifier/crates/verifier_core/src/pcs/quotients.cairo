@@ -147,8 +147,8 @@ fn fri_answers_for_log_size(
     ref queried_values: TreeArray<Span<M31>>,
     n_columns: TreeArray<usize>,
 ) -> Span<QM31> {
-    let sample_batches = ColumnSampleBatchImpl::group_by_point(samples_per_column);
-    let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, random_coeff);
+    let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
+    let quotient_constants = QuotientConstantsImpl::gen(@sample_batches_by_point, random_coeff);
     let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
     let mut quotient_evals_at_queries = array![];
 
@@ -157,7 +157,7 @@ fn fri_answers_for_log_size(
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
-                    @sample_batches,
+                    @sample_batches_by_point,
                     queried_values_at_row.span(),
                     @quotient_constants,
                     commitment_domain.at(bit_reverse_index(*query_position, log_size)),
@@ -178,17 +178,19 @@ fn fri_answers_for_log_size(
 /// * `domain_point`: The domain point the query corresponts to.
 #[inline(always)]
 fn accumulate_row_quotients(
-    sample_batches: @Array<ColumnSampleBatch>,
+    sample_batches_by_point: @Array<ColumnSampleBatch>,
     queried_values_at_row: Span<M31>,
     quotient_constants: @QuotientConstants,
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
-    let n_batches = sample_batches.len();
+    let n_batches = sample_batches_by_point.len();
     // TODO(andrew): Unnessesary asserts, remove.
     assert!(n_batches == quotient_constants.line_coeffs.len());
     assert!(n_batches == quotient_constants.batch_random_coeffs.len());
 
-    let denominator_inverses = quotient_denominator_inverses(sample_batches.span(), domain_point);
+    let denominator_inverses = quotient_denominator_inverses(
+        sample_batches_by_point.span(), domain_point,
+    );
     let domain_point_y: UnreducedM31 = domain_point.y.into();
 
     let mut quotient_accumulator: QM31 = Zero::zero();
@@ -197,7 +199,7 @@ fn accumulate_row_quotients(
     let mut batch_random_coeffs_iter = quotient_constants.batch_random_coeffs.span().into_iter();
     let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
 
-    for sample_batch in sample_batches.span() {
+    for sample_batch in sample_batches_by_point.span() {
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
         let line_coeffs_list = line_coeffs_list_iter.next().unwrap();
@@ -265,11 +267,13 @@ pub struct QuotientConstants {
 
 #[generate_trait]
 impl QuotientConstantsImpl of QuotientConstantsTrait {
-    fn gen(sample_batches: @Array<ColumnSampleBatch>, random_coeff: QM31) -> QuotientConstants {
+    fn gen(
+        sample_batches_by_point: @Array<ColumnSampleBatch>, random_coeff: QM31,
+    ) -> QuotientConstants {
         let mut line_coeffs = array![];
         let mut batch_random_coeffs = array![];
 
-        for sample_batch in sample_batches.span() {
+        for sample_batch in sample_batches_by_point.span() {
             // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
             // Use a better solution.
             assert!(
