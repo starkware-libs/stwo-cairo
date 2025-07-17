@@ -9,6 +9,7 @@ casm = true
 [features]
 poseidon252_verifier = ["stwo_verifier_core/poseidon252_verifier"]
 qm31_opcode = ["stwo_verifier_core/qm31_opcode"]
+hash_outputs = ["stwo_verifier_core/hash_outputs"]
 
 [cairo]
 enable-gas = false
