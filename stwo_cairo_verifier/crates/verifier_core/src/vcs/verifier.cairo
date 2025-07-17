@@ -104,9 +104,19 @@ impl MerkleVerifierImpl<
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
         let mut columns_by_log_size = self.columns_by_log_size.clone();
-        let mut layer_log_size: felt252 = columns_by_log_size.len().into();
+        let mut layer_log_size: felt252 = columns_by_log_size.len().into() - 1;
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
-        let mut is_first_layer = true;
+
+        if let Some(layer_cols) = columns_by_log_size.pop_back() {
+            let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
+
+            let n_columns_in_layer = layer_cols.len();
+            for current_query in layer_column_queries {
+                let column_values = queried_values.pop_front_n(n_columns_in_layer);
+
+                prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
+            }
+        }
 
         while let Some(layer_cols) = columns_by_log_size.pop_back() {
             let n_columns_in_layer = layer_cols.len();
@@ -126,22 +136,18 @@ impl MerkleVerifierImpl<
             // Merge previous layer queries and column queries.
             while let Some(current_query) =
                 next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
-                let node_hashes = if is_first_layer {
-                    None
-                } else {
-                    let witness_too_short_error = || panic!(
-                        "{}", MerkleVerificationError::WitnessTooShort,
-                    );
-                    let left_hash = fetch_prev_node_hash(
-                        ref prev_layer_hashes, ref hash_witness, current_query * 2,
-                    )
-                        .unwrap_or_else(witness_too_short_error);
-                    let right_hash = fetch_prev_node_hash(
-                        ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
-                    )
-                        .unwrap_or_else(witness_too_short_error);
-                    Some((left_hash.clone(), right_hash.clone()))
-                };
+                let witness_too_short_error = || panic!(
+                    "{}", MerkleVerificationError::WitnessTooShort,
+                );
+                let left_hash = fetch_prev_node_hash(
+                    ref prev_layer_hashes, ref hash_witness, current_query * 2,
+                )
+                    .unwrap_or_else(witness_too_short_error);
+                let right_hash = fetch_prev_node_hash(
+                    ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
+                )
+                    .unwrap_or_else(witness_too_short_error);
+                let node_hashes = Some((left_hash.clone(), right_hash.clone()));
 
                 // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
@@ -155,7 +161,6 @@ impl MerkleVerifierImpl<
             }
 
             prev_layer_hashes = layer_total_queries;
-            is_first_layer = false;
         }
 
         // Check that all witnesses and values have been consumed.
