@@ -85,7 +85,7 @@ impl BuiltinSegments {
                         assert!(segment.is_none(), "{} builtin is not supported", name);
                     }
                     // Not builtins.
-                    BuiltinName::segment_arena => {}
+                    BuiltinName::segment_arena | BuiltinName::system => {}
                 }
             };
         }

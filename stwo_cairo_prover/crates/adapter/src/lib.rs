@@ -52,9 +52,7 @@ impl PublicSegmentContext {
                 BuiltinName::range_check96 => present[8] = true,
                 BuiltinName::add_mod => present[9] = true,
                 BuiltinName::mul_mod => present[10] = true,
-                BuiltinName::segment_arena => {
-                    // Do nothing.
-                }
+                BuiltinName::segment_arena | BuiltinName::system => {}
             }
         }
         Self { present }

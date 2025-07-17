@@ -7,7 +7,7 @@ use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_def
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
+use cairo_vm::prover_input_info::ProverInputInfo;
 use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
 use tracing::{span, Level};
