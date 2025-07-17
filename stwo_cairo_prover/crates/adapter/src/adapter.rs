@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
+use cairo_vm::prover_input_info::ProverInputInfo;
 use tracing::{span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};

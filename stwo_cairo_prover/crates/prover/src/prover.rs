@@ -421,7 +421,12 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use stwo_cairo_adapter::test_utils::run_program_and_adapter;
+            use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
+            use cairo_vm::hint_processor::builtin_hint_processor::{
+                builtin_hint_processor_definition::BuiltinHintProcessor,
+            };
+            use cairo_vm::types::layout_name::LayoutName;
+            use stwo_cairo_adapter::test_utils::get_prover_input_info_json_path;
             use test_log::test;
 
             use super::*;
@@ -445,6 +450,50 @@ pub mod tests {
             #[test]
             fn test_prove_verify_all_builtins() {
                 let compiled_program = get_test_program("test_prove_verify_all_builtins");
+
+                // TODO(Stav): Remove this hack when ProverInputInfo is deprecated.
+                let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
+                if is_fix_mode {
+                    let cairo_run_config = CairoRunConfig {
+                        entrypoint: "main",
+                        trace_enabled: true,
+                        relocate_mem: false,
+                        layout: LayoutName::all_cairo_stwo,
+                        proof_mode: true,
+                        secure_run: None,
+                        allow_missing_builtins: None,
+                        dynamic_layout_params: None,
+                        disable_trace_padding: true,
+                    };
+
+                    let mut runner = cairo_run(
+                        compiled_program.as_slice(),
+                        &cairo_run_config,
+                        &mut BuiltinHintProcessor::new_empty(),
+                    )
+                    .expect("Failed to run cairo program");
+                    let prover_input_info = runner
+                        .get_prover_input_info()
+                        .expect("Failed to get prover input info from finished runner");
+
+                    let json = prover_input_info
+                        .serialize_json()
+                        .expect("Failed to serialize ProverInputInfo to json");
+                    std::fs::write(
+                        get_prover_input_info_json_path("test_prove_verify_all_builtins"),
+                        json,
+                    )
+                    .expect("Failed to write ProverInputInfo to json file");
+
+                    let bytes = prover_input_info
+                        .serialize()
+                        .expect("Failed to serialize ProverInputInfo");
+                    std::fs::write(
+                        get_prover_input_info_path("test_prove_verify_all_builtins"),
+                        bytes,
+                    )
+                    .expect("Failed to write ProverInputInfo to binary file");
+                }
                 let input = run_program_and_adapter(&compiled_program);
                 assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
