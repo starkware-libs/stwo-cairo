@@ -2,7 +2,7 @@ use std::collections::hash_map::Entry;
 use std::ops::{Deref, DerefMut};
 
 use bytemuck::{Pod, Zeroable};
-use cairo_vm::stdlib::collections::HashMap;
+use std::collections::HashMap;
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
