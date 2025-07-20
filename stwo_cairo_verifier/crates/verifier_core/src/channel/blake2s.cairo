@@ -2,7 +2,7 @@ use bounded_int::impls::*;
 use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
+use stwo_verifier_utils::{BLAKE2S_256_INITIAL_STATE, MemorySection};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -121,7 +121,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn mix_memory_section(ref self: Blake2sChannel, data: @Array<(u32, [u32; 8])>) {
+    fn mix_memory_section(ref self: Blake2sChannel, data: @MemorySection) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
 
