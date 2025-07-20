@@ -17,7 +17,7 @@ dependencies = [
  "stwo-cairo-serialize 0.1.0",
  "stwo_cairo_prover 0.1.0",
  "stwo_cairo_utils",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -604,7 +604,7 @@ dependencies = [
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
  "stwo-constraint-framework",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -629,7 +629,7 @@ dependencies = [
  "stwo-cairo-common 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
  "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
  "stwo-prover",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -682,7 +682,7 @@ dependencies = [
  "rust-analyzer-salsa",
  "semver 1.0.25",
  "smol_str",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -785,7 +785,7 @@ dependencies = [
  "itertools 0.14.0",
  "rust-analyzer-salsa",
  "serde",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -876,7 +876,7 @@ dependencies = [
  "cairo-lang-filesystem",
  "cairo-lang-utils 2.11.4",
  "serde",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "toml",
 ]
 
@@ -894,7 +894,7 @@ dependencies = [
  "cairo-lang-utils 2.11.4",
  "cairo-vm",
  "itertools 0.14.0",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -923,7 +923,7 @@ dependencies = [
  "sha2",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -975,7 +975,7 @@ dependencies = [
  "sha3",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -990,7 +990,7 @@ dependencies = [
  "itertools 0.14.0",
  "num-bigint",
  "num-traits",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1005,7 +1005,7 @@ dependencies = [
  "itertools 0.14.0",
  "num-bigint",
  "num-traits",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1048,7 +1048,7 @@ dependencies = [
  "num-bigint",
  "num-traits",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1086,7 +1086,7 @@ dependencies = [
  "serde_json",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1108,7 +1108,7 @@ dependencies = [
  "sha3",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -1156,7 +1156,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2584a7ce6ccb6ee465da709983f42162384df5b8c093fb4c2e935db749c61bd"
 dependencies = [
  "hashbrown 0.14.5",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "itertools 0.12.1",
  "num-bigint",
  "num-traits",
@@ -1169,7 +1169,7 @@ version = "2.11.4"
 source = "git+https://github.com/starkware-libs/cairo.git?rev=5cc466a#5cc466a6c7ca3e78a053e58911d567c2889444d2"
 dependencies = [
  "hashbrown 0.15.2",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "itertools 0.14.0",
  "num-bigint",
  "num-traits",
@@ -1226,7 +1226,7 @@ dependencies = [
  "sha3",
  "starknet-crypto 0.7.4",
  "starknet-types-core",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "zip",
 ]
 
@@ -1463,7 +1463,7 @@ dependencies = [
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-serialize 0.1.0",
  "stwo_cairo_prover 0.1.0",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
  "tracing-subscriber",
 ]
@@ -1905,12 +1905,13 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "2.7.1"
+version = "2.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8c9c992b02b5b4c94ea26e32fe5bccb7aa7d9f390ab5c1221ff895bc7ea8b652"
+checksum = "fe4cd85333e22411419a0bcae1297d25e58c9443848b11dc6a86fefe8c78a661"
 dependencies = [
  "equivalent",
  "hashbrown 0.15.2",
+ "rayon",
  "serde",
 ]
 
@@ -2376,7 +2377,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b7cafe60d6cf8e62e1b9b2ea516a089c008945bb5a275416789e7db0bc199dc"
 dependencies = [
  "memchr",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "ucd-trie",
 ]
 
@@ -2387,7 +2388,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3672b37090dbd86368a4145bc067582552b29c27377cad4e0a306c97f9bd7772"
 dependencies = [
  "fixedbitset",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
 ]
 
 [[package]]
@@ -2743,7 +2744,7 @@ checksum = "1e147371c75553e1e2fcdb483944a8540b8438c31426279553b9a8182a9b7b65"
 dependencies = [
  "bytes",
  "hashbrown 0.15.2",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "munge",
  "ptr_meta",
  "rancor",
@@ -2812,7 +2813,7 @@ version = "0.17.0-pre.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "719825638c59fd26a55412a24561c7c5bcf54364c88b9a7a04ba08a6eafaba8d"
 dependencies = [
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "lock_api",
  "oorandom",
  "parking_lot",
@@ -3117,7 +3118,7 @@ dependencies = [
  "simdutf8",
  "sonic-number",
  "sonic-simd",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]
@@ -3257,6 +3258,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
+name = "std-shims"
+version = "0.1.0"
+source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+
+[[package]]
 name = "string_cache"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3277,15 +3283,17 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=dd5d5c3#dd5d5c3c73c5e00dbc1a275f25f33a0263ea13ac"
+source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
 dependencies = [
  "blake2",
  "blake3",
  "bytemuck",
  "cfg-if",
  "educe 0.5.11",
+ "fnv",
+ "hashbrown 0.15.2",
  "hex",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
@@ -3293,9 +3301,22 @@ dependencies = [
  "serde",
  "starknet-crypto 0.6.2",
  "starknet-ff",
- "thiserror 1.0.69",
+ "std-shims",
+ "thiserror 2.0.12",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "stwo-air-utils"
+version = "0.1.1"
+source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "rayon",
+ "stwo",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
 ]
 
 [[package]]
@@ -3311,21 +3332,9 @@ dependencies = [
 ]
 
 [[package]]
-name = "stwo-air-utils"
-version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=dd5d5c3#dd5d5c3c73c5e00dbc1a275f25f33a0263ea13ac"
-dependencies = [
- "bytemuck",
- "itertools 0.12.1",
- "rayon",
- "stwo",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=dd5d5c3)",
-]
-
-[[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcbaebf#dcbaebfbbf923855eadd8cd3612b37569122d927"
+source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3336,7 +3345,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dd5d5c3#dd5d5c3c73c5e00dbc1a275f25f33a0263ea13ac"
+source = "git+https://github.com/starkware-libs/stwo?rev=dcbaebf#dcbaebfbbf923855eadd8cd3612b37569122d927"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3366,7 +3375,7 @@ dependencies = [
  "stwo",
  "stwo-cairo-common 0.1.0",
  "test-case",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -3389,7 +3398,7 @@ dependencies = [
  "sonic-rs",
  "stwo-cairo-common 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
  "stwo-prover",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
 ]
 
@@ -3464,12 +3473,14 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=dd5d5c3#dd5d5c3c73c5e00dbc1a275f25f33a0263ea13ac"
+source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
 dependencies = [
+ "hashbrown 0.15.2",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
  "rayon",
+ "std-shims",
  "stwo",
  "tracing",
 ]
@@ -3485,7 +3496,7 @@ dependencies = [
  "cfg-if",
  "educe 0.5.11",
  "hex",
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",
@@ -3517,8 +3528,8 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=dd5d5c3)",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=dd5d5c3)",
+ "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
@@ -3563,7 +3574,7 @@ dependencies = [
  "env_logger",
  "log",
  "serde",
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
  "tracing",
  "tracing-subscriber",
 ]
@@ -3691,11 +3702,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "2.0.11"
+version = "2.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d452f284b73e6d76dd36758a0c8684b1d5be31f92b89d07fd5822175732206fc"
+checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
 dependencies = [
- "thiserror-impl 2.0.11",
+ "thiserror-impl 2.0.12",
 ]
 
 [[package]]
@@ -3711,9 +3722,9 @@ dependencies = [
 
 [[package]]
 name = "thiserror-impl"
-version = "2.0.11"
+version = "2.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "26afc1baea8a989337eeb52b6e72a039780ce45c3edfcc9c5b9d112feeb173c2"
+checksum = "7f7cf42b4507d8ea322120659672cf1b9dbb93f8f2d4ecfd6e51350ff5b17a1d"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -3772,7 +3783,7 @@ version = "0.22.24"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "17b4795ff5edd201c7cd6dca065ae59972ce77d1b80fa0a84d94950ece7d1474"
 dependencies = [
- "indexmap 2.7.1",
+ "indexmap 2.10.0",
  "serde",
  "serde_spanned",
  "toml_datetime",
@@ -3886,7 +3897,7 @@ version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c01d12e3a56a4432a8b436f293c25f4808bdf9e9f9f98f9260bba1f1bc5a1f26"
 dependencies = [
- "thiserror 2.0.11",
+ "thiserror 2.0.12",
 ]
 
 [[package]]

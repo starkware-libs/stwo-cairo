@@ -11,7 +11,7 @@ use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTra
 #[test]
 #[cfg(feature: "poseidon252_verifier")]
 fn test_verifier() {
-    let root = 0x06e3a2499c5ee8a2a66f536f30640b9b67cb50092642003b64a60c401e280214;
+    let root = 0x41255dc66c0226f688269289df136a92065192c579d0f907c636acdeeb1edcb;
     let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
     let decommitment = MerkleDecommitment::<
         PoseidonMerkleHasher,
