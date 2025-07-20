@@ -3,6 +3,7 @@ use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
+use stwo_verifier_utils::MemorySection;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{gen_bit_mask, pack4};
@@ -92,7 +93,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.inc_challenges();
     }
 
-    fn mix_memory_section(ref self: Poseidon252Channel, data: @Array<(u32, [u32; 8])>) {
+    fn mix_memory_section(ref self: Poseidon252Channel, data: @MemorySection) {
         // TODO(Gali): Make this more efficient.
         let mut flat_data = array![];
         for entry in data.span() {
