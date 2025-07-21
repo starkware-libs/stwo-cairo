@@ -2,6 +2,7 @@ use bounded_int::impls::*;
 use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
+use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -16,10 +17,6 @@ mod test;
 pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
-
-pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
-    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
-];
 
 #[derive(Drop)]
 pub struct Blake2sChannel {
