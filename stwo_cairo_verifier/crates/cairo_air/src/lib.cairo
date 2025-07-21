@@ -303,6 +303,7 @@ use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{Air, StarkProof, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use stwo_verifier_utils::{MemorySection, PubMemoryEntry, PubMemoryValue};
 
 pub mod cairo_component;
 pub mod components;
@@ -2375,14 +2376,6 @@ impl MemorySmallValueImpl of MemorySmallValueTrait {
     }
 }
 
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (id, value)
-pub type PubMemoryValue = (u32, [u32; 8]);
-
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (address, id, value)
-pub type PubMemoryEntry = (u32, u32, [u32; 8]);
-
 #[derive(Debug, Serde, Copy, Drop)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
@@ -2465,9 +2458,6 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         assert!(n_builtins == 11);
     }
 }
-
-/// A contiguous memory section.
-pub type MemorySection = Array<PubMemoryValue>;
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
