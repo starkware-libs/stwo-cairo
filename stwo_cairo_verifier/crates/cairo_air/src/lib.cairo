@@ -282,16 +282,11 @@ use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
-#[cfg(feature: "poseidon252_verifier")]
-use core::poseidon::poseidon_hash_span;
-use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
     PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
     PreprocessedMaskValuesImpl,
 };
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
@@ -305,6 +300,10 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use stwo_verifier_utils::{
+    MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, deconstruct_f252,
+    hash_memory_section,
+};
 pub mod components;
 pub mod utils;
 
@@ -2398,14 +2397,6 @@ impl MemorySmallValueImpl of MemorySmallValueTrait {
     }
 }
 
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (id, value)
-pub type PubMemoryValue = (u32, [u32; 8]);
-
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (address, id, value)
-pub type PubMemoryEntry = (u32, u32, [u32; 8]);
-
 #[derive(Debug, Serde, Copy, Drop)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
@@ -2487,52 +2478,6 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         let n_builtins = self.present_segments().len();
         assert!(n_builtins == 11);
     }
-}
-
-/// A contiguous memory section.
-pub type MemorySection = Array<PubMemoryValue>;
-
-/// Returns the hash of the memory section.
-/// Note: this function ignores the ids and therefore assumes that the section is sorted.
-// TODO(Gali): Unite this function with the one in verifier_core in a separate crate.
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut byte_count = 0;
-
-    let mut buffer = array![];
-    for entry in section {
-        // Compress whenever the buffer reaches capacity.
-        if let Some(msg) = buffer.span().try_into() {
-            state = blake2s_compress(state, byte_count, *msg);
-            buffer = array![];
-        }
-
-        // Append current value to the buffer without its id.
-        let (_, val) = *entry;
-        buffer.append_span(val.span());
-        byte_count += 32;
-    }
-
-    // Pad buffer to blake hash message size.
-    for _ in buffer.len()..16 {
-        buffer.append(0);
-    }
-
-    // Finalize hash.
-    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
-}
-
-/// Returns the hash of the memory section.
-/// Note: this function ignores the ids and therefore assumes that the section is sorted.
-#[cfg(feature: "poseidon252_verifier")]
-pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    let mut felts = array![];
-    for entry in section {
-        let (_, val) = *entry;
-        felts.append(construct_f252(BoxTrait::new(val)));
-    }
-    deconstruct_f252(poseidon_hash_span(felts.span()))
 }
 
 #[derive(Serde, Drop)]
