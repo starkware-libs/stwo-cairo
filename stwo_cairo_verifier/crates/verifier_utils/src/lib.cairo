@@ -1,5 +1,6 @@
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::blake::{blake2s_compress, blake2s_finalize};
+use core::box::BoxImpl;
 #[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 
@@ -26,25 +27,40 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut byte_count = 0;
+    let mut section = section.span();
+    let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
+        *head
+    } else {
+        return blake2s_finalize(state, 0, BoxImpl::new([0; 16]));
+    };
 
-    let mut buffer = array![];
-    for entry in section {
-        // Compress whenever the buffer reaches capacity.
-        if let Some(msg) = buffer.span().try_into() {
-            state = blake2s_compress(state, byte_count, *msg);
-            buffer = array![];
-        }
+    let (_, [v8, v9, v10, v11, v12, v13, v14, v15]) = if let Some(head) = section.pop_front() {
+        *head
+    } else {
+        return blake2s_finalize(
+            state, 32, BoxImpl::new([v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0]),
+        );
+    };
 
-        // Append current value to the buffer without its id.
-        let (_, val) = *entry;
-        buffer.append_span(val.span());
-        byte_count += 32;
+    let mut buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
+    let mut byte_count = 64;
+
+    while let Some(head) = section.multi_pop_front::<2>() {
+        // Append current value to the buffer without its id and compress.
+        state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
+        let [(_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15])] =
+            head
+            .unbox();
+        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
+        byte_count += 64;
     }
 
     // Pad buffer to blake hash message size.
-    for _ in buffer.len()..16 {
-        buffer.append(0);
+    if let Some(head) = section.pop_front() {
+        state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
+        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
+        byte_count += 32;
     }
 
     // Finalize hash.
