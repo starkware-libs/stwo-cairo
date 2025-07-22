@@ -22,12 +22,43 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
 
-/// Returns the hash of the memory section.
-/// Note: this function ignores the ids and therefore assumes that the section is sorted.
+/// Returns the hash of the memory section for packing purposes.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+    hash_memory_section_ex(section.span(), BoxTrait::new(BLAKE2S_256_INITIAL_STATE))
+}
+
+/// Returns the hash of the memory section with the channel's digest hash for mixing purposes.
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub fn hash_memory_section_with_digest(
+    section: @MemorySection, digest_hash: Box<[u32; 8]>,
+) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut section = section.span();
+    let [d0, d1, d2, d3, d4, d5, d6, d7] = digest_hash.unbox();
+
+    let (buffer, byte_count) = if let Some(head) = section.pop_front() {
+        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7]), 64)
+    } else {
+        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]), 32)
+    };
+    if section.is_empty() {
+        state = blake2s_finalize(state, byte_count, buffer);
+    } else {
+        state = blake2s_compress(state, byte_count, buffer);
+        state = hash_memory_section_ex(section, state)
+    }
+
+    state
+}
+
+/// Returns the hash of the memory section with the given initial state.
+/// Note: this function ignores the ids and therefore assumes that the section is sorted.
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn hash_memory_section_ex(section: Span<PubMemoryValue>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
+    let mut state = state;
+    let mut section = section;
     let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
