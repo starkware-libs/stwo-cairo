@@ -20,3 +20,4 @@ stwo.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
 sonic-rs = { version = "0.3.17" }
+sas = { version = "0.1.3", features = ["rayon", "numa"] }

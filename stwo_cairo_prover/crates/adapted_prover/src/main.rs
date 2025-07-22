@@ -112,6 +112,7 @@ fn main() -> ExitCode {
 }
 
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
+    sas::init();
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
