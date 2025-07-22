@@ -2,7 +2,9 @@ use bounded_int::impls::*;
 use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use stwo_verifier_utils::{BLAKE2S_256_INITIAL_STATE, MemorySection};
+use stwo_verifier_utils::{
+    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_with_digest,
+};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -122,41 +124,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn mix_memory_section(ref self: Blake2sChannel, data: @MemorySection) {
-        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
-        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
-
-        if data.is_empty() {
-            let res = blake2s_finalize(
-                state, 32, BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
-            );
-            update_digest(ref self, Blake2sHash { hash: res });
-            return;
-        }
-
-        let mut data = data.span();
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
-        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
-        let mut byte_count = 64;
-
-        while let Some(head) = data.multi_pop_front::<2>() {
-            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
-            let [
-                (_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15]),
-            ] =
-                head
-                .unbox();
-            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
-            byte_count += 64;
-        }
-
-        if !data.is_empty() {
-            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
-            let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
-            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
-            byte_count += 32;
-        }
-
-        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        let res = hash_memory_section_with_digest(data, self.digest.hash);
         update_digest(ref self, Blake2sHash { hash: res });
     }
 

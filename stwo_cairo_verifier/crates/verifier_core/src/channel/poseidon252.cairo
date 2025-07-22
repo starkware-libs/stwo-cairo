@@ -106,7 +106,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn mix_memory_section(ref self: Poseidon252Channel, data: @MemorySection) {
-        // TODO(Gali): Make this more efficient.
+        // TODO(Gali): Make this more efficient, use hash_memory_section.
         let mut flat_data = array![];
         for entry in data.span() {
             let (_, val) = entry;
