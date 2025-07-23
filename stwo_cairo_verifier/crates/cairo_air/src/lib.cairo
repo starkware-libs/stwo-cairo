@@ -1939,16 +1939,7 @@ fn verify_claim(claim: @CairoClaim) {
 }
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
-    // Check that non-supported builtins aren't used.
-    if let Some(ec_op) = segment_ranges.ec_op {
-        assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
-    }
-    if let Some(ecdsa) = segment_ranges.ecdsa {
-        assert!(ecdsa.start_ptr.value == ecdsa.stop_ptr.value);
-    }
-    if let Some(keccak) = segment_ranges.keccak {
-        assert!(keccak.start_ptr.value == keccak.stop_ptr.value);
-    }
+    assert_supported_builtins(builtins_claim, segment_ranges);
 
     // Output builtin.
     assert!(segment_ranges.output.stop_ptr.value <= @pow2(31));
@@ -2083,6 +2074,47 @@ fn check_builtin(
 struct BuiltinClaim {
     segment_start: u32,
     log_size: u32,
+}
+
+fn assert_supported_builtins_in_execution(segment_ranges: @PublicSegmentRanges) {
+    // Check that non-supported builtins aren't used in the execution.
+    if let Some(ec_op) = segment_ranges.ec_op {
+        assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
+    }
+    if let Some(ecdsa) = segment_ranges.ecdsa {
+        assert!(ecdsa.start_ptr.value == ecdsa.stop_ptr.value);
+    }
+    if let Some(keccak) = segment_ranges.keccak {
+        assert!(keccak.start_ptr.value == keccak.stop_ptr.value);
+    }
+}
+
+#[cfg(feature: "poseidon252_verifier")]
+fn assert_supported_builtins(claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
+    assert_supported_builtins_in_execution(segment_ranges);
+
+    let BuiltinsClaim {
+        range_check_128_builtin: _,
+        range_check_96_builtin,
+        bitwise_builtin: _,
+        add_mod_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+    } = claim;
+    assert!(range_check_96_builtin.is_none());
+    assert!(add_mod_builtin.is_none());
+    assert!(mul_mod_builtin.is_none());
+    assert!(pedersen_builtin.is_none());
+    assert!(poseidon_builtin.is_none());
+}
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+fn assert_supported_builtins(claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
+    assert_supported_builtins_in_execution(segment_ranges);
+
+    // Every builtin in the claim is supported.
+    let _ = claim;
 }
 
 fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges) {
