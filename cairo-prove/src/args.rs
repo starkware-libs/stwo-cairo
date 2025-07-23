@@ -25,6 +25,7 @@ pub enum Commands {
         /// The format of the proof output.
         /// - json: Standard JSON format (default)
         /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        /// - compact_binary: Compact binary format
         #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
         proof_format: ProofFormat,
         /// Program arguments

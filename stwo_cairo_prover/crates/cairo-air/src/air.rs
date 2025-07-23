@@ -14,7 +14,7 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
 
@@ -62,6 +62,20 @@ where
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
+    }
+}
+impl<H: MerkleHasher> CompactBinary for CairoProof<H> {
+    fn compact_serialize(&self, output: &mut Vec<u8>) {
+        let Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof,
+        } = self;
+        todo!("GREP ME: CompactBinary::compact_serialize for CairoProof");
+    }
+    fn compact_deserialize(input: &[u8]) -> Self {
+        todo!("GREP ME: CompactBinary::compact_deserialize for CairoProof");
     }
 }
 
