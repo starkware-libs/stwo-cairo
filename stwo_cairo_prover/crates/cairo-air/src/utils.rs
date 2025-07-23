@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoSerialize, CompactBinary};
 use tracing::{span, Level};
 
 use crate::CairoProof;
@@ -18,6 +18,8 @@ pub enum ProofFormat {
     /// Array of field elements serialized as hex strings.
     /// Compatible with `scarb execute`
     CairoSerde,
+    /// Compact binary format.
+    CompactBinary,
 }
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
@@ -48,6 +50,11 @@ where
                 .collect();
 
             proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
+        }
+        ProofFormat::CompactBinary => {
+            let mut compact_bytes: Vec<u8> = Vec::new();
+            CompactBinary::compact_serialize(proof, &mut compact_bytes);
+            proof_file.write_all(&compact_bytes)?;
         }
     }
 
