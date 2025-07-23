@@ -146,23 +146,23 @@ where
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_preprocessed_roots() {
-    let max_log_blowup_factor = 5;
+    let max_log_blowup_factor = 1;
 
-    // Blake2s roots.
-    let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::Canonical,
-    );
-    blake_roots.iter().enumerate().for_each(|(i, root)| {
-        let root_bytes = root.0;
-        let u32s_hex = root_bytes
-            .array_chunks::<4>()
-            .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
-            .collect_vec()
-            .join(", ");
+    // // Blake2s roots.
+    // let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
+    //     max_log_blowup_factor,
+    //     PreProcessedTraceVariant::Canonical,
+    // );
+    // blake_roots.iter().enumerate().for_each(|(i, root)| {
+    //     let root_bytes = root.0;
+    //     let u32s_hex = root_bytes
+    //         .array_chunks::<4>()
+    //         .map(|&bytes| format!("{:#010x}", u32::from_le_bytes(bytes)))
+    //         .collect_vec()
+    //         .join(", ");
 
-        println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
-    });
+    //     println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
+    // });
 
     // Poseidon252 roots.
     get_preprocessed_roots::<Poseidon252MerkleChannel>(
@@ -281,5 +281,10 @@ mod tests {
         let result = tree_trace_cells(tree_sizes);
 
         assert_eq!(result, vec![6, 24, 32]);
+    }
+
+    #[test]
+    fn test_export_preprocessed_roots() {
+        super::export_preprocessed_roots();
     }
 }
