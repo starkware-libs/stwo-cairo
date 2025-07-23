@@ -2,6 +2,7 @@
 name = "adapted_stwo"
 version = "0.1.0"
 edition = "2021"
+build = "build.rs"
 
 [features]
 std = ["stwo-cairo-adapter/std"]
@@ -21,3 +22,4 @@ thiserror.workspace = true
 tracing.workspace = true
 sonic-rs = { version = "0.3.17" }
 sas = { version = "0.1.3", features = ["rayon", "numa"] }
+libc = "0.2.174"

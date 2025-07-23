@@ -5,6 +5,7 @@ use std::process::ExitCode;
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
+use libc::c_int;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::pcs::PcsConfig;
@@ -111,8 +112,16 @@ fn main() -> ExitCode {
     run_binary(run, "adapted_stwo")
 }
 
+unsafe extern "C" {
+    pub fn numa_set_preferred(node: c_int) -> c_int;
+    pub fn numa_run_on_node(node: c_int) -> c_int;
+}
+
 fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
-    sas::init();
+    unsafe {
+        numa_set_preferred(0);
+        numa_run_on_node(0);
+    }
     let _span = span!(Level::INFO, "run").entered();
     let args = Args::try_parse_from(args)?;
 
