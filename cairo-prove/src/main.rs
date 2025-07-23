@@ -10,9 +10,9 @@ use cairo_prove::execute::execute;
 use cairo_prove::prove::{prove, prover_input_from_runner};
 use clap::Parser;
 use log::{error, info};
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
+use stwo_cairo_prover::stwo::core::fri::FriConfig;
+use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 
@@ -68,7 +68,7 @@ fn handle_verify(proof: &Path, with_pedersen: bool) {
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
     };
     let result =
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, secure_pcs_config(), preprocessed_trace);
+        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace);
     match result {
         Ok(_) => info!("Verification successful"),
         Err(e) => error!("Verification failed: {:?}", e),
@@ -110,9 +110,8 @@ mod tests {
         let target_path = "./example/target/release/example.executable.json";
         let args = vec![Arg::Value(Felt252::from(BigInt::from(100)))];
         let proof = execute_and_prove(target_path, args, PcsConfig::default());
-        let pcs_config = PcsConfig::default();
         let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-        let result = verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace);
+        let result = verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace);
         assert!(result.is_ok());
     }
 }
