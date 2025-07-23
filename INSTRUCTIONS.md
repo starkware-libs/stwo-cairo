@@ -16,12 +16,12 @@ cd ../
 ### Install scarb
 https://docs.swmansion.com/scarb/download#install-via-installation-script
 
+## Test the example
 Go to the `massa-stwo-cairo` directory
 ```bash
 cd massa-stwo-cairo
 ```
 
-## Test the example
 ### Build the example
 ```bash
 cd cairo-prove/examples/
