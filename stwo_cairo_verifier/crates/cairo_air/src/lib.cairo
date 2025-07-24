@@ -5712,8 +5712,18 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
+        let BuiltinsClaim {
+            range_check_128_builtin,
+            range_check_96_builtin,
+            bitwise_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+        } = claim;
+
         let mut add_mod_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.add_mod_builtin {
+        if let Option::Some(claim) = add_mod_builtin {
             add_mod_builtin_component =
                 Option::Some(
                     components::add_mod_builtin::Component {
@@ -5730,7 +5740,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut bitwise_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.bitwise_builtin {
+        if let Option::Some(claim) = bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
                     components::bitwise_builtin::Component {
@@ -5753,7 +5763,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut mul_mod_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.mul_mod_builtin {
+        if let Option::Some(claim) = mul_mod_builtin {
             mul_mod_builtin_component =
                 Option::Some(
                     components::mul_mod_builtin::Component {
@@ -5782,7 +5792,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut pedersen_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.pedersen_builtin {
+        if let Option::Some(claim) = pedersen_builtin {
             pedersen_builtin_component =
                 Option::Some(
                     components::pedersen_builtin::Component {
@@ -5808,7 +5818,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut poseidon_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.poseidon_builtin {
+        if let Option::Some(claim) = poseidon_builtin {
             poseidon_builtin_component =
                 Option::Some(
                     components::poseidon_builtin::Component {
@@ -5847,7 +5857,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut range_check_96_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.range_check_96_builtin {
+        if let Option::Some(claim) = range_check_96_builtin {
             range_check_96_builtin_component =
                 Option::Some(
                     components::range_check_builtin_bits_96::Component {
@@ -5868,7 +5878,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut range_check_128_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.range_check_128_builtin {
+        if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
                     components::range_check_builtin_bits_128::Component {
@@ -6111,8 +6121,23 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
+        let BuiltinsClaim {
+            range_check_128_builtin,
+            range_check_96_builtin,
+            bitwise_builtin,
+            add_mod_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+        } = claim;
+        assert!(range_check_96_builtin.is_none());
+        assert!(add_mod_builtin.is_none());
+        assert!(mul_mod_builtin.is_none());
+        assert!(pedersen_builtin.is_none());
+        assert!(poseidon_builtin.is_none());
+
         let mut bitwise_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.bitwise_builtin {
+        if let Option::Some(claim) = bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
                     components::bitwise_builtin::Component {
@@ -6135,7 +6160,7 @@ impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         let mut range_check_128_builtin_component = Option::None;
-        if let Option::Some(claim) = claim.range_check_128_builtin {
+        if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
                     components::range_check_builtin_bits_128::Component {
