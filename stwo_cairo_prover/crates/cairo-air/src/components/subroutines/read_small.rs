@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct ReadSmall {}
 
 impl ReadSmall {

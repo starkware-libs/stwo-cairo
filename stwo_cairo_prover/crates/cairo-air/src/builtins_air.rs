@@ -6,7 +6,7 @@ use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::air::CairoInteractionElements;
@@ -16,7 +16,7 @@ use crate::components::{
     pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
@@ -109,7 +109,7 @@ impl BuiltinsClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,

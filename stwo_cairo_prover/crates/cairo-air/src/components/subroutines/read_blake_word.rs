@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct ReadBlakeWord {}
 
 impl ReadBlakeWord {

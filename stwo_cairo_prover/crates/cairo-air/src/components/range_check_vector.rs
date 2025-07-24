@@ -62,7 +62,7 @@ macro_rules! range_check_eval{
     ($name:ident, $suffix_upper:ident, $($log_range:expr),+) => {
         paste::paste! {
             use serde::{Deserialize, Serialize};
-            use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+            use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
             use stwo_constraint_framework::{EvalAtRow, FrameworkComponent};
             use stwo_constraint_framework::FrameworkEval;
             use stwo::core::channel::Channel;
@@ -80,7 +80,7 @@ macro_rules! range_check_eval{
             const RANGES : [u32; N_RANGES] = [$($log_range),+];
             pub type Component = FrameworkComponent<[<Eval>]>;
 
-            #[derive(Clone, Deserialize, Serialize, CairoSerialize, CairoDeserialize)]
+            #[derive(Clone, Deserialize, Serialize, CairoSerialize, CairoDeserialize, CompactBinary)]
             pub struct Claim {}
 
             impl Claim {
@@ -99,7 +99,7 @@ macro_rules! range_check_eval{
                 pub fn mix_into(&self, _channel: &mut impl Channel) {}
             }
 
-            #[derive(Clone, Copy, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+            #[derive(Clone, Copy, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
             pub struct InteractionClaim{
                 pub claimed_sum: QM31,
             }

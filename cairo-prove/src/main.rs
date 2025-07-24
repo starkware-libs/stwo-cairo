@@ -67,8 +67,7 @@ fn handle_verify(proof: &Path, with_pedersen: bool) {
         true => PreProcessedTraceVariant::Canonical,
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
     };
-    let result =
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace);
+    let result = verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace);
     match result {
         Ok(_) => info!("Verification successful"),
         Err(e) => error!("Verification failed: {:?}", e),

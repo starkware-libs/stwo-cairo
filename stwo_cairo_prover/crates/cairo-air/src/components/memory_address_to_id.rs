@@ -3,7 +3,7 @@ use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 use crate::preprocessed::{PreProcessedColumn, Seq};
@@ -73,7 +73,7 @@ impl FrameworkEval for Eval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -90,7 +90,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }

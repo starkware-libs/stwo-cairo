@@ -5,7 +5,7 @@ use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::components::{
@@ -19,7 +19,7 @@ use crate::components::{
 };
 use crate::relations;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct RangeChecksClaim {
     pub rc_6: range_check_6::Claim,
     pub rc_8: range_check_8::Claim,
@@ -122,7 +122,7 @@ impl RangeChecksClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct RangeChecksInteractionClaim {
     pub rc_6: range_check_6::InteractionClaim,
     pub rc_8: range_check_8::InteractionClaim,

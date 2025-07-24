@@ -64,7 +64,11 @@ where
         CairoSerialize::serialize(stark_proof, output);
     }
 }
-impl<H: MerkleHasher> CompactBinary for CairoProof<H> {
+
+impl<H: MerkleHasher> CompactBinary for CairoProof<H>
+where
+    H::Hash: CompactBinary,
+{
     fn compact_serialize(&self, output: &mut Vec<u8>) {
         let Self {
             claim,
@@ -72,10 +76,28 @@ impl<H: MerkleHasher> CompactBinary for CairoProof<H> {
             interaction_claim,
             stark_proof,
         } = self;
-        todo!("GREP ME: CompactBinary::compact_serialize for CairoProof");
+        claim.compact_serialize(output);
+        interaction_pow.compact_serialize(output);
+        interaction_claim.compact_serialize(output);
+        stark_proof.compact_serialize(output);
     }
-    fn compact_deserialize(input: &[u8]) -> Self {
-        todo!("GREP ME: CompactBinary::compact_deserialize for CairoProof");
+
+    // TODO: Add Versioning and tags
+    fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let (input, claim) = CairoClaim::compact_deserialize(input);
+        let (input, interaction_pow) = u64::compact_deserialize(input);
+        let (input, interaction_claim) = CairoInteractionClaim::compact_deserialize(input);
+        let (input, stark_proof) = StarkProof::compact_deserialize(input);
+
+        (
+            input,
+            Self {
+                claim,
+                interaction_pow,
+                interaction_claim,
+                stark_proof,
+            },
+        )
     }
 }
 
@@ -114,7 +136,7 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -239,7 +261,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -300,7 +322,9 @@ impl PublicData {
 }
 
 // TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
+)]
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
@@ -320,7 +344,9 @@ pub type PubMemoryValue = (u32, [u32; 8]);
 // (address, id, value)
 pub type PubMemoryEntry = (u32, u32, [u32; 8]);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
+)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
     pub stop_ptr: MemorySmallValue,
@@ -337,7 +363,9 @@ impl SegmentRange {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
+)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -425,7 +453,7 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
@@ -534,7 +562,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,

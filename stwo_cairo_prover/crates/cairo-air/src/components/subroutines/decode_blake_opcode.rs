@@ -3,7 +3,7 @@ use crate::components::subroutines::decode_instruction_64420::DecodeInstruction6
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 use crate::components::subroutines::read_positive_num_bits_27::ReadPositiveNumBits27;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct DecodeBlakeOpcode {}
 
 impl DecodeBlakeOpcode {

@@ -5,7 +5,7 @@ use crate::components::subroutines::div_252::Div252;
 use crate::components::subroutines::mul_252::Mul252;
 use crate::components::subroutines::sub_252::Sub252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct EcAdd {}
 
 impl EcAdd {
