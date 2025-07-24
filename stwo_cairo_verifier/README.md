@@ -56,3 +56,34 @@ Visualise profile in the browser.
 # Once opened navigate to `Sample -> steps`.
 go tool pprof -http=":8000" profile.pb.gz
 ```
+
+## Profile executable
+
+In order to run the verifier program we need to prepare arguments (proof) first:
+
+```sh
+# Will build the dev-utils prover from the current codebase and run it on one of the test Cairo programs.
+make bench-proof
+```
+
+### Used resources
+
+To estimate the execution resources (total number of steps, builtin usage) run the following command:
+
+```sh
+# Will run scarb execute internally
+make bench
+```
+
+### Scoped sierra statements
+
+For more insights generate a scoped Sierra profile (loops and recursions are collapsed to improve readability) and visualize using `scarb-burn` tool: 
+
+```sh
+# Install
+make install-scarb-burn
+# Generate pprof file and open it using the go pprof
+make profile
+```
+
+NOTE that this option requires golang toolchain and pprof package installed.
