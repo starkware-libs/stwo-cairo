@@ -1,6 +1,6 @@
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct RangeCheckLastLimbBitsInMsLimb2 {}
 
 impl RangeCheckLastLimbBitsInMsLimb2 {

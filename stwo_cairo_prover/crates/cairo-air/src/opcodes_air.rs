@@ -6,7 +6,7 @@ use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::air::CairoInteractionElements;
@@ -19,7 +19,7 @@ use crate::components::{
     jump_opcode_rel_imm, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
     pub add_small: Vec<add_opcode_small::Claim>,
@@ -158,7 +158,7 @@ impl OpcodeClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct OpcodeInteractionClaim {
     pub add: Vec<add_opcode::InteractionClaim>,
     pub add_small: Vec<add_opcode_small::InteractionClaim>,

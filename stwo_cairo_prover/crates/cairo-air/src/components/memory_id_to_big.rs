@@ -7,7 +7,7 @@ use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
 };
@@ -336,7 +336,7 @@ impl FrameworkEval for SmallEval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub big_log_sizes: Vec<u32>,
     pub small_log_size: u32,
@@ -377,7 +377,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub big_claimed_sums: Vec<SecureField>,
     pub small_claimed_sum: SecureField,

@@ -17,7 +17,7 @@ use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoSerialize, CompactBinary};
 use thiserror::Error;
 
 #[derive(Debug, Error)]
@@ -50,7 +50,7 @@ pub fn create_and_serialize_generic_proof<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
     MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
+    <MC::H as MerkleHasher>::Hash: CairoSerialize + CompactBinary,
 {
     let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
 

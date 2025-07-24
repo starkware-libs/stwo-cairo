@@ -3573,6 +3573,7 @@ dependencies = [
  "starknet-ff",
  "stwo",
  "stwo-cairo-serialize-derive",
+ "unsigned-varint",
 ]
 
 [[package]]

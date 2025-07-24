@@ -30,7 +30,7 @@ pub fn serialize_proof_to_file<MC: MerkleChannel>(
 ) -> Result<(), std::io::Error>
 where
     MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
+    <MC::H as MerkleHasher>::Hash: CairoSerialize + CompactBinary,
 {
     let span = span!(Level::INFO, "Serialize proof").entered();
 

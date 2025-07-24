@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
 use stwo::core::channel::Channel;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 
 pub type M31 = stwo::core::fields::m31::M31;
 pub type QM31 = stwo::core::fields::qm31::QM31;
@@ -59,6 +59,7 @@ impl ProverType for M31 {
     Hash,
     CairoSerialize,
     CairoDeserialize,
+    CompactBinary,
 )]
 pub struct CasmState {
     pub pc: M31,

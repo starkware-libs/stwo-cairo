@@ -1,7 +1,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_2::RangeCheckLastLimbBitsInMsLimb2;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct ReadPositiveNumBits128 {}
 
 impl ReadPositiveNumBits128 {
