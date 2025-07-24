@@ -2,7 +2,7 @@ use bounded_int::BoundedInt;
 use core::array::ArrayImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, SquashedFelt252DictTrait};
 use core::iter::{IntoIterator, Iterator};
-use core::nullable::{Nullable, NullableTrait, null};
+use core::nullable::{Nullable, NullableTrait, match_nullable, FromNullableResult, null};
 use core::num::traits::{One, Zero};
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
 use crate::fields::BatchInvertible;
@@ -337,14 +337,16 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
             // Handling this case specifically is more optimal than using the dictionary.
             for sample in samples.span() {
                 let point_key = CirclePointQM31Key::encode(sample.point);
-                let (entry, point_samples) = grouped_samples.entry(point_key);
+                let (entry, value) = grouped_samples.entry(point_key);
 
-                // Check if we've seen the point before.
-                if point_samples.is_null() {
-                    point_set.append(*sample.point);
-                }
-
-                let mut point_samples = point_samples.deref_or(array![]);
+                let mut point_samples = match match_nullable(value) {
+                    FromNullableResult::Null => {
+                        // This is the first time we've seen this point, add it to the point set.
+                        point_set.append(*sample.point);
+                        array![]
+                    },
+                    FromNullableResult::NotNull(value) => value.unbox(),
+                };
                 point_samples.append((column, sample.value));
                 grouped_samples = entry.finalize(NullableTrait::new(point_samples));
             }
