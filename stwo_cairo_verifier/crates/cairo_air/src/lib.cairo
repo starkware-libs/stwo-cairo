@@ -307,7 +307,10 @@ use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 pub mod cairo_component;
 pub mod components;
 #[cfg(test)]
+mod profiling;
+#[cfg(test)]
 mod test;
+pub mod test_utils;
 pub mod utils;
 
 // Security constants.
