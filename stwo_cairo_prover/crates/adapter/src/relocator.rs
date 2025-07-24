@@ -125,11 +125,12 @@ impl Relocator {
                 BuiltinName::range_check96 => res.range_check_bits_96 = segment,
                 BuiltinName::add_mod => res.add_mod = segment,
                 BuiltinName::mul_mod => res.mul_mod = segment,
+                BuiltinName::output => res.output = segment,
                 BuiltinName::ecdsa | BuiltinName::keccak | BuiltinName::ec_op => {
                     panic!("Builtin {} is not supported in Stwo", builtin_name)
                 }
                 // Not builtins.
-                BuiltinName::output | BuiltinName::segment_arena => {}
+                BuiltinName::segment_arena => {}
             };
         }
         res
