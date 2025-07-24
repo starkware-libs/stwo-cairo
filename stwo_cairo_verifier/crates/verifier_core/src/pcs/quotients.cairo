@@ -342,8 +342,6 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
                 // Check if we've seen the point before.
                 if point_samples.is_null() {
                     point_set.append(*sample.point);
-                } else {
-                    println!("dup at column: {:?}", column);
                 }
 
                 let mut point_samples = point_samples.deref_or(array![]);
