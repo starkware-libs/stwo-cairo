@@ -748,13 +748,19 @@ fn preprocessed_root(log_blowup_factor: u32) -> Hash {
 #[cfg(feature: "poseidon252_verifier")]
 fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x053be12b3503460f6657c5a46ed1b56719f91e45530a869327b39b7b8a20e0e6,
-        1 => 0x009c3ff379acfd021edc6424e1db4efeaf89dcc33454f3dc4ebe4cab8eedf6b9,
-        2 => 0x03d4e5bd52271fa8f9e62faa88edbb7139e6d8c53f03da60245ec4630be6aa57,
-        3 => 0x01d88ea9df444050fb2e8694c58bece0f152c7901b24e2c4814374e12dc88159,
-        4 => 0x048d6171d793484bb412ad431d3fdd875dfd00cfa1e3e95d4e5d38bd0e4add50,
+        0 => 0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e,
+        1 => 0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394,
+        2 => 0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543,
+        3 => 0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d,
+        4 => 0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9,
         _ => panic!("invalid blowup factor"),
     }
+
+                                     [0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e]
+log_blowup_factor: 2, poseidon root: [0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394]
+log_blowup_factor: 3, poseidon root: [0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543]
+log_blowup_factor: 4, poseidon root: [0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d]
+log_blowup_factor: 5, poseidon root: [0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9]
 }
 
 #[derive(Drop, Serde)]
