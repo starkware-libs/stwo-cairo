@@ -9,6 +9,7 @@ casm = true
 [features]
 poseidon252_verifier = []
 qm31_opcode = []
+outputs_packing = []
 
 [cairo]
 enable-gas = false
