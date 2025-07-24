@@ -1,8 +1,8 @@
 use core::array::ArrayTrait;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
+use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::BaseField;
-use crate::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use crate::fields::m31::M31Zero;
 use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;

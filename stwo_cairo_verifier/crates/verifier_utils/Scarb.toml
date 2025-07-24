@@ -1,0 +1,22 @@
+[package]
+name = "stwo_verifier_utils"
+version = "0.1.0"
+edition = "2024_07"
+
+[lib]
+casm = true
+
+[features]
+poseidon252_verifier = []
+qm31_opcode = []
+
+[cairo]
+enable-gas = false
+
+[tool.fmt]
+sort-module-level-items = true
+
+[dependencies]
+
+[dev-dependencies]
+cairo_test = "2.11.4"

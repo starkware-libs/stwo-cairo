@@ -62,43 +62,6 @@ pub fn split_f252(x: [u32; 8]) -> [M31; memory_id_to_big::N_M31_IN_FELT252] {
     (*m31_segments.span().try_into().unwrap()).unbox()
 }
 
-/// Constructs a `felt252` from 8 u32 little-endian limbs.
-/// Doesn't check for overflow, i.e, the result is in fact a u256 modulo p252.
-pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
-    let [l0, l1, l2, l3, l4, l5, l6, l7] = x.unbox();
-    let offset = 0x100000000;
-    let result: felt252 = l7.into();
-    let result = result * offset + l6.into();
-    let result = result * offset + l5.into();
-    let result = result * offset + l4.into();
-    let result = result * offset + l3.into();
-    let result = result * offset + l2.into();
-    let result = result * offset + l1.into();
-    result * offset + l0.into()
-}
-
-/// Deconstructs a `felt252` to 8 u32 little-endian limbs.
-pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
-    let offset = 0x100000000;
-    let cur: u256 = x.into();
-    let (cur, l0) = DivRem::div_rem(cur, offset);
-    let (cur, l1) = DivRem::div_rem(cur, offset);
-    let (cur, l2) = DivRem::div_rem(cur, offset);
-    let (cur, l3) = DivRem::div_rem(cur, offset);
-    let (cur, l4) = DivRem::div_rem(cur, offset);
-    let (cur, l5) = DivRem::div_rem(cur, offset);
-    let (cur, l6) = DivRem::div_rem(cur, offset);
-    let (_, l7) = DivRem::div_rem(cur, offset);
-    BoxTrait::new(
-        [
-            l0.try_into().unwrap(), l1.try_into().unwrap(), l2.try_into().unwrap(),
-            l3.try_into().unwrap(), l4.try_into().unwrap(), l5.try_into().unwrap(),
-            l6.try_into().unwrap(), l7.try_into().unwrap(),
-        ],
-    )
-}
-
-
 /// Splits a 32N bit dense representation into felts, each with N_BITS_PER_FELT bits.
 ///
 /// Parameters:
