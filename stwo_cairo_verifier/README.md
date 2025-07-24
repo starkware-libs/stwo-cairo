@@ -56,3 +56,36 @@ Visualise profile in the browser.
 # Once opened navigate to `Sample -> steps`.
 go tool pprof -http=":8000" profile.pb.gz
 ```
+
+## Profile executable
+
+Test prover input is already generated and available under `cairo_verifier/tests/programs/bench/artfacts`.
+However in case there is a need to re-create artifacts (e.g. guest program changed, or compiler version upgraded) you need to run the following commands:
+```sh
+# Install a Cairo bootloader runner
+make install-cairo-bootloader
+# Will build and execute the guest Cairo program to produce a PIE, then execute the bootloader to generate prover input.
+make bench-artifacts
+# Will build adapted prover from the current codebase and run it.
+make bench-proof
+```
+
+### Used resources
+
+In order to estimate the execution resources (total number of steps, builtin usage) run the following command:
+
+```sh
+# Will run scarb execute internally
+make bench
+```
+
+### Scoped sierra statements
+
+For more insights generate a scoped Sierra profile (loops and recursions are collapsed to improve readability) and visualize using `scarb-burn` tool: 
+
+```sh
+# Install
+make install-scarb-burn
+# 
+make profile
+```
