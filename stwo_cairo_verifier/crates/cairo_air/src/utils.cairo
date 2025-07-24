@@ -5,8 +5,9 @@ use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::utils::pow2;
+#[cfg(feature: "poseidon252_verifier")]
+use crate::{Invertible, QM31, Zero};
 use super::components::memory_id_to_big;
-
 
 #[generate_trait]
 pub impl UsizeImpl of UsizeExTrait {
@@ -147,4 +148,34 @@ fn split<
     }
 
     (*SpanTryIntoFixedArray::try_into(res.span()).unwrap()).unbox()
+}
+
+/// Sums the inverses of the given QM31 values.
+/// Uses Montgomery's trick to compute the inverses efficiently.
+#[cfg(feature: "poseidon252_verifier")]
+pub fn sum_inverses_qm31(values: @Array<QM31>) -> QM31 {
+    let mut values = values.span();
+    let first_value = *values.pop_front().expect('values cannot be empty');
+    let mut prefix_mul = array![first_value];
+
+    // First pass.
+    let mut curr_mul = first_value;
+    for value in values {
+        let mul = curr_mul * *value;
+        prefix_mul.append(mul);
+        curr_mul = mul;
+    }
+    let mut prefix_mul = prefix_mul.span();
+
+    // Inverse cumulative product.
+    let mut curr_inverse = prefix_mul.pop_back().unwrap().inverse();
+
+    // Second pass.
+    let mut sum = Zero::zero();
+    while let (Some(prefix), Some(value)) = (prefix_mul.pop_back(), values.pop_back()) {
+        sum += *prefix * curr_inverse;
+        curr_inverse *= *value;
+    }
+
+    sum + curr_inverse
 }

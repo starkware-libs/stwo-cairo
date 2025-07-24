@@ -2,6 +2,8 @@ use core::num::traits::one::One;
 use stwo_constraint_framework::LookupElements;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
+#[cfg(feature: "poseidon252_verifier")]
+use crate::Invertible;
 use crate::{
     CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
     RelationUsesDict, accumulate_relation_uses, construct_f252, deconstruct_f252,
@@ -158,3 +160,19 @@ fn test_deconstruct_felt() {
         [1_u32, 2, 3, 4, 5, 6, 7, 8],
     );
 }
+
+#[cfg(feature: "poseidon252_verifier")]
+#[test]
+fn test_sum_inverses_qm31() {
+    let a = qm31_const::<1, 2, 3, 4>();
+    let b = qm31_const::<5, 6, 7, 8>();
+    let c = qm31_const::<9, 10, 11, 12>();
+    let d = qm31_const::<13, 14, 15, 16>();
+    let expected = a.inverse() + b.inverse() + c.inverse() + d.inverse();
+    let array = array![a, b, c, d];
+
+    let sum = crate::utils::sum_inverses_qm31(@array);
+
+    assert_eq!(sum, expected);
+}
+
