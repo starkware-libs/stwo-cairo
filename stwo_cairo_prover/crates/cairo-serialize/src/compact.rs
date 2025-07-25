@@ -26,6 +26,15 @@ pub trait CompactBinary {
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self);
 }
 
+/// Helper function to convert a byte slice into an array of a specific size from a closure if
+/// possible.
+pub fn buf_to_array_ctr<F: Fn(&[u8; N]) -> V, V, const N: usize>(
+    buf: &[u8],
+    ctr: F,
+) -> Option<(&[u8], V)> {
+    Some((&buf[N..], ctr(&buf.get(..N)?.try_into().ok()?)))
+}
+
 impl CompactBinary for u32 {
     fn compact_serialize(&self, output: &mut Vec<u8>) {
         output.extend_from_slice(encode::u32(*self, &mut u32_buffer()));
@@ -57,13 +66,6 @@ impl CompactBinary for usize {
         let (value, input) = decode::usize(input).unwrap();
         (input, value)
     }
-}
-
-pub fn buf_to_array_ctr<F: Fn(&[u8; N]) -> V, V, const N: usize>(
-    buf: &[u8],
-    ctr: F,
-) -> Option<(&[u8], V)> {
-    Some((&buf[N..], ctr(&buf.get(..N)?.try_into().ok()?)))
 }
 
 impl CompactBinary for BaseField {
@@ -361,9 +363,11 @@ impl<T: CompactBinary> CompactBinary for Option<T> {
 
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
         if *input.first().unwrap() == b'1' {
+            let input = &input[1..];
             let (input, value) = T::compact_deserialize(input);
             (input, Some(value))
         } else {
+            let input = &input[1..];
             (input, None)
         }
     }
