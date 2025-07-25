@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::time::Instant;
 
-use cairo_air::utils::{ProofFormat, serialize_proof_to_file};
+use cairo_air::utils::{ProofFormat, deserialize_proof_from_bytes, serialize_proof_to_file};
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_lang_runner::Arg;
@@ -59,10 +59,13 @@ fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: Pr
     info!("Proof generation completed in {:.2?}", elapsed);
 }
 
-fn handle_verify(proof: &Path, with_pedersen: bool) {
+fn handle_verify(proof: &Path, proof_format: ProofFormat, with_pedersen: bool) {
     info!("Verifying proof from: {:?}", proof);
-    let cairo_proof =
-        serde_json::from_reader(std::fs::File::open(proof.to_str().unwrap()).unwrap()).unwrap();
+
+    let bytes = std::fs::read(proof).expect("Failed to read proof file");
+    let cairo_proof = deserialize_proof_from_bytes::<Blake2sMerkleChannel>(&bytes, proof_format)
+        .expect("Failed to deserialize proof");
+
     let preprocessed_trace = match with_pedersen {
         true => PreProcessedTraceVariant::Canonical,
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
@@ -90,9 +93,10 @@ fn main() {
         }
         Commands::Verify {
             proof,
+            proof_format,
             with_pedersen,
         } => {
-            handle_verify(&proof, with_pedersen);
+            handle_verify(&proof, proof_format, with_pedersen);
         }
     }
 }

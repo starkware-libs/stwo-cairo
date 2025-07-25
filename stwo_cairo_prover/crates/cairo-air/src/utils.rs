@@ -2,10 +2,10 @@ use std::fs::File;
 use std::io::Write;
 use std::path::PathBuf;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::{CairoSerialize, CompactBinary};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use tracing::{span, Level};
 
 use crate::CairoProof;
@@ -60,4 +60,38 @@ where
 
     span.exit();
     Ok(())
+}
+
+/// Deserializes Cairo proof given the desired format from a file.
+pub fn deserialize_proof_from_bytes<'a, MC: MerkleChannel>(
+    bytes: &'a [u8],
+    proof_format: ProofFormat,
+) -> Result<CairoProof<MC::H>, std::io::Error>
+where
+    MC::H: Serialize + Deserialize<'a>,
+    <MC::H as MerkleHasher>::Hash: CairoDeserialize + CairoSerialize + CompactBinary,
+{
+    let cairo_proof = match proof_format {
+        ProofFormat::Json => serde_json::from_slice(bytes).unwrap(),
+        ProofFormat::CairoSerde => {
+            let json: Vec<String> = serde_json::from_slice(bytes).unwrap();
+
+            let felts = json
+                .iter()
+                .map(|s| {
+                    let s = s.strip_prefix("0x").unwrap();
+                    starknet_ff::FieldElement::from_hex_be(s)
+                        .expect("Failed to parse field element")
+                })
+                .collect::<Vec<_>>();
+
+            <CairoProof<<MC as MerkleChannel>::H> as stwo_cairo_serialize::CairoDeserialize>::deserialize(&mut felts.iter())
+        }
+        ProofFormat::CompactBinary => {
+            let (_, cairo_proof) = CairoProof::<MC::H>::compact_deserialize(bytes);
+            cairo_proof
+        }
+    };
+
+    Ok(cairo_proof)
 }
