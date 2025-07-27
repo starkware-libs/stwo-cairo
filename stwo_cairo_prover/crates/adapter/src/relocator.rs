@@ -8,7 +8,7 @@ use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{span, Level};
 
 use crate::builtins::MemorySegmentAddresses;
-use crate::memory::{MemoryEntry, F252};
+use crate::memory::MemoryEntry;
 use crate::vm_import::RelocatedTraceEntry;
 use crate::BuiltinSegments;
 
@@ -16,27 +16,21 @@ use crate::BuiltinSegments;
 pub const MIN_SEGMENT_SIZE: usize = N_LANES;
 
 #[derive(Debug, Clone)]
-/// The relocator is responsible for relocating addresses for the memory and the builtins segments.
+// The relocator is responsible for converting each two-dimensional address
+/// (i.e., segment + offset) output by the VM, into a single flat address.
 pub struct Relocator {
     pub relocation_table: Vec<u32>,
-    pub relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
-    pub builtins_segments_indices: BTreeMap<usize, BuiltinName>,
 }
 impl Relocator {
-    /// Allocates an address for each segment according to the relocatable memory.
-    /// Each built-in segment is rounded up to the nearest power of two instances
-    /// or `MIN_SEGMENT_SIZE`, taking the maximum of the two.
-    pub fn new(
-        relocatable_mem: Vec<Vec<Option<MaybeRelocatable>>>,
-        builtins_segments_indices: BTreeMap<usize, BuiltinName>,
-    ) -> Self {
+    /// Allocates an address for each segment according to the relocatable memory segments size.
+    pub fn new(relocatable_mem: &[Vec<Option<MaybeRelocatable>>]) -> Self {
         let _span = span!(Level::INFO, "Relocator::new").entered();
-        let address_base = 1;
-        let mut relocation_table = vec![address_base];
+
+        // The first address is 1.
+        let mut relocation_table = vec![1];
 
         for (segment_index, segment) in relocatable_mem.iter().enumerate() {
             let segment_size = segment.len();
-
             let addr = relocation_table.last().unwrap() + segment_size as u32;
             assert!(
                 addr <= MEMORY_ADDRESS_BOUND as u32,
@@ -47,52 +41,40 @@ impl Relocator {
             relocation_table.push(addr);
         }
 
-        Self {
-            relocation_table,
-            relocatable_mem,
-            builtins_segments_indices,
-        }
+        Self { relocation_table }
     }
 
     pub fn calc_relocated_addr(&self, segment_index: usize, offset: usize) -> u32 {
         self.relocation_table[segment_index] + offset as u32
     }
 
-    /// Relocate the value according to the relocation table.
-    pub fn relocate_value(&self, value: &MaybeRelocatable) -> F252 {
-        let mut res = [0; 8];
-        match value {
-            MaybeRelocatable::RelocatableValue(addr) => {
-                res[0] = self.calc_relocated_addr(addr.segment_index as usize, addr.offset)
-            }
-            MaybeRelocatable::Int(val) => res = bytemuck::cast(val.to_bytes_le()),
-        }
-        res
-    }
-
-    /// Get a list of relocated addresses and values for a segment.
-    fn get_relocated_segment(&self, segment_index: usize) -> Vec<MemoryEntry> {
-        let mut res = vec![];
-        let segment = &self.relocatable_mem[segment_index];
-        for (offset, value) in segment.iter().enumerate() {
-            let address = self.calc_relocated_addr(segment_index, offset) as u64;
-            let value = if let Some(val) = value {
-                self.relocate_value(val)
-            } else {
-                // If this cell is None, fill with zero.
-                [0; 8]
-            };
-            res.push(MemoryEntry { address, value });
-        }
-        res
-    }
-
-    /// Get a list of relocated addresses and values for the memory.
-    pub fn get_relocated_memory(&self) -> Vec<MemoryEntry> {
+    /// Relocates the given memory segment by segment.
+    pub fn relocate_memory(&self, memory: &[Vec<Option<MaybeRelocatable>>]) -> Vec<MemoryEntry> {
         let _span = span!(Level::INFO, "get_relocated_memory").entered();
         let mut res = vec![];
-        for (segment_index, _) in self.relocatable_mem.iter().enumerate() {
-            res.extend(self.get_relocated_segment(segment_index));
+        for (segment_index, segment) in memory.iter().enumerate() {
+            let mut relocated_segment = vec![];
+            for (offset, value) in segment.iter().enumerate() {
+                let address = self.calc_relocated_addr(segment_index, offset) as u64;
+                let value = if let Some(val) = value {
+                    let mut relocated_value = [0; 8];
+                    match val {
+                        MaybeRelocatable::RelocatableValue(addr) => {
+                            relocated_value[0] =
+                                self.calc_relocated_addr(addr.segment_index as usize, addr.offset)
+                        }
+                        MaybeRelocatable::Int(val) => {
+                            relocated_value = bytemuck::cast(val.to_bytes_le())
+                        }
+                    };
+                    relocated_value
+                } else {
+                    // If this cell is None, fill with zero.
+                    [0; 8]
+                };
+                relocated_segment.push(MemoryEntry { address, value });
+            }
+            res.extend(relocated_segment);
         }
         assert!(
             res.len() <= MEMORY_ADDRESS_BOUND,
@@ -102,10 +84,13 @@ impl Relocator {
     }
 
     // Return the segment info (start_address, exclusive end_address) for each builtin.
-    pub fn get_builtin_segments(&self) -> BuiltinSegments {
+    pub fn relocate_builtin_segments(
+        &self,
+        builtins: &BTreeMap<usize, BuiltinName>,
+    ) -> BuiltinSegments {
         let _span = span!(Level::INFO, "get_builtin_segments").entered();
         let mut res = BuiltinSegments::default();
-        for (segment_index, builtin_name) in self.builtins_segments_indices.iter() {
+        for (segment_index, builtin_name) in builtins.iter() {
             let start_addr = self.relocation_table[*segment_index];
             let end_addr = self.relocation_table[*segment_index + 1];
             let segment = if start_addr == end_addr {
@@ -135,6 +120,7 @@ impl Relocator {
         res
     }
 
+    // Relocates the trace entries according to the relocation table.
     pub fn relocate_trace(&self, relocatble_trace: &[TraceEntry]) -> Vec<RelocatedTraceEntry> {
         let _span = span!(Level::INFO, "relocate_trace").entered();
         let mut res = vec![];
@@ -151,17 +137,18 @@ impl Relocator {
         res
     }
 
+    // Relocates the publoc memory addresses according to the relocation table.
     pub fn relocate_public_addresses(
         &self,
-        public_addresses: BTreeMap<usize, Vec<usize>>,
+        public_addresses: &BTreeMap<usize, Vec<usize>>,
     ) -> Vec<u32> {
         let _span = span!(Level::INFO, "relocate_public_addresses").entered();
         let mut res = vec![];
         for (segment_index, offsets) in public_addresses {
-            let base_addr = self.relocation_table[segment_index];
+            let base_addr = self.relocation_table[*segment_index];
 
             for offset in offsets {
-                let addr = base_addr + offset as u32;
+                let addr = base_addr + *offset as u32;
                 assert!(
                     addr < self.relocation_table[segment_index + 1],
                     "Offset {} is out of segment {}",
@@ -188,7 +175,7 @@ pub mod relocator_tests {
     use crate::builtins::MemorySegmentAddresses;
     use crate::relocated_trace_entry;
 
-    pub fn create_test_relocator() -> Relocator {
+    pub fn create_test_memory() -> Vec<Vec<Option<MaybeRelocatable>>> {
         let segment0 = vec![
             Some(MaybeRelocatable::Int(1.into())),
             Some(MaybeRelocatable::Int(9.into())),
@@ -202,11 +189,7 @@ pub mod relocator_tests {
             Some(MaybeRelocatable::Int(3.into())),
         ];
 
-        let relocatble_memory = vec![segment0, builtin_segment1, segment2];
-        let builtins_segments =
-            BTreeMap::from([(1, BuiltinName::bitwise), (2, BuiltinName::segment_arena)]);
-
-        Relocator::new(relocatble_memory, builtins_segments)
+        vec![segment0, builtin_segment1, segment2]
     }
 
     pub fn get_test_relocatble_trace() -> Vec<TraceEntry> {
@@ -231,52 +214,25 @@ pub mod relocator_tests {
 
     #[test]
     fn test_relocation_table() {
-        let relocator = create_test_relocator();
+        let memory = create_test_memory();
+        let relocator = Relocator::new(&memory);
         assert_eq!(relocator.relocation_table, vec![1, 4, 84, 87]);
     }
 
     #[test]
     fn test_calc_relocated_addr() {
-        let relocator = create_test_relocator();
+        let memory = create_test_memory();
+        let relocator = Relocator::new(&memory);
         assert_eq!(relocator.calc_relocated_addr(2, 2), 86);
     }
 
     #[test]
-    fn test_relocated_value() {
-        let relocator = create_test_relocator();
-        assert_eq!(
-            relocator.relocate_value(&MaybeRelocatable::RelocatableValue(relocatable!(2, 2))),
-            [86, 0, 0, 0, 0, 0, 0, 0]
-        );
-        assert_eq!(
-            relocator.relocate_value(&MaybeRelocatable::RelocatableValue(relocatable!(2, 2))),
-            [86, 0, 0, 0, 0, 0, 0, 0]
-        );
-        assert_eq!(
-            relocator.relocate_value(&MaybeRelocatable::Int(128.into())),
-            [128, 0, 0, 0, 0, 0, 0, 0]
-        );
-    }
-
-    #[test]
-    fn cargo_test_relocate_segment() {
-        let relocator = create_test_relocator();
-        assert_eq!(
-            relocator.get_relocated_segment(1),
-            (4..84)
-                .map(|addr| MemoryEntry {
-                    address: addr,
-                    value: [2, 0, 0, 0, 0, 0, 0, 0],
-                })
-                .collect::<Vec<_>>()
-        );
-    }
-
-    #[test]
     fn test_relocate_memory() {
-        let relocator = create_test_relocator();
+        let memory = create_test_memory();
+        let relocator = Relocator::new(&memory);
+        let memory = create_test_memory();
 
-        let relocated_memory = relocator.get_relocated_memory();
+        let relocated_memory = relocator.relocate_memory(&memory);
         assert_eq!(
             relocated_memory[0],
             MemoryEntry {
@@ -358,12 +314,12 @@ pub mod relocator_tests {
             Some(MaybeRelocatable::Int(3.into())),
         ];
 
-        let relocatble_memory = vec![segment0, builtin_segment1, segment2];
+        let relocatble_memory = [segment0, builtin_segment1, segment2];
         let builtins_segments =
             BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
 
-        let relocator = Relocator::new(relocatble_memory, builtins_segments);
-        let builtins_segments = relocator.get_builtin_segments();
+        let relocator = Relocator::new(&relocatble_memory);
+        let builtins_segments = relocator.relocate_builtin_segments(&builtins_segments);
 
         assert_eq!(
             builtins_segments.bitwise,
@@ -384,7 +340,8 @@ pub mod relocator_tests {
     #[test]
     fn test_relocate_trace() {
         let relocatble_trace = get_test_relocatble_trace();
-        let relocator = create_test_relocator();
+        let memory = create_test_memory();
+        let relocator = Relocator::new(&memory);
         let relocated_trace = relocator.relocate_trace(&relocatble_trace);
 
         let expected_relocated_trace = vec![
@@ -397,10 +354,11 @@ pub mod relocator_tests {
 
     #[test]
     fn test_relocate_public_addresses() {
-        let relocator = create_test_relocator();
+        let memory = create_test_memory();
+        let relocator = Relocator::new(&memory);
 
         let relocatble_public_addrs = BTreeMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);
-        let relocated_public_addrs = relocator.relocate_public_addresses(relocatble_public_addrs);
+        let relocated_public_addrs = relocator.relocate_public_addresses(&relocatble_public_addrs);
 
         let expected_relocated_public_addresses = vec![3, 4, 5, 47];
         assert_eq!(relocated_public_addrs, expected_relocated_public_addresses);
