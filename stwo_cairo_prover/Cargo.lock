@@ -3260,7 +3260,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "std-shims"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+source = "git+https://github.com/starkware-libs/stwo?rev=a0f8a91#a0f8a917166ab20c97ab1044e6ad55ebcf19ad21"
 
 [[package]]
 name = "string_cache"
@@ -3283,7 +3283,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+source = "git+https://github.com/starkware-libs/stwo?rev=a0f8a91#a0f8a917166ab20c97ab1044e6ad55ebcf19ad21"
 dependencies = [
  "blake2",
  "blake3",
@@ -3310,13 +3310,13 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+source = "git+https://github.com/starkware-libs/stwo?rev=a0f8a91#a0f8a917166ab20c97ab1044e6ad55ebcf19ad21"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
  "rayon",
  "stwo",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=a0f8a91)",
 ]
 
 [[package]]
@@ -3334,7 +3334,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+source = "git+https://github.com/starkware-libs/stwo?rev=a0f8a91#a0f8a917166ab20c97ab1044e6ad55ebcf19ad21"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3473,7 +3473,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=4e0bbe7#4e0bbe7ce8e65ca46b04c0b099be25def4c0ba97"
+source = "git+https://github.com/starkware-libs/stwo?rev=a0f8a91#a0f8a917166ab20c97ab1044e6ad55ebcf19ad21"
 dependencies = [
  "hashbrown 0.15.2",
  "itertools 0.12.1",
@@ -3528,8 +3528,8 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=4e0bbe7)",
+ "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=a0f8a91)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=a0f8a91)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
