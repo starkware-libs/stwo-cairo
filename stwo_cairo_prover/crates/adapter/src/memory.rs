@@ -332,7 +332,7 @@ pub fn limbs_to_u128(limbs: [u32; 4]) -> u128 {
 mod tests {
 
     use super::*;
-    use crate::relocator::relocator_tests::create_test_relocator;
+    use crate::relocator::relocator_tests::{create_test_memory, create_test_relocator};
 
     #[test]
     fn test_memory() {
@@ -437,8 +437,9 @@ mod tests {
     #[test]
     fn test_memory_from_relocator() {
         let relocator = create_test_relocator();
+        let memory = create_test_memory();
         let memory: MemoryBuilder =
-            MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
+            MemoryBuilder::from_iter(MemoryConfig::default(), relocator.relocate_memory(&memory));
         assert_eq!(memory.get(1), MemoryValue::Small(1));
         assert_eq!(memory.get(85), MemoryValue::Small(2));
     }
