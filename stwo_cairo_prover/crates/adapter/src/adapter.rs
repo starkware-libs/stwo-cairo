@@ -19,13 +19,16 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         &mut prover_input_info.relocatable_memory,
         prover_input_info.builtins_segments.clone(),
     );
-    let relocator = Relocator::new(
-        prover_input_info.relocatable_memory.clone(),
-        prover_input_info.builtins_segments.clone(),
-    );
 
-    let relocated_memory = relocator.get_relocated_memory();
+    // Relocation part.
+    let relocator = Relocator::new(&prover_input_info.relocatable_memory);
+    let relocated_memory = relocator.relocate_memory(&prover_input_info.relocatable_memory);
     let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
+    let builtins_segments =
+        relocator.relocate_builtin_segments(&prover_input_info.builtins_segments);
+    info!("Builtin segments: {:?}", builtins_segments);
+    let public_memory_addresses =
+        relocator.relocate_public_addresses(&prover_input_info.public_memory_offsets);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
@@ -33,9 +36,6 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         "Opcode counts: {:?}",
         state_transitions.casm_states_by_opcode.counts()
     );
-
-    let builtins_segments = relocator.get_builtin_segments();
-    info!("Builtin segments: {:?}", builtins_segments);
 
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
@@ -46,8 +46,7 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
         state_transitions,
         memory,
         inst_cache,
-        public_memory_addresses: relocator
-            .relocate_public_addresses(prover_input_info.public_memory_offsets.clone()),
+        public_memory_addresses,
         builtins_segments,
         public_segment_context,
     })
