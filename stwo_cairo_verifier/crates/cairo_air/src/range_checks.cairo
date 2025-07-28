@@ -127,8 +127,8 @@ use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
-    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
+    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
@@ -137,49 +137,53 @@ use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
 
+pub mod range_check_elements {
+    use stwo_constraint_framework::LookupElements;
+    pub type RangeCheck_6Elements = LookupElements<1>;
 
-pub type RangeCheck_6Elements = LookupElements<1>;
+    pub type RangeCheck_8Elements = LookupElements<1>;
 
-pub type RangeCheck_8Elements = LookupElements<1>;
+    pub type RangeCheck_11Elements = LookupElements<1>;
 
-pub type RangeCheck_11Elements = LookupElements<1>;
+    pub type RangeCheck_12Elements = LookupElements<1>;
 
-pub type RangeCheck_12Elements = LookupElements<1>;
+    pub type RangeCheck_18Elements = LookupElements<1>;
+    pub type RangeCheck_18_BElements = LookupElements<1>;
 
-pub type RangeCheck_18Elements = LookupElements<1>;
-pub type RangeCheck_18_BElements = LookupElements<1>;
+    pub type RangeCheck_19Elements = LookupElements<1>;
+    pub type RangeCheck_19_BElements = LookupElements<1>;
+    pub type RangeCheck_19_CElements = LookupElements<1>;
+    pub type RangeCheck_19_DElements = LookupElements<1>;
+    pub type RangeCheck_19_EElements = LookupElements<1>;
+    pub type RangeCheck_19_FElements = LookupElements<1>;
+    pub type RangeCheck_19_GElements = LookupElements<1>;
+    pub type RangeCheck_19_HElements = LookupElements<1>;
 
-pub type RangeCheck_19Elements = LookupElements<1>;
-pub type RangeCheck_19_BElements = LookupElements<1>;
-pub type RangeCheck_19_CElements = LookupElements<1>;
-pub type RangeCheck_19_DElements = LookupElements<1>;
-pub type RangeCheck_19_EElements = LookupElements<1>;
-pub type RangeCheck_19_FElements = LookupElements<1>;
-pub type RangeCheck_19_GElements = LookupElements<1>;
-pub type RangeCheck_19_HElements = LookupElements<1>;
+    pub type RangeCheck_9_9Elements = LookupElements<2>;
+    pub type RangeCheck_9_9_BElements = LookupElements<2>;
+    pub type RangeCheck_9_9_CElements = LookupElements<2>;
+    pub type RangeCheck_9_9_DElements = LookupElements<2>;
+    pub type RangeCheck_9_9_EElements = LookupElements<2>;
+    pub type RangeCheck_9_9_FElements = LookupElements<2>;
+    pub type RangeCheck_9_9_GElements = LookupElements<2>;
+    pub type RangeCheck_9_9_HElements = LookupElements<2>;
 
-pub type RangeCheck_9_9Elements = LookupElements<2>;
-pub type RangeCheck_9_9_BElements = LookupElements<2>;
-pub type RangeCheck_9_9_CElements = LookupElements<2>;
-pub type RangeCheck_9_9_DElements = LookupElements<2>;
-pub type RangeCheck_9_9_EElements = LookupElements<2>;
-pub type RangeCheck_9_9_FElements = LookupElements<2>;
-pub type RangeCheck_9_9_GElements = LookupElements<2>;
-pub type RangeCheck_9_9_HElements = LookupElements<2>;
+    pub type RangeCheck_4_3Elements = LookupElements<2>;
 
-pub type RangeCheck_4_3Elements = LookupElements<2>;
+    pub type RangeCheck_4_4Elements = LookupElements<2>;
 
-pub type RangeCheck_4_4Elements = LookupElements<2>;
+    pub type RangeCheck_5_4Elements = LookupElements<2>;
 
-pub type RangeCheck_5_4Elements = LookupElements<2>;
+    pub type RangeCheck_7_2_5Elements = LookupElements<3>;
 
-pub type RangeCheck_7_2_5Elements = LookupElements<3>;
+    pub type RangeCheck_3_6_6_3Elements = LookupElements<4>;
 
-pub type RangeCheck_3_6_6_3Elements = LookupElements<4>;
+    pub type RangeCheck_4_4_4_4Elements = LookupElements<4>;
 
-pub type RangeCheck_4_4_4_4Elements = LookupElements<4>;
+    pub type RangeCheck_3_3_3_3_3Elements = LookupElements<5>;
+}
+use range_check_elements::*;
 
-pub type RangeCheck_3_3_3_3_3Elements = LookupElements<5>;
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksClaim {

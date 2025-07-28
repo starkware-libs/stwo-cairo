@@ -1,66 +1,42 @@
-use cairo_component::CairoComponent;
 use components::memory_address_to_id::{
-    ClaimImpl as MemoryAddressToIdClaimImpl,
     InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
     MEMORY_ADDRESS_TO_ID_SPLIT,
 };
-use components::memory_id_to_big::{
-    ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
-};
-use components::triple_xor_32::{
-    ClaimImpl as TripleXor32ClaimImpl, InteractionClaimImpl as TripleXor32InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_12::{
-    ClaimImpl as VerifyBitwiseXor12ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_4::{
-    ClaimImpl as VerifyBitwiseXor4ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_7::{
-    ClaimImpl as VerifyBitwiseXor7ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_8::{
-    ClaimImpl as VerifyBitwiseXor8ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_9::{
-    ClaimImpl as VerifyBitwiseXor9ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl,
-};
-use components::verify_instruction::{
-    ClaimImpl as VerifyInstructionClaimImpl,
-    InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
-};
+use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+
+#[cfg(feature: "poseidon252_verifier")]
+mod poseidon252_verifier_uses {
+    pub use core::poseidon::poseidon_hash_span;
+    pub use stwo_cairo_air::utils::deconstruct_f252;
+}
+#[cfg(feature: "poseidon252_verifier")]
+use poseidon252_verifier_uses::*;
+
+
 #[cfg(not(feature: "poseidon252_verifier"))]
-use core::blake::{blake2s_compress, blake2s_finalize};
+mod blake2s_verifier_uses {
+    pub use core::blake::{blake2s_compress, blake2s_finalize};
+    pub use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
+}
+#[cfg(not(feature: "poseidon252_verifier"))]
+use blake2s_verifier_uses::*;
 use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
-#[cfg(feature: "poseidon252_verifier")]
-use core::poseidon::poseidon_hash_span;
-use stwo_cairo_air::utils::{construct_f252, deconstruct_f252};
+use stwo_cairo_air::utils::construct_f252;
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
-    PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
-    PreprocessedMaskValuesImpl,
+    LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
+    PreprocessedColumnTrait, PreprocessedMaskValuesImpl,
 };
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::channel::blake2s::BLAKE2S_256_INITIAL_STATE;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, P_U32, m31};
+use stwo_verifier_core::fields::m31::{M31, P_U32};
 use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
-use stwo_verifier_core::fri::FriConfig;
+use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
-use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
-use stwo_verifier_core::verifier::{Air, StarkProof, verify};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use stwo_verifier_core::verifier::{StarkProof, verify};
 
 
 pub mod cairo_air;
@@ -93,22 +69,23 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
 
 pub mod pedersen;
-use pedersen::*;
+use pedersen::PedersenContextInteractionClaimImpl;
 
 pub mod poseidon;
-use poseidon::*;
+use poseidon::PoseidonContextInteractionClaimImpl;
 
 pub mod blake;
-use blake::*;
+use blake::BlakeContextInteractionClaimImpl;
 
 pub mod builtins;
-use builtins::*;
+use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
 
 pub mod opcodes;
-use opcodes::*;
+use opcodes::OpcodeInteractionClaimImpl;
 
 pub mod range_checks;
-use range_checks::*;
+use range_checks::RangeChecksInteractionClaimImpl;
+pub use range_checks::range_check_elements::*;
 
 pub mod preprocessed_columns;
 use preprocessed_columns::preprocessed_root;
