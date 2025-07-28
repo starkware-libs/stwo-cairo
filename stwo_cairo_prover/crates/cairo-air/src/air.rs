@@ -14,6 +14,7 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
+use stwo_cairo_serialize::compact::{strip_expected_tag, strip_expected_version};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
@@ -76,17 +77,29 @@ where
             interaction_claim,
             stark_proof,
         } = self;
-        claim.compact_serialize(output);
-        interaction_pow.compact_serialize(output);
-        interaction_claim.compact_serialize(output);
-        stark_proof.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
+            (0, claim),
+            (1, interaction_pow),
+            (2, interaction_claim),
+            (3, stark_proof),
+        ];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, claim) = CairoClaim::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, interaction_pow) = u64::compact_deserialize(input);
+        let input = strip_expected_tag(input, 2);
         let (input, interaction_claim) = CairoInteractionClaim::compact_deserialize(input);
+        let input = strip_expected_tag(input, 3);
         let (input, stark_proof) = StarkProof::compact_deserialize(input);
 
         (
