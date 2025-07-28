@@ -37,6 +37,23 @@ pub fn buf_to_array_ctr<F: Fn(&[u8; N]) -> V, V, const N: usize>(
     Some((&buf[N..], ctr(&buf.get(..N)?.try_into().ok()?)))
 }
 
+/// Helper function to deserialize a struct's version and check it against an expected value.
+pub fn strip_expected_version(input: &[u8], expected_version: u32) -> &[u8] {
+    let (input, version) = u32::compact_deserialize(input);
+    assert_eq!(
+        version, expected_version,
+        "Unexpected version during deserialization"
+    );
+    input
+}
+
+/// Helper function to deserialize a field's tag and check it against an expected value.
+pub fn strip_expected_tag(input: &[u8], expected_tag: usize) -> &[u8] {
+    let (input, tag) = usize::compact_deserialize(input);
+    assert_eq!(tag, expected_tag, "Unexpected tag during deserialization");
+    input
+}
+
 impl CompactBinary for u32 {
     fn compact_serialize(&self, output: &mut Vec<u8>) {
         output.extend_from_slice(encode::u32(*self, &mut u32_buffer()));
@@ -115,21 +132,6 @@ impl CompactBinary for SecureField {
             SecureField::from_m31(m31_value_0, m31_value_1, m31_value_2, m31_value_3),
         )
     }
-}
-
-fn strip_expected_tag(input: &[u8], expected_tag: usize) -> &[u8] {
-    let (input, tag) = usize::compact_deserialize(input);
-    assert_eq!(tag, expected_tag, "Unexpected tag during deserialization");
-    input
-}
-
-fn strip_expected_version(input: &[u8], expected_version: u32) -> &[u8] {
-    let (input, version) = u32::compact_deserialize(input);
-    assert_eq!(
-        version, expected_version,
-        "Unexpected version during deserialization"
-    );
-    input
 }
 
 impl<H: MerkleHasher> CompactBinary for MerkleDecommitment<H>
