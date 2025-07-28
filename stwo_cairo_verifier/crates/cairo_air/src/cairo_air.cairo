@@ -38,20 +38,41 @@ use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::opcodes::*;
-use stwo_cairo_air::pedersen::*;
-use stwo_cairo_air::poseidon::*;
+
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub mod poseidon252_verifier_imports {
+    pub use stwo_cairo_air::pedersen::{PedersenContextComponents, PedersenContextComponentsImpl};
+    pub use stwo_cairo_air::poseidon::{PoseidonContextComponents, PoseidonContextComponentsImpl};
+}
+#[cfg(not(feature: "poseidon252_verifier"))]
+use poseidon252_verifier_imports::*;
+use stwo_cairo_air::blake::{
+    BlakeClaimImpl, BlakeContextClaim, BlakeContextClaimImpl, BlakeContextComponents,
+    BlakeContextComponentsImpl, BlakeContextInteractionClaim, BlakeContextInteractionClaimImpl,
+};
+use stwo_cairo_air::builtins::{
+    BuiltinsClaim, BuiltinsClaimImpl, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
+};
+use stwo_cairo_air::pedersen::{
+    PedersenClaimImpl, PedersenContextClaim, PedersenContextClaimImpl,
+    PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
+};
+use stwo_cairo_air::poseidon::{
+    PoseidonClaimImpl, PoseidonContextClaim, PoseidonContextClaimImpl,
+    PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
+};
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMNS;
-use stwo_cairo_air::range_checks::*;
+use stwo_cairo_air::range_checks::{
+    RangeChecksClaim, RangeChecksClaimImpl, RangeChecksComponents, RangeChecksComponentsImpl,
+    RangeChecksInteractionClaim, RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
+    RangeChecksInteractionElementsImpl,
+};
 use stwo_cairo_air::{
-    BlakeContextClaim, BlakeContextInteractionClaim, BuiltinsClaim, BuiltinsInteractionClaim,
-    OpcodeClaim, OpcodeInteractionClaim, PedersenContextClaim, PedersenContextInteractionClaim,
-    PoseidonContextClaim, PoseidonContextInteractionClaim, PublicData, PublicDataImpl,
-    RangeChecksClaim, RangeChecksInteractionClaim, RelationUsesDict, accumulate_relation_uses,
-    components, utils,
+    PublicData, PublicDataImpl, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
-    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumnSet, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
 use stwo_verifier_core::circle::CirclePoint;
