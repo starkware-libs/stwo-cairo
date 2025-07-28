@@ -296,7 +296,7 @@ use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, P_U32, m31};
-use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::fri::FriConfig;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::pcs::{PcsConfig, PcsConfigTrait};
@@ -2670,17 +2670,23 @@ fn sum_public_memory_entries(
     entries: @Array<PubMemoryEntry>, lookup_elements: @CairoInteractionElements,
 ) -> QM31 {
     let mut sum = Zero::zero();
+    let id_to_value_alpha = *lookup_elements.memory_id_to_value.alpha;
+    let id_to_value_z = *lookup_elements.memory_id_to_value.z;
+    let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
+    let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
+
     for entry in entries.span() {
         let (addr, id, val) = *entry;
 
-        let addr_m31 = addr.try_into().unwrap();
-        let id_m31 = id.try_into().unwrap();
-        let addr_to_id = lookup_elements.memory_address_to_id.combine([addr_m31, id_m31]).inverse();
+        let addr_m31: M31 = addr.try_into().unwrap();
+        let addr_qm31 = addr_m31.into();
+        let id_m31: M31 = id.try_into().unwrap();
+        let id_qm31 = id_m31.into();
+        let addr_to_id = (addr_qm31 + id_qm31 * addr_to_id_alpha - addr_to_id_z).inverse();
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
-        let alpha = *lookup_elements.memory_id_to_value.alpha;
-        let mut combine_sum = combine::combine_felt252(val, alpha);
-        combine_sum = combine_sum * alpha + id_m31.into() - *lookup_elements.memory_id_to_value.z;
+        let mut combine_sum = combine::combine_felt252(val, id_to_value_alpha);
+        combine_sum = combine_sum * id_to_value_alpha + id_m31.into() - id_to_value_z;
         let id_to_value = combine_sum.inverse();
 
         sum += addr_to_id + id_to_value;
@@ -2697,20 +2703,24 @@ fn sum_public_memory_entries(
 ) -> QM31 {
     // Gather values to be inverted and summed.
     let mut values: Array<QM31> = array![];
+
+    let id_to_value_alpha = *lookup_elements.memory_id_to_value.alpha;
+    let id_to_value_z = *lookup_elements.memory_id_to_value.z;
+    let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
+    let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
+
     for entry in entries.span() {
         let (addr, id, val) = *entry;
 
-        let addr_m31 = addr.try_into().unwrap();
-        let id_m31 = id.try_into().unwrap();
-        let addr_to_id = lookup_elements.memory_address_to_id.combine([addr_m31, id_m31]);
+        let addr_m31: M31 = addr.try_into().unwrap();
+        let addr_qm31: QM31 = addr_m31.into();
+        let id_m31: M31 = id.try_into().unwrap();
+        let addr_to_id = addr_qm31 + addr_to_id_alpha.mul_m31(id_m31) - addr_to_id_z;
         values.append(addr_to_id);
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
-        let alpha = *lookup_elements.memory_id_to_value.alpha;
-        let combined_limbs = combine::combine_felt252(val, alpha);
-        let id_to_value = combined_limbs * alpha
-            + id_m31.into()
-            - *lookup_elements.memory_id_to_value.z;
+        let combined_limbs = combine::combine_felt252(val, id_to_value_alpha);
+        let id_to_value = combined_limbs * id_to_value_alpha + id_m31.into() - id_to_value_z;
         values.append(id_to_value);
     }
 
