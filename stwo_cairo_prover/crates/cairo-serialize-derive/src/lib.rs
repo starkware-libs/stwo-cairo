@@ -138,17 +138,20 @@ pub fn derive_compact_binary(input: TokenStream) -> TokenStream {
     };
 
     // Generate code to serialize each field in the order they appear.
-    let compact_serialize_body = fields.iter().map(|f| {
+    let compact_serialize_body = fields.iter().enumerate().map(|(i, f)| {
         let field_name = &f.ident;
         quote! {
+            usize::compact_serialize(&#i, output);
             CompactBinary::compact_serialize(&self.#field_name, output);
         }
     });
 
     // Generate code to deserialize each field in the order they appear.
-    let compact_deserialize_let_bindings = fields.iter().map(|f| {
+    let compact_deserialize_let_bindings = fields.iter().enumerate().map(|(i, f)| {
         let field_name = &f.ident;
         quote! {
+            let (input, tag) = usize::compact_deserialize(input);
+            assert_eq!(tag, #i, "Unexpected tag during deserialization");
             let (input, #field_name) = ::stwo_cairo_serialize::CompactBinary::compact_deserialize(input);
         }
     });
@@ -161,10 +164,13 @@ pub fn derive_compact_binary(input: TokenStream) -> TokenStream {
     let expanded = quote! {
         impl #impl_generics ::stwo_cairo_serialize::CompactBinary for #struct_name #ty_generics #where_clause {
             fn compact_serialize(&self, output: &mut Vec<u8>) {
+                u32::compact_serialize(&0, output);
                 #(#compact_serialize_body)*
             }
 
             fn compact_deserialize<'a>(mut input: &'a [u8]) -> (&'a [u8], Self) {
+                let (input, version) = u32::compact_deserialize(input);
+                assert_eq!(0, version, "Unexpected version during deserialization");
                 #(#compact_deserialize_let_bindings)*
                 (input, Self { #(#compact_deserialize_struct_fields),* })
             }

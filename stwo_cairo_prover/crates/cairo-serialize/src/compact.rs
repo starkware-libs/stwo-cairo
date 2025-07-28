@@ -23,7 +23,9 @@ pub trait CompactBinary {
     fn compact_serialize(&self, output: &mut Vec<u8>);
 
     /// Deserializes the object from a compact binary format.
-    fn compact_deserialize(input: &[u8]) -> (&[u8], Self);
+    fn compact_deserialize(input: &[u8]) -> (&[u8], Self)
+    where
+        Self: Sized;
 }
 
 /// Helper function to convert a byte slice into an array of a specific size from a closure if
@@ -115,6 +117,21 @@ impl CompactBinary for SecureField {
     }
 }
 
+fn strip_expected_tag(input: &[u8], expected_tag: usize) -> &[u8] {
+    let (input, tag) = usize::compact_deserialize(input);
+    assert_eq!(tag, expected_tag, "Unexpected tag during deserialization");
+    input
+}
+
+fn strip_expected_version(input: &[u8], expected_version: u32) -> &[u8] {
+    let (input, version) = u32::compact_deserialize(input);
+    assert_eq!(
+        version, expected_version,
+        "Unexpected version during deserialization"
+    );
+    input
+}
+
 impl<H: MerkleHasher> CompactBinary for MerkleDecommitment<H>
 where
     H::Hash: CompactBinary,
@@ -124,13 +141,21 @@ where
             hash_witness,
             column_witness,
         } = self;
-        hash_witness.compact_serialize(output);
-        column_witness.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> =
+            vec![(0, hash_witness), (1, column_witness)];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, hash_witness) = Vec::<H::Hash>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, column_witness) = Vec::<BaseField>::compact_deserialize(input);
         (
             input,
@@ -171,15 +196,23 @@ where
             decommitment,
             commitment,
         } = self;
-        fri_witness.compact_serialize(output);
-        decommitment.compact_serialize(output);
-        commitment.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> =
+            vec![(0, fri_witness), (1, decommitment), (2, commitment)];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, fri_witness) = Vec::<SecureField>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, decommitment) = MerkleDecommitment::compact_deserialize(input);
+        let input = strip_expected_tag(input, 2);
         let (input, commitment) = H::Hash::compact_deserialize(input);
         (
             input,
@@ -202,15 +235,23 @@ where
             inner_layers,
             last_layer_poly,
         } = self;
-        first_layer.compact_serialize(output);
-        inner_layers.compact_serialize(output);
-        last_layer_poly.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> =
+            vec![(0, first_layer), (1, inner_layers), (2, last_layer_poly)];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, first_layer) = FriLayerProof::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, inner_layers) = Vec::<FriLayerProof<H>>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 2);
         let (input, last_layer_poly) = LinePoly::compact_deserialize(input);
         (
             input,
@@ -242,15 +283,26 @@ impl CompactBinary for FriConfig {
             log_last_layer_degree_bound,
             n_queries,
         } = self;
-        log_blowup_factor.compact_serialize(output);
-        log_last_layer_degree_bound.compact_serialize(output);
-        n_queries.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
+            (0, log_blowup_factor),
+            (1, log_last_layer_degree_bound),
+            (2, n_queries),
+        ];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, log_blowup_factor) = u32::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, log_last_layer_degree_bound) = u32::compact_deserialize(input);
+        let input = strip_expected_tag(input, 2);
         let (input, n_queries) = usize::compact_deserialize(input);
         (
             input,
@@ -269,13 +321,20 @@ impl CompactBinary for PcsConfig {
             pow_bits,
             fri_config,
         } = self;
-        pow_bits.compact_serialize(output);
-        fri_config.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![(0, pow_bits), (1, fri_config)];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, pow_bits) = u32::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, fri_config) = FriConfig::compact_deserialize(input);
         (
             input,
@@ -301,24 +360,39 @@ where
             proof_of_work,
             fri_proof,
         } = self;
-        config.compact_serialize(output);
-        commitments.compact_serialize(output);
-        sampled_values.compact_serialize(output);
-        decommitments.compact_serialize(output);
-        queried_values.compact_serialize(output);
-        proof_of_work.compact_serialize(output);
-        fri_proof.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
+            (0, config),
+            (1, &commitments.0),
+            (2, &sampled_values.0),
+            (3, &decommitments.0),
+            (4, &queried_values.0),
+            (5, proof_of_work),
+            (6, fri_proof),
+        ];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, config) = PcsConfig::compact_deserialize(input);
+        let input = strip_expected_tag(input, 1);
         let (input, commitments) = Vec::<H::Hash>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 2);
         let (input, sampled_values) =
             Vec::<ColumnVec<Vec<SecureField>>>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 3);
         let (input, decommitments) = Vec::<MerkleDecommitment<H>>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 4);
         let (input, queried_values) = Vec::<Vec<BaseField>>::compact_deserialize(input);
+        let input = strip_expected_tag(input, 5);
         let (input, proof_of_work) = u64::compact_deserialize(input);
+        let input = strip_expected_tag(input, 6);
         let (input, fri_proof) = FriProof::compact_deserialize(input);
         (
             input,
@@ -341,11 +415,19 @@ where
 {
     fn compact_serialize(&self, output: &mut Vec<u8>) {
         let Self(commitment_scheme_proof) = self;
-        commitment_scheme_proof.compact_serialize(output);
+        let version = 0;
+        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![(0, commitment_scheme_proof)];
+        u32::compact_serialize(&version, output);
+        for (tag, value) in to_serialize {
+            usize::compact_serialize(&tag, output);
+            value.compact_serialize(output);
+        }
     }
 
     // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
+        let input = strip_expected_version(input, 0);
+        let input = strip_expected_tag(input, 0);
         let (input, commitment_scheme_proof) = CommitmentSchemeProof::compact_deserialize(input);
         (input, StarkProof(commitment_scheme_proof))
     }
