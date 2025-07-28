@@ -17,7 +17,8 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo_cairo_serialize::compact::{strip_expected_tag, strip_expected_version};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::{Relation, TraceLocationAllocator};
 
@@ -93,7 +94,6 @@ where
         }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
         let input = strip_expected_version(input, 0);
         let input = strip_expected_tag(input, 0);
