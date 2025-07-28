@@ -781,7 +781,7 @@ pub struct VerificationOutput {
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
-    pub output: Blake2sHash,
+    pub output_hash: felt252,
 }
 
 /// Given a proof, returns the output of the verifier.
@@ -810,11 +810,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
         hash_memory_section(proof.claim.public_data.public_memory.program),
     );
 
-    let output_hash = Blake2sHash {
-        hash: hash_memory_section(proof.claim.public_data.public_memory.output),
-    };
+    let output_hash = construct_f252(
+        hash_memory_section(proof.claim.public_data.public_memory.output),
+    );
 
-    VerificationOutput { program_hash, output: output_hash }
+    VerificationOutput { program_hash, output_hash }
 }
 
 pub fn verify_cairo(proof: CairoProof) {
