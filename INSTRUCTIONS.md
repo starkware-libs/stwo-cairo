@@ -39,4 +39,5 @@ cd ..
 ## Test the example
 ```bash
 cairo-prove/target/release/cairo-prove prove cairo-prove/example/target/dev/example.executable.json ./example_proof.compact_bin --arguments 10000 --proof-format compact-binary
+cairo-prove/target/release/cairo-prove verify ./example_proof.compact_bin --proof-format compact-binary
 ```
