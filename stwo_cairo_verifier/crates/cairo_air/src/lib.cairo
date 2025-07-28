@@ -2608,37 +2608,16 @@ pub struct PublicData {
 #[generate_trait]
 impl PublicDataImpl of PublicDataTrait {
     fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
-        // TODO(Ohad): Optimized inverse.
         let mut sum = Zero::zero();
 
-        // TODO(andrew): Consider batch inverse here.
-        for entry in self
+        let public_memory_entries = self
             .public_memory
             .get_entries(
                 initial_pc: (*self.initial_state.pc).into(),
                 initial_ap: (*self.initial_state.ap).into(),
                 final_ap: (*self.final_state.ap).into(),
-            )
-            .span() {
-            let (addr, id, val) = *entry;
-
-            let addr_m31 = addr.try_into().unwrap();
-            let id_m31 = id.try_into().unwrap();
-            let addr_to_id = lookup_elements
-                .memory_address_to_id
-                .combine([addr_m31, id_m31])
-                .inverse();
-
-            // Use handwritten implementation of combine_id_to_value to improve performance.
-            let alpha = *lookup_elements.memory_id_to_value.alpha;
-            let mut combine_sum = combine::combine_felt252(val, alpha);
-            combine_sum = combine_sum * alpha
-                + id_m31.into()
-                - *lookup_elements.memory_id_to_value.z;
-            let id_to_value = combine_sum.inverse();
-
-            sum += addr_to_id + id_to_value;
-        }
+            );
+        sum += sum_public_memory_entries(@public_memory_entries, lookup_elements);
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
@@ -2655,6 +2634,59 @@ impl PublicDataImpl of PublicDataTrait {
         self.final_state.mix_into(ref channel);
     }
 }
+
+#[cfg(feature: "qm31_opcode")]
+fn sum_public_memory_entries(
+    entries: @Array<PubMemoryEntry>, lookup_elements: @CairoInteractionElements,
+) -> QM31 {
+    let mut sum = Zero::zero();
+    for entry in entries.span() {
+        let (addr, id, val) = *entry;
+
+        let addr_m31 = addr.try_into().unwrap();
+        let id_m31 = id.try_into().unwrap();
+        let addr_to_id = lookup_elements.memory_address_to_id.combine([addr_m31, id_m31]).inverse();
+
+        // Use handwritten implementation of combine_id_to_value to improve performance.
+        let alpha = *lookup_elements.memory_id_to_value.alpha;
+        let mut combine_sum = combine::combine_felt252(val, alpha);
+        combine_sum = combine_sum * alpha + id_m31.into() - *lookup_elements.memory_id_to_value.z;
+        let id_to_value = combine_sum.inverse();
+
+        sum += addr_to_id + id_to_value;
+    }
+
+    sum
+}
+
+#[cfg(not(feature: "qm31_opcode"))]
+// An alternative implementation that uses batch inverse, for the case that we don't have an opcode
+// for it.
+fn sum_public_memory_entries(
+    entries: @Array<PubMemoryEntry>, lookup_elements: @CairoInteractionElements,
+) -> QM31 {
+    // Gather values to be inverted and summed.
+    let mut values: Array<QM31> = array![];
+    for entry in entries.span() {
+        let (addr, id, val) = *entry;
+
+        let addr_m31 = addr.try_into().unwrap();
+        let id_m31 = id.try_into().unwrap();
+        let addr_to_id = lookup_elements.memory_address_to_id.combine([addr_m31, id_m31]);
+        values.append(addr_to_id);
+
+        // Use handwritten implementation of combine_id_to_value to improve performance.
+        let alpha = *lookup_elements.memory_id_to_value.alpha;
+        let combined_limbs = combine::combine_felt252(val, alpha);
+        let id_to_value = combined_limbs * alpha
+            + id_m31.into()
+            - *lookup_elements.memory_id_to_value.z;
+        values.append(id_to_value);
+    }
+
+    utils::sum_inverses_qm31(@values)
+}
+
 
 #[derive(Drop, Serde, Copy)]
 pub struct CasmState {
