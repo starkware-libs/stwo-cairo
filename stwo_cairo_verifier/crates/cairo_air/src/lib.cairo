@@ -2674,7 +2674,12 @@ fn sum_public_memory_entries(
     // Gather values to be inverted and summed.
     let mut values: Array<QM31> = array![];
 
-    let id_to_value_alpha = *lookup_elements.memory_id_to_value.alpha;
+    let id_to_value_alpha_powers: Box<[QM31; 29]> = *(lookup_elements
+        .memory_id_to_value
+        .alpha_powers
+        .span()
+        .try_into()
+        .unwrap());
     let id_to_value_z = *lookup_elements.memory_id_to_value.z;
     let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
     let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
@@ -2689,8 +2694,8 @@ fn sum_public_memory_entries(
         values.append(addr_to_id);
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
-        let combined_limbs = combine::combine_felt252(val, id_to_value_alpha);
-        let id_to_value = combined_limbs * id_to_value_alpha + id_m31.into() - id_to_value_z;
+        let combined_limbs = combine::combine_felt252(val, id_to_value_alpha_powers);
+        let id_to_value = combined_limbs + id_m31.into() - id_to_value_z;
         values.append(id_to_value);
     }
 
