@@ -1,14 +1,15 @@
 use core::num::traits::one::One;
+#[cfg(not(feature: "qm31_opcode"))]
+use stwo_cairo_air::Invertible;
+use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
+use stwo_cairo_air::{
+    CairoInteractionElements, PublicData, PublicDataImpl, RelationUsesDict,
+    accumulate_relation_uses,
+};
 use stwo_constraint_framework::LookupElements;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_utils::{construct_f252, deconstruct_f252, hash_memory_section};
-#[cfg(not(feature: "qm31_opcode"))]
-use crate::Invertible;
-use crate::{
-    CairoInteractionElements, PublicData, PublicDataImpl, RangeChecksInteractionElements,
-    RelationUsesDict, accumulate_relation_uses,
-};
 #[test]
 #[cairofmt::skip]
 fn test_public_data_logup_sum() {

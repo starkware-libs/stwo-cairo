@@ -5,6 +5,7 @@
 use bounded_int::{ConstValue, upcast};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
+use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_constraint_framework::LookupElements;
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, M31Trait};
@@ -13,8 +14,8 @@ use stwo_verifier_core::utils::ArrayImpl;
 use super::test_utils::{dummy_interaction_lookup_elements, mock_public_memory_with_outputs};
 use super::{
     CairoInteractionElements, CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory,
-    PublicMemoryTrait, PublicSegmentRanges, RangeChecksInteractionElements, RelationUsesDict,
-    SegmentRange, accumulate_relation_uses, hash_memory_section,
+    PublicMemoryTrait, PublicSegmentRanges, RelationUsesDict, SegmentRange,
+    accumulate_relation_uses, hash_memory_section,
 };
 
 const REGISTERS_START: ConstValue<1000> = 1000;

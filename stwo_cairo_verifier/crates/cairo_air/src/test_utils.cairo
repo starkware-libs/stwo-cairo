@@ -1,9 +1,9 @@
 use core::num::traits::one::One;
+use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_verifier_core::utils::ArrayImpl;
 use super::{
-    CairoInteractionElements, CasmState, LookupElements, MemorySmallValue, PublicData,
-    PublicDataImpl, PublicMemory, PublicSegmentRanges, RangeChecksInteractionElements,
-    RelationUsesDict, SegmentRange, accumulate_relation_uses, hash_memory_section, qm31_const,
+    CairoInteractionElements, LookupElements, MemorySmallValue, PublicDataImpl, PublicMemory,
+    PublicSegmentRanges, SegmentRange, qm31_const,
 };
 
 #[generate_trait]
