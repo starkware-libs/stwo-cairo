@@ -1929,7 +1929,7 @@ fn verify_claim(claim: @CairoClaim) {
 
     // When using address_to_id relation, it is assumed that address < 2^27.
     // To verify that, one needs to check that the size of the address_to_id component <=
-    // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), beacuse the component is split to
+    // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), because the component is split to
     // MEMORY_ADDRESS_TO_ID_SPLIT addresses in each row of the component.
     assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
     assert!(*claim.memory_address_to_id.log_size <= 27_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
@@ -2387,7 +2387,7 @@ impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     }
 }
 
-// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+// TODO(alonf) Change all the obscure types and structs to a meaningful struct system for the memory.
 #[derive(Clone, Debug, Serde, Copy, Drop)]
 pub struct MemorySmallValue {
     pub id: u32,
