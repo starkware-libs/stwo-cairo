@@ -900,6 +900,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
+        // TODO(audit): Remove this constraint and call multiplicity.
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 

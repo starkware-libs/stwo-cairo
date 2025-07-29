@@ -671,6 +671,7 @@ pub fn evaluate_constraints_at_point(
         ))
         + (claimed_sum) * (column_size.inverse().into()))
         * (intermediate14)
+        // TODO(audit): Change to + multiplicity.
         - (-(trace_1_column_28_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -1043,6 +1044,7 @@ pub fn intermediate14(
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
+    // TODO(audit): change seq + m31(1073741824).into() + offset to seq+offset.
     (MemoryIdToBig_alpha0) * (seq + m31(1073741824).into() + offset)
         + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
         + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)

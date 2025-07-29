@@ -43,6 +43,7 @@ fn add_to_sum(ref sum: QM31, val: u9, alpha: QM31) {
 }
 
 /// Ignoring types, this is the same as `add_to_sum(ref sum, msb * shift + lsb, alpha)`.
+/// TODO(audit): Consider renaming shift to lsb_bound.
 fn add_to_sum_with_shift(ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9, alpha: QM31) {
     sum = sum * alpha
         + M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(msb, shift), lsb))).into();
@@ -56,9 +57,12 @@ fn add_to_sum_with_shift(ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9
 ///
 /// Note that Horner evaluation expects the coefficients in reverse order, which makes the [u32; 8]
 /// -> [u9; 28] transformation somewhat unnatural.
+/// 
+/// TODO(audit): Consider renaming partial combine
 pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
 
+    // TODO(audit): Do we know that the value is a felt? Otherwise, maybe need to check that the msbits are zeros.
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
     let (_, l27, l26, l25, l24_high) = take27(v7, 0x2);
@@ -68,7 +72,7 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     add_to_sum(ref sum, l25, alpha);
 
     // Take 8 + 18 + 6 bits from v6
-    let (l24_low, l23, l22, l21_high) = take18(v6, 0x40);
+    let (l24_low, l23, l22, l21_high) = take18(v6, 2**6);
     add_to_sum_with_shift(ref sum, l24_high, l24_low, 0x100, alpha);
 
     add_to_sum(ref sum, l23, alpha);
@@ -113,6 +117,7 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     add_to_sum(ref sum, l4, alpha);
 
     // Take 5 + 27 + 0 bits from v0
+    // TODO(audit): Consider change to take18 (or something with one less div_rem).
     let (l3_low, l2, l1, l0, _) = take27(v0, 1);
     add_to_sum_with_shift(ref sum, l3_high, l3_low, 0x20, alpha);
 

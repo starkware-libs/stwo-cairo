@@ -9,6 +9,7 @@ use stwo_verifier_core::fields::m31::{M31, m31};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::{ColumnArray, ColumnSpan};
 
+// TODO(audit): In the prover, if there are more than 2^24 (seq size) small ids, move to id_to_big.
 
 pub fn mask_points(
     ref preprocessed_column_set: PreprocessedColumnSet,
@@ -51,6 +52,7 @@ pub fn mask_points(
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
 }
 
+// TODO(audit): Change IdToBig to IdToValue.
 #[derive(Drop)]
 pub struct ConstraintParams {
     pub MemoryIdToBig_alpha0: QM31,
@@ -275,6 +277,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate4 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
+    // TODO(audit): Pair logups.
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_9_offset_0, trace_2_column_10_offset_0, trace_2_column_11_offset_0,
@@ -361,6 +364,7 @@ pub fn evaluate_constraints_at_point(
         ))
         + (claimed_sum) * (column_size.inverse().into()))
         * (intermediate4)
+        // TODO(audit): Change to +.
         - (-(trace_1_column_8_offset_0)))
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -490,6 +494,7 @@ pub fn intermediate4(
         - (MemoryIdToBig_z)
 }
 
+// TODO(audit): This is the same function...
 pub fn intermediate3(
     RangeCheck_9_9_d_alpha0: QM31,
     RangeCheck_9_9_d_alpha1: QM31,

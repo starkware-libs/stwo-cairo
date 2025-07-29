@@ -15,6 +15,7 @@ pub type ClaimedPrefixSum = (QM31, usize);
 pub struct LookupElements<const N: usize> {
     pub z: QM31,
     pub alpha: QM31,
+    // TODO(audit): Change to Box of fixed size array. 
     pub alpha_powers: Array<QM31>,
 }
 
@@ -100,6 +101,7 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
             sum += (*alpha).mul_m31(*value);
         }
 
+        // TODO(audit): check that the lenghts are equal, unless alphas are changed to fixed size.
         sum
     }
 }
@@ -228,6 +230,7 @@ pub fn range_check_size<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32
 /// An encoding of a [`PreprocessedColumn`] to index into [`Felt252Dict`].
 #[generate_trait]
 pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
+    // TODO(audit): Consider not using encode.
     fn encode(key: @PreprocessedColumn) -> felt252 {
         const FELT252_2_POW_32: felt252 = 0x100000000;
 

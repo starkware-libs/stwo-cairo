@@ -72,6 +72,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 2)));
         preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)));
         trace_mask_points.append(array![point]);
+        // TODO(audit): change point_offset_neg_1 to prev_point.
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -79,6 +80,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
+        // TODO(audit): Consider removing the + 1.
         LOG_SIZE + 1
     }
 
@@ -106,6 +108,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let rangecheck_3_6_6_3_3 = preprocessed_mask_values
             .get(PreprocessedColumn::RangeCheck4(([3, 6, 6, 3], 3)));
 
+        // TODO(audit): Change to multiplicity.
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 

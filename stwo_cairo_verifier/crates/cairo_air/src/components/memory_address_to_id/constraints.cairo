@@ -71,6 +71,7 @@ pub fn evaluate_constraints_at_point(
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
 ) {
+    // TODO(audit): Change names to ids and multiplicities.
     let ConstraintParams {
         MemoryAddressToId_alpha0,
         MemoryAddressToId_alpha1,
@@ -240,6 +241,7 @@ pub fn evaluate_constraints_at_point(
         ],
     ))
         * ((intermediate0) * (intermediate1))
+        // TODO(audit): Change to +.
         - ((intermediate1) * (-(trace_1_column_1_offset_0))
             + (intermediate0) * (-(trace_1_column_3_offset_0))))
         * domain_vanish_at_point_inv;
@@ -402,7 +404,7 @@ fn intermediates(
     ]
 }
 
-
+// TODO(audit): Consider changing seq + m31(1).into() + (column_size * m31(7)).into() to 8*seq + 1 + 7. 
 pub fn intermediate7(
     MemoryAddressToId_alpha0: QM31,
     MemoryAddressToId_alpha1: QM31,

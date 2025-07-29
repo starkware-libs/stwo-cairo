@@ -280,6 +280,7 @@ pub fn evaluate_constraints_at_point(
 
     core::internal::revoke_ap_tracking();
 
+    // TODO(audit): Change pop_front to try_into.
     let mut intermediates = intermediates(
         VerifyBitwiseXor_12_alpha0,
         VerifyBitwiseXor_12_alpha1,
@@ -308,6 +309,7 @@ pub fn evaluate_constraints_at_point(
     let intermediate15 = *intermediates.pop_front().unwrap();
 
     // Constraint 0
+    // TODO(audit): Change trace_1_column_0_offset_0 to multiplicity_00_00.
     let constraint_quotient = ((QM31Trait::from_partial_evals(
         [
             trace_2_column_16_offset_0, trace_2_column_17_offset_0, trace_2_column_18_offset_0,
@@ -461,7 +463,7 @@ pub fn evaluate_constraints_at_point(
     sum = sum * random_coeff + constraint_quotient;
 }
 
-
+// TODO(audit): Change names and order, for example intermediate12 to combine_11_00.
 fn intermediates(
     VerifyBitwiseXor_12_alpha0: QM31,
     VerifyBitwiseXor_12_alpha1: QM31,

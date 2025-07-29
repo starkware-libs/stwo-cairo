@@ -170,6 +170,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
+        // TODO(audit): Consider returning the sums instead of using them as references.
         decode_instruction_15a61_evaluate(
             [input_pc_col0],
             self.verify_instruction_lookup_elements,
@@ -284,6 +285,7 @@ fn lookup_constraints(
         .unwrap())
         .unbox();
 
+    // TODO(audit): Consider optimize this to avoid try_into.
     let [trace_2_col0]: [QM31; 1] = (*trace_2_col0.try_into().unwrap()).unbox();
     let [trace_2_col1]: [QM31; 1] = (*trace_2_col1.try_into().unwrap()).unbox();
     let [trace_2_col2]: [QM31; 1] = (*trace_2_col2.try_into().unwrap()).unbox();
@@ -296,6 +298,7 @@ fn lookup_constraints(
     let [trace_2_col9]: [QM31; 1] = (*trace_2_col9.try_into().unwrap()).unbox();
     let [trace_2_col10]: [QM31; 1] = (*trace_2_col10.try_into().unwrap()).unbox();
     let [trace_2_col11]: [QM31; 1] = (*trace_2_col11.try_into().unwrap()).unbox();
+    // TODO(audit): Change name of neg1 tp prev.
     let [trace_2_col12_neg1, trace_2_col12]: [QM31; 2] = (*trace_2_col12.try_into().unwrap())
         .unbox();
     let [trace_2_col13_neg1, trace_2_col13]: [QM31; 2] = (*trace_2_col13.try_into().unwrap())
@@ -307,6 +310,7 @@ fn lookup_constraints(
 
     core::internal::revoke_ap_tracking();
 
+    // TODO(audit): Compute QM31 from prev once.
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
     ))

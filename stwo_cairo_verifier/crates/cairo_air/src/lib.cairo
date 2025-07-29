@@ -1928,12 +1928,14 @@ fn verify_claim(claim: @CairoClaim) {
 
     // Large value IDs reside in [2^30..P).
     // Check that IDs in (ID -> Value) do not overflow P.
+    // TODO(audit): Assert that small id to value has less that 2^30 ids.
     let mut n_unique_large_values = 0;
     for log_size in claim.memory_id_to_value.big_log_sizes.span() {
         n_unique_large_values += pow2(*log_size);
     }
+    // TODO(audit): Make it a constant.
     let large_id_offset = pow2(30);
-    let largest_id = n_unique_large_values + large_id_offset - 1;
+    let largest_id = n_unique_large_values + large_id_offset;
     assert!(largest_id < P_U32);
 }
 
@@ -3201,6 +3203,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
         );
         let mut memory_id_to_value_components = array![];
         let mut offset = 0;
+        // TODO(audit): Consider change to zip_eq.
         for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
             let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];

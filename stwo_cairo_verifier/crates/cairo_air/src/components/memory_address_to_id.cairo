@@ -110,6 +110,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let mut addr_to_id_alpha_powers = self.lookup_elements.alpha_powers.span();
+        // TODO(audit): alpha_0 is alpha^0 = 1.
         let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
         let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
         let addr_to_id_z = *self.lookup_elements.z;
