@@ -36,7 +36,7 @@ The current implementation consists of the following elements
 
 Still todo:
 
-- Check exactly what field have compressible data (I think CairoClaim and CairoInteractionClaim may both be target for a lot of optimization, but also some fields of the StarkProof)
+- Check exactly what field have compressible data (I think CairoClaim and CairoInteractionClaim may both be target for a lot of optimization, but maybe other too)
 - See how to best compact the data (e.g. is there an easy pattern to spot or is there not, and in this case zipping the data may be easier)
 
 ## Tests and benchmarks
