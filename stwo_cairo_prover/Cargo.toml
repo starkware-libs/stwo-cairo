@@ -29,6 +29,7 @@ env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
 itertools = "0.12.0"
 log = "0.4.21"
+mockall = "0.13.1"
 num-traits = "0.2.17"
 paste = "1.0"
 rand = "0.8.5"

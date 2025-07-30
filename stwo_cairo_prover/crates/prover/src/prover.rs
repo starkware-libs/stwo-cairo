@@ -1,6 +1,7 @@
 use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
 use cairo_air::verifier::INTERACTION_POW_BITS;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use mockall::automock;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
@@ -20,6 +21,33 @@ use crate::witness::cairo::CairoClaimGenerator;
 use crate::witness::utils::witness_trace_cells;
 
 pub(crate) const LOG_MAX_ROWS: u32 = 26;
+
+#[cfg_attr(test, automock)]
+pub trait CairoProver {
+    fn prove_cairo<MC: MerkleChannel + 'static>(
+        input: ProverInput,
+        pcs_config: PcsConfig,
+        preprocessed_trace: PreProcessedTraceVariant,
+    ) -> Result<CairoProof<MC::H>, ProvingError>
+    where
+        SimdBackend: BackendForChannel<MC>;
+}
+
+pub struct RealCairoProver;
+
+impl CairoProver for RealCairoProver {
+    fn prove_cairo<MC: MerkleChannel>(
+        input: ProverInput,
+        pcs_config: PcsConfig,
+        preprocessed_trace: PreProcessedTraceVariant,
+    ) -> Result<CairoProof<MC::H>, ProvingError>
+    where
+        SimdBackend: BackendForChannel<MC>,
+    {
+        prove_cairo::<MC>(input, pcs_config, preprocessed_trace)
+    }
+
+}
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,

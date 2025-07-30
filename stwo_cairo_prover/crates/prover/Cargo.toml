@@ -33,6 +33,7 @@ cairo-air.workspace = true
 stwo.workspace = true
 stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
+mockall.workspace = true
 
 [dev-dependencies]
 cairo-vm = { workspace = true, default-features = true }
