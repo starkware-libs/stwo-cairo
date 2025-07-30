@@ -779,7 +779,7 @@ mod mappings_tests {
     }
 
     #[test]
-    fn test_small_add_postive_range() {
+    fn test_small_add_positive_range() {
         // lower bound
         let mut dst = MemoryValue::Small(0);
         let mut op0 = MemoryValue::Small(0);
@@ -787,10 +787,10 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
 
         // upper bound
-        let postive_upper_bound = 2_u128.pow(27) - 1;
-        dst = MemoryValue::Small(postive_upper_bound);
-        op0 = MemoryValue::Small(postive_upper_bound);
-        op1 = MemoryValue::Small(postive_upper_bound);
+        let positive_upper_bound = 2_u128.pow(27) - 1;
+        dst = MemoryValue::Small(positive_upper_bound);
+        op0 = MemoryValue::Small(positive_upper_bound);
+        op1 = MemoryValue::Small(positive_upper_bound);
         assert!(is_small_add(dst, op0, op1));
 
         dst = MemoryValue::F252(dst.as_u256());

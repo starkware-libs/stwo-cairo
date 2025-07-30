@@ -198,9 +198,9 @@ impl BuiltinSegments {
     ) {
         let _span = span!(Level::INFO, "pad_relocatble_builtin_segments").entered();
         for (segment_index, builtin_name) in builtins_segments {
-            let current_buitlin_segment = &mut relocatable_memory[segment_index];
+            let current_builtin_segment = &mut relocatable_memory[segment_index];
 
-            let original_segment_len = current_buitlin_segment.len();
+            let original_segment_len = current_builtin_segment.len();
 
             if original_segment_len == 0 {
                 // Do not pad empty segments.
@@ -228,7 +228,7 @@ impl BuiltinSegments {
                 cells_per_instance
             );
 
-            if !current_buitlin_segment.iter().all(|x| x.is_some()) {
+            if !current_builtin_segment.iter().all(|x| x.is_some()) {
                 panic!(
                     "Builtins segments '{}' at segment index: {}, contains a hole.",
                     builtin_name, segment_index
@@ -241,13 +241,13 @@ impl BuiltinSegments {
                 .next_power_of_two()
                 .max(MIN_SEGMENT_SIZE)
                 * cells_per_instance;
-            current_buitlin_segment.resize(new_segment_size, None);
+            current_builtin_segment.resize(new_segment_size, None);
 
             // Fill the segment extension with copies of the last instance.
             let last_instance_start = original_segment_len - cells_per_instance;
             for i in original_segment_len..new_segment_size {
-                current_buitlin_segment[i] =
-                    current_buitlin_segment[last_instance_start + (i % cells_per_instance)].clone();
+                current_builtin_segment[i] =
+                    current_builtin_segment[last_instance_start + (i % cells_per_instance)].clone();
             }
 
             info!(

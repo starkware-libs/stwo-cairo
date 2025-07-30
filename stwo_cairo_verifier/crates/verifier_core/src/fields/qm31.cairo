@@ -76,7 +76,7 @@ pub trait PackedUnreducedQM31Trait {
     fn reduce(self: PackedUnreducedQM31) -> QM31;
 }
 
-impl QM31Dispaly of core::fmt::Display<QM31> {
+impl QM31Display of core::fmt::Display<QM31> {
     fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
         let [a, b, c, d] = (*self).to_fixed_array();
         let a: u32 = a.into();

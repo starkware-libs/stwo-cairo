@@ -253,7 +253,7 @@ pub fn gen_bit_mask(n_bits: u32) -> u64 {
     *BIT_MASKS.span()[n_bits]
 }
 
-/// Given a span of column log sizes, Return a span of the column indicies grouped by their log
+/// Given a span of column log sizes, Return a span of the column indices grouped by their log
 /// size.
 ///
 /// # Arguments

@@ -105,7 +105,7 @@ mod tests {
         assert_eq!(
             prover_input_a,
             to_value(prover_input_b).expect("Unable to covert prover input to value"),
-            "Prover input from vm output: {} doesn't match the expected prover inpu",
+            "Prover input from vm output: {} doesn't match the expected prover input",
             test_name,
         );
     }

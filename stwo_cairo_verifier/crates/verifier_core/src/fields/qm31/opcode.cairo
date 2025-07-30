@@ -5,7 +5,7 @@ use super::super::Invertible;
 use super::super::cm31::CM31;
 use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
 use super::{
-    PackedUnreducedQM31Trait, QM31Dispaly, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
+    PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
 };
 
 #[derive(Copy, Drop, PartialEq)]
@@ -263,7 +263,7 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
 
 impl QM31Debug of core::fmt::Debug<QM31> {
     fn fmt(self: @QM31, ref f: core::fmt::Formatter) -> Result<(), core::fmt::Error> {
-        QM31Dispaly::fmt(self, ref f)
+        QM31Display::fmt(self, ref f)
     }
 }
 

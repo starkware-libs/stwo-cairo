@@ -1,7 +1,7 @@
 # Cross compilation configuration for cross-rs
 # See: https://github.com/cross-rs/cross
 
-# Note: Cross is used for cross compilation of rust projects to diffrent architechtures.
+# Note: Cross is used for cross compilation of rust projects to different architectures.
 #       This file doesn't currently have any special configurations.
 #       To cross compile for arm do: cargo install cross &&
 #       cross build --release --target aarch64-unknown-linux-gnu

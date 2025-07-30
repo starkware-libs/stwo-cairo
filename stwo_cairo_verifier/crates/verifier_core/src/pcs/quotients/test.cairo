@@ -178,7 +178,7 @@ fn test_accumulate_row_quotients() {
 // Test used to benchmark step counts.
 #[test]
 fn test_fri_answers_with_1000_columns() {
-    // NOTE: Forge fails if these are declated `const ...`.
+    // NOTE: Forge fails if these are declared `const ...`.
     let log_size: u32 = 16;
     let n_queries: usize = 20;
     let n_columns: usize = 1000;

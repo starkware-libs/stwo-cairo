@@ -1,4 +1,4 @@
-//! This module is inteded for functions that we want to be able to profile.
+//! This module is intended for functions that we want to be able to profile.
 //! It is not intended to be used in production code, but rather for debugging and
 //! performance analysis during development.
 

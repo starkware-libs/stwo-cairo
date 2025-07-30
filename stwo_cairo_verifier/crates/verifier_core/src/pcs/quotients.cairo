@@ -175,7 +175,7 @@ fn fri_answers_for_log_size(
 /// * `sampled_batches`: OOD column samples grouped by eval point.
 /// * `query_evals_by_column`: Sampled query evals by trace column.
 /// * `query_index`: The index of the query to compute the quotients for.
-/// * `domain_point`: The domain point the query corresponts to.
+/// * `domain_point`: The domain point the query corresponds to.
 #[inline(always)]
 fn accumulate_row_quotients(
     sample_batches_by_point: @Array<ColumnSampleBatch>,
@@ -184,7 +184,7 @@ fn accumulate_row_quotients(
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
     let n_batches = sample_batches_by_point.len();
-    // TODO(andrew): Unnessesary asserts, remove.
+    // TODO(andrew): Unnecessary asserts, remove.
     assert!(n_batches == quotient_constants.point_constants.len());
 
     let denominator_inverses = quotient_denominator_inverses(
