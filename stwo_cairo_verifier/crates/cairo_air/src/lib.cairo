@@ -322,6 +322,7 @@ pub const KECCAK_MEMORY_CELLS: usize = 16;
 pub const MUL_MOD_MEMORY_CELLS: usize = 7;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
+// document it's for both 96 and 128
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
 // trace declaration. If the function changes, this array must be updated to stay in sync.
@@ -994,6 +995,7 @@ pub struct Claim {
     pub range_check_builtin_segment_start: u32,
 }
 
+// todo: consider using a BuiltinClaim struct.
 #[derive(Drop, Serde, Copy)]
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<components::add_mod_builtin::Claim>,
@@ -1869,6 +1871,7 @@ impl CairoClaimImpl of CairoClaimTrait {
 ///
 /// Panics if the claim is invalid.
 fn verify_claim(claim: @CairoClaim) {
+    // Why ignore output and safe_call?
     let PublicData {
         public_memory: PublicMemory {
             program, public_segments, output: _output, safe_call: _safe_call,
@@ -1883,6 +1886,7 @@ fn verify_claim(claim: @CairoClaim) {
 
     // Currently only bootloader context is supported.
     // TODO: Change that fact post MVP.
+    // todo: check with agadi what's the status
     public_segments.assert_bootloader_context();
     verify_program(program, public_segments);
 
@@ -1892,21 +1896,22 @@ fn verify_claim(claim: @CairoClaim) {
     let final_pc: u32 = (*final_pc).into();
     let final_ap: u32 = (*final_ap).into();
     let final_fp: u32 = (*final_fp).into();
-
+    // Mention why each check
     assert!(initial_pc.is_one());
     assert!(initial_pc + 2 < initial_ap);
     assert!(initial_fp == final_fp);
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
+    // this checks that even if ap starts very high, it can't overflow
     assert!(initial_ap <= final_ap);
 
     // When using address_to_id relation, it is assumed that address < 2^27.
     // To verify that, one needs to check that the size of the address_to_id component <=
     // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), beacuse the component is split to
     // MEMORY_ADDRESS_TO_ID_SPLIT addresses in each row of the component.
+    // Move to test
     assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
     assert!(*claim.memory_address_to_id.log_size <= 27_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
-
     // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();
     claim.accumulate_relation_uses(ref relation_uses);
@@ -1916,6 +1921,7 @@ fn verify_claim(claim: @CairoClaim) {
     // number of steps of the program by 2^29. An add_ap use can increase ap *to* at most 2^27-1,
     // and every other step can increase ap by at most 2. Therefore the most ap can increase to with
     // n_steps steps is 2^27-1 + 2 * (n_steps-1). This is less than P if n_steps <= 2^29.
+    // TODO: tityahes to initial_ap (what if it starts at P-1?)
     let opcodes_uses = relation_uses.get('Opcodes');
     assert!(opcodes_uses <= pow2(29).into());
 
@@ -1933,13 +1939,19 @@ fn verify_claim(claim: @CairoClaim) {
     for log_size in claim.memory_id_to_value.big_log_sizes.span() {
         n_unique_large_values += pow2(*log_size);
     }
-    let large_id_offset = pow2(30);
+    // todo: remove after checking elsewhere (with todo)
+    // todo: make sure we do something similar to small values (check no overlap between small and large)
+    // only one small value comp and no seqs larger than 24, so no overlap. where to check log_size < 31?
+    let large_id_offset = pow2(30);// use a const for 2**30
     let largest_id = n_unique_large_values + large_id_offset - 1;
     assert!(largest_id < P_U32);
 }
 
+// todo: Document
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
     // Check that non-supported builtins aren't used.
+    // todo: check if better to chck that it's None
+    // todo:  use destructure
     if let Some(ec_op) = segment_ranges.ec_op {
         assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
     }
@@ -2052,10 +2064,13 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     );
 }
 
+// todo: document
 fn check_builtin(
     builtin_claim: Option<BuiltinClaim>, segment_range: Option<SegmentRange>, n_cells: usize,
 ) {
     let segment_range = match segment_range {
+        // todo: If one of them is None assert the other is also None.
+        // If is empty run the code anyway.
         None => { return; },
         Some(segment_range) => {
             if segment_range.is_empty() {
@@ -2085,25 +2100,35 @@ struct BuiltinClaim {
     log_size: u32,
 }
 
+// todo: document
 fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges) {
+    // Use multipop<6> to get the values. 
+    // todo: Consider adding assertions on the size of the program.
     let (_, program_value_0) = program[0];
     let (_, program_value_1) = program[1];
     let (_, program_value_2) = program[2];
     let (_, program_value_4) = program[4];
     let (_, program_value_5) = program[5];
 
+    // ap += N_BUILTINS. Two felts.
     let n_builtins = public_segments.present_segments().len();
-    assert!(program_value_0 == @[0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
+    assert!(program_value_0 == @[0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); 
+    // Imm of last instruction (N_BUILTINS).
     assert!(
-        program_value_1 == @[n_builtins, 0, 0, 0, 0, 0, 0, 0],
-    ); // Imm of last instruction (N_BUILTINS).
+        program_value_1 == @[n_builtins, 0, 0, 0, 0, 0, 0, 0], 
+    ); 
+
+    // Instruction: call rel program[3]. Two felts. (call to main).
     assert!(
         program_value_2 == @[0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0],
-    ); // Instruction: call rel ?
+    ); 
+
+    // Instruction: jmp rel 0. Two felts.
     assert!(
         program_value_4 == @[0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0],
-    ); // Instruction: jmp rel 0.
-    assert!(program_value_5 == @[0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
+    ); 
+    // Imm of last instruction (jmp rel 0).
+    assert!(program_value_5 == @[0, 0, 0, 0, 0, 0, 0, 0]); 
 }
 
 
@@ -2606,6 +2631,7 @@ pub struct PublicData {
     pub final_state: CasmState,
 }
 
+// todo: ask cursor to give a list of functions that should be doced.
 #[generate_trait]
 impl PublicDataImpl of PublicDataTrait {
     fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
@@ -3225,6 +3251,7 @@ impl CairoAirNewImpl of CairoAirNewTrait {
                 );
             offset = offset + pow2(log_size);
         }
+        // todo: check here that offset is not too high instead of verify_claim
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,

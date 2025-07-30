@@ -1043,6 +1043,7 @@ pub fn intermediate14(
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
+    // TODO: change to offset (without the + m31...), change in air infra, and in CairoAirNew (where big component init is)
     (MemoryIdToBig_alpha0) * (seq + m31(1073741824).into() + offset)
         + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
         + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)
