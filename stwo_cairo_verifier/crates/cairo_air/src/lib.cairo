@@ -68,6 +68,7 @@ pub const KECCAK_MEMORY_CELLS: usize = 16;
 pub const MUL_MOD_MEMORY_CELLS: usize = 7;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
+// This is for both the 128 and 96 bit range checks.
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
 
