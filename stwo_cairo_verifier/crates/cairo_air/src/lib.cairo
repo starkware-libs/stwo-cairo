@@ -454,24 +454,32 @@ struct BuiltinClaim {
 }
 
 fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges) {
-    let (_, program_value_0) = program[0];
-    let (_, program_value_1) = program[1];
-    let (_, program_value_2) = program[2];
-    let (_, program_value_4) = program[4];
-    let (_, program_value_5) = program[5];
+    let mut program = program.span();
+    let [
+        (_, program_value_0),
+        (_, program_value_1),
+        (_, program_value_2),
+        (_, _program_value_3),
+        (_, program_value_4),
+        (_, program_value_5),
+    ]: [PubMemoryValue; 6] =
+        (*program
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
 
     let n_builtins = public_segments.present_segments().len();
-    assert!(program_value_0 == @[0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
+    assert!(program_value_0 == [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
     assert!(
-        program_value_1 == @[n_builtins, 0, 0, 0, 0, 0, 0, 0],
+        program_value_1 == [n_builtins, 0, 0, 0, 0, 0, 0, 0],
     ); // Imm of last instruction (N_BUILTINS).
     assert!(
-        program_value_2 == @[0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0],
+        program_value_2 == [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0],
     ); // Instruction: call rel ?
     assert!(
-        program_value_4 == @[0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0],
+        program_value_4 == [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0],
     ); // Instruction: jmp rel 0.
-    assert!(program_value_5 == @[0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
+    assert!(program_value_5 == [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
 }
 
 
