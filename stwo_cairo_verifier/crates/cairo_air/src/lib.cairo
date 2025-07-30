@@ -40,7 +40,7 @@ use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{StarkProof, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use stwo_verifier_utils::{
-    MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, hash_memory_section,
+    MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, encode_and_hash_memory_section,
 };
 pub mod cairo_air;
 use cairo_air::*;
@@ -128,7 +128,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        hash_memory_section(proof.claim.public_data.public_memory.program),
+        encode_and_hash_memory_section(proof.claim.public_data.public_memory.program),
     );
 
     let mut output = array![];
@@ -145,11 +145,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        hash_memory_section(proof.claim.public_data.public_memory.program),
+        encode_and_hash_memory_section(proof.claim.public_data.public_memory.program),
     );
 
     let output_hash = construct_f252(
-        hash_memory_section(proof.claim.public_data.public_memory.output),
+        encode_and_hash_memory_section(proof.claim.public_data.public_memory.output),
     );
 
     VerificationOutput { program_hash, output_hash }

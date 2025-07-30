@@ -11,16 +11,22 @@ use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, M31Trait};
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
+use stwo_verifier_utils::encode_and_hash_memory_section;
 use super::test_utils::{dummy_interaction_lookup_elements, mock_public_memory_with_outputs};
 use super::{
     CairoInteractionElements, CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory,
     PublicMemoryTrait, PublicSegmentRanges, RelationUsesDict, SegmentRange,
-    accumulate_relation_uses, hash_memory_section,
+    accumulate_relation_uses,
 };
 
 const REGISTERS_START: ConstValue<1000> = 1000;
 const REGISTERS_END: ConstValue<2000> = 2000;
 
+#[test]
+fn test_output_encoding() {
+    let public_memory = mock_public_memory_with_outputs(1000);
+    encode_and_hash_memory_section(@public_memory.output);
+}
 #[test]
 fn test_output_mixing() {
     let mut channel: Channel = Default::default();
