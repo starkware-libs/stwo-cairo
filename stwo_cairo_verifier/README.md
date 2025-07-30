@@ -59,11 +59,24 @@ go tool pprof -http=":8000" profile.pb.gz
 
 ## Profile executable
 
-In order to run the verifier program we need to prepare arguments (proof) first:
+In order to run the verifier program we need to prepare arguments (proof) first.
+
+Build Stwo prover from the current commit:
 
 ```sh
-# Will build the dev-utils prover from the current codebase and run it on one of the test Cairo programs.
-make bench-proof
+cd ../stwo_cairo_prover
+RUSTFLAGS="-C target-cpu=native -C opt-level=3" cargo build --release --bin prove_from_compiled_program
+```
+
+Generate a proof for one of the test programs:
+
+```sh
+mkdir -p target/bench
+../stwo_cairo_prover/target/release/prove_from_compiled_program \
+    --compiled_program ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/compiled.json \
+    --proof_path target/bench/proof.serde.json \
+    --proof-format cairo-serde \
+    --verify
 ```
 
 ### Used resources
@@ -71,29 +84,69 @@ make bench-proof
 To estimate the execution resources (total number of steps, builtin usage) run the following command:
 
 ```sh
-# Will run scarb execute internally
-make bench
+scarb execute \
+    --package stwo_cairo_verifier \
+    --arguments-file target/bench/proof.serde.json \
+    --print-resource-usage \
+    --output none
 ```
+
+Arguments file is the proof (in Cairo serde format) that we generated on the previous step.
 
 ### Scoped sierra statements
 
-For more insights generate a scoped Sierra profile (loops and recursions are collapsed to improve readability): 
+For more insights you can generate a scoped Sierra profile (loops and recursions are collapsed to improve readability).
+
+First of all, clone `cairo` locally (if you haven't yet), then install `cairo-execute` binary:
 
 ```sh
-# Install cairo-execute to build & run the verifier
-make install-cairo-execute
-# Clone Cairo repo locally to link the matching core libraries
-make install-corelib
-# Generate profile
-make profile
+git clone https://github.com/starkware-libs/cairo ~/cairo
+cd cairo
+cargo install --path crates/bin/cairo-execute cairo-execute
 ```
 
-Now you can visualize it with `flamegraph.pl` or with `scarb-burn` tool which allows to generate both FlameGraphs and pprof files:
+Also from the current directory create a symlink to the `corelib`:
 
 ```sh
-make install-scarb-burn
-# Generate pprof and open in the browser
-make pprof
-# Generate FlameGraph and open in the browser
-make flamegraph
+# CURDIR is stwo_cairo_verifier
+ln -s "~/cairo/corelib" corelib
+```
+
+Now we can generate the profile:
+
+```sh
+cairo-execute \
+    --run-profiler scoped \
+    --args-file target/bench/proof.serde.json \
+    --output-path target/stwo_cairo_verifier.pie.zip \
+    --executable stwo_cairo_verifier::main \
+    --layout all_cairo_stwo \
+    --ignore-warnings \
+    crates/cairo_verifier/blake_cairo_project > target/stwo_cairo_verifier.profile.txt
+```
+
+You can visualize it with `flamegraph.pl` or with `scarb-burn` tool.
+
+```sh
+cargo install --git https://github.com/m-kus/scarb-burn --rev f01a5164576e29c002098ab397fb015808a4fb7b scarb-burn
+```
+
+To render a flamechart and open in the browser:
+
+```sh
+scarb-burn \
+    --profile-file target/stwo_cairo_verifier.profile.txt \
+    --output-file target/stwo_cairo_verifier.flamegraph.svg \
+    --output-type flamegraph \
+    --open-in-browser
+```
+
+To generate pprof file and run the service in the browser (requires golang toolchain and pprof package installed):
+
+```sh
+scarb-burn \
+    --profile-file target/stwo_cairo_verifier.profile.txt \
+    --output-file target/stwo_cairo_verifier.pprof.gz \
+    --output-type pprof \
+    --open-in-browser
 ```
