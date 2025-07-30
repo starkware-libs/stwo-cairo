@@ -641,9 +641,11 @@ dependencies = [
  "stwo-cairo-adapter",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
+ "stwo-cairo-serialize-derive",
  "stwo-constraint-framework",
  "thiserror",
  "tracing",
+ "zip 4.3.0",
 ]
 
 [[package]]
@@ -3564,6 +3566,7 @@ dependencies = [
  "starknet-types-core",
  "stwo",
  "stwo-cairo-serialize",
+ "stwo-cairo-serialize-derive",
 ]
 
 [[package]]
@@ -3574,6 +3577,7 @@ dependencies = [
  "stwo",
  "stwo-cairo-serialize-derive",
  "unsigned-varint",
+ "zip 4.3.0",
 ]
 
 [[package]]
@@ -3581,6 +3585,7 @@ name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
 dependencies = [
  "quote",
+ "stwo",
  "syn 2.0.104",
 ]
 
