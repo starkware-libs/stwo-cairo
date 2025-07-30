@@ -77,13 +77,23 @@ make bench
 
 ### Scoped sierra statements
 
-For more insights generate a scoped Sierra profile (loops and recursions are collapsed to improve readability) and visualize using `scarb-burn` tool: 
+For more insights generate a scoped Sierra profile (loops and recursions are collapsed to improve readability): 
 
 ```sh
-# Install
-make install-scarb-burn
-# Generate pprof file and open it using the go pprof
+# Install cairo-execute to build & run the verifier
+make install-cairo-execute
+# Clone Cairo repo locally to link the matching core libraries
+make install-corelib
+# Generate profile
 make profile
 ```
 
-NOTE that this option requires golang toolchain and pprof package installed.
+Now you can visualize it with `flamegraph.pl` or with `scarb-burn` tool which allows to generate both FlameGraphs and pprof files:
+
+```sh
+make install-scarb-burn
+# Generate pprof and open in the browser
+make pprof
+# Generate FlameGraph and open in the browser
+make flamegraph
+```
