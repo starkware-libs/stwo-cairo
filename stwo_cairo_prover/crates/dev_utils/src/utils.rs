@@ -17,7 +17,9 @@ use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
     default_prod_prover_parameters, prove_cairo, ChannelHash, ProverParameters,
 };
-use stwo_cairo_serialize::{CairoSerialize, CompactBinary};
+use stwo_cairo_serialize::CairoSerialize;
+use stwo::core::compact_binary::CompactBinary;
+
 use thiserror::Error;
 
 #[derive(Debug, Error)]

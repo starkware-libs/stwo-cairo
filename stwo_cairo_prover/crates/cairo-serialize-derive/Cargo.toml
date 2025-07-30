@@ -7,5 +7,6 @@ edition = "2021"
 proc-macro = true
 
 [dependencies]
+stwo.workspace = true
 quote = "1.0.37"
 syn = "2.0.90"

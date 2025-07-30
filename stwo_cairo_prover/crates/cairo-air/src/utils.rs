@@ -1,11 +1,12 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
+use stwo::core::compact_binary::CompactBinary;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
 use crate::CairoProof;
@@ -34,22 +35,16 @@ where
 {
     let span = span!(Level::INFO, "Serialize proof").entered();
 
-    let mut proof_file = File::create(proof_path)?;
+    let mut proof_file = File::create(&proof_path)?;
 
     match proof_format {
         ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
+            fs::write(&proof_path, serde_json::to_string(&proof)?)?;
         }
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(proof, &mut serialized);
-
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
+            fs::write(&proof_path, serde_json::to_string(&serialized)?)?;
         }
         ProofFormat::CompactBinary => {
             let mut compact_bytes: Vec<u8> = Vec::new();

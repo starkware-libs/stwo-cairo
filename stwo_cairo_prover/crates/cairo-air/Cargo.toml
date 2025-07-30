@@ -19,11 +19,13 @@ starknet-curve = "0.5.1"
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive" }
 stwo.workspace = true
 stwo-constraint-framework.workspace = true
 thiserror.workspace = true
 serde_json.workspace = true
 tracing.workspace = true
+zip = "4.3.0"
 
 [dev-dependencies]
 rand.workspace = true

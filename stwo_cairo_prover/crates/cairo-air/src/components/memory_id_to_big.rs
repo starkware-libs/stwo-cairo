@@ -7,7 +7,9 @@ use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize, CompactBinary};
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
+use stwo::core::compact_binary::CompactBinary;
+use stwo_cairo_serialize_derive::CompactBinary;
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
 };

@@ -8,3 +8,4 @@ starknet-ff.workspace = true
 stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive" }
 stwo.workspace = true
 unsigned-varint = "0.8"
+zip = "4.3.0"
