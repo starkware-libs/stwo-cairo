@@ -48,13 +48,15 @@ cairo-prove/target/release/cairo-prove prove cairo-prove/example/target/dev/exam
 cairo-prove/target/release/cairo-prove verify ./example_proof.compact_bin --proof-format compact-binary
 ```
 
+**Note that we've adapted the serialize_proof_to_file() function to use serde_json without a JSON prettier to have more accurate results** 
+
 For this example proof, here are the results:
 
 | File                      | Format         | Size on disk (bytes) | Gain    |
 |---------------------------|----------------|---------------------:|--------:|
-| example_proof.base_json   | json           |          12 364 809  |    --   |
-| example_proof.cairo_serde | cairo-serde    |           3 224 193  |  73.9 % |
-| example_proof.compact_bin | compact-binary |             834 606  |  93.2 % |
+| example_proof.base_json   | json           |           2 528 114  |    --   |
+| example_proof.cairo_serde | cairo-serde    |           2 448 494  |   3.1 % |
+| example_proof.compact_bin | compact-binary |             834 606  |  67.0 % |
 
 Note that zipping `example_proof.compact_bin` leads to a file size of ~ 557 kB, so we still have some improvements to get, but probably not too much.
 
