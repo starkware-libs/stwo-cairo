@@ -93,7 +93,6 @@ where
         }
     }
 
-    // TODO: Add Versioning and tags
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
         let input = strip_expected_version(input, 0);
         let input = strip_expected_tag(input, 0);
