@@ -266,7 +266,7 @@ fn decommit_last_layer(verifier: FriVerifier, mut queries: Queries, mut query_ev
     while let (Some(query), Some(query_eval)) =
         (queries.positions.pop_front(), query_evals.pop_front()) {
         // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
-        // the FFT return evals in bit-reversed order to prevent this unnessesary bit-reverse.
+        // the FFT return evals in bit-reversed order to prevent this unnecessary bit-reverse.
         let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
 
         assert!(
@@ -310,7 +310,7 @@ pub struct FriProof {
 
 #[derive(Drop)]
 struct FriFirstLayerVerifier {
-    /// The list of degree bounds of all circle polynomials commited in the first layer.
+    /// The list of degree bounds of all circle polynomials committed in the first layer.
     column_log_bounds: Span<u32>,
     /// The commitment domains of all the circle polynomials in the first layer, sorted in
     /// descending order by size.

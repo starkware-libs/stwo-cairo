@@ -242,7 +242,7 @@ mod tests {
             .into_iter()
             .map(BaseField::from)
             .collect_vec();
-        // Multiplicites are of addresses offseted by 1.
+        // Multiplicities are of addresses offsetted by 1.
         let expected_mults = [2, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0].map(M31);
 
         address_usages.iter().for_each(|addr| {

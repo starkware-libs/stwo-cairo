@@ -396,7 +396,7 @@ pub mod relocator_tests {
     }
 
     #[test]
-    fn test_relocate_public_adresses() {
+    fn test_relocate_public_addresses() {
         let relocator = create_test_relocator();
 
         let relocatble_public_addrs = BTreeMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);

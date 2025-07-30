@@ -473,7 +473,7 @@ func run_blake_test{}(is_last_block: felt) {
 
 // Forces the runner to execute the Blake2s or Blake2sLastBlock opcode with the given operands.
 // op0 is a pointer to an array of 8 felts as u32 integers of the state.
-// op1 is a pointer to an array of 16 felts as u32 integers of the messsage.
+// op1 is a pointer to an array of 16 felts as u32 integers of the message.
 // dst is a felt representing a u32 of the counter.
 // ap contains a pointer to an array of 8 felts as u32 integers of the output state.
 // Those values are stored within addresses fp-5, fp-4 and fp-3 respectively.

@@ -53,7 +53,7 @@ impl FrameworkEval for Eval {
     }
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        // Addresses are offseted by 1, as 0 address is reserved.
+        // Addresses are offsetted by 1, as 0 address is reserved.
         let seq_plus_one =
             eval.get_preprocessed_column(Seq::new(self.log_size()).id()) + E::F::from(M31(1));
         for i in 0..MEMORY_ADDRESS_TO_ID_SPLIT {

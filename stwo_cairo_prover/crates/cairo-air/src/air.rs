@@ -285,7 +285,8 @@ impl PublicData {
     }
 }
 
-// TODO(alonf) Change all the obscure types and structs to a meaninful struct system for the memory.
+// TODO(alonf) Change all the obscure types and structs to a meaningful struct system for the
+// memory.
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
 pub struct MemorySmallValue {
     pub id: u32,

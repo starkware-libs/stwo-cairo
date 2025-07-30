@@ -29,7 +29,7 @@ pub trait SingleFeltType: ProverType {
 }
 
 /// Expression Types - the basic type of the variables composing the expression.
-/// For exaple, felt or bool. The expression types are devided into group, depending on
+/// For example, felt or bool. The expression types are divided into group, depending on
 /// the operations that can be performed on them.
 pub trait ProverType: Debug + Clone + Copy + Default {
     // Returns the value of the prover type as a string.

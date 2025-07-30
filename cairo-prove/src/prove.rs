@@ -12,7 +12,7 @@ use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 
-/// Exctracts artifacts from a finished cairo runner, to later be used for proving.
+/// Extracts artifacts from a finished cairo runner, to later be used for proving.
 pub fn prover_input_from_runner(runner: &CairoRunner) -> ProverInput {
     let public_input = runner.get_air_public_input().unwrap();
     let addresses = public_input

@@ -334,7 +334,7 @@ pub mod tests {
     use stwo::prover::backend::Column;
 
     #[test]
-    fn test_columns_are_in_decending_order() {
+    fn test_columns_are_in_descending_order() {
         let preprocessed_trace = PreProcessedTrace::canonical();
 
         let columns = preprocessed_trace.columns;
