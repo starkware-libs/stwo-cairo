@@ -10,13 +10,13 @@
 use std::path::PathBuf;
 
 use cairo_lang_executable::executable::Executable;
-use cairo_prove::args::ProgramArguments;
-use cairo_prove::execute::execute;
+use cairo_lang_runner::Arg;
+use cairo_lang_utils::bigint::BigUintAsHex;
 use clap::Parser;
-use dev_utils::utils::Error;
-use stwo_cairo_adapter::adapter::adapter;
+use dev_utils::utils::{run_cairo1_and_adapter, Error};
+use num_bigint::BigInt;
 use stwo_cairo_adapter::test_utils::{read_compiled_cairo_program, run_program_and_adapter};
-use stwo_cairo_adapter::{ExecutionResources, ProverInput};
+use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -32,6 +32,34 @@ struct Args {
     /// Arguments to pass to the Cairo program, either inline or from file
     #[command(flatten)]
     program_arguments: ProgramArguments,
+}
+
+#[derive(Parser, Debug, Clone)]
+pub struct ProgramArguments {
+    /// Serialized arguments to the executable function.
+    #[arg(long, value_delimiter = ',')]
+    pub arguments: Vec<BigInt>,
+
+    /// Serialized arguments to the executable function from a file.
+    #[arg(long, conflicts_with = "arguments")]
+    pub arguments_file: Option<PathBuf>,
+}
+impl ProgramArguments {
+    pub fn read_arguments(self) -> Vec<Arg> {
+        if let Some(path) = self.arguments_file {
+            let file = std::fs::File::open(&path).unwrap();
+            let as_vec: Vec<BigUintAsHex> = serde_json::from_reader(file).unwrap();
+            as_vec
+                .into_iter()
+                .map(|v| Arg::Value(v.value.into()))
+                .collect()
+        } else {
+            self.arguments
+                .iter()
+                .map(|v| Arg::Value(v.into()))
+                .collect()
+        }
+    }
 }
 
 fn main() -> Result<(), Error> {
@@ -61,10 +89,4 @@ fn main() -> Result<(), Error> {
     log::info!("Execution resources: {execution_resources:#?}");
 
     Ok(())
-}
-
-fn run_cairo1_and_adapter(program: Executable, args: Vec<cairo_lang_runner::Arg>) -> ProverInput {
-    let runner = execute(program, args);
-    let mut prover_input_info = runner.get_prover_input_info().expect("");
-    adapter(&mut prover_input_info).expect("Failed to run adapter")
 }
