@@ -6,18 +6,18 @@ version = 4
 name = "adapted_stwo"
 version = "0.1.0"
 dependencies = [
- "cairo-air 0.1.1",
+ "cairo-air",
  "clap",
  "log",
  "serde",
  "sonic-rs",
  "starknet-ff",
  "stwo",
- "stwo-cairo-adapter 0.1.0",
- "stwo-cairo-serialize 0.1.0",
- "stwo_cairo_prover 0.1.0",
+ "stwo-cairo-adapter",
+ "stwo-cairo-serialize",
+ "stwo_cairo_prover",
  "stwo_cairo_utils",
- "thiserror 2.0.12",
+ "thiserror",
  "tracing",
 ]
 
@@ -600,36 +600,11 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-cairo-adapter 0.1.0",
- "stwo-cairo-common 0.1.0",
- "stwo-cairo-serialize 0.1.0",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
  "stwo-constraint-framework",
- "thiserror 2.0.12",
- "tracing",
-]
-
-[[package]]
-name = "cairo-air"
-version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
-dependencies = [
- "clap",
- "itertools 0.12.1",
- "log",
- "num-traits",
- "paste",
- "rayon",
- "serde",
- "serde_json",
- "sonic-rs",
- "starknet-curve 0.5.1",
- "starknet-ff",
- "starknet-types-core",
- "stwo-cairo-adapter 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-cairo-common 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-prover",
- "thiserror 2.0.12",
+ "thiserror",
  "tracing",
 ]
 
@@ -682,7 +657,7 @@ dependencies = [
  "rust-analyzer-salsa",
  "semver 1.0.25",
  "smol_str",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -785,7 +760,7 @@ dependencies = [
  "itertools 0.14.0",
  "rust-analyzer-salsa",
  "serde",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -876,7 +851,7 @@ dependencies = [
  "cairo-lang-filesystem",
  "cairo-lang-utils 2.11.4",
  "serde",
- "thiserror 2.0.12",
+ "thiserror",
  "toml",
 ]
 
@@ -894,7 +869,7 @@ dependencies = [
  "cairo-lang-utils 2.11.4",
  "cairo-vm",
  "itertools 0.14.0",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -923,7 +898,7 @@ dependencies = [
  "sha2",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -975,7 +950,7 @@ dependencies = [
  "sha3",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -990,7 +965,7 @@ dependencies = [
  "itertools 0.14.0",
  "num-bigint",
  "num-traits",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -1005,7 +980,7 @@ dependencies = [
  "itertools 0.14.0",
  "num-bigint",
  "num-traits",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -1048,7 +1023,7 @@ dependencies = [
  "num-bigint",
  "num-traits",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -1086,7 +1061,7 @@ dependencies = [
  "serde_json",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -1108,7 +1083,7 @@ dependencies = [
  "sha3",
  "smol_str",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -1178,28 +1153,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "cairo-prove"
-version = "0.1.0"
-dependencies = [
- "cairo-air 0.1.1 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "cairo-lang-casm 2.11.4",
- "cairo-lang-compiler",
- "cairo-lang-executable",
- "cairo-lang-runner",
- "cairo-lang-utils 2.11.4",
- "cairo-vm",
- "camino",
- "clap",
- "env_logger",
- "log",
- "num-bigint",
- "serde_json",
- "stwo-cairo-adapter 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo_cairo_prover 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
-]
-
-[[package]]
 name = "cairo-vm"
 version = "2.0.1"
 source = "git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673#b1a91f929b5fa29a1a2e9e6990a68a1220c0c673"
@@ -1226,7 +1179,7 @@ dependencies = [
  "sha3",
  "starknet-crypto 0.7.4",
  "starknet-types-core",
- "thiserror 2.0.12",
+ "thiserror",
  "zip",
 ]
 
@@ -1447,23 +1400,25 @@ dependencies = [
 name = "dev-utils"
 version = "0.1.1"
 dependencies = [
- "cairo-air 0.1.1",
+ "cairo-air",
  "cairo-lang-executable",
  "cairo-lang-runner",
- "cairo-prove",
+ "cairo-lang-utils 2.11.4",
  "cairo-vm",
+ "camino",
  "clap",
  "log",
+ "num-bigint",
  "regex",
  "serde",
  "serde_json",
  "sonic-rs",
  "starknet-ff",
  "stwo",
- "stwo-cairo-adapter 0.1.0",
- "stwo-cairo-serialize 0.1.0",
- "stwo_cairo_prover 0.1.0",
- "thiserror 2.0.12",
+ "stwo-cairo-adapter",
+ "stwo-cairo-serialize",
+ "stwo_cairo_prover",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
@@ -1575,7 +1530,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "186e05a59d4c50738528153b83b0b0194d3a29507dfec16eccd4b342903397d0"
 dependencies = [
  "log",
- "regex",
 ]
 
 [[package]]
@@ -1587,7 +1541,6 @@ dependencies = [
  "anstream",
  "anstyle",
  "env_filter",
- "humantime",
  "log",
 ]
 
@@ -1837,12 +1790,6 @@ checksum = "589533453244b0995c858700322199b2becb13b627df2851f64a2775d024abcf"
 dependencies = [
  "windows-sys 0.59.0",
 ]
-
-[[package]]
-name = "humantime"
-version = "2.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b112acc8b3adf4b107a8ec20977da0273a8c386765a3ec0229bd500a1443f9f"
 
 [[package]]
 name = "id-arena"
@@ -2377,7 +2324,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b7cafe60d6cf8e62e1b9b2ea516a089c008945bb5a275416789e7db0bc199dc"
 dependencies = [
  "memchr",
- "thiserror 2.0.12",
+ "thiserror",
  "ucd-trie",
 ]
 
@@ -3118,7 +3065,7 @@ dependencies = [
  "simdutf8",
  "sonic-number",
  "sonic-simd",
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
@@ -3302,7 +3249,7 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "std-shims",
- "thiserror 2.0.12",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
@@ -3316,36 +3263,13 @@ dependencies = [
  "itertools 0.12.1",
  "rayon",
  "stwo",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=d9c929d)",
-]
-
-[[package]]
-name = "stwo-air-utils"
-version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcbaebf#dcbaebfbbf923855eadd8cd3612b37569122d927"
-dependencies = [
- "bytemuck",
- "itertools 0.12.1",
- "rayon",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=dcbaebf)",
- "stwo-prover",
+ "stwo-air-utils-derive",
 ]
 
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
 source = "git+https://github.com/starkware-libs/stwo?rev=d9c929d#d9c929d28c9b6087820208a300a789a30d8635d0"
-dependencies = [
- "itertools 0.13.0",
- "proc-macro2",
- "quote",
- "syn 2.0.98",
-]
-
-[[package]]
-name = "stwo-air-utils-derive"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcbaebf#dcbaebfbbf923855eadd8cd3612b37569122d927"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3373,32 +3297,9 @@ dependencies = [
  "serde_json",
  "sonic-rs",
  "stwo",
- "stwo-cairo-common 0.1.0",
+ "stwo-cairo-common",
  "test-case",
- "thiserror 2.0.12",
- "tracing",
-]
-
-[[package]]
-name = "stwo-cairo-adapter"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
-dependencies = [
- "bincode 2.0.1",
- "bytemuck",
- "cairo-lang-casm 2.9.3",
- "cairo-vm",
- "dashmap",
- "itertools 0.12.1",
- "log",
- "memmap2",
- "rayon",
- "serde",
- "serde_json",
- "sonic-rs",
- "stwo-cairo-common 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-prover",
- "thiserror 2.0.12",
+ "thiserror",
  "tracing",
 ]
 
@@ -3415,23 +3316,7 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-cairo-serialize 0.1.0",
-]
-
-[[package]]
-name = "stwo-cairo-common"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
-dependencies = [
- "bytemuck",
- "itertools 0.12.1",
- "ruint",
- "serde",
- "serde_arrays",
- "starknet-ff",
- "starknet-types-core",
- "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-prover",
+ "stwo-cairo-serialize",
 ]
 
 [[package]]
@@ -3440,31 +3325,12 @@ version = "0.1.0"
 dependencies = [
  "starknet-ff",
  "stwo",
- "stwo-cairo-serialize-derive 0.1.0",
-]
-
-[[package]]
-name = "stwo-cairo-serialize"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
-dependencies = [
- "starknet-ff",
- "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-prover",
+ "stwo-cairo-serialize-derive",
 ]
 
 [[package]]
 name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
-dependencies = [
- "quote",
- "syn 2.0.98",
-]
-
-[[package]]
-name = "stwo-cairo-serialize-derive"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
 dependencies = [
  "quote",
  "syn 2.0.98",
@@ -3486,34 +3352,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "stwo-prover"
-version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=dcbaebf#dcbaebfbbf923855eadd8cd3612b37569122d927"
-dependencies = [
- "blake2",
- "blake3",
- "bytemuck",
- "cfg-if",
- "educe 0.5.11",
- "hex",
- "indexmap 2.10.0",
- "itertools 0.12.1",
- "num-traits",
- "rand 0.8.5",
- "rayon",
- "serde",
- "starknet-crypto 0.6.2",
- "starknet-ff",
- "thiserror 1.0.69",
- "tracing",
- "tracing-subscriber",
-]
-
-[[package]]
 name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
- "cairo-air 0.1.1",
+ "cairo-air",
  "cairo-vm",
  "hex",
  "itertools 0.12.1",
@@ -3528,41 +3370,16 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=d9c929d)",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=d9c929d)",
- "stwo-cairo-adapter 0.1.0",
- "stwo-cairo-common 0.1.0",
- "stwo-cairo-serialize 0.1.0",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter",
+ "stwo-cairo-common",
+ "stwo-cairo-serialize",
  "stwo-constraint-framework",
  "tempfile",
  "test-log",
  "tracing",
  "tracing-subscriber",
-]
-
-[[package]]
-name = "stwo_cairo_prover"
-version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a#62c3c4a94546b274d20123cc5f22044bcbe7104e"
-dependencies = [
- "cairo-air 0.1.1 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "hex",
- "itertools 0.12.1",
- "num-traits",
- "paste",
- "rayon",
- "serde",
- "serde_json",
- "starknet-curve 0.5.1",
- "starknet-ff",
- "starknet-types-core",
- "stwo-air-utils 0.1.1 (git+https://github.com/starkware-libs/stwo?rev=dcbaebf)",
- "stwo-air-utils-derive 0.1.0 (git+https://github.com/starkware-libs/stwo?rev=dcbaebf)",
- "stwo-cairo-adapter 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-cairo-common 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
- "stwo-prover",
- "tracing",
 ]
 
 [[package]]
@@ -3574,7 +3391,7 @@ dependencies = [
  "env_logger",
  "log",
  "serde",
- "thiserror 2.0.12",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
@@ -3693,31 +3510,11 @@ dependencies = [
 
 [[package]]
 name = "thiserror"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6aaf5339b578ea85b50e080feb250a3e8ae8cfcdff9a461c9ec2904bc923f52"
-dependencies = [
- "thiserror-impl 1.0.69",
-]
-
-[[package]]
-name = "thiserror"
 version = "2.0.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "567b8a2dae586314f7be2a752ec7474332959c6460e02bde30d702a66d488708"
 dependencies = [
- "thiserror-impl 2.0.12",
-]
-
-[[package]]
-name = "thiserror-impl"
-version = "1.0.69"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4fee6c4efc90059e10f81e6d42c60a18f76588c3d74cb83a0b242a2b6c7504c1"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.98",
+ "thiserror-impl",
 ]
 
 [[package]]
@@ -3897,7 +3694,7 @@ version = "0.1.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c01d12e3a56a4432a8b436f293c25f4808bdf9e9f9f98f9260bba1f1bc5a1f26"
 dependencies = [
- "thiserror 2.0.12",
+ "thiserror",
 ]
 
 [[package]]
