@@ -34,11 +34,6 @@ The current implementation consists of the following elements
 - Added `CompactBinary` trait in `stwo_cairo_prover/crates/cairo-serialize/src/compact.rs`, and implemented this trait for all structures needed.
 - Added a `#[derive(CompactBinary)]` proc macro to implement the trait for structures composed of fields implementing it. Note that the proc macro is only expected to produce a `0` version, if a given structure is to be updated it's implementation should be done manually, while keeping back-compatibility of all previous serialization versions for this structure. See `stwo_cairo_prover/crates/cairo-serialize-derive/src/lib.rs`
 
-Still todo:
-
-- Check exactly what field have compressible data (I think CairoClaim and CairoInteractionClaim may both be target for a lot of optimization, but maybe other too)
-- See how to best compact the data (e.g. is there an easy pattern to spot or is there not, and in this case zipping the data may be easier)
-
 ## Tests and benchmarks
 
 By following the `INSTRUCTIONS.md` document, you can serialize proofs using this new format as such:
@@ -52,19 +47,21 @@ cairo-prove/target/release/cairo-prove verify ./example_proof.compact_bin --proo
 
 For this example proof, here are the results: (compact_bin_v2 corresponds to a format where the fields of the CairoProof `claim`, `interaction_claim` and `stark_proof` are zipped with BZip2).
 
-| File                           | Format            | Size on disk (bytes) | Gain     |
-|--------------------------------|-------------------|---------------------:|---------:|
-| example_proof.base_json        | json              |           2 528 114  |    --    |
-| example_proof.cairo_serde      | cairo-serde       |           2 448 494  |  - 3.1 % |
-| example_proof.compact_bin      | compact-binary    |             834 606  | - 67.0 % |
-| example_proof.compact_bin_v2   | compact-binary-v2 |             582 932  | - 76.9 % |
+| File                               | Format                   | Size on disk (bytes) | Gain     |
+|------------------------------------|--------------------------|---------------------:|---------:|
+| example_proof.base_json            | json                     |           2 528 114  |    --    |
+| example_proof.cairo_serde          | cairo-serde              |           2 448 494  |  - 3.1 % | 
+| example_proof.compact_bin_unzipped | compact-binary-unzipped  |             834 606  | - 67.0 % |
+| example_proof.compact_bin_zipped   | compact-binary-zipped    |             582 626  | - 77.0 % |
 
 With a bigger proof:
-| File                           | Format            | Size on disk (bytes) | Gain     |
-|--------------------------------|-------------------|---------------------:|---------:|
-| proof.json                     | json              |          4 446 151   |    --    |
-| proof.cairo_serde              | cairo-serde       |          4 661 005   |  + 4.8 % |
-| proof.compact_bin_v2           | compact-binary-v2 |          1 458 939   | - 67.2 % |
+
+| File                               | Format                   | Size on disk (bytes) | Gain     |
+|------------------------------------|--------------------------|---------------------:|---------:|
+| proof.json                         | json                     |          4 446 151   |    --    |
+| proof.cairo_serde                  | cairo-serde              |          4 661 005   |  + 4.8 % |
+| proof.compact_bin_unzipped         | compact-binary-unzipped  |          1 506 237   | - 66.1 % |
+| proof.compact_bin_zipped           | compact-binary-zipped    |          1 458 557   | - 67.2 % |
 
 ## Potential improvements
 
