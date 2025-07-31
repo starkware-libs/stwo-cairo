@@ -3347,6 +3347,7 @@ dependencies = [
  "thiserror",
  "tracing",
  "tracing-subscriber",
+ "unsigned-varint",
 ]
 
 [[package]]

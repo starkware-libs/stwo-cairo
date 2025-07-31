@@ -42,6 +42,53 @@ use crate::components::{
 use crate::relations;
 use crate::verifier::RelationUse;
 
+use std::io::{Cursor, Read, Write};
+use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter, ZipArchive};
+
+struct Zipped<T>(T);
+
+impl<T: CompactBinary> Zipped<&T> {
+    fn compact_serialize(&self, output: &mut Vec<u8>) {
+        let mut unzipped_data = Vec::new();
+        T::compact_serialize(&self.0, &mut unzipped_data);
+        let zipped_data = zip_bytes(&unzipped_data);
+        usize::compact_serialize(&zipped_data.len(), output);
+        output.extend_from_slice(&zipped_data);
+    }
+
+    fn compact_deserialize(input: &[u8]) -> (&[u8], T) {
+        let (input, len) = usize::compact_deserialize(input);
+        let (zipped_data, input) = input.split_at(len);
+        let unzipped_data = unzip_bytes(zipped_data);
+        let data = T::compact_deserialize(&unzipped_data).1;
+        (input, data)
+    }
+}
+
+fn zip_bytes(input: &[u8]) -> Vec<u8> {
+    let mut buf = Vec::new();
+    let cursor = Cursor::new(&mut buf);
+    let mut zip = ZipWriter::new(cursor);
+    let options = SimpleFileOptions::default()
+        .compression_method(CompressionMethod::Bzip2);
+    zip.start_file("", options).unwrap();
+    zip.write_all(input).unwrap();
+    let mut cursor = zip.finish().unwrap();
+    cursor.set_position(0);
+    let mut out = Vec::new();
+    Read::read_to_end(&mut cursor, &mut out).unwrap();
+    out
+}
+
+fn unzip_bytes(input: &[u8]) -> Vec<u8> {
+    let cursor = Cursor::new(input);
+    let mut archive = ZipArchive::new(cursor).unwrap();
+    let mut file = archive.by_index(0).unwrap();
+    let mut buf = Vec::new();
+    file.read_to_end(&mut buf).unwrap();
+    buf
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
     pub claim: CairoClaim,
@@ -80,29 +127,30 @@ where
             stark_proof,
         } = self;
         let version = 0;
-        let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
-            (0, claim),
-            (1, interaction_pow),
-            (2, interaction_claim),
-            (3, stark_proof),
-        ];
+        let claim = Zipped(claim);
+        let interaction_claim = Zipped(interaction_claim);
+        let stark_proof = Zipped(stark_proof);
         u32::compact_serialize(&version, output);
-        for (tag, value) in to_serialize {
-            usize::compact_serialize(&tag, output);
-            value.compact_serialize(output);
-        }
+        usize::compact_serialize(&0, output);
+        claim.compact_serialize(output);
+        usize::compact_serialize(&1, output);
+        interaction_pow.compact_serialize(output);
+        usize::compact_serialize(&2, output);
+        interaction_claim.compact_serialize(output);
+        usize::compact_serialize(&3, output);
+        stark_proof.compact_serialize(output);
     }
 
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
         let input = strip_expected_version(input, 0);
         let input = strip_expected_tag(input, 0);
-        let (input, claim) = CairoClaim::compact_deserialize(input);
+        let (input, claim) = Zipped::<&CairoClaim>::compact_deserialize(input);
         let input = strip_expected_tag(input, 1);
         let (input, interaction_pow) = u64::compact_deserialize(input);
         let input = strip_expected_tag(input, 2);
-        let (input, interaction_claim) = CairoInteractionClaim::compact_deserialize(input);
+        let (input, interaction_claim) = Zipped::<&CairoInteractionClaim>::compact_deserialize(input);
         let input = strip_expected_tag(input, 3);
-        let (input, stark_proof) = StarkProof::compact_deserialize(input);
+        let (input, stark_proof) = Zipped::<&StarkProof<H>>::compact_deserialize(input);
 
         (
             input,
