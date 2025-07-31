@@ -2,12 +2,11 @@ use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo::core::compact_binary::CompactBinary;
-use stwo_cairo_serialize_derive::CompactBinary;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
