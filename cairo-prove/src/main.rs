@@ -98,6 +98,24 @@ fn main() {
         } => {
             handle_verify(&proof, proof_format, with_pedersen);
         }
+        Commands::Transpile {
+            in_proof,
+            in_proof_format,
+            out_proof,
+            out_proof_format,
+        } => {
+            let bytes = std::fs::read(&in_proof).expect("Failed to read input proof file");
+            let cairo_proof =
+                deserialize_proof_from_bytes::<Blake2sMerkleChannel>(&bytes, in_proof_format)
+                    .expect("Failed to deserialize input proof");
+
+            serialize_proof_to_file::<Blake2sMerkleChannel>(
+                &cairo_proof,
+                out_proof,
+                out_proof_format,
+            )
+            .expect("Failed to serialize output proof");
+        }
     }
 }
 

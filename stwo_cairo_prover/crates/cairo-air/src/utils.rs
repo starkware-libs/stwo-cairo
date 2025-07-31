@@ -69,17 +69,7 @@ where
     let cairo_proof = match proof_format {
         ProofFormat::Json => serde_json::from_slice(bytes).unwrap(),
         ProofFormat::CairoSerde => {
-            let json: Vec<String> = serde_json::from_slice(bytes).unwrap();
-
-            let felts = json
-                .iter()
-                .map(|s| {
-                    let s = s.strip_prefix("0x").unwrap();
-                    starknet_ff::FieldElement::from_hex_be(s)
-                        .expect("Failed to parse field element")
-                })
-                .collect::<Vec<_>>();
-
+            let felts: Vec<starknet_ff::FieldElement> = serde_json::from_slice(bytes).unwrap();
             <CairoProof<<MC as MerkleChannel>::H> as stwo_cairo_serialize::CairoDeserialize>::deserialize(&mut felts.iter())
         }
         ProofFormat::CompactBinary => {
