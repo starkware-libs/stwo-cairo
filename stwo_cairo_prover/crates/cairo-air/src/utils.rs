@@ -4,8 +4,8 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::MerkleChannel;
-use stwo::core::vcs::MerkleHasher;
 use stwo::core::compact_binary::CompactBinary;
+use stwo::core::vcs::MerkleHasher;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 

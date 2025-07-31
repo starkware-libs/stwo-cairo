@@ -63,7 +63,6 @@ macro_rules! range_check_eval{
         paste::paste! {
             use serde::{Deserialize, Serialize};
             use stwo::core::compact_binary::CompactBinary;
-            use stwo_cairo_serialize_derive::CompactBinary;
             use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
             use stwo_constraint_framework::{EvalAtRow, FrameworkComponent};
             use stwo_constraint_framework::FrameworkEval;

@@ -3449,6 +3449,7 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "std-shims",
+ "stwo-compact-binary-derive",
  "thiserror",
  "tracing",
  "tracing-subscriber",
@@ -3536,6 +3537,14 @@ version = "0.1.0"
 dependencies = [
  "quote",
  "stwo",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "stwo-compact-binary-derive"
+version = "0.1.0"
+dependencies = [
+ "quote",
  "syn 2.0.98",
 ]
 

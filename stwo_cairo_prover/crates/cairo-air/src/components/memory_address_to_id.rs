@@ -1,11 +1,10 @@
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use stwo::core::compact_binary::CompactBinary;
-use stwo_cairo_serialize_derive::CompactBinary;
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 use crate::preprocessed::{PreProcessedColumn, Seq};
