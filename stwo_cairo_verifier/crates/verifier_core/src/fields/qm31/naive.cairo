@@ -297,7 +297,7 @@ pub struct PackedUnreducedQM31 {
 
 pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     #[inline]
-    fn mul_m31(self: PackedUnreducedQM31, rhs: UnreducedM31) -> PackedUnreducedQM31 {
+    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
     }
 

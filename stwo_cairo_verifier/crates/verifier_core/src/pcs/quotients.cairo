@@ -190,10 +190,8 @@ fn accumulate_row_quotients(
     let denominator_inverses = quotient_denominator_inverses(
         sample_batches_by_point.span(), domain_point,
     );
-    let domain_point_y: UnreducedM31 = domain_point.y.into();
-
+    let domain_point_y: M31 = domain_point.y;
     let mut quotient_accumulator: QM31 = Zero::zero();
-
     let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
 
     for point_constants in quotient_constants.point_constants.span() {

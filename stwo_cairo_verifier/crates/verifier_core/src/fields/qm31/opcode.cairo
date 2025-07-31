@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31InnerT, M31Trait};
 use super::{
     PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
 };
@@ -217,8 +217,8 @@ pub struct PackedUnreducedQM31 {
 
 pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     #[inline]
-    fn mul_m31(self: PackedUnreducedQM31, rhs: UnreducedM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: self.inner * rhs.inner.into() }
+    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
+        PackedUnreducedQM31 { inner: self.inner * rhs.into() }
     }
 
     /// Returns a zero element with each coordinate set to `P*P*P`.

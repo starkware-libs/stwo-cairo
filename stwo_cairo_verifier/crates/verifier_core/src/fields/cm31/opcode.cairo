@@ -157,8 +157,8 @@ pub struct PackedUnreducedCM31 {
 
 pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     #[inline]
-    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: CM31 { inner: self.inner.inner * rhs.inner.into() } }
+    fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: CM31 { inner: self.inner.inner * rhs.into() } }
     }
 
     /// Returns a zero element with each coordinate set to `P*P*P`.

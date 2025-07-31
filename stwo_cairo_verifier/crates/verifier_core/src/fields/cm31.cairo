@@ -35,7 +35,7 @@ impl DisplayCM31 of core::fmt::Display<CM31> {
 }
 
 pub trait PackedUnreducedCM31Trait {
-    fn mul_m31(self: PackedUnreducedCM31, rhs: UnreducedM31) -> PackedUnreducedCM31;
+    fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31;
 
     /// Returns a zero element with each coordinate set to `P*P*P`.
     fn large_zero() -> PackedUnreducedCM31;
