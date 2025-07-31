@@ -50,15 +50,21 @@ cairo-prove/target/release/cairo-prove verify ./example_proof.compact_bin --proo
 
 **Note that we've adapted the serialize_proof_to_file() function to use serde_json without a JSON prettier to have more accurate results** 
 
-For this example proof, here are the results:
+For this example proof, here are the results: (compact_bin_v2 corresponds to a format where the fields of the CairoProof `claim`, `interaction_claim` and `stark_proof` are zipped with BZip2).
 
-| File                      | Format         | Size on disk (bytes) | Gain    |
-|---------------------------|----------------|---------------------:|--------:|
-| example_proof.base_json   | json           |           2 528 114  |    --   |
-| example_proof.cairo_serde | cairo-serde    |           2 448 494  |   3.1 % |
-| example_proof.compact_bin | compact-binary |             834 606  |  67.0 % |
+| File                           | Format            | Size on disk (bytes) | Gain     |
+|--------------------------------|-------------------|---------------------:|---------:|
+| example_proof.base_json        | json              |           2 528 114  |    --    |
+| example_proof.cairo_serde      | cairo-serde       |           2 448 494  |  - 3.1 % |
+| example_proof.compact_bin      | compact-binary    |             834 606  | - 67.0 % |
+| example_proof.compact_bin_v2   | compact-binary-v2 |             582 932  | - 76.9 % |
 
-Note that zipping `example_proof.compact_bin` leads to a file size of ~ 557 kB, so we still have some improvements to get, but probably not too much.
+With a bigger proof:
+| File                           | Format            | Size on disk (bytes) | Gain     |
+|--------------------------------|-------------------|---------------------:|---------:|
+| proof.json                     | json              |          4 446 151   |    --    |
+| proof.cairo_serde              | cairo-serde       |          4 661 005   |  + 4.8 % |
+| proof.compact_bin_v2           | compact-binary-v2 |          1 458 939   | - 67.2 % |
 
 ## Potential improvements
 
