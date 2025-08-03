@@ -1,7 +1,7 @@
 //! Software only implementation of CM31 field (i.e no QM31 opcode).
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
-use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31, m31};
+use super::super::m31::{M31, M31InnerT, M31Trait, m31};
 use super::super::{BatchInvertible, Invertible};
 use super::{CM31Trait, PackedUnreducedCM31Trait};
 

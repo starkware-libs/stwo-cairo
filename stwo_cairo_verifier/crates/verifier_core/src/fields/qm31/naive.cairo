@@ -4,7 +4,7 @@ use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::{CM31, CM31Trait, PackedUnreducedCM31, PackedUnreducedCM31Trait};
-use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
+use super::super::m31::{M31, M31InnerT, M31Trait};
 use super::{PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait};
 
 

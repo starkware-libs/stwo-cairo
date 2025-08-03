@@ -3,7 +3,7 @@
 //! Represented as ((a, b), (c, d)) of (a + bi) + (c + di)u.
 
 use super::cm31::CM31;
-use super::m31::{M31, UnreducedM31};
+use super::m31::M31;
 
 #[cfg(not(feature: "qm31_opcode"))]
 mod naive;

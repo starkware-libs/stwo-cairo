@@ -84,32 +84,6 @@ pub impl M31Neg of Neg<M31> {
     }
 }
 
-#[derive(Copy, Drop, Debug)]
-pub struct UnreducedM31 {
-    pub inner: felt252,
-}
-
-pub impl UnreducedM31Sub of Sub<UnreducedM31> {
-    #[inline]
-    fn sub(lhs: UnreducedM31, rhs: UnreducedM31) -> UnreducedM31 {
-        UnreducedM31 { inner: lhs.inner - rhs.inner }
-    }
-}
-
-pub impl UnreducedM31Add of Add<UnreducedM31> {
-    #[inline]
-    fn add(lhs: UnreducedM31, rhs: UnreducedM31) -> UnreducedM31 {
-        UnreducedM31 { inner: lhs.inner + rhs.inner }
-    }
-}
-
-impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
-    #[inline]
-    fn into(self: M31) -> UnreducedM31 {
-        UnreducedM31 { inner: self.inner.into() }
-    }
-}
-
 /// Returns `v^(2^n)`.
 fn repeated_square(v: M31, n: usize) -> M31 {
     if n == 0 {
