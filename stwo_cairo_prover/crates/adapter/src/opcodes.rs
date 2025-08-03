@@ -772,13 +772,8 @@ mod mappings_tests {
                 &mut BuiltinHintProcessor::new_empty(),
             )
             .expect("Run failed");
-        runner.relocate(true).unwrap();
-        adapter(
-            &mut runner
-                .get_prover_input_info()
-                .expect("Failed to get prover input info from finished runner"),
-        )
-        .expect("Failed to run adapter")
+
+        adapter(&runner)
     }
 
     #[test]

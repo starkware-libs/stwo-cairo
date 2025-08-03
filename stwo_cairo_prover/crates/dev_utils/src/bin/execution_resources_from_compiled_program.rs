@@ -65,6 +65,5 @@ fn main() -> Result<(), Error> {
 
 fn run_cairo1_and_adapter(program: Executable, args: Vec<cairo_lang_runner::Arg>) -> ProverInput {
     let runner = execute(program, args);
-    let mut prover_input_info = runner.get_prover_input_info().expect("");
-    adapter(&mut prover_input_info).expect("Failed to run adapter")
+    adapter(&runner)
 }

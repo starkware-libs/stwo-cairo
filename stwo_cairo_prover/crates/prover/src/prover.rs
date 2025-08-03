@@ -264,8 +264,7 @@ pub mod tests {
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-        use stwo_cairo_adapter::adapter::read_and_adapt_prover_input_info_file;
-        use stwo_cairo_adapter::test_utils::{get_prover_input_info_path, get_test_program};
+        use stwo_cairo_adapter::test_utils::get_test_program;
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
         use test_log::test;
@@ -346,33 +345,9 @@ pub mod tests {
             assert!(status.success());
         }
 
-        #[ignore = "TODO: move to nightly"]
-        #[test]
-        fn test_prove_verify_all_opcode_components_from_file() {
-            let prover_input_file_path =
-                get_prover_input_info_path("test_prove_verify_all_opcode_components");
-            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
-                .expect("Failed to create prover input from vm output");
-            for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                assert!(
-                    *n_instances > 0,
-                    "{} isn't used in E2E full-Cairo opcode test",
-                    opcode
-                );
-            }
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                input,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
-        }
-
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
-            let prover_input_file_path = get_prover_input_info_path(path);
-            let input = read_and_adapt_prover_input_info_file(&prover_input_file_path).unwrap();
+            let compiled_program = get_test_program(path);
+            let input = run_program_and_adapter(&compiled_program);
 
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -440,23 +415,6 @@ pub mod tests {
             }
 
             #[test]
-            fn test_prove_verify_all_builtins_from_file() {
-                let prover_input_file_path =
-                    get_prover_input_info_path("test_prove_verify_all_builtins");
-                let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
-                    .expect("Failed to create prover input from vm output");
-                assert_all_builtins_in_input(&input);
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
-            }
-
-            #[test]
             fn test_add_mod_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_add_mod_builtin");
                 let input = run_program_and_adapter(&compiled_program);
@@ -488,15 +446,6 @@ pub mod tests {
             fn test_poseidon_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_poseidon_builtin");
                 let input = run_program_and_adapter(&compiled_program);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
-            }
-
-            #[test]
-            fn test_poseidon_builtin_constraints_from_file() {
-                let prover_input_file_path =
-                    get_prover_input_info_path("test_prove_verify_poseidon_builtin");
-                let input = read_and_adapt_prover_input_info_file(&prover_input_file_path)
-                    .expect("Failed to create prover input from vm output");
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
