@@ -5,8 +5,10 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::{CM31, CM31Trait, PackedUnreducedCM31, PackedUnreducedCM31Trait};
 use super::super::m31::{M31, M31InnerT, M31Trait, UnreducedM31};
-use super::{PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait};
+use super::{PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE};
 
+mod unreduced;
+use unreduced::{UnreducedQM31Trait, mul_unreduced};
 
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -53,73 +55,12 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
-        (Self::mul_unreduced(a, b) + c.into()).reduce()
+        (mul_unreduced(a, b) + c.into()).reduce()
     }
 
     #[inline]
     fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
-        (Self::mul_unreduced(a, b) - c.into()).reduce()
-    }
-
-    // TODO(andrew): May be net worse performance doing unreduced arithmetic due to all felt252
-    // multiplications (which are expensive for the M31 prover to simulate). Measure overall
-    // prove+verify performance differences with unreduced felt252 vs reduced u32. If prover
-    // performance is an issue consider Karatsuba.
-    #[inline]
-    fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
-        /// Equals `P * P * 16`.
-        const PP16: felt252 = 0x3fffffff000000010;
-
-        // `lhs` 1st CM31 coordinate.
-        let lhs_aa: felt252 = lhs.a.a.into();
-        let lhs_ab: felt252 = lhs.a.b.into();
-
-        // `lhs` 2nd CM31 coordinate.
-        let lhs_ba: felt252 = lhs.b.a.into();
-        let lhs_bb: felt252 = lhs.b.b.into();
-
-        // `rhs` 1st CM31 coordinate.
-        let rhs_aa: felt252 = rhs.a.a.into();
-        let rhs_ab: felt252 = rhs.a.b.into();
-
-        // `rhs` 2nd CM31 coordinate.
-        let rhs_ba: felt252 = rhs.b.a.into();
-        let rhs_bb: felt252 = rhs.b.b.into();
-
-        // lhs.a * rhs.a
-        let (aa_t_ba_a, aa_t_ba_b) = {
-            let res_a = lhs_aa * rhs_aa - lhs_ab * rhs_ab;
-            let res_b = lhs_aa * rhs_ab + lhs_ab * rhs_aa;
-            (res_a, res_b)
-        };
-
-        // R * lhs.b * rhs.b
-        let (r_t_ab_t_bb_a, r_t_ab_t_bb_b) = {
-            let res_a = lhs_ba * rhs_ba - lhs_bb * rhs_bb;
-            let res_b = lhs_ba * rhs_bb + lhs_bb * rhs_ba;
-            (res_a + res_a - res_b, res_a + res_b + res_b)
-        };
-
-        // lhs.a * rhs.b
-        let (aa_t_bb_a, aa_t_bb_b) = {
-            let res_a = lhs_aa * rhs_ba - lhs_ab * rhs_bb;
-            let res_b = lhs_aa * rhs_bb + lhs_ab * rhs_ba;
-            (res_a, res_b)
-        };
-
-        // lhs.b * rhs.a
-        let (ab_t_ba_a, ab_t_ba_b) = {
-            let res_a = lhs_ba * rhs_aa - lhs_bb * rhs_ab;
-            let res_b = lhs_ba * rhs_ab + lhs_bb * rhs_aa;
-            (res_a, res_b)
-        };
-
-        UnreducedQM31 {
-            a: PP16 + aa_t_ba_a + r_t_ab_t_bb_a,
-            b: PP16 + aa_t_ba_b + r_t_ab_t_bb_b,
-            c: PP16 + aa_t_bb_a + ab_t_ba_a,
-            d: PP16 + aa_t_bb_b + ab_t_ba_b,
-        }
+        (mul_unreduced(a, b) - c.into()).reduce()
     }
 
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
@@ -232,63 +173,12 @@ pub impl QM31Neg of Neg<QM31> {
     }
 }
 
-/// Stores an unreduced [`QM31`] with each coordinate stored as a `felt252`.
-#[derive(Copy, Drop, Debug)]
-pub struct UnreducedQM31 {
-    a: felt252,
-    b: felt252,
-    c: felt252,
-    d: felt252,
-}
-
-pub impl UnreducedQM31Impl of UnreducedQM31Trait {
-    #[inline]
-    fn reduce(self: UnreducedQM31) -> QM31 {
-        QM31 {
-            a: CM31 {
-                a: M31Trait::reduce_u128(self.a.try_into().unwrap()).into(),
-                b: M31Trait::reduce_u128(self.b.try_into().unwrap()).into(),
-            },
-            b: CM31 {
-                a: M31Trait::reduce_u128(self.c.try_into().unwrap()).into(),
-                b: M31Trait::reduce_u128(self.d.try_into().unwrap()).into(),
-            },
-        }
-    }
-}
-
-impl UnreducedQM31Sub of Sub<UnreducedQM31> {
-    #[inline]
-    fn sub(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
-        UnreducedQM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b, c: lhs.c - rhs.c, d: lhs.d - rhs.d }
-    }
-}
-
-impl UnreducedQM31Add of Add<UnreducedQM31> {
-    #[inline]
-    fn add(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
-        UnreducedQM31 { a: lhs.a + rhs.a, b: lhs.b + rhs.b, c: lhs.c + rhs.c, d: lhs.d + rhs.d }
-    }
-}
-
-impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
-    #[inline]
-    fn into(self: QM31) -> UnreducedQM31 {
-        UnreducedQM31 {
-            a: self.a.a.inner.into(),
-            b: self.a.b.inner.into(),
-            c: self.b.a.inner.into(),
-            d: self.b.b.inner.into(),
-        }
-    }
-}
-
 /// Stores an unreduced [`QM31`] packed into two `felt252`.
 ///
-/// Is more efficient than [`UnreducedQM31`] since only requires two felt252 operations per addition
-/// or M31 multiplication vs 4.
-// TODO: Determine if performance difference between UnreducedQM31 and PackedUnreducedQM31 is worth
-// keeping around both types.
+/// This is used for PackedUnreducedQM31Trait::large_zero() + \sum PackedUnreducedQM31 * m31.
+///
+/// This more efficient than [`UnreducedQM31`] for the case above since it requires two (rather than
+/// 4) felt252 operations per addition or M31 multiplication.
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedQM31 {
     pub a: PackedUnreducedCM31,

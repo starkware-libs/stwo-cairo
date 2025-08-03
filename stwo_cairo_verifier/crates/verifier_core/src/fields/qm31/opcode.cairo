@@ -4,9 +4,7 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
 use super::super::m31::{M31, M31InnerT, M31Trait};
-use super::{
-    PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE, UnreducedQM31Trait,
-};
+use super::{PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE};
 
 #[derive(Copy, Drop, PartialEq)]
 pub struct QM31 {
@@ -50,11 +48,6 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
         QM31 { inner: a.inner * b.inner - c.inner }
-    }
-
-    #[inline]
-    fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
-        UnreducedQM31 { inner: lhs * rhs }
     }
 
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
@@ -172,40 +165,6 @@ pub impl QM31Neg of Neg<QM31> {
     #[inline]
     fn neg(a: QM31) -> QM31 {
         qm31_const::<0, 0, 0, 0>() - a
-    }
-}
-
-#[derive(Copy, Drop)]
-pub struct UnreducedQM31 {
-    // Using QM31 directly is efficient thanks to the QM31 opcode.
-    inner: QM31,
-}
-
-impl UnreducedQM31Impl of UnreducedQM31Trait {
-    #[inline]
-    fn reduce(self: UnreducedQM31) -> QM31 {
-        self.inner
-    }
-}
-
-impl UnreducedQM31Sub of Sub<UnreducedQM31> {
-    #[inline]
-    fn sub(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
-        UnreducedQM31 { inner: lhs.inner - rhs.inner }
-    }
-}
-
-impl UnreducedQM31Add of Add<UnreducedQM31> {
-    #[inline]
-    fn add(lhs: UnreducedQM31, rhs: UnreducedQM31) -> UnreducedQM31 {
-        UnreducedQM31 { inner: lhs.inner + rhs.inner }
-    }
-}
-
-impl QM31IntoUnreducedQM31 of Into<QM31, UnreducedQM31> {
-    #[inline]
-    fn into(self: QM31) -> UnreducedQM31 {
-        UnreducedQM31 { inner: self }
     }
 }
 
