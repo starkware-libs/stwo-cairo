@@ -37,9 +37,6 @@ pub trait QM31Trait {
     /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
     fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31;
 
-    /// Returns `lhs * rhs` in unreduced form.
-    fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31;
-
     /// Returns the combined value, given the values of its composing base field polynomials at that
     /// point.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
@@ -61,10 +58,6 @@ pub impl QM31Serde of Serde<QM31> {
         let d: M31 = Serde::deserialize(ref serialized)?;
         Some(QM31Trait::from_fixed_array([a, b, c, d]))
     }
-}
-
-trait UnreducedQM31Trait {
-    fn reduce(self: UnreducedQM31) -> QM31;
 }
 
 pub trait PackedUnreducedQM31Trait {
