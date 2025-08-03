@@ -1,34 +1,35 @@
-use std::path::Path;
-
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
+use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
-use super::vm_import::VmImportError;
 use super::ProverInput;
 use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
-use crate::test_utils::read_prover_input_info_file;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, VmImportError> {
+pub fn adapter(runner: &CairoRunner) -> ProverInput {
     let _span = span!(Level::INFO, "adapter").entered();
-    info!("Num steps: {:?}", prover_input_info.relocatable_trace.len());
 
-    BuiltinSegments::pad_relocatble_builtin_segments(
-        &mut prover_input_info.relocatable_memory,
-        prover_input_info.builtins_segments.clone(),
-    );
+    // Extract the relevant information from the Runner.
+    let relocatable_trace = runner
+        .get_relocatable_trace()
+        .expect("Trace was not enabled in the run");
+
+    info!("Num steps: {:?}", relocatable_trace.len());
+
+    let mut relocatable_memory = runner.get_relocatable_memory();
+
+    let public_memory_offsets = runner.get_public_memory_offsets();
+    let builtins_segments = runner.get_builtins_segments();
+    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtins_segments);
 
     // Relocation part.
-    let relocator = Relocator::new(&prover_input_info.relocatable_memory);
-    let relocated_memory = relocator.relocate_memory(&prover_input_info.relocatable_memory);
-    let relocated_trace = relocator.relocate_trace(&prover_input_info.relocatable_trace);
-    let builtins_segments =
-        relocator.relocate_builtin_segments(&prover_input_info.builtins_segments);
+    let relocator = Relocator::new(&relocatable_memory);
+    let relocated_memory = relocator.relocate_memory(&relocatable_memory);
+    let relocated_trace = relocator.relocate_trace(relocatable_trace);
+    let builtins_segments = relocator.relocate_builtin_segments(&builtins_segments);
     info!("Builtin segments: {:?}", builtins_segments);
-    let public_memory_addresses =
-        relocator.relocate_public_addresses(&prover_input_info.public_memory_offsets);
+    let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
@@ -42,22 +43,14 @@ pub fn adapter(prover_input_info: &mut ProverInputInfo) -> Result<ProverInput, V
 
     // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
-    Ok(ProverInput {
+    ProverInput {
         state_transitions,
         memory,
         inst_cache,
         public_memory_addresses,
         builtins_segments,
         public_segment_context,
-    })
-}
-
-pub fn read_and_adapt_prover_input_info_file(
-    prover_input_info_path: &Path,
-) -> Result<ProverInput, VmImportError> {
-    let _span: span::EnteredSpan = span!(Level::INFO, "adapter").entered();
-
-    adapter(&mut read_prover_input_info_file(prover_input_info_path))
+    }
 }
 
 #[cfg(test)]
@@ -65,10 +58,8 @@ pub fn read_and_adapt_prover_input_info_file(
 mod tests {
     use serde_json::to_value;
 
-    use crate::adapter::read_and_adapt_prover_input_info_file;
     use crate::test_utils::{
-        get_prover_input_info_path, get_prover_input_path, get_test_program, read_json,
-        run_program_and_adapter, write_json,
+        get_prover_input_path, get_test_program, read_json, run_program_and_adapter, write_json,
     };
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
@@ -78,34 +69,20 @@ mod tests {
         let mut prover_input = run_program_and_adapter(&compiled_program);
         // Instruction cache is not deterministic, sort it.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
-
-        let prover_input_a =
-            to_value(prover_input).expect("Unable to covert prover input to value");
-
-        if is_fix_mode {
-            write_json(&get_prover_input_path(test_name), &prover_input_a);
-        }
-
-        let mut prover_input_b =
-            read_and_adapt_prover_input_info_file(&get_prover_input_info_path(test_name))
-                .expect("Failed to create prover input from vm output");
-        prover_input_b.inst_cache.sort_by_key(|(addr, _)| *addr);
+        let prover_input_value =
+            to_value(&prover_input).expect("Unable to convert prover input to value");
 
         let expected_prover_input_path = get_prover_input_path(test_name);
+        if is_fix_mode {
+            write_json(&expected_prover_input_path, &prover_input_value);
+        }
         let expected_prover_input = read_json(&expected_prover_input_path);
 
         assert_eq!(
-            prover_input_a,
+            prover_input_value,
             expected_prover_input,
             "Prover input from compiled cairo program: {} doesn't match the expected prover input. To update prover input file, run the test with FIX=1.",
             test_name
-        );
-
-        assert_eq!(
-            prover_input_a,
-            to_value(prover_input_b).expect("Unable to covert prover input to value"),
-            "Prover input from vm output: {} doesn't match the expected prover input",
-            test_name,
         );
     }
 

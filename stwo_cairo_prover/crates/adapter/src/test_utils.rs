@@ -1,16 +1,14 @@
-use std::fs::{read, read_to_string, File};
+use std::fs::{read_to_string, File};
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::*;
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
-use tracing::{span, Level};
 
 use crate::adapter::adapter;
 use crate::ProverInput;
@@ -39,22 +37,6 @@ pub fn program_from_casm(
     (program, program_len)
 }
 
-pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
-    let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
-
-    let bytes = read(prover_input_info_path).unwrap_or_else(|_| {
-        panic!(
-            "Unable to read prover input info at path {}",
-            prover_input_info_path.display()
-        )
-    });
-    let (prover_input_info, _): (ProverInputInfo, usize) =
-        bincode::serde::decode_from_slice(&bytes, bincode::config::standard())
-            .expect("Unable to decode prover input info");
-
-    prover_input_info
-}
-
 pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
@@ -66,6 +48,7 @@ pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
         allow_missing_builtins: None,
         dynamic_layout_params: None,
         disable_trace_padding: true,
+        relocate_trace: false,
     };
 
     let runner = cairo_run(
@@ -74,12 +57,7 @@ pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
         &mut BuiltinHintProcessor::new_empty(),
     )
     .expect("Failed to run cairo program");
-    adapter(
-        &mut runner
-            .get_prover_input_info()
-            .expect("Failed to get prover input info from finished runner"),
-    )
-    .expect("Failed to run adapter")
+    adapter(&runner)
 }
 
 pub fn get_test_program(test_name: &str) -> Vec<u8> {
@@ -106,13 +84,6 @@ pub fn get_prover_input_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input.json")
-}
-
-pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("prover_input_info")
 }
 
 pub fn read_json(file_path: &PathBuf) -> Value {
