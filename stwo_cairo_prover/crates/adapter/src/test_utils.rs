@@ -115,6 +115,14 @@ pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
         .join("prover_input_info")
 }
 
+// TODO(Stav): Remove this function when ProverInputInfo is deprecated.
+pub fn get_prover_input_info_json_path(test_name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("prover_input_info.json")
+}
+
 pub fn read_json(file_path: &PathBuf) -> Value {
     let json_file = read_to_string(file_path).unwrap();
     serde_json::from_str(&json_file).expect("Invalid JSON file")
