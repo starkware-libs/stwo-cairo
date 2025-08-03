@@ -453,6 +453,14 @@ struct BuiltinClaim {
     log_size: u32,
 }
 
+/// Check the program memory section is of the expected format.
+/// The program should start with:
+///     0. ap += N_BUILTINS (call to bootloader)
+///     1. N_BUILTINS (immediate of instruction 0)
+///     2. call rel ? (call to main)
+///     3. main address (unrestricted immediate of instruction 2)
+///     4. jmp rel 0 (To continue execution when step padding)
+///     5. 0 (immediate of instruction 4)
 fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges) {
     let mut program = program.span();
     let [
@@ -468,18 +476,19 @@ fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges
         .unwrap())
         .unbox();
 
+    // ap += N_BUILTINS. Two felts.
     let n_builtins = public_segments.present_segments().len();
     assert!(program_value_0 == [0x7fff7fff, 0x4078001, 0, 0, 0, 0, 0, 0]); // ap += N_BUILTINS.
-    assert!(
-        program_value_1 == [n_builtins, 0, 0, 0, 0, 0, 0, 0],
-    ); // Imm of last instruction (N_BUILTINS).
-    assert!(
-        program_value_2 == [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0],
-    ); // Instruction: call rel ?
-    assert!(
-        program_value_4 == [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0],
-    ); // Instruction: jmp rel 0.
-    assert!(program_value_5 == [0, 0, 0, 0, 0, 0, 0, 0]); // Imm of last instruction (jmp rel 0).
+    // Imm of last instruction (N_BUILTINS).
+    assert!(program_value_1 == [n_builtins, 0, 0, 0, 0, 0, 0, 0]);
+
+    // Instruction: call rel program[3]. Two felts. (call to main). No restrictions on the imm.
+    assert!(program_value_2 == [0x80018000, 0x11048001, 0, 0, 0, 0, 0, 0]);
+
+    // Instruction: jmp rel 0. Two felts.
+    assert!(program_value_4 == [0x7fff7fff, 0x1078001, 0, 0, 0, 0, 0, 0]);
+    // Imm of last instruction (jmp rel 0).
+    assert!(program_value_5 == [0, 0, 0, 0, 0, 0, 0, 0]);
 }
 
 
