@@ -69,30 +69,3 @@ pub impl M31Neg of Neg<M31> {
         M31Trait::new(m31_ops::sub(0, a.inner))
     }
 }
-
-#[derive(Copy, Drop, Debug)]
-pub struct UnreducedM31 {
-    // Using M31 directly is efficient thanks to the QM31 opcode.
-    pub inner: M31,
-}
-
-pub impl UnreducedM31Sub of Sub<UnreducedM31> {
-    #[inline(always)]
-    fn sub(lhs: UnreducedM31, rhs: UnreducedM31) -> UnreducedM31 {
-        UnreducedM31 { inner: lhs.inner - rhs.inner }
-    }
-}
-
-pub impl UnreducedM31Add of Add<UnreducedM31> {
-    #[inline(always)]
-    fn add(lhs: UnreducedM31, rhs: UnreducedM31) -> UnreducedM31 {
-        UnreducedM31 { inner: lhs.inner + rhs.inner }
-    }
-}
-
-impl M31IntoUnreducedM31 of Into<M31, UnreducedM31> {
-    #[inline(always)]
-    fn into(self: M31) -> UnreducedM31 {
-        UnreducedM31 { inner: self }
-    }
-}
