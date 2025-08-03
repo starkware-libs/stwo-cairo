@@ -98333,6 +98333,7 @@
     "10": []
   },
   "builtins_segments": {
+    "2": "output",
     "3": "pedersen",
     "4": "range_check",
     "5": "bitwise",

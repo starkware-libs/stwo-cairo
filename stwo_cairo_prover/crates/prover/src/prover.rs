@@ -403,7 +403,6 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use stwo_cairo_adapter::test_utils::run_program_and_adapter;
             use test_log::test;
 
             use super::*;

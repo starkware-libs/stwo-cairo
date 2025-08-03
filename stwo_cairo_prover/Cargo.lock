@@ -748,7 +748,7 @@ dependencies = [
  "cairo-lang-sierra-to-casm",
  "cairo-lang-syntax",
  "cairo-lang-utils 2.11.4",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673)",
  "indoc",
  "itertools 0.14.0",
  "serde",
@@ -892,7 +892,7 @@ dependencies = [
  "cairo-lang-sierra-to-casm",
  "cairo-lang-sierra-type-size",
  "cairo-lang-utils 2.11.4",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673)",
  "itertools 0.14.0",
  "thiserror 2.0.12",
 ]
@@ -913,7 +913,7 @@ dependencies = [
  "cairo-lang-sierra-to-casm",
  "cairo-lang-starknet",
  "cairo-lang-utils 2.11.4",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673)",
  "itertools 0.14.0",
  "keccak",
  "num-bigint",
@@ -1187,7 +1187,7 @@ dependencies = [
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-lang-utils 2.11.4",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673)",
  "camino",
  "clap",
  "env_logger",
@@ -1197,6 +1197,37 @@ dependencies = [
  "stwo-cairo-adapter 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
  "stwo-cairo-serialize 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
  "stwo_cairo_prover 0.1.0 (git+https://github.com/starkware-libs/stwo-cairo?rev=62c3c4a)",
+]
+
+[[package]]
+name = "cairo-vm"
+version = "2.0.1"
+source = "git+https://github.com/lambdaclass/cairo-vm?rev=00406f0cb324520a6706c58d71e3b9f24c076fcf#00406f0cb324520a6706c58d71e3b9f24c076fcf"
+dependencies = [
+ "anyhow",
+ "bincode 2.0.1",
+ "bitvec",
+ "generic-array",
+ "hashbrown 0.15.2",
+ "hex",
+ "indoc",
+ "keccak",
+ "lazy_static",
+ "nom",
+ "num-bigint",
+ "num-integer",
+ "num-prime",
+ "num-traits",
+ "rand 0.8.5",
+ "rust_decimal",
+ "serde",
+ "serde_json",
+ "sha2",
+ "sha3",
+ "starknet-crypto 0.7.4",
+ "starknet-types-core",
+ "thiserror 2.0.12",
+ "zip",
 ]
 
 [[package]]
@@ -1451,7 +1482,7 @@ dependencies = [
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-prove",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=00406f0cb324520a6706c58d71e3b9f24c076fcf)",
  "clap",
  "log",
  "regex",
@@ -3360,7 +3391,7 @@ dependencies = [
  "bincode 2.0.1",
  "bytemuck",
  "cairo-lang-casm 2.9.3",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=00406f0cb324520a6706c58d71e3b9f24c076fcf)",
  "crypto-bigint",
  "dashmap",
  "indoc",
@@ -3387,7 +3418,7 @@ dependencies = [
  "bincode 2.0.1",
  "bytemuck",
  "cairo-lang-casm 2.9.3",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=b1a91f929b5fa29a1a2e9e6990a68a1220c0c673)",
  "dashmap",
  "itertools 0.12.1",
  "log",
@@ -3514,7 +3545,7 @@ name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
  "cairo-air 0.1.1",
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=00406f0cb324520a6706c58d71e3b9f24c076fcf)",
  "hex",
  "itertools 0.12.1",
  "num-traits",
@@ -3569,7 +3600,7 @@ dependencies = [
 name = "stwo_cairo_utils"
 version = "0.1.0"
 dependencies = [
- "cairo-vm",
+ "cairo-vm 2.0.1 (git+https://github.com/lambdaclass/cairo-vm?rev=00406f0cb324520a6706c58d71e3b9f24c076fcf)",
  "clap",
  "env_logger",
  "log",

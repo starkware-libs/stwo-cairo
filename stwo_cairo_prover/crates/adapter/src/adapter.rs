@@ -1,6 +1,6 @@
 use std::path::Path;
 
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
+use cairo_vm::prover_input_info::ProverInputInfo;
 use tracing::{info, span, Level};
 
 use super::memory::{MemoryBuilder, MemoryConfig};
@@ -64,12 +64,15 @@ pub fn read_and_adapt_prover_input_info_file(
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
+    use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
+    use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
+    use cairo_vm::types::layout_name::LayoutName;
     use serde_json::to_value;
 
     use crate::adapter::read_and_adapt_prover_input_info_file;
     use crate::test_utils::{
-        get_prover_input_info_path, get_prover_input_path, get_test_program, read_json,
-        run_program_and_adapter, write_json,
+        get_prover_input_info_json_path, get_prover_input_info_path, get_prover_input_path,
+        get_test_program, read_json, run_program_and_adapter, write_json,
     };
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
@@ -85,6 +88,48 @@ mod tests {
 
         if is_fix_mode {
             write_json(&get_prover_input_path(test_name), &prover_input_a);
+
+            // TODO(Stav): Remove all fix logic below pertaining to ProverInputInfo once
+            // ProverInputInfo's been deprecated.
+            let cairo_run_config = CairoRunConfig {
+                entrypoint: "main",
+                trace_enabled: true,
+                relocate_mem: false,
+                layout: LayoutName::all_cairo_stwo,
+                proof_mode: true,
+                secure_run: None,
+                allow_missing_builtins: None,
+                dynamic_layout_params: None,
+                disable_trace_padding: true,
+            };
+
+            let mut runner = cairo_run(
+                compiled_program.as_slice(),
+                &cairo_run_config,
+                &mut BuiltinHintProcessor::new_empty(),
+            )
+            .expect("Failed to run cairo program");
+            let prover_input_info = runner
+                .get_prover_input_info()
+                .expect("Failed to get prover input info from finished runner");
+
+            let json = prover_input_info
+                .serialize_json()
+                .expect("Failed to serialize ProverInputInfo to json");
+            std::fs::write(
+                get_prover_input_info_json_path("test_prove_verify_all_builtins"),
+                json,
+            )
+            .expect("Failed to write ProverInputInfo to json file");
+
+            let bytes = prover_input_info
+                .serialize()
+                .expect("Failed to serialize ProverInputInfo");
+            std::fs::write(
+                get_prover_input_info_path("test_prove_verify_all_builtins"),
+                bytes,
+            )
+            .expect("Failed to write ProverInputInfo to binary file");
         }
 
         let mut prover_input_b =

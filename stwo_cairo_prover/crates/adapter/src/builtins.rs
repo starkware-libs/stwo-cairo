@@ -19,6 +19,7 @@ pub const MUL_MOD_MEMORY_CELLS: usize = 7;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
+pub const OUTPUT_MEMORY_CELLS: usize = 1;
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
 pub const MIN_SEGMENT_SIZE: usize = N_LANES;
@@ -117,6 +118,7 @@ impl BuiltinSegments {
             &self.range_check_bits_96,
             RANGE_CHECK_MEMORY_CELLS,
         );
+        insert_builtin(BuiltinName::output, &self.output, OUTPUT_MEMORY_CELLS);
 
         counts
     }
@@ -198,6 +200,9 @@ impl BuiltinSegments {
     ) {
         let _span = span!(Level::INFO, "pad_relocatble_builtin_segments").entered();
         for (segment_index, builtin_name) in builtins_segments {
+            if builtin_name == BuiltinName::output {
+                continue;
+            }
             let current_builtin_segment = &mut relocatable_memory[segment_index];
 
             let original_segment_len = current_builtin_segment.len();
