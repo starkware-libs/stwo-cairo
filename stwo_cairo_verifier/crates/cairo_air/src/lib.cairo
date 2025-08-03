@@ -302,7 +302,7 @@ use stwo_verifier_core::verifier::{Air, StarkProof, VerificationError, verify};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use stwo_verifier_utils::{
     MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, deconstruct_f252,
-    hash_memory_section, encode_and_hash_memory_section,
+    encode_and_hash_memory_section, hash_memory_section,
 };
 
 pub mod components;

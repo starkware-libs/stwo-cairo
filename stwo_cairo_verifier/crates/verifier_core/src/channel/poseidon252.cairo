@@ -129,7 +129,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     /// `self.draw_felt252()` in little endian.
     /// TODO: check that this distribution is good enough, as it is only close to uniform.
     fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
-        let {low, high}: u256 = draw_felt252(ref self).into();
+        let u256 { low, high } = draw_felt252(ref self).into();
         let mut bytes = array![];
 
         // Extract the 16 bytes from the low 128 bits of the felt 252.
