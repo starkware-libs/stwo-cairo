@@ -1,7 +1,10 @@
-use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
+use bounded_int::impls::*;
+use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use core::traits::DivRem;
+use stwo_verifier_utils::{
+    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_with_digest,
+};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -9,33 +12,10 @@ use crate::utils::gen_bit_mask;
 use crate::vcs::blake2s_hasher::Blake2sHash;
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
-/// Equals `2^31`.
-const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000;
-
 /// Number of `M31` per hash.
 pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
-
-type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
-
-
-const U8_SHIFT: felt252 = 0x100; // 2**8
-const U32_SHIFT: felt252 = 0x100000000; // 2**32
-
-const NZ_U8_SHIFT: NonZero<ConstValue<U8_SHIFT>> = 0x100;
-const NZ_U32_SHIFT: NonZero<ConstValue<U32_SHIFT>> = 0x100000000;
-
-type U8_BOUNDED_INT = BoundedInt<0, { U8_SHIFT - 1 }>;
-type U16_BOUNDED_INT = BoundedInt<0, { 0x10000 - 1 }>; // 2**16 - 1
-type U24_BOUNDED_INT = BoundedInt<0, { 0x1000000 - 1 }>; // 2**24 - 1
-
-
-// TODO: Stone uses a different initial state with the key set to 0.
-// Consider using this initial state instead.
-pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
-    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
-];
 
 #[derive(Drop)]
 pub struct Blake2sChannel {
@@ -53,26 +33,6 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
             digest: Blake2sHash { hash: BoxImpl::new([0; 8]) }, channel_time: Default::default(),
         }
     }
-}
-
-impl DivRemU64ByU32Shift of DivRemHelper<u64, ConstValue<U32_SHIFT>> {
-    type DivT = BoundedInt<0, { U32_SHIFT - 1 }>;
-    type RemT = BoundedInt<0, { U32_SHIFT - 1 }>;
-}
-
-impl DivRemU32ByU8Shift of DivRemHelper<u32, ConstValue<U8_SHIFT>> {
-    type DivT = U24_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
-}
-
-impl DivRemU24ByU8Shift of DivRemHelper<U24_BOUNDED_INT, ConstValue<U8_SHIFT>> {
-    type DivT = U16_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
-}
-
-impl DivRemU16ByU8Shift of DivRemHelper<U16_BOUNDED_INT, ConstValue<U8_SHIFT>> {
-    type DivT = U8_BOUNDED_INT;
-    type RemT = U8_BOUNDED_INT;
 }
 
 pub impl Blake2sChannelImpl of ChannelTrait {
@@ -159,42 +119,8 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn mix_memory_section(ref self: Blake2sChannel, data: @Array<(u32, [u32; 8])>) {
-        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
-        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
-
-        if data.is_empty() {
-            let res = blake2s_finalize(
-                state, 32, BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
-            );
-            update_digest(ref self, Blake2sHash { hash: res });
-            return;
-        }
-
-        let mut data = data.span();
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
-        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
-        let mut byte_count = 64;
-
-        while let Some(head) = data.multi_pop_front::<2>() {
-            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
-            let [
-                (_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15]),
-            ] =
-                head
-                .unbox();
-            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
-            byte_count += 64;
-        }
-
-        if !data.is_empty() {
-            state = blake2s_compress(state, byte_count, BoxImpl::new(buffer));
-            let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *data.pop_front().unwrap();
-            buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
-            byte_count += 32;
-        }
-
-        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+    fn mix_memory_section(ref self: Blake2sChannel, data: @MemorySection) {
+        let res = hash_memory_section_with_digest(data, self.digest.hash);
         update_digest(ref self, Blake2sHash { hash: res });
     }
 

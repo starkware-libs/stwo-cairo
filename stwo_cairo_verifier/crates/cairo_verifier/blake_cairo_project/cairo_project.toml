@@ -3,6 +3,7 @@
 "stwo_cairo_air" = "../../cairo_air/src"
 "stwo_constraint_framework" = "../../constraint_framework/src"
 "stwo_verifier_core" = "../../verifier_core/src"
+"stwo_verifier_utils" = "../../verifier_utils/src"
 "stwo_cairo_verifier" = "../../cairo_verifier/src"
 "stwo_cairo_verifier_mock" = "../../cairo_verifier_mock/src"
 
@@ -25,6 +26,9 @@ discriminator = "stwo_constraint_framework"
 
 [config.global.dependencies.stwo_verifier_core]
 discriminator = "stwo_verifier_core"
+
+[config.global.dependencies.stwo_verifier_utils]
+discriminator = "stwo_verifier_utils"
 
 [config.global.experimental_features]
 negative_impls = false
@@ -63,6 +67,9 @@ discriminator = "stwo_constraint_framework"
 
 [config.override."stwo_cairo_air".dependencies.stwo_verifier_core]
 discriminator = "stwo_verifier_core"
+
+[config.override."stwo_cairo_air".dependencies.stwo_verifier_utils]
+discriminator = "stwo_verifier_utils"
 
 [config.override."stwo_cairo_air".dependencies.bounded_int]
 discriminator = "bounded_int"
@@ -112,12 +119,32 @@ discriminator = "bounded_int"
 [config.override."stwo_verifier_core".dependencies.stwo_verifier_core]
 discriminator = "stwo_verifier_core"
 
+[config.override."stwo_verifier_core".dependencies.stwo_verifier_utils]
+discriminator = "stwo_verifier_utils"
+
 [config.override."stwo_verifier_core".experimental_features]
 negative_impls = false
 associated_item_constraints = false
 coupons = false
 user_defined_inline_macros = false
 
+[config.override."stwo_verifier_utils"]
+name = "stwo_verifier_utils"
+edition = "2024_07"
+version = "0.1.0"
+cfg_set = [
+    ["target", "lib"],
+    ["feature", "qm31_opcode"],
+]
+
+[config.override."stwo_verifier_utils".dependencies.stwo_verifier_utils]
+discriminator = "stwo_verifier_utils"
+
+[config.override."stwo_verifier_utils".experimental_features]
+negative_impls = false
+associated_item_constraints = false
+coupons = false
+user_defined_inline_macros = false
 
 [config.override."stwo_cairo_verifier"]
 name = "stwo_cairo_verifier"
