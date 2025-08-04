@@ -9,6 +9,7 @@ use super::m31::M31;
 mod naive;
 #[cfg(not(feature: "qm31_opcode"))]
 use naive::*;
+
 #[cfg(feature: "qm31_opcode")]
 mod opcode;
 #[cfg(feature: "qm31_opcode")]
