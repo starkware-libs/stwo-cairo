@@ -6,16 +6,16 @@ version = 4
 name = "adapted_stwo"
 version = "0.1.0"
 dependencies = [
- "cairo-air",
+ "cairo-air 0.1.1",
  "clap",
  "log",
  "serde",
  "sonic-rs",
  "starknet-ff",
  "stwo",
- "stwo-cairo-adapter",
- "stwo-cairo-serialize",
- "stwo_cairo_prover",
+ "stwo-cairo-adapter 0.1.0",
+ "stwo-cairo-serialize 0.1.0",
+ "stwo_cairo_prover 0.1.0",
  "stwo_cairo_utils",
  "thiserror",
  "tracing",
@@ -629,10 +629,38 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-cairo-adapter",
- "stwo-cairo-common",
- "stwo-cairo-serialize",
- "stwo-cairo-serialize-derive",
+ "stwo-cairo-adapter 0.1.0",
+ "stwo-cairo-common 0.1.0",
+ "stwo-cairo-serialize 0.1.0",
+ "stwo-cairo-serialize-derive 0.1.0",
+ "stwo-constraint-framework",
+ "thiserror",
+ "tracing",
+ "zip 4.3.0",
+]
+
+[[package]]
+name = "cairo-air"
+version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "clap",
+ "itertools 0.12.1",
+ "log",
+ "num-traits",
+ "paste",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "starknet-curve 0.5.1",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo",
+ "stwo-cairo-adapter 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
  "stwo-constraint-framework",
  "thiserror",
  "tracing",
@@ -1186,8 +1214,9 @@ dependencies = [
 [[package]]
 name = "cairo-prove"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
- "cairo-air",
+ "cairo-air 0.1.1 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
  "cairo-lang-casm 2.11.4",
  "cairo-lang-compiler",
  "cairo-lang-executable",
@@ -1200,9 +1229,9 @@ dependencies = [
  "log",
  "num-bigint",
  "serde_json",
- "stwo-cairo-adapter",
- "stwo-cairo-serialize",
- "stwo_cairo_prover",
+ "stwo-cairo-adapter 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo_cairo_prover 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
 ]
 
 [[package]]
@@ -1491,7 +1520,7 @@ dependencies = [
 name = "dev-utils"
 version = "0.1.1"
 dependencies = [
- "cairo-air",
+ "cairo-air 0.1.1",
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-prove",
@@ -1504,9 +1533,9 @@ dependencies = [
  "sonic-rs",
  "starknet-ff",
  "stwo",
- "stwo-cairo-adapter",
- "stwo-cairo-serialize",
- "stwo_cairo_prover",
+ "stwo-cairo-adapter 0.1.0",
+ "stwo-cairo-serialize 0.1.0",
+ "stwo_cairo_prover 0.1.0",
  "thiserror",
  "tracing",
  "tracing-subscriber",
@@ -3409,7 +3438,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "std-shims"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 
 [[package]]
 name = "string_cache"
@@ -3432,7 +3461,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 dependencies = [
  "blake2",
  "blake3",
@@ -3456,12 +3485,13 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "unsigned-varint",
+ "zip 4.3.0",
 ]
 
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3473,7 +3503,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3501,8 +3531,33 @@ dependencies = [
  "serde_json",
  "sonic-rs",
  "stwo",
- "stwo-cairo-common",
+ "stwo-cairo-common 0.1.0",
  "test-case",
+ "thiserror",
+ "tracing",
+]
+
+[[package]]
+name = "stwo-cairo-adapter"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "bincode 2.0.1",
+ "bytemuck",
+ "cairo-lang-casm 2.9.3",
+ "cairo-vm",
+ "crypto-bigint",
+ "dashmap",
+ "indoc",
+ "itertools 0.12.1",
+ "log",
+ "memmap2",
+ "rayon",
+ "serde",
+ "serde_json",
+ "sonic-rs",
+ "stwo",
+ "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
  "thiserror",
  "tracing",
 ]
@@ -3520,8 +3575,25 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-cairo-serialize",
- "stwo-cairo-serialize-derive",
+ "stwo-cairo-serialize 0.1.0",
+ "stwo-cairo-serialize-derive 0.1.0",
+]
+
+[[package]]
+name = "stwo-cairo-common"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "ruint",
+ "serde",
+ "serde_arrays",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo",
+ "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
 ]
 
 [[package]]
@@ -3530,7 +3602,19 @@ version = "0.1.0"
 dependencies = [
  "starknet-ff",
  "stwo",
- "stwo-cairo-serialize-derive",
+ "stwo-cairo-serialize-derive 0.1.0",
+ "unsigned-varint",
+ "zip 4.3.0",
+]
+
+[[package]]
+name = "stwo-cairo-serialize"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "starknet-ff",
+ "stwo",
+ "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
  "unsigned-varint",
  "zip 4.3.0",
 ]
@@ -3545,9 +3629,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo-cairo-serialize-derive"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "quote",
+ "stwo",
+ "syn 2.0.98",
+]
+
+[[package]]
 name = "stwo-compact-binary-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 dependencies = [
  "quote",
  "syn 2.0.98",
@@ -3556,7 +3650,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#d02418bdef66fc4075aa0f6ddf70368ccfb24389"
 dependencies = [
  "hashbrown 0.15.2",
  "itertools 0.12.1",
@@ -3572,7 +3666,7 @@ dependencies = [
 name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
- "cairo-air",
+ "cairo-air 0.1.1",
  "cairo-vm",
  "hex",
  "itertools 0.12.1",
@@ -3589,14 +3683,40 @@ dependencies = [
  "stwo",
  "stwo-air-utils",
  "stwo-air-utils-derive",
- "stwo-cairo-adapter",
- "stwo-cairo-common",
- "stwo-cairo-serialize",
+ "stwo-cairo-adapter 0.1.0",
+ "stwo-cairo-common 0.1.0",
+ "stwo-cairo-serialize 0.1.0",
  "stwo-constraint-framework",
  "tempfile",
  "test-log",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "stwo_cairo_prover"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
+dependencies = [
+ "cairo-air 0.1.1 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "hex",
+ "itertools 0.12.1",
+ "num-traits",
+ "paste",
+ "rayon",
+ "serde",
+ "serde_json",
+ "starknet-curve 0.5.1",
+ "starknet-ff",
+ "starknet-types-core",
+ "stwo",
+ "stwo-air-utils",
+ "stwo-air-utils-derive",
+ "stwo-cairo-adapter 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization)",
+ "stwo-constraint-framework",
+ "tracing",
 ]
 
 [[package]]
