@@ -1,6 +1,6 @@
 use core::ops::AddAssign;
 use super::super::super::super::cm31::CM31;
-use super::super::super::super::m31::M31Trait;
+use super::super::super::super::m31::{M31Trait, MulByM31Trait};
 use super::super::super::{M31, PackedUnreducedQM31Trait, QM31};
 
 /// A packed representation of an unreduced [`CM31`] as a single `felt252`.
@@ -19,8 +19,7 @@ pub struct PackedUnreducedCM31 {
     pub inner: felt252,
 }
 
-#[generate_trait]
-pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
+pub impl PackedCM31byM31Impl of MulByM31Trait<PackedUnreducedCM31> {
     /// Multiplies a [`PackedUnreducedCM31`] by an [`M31`], returning a new [`PackedUnreducedCM31`].
     ///
     /// Typically, both operands are reduced 31-bit elements, yielding a 62-bit result.
@@ -29,7 +28,10 @@ pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: self.inner * rhs.inner.into() }
     }
+}
 
+#[generate_trait]
+pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     /// Returns a zero element with each coordinate set to `P*P*P`.
     ///
     /// Using [`large_zero`] instead of direct zero initialization prevents underflow during
@@ -89,12 +91,14 @@ pub struct PackedUnreducedQM31 {
     pub b: PackedUnreducedCM31,
 }
 
-pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
+pub impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
     #[inline]
     fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
     }
+}
 
+pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     /// Returns a zero element with each coordinate set to `P*P*P`.
     #[inline]
     fn large_zero() -> PackedUnreducedQM31 {

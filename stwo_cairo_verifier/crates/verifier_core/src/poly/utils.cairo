@@ -1,4 +1,4 @@
-use crate::fields::m31::M31;
+use crate::fields::m31::{M31, MulByM31Trait};
 use crate::fields::qm31::{QM31, QM31Trait};
 use crate::fields::{BaseField, SecureField};
 

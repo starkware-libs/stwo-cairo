@@ -6,7 +6,7 @@ use crate::circle_mul_table::{
     M31_CIRCLE_GEN_MUL_TABLE_BITS_6_TO_11,
 };
 use crate::fields::Invertible;
-use crate::fields::m31::M31;
+use crate::fields::m31::{M31, MulByM31Trait};
 use crate::fields::qm31::{QM31, QM31Trait};
 use super::utils::pow2;
 

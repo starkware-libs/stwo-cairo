@@ -1,5 +1,5 @@
 use crate::fields::Invertible;
-use crate::fields::m31::m31;
+use crate::fields::m31::{MulByM31Trait, m31};
 use crate::fields::qm31::{
     PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Impl, QM31Trait, qm31_const,
 };
