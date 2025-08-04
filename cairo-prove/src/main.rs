@@ -37,7 +37,7 @@ fn secure_pcs_config() -> PcsConfig {
         fri_config: FriConfig {
             log_last_layer_degree_bound: 0,
             log_blowup_factor: 1,
-            n_queries: 700,
+            n_queries: 70,
         },
     }
 }
