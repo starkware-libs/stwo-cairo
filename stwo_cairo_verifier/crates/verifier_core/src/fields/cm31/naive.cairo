@@ -1,9 +1,9 @@
 //! Software only implementation of CM31 field (i.e no QM31 opcode).
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
+use super::CM31Trait;
 use super::super::m31::{M31, M31InnerT, M31Trait, m31};
 use super::super::{BatchInvertible, Invertible};
-use super::{CM31Trait, PackedUnreducedCM31Trait};
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
 pub struct CM31 {
@@ -131,6 +131,7 @@ pub struct PackedUnreducedCM31 {
     pub inner: felt252,
 }
 
+#[generate_trait]
 pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     #[inline]
     fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
