@@ -10,9 +10,9 @@ use cairo_prove::execute::execute;
 use cairo_prove::prove::{prove, prover_input_from_runner};
 use clap::Parser;
 use log::{error, info};
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
+use stwo_cairo_prover::stwo::core::fri::FriConfig;
+use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 
