@@ -94,18 +94,6 @@ where
         interaction_claim.compact_serialize(output);
         usize::compact_serialize(&3, output);
         stark_proof.compact_serialize(output);
-
-        // Without ZIP:
-        // let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
-        // (0, claim),
-        // (1, interaction_pow),
-        // (2, interaction_claim),
-        // (3, stark_proof),
-        // ];
-        // for (tag, value) in to_serialize {
-        // usize::compact_serialize(&tag, output);
-        // value.compact_serialize(output);
-        // }
     }
 
     fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
@@ -123,15 +111,6 @@ where
         let (input, stark_proof) =
             ZippedCompactBinary::<&StarkProof<H>>::compact_deserialize(input);
 
-        // Without ZIP:
-        // let input = strip_expected_tag(input, 0);
-        // let (input, claim) = CairoClaim::compact_deserialize(input);
-        // let input = strip_expected_tag(input, 1);
-        // let (input, interaction_pow) = u64::compact_deserialize(input);
-        // let input = strip_expected_tag(input, 2);
-        // let (input, interaction_claim) = CairoInteractionClaim::compact_deserialize(input);
-        // let input = strip_expected_tag(input, 3);
-        // let (input, stark_proof) = StarkProof::<H>::compact_deserialize(input);
         (
             input,
             Self {
@@ -503,79 +482,6 @@ pub struct PublicMemory {
     pub output: MemorySection,
     pub safe_call: MemorySection,
 }
-
-// fn zip_bytes(input: &[u8]) -> Vec<u8> {
-// We use a buffer here, though you'd normally use a `File`
-// let mut buf = Vec::new();
-// let file = std::io::Cursor::new(&mut buf[..]);
-// let mut zip = zip::ZipWriter::new(file);
-// let options =
-// zip::write::SimpleFileOptions::default().compression_method(zip::CompressionMethod::Stored);
-// zip.start_file("a", options).unwrap();
-// zip.write(input).unwrap();
-// zip.finish().unwrap().into_inner().to_vec()
-// }
-
-// impl CompactBinary for PublicMemory {
-// fn compact_serialize(&self, output: &mut Vec<u8>) {
-// let Self {
-// program,
-// public_segments,
-// output: memory_output,
-// safe_call,
-// } = self;
-// let version = 0;
-// let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
-// (0, program),
-// (1, public_segments),
-// (2, memory_output),
-// (3, safe_call),
-// ];
-// u32::compact_serialize(&version, output);
-// for (tag, value) in to_serialize {
-// usize::compact_serialize(&tag, output);
-// value.compact_serialize(output);
-// }
-//
-// TO TEST
-// let to_serialize: Vec<(usize, &dyn CompactBinary)> = vec![
-// (0, program),
-// (1, public_segments),
-// (2, memory_output),
-// (3, safe_call),
-// ];
-// let mut second_output = Vec::new();
-// u32::compact_serialize(&version, &mut second_output);
-// for (tag, value) in to_serialize {
-// usize::compact_serialize(&tag, &mut second_output);
-// value.compact_serialize(&mut second_output);
-// }
-// println!("Compact serialized PublicMemory: {:?}", second_output);
-// println!("Size: {}", second_output.len());
-//
-// let compressed = zip_bytes(&mut second_output);
-// println!("Compressed PublicMemory: {:?}", compressed);
-// println!("Compressed size: {}", compressed.len());*/
-// }
-//
-// fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
-// let input = strip_expected_version(input, 0);
-// let input = strip_expected_tag(input, 0);
-// let (input, program) = MemorySection::compact_deserialize(input);
-// let input = strip_expected_tag(input, 1);
-// let (input, public_segments) = PublicSegmentRanges::compact_deserialize(input);
-// let input = strip_expected_tag(input, 2);
-// let (input, output) = MemorySection::compact_deserialize(input);
-// let input = strip_expected_tag(input, 3);
-// let (input, safe_call) = MemorySection::compact_deserialize(input);
-// (input, Self {
-// program,
-// public_segments,
-// output,
-// safe_call,
-// })
-// }
-// }
 
 impl PublicMemory {
     /// Returns [`PubMemoryEntry`] for all public memory.
