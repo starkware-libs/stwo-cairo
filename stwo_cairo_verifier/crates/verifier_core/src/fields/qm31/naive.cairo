@@ -3,11 +3,13 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
-use super::super::cm31::{CM31, CM31Trait, PackedUnreducedCM31, PackedUnreducedCM31Trait};
+use super::super::cm31::{CM31, CM31Trait};
 use super::super::m31::{M31, M31InnerT, M31Trait};
 use super::{PackedUnreducedQM31Trait, QM31Trait, QM31_EXTENSION_DEGREE};
 
 mod unreduced;
+
+pub use unreduced::{PackedUnreducedQM31, PackedUnreducedQM31Impl};
 
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -169,66 +171,6 @@ pub impl QM31Neg of Neg<QM31> {
     #[inline]
     fn neg(a: QM31) -> QM31 {
         QM31 { a: -a.a, b: -a.b }
-    }
-}
-
-/// Stores an unreduced [`QM31`] packed into two `felt252`.
-///
-/// This is used for PackedUnreducedQM31Trait::large_zero() + \sum PackedUnreducedQM31 * m31.
-///
-/// This more efficient than [`UnreducedQM31`] for the case above since it requires two (rather than
-/// 4) felt252 operations per addition or M31 multiplication.
-#[derive(Copy, Drop, Debug)]
-pub struct PackedUnreducedQM31 {
-    pub a: PackedUnreducedCM31,
-    pub b: PackedUnreducedCM31,
-}
-
-pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
-    #[inline]
-    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
-    }
-
-    /// Returns a zero element with each coordinate set to `P*P*P`.
-    #[inline]
-    fn large_zero() -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 {
-            a: PackedUnreducedCM31Trait::large_zero(), b: PackedUnreducedCM31Trait::large_zero(),
-        }
-    }
-
-    #[inline]
-    fn reduce(self: PackedUnreducedQM31) -> QM31 {
-        QM31 { a: self.a.reduce(), b: self.b.reduce() }
-    }
-}
-
-pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
-    #[inline]
-    fn add_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
-        self = self + rhs
-    }
-}
-
-pub impl PackedUnreducedQM31Add of Add<PackedUnreducedQM31> {
-    #[inline]
-    fn add(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: lhs.a + rhs.a, b: lhs.b + rhs.b }
-    }
-}
-
-pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
-    #[inline]
-    fn sub(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
-    }
-}
-
-pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
-    #[inline]
-    fn into(self: QM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: self.a.into(), b: self.b.into() }
     }
 }
 
