@@ -604,6 +604,7 @@ dependencies = [
 [[package]]
 name = "cairo-air"
 version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "clap",
  "itertools 0.12.1",
@@ -3371,11 +3372,11 @@ dependencies = [
  "starknet-crypto 0.6.2",
  "starknet-ff",
  "std-shims",
- "stwo-compact-binary",
  "stwo-compact-binary-derive",
  "thiserror",
  "tracing",
  "tracing-subscriber",
+ "unsigned-varint",
 ]
 
 [[package]]
@@ -3404,6 +3405,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-adapter"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "bincode 2.0.1",
  "bytemuck",
@@ -3428,6 +3430,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-common"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3444,6 +3447,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "starknet-ff",
  "stwo",
@@ -3455,19 +3459,11 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "quote",
  "stwo",
  "syn 2.0.104",
-]
-
-[[package]]
-name = "stwo-compact-binary"
-version = "0.1.1"
-dependencies = [
- "starknet-ff",
- "unsigned-varint",
- "zip 4.3.0",
 ]
 
 [[package]]
@@ -3476,7 +3472,6 @@ version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "quote",
- "stwo-compact-binary",
  "syn 2.0.104",
 ]
 
@@ -3498,6 +3493,7 @@ dependencies = [
 [[package]]
 name = "stwo_cairo_prover"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo-cairo?branch=add_binary_proof_serialization#42d244410edb2fe966c94336483debdc52f3a17f"
 dependencies = [
  "cairo-air",
  "hex",
