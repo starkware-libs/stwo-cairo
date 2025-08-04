@@ -24,8 +24,6 @@ pub trait QM31Trait {
 
     fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE];
 
-    fn mul_m31(self: QM31, rhs: M31) -> QM31;
-
     // TODO(andrew): When associated types are supported, support `Mul<QM31, CM31>`.
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31;
 
@@ -61,8 +59,6 @@ pub impl QM31Serde of Serde<QM31> {
 }
 
 pub trait PackedUnreducedQM31Trait {
-    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31;
-
     /// Returns a zero element with each coordinate set to `P*P*P`.
     fn large_zero() -> PackedUnreducedQM31;
 
