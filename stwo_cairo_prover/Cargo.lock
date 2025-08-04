@@ -3409,6 +3409,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "std-shims"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 
 [[package]]
 name = "string_cache"
@@ -3431,6 +3432,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "blake2",
  "blake3",
@@ -3459,6 +3461,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3470,6 +3473,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3543,6 +3547,7 @@ dependencies = [
 [[package]]
 name = "stwo-compact-binary-derive"
 version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "quote",
  "syn 2.0.98",
@@ -3551,6 +3556,7 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?branch=add_binary_proof_serialization#e7256de221ae3045e8ed3c0f1b5836b58b33024e"
 dependencies = [
  "hashbrown 0.15.2",
  "itertools 0.12.1",

@@ -1,24 +1,31 @@
-use core::blake::{blake2s_compress, blake2s_finalize};
 
 #[executable]
-fn main(mut n: felt252) -> [u32; 8] {
-    chain_hash(n)
+fn main(mut n: felt252) -> felt252 {
+    let res = fib(1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,n);
+    return res;
 }
 
-pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
-    0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
-];
+fn fib(mut a: felt252, mut b: felt252, mut c: felt252, mut d: felt252, mut e: felt252, mut f: felt252, mut g: felt252, mut h: felt252, mut i: felt252, mut j: felt252, mut k: felt252, mut l: felt252, mut m: felt252, mut o: felt252, mut p: felt252, mut q: felt252, mut n: felt252) -> felt252 {
 
-//  Given n performs hash_chain on n 0-messages.
-fn chain_hash(mut n: felt252) -> [u32; 8] {
-    assert!(n != 0);
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut byte_count = 0;
     while n != 1 {
-        byte_count = byte_count + 64;
-        state = blake2s_compress(state, byte_count, BoxTrait::new([0; 16]));
+        let temp = a + b + c + d + e + f + g + h + i + j + k + l + m + o + p + q;
+        a = b+1;
+        b = c+1;
+        c = d+1;
+        d = e+1;
+        e = f+1;
+        f = g+1;
+        g = h+1;
+        h = i+1;
+        i = j+1;
+        j = k+1;
+        k = l+1;
+        l = m+1;
+        m = o+1;
+        o = p+1;
+        p = q+1;
+        q = temp + 1;
         n = n - 1;
     }
-    state = blake2s_finalize(state, byte_count + 64, BoxTrait::new([0; 16]));
-    state.unbox()
+    return q;
 }
