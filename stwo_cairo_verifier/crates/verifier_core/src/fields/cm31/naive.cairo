@@ -124,20 +124,38 @@ pub impl CM31Neg of Neg<CM31> {
     }
 }
 
-/// An unreduced [`CM31`] packed into a single `felt252`.
+/// A packed representation of an unreduced [`CM31`] as a single `felt252`.
+///
+/// This format enables performing two arithmetic operations (multiplication, addition,
+/// or subtraction) simultaneously. However, explicit packing and unpacking steps are required
+/// to convert between `CM31` and `PackedUnreducedCM31`.
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedCM31 {
-    /// Stores a 128 bit and 124 bit unreduced M31 packed into a felt252 i.e. `a + (b << 128)`.
+    /// Encodes two potentially unreduced M31 elements within a single `felt252`.
+    /// Stored as `a + (b << 128)`.
+    ///
+    /// Bounds:
+    /// - `a` must be in the range [0, 2^128).
+    /// - `b` must be in the range [0, 2^123 + 17 * 2^64).
     pub inner: felt252,
 }
 
 pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
+    /// Multiplies a [`PackedUnreducedCM31`] by an [`M31`], returning a new [`PackedUnreducedCM31`].
+    ///
+    /// Typically, both operands are reduced 31-bit elements, yielding a 62-bit result.
+    /// The packed form of `self` allows two multiplications to be executed concurrently.
     #[inline]
     fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: self.inner * rhs.inner.into() }
     }
 
     /// Returns a zero element with each coordinate set to `P*P*P`.
+    ///
+    /// Using [`large_zero`] instead of direct zero initialization prevents underflow during
+    /// subtraction operations. Starting from [`large_zero`], it's safe to perform up to `P`
+    /// additions or subtractions of results produced by [`mul_m31`] without risking overflow or
+    /// underflow.
     #[inline]
     fn large_zero() -> PackedUnreducedCM31 {
         // Stores `P*P*P + (P*P*P << 128)`.
@@ -160,6 +178,8 @@ pub impl PackedUnreducedCM31Add of Add<PackedUnreducedCM31> {
 }
 
 pub impl PackedUnreducedCM31Sub of Sub<PackedUnreducedCM31> {
+    /// Subtracts two [`PackedUnreducedCM31`] elements, returning a new [`PackedUnreducedCM31`].
+    /// Note that there is a potential underflow here, `large_zero` should be used to prevent this.
     #[inline]
     fn sub(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: lhs.inner - rhs.inner }
