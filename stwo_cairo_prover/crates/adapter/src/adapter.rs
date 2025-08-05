@@ -76,7 +76,7 @@ mod tests {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_test_program(test_name);
-        let mut prover_input = run_program_and_adapter(&compiled_program);
+        let mut prover_input = run_program_and_adapter(&compiled_program, None);
         // Instruction cache is not deterministic, sort it.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
 

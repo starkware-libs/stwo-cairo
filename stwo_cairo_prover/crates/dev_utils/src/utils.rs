@@ -6,8 +6,9 @@ use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
-use cairo_vm::cairo_run::{cairo_run, cairo_run_program, CairoRunConfig};
+use cairo_vm::cairo_run::{cairo_run_program, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
+use cairo_vm::hint_processor::hint_processor_definition::HintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
@@ -144,7 +145,7 @@ pub fn create_and_serialize_proof(
     Ok(())
 }
 
-pub fn run_cairo1_and_adapter(
+pub fn run_cairo1_and_adapter_from_executable(
     executable: Executable,
     args: Vec<cairo_lang_runner::Arg>,
 ) -> ProverInput {
@@ -186,27 +187,13 @@ pub fn run_cairo1_and_adapter(
         panic_traceback: Default::default(),
     };
 
-    let cairo_run_config = CairoRunConfig {
-        trace_enabled: true,
-        relocate_mem: true,
-        layout: LayoutName::all_cairo_stwo,
-        secure_run: None,
-        allow_missing_builtins: None,
-        dynamic_layout_params: None,
-        disable_trace_padding: true,
-        proof_mode: true,
-        ..Default::default()
-    };
-
-    let runner = cairo_run_program(&program, &cairo_run_config, &mut hint_processor)
-        .expect("Failed to execute program");
-    let mut prover_input_info = runner
-        .get_prover_input_info()
-        .expect("Failed to get prover input info from finished runner");
-    adapter(&mut prover_input_info).expect("Failed to run adapter")
+    run_program_and_adapter(&program, Some(&mut hint_processor))
 }
 
-pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
+pub fn run_program_and_adapter(
+    program: &Program,
+    hint_processor: Option<&mut dyn HintProcessor>,
+) -> ProverInput {
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
         trace_enabled: true,
@@ -219,12 +206,14 @@ pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
         disable_trace_padding: true,
     };
 
-    let runner = cairo_run(
-        program,
-        &cairo_run_config,
-        &mut BuiltinHintProcessor::new_empty(),
-    )
-    .expect("Failed to run cairo program");
+    let mut default_hint_processor = BuiltinHintProcessor::new_empty();
+    let hint_processor = match hint_processor {
+        Some(hp) => hp,
+        None => &mut default_hint_processor,
+    };
+
+    let runner = cairo_run_program(program, &cairo_run_config, hint_processor)
+        .expect("Failed to run cairo program");
     adapter(
         &mut runner
             .get_prover_input_info()

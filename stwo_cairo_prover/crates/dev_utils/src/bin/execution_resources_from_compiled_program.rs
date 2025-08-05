@@ -11,7 +11,9 @@ use std::path::PathBuf;
 
 use cairo_lang_executable::executable::Executable;
 use clap::Parser;
-use dev_utils::utils::{run_cairo1_and_adapter, run_program_and_adapter, Error, ProgramArguments};
+use dev_utils::utils::{
+    run_cairo1_and_adapter_from_executable, run_program_and_adapter, Error, ProgramArguments,
+};
 use stwo_cairo_adapter::test_utils::read_compiled_cairo_program;
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
@@ -43,7 +45,7 @@ fn main() -> Result<(), Error> {
         let executable: Executable =
             serde_json::from_reader(std::fs::File::open(&args.compiled_program).unwrap())
                 .expect("Failed to read executable");
-        run_cairo1_and_adapter(executable, args.program_arguments.read_arguments())
+        run_cairo1_and_adapter_from_executable(executable, args.program_arguments.read_arguments())
     } else {
         assert!(
             args.program_arguments.arguments.is_empty()
@@ -51,7 +53,7 @@ fn main() -> Result<(), Error> {
             "Can't run Cairo0 programs with arguments"
         );
         let program = read_compiled_cairo_program(&args.compiled_program);
-        run_program_and_adapter(&program)
+        run_program_and_adapter(&program, None)
     };
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
