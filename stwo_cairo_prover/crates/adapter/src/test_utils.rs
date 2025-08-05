@@ -2,18 +2,12 @@ use std::fs::{read, read_to_string, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 
-use cairo_vm::cairo_run::{cairo_run, CairoRunConfig};
-use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::*;
 use cairo_vm::stdlib::collections::HashMap;
-use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
 use tracing::{span, Level};
-
-use crate::adapter::adapter;
-use crate::ProverInput;
 
 pub fn program_from_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
@@ -53,33 +47,6 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
             .expect("Unable to decode prover input info");
 
     prover_input_info
-}
-
-pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
-    let cairo_run_config = CairoRunConfig {
-        entrypoint: "main",
-        trace_enabled: true,
-        relocate_mem: false,
-        layout: LayoutName::all_cairo_stwo,
-        proof_mode: true,
-        secure_run: None,
-        allow_missing_builtins: None,
-        dynamic_layout_params: None,
-        disable_trace_padding: true,
-    };
-
-    let runner = cairo_run(
-        program,
-        &cairo_run_config,
-        &mut BuiltinHintProcessor::new_empty(),
-    )
-    .expect("Failed to run cairo program");
-    adapter(
-        &mut runner
-            .get_prover_input_info()
-            .expect("Failed to get prover input info from finished runner"),
-    )
-    .expect("Failed to run adapter")
 }
 
 pub fn get_test_program(test_name: &str) -> Vec<u8> {
