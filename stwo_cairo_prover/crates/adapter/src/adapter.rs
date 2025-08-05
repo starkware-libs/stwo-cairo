@@ -63,12 +63,12 @@ pub fn read_and_adapt_prover_input_info_file(
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
+    use dev_utils::utils::run_program_and_adapter;
     use serde_json::to_value;
 
     use crate::adapter::read_and_adapt_prover_input_info_file;
     use crate::test_utils::{
-        get_prover_input_info_path, get_prover_input_path, get_test_program, read_json,
-        run_program_and_adapter, write_json,
+        get_prover_input_info_path, get_prover_input_path, get_test_program, read_json, write_json,
     };
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
