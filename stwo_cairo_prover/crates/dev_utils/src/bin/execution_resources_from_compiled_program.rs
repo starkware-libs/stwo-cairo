@@ -82,7 +82,7 @@ fn main() -> Result<(), Error> {
             "Can't run Cairo0 programs with arguments"
         );
         let program = read_compiled_cairo_program(&args.compiled_program);
-        run_program_and_adapter(&program)
+        run_program_and_adapter(&program, None)
     };
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
