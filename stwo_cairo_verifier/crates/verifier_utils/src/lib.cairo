@@ -28,7 +28,7 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
 /// Returns the hash of the memory section for packing purposes.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    hash_memory_section_ex(section.span(), BoxTrait::new(BLAKE2S_256_INITIAL_STATE))
+    hash_memory_section_ex(section.span(), BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0)
 }
 
 /// Returns the hash of the memory section with the channel's digest hash for mixing purposes.
@@ -50,7 +50,7 @@ pub fn hash_memory_section_with_digest(
         state = blake2s_finalize(state, byte_count, buffer);
     } else {
         state = blake2s_compress(state, byte_count, buffer);
-        state = hash_memory_section_ex(section, state)
+        state = hash_memory_section_ex(section, state, byte_count)
     }
 
     state
@@ -59,25 +59,30 @@ pub fn hash_memory_section_with_digest(
 /// Returns the hash of the memory section with the given initial state.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn hash_memory_section_ex(section: Span<PubMemoryValue>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
+fn hash_memory_section_ex(
+    section: Span<PubMemoryValue>, state: Box<[u32; 8]>, mut byte_count: u32,
+) -> Box<[u32; 8]> {
     let mut state = state;
     let mut section = section;
     let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
-        return blake2s_finalize(state, 0, BoxImpl::new([0; 16]));
+        return blake2s_finalize(state, byte_count, BoxImpl::new([0; 16]));
     };
 
     let (_, [v8, v9, v10, v11, v12, v13, v14, v15]) = if let Some(head) = section.pop_front() {
         *head
     } else {
+        byte_count += 32;
         return blake2s_finalize(
-            state, 32, BoxImpl::new([v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0]),
+            state,
+            byte_count,
+            BoxImpl::new([v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0]),
         );
     };
 
     let mut buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
-    let mut byte_count = 64;
+    byte_count += 64;
 
     while let Some(head) = section.multi_pop_front::<2>() {
         // Append current value to the buffer without its id and compress.
