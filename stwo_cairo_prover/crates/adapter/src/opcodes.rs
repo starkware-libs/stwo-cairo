@@ -740,7 +740,9 @@ mod mappings_tests {
 
     use cairo_lang_casm::casm;
     use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
+    use cairo_vm::relocatable;
     use cairo_vm::types::layout_name::LayoutName;
+    use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
     use stwo::core::fields::m31::M31;
     use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -749,7 +751,8 @@ mod mappings_tests {
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
-    use crate::relocator::relocator_tests::{create_test_relocator, get_test_relocatble_trace};
+    use crate::relocator::relocator_tests::get_test_relocatble_trace;
+    use crate::relocator::Relocator;
     use crate::test_utils::program_from_casm;
     use crate::vm_import::RelocatedTraceEntry;
     use crate::{casm_state, relocated_trace_entry, ProverInput};
@@ -1275,7 +1278,21 @@ mod mappings_tests {
 
     #[test]
     fn test_casm_state_from_relocator() {
-        let relocator = create_test_relocator();
+        let segment0 = vec![
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(9.into())),
+            Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1))),
+        ];
+        let builtin_segment1 =
+            vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1))); 80];
+        let segment2 = vec![
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(2.into())),
+            Some(MaybeRelocatable::Int(3.into())),
+        ];
+        let memory = vec![segment0, builtin_segment1, segment2];
+        let relocator = Relocator::new(&memory);
+
         let encoded_qm_31_add_mul_inst =
             0b11100000001001010011111111111110101111111111111001000000000000000;
         let x = u128_to_4_limbs(encoded_qm_31_add_mul_inst);

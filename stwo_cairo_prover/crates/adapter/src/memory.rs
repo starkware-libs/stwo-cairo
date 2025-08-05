@@ -331,8 +331,11 @@ pub fn limbs_to_u128(limbs: [u32; 4]) -> u128 {
 #[cfg(test)]
 mod tests {
 
+    use cairo_vm::relocatable;
+    use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
+
     use super::*;
-    use crate::relocator::relocator_tests::create_test_relocator;
+    use crate::relocator::Relocator;
 
     #[test]
     fn test_memory() {
@@ -436,9 +439,23 @@ mod tests {
 
     #[test]
     fn test_memory_from_relocator() {
-        let relocator = create_test_relocator();
+        let segment0 = vec![
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(9.into())),
+            Some(MaybeRelocatable::RelocatableValue(relocatable!(2, 1))),
+        ];
+        let builtin_segment1 =
+            vec![Some(MaybeRelocatable::RelocatableValue(relocatable!(0, 1))); 80];
+        let segment2 = vec![
+            Some(MaybeRelocatable::Int(1.into())),
+            Some(MaybeRelocatable::Int(2.into())),
+            Some(MaybeRelocatable::Int(3.into())),
+        ];
+        let memory = vec![segment0, builtin_segment1, segment2];
+        let relocator = Relocator::new(&memory);
+
         let memory: MemoryBuilder =
-            MemoryBuilder::from_iter(MemoryConfig::default(), relocator.get_relocated_memory());
+            MemoryBuilder::from_iter(MemoryConfig::default(), relocator.relocate_memory(&memory));
         assert_eq!(memory.get(1), MemoryValue::Small(1));
         assert_eq!(memory.get(85), MemoryValue::Small(2));
     }
