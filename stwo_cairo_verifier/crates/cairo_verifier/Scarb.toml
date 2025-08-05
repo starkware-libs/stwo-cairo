@@ -13,12 +13,9 @@ poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
 qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
 outputs_packing = ["stwo_cairo_air/outputs_packing"]
 
-[cairo]
-enable-gas = false
-
 [dependencies]
 stwo_cairo_air = { path = "../cairo_air" }
 cairo_execute = "2.9.2"
 
 [dev-dependencies]
-cairo_test = "2.11.4"
+cairo_test = "2.12.0"
