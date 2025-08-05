@@ -62,7 +62,7 @@ fn main() -> Result<(), Error> {
     let args = Args::try_parse_from(std::env::args())?;
 
     let compiled_program = read_compiled_cairo_program(&args.compiled_program);
-    let input = run_program_and_adapter(&compiled_program);
+    let input = run_program_and_adapter(&compiled_program, None);
 
     create_and_serialize_proof(
         input,
