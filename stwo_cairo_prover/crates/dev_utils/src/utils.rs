@@ -5,7 +5,8 @@ use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
-use cairo_vm::cairo_run::{cairo_run_program, CairoRunConfig};
+use cairo_vm::cairo_run::{cairo_run, cairo_run_program, CairoRunConfig};
+use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
@@ -170,4 +171,31 @@ pub fn run_cairo1_and_adapter(
         .get_prover_input_info()
         .expect("Failed to get prover input info from finished runner");
     adapter(&mut prover_input_info).expect("Failed to run adapter")
+}
+
+pub fn run_program_and_adapter(program: &[u8]) -> ProverInput {
+    let cairo_run_config = CairoRunConfig {
+        entrypoint: "main",
+        trace_enabled: true,
+        relocate_mem: false,
+        layout: LayoutName::all_cairo_stwo,
+        proof_mode: true,
+        secure_run: None,
+        allow_missing_builtins: None,
+        dynamic_layout_params: None,
+        disable_trace_padding: true,
+    };
+
+    let runner = cairo_run(
+        program,
+        &cairo_run_config,
+        &mut BuiltinHintProcessor::new_empty(),
+    )
+    .expect("Failed to run cairo program");
+    adapter(
+        &mut runner
+            .get_prover_input_info()
+            .expect("Failed to get prover input info from finished runner"),
+    )
+    .expect("Failed to run adapter")
 }
