@@ -4,6 +4,10 @@ use core::box::BoxImpl;
 #[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 
+pub mod zip_eq;
+#[cfg(test)]
+mod zip_eq_test;
+
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
 // (id, value)
 pub type PubMemoryValue = (u32, [u32; 8]);
