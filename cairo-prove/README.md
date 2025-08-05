@@ -5,7 +5,7 @@ Blazing ⚡ fast ⚡ Cairo prover.
 ## Prerequisites
 
 - Rust, version mentioned in `rust-toolchain.toml`.
-- Scarb (Optional/Recommended). To run the example it's recommended to compile with `scarb nightly-2025-05-17`.
+- Scarb (Optional/Recommended). To run the example it's recommended to compile with `scarb 2.12.0`.
 
 ## Installation
 
