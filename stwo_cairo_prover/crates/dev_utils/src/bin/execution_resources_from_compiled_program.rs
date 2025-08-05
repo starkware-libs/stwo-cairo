@@ -12,9 +12,9 @@ use std::path::PathBuf;
 use cairo_lang_executable::executable::Executable;
 use clap::Parser;
 use dev_utils::utils::{
-    read_cairo_arguments_from_file, run_cairo1_and_adapter, run_program_and_adapter, Error,
+    read_cairo_arguments_from_file, read_compiled_cairo_program, run_cairo1_and_adapter,
+    run_program_and_adapter, Error,
 };
-use stwo_cairo_adapter::test_utils::read_compiled_cairo_program;
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
@@ -56,7 +56,7 @@ fn main() -> Result<(), Error> {
             "Can't run Cairo0 programs with arguments"
         );
         let program = read_compiled_cairo_program(&args.compiled_program);
-        run_program_and_adapter(&program)
+        run_program_and_adapter(&program, None)
     };
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
