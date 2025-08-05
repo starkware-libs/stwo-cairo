@@ -3,6 +3,7 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 
 use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use itertools::Itertools;
@@ -49,16 +50,17 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
     prover_input_info
 }
 
-pub fn get_test_program(test_name: &str) -> Vec<u8> {
+pub fn get_test_program(test_name: &str) -> Program {
     let program_path = get_compiled_cairo_program_path(test_name);
     read_compiled_cairo_program(&program_path)
 }
 
-pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Vec<u8> {
-    match std::fs::read(program_path) {
+pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
+    let bytes = match std::fs::read(program_path) {
         Ok(program) => program,
         Err(e) => panic!("Failed to read program: {:?}", e),
-    }
+    };
+    Program::from_bytes(&bytes, Some("main")).expect("Failed to create program from bytes")
 }
 
 fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
