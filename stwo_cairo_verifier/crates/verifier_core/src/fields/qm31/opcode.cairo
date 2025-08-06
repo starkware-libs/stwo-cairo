@@ -170,57 +170,20 @@ pub impl QM31Neg of Neg<QM31> {
     }
 }
 
-#[derive(Copy, Drop, Debug)]
-pub struct PackedUnreducedQM31 {
-    // Using QM31 directly is efficient thanks to the QM31 opcode.
-    inner: QM31,
-}
 
-impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
-    #[inline]
-    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: self.inner * rhs.into() }
-    }
-}
+// Alias PackedUnreducedQM31 to QM31, since QM31 provides the most efficient implementation
+// when QM31 opcodes are available.
+pub type PackedUnreducedQM31 = QM31;
 
 pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
-    /// Returns a zero element with each coordinate set to `P*P*P`.
     #[inline]
     fn large_zero() -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: Zero::zero() }
+        Zero::zero()
     }
 
     #[inline]
     fn reduce(self: PackedUnreducedQM31) -> QM31 {
-        self.inner
-    }
-}
-
-pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
-    #[inline]
-    fn add_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
-        self = self + rhs
-    }
-}
-
-pub impl PackedUnreducedQM31Add of Add<PackedUnreducedQM31> {
-    #[inline]
-    fn add(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: lhs.inner + rhs.inner }
-    }
-}
-
-pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
-    #[inline]
-    fn sub(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: lhs.inner - rhs.inner }
-    }
-}
-
-pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
-    #[inline]
-    fn into(self: QM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { inner: self }
+        self
     }
 }
 
