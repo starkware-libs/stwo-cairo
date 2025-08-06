@@ -14,9 +14,6 @@ mod opcode;
 use opcode::*;
 
 pub trait CM31Trait {
-    // TODO(andrew): When associated types are supported, support `Mul<CM31, M31>`.
-    fn mul_m31(self: CM31, rhs: M31) -> CM31;
-
     // TODO(andrew): When associated types are supported, support `Sub<CM31, M31>`.
     fn sub_m31(self: CM31, rhs: M31) -> CM31;
 

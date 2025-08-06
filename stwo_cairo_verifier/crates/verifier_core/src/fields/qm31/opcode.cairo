@@ -3,12 +3,19 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31Trait};
+use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait};
 use super::{PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE};
 
 #[derive(Copy, Drop, PartialEq)]
 pub struct QM31 {
     inner: core::qm31::qm31,
+}
+
+impl QM31MulByM31Impl of MulByM31Trait<QM31> {
+    #[inline]
+    fn mul_m31(self: QM31, rhs: M31) -> QM31 {
+        self * rhs.into()
+    }
 }
 
 pub impl QM31Impl of QM31Trait {
@@ -22,11 +29,6 @@ pub impl QM31Impl of QM31Trait {
     fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
         let [a, b, c, d] = core::qm31::QM31Trait::unpack(self.inner);
         [M31Trait::new(a), M31Trait::new(b), M31Trait::new(c), M31Trait::new(d)]
-    }
-
-    #[inline]
-    fn mul_m31(self: QM31, rhs: M31) -> QM31 {
-        self * rhs.into()
     }
 
     #[inline]
@@ -174,12 +176,14 @@ pub struct PackedUnreducedQM31 {
     inner: QM31,
 }
 
-pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
+impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
     #[inline]
     fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { inner: self.inner * rhs.into() }
     }
+}
 
+pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     /// Returns a zero element with each coordinate set to `P*P*P`.
     #[inline]
     fn large_zero() -> PackedUnreducedQM31 {

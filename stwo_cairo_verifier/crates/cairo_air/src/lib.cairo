@@ -30,7 +30,7 @@ use stwo_constraint_framework::{
 };
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, P_U32};
+use stwo_verifier_core::fields::m31::{M31, MulByM31Trait, P_U32};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;

@@ -55,6 +55,12 @@ pub impl M31Impl of M31Trait {
     }
 }
 
+
+/// A trait for multiplying a value by an `M31`.
+pub trait MulByM31Trait<T> {
+    fn mul_m31(self: T, rhs: M31) -> T;
+}
+
 impl M31IntoU32 of Into<M31, u32> {
     #[inline]
     fn into(self: M31) -> u32 {

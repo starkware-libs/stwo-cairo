@@ -3,10 +3,11 @@ use bounded_int::{
     AddHelper, BoundedInt, DivRemHelper, MulHelper, NZ_U9_SHIFT, add, bounded_int_mul, div_rem,
     upcast,
 };
+#[cfg(not(feature: "qm31_opcode"))]
+use stwo_verifier_core::fields::m31::MulByM31Trait;
 use stwo_verifier_core::fields::m31::{M31InnerT, M31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
-#[cfg(not(feature: "qm31_opcode"))]
-use stwo_verifier_core::fields::qm31::QM31Trait;
+
 
 // Use a short name in this file as it is used in many places.
 type u9 = U9_BOUNDED_INT;

@@ -2,7 +2,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
-use super::super::m31::{M31, M31InnerT, M31Trait, m31};
+use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait, m31};
 use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq, Serde)]
@@ -20,13 +20,14 @@ pub impl CM31InvertibleImpl of Invertible<CM31> {
     }
 }
 
-pub impl CM31Impl of CM31Trait {
-    // TODO(andrew): When associated types are supported, support `Mul<CM31, M31>`.
+impl CM31MulByM31Impl of MulByM31Trait<CM31> {
     #[inline]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
         CM31 { a: self.a * rhs, b: self.b * rhs }
     }
+}
 
+pub impl CM31Impl of CM31Trait {
     // TODO(andrew): When associated types are supported, support `Sub<CM31, M31>`.
     #[inline]
     fn sub_m31(self: CM31, rhs: M31) -> CM31 {
