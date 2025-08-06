@@ -84,6 +84,7 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
+use stwo_verifier_utils::zip_eq::zip_eq;
 
 
 #[derive(Drop, Serde)]
@@ -1976,11 +1977,58 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         interaction_claim: @OpcodeInteractionClaim,
     ) -> OpcodeComponents {
         // Add components
+
+        let OpcodeClaim {
+            add: add_claims,
+            add_small: add_small_claims,
+            add_ap: add_ap_claims,
+            assert_eq: assert_eq_claims,
+            assert_eq_imm: assert_eq_imm_claims,
+            assert_eq_double_deref: assert_eq_double_deref_claims,
+            blake: blake_claims,
+            call: call_claims,
+            call_rel_imm: call_rel_imm_claims,
+            generic: generic_claims,
+            jnz: jnz_claims,
+            jnz_taken: jnz_taken_claims,
+            jump: jump_claims,
+            jump_double_deref: jump_double_deref_claims,
+            jump_rel: jump_rel_claims,
+            jump_rel_imm: jump_rel_imm_claims,
+            mul: mul_claims,
+            mul_small: mul_small_claims,
+            qm31: qm31_claims,
+            ret: ret_claims,
+        } = claim;
+
+        let OpcodeInteractionClaim {
+            add: add_interaction_claims,
+            add_small: add_small_interaction_claims,
+            add_ap: add_ap_interaction_claims,
+            assert_eq: assert_eq_interaction_claims,
+            assert_eq_imm: assert_eq_imm_interaction_claims,
+            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
+            blake: blake_interaction_claims,
+            call: call_interaction_claims,
+            call_rel_imm: call_rel_imm_interaction_claims,
+            generic: generic_interaction_claims,
+            jnz: jnz_interaction_claims,
+            jnz_taken: jnz_taken_interaction_claims,
+            jump: jump_interaction_claims,
+            jump_double_deref: jump_double_deref_interaction_claims,
+            jump_rel: jump_rel_interaction_claims,
+            jump_rel_imm: jump_rel_imm_interaction_claims,
+            mul: mul_interaction_claims,
+            mul_small: mul_small_interaction_claims,
+            qm31: qm31_interaction_claims,
+            ret: ret_interaction_claims,
+        } = interaction_claim;
+
+        assert!(generic_claims.is_empty(), "The generic opcode is not supported.");
+
+        // Add components
         let mut add_components = array![];
-        let mut add_claims = claim.add.span();
-        let mut add_interaction_claims = interaction_claim.add.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_claims.pop_front(), add_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(add_claims.span(), add_interaction_claims.span()) {
             add_components
                 .append(
                     components::add_opcode::Component {
@@ -1999,15 +2047,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(add_claims.is_empty());
-        assert!(add_interaction_claims.is_empty());
 
         // Add Small components
         let mut add_small_components = array![];
-        let mut add_small_claims = claim.add_small.span();
-        let mut add_small_interaction_claims = interaction_claim.add_small.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_small_claims.pop_front(), add_small_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            add_small_claims.span(), add_small_interaction_claims.span(),
+        ) {
             add_small_components
                 .append(
                     components::add_opcode_small::Component {
@@ -2026,15 +2071,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(add_small_claims.is_empty());
-        assert!(add_small_interaction_claims.is_empty());
 
         // Add AP components
         let mut add_ap_components = array![];
-        let mut add_ap_claims = claim.add_ap.span();
-        let mut add_ap_interaction_claims = interaction_claim.add_ap.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_ap_claims.pop_front(), add_ap_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            add_ap_claims.span(), add_ap_interaction_claims.span(),
+        ) {
             add_ap_components
                 .append(
                     components::add_ap_opcode::Component {
@@ -2061,15 +2103,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(add_ap_claims.is_empty());
-        assert!(add_ap_interaction_claims.is_empty());
 
         // Assert Eq components
         let mut assert_eq_components = array![];
-        let mut assert_eq_claims = claim.assert_eq.span();
-        let mut assert_eq_interaction_claims = interaction_claim.assert_eq.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (assert_eq_claims.pop_front(), assert_eq_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_claims.span(), assert_eq_interaction_claims.span(),
+        ) {
             assert_eq_components
                 .append(
                     components::assert_eq_opcode::Component {
@@ -2085,15 +2124,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(assert_eq_claims.is_empty());
-        assert!(assert_eq_interaction_claims.is_empty());
 
         // Assert Eq Imm components
         let mut assert_eq_imm_components = array![];
-        let mut assert_eq_imm_claims = claim.assert_eq_imm.span();
-        let mut assert_eq_imm_interaction_claims = interaction_claim.assert_eq_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (assert_eq_imm_claims.pop_front(), assert_eq_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_imm_claims.span(), assert_eq_imm_interaction_claims.span(),
+        ) {
             assert_eq_imm_components
                 .append(
                     components::assert_eq_opcode_imm::Component {
@@ -2109,20 +2145,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(assert_eq_imm_claims.is_empty());
-        assert!(assert_eq_imm_interaction_claims.is_empty());
 
         // Assert Eq Double Deref components
         let mut assert_eq_double_deref_components = array![];
-        let mut assert_eq_double_deref_claims = claim.assert_eq_double_deref.span();
-        let mut assert_eq_double_deref_interaction_claims = interaction_claim
-            .assert_eq_double_deref
-            .span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (
-                assert_eq_double_deref_claims.pop_front(),
-                assert_eq_double_deref_interaction_claims.pop_front(),
-            ) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_double_deref_claims.span(), assert_eq_double_deref_interaction_claims.span(),
+        ) {
             assert_eq_double_deref_components
                 .append(
                     components::assert_eq_opcode_double_deref::Component {
@@ -2141,14 +2169,11 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(assert_eq_double_deref_claims.is_empty());
-        assert!(assert_eq_double_deref_interaction_claims.is_empty());
 
         let mut blake_components = array![];
-        let mut blake_claims = claim.blake.span();
-        let mut blake_interaction_claims = interaction_claim.blake.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (blake_claims.pop_front(), blake_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            blake_claims.span(), blake_interaction_claims.span(),
+        ) {
             blake_components
                 .append(
                     components::blake_compress_opcode::Component {
@@ -2176,15 +2201,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(blake_claims.is_empty());
-        assert!(blake_interaction_claims.is_empty());
 
         // Call components
         let mut call_components = array![];
-        let mut call_claims = claim.call.span();
-        let mut call_interaction_claims = interaction_claim.call.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (call_claims.pop_front(), call_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            call_claims.span(), call_interaction_claims.span(),
+        ) {
             call_components
                 .append(
                     components::call_opcode::Component {
@@ -2203,15 +2225,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(call_claims.is_empty());
-        assert!(call_interaction_claims.is_empty());
 
         // Call Rel_imm components
         let mut call_rel_imm_components = array![];
-        let mut call_rel_imm_claims = claim.call_rel_imm.span();
-        let mut call_rel_imm_interaction_claims = interaction_claim.call_rel_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (call_rel_imm_claims.pop_front(), call_rel_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            call_rel_imm_claims.span(), call_rel_imm_interaction_claims.span(),
+        ) {
             call_rel_imm_components
                 .append(
                     components::call_opcode_rel_imm::Component {
@@ -2230,15 +2249,10 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(call_rel_imm_claims.is_empty());
-        assert!(call_rel_imm_interaction_claims.is_empty());
 
         // Jnz components
         let mut jnz_components = array![];
-        let mut jnz_claims = claim.jnz.span();
-        let mut jnz_interaction_claims = interaction_claim.jnz.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jnz_claims.pop_front(), jnz_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
             jnz_components
                 .append(
                     components::jnz_opcode::Component {
@@ -2257,15 +2271,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jnz_claims.is_empty());
-        assert!(jnz_interaction_claims.is_empty());
 
         // Jnz Taken components
         let mut jnz_taken_components = array![];
-        let mut jnz_taken_claims = claim.jnz_taken.span();
-        let mut jnz_taken_interaction_claims = interaction_claim.jnz_taken.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jnz_taken_claims.pop_front(), jnz_taken_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jnz_taken_claims.span(), jnz_taken_interaction_claims.span(),
+        ) {
             jnz_taken_components
                 .append(
                     components::jnz_opcode_taken::Component {
@@ -2284,15 +2295,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jnz_taken_claims.is_empty());
-        assert!(jnz_taken_interaction_claims.is_empty());
 
         // Jump components
         let mut jump_components = array![];
-        let mut jump_claims = claim.jump.span();
-        let mut jump_interaction_claims = interaction_claim.jump.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_claims.pop_front(), jump_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_claims.span(), jump_interaction_claims.span(),
+        ) {
             jump_components
                 .append(
                     components::jump_opcode::Component {
@@ -2311,18 +2319,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jump_claims.is_empty());
-        assert!(jump_interaction_claims.is_empty());
 
         // Jump Double Deref components
         let mut jump_double_deref_components = array![];
-        let mut jump_double_deref_claims = claim.jump_double_deref.span();
-        let mut jump_double_deref_interaction_claims = interaction_claim.jump_double_deref.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (
-                jump_double_deref_claims.pop_front(),
-                jump_double_deref_interaction_claims.pop_front(),
-            ) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_double_deref_claims.span(), jump_double_deref_interaction_claims.span(),
+        ) {
             jump_double_deref_components
                 .append(
                     components::jump_opcode_double_deref::Component {
@@ -2341,15 +2343,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jump_double_deref_claims.is_empty());
-        assert!(jump_double_deref_interaction_claims.is_empty());
 
         // Jump Rel components
         let mut jump_rel_components = array![];
-        let mut jump_rel_claims = claim.jump_rel.span();
-        let mut jump_rel_interaction_claims = interaction_claim.jump_rel.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_rel_claims.pop_front(), jump_rel_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_rel_claims.span(), jump_rel_interaction_claims.span(),
+        ) {
             jump_rel_components
                 .append(
                     components::jump_opcode_rel::Component {
@@ -2368,15 +2367,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jump_rel_claims.is_empty());
-        assert!(jump_rel_interaction_claims.is_empty());
 
         // Jump Rel Imm components
         let mut jump_rel_imm_components = array![];
-        let mut jump_rel_imm_claims = claim.jump_rel_imm.span();
-        let mut jump_rel_imm_interaction_claims = interaction_claim.jump_rel_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_rel_imm_claims.pop_front(), jump_rel_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_rel_imm_claims.span(), jump_rel_imm_interaction_claims.span(),
+        ) {
             jump_rel_imm_components
                 .append(
                     components::jump_opcode_rel_imm::Component {
@@ -2395,15 +2391,10 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(jump_rel_imm_claims.is_empty());
-        assert!(jump_rel_imm_interaction_claims.is_empty());
 
         // Mul components
         let mut mul_components = array![];
-        let mut mul_claims = claim.mul.span();
-        let mut mul_interaction_claims = interaction_claim.mul.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (mul_claims.pop_front(), mul_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(mul_claims.span(), mul_interaction_claims.span()) {
             mul_components
                 .append(
                     components::mul_opcode::Component {
@@ -2454,15 +2445,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(mul_claims.is_empty());
-        assert!(mul_interaction_claims.is_empty());
 
         // Mul Small components
         let mut mul_small_components = array![];
-        let mut mul_small_claims = claim.mul_small.span();
-        let mut mul_small_interaction_claims = interaction_claim.mul_small.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (mul_small_claims.pop_front(), mul_small_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            mul_small_claims.span(), mul_small_interaction_claims.span(),
+        ) {
             mul_small_components
                 .append(
                     components::mul_opcode_small::Component {
@@ -2485,15 +2473,12 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(mul_small_claims.is_empty());
-        assert!(mul_small_interaction_claims.is_empty());
 
         // QM31 components
         let mut qm31_components = array![];
-        let mut qm31_claims = claim.qm31.span();
-        let mut qm31_interaction_claims = interaction_claim.qm31.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (qm31_claims.pop_front(), qm31_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            qm31_claims.span(), qm31_interaction_claims.span(),
+        ) {
             qm31_components
                 .append(
                     components::qm_31_add_mul_opcode::Component {
@@ -2516,15 +2501,10 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(qm31_claims.is_empty());
-        assert!(qm31_interaction_claims.is_empty());
 
         // Ret components
         let mut ret_components = array![];
-        let mut ret_claims = claim.ret.span();
-        let mut ret_interaction_claims = interaction_claim.ret.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (ret_claims.pop_front(), ret_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(ret_claims.span(), ret_interaction_claims.span()) {
             ret_components
                 .append(
                     components::ret_opcode::Component {
@@ -2543,8 +2523,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     },
                 );
         }
-        assert!(ret_claims.is_empty());
-        assert!(ret_interaction_claims.is_empty());
 
         OpcodeComponents {
             add: add_components,
