@@ -35,6 +35,7 @@ jobs:
       - run: scarb test --features=qm31_opcode --package stwo_verifier_core
       - run: scarb test --features=qm31_opcode --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
+      - run: scarb test --package stwo_verifier_utils
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:
