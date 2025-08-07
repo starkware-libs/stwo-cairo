@@ -2,8 +2,9 @@ use std::path::PathBuf;
 
 use cairo_air::utils::ProofFormat;
 use clap::Parser;
-use dev_utils::utils::{create_and_serialize_proof, run_program_and_adapter, Error};
-use stwo_cairo_adapter::test_utils::read_compiled_cairo_program;
+use dev_utils::utils::{
+    create_and_serialize_proof, read_compiled_cairo_program, run_program_and_adapter, Error,
+};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -62,7 +63,7 @@ fn main() -> Result<(), Error> {
     let args = Args::try_parse_from(std::env::args())?;
 
     let compiled_program = read_compiled_cairo_program(&args.compiled_program);
-    let input = run_program_and_adapter(&compiled_program);
+    let input = run_program_and_adapter(&compiled_program, None);
 
     create_and_serialize_proof(
         input,
