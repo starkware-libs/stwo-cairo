@@ -1,14 +1,12 @@
-use std::fs::{read, read_to_string, File};
+use std::fs::{read_to_string, File};
 use std::io::Write;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::ProverInputInfo;
 use itertools::Itertools;
 use serde_json::{to_string_pretty, Value};
-use tracing::{span, Level};
 
 pub fn program_from_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
@@ -34,22 +32,6 @@ pub fn program_from_casm(
     (program, program_len)
 }
 
-pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
-    let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
-
-    let bytes = read(prover_input_info_path).unwrap_or_else(|_| {
-        panic!(
-            "Unable to read prover input info at path {}",
-            prover_input_info_path.display()
-        )
-    });
-    let (prover_input_info, _): (ProverInputInfo, usize) =
-        bincode::serde::decode_from_slice(&bytes, bincode::config::standard())
-            .expect("Unable to decode prover input info");
-
-    prover_input_info
-}
-
 pub fn get_test_program(test_name: &str) -> Program {
     let program_path = get_compiled_cairo_program_path(test_name);
     let bytes =
@@ -69,13 +51,6 @@ pub fn get_prover_input_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input.json")
-}
-
-pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("prover_input_info")
 }
 
 pub fn get_proof_file_path(test_name: &str) -> PathBuf {
