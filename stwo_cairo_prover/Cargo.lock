@@ -3280,6 +3280,7 @@ dependencies = [
  "cairo-vm",
  "crypto-bigint",
  "dashmap",
+ "dev-utils",
  "indoc",
  "itertools 0.12.1",
  "log",
@@ -3350,6 +3351,7 @@ version = "0.1.0"
 dependencies = [
  "cairo-air",
  "cairo-vm",
+ "dev-utils",
  "hex",
  "itertools 0.12.1",
  "num-traits",

@@ -35,6 +35,7 @@ stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
 
 [dev-dependencies]
+dev-utils.workspace = true
 cairo-vm = { workspace = true, default-features = true }
 tempfile = "3.19.1"
 test-log = { version = "0.2.17", features = ["trace"] }

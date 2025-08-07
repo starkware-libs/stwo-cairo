@@ -32,3 +32,4 @@ crypto-bigint = "0.5.1"
 cairo-lang-casm.workspace = true
 rand.workspace = true
 test-case.workspace = true
+dev-utils.workspace = true
