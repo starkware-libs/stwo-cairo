@@ -138,9 +138,9 @@ pub fn adapt_to_stwo_input(
     public_segment_context: PublicSegmentContext,
 ) -> Result<ProverInput, VmImportError> {
     let state_transitions = StateTransitions::from_slice_parallel(trace, &memory);
-    let mut builtins_segments = BuiltinSegments::from_memory_segments(memory_segments);
-    builtins_segments.fill_memory_holes(&mut memory);
-    builtins_segments.pad_builtin_segments(&mut memory);
+    let mut builtin_segments = BuiltinSegments::from_memory_segments(memory_segments);
+    builtin_segments.fill_memory_holes(&mut memory);
+    builtin_segments.pad_builtin_segments(&mut memory);
     let (memory, inst_cache) = memory.build();
 
     Ok(ProverInput {
@@ -148,7 +148,7 @@ pub fn adapt_to_stwo_input(
         memory,
         inst_cache,
         public_memory_addresses,
-        builtins_segments,
+        builtin_segments,
         public_segment_context,
     })
 }
