@@ -1,4 +1,4 @@
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, HashMap};
 
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
@@ -140,14 +140,14 @@ impl Relocator {
     // Relocates the publoc memory addresses according to the relocation table.
     pub fn relocate_public_addresses(
         &self,
-        public_addresses: &BTreeMap<usize, Vec<usize>>,
+        public_addresses: &HashMap<usize, Vec<(usize, usize)>>,
     ) -> Vec<u32> {
         let _span = span!(Level::INFO, "relocate_public_addresses").entered();
         let mut res = vec![];
         for (segment_index, offsets) in public_addresses {
             let base_addr = self.relocation_table[*segment_index];
 
-            for offset in offsets {
+            for (offset, _) in offsets {
                 let addr = base_addr + *offset as u32;
                 assert!(
                     addr < self.relocation_table[segment_index + 1],
@@ -291,7 +291,7 @@ pub mod relocator_tests {
     }
 
     #[test]
-    fn test_create_builtins_segments() {
+    fn test_create_builtin_segments() {
         let builtin_segment0 = vec![
             Some(MaybeRelocatable::Int(1.into())),
             Some(MaybeRelocatable::Int(9.into())),
@@ -315,21 +315,21 @@ pub mod relocator_tests {
         ];
 
         let relocatble_memory = [segment0, builtin_segment1, segment2];
-        let builtins_segments =
+        let builtin_segments =
             BTreeMap::from([(0, BuiltinName::bitwise), (1, BuiltinName::range_check)]);
 
         let relocator = Relocator::new(&relocatble_memory);
-        let builtins_segments = relocator.relocate_builtin_segments(&builtins_segments);
+        let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
 
         assert_eq!(
-            builtins_segments.bitwise,
+            builtin_segments.bitwise,
             Some(MemorySegmentAddresses {
                 begin_addr: 1,
                 stop_ptr: 81
             })
         );
         assert_eq!(
-            builtins_segments.range_check_bits_128,
+            builtin_segments.range_check_bits_128,
             Some(MemorySegmentAddresses {
                 begin_addr: 81,
                 stop_ptr: 97
@@ -357,8 +357,11 @@ pub mod relocator_tests {
         let memory = create_test_memory();
         let relocator = Relocator::new(&memory);
 
-        let relocatble_public_addrs = BTreeMap::from([(0, vec![2]), (1, vec![0, 1, 43])]);
-        let relocated_public_addrs = relocator.relocate_public_addresses(&relocatble_public_addrs);
+        let relocatble_public_addrs =
+            HashMap::from([(0, vec![(2, 0)]), (1, vec![(0, 0), (1, 0), (43, 0)])]);
+        let mut relocated_public_addrs =
+            relocator.relocate_public_addresses(&relocatble_public_addrs);
+        relocated_public_addrs.sort();
 
         let expected_relocated_public_addresses = vec![3, 4, 5, 47];
         assert_eq!(relocated_public_addrs, expected_relocated_public_addresses);
