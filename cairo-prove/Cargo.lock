@@ -604,7 +604,7 @@ dependencies = [
 [[package]]
 name = "cairo-air"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "clap",
  "itertools 0.12.1",
@@ -3404,7 +3404,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-adapter"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "bincode 2.0.1",
  "bytemuck",
@@ -3429,7 +3429,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-common"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3446,7 +3446,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "starknet-ff",
  "stwo",
@@ -3458,7 +3458,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "quote",
  "stwo",
@@ -3503,7 +3503,7 @@ dependencies = [
 [[package]]
 name = "stwo_cairo_prover"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=66db04a#66db04ac276027f702a470ba571ac33a3a54c827"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "cairo-air",
  "hex",
