@@ -33,6 +33,7 @@ jobs:
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_air
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_verifier
       - run: scarb test --features=poseidon252_verifier --package stwo_verifier_utils
+      - run: scarb execute --package stwo_cairo_verifier  --features poseidon252_verifier --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
       - run: scarb test --features=qm31_opcode --package stwo_verifier_core
       - run: scarb test --features=qm31_opcode --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
