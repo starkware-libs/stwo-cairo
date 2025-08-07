@@ -6,7 +6,7 @@ edition = "2021"
 
 [features]
 slow-tests = []
-std = ["dep:sonic-rs"]
+std = ["dep:sonic-rs", "cairo-vm/std"]
 
 [dependencies]
 bytemuck.workspace = true
