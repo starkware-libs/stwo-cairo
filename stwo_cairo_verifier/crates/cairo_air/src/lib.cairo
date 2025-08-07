@@ -306,6 +306,15 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(largest_id < P_U32);
 }
 
+/// Checks that the ranges given by `segment_ranges` are valid given the claim.
+///
+/// `segment_ranges` specifies the memory segments for each builtin used by the Cairo program.
+/// `builtins_claim` describes the address ranges that are verified by the builtins AIR.
+///
+/// This function ensures that all builtin segments are fully contained within the address ranges
+/// verified by the builtins AIR.
+/// The builtins keccak, ec_op, and ecdsa, are not supported, and therefore it's checked that their
+/// segments are empty.
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
     let PublicSegmentRanges {
         ec_op: ec_op_segment_range,
