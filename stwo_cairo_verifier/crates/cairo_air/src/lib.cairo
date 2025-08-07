@@ -306,6 +306,13 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(largest_id < P_U32);
 }
 
+/// Verifies the used builtins are valid.
+/// `segment_ranges` contains the segments where the builtins are used by the Cairo program.
+/// `builtins_claim` contains the address space in which the builtins AIR verifies correctness.
+/// This function makes sure that all the builtins segments are contained in the address space
+/// verified by the builtins AIR.
+/// There are a total of a 11 builtins, but 3 of them, keccak, ec_op and ecdsa, are not supported,
+/// and therefore it's checked that their segments are empty.
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
     let PublicSegmentRanges {
         ec_op: ec_op_segment_range,
