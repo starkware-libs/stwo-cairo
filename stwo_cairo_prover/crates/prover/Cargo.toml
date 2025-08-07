@@ -4,6 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
+std = ["cairo-vm/std", "stwo-cairo-adapter/std"]
 slow-tests = []
 relation-tracker = []
 

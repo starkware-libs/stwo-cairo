@@ -3,6 +3,9 @@ name = "cairo-air"
 version.workspace = true
 edition.workspace = true
 
+[features]
+std = ["stwo-cairo-adapter/std"]
+
 [dependencies]
 itertools.workspace = true
 clap.workspace = true
