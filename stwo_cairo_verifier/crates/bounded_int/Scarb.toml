@@ -5,12 +5,10 @@ edition = "2023_10"
 
 [lib]
 
-[cairo]
-
 [tool.fmt]
 sort-module-level-items = true
 
 [dependencies]
 
 [dev-dependencies]
-cairo_test = "2.11.4"
+cairo_test = "2.12.0"

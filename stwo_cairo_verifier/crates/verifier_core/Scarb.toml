@@ -11,9 +11,6 @@ poseidon252_verifier = ["stwo_verifier_utils/poseidon252_verifier"]
 qm31_opcode = ["stwo_verifier_utils/qm31_opcode"]
 outputs_packing = ["stwo_verifier_utils/outputs_packing"]
 
-[cairo]
-enable-gas = false
-
 [tool.fmt]
 sort-module-level-items = true
 
@@ -22,4 +19,4 @@ bounded_int = { path = "../bounded_int" }
 stwo_verifier_utils = { path = "../verifier_utils" }
 
 [dev-dependencies]
-cairo_test = "2.11.4"
+cairo_test = "2.12.0"
