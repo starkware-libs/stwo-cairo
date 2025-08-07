@@ -44,6 +44,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
                 word = word * M31_SHIFT + v2.inner.into();
                 word = word * M31_SHIFT + v3.inner.into();
                 word = word * M31_SHIFT_POW_4;
+                word += 4 * M31_SHIFT_POW_8;
                 let (hash, _, _) = hades_permutation(word, 1, 0);
                 return hash;
             }
