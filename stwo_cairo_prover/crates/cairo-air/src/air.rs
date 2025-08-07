@@ -4,7 +4,8 @@ use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
 use stwo::core::compact_binary::{
-    strip_expected_tag, strip_expected_version, CompactBinary, ZippedCompactBinary,
+    strip_expected_tag, strip_expected_version, CompactBinary, CompactDeserializeError,
+    CompactSerializeError, ZippedCompactBinary,
 };
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, QM31};
@@ -73,7 +74,7 @@ impl<H: MerkleHasher> CompactBinary for CairoProof<H>
 where
     H::Hash: CompactBinary,
 {
-    fn compact_serialize(&self, output: &mut Vec<u8>) {
+    fn compact_serialize(&self, output: &mut Vec<u8>) -> Result<(), CompactSerializeError> {
         let Self {
             claim,
             interaction_pow,
@@ -81,38 +82,39 @@ where
             stark_proof,
         } = self;
         let version = 0;
-        u32::compact_serialize(&version, output);
+        u32::compact_serialize(&version, output)?;
 
         // With ZIP:
         let claim = ZippedCompactBinary(claim);
         let interaction_claim = ZippedCompactBinary(interaction_claim);
         let stark_proof = ZippedCompactBinary(stark_proof);
-        usize::compact_serialize(&0, output);
-        claim.compact_serialize(output);
-        usize::compact_serialize(&1, output);
-        interaction_pow.compact_serialize(output);
-        usize::compact_serialize(&2, output);
-        interaction_claim.compact_serialize(output);
-        usize::compact_serialize(&3, output);
-        stark_proof.compact_serialize(output);
+        usize::compact_serialize(&0, output)?;
+        claim.compact_serialize(output)?;
+        usize::compact_serialize(&1, output)?;
+        interaction_pow.compact_serialize(output)?;
+        usize::compact_serialize(&2, output)?;
+        interaction_claim.compact_serialize(output)?;
+        usize::compact_serialize(&3, output)?;
+        stark_proof.compact_serialize(output)?;
+        Ok(())
     }
 
-    fn compact_deserialize(input: &[u8]) -> (&[u8], Self) {
-        let input = strip_expected_version(input, 0);
+    fn compact_deserialize(input: &[u8]) -> Result<(&[u8], Self), CompactDeserializeError> {
+        let input = strip_expected_version(input, 0)?;
 
         // With ZIP:
-        let input = strip_expected_tag(input, 0);
-        let (input, claim) = ZippedCompactBinary::<&CairoClaim>::compact_deserialize(input);
-        let input = strip_expected_tag(input, 1);
-        let (input, interaction_pow) = u64::compact_deserialize(input);
-        let input = strip_expected_tag(input, 2);
+        let input = strip_expected_tag(input, 0)?;
+        let (input, claim) = ZippedCompactBinary::<&CairoClaim>::compact_deserialize(input)?;
+        let input = strip_expected_tag(input, 1)?;
+        let (input, interaction_pow) = u64::compact_deserialize(input)?;
+        let input = strip_expected_tag(input, 2)?;
         let (input, interaction_claim) =
-            ZippedCompactBinary::<&CairoInteractionClaim>::compact_deserialize(input);
-        let input = strip_expected_tag(input, 3);
+            ZippedCompactBinary::<&CairoInteractionClaim>::compact_deserialize(input)?;
+        let input = strip_expected_tag(input, 3)?;
         let (input, stark_proof) =
-            ZippedCompactBinary::<&StarkProof<H>>::compact_deserialize(input);
+            ZippedCompactBinary::<&StarkProof<H>>::compact_deserialize(input)?;
 
-        (
+        Ok((
             input,
             Self {
                 claim,
@@ -120,7 +122,7 @@ where
                 interaction_claim,
                 stark_proof,
             },
-        )
+        ))
     }
 }
 

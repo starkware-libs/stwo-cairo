@@ -48,7 +48,12 @@ where
         }
         ProofFormat::CompactBinary => {
             let mut compact_bytes: Vec<u8> = Vec::new();
-            CompactBinary::compact_serialize(proof, &mut compact_bytes);
+            CompactBinary::compact_serialize(proof, &mut compact_bytes).map_err(|err| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("Failed to serialize proof: {:?}", err),
+                )
+            })?;
             proof_file.write_all(&compact_bytes)?;
         }
     }
@@ -73,7 +78,13 @@ where
             <CairoProof<<MC as MerkleChannel>::H> as stwo_cairo_serialize::CairoDeserialize>::deserialize(&mut felts.iter())
         }
         ProofFormat::CompactBinary => {
-            let (_, cairo_proof) = CairoProof::<MC::H>::compact_deserialize(bytes);
+            let (_, cairo_proof) =
+                CairoProof::<MC::H>::compact_deserialize(bytes).map_err(|err| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        format!("Failed to deserialize proof: {:?}", err),
+                    )
+                })?;
             cairo_proof
         }
     };
