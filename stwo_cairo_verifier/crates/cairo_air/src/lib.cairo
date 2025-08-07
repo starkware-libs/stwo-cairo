@@ -307,20 +307,34 @@ fn verify_claim(claim: @CairoClaim) {
 }
 
 fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
+    let PublicSegmentRanges {
+        ec_op: ec_op_segment_range,
+        ecdsa: ecdsa_segment_range,
+        keccak: keccak_segment_range,
+        output: output_segment_range,
+        pedersen: pedersen_segment_range,
+        range_check_128: range_check_128_segment_range,
+        range_check_96: range_check_96_segment_range,
+        bitwise: bitwise_segment_range,
+        add_mod: add_mod_segment_range,
+        mul_mod: mul_mod_segment_range,
+        poseidon: poseidon_segment_range,
+    } = segment_ranges;
+
     // Check that non-supported builtins aren't used.
-    if let Some(ec_op) = segment_ranges.ec_op {
+    if let Some(ec_op) = ec_op_segment_range {
         assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
     }
-    if let Some(ecdsa) = segment_ranges.ecdsa {
+    if let Some(ecdsa) = ecdsa_segment_range {
         assert!(ecdsa.start_ptr.value == ecdsa.stop_ptr.value);
     }
-    if let Some(keccak) = segment_ranges.keccak {
+    if let Some(keccak) = keccak_segment_range {
         assert!(keccak.start_ptr.value == keccak.stop_ptr.value);
     }
 
     // Output builtin.
-    assert!(segment_ranges.output.stop_ptr.value <= @pow2(31));
-    assert!(segment_ranges.output.start_ptr.value <= segment_ranges.output.stop_ptr.value);
+    assert!(output_segment_range.stop_ptr.value <= @pow2(31));
+    assert!(output_segment_range.start_ptr.value <= output_segment_range.stop_ptr.value);
 
     // All other supported builtins.
     let BuiltinsClaim {
@@ -342,7 +356,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.range_check_128,
+        *range_check_128_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
@@ -355,7 +369,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.range_check_96,
+        *range_check_96_segment_range,
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
@@ -367,7 +381,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     segment_start: claim.bitwise_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.bitwise,
+        *bitwise_segment_range,
         BITWISE_MEMORY_CELLS,
     );
     check_builtin(
@@ -379,7 +393,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     segment_start: claim.add_mod_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.add_mod,
+        *add_mod_segment_range,
         ADD_MOD_MEMORY_CELLS,
     );
     check_builtin(
@@ -391,7 +405,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     segment_start: claim.mul_mod_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.mul_mod,
+        *mul_mod_segment_range,
         MUL_MOD_MEMORY_CELLS,
     );
     check_builtin(
@@ -403,7 +417,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.pedersen,
+        *pedersen_segment_range,
         PEDERSEN_MEMORY_CELLS,
     );
     check_builtin(
@@ -415,7 +429,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
                     segment_start: claim.poseidon_builtin_segment_start, log_size: claim.log_size,
                 },
             ),
-        *segment_ranges.poseidon,
+        *poseidon_segment_range,
         POSEIDON_MEMORY_CELLS,
     );
 }
