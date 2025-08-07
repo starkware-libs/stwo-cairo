@@ -176,6 +176,7 @@ pub fn run_program_and_adapter(
     let cairo_run_config = CairoRunConfig {
         entrypoint: "main",
         trace_enabled: true,
+        relocate_trace: false,
         relocate_mem: false,
         layout: LayoutName::all_cairo_stwo,
         proof_mode: true,
@@ -190,12 +191,7 @@ pub fn run_program_and_adapter(
 
     let runner = cairo_run_program(program, &cairo_run_config, hint_processor)
         .expect("Failed to run cairo program");
-    adapter(
-        &mut runner
-            .get_prover_input_info()
-            .expect("Failed to get prover input info from finished runner"),
-    )
-    .expect("Failed to run adapter")
+    adapter(&runner)
 }
 
 pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {

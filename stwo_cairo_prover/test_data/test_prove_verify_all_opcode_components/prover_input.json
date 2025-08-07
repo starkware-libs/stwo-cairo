@@ -1,5 +1,5 @@
 {
-  "builtins_segments": {
+  "builtin_segments": {
     "add_mod": null,
     "bitwise": null,
     "mul_mod": null,

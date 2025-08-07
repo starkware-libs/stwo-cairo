@@ -1,5 +1,5 @@
 {
-  "builtins_segments": {
+  "builtin_segments": {
     "add_mod": {
       "begin_addr": 6713,
       "stop_ptr": 7161

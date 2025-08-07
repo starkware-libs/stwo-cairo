@@ -22,6 +22,6 @@ num-bigint = "0.4.6"
 
 serde_json.workspace = true
 cairo-vm.workspace = true
-cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "0f39db38bdd90dc7dffef04a972d332e3b23bb73" }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "0f39db38bdd90dc7dffef04a972d332e3b23bb73" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "0f39db38bdd90dc7dffef04a972d332e3b23bb73" }

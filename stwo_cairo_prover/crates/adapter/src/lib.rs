@@ -26,7 +26,7 @@ pub struct ProverInput {
     pub memory: Memory,
     pub inst_cache: Vec<(u32, u128)>,
     pub public_memory_addresses: Vec<u32>,
-    pub builtins_segments: BuiltinSegments,
+    pub builtin_segments: BuiltinSegments,
     pub public_segment_context: PublicSegmentContext,
 }
 
@@ -110,7 +110,7 @@ impl ExecutionResources {
                 .counts()
                 .into_iter()
                 .collect(),
-            builtin_instance_counts: input.builtins_segments.get_counts(),
+            builtin_instance_counts: input.builtin_segments.get_counts(),
             memory_tables_sizes: MemoryTablesSizes {
                 address_to_id: input.memory.address_to_id.len(),
                 id_to_big: input.memory.f252_values.len(),
@@ -151,7 +151,7 @@ pub fn log_prover_input(
         memory,
         inst_cache: _,
         public_memory_addresses: _,
-        builtins_segments: _,
+        builtin_segments: _,
         public_segment_context: _,
     }: &ProverInput,
 ) {
