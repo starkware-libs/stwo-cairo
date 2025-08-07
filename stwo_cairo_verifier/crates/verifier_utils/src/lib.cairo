@@ -193,7 +193,8 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
 /// Returns the hash of the memory section, for packing purposes.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 /// Note: no encoding is done at the moment.
-// TODO(Gali): There is no encoding done at the moment with poseidon, so this function is equivalent to `hash_memory_section`.
+// TODO(Gali): There is no encoding done at the moment with poseidon, so this function is equivalent
+// to `hash_memory_section`.
 #[cfg(feature: "poseidon252_verifier")]
 pub fn encode_and_hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
     hash_memory_section(section)
