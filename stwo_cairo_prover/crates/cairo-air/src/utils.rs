@@ -39,12 +39,16 @@ where
 
     match proof_format {
         ProofFormat::Json => {
-            fs::write(&proof_path, serde_json::to_string(&proof)?)?;
+            proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
         }
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(proof, &mut serialized);
-            fs::write(&proof_path, serde_json::to_string(&serialized)?)?;
+            let hex_strings: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{:x}", felt))
+                .collect();
+            fs::write(&proof_path, serde_json::to_string(&hex_strings)?)?;
         }
         ProofFormat::CompactBinary => {
             let mut compact_bytes: Vec<u8> = Vec::new();
@@ -72,9 +76,9 @@ where
     <MC::H as MerkleHasher>::Hash: CairoDeserialize + CairoSerialize + CompactBinary,
 {
     let cairo_proof = match proof_format {
-        ProofFormat::Json => serde_json::from_slice(bytes).unwrap(),
+        ProofFormat::Json => serde_json::from_slice(bytes)?,
         ProofFormat::CairoSerde => {
-            let felts: Vec<starknet_ff::FieldElement> = serde_json::from_slice(bytes).unwrap();
+            let felts: Vec<starknet_ff::FieldElement> = serde_json::from_slice(bytes)?;
             <CairoProof<<MC as MerkleChannel>::H> as stwo_cairo_serialize::CairoDeserialize>::deserialize(&mut felts.iter())
         }
         ProofFormat::CompactBinary => {
