@@ -12,7 +12,10 @@
       "begin_addr": 7161,
       "stop_ptr": 7609
     },
-    "output": null,
+    "output": {
+      "begin_addr": 5639,
+      "stop_ptr": 5689
+    },
     "pedersen": {
       "begin_addr": 5689,
       "stop_ptr": 5881
