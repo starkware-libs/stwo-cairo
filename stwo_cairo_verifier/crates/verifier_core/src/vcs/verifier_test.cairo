@@ -11,20 +11,20 @@ use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTra
 #[test]
 #[cfg(feature: "poseidon252_verifier")]
 fn test_verifier() {
-    let root = 0x41255dc66c0226f688269289df136a92065192c579d0f907c636acdeeb1edcb;
+    let root = 0x487d4619a3b49e2d33f289d6a47f4cdf3f71a03f48ac7012d36c2da9ed91d80;
     let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
     let decommitment = MerkleDecommitment::<
         PoseidonMerkleHasher,
     > {
         hash_witness: array![
-            0x037056abc40b9e8c2a67826f54a8c379b0b3ef46629e6a19609e1144bf230f36,
-            0x068708ce1c3fc019a43494bd262e87fc70e5c1f68f42881f120fe90ea2bf2201,
-            0x01270a97c943188a4aa8a839687ff6d2681b070d1d1627466b93843ad26f4cb2,
-            0x06be4322e37fe02371c14436674765da25109e9bc3af4a683c9afea63eb3bdc3,
-            0x0360c78816d1d60758c67c011dcd82396a2ccf85fe49ea45667e3cb9feca3f40,
-            0x01b4e5f9533e652324ab6b5747edc3343db8f1b9432cdcf2e5ea54fa156ba483,
-            0x04a389ddc8e37da68b73c185460f372a5ed8a09eab0f51c63578776db8d1b5ae,
-            0x03adfd255329a9a3d49792362f34630fd6b04cc7efdb3a6a175c70b988915cdc,
+            0x5c76ecdbaa8b3a6304fb93f5fdf88e4280531ef9dc3dbcde458bd94bfa26ae8,
+            0x108997bc3a7f5fe7fc54dfa9d35d17f5aee79947219e205ac76409db6bf50ca,
+            0x31f9875a51ab087340a79425a9c6fd6de719ad49426ae7989aedbcf6c0715e6,
+            0x3b24dd37daaeb333637843bd32e53692305b37b5ee6e91346fb10e39c0dcf4c,
+            0x1aa69036259fd33a58f63fdfc463cdf435d064cd20532b5767832ae9c4f4890,
+            0x7c041574b8c637910d6b81f190b6748f53b2518406201049a8245cd88cce07f,
+            0x3ad10f628663d389c30a470c31ca6483c26d655e3e77a299e42b88d73ee62e,
+            0x1ce41b469e51820da799eabfaef4aa08b3ad84263289f14be28a6a3db4fdb63,
         ]
             .span(),
         column_witness: array![
