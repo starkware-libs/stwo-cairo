@@ -1,11 +1,12 @@
-use std::fs::File;
+use std::fs::{self, File};
 use std::io::Write;
 use std::path::PathBuf;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use stwo::core::channel::MerkleChannel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
 use crate::CairoProof;
@@ -18,6 +19,8 @@ pub enum ProofFormat {
     /// Array of field elements serialized as hex strings.
     /// Compatible with `scarb execute`
     CairoSerde,
+    /// Compact binary format.
+    CompactBinary,
 }
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
@@ -28,11 +31,11 @@ pub fn serialize_proof_to_file<MC: MerkleChannel>(
 ) -> Result<(), std::io::Error>
 where
     MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
+    <MC::H as MerkleHasher>::Hash: CairoSerialize + CompactBinary,
 {
     let span = span!(Level::INFO, "Serialize proof").entered();
 
-    let mut proof_file = File::create(proof_path)?;
+    let mut proof_file = File::create(&proof_path)?;
 
     match proof_format {
         ProofFormat::Json => {
@@ -41,16 +44,54 @@ where
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
             CairoSerialize::serialize(proof, &mut serialized);
-
             let hex_strings: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{:x}", felt))
                 .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
+            fs::write(&proof_path, serde_json::to_string(&hex_strings)?)?;
+        }
+        ProofFormat::CompactBinary => {
+            let mut compact_bytes: Vec<u8> = Vec::new();
+            CompactBinary::compact_serialize(proof, &mut compact_bytes).map_err(|err| {
+                std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("Failed to serialize proof: {:?}", err),
+                )
+            })?;
+            proof_file.write_all(&compact_bytes)?;
         }
     }
 
     span.exit();
     Ok(())
+}
+
+/// Deserializes Cairo proof given the desired format from a file.
+pub fn deserialize_proof_from_bytes<'a, MC: MerkleChannel>(
+    bytes: &'a [u8],
+    proof_format: ProofFormat,
+) -> Result<CairoProof<MC::H>, std::io::Error>
+where
+    MC::H: Serialize + Deserialize<'a>,
+    <MC::H as MerkleHasher>::Hash: CairoDeserialize + CairoSerialize + CompactBinary,
+{
+    let cairo_proof = match proof_format {
+        ProofFormat::Json => serde_json::from_slice(bytes)?,
+        ProofFormat::CairoSerde => {
+            let felts: Vec<starknet_ff::FieldElement> = serde_json::from_slice(bytes)?;
+            <CairoProof<<MC as MerkleChannel>::H> as stwo_cairo_serialize::CairoDeserialize>::deserialize(&mut felts.iter())
+        }
+        ProofFormat::CompactBinary => {
+            let (_, cairo_proof) =
+                CairoProof::<MC::H>::compact_deserialize(bytes).map_err(|err| {
+                    std::io::Error::new(
+                        std::io::ErrorKind::InvalidData,
+                        format!("Failed to deserialize proof: {:?}", err),
+                    )
+                })?;
+            cairo_proof
+        }
+    };
+
+    Ok(cairo_proof)
 }

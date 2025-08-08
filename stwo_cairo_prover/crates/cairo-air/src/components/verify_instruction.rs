@@ -32,7 +32,7 @@ pub struct Eval {
     pub verify_instruction_lookup_elements: relations::VerifyInstruction,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -49,7 +49,7 @@ impl Claim {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }

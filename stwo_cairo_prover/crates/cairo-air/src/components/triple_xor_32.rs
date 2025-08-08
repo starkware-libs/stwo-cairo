@@ -14,7 +14,7 @@ pub struct Eval {
     pub triple_xor_32_lookup_elements: relations::TripleXor32,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -30,7 +30,7 @@ impl Claim {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }

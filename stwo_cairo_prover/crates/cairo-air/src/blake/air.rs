@@ -1,6 +1,7 @@
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::fields::qm31::QM31;
 use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
@@ -13,7 +14,7 @@ use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct BlakeContextClaim {
     pub claim: Option<Claim>,
 }
@@ -38,7 +39,7 @@ impl BlakeContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub blake_round: blake_round::Claim,
     pub blake_g: blake_g::Claim,
@@ -99,7 +100,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct BlakeContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -118,7 +119,7 @@ impl BlakeContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub blake_round: blake_round::InteractionClaim,
     pub blake_g: blake_g::InteractionClaim,

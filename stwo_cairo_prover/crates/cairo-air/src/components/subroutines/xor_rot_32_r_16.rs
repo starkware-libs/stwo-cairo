@@ -2,7 +2,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct XorRot32R16 {}
 
 impl XorRot32R16 {

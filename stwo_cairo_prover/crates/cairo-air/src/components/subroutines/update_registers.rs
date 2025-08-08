@@ -4,7 +4,7 @@ use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 use crate::components::subroutines::cond_felt_252_as_rel_imm::CondFelt252AsRelImm;
 use crate::components::subroutines::range_check_ap::RangeCheckAp;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct UpdateRegisters {}
 
 impl UpdateRegisters {

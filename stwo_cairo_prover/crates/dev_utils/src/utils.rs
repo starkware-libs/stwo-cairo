@@ -5,6 +5,7 @@ use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
@@ -50,7 +51,7 @@ pub fn create_and_serialize_generic_proof<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
     MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
+    <MC::H as MerkleHasher>::Hash: CairoSerialize + CompactBinary,
 {
     let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
 

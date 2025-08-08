@@ -69,26 +69,30 @@ scarb build
 To generate a proof for an execution of a program's executable, run:
 
 ```
-cairo-prove prove <path-to-executable> <path-to-output> --arguments <args>
+cairo-prove prove <path-to-executable> <path-to-output> --arguments <args> --proof-format <proof-format>
 ```
 or:
 
 ```
-cairo-prove prove <path-to-executable> <path-to-output-file> --arguments-file <path-to-args-file>
+cairo-prove prove <path-to-executable> <path-to-output-file> --arguments-file <path-to-args-file> --proof-format <proof-format>
 ```
 
-*Note: For information about the formats of `arguments` and `arguments-file`, see [Inputs](#inputs).*
+*Notes: 
+- For information about the formats of `arguments` and `arguments-file`, see [Inputs](#inputs).
+- <proof-format> can be `json` (default), `cairo-serde` or `compact-binary`
+*
+
 
 To verify a proof, run:
 
 ```
-cairo-prove verify <path-to-proof-file>
+cairo-prove verify <path-to-proof-file> --proof-format <proof-format>
 ```
 
 or, if the Pedersen builtin is used in the proof:
 
 ```
-cairo-prove verify <path-to-proof-file> --with-pedersen
+cairo-prove verify <path-to-proof-file> --proof-format <proof-format> --with-pedersen
 ```
 
 *Note: To learn more about the effects of the Pedersen builtin, see [Pedersen](#pedersen).*

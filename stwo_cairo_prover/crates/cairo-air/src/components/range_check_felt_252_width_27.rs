@@ -45,7 +45,7 @@ pub struct Eval {
     pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub log_size: u32,
 }
@@ -61,7 +61,7 @@ impl Claim {
     }
 }
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub claimed_sum: SecureField,
 }
