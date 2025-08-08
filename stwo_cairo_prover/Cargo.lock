@@ -12,7 +12,7 @@ dependencies = [
  "serde",
  "sonic-rs",
  "starknet-ff",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-serialize 0.1.0",
  "stwo_cairo_prover 0.1.0",
@@ -628,12 +628,12 @@ dependencies = [
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
  "stwo-cairo-serialize-derive 0.1.0",
- "stwo-constraint-framework",
+ "stwo-constraint-framework 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "thiserror",
  "tracing",
 ]
@@ -655,12 +655,12 @@ dependencies = [
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "stwo-cairo-adapter 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
- "stwo-constraint-framework",
+ "stwo-constraint-framework 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "thiserror",
  "tracing",
 ]
@@ -1529,7 +1529,7 @@ dependencies = [
  "serde_json",
  "sonic-rs",
  "starknet-ff",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-serialize 0.1.0",
  "stwo_cairo_prover 0.1.0",
@@ -3438,6 +3438,11 @@ version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo?rev=061a53ce#061a53ce61d5dc4a69a862ba217718ab459d8235"
 
 [[package]]
+name = "std-shims"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+
+[[package]]
 name = "string_cache"
 version = "0.8.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3476,9 +3481,38 @@ dependencies = [
  "serde",
  "starknet-crypto 0.6.2",
  "starknet-ff",
- "std-shims",
- "stwo-compact-binary",
- "stwo-compact-binary-derive",
+ "std-shims 0.1.0 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo-compact-binary 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo-compact-binary-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "thiserror",
+ "tracing",
+ "tracing-subscriber",
+]
+
+[[package]]
+name = "stwo"
+version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+dependencies = [
+ "blake2",
+ "blake3",
+ "bytemuck",
+ "cfg-if",
+ "educe 0.5.11",
+ "fnv",
+ "hashbrown 0.15.2",
+ "hex",
+ "indexmap 2.10.0",
+ "itertools 0.12.1",
+ "num-traits",
+ "rand 0.8.5",
+ "rayon",
+ "serde",
+ "starknet-crypto 0.6.2",
+ "starknet-ff",
+ "std-shims 0.1.0 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo-compact-binary 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo-compact-binary-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "thiserror",
  "tracing",
  "tracing-subscriber",
@@ -3492,14 +3526,37 @@ dependencies = [
  "bytemuck",
  "itertools 0.12.1",
  "rayon",
- "stwo",
- "stwo-air-utils-derive",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+]
+
+[[package]]
+name = "stwo-air-utils"
+version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+dependencies = [
+ "bytemuck",
+ "itertools 0.12.1",
+ "rayon",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
 ]
 
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo?rev=061a53ce#061a53ce61d5dc4a69a862ba217718ab459d8235"
+dependencies = [
+ "itertools 0.13.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "stwo-air-utils-derive"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3526,7 +3583,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sonic-rs",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-common 0.1.0",
  "test-case",
  "thiserror",
@@ -3552,7 +3609,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sonic-rs",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "thiserror",
  "tracing",
@@ -3570,7 +3627,7 @@ dependencies = [
  "serde_arrays",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-serialize 0.1.0",
  "stwo-cairo-serialize-derive 0.1.0",
 ]
@@ -3587,7 +3644,7 @@ dependencies = [
  "serde_arrays",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
 ]
@@ -3597,7 +3654,7 @@ name = "stwo-cairo-serialize"
 version = "0.1.0"
 dependencies = [
  "starknet-ff",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-serialize-derive 0.1.0",
  "unsigned-varint",
  "zip 4.3.0",
@@ -3609,7 +3666,7 @@ version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "starknet-ff",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "stwo-cairo-serialize-derive 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "unsigned-varint",
  "zip 4.3.0",
@@ -3620,7 +3677,7 @@ name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
 dependencies = [
  "quote",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "syn 2.0.98",
 ]
 
@@ -3630,7 +3687,7 @@ version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c#ad476c5c0eb4a7625d9f1a0093d1cfaa91b39370"
 dependencies = [
  "quote",
- "stwo",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "syn 2.0.98",
 ]
 
@@ -3645,12 +3702,32 @@ dependencies = [
 ]
 
 [[package]]
+name = "stwo-compact-binary"
+version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+dependencies = [
+ "starknet-ff",
+ "unsigned-varint",
+ "zip 4.3.0",
+]
+
+[[package]]
 name = "stwo-compact-binary-derive"
 version = "0.1.0"
 source = "git+https://github.com/massalabs/stwo?rev=061a53ce#061a53ce61d5dc4a69a862ba217718ab459d8235"
 dependencies = [
  "quote",
- "stwo-compact-binary",
+ "stwo-compact-binary 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "syn 2.0.98",
+]
+
+[[package]]
+name = "stwo-compact-binary-derive"
+version = "0.1.0"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+dependencies = [
+ "quote",
+ "stwo-compact-binary 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "syn 2.0.98",
 ]
 
@@ -3664,8 +3741,23 @@ dependencies = [
  "num-traits",
  "rand 0.8.5",
  "rayon",
- "std-shims",
- "stwo",
+ "std-shims 0.1.0 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "tracing",
+]
+
+[[package]]
+name = "stwo-constraint-framework"
+version = "0.1.1"
+source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+dependencies = [
+ "hashbrown 0.15.2",
+ "itertools 0.12.1",
+ "num-traits",
+ "rand 0.8.5",
+ "rayon",
+ "std-shims 0.1.0 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "tracing",
 ]
 
@@ -3687,13 +3779,13 @@ dependencies = [
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
- "stwo-air-utils",
- "stwo-air-utils-derive",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo-air-utils 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "stwo-cairo-adapter 0.1.0",
  "stwo-cairo-common 0.1.0",
  "stwo-cairo-serialize 0.1.0",
- "stwo-constraint-framework",
+ "stwo-constraint-framework 0.1.1 (git+https://github.com/massalabs/stwo?rev=ba8dd1c5)",
  "tempfile",
  "test-log",
  "tracing",
@@ -3716,13 +3808,13 @@ dependencies = [
  "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
- "stwo",
- "stwo-air-utils",
- "stwo-air-utils-derive",
+ "stwo 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo-air-utils 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
+ "stwo-air-utils-derive 0.1.0 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "stwo-cairo-adapter 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-common 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
  "stwo-cairo-serialize 0.1.0 (git+https://github.com/massalabs/stwo-cairo?rev=ad476c5c)",
- "stwo-constraint-framework",
+ "stwo-constraint-framework 0.1.1 (git+https://github.com/massalabs/stwo?rev=061a53ce)",
  "tracing",
 ]
 
