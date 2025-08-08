@@ -17,6 +17,9 @@ pub mod range_checks_air;
 pub mod relations;
 pub mod utils;
 
+#[cfg(test)]
+mod utils_test;
+
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
