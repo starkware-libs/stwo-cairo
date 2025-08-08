@@ -246,3 +246,39 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
         ],
     )
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    use crate::encode_felt_in_limbs_to_array;
+
+    #[test]
+    #[cfg(not(feature: "poseidon252_verifier"))]
+    fn test_encode_felt_in_limbs() {
+        let felt0 = [0x12345678, 0x70000000, 0, 0, 0, 0, 0, 0];
+        let felt1 = [0x12345678, 0x90abcdef, 0xabcdef12, 0x34567890, 0x01234567, 0x89abcdef, 0x01234567, 0];
+        let mut array = array![];
+        encode_felt_in_limbs_to_array(felt0, ref array);
+        encode_felt_in_limbs_to_array(felt1, ref array);
+        assert_eq!(array, array![1879048192, 305419896, 2147483648, 19088743, 2309737967, 19088743, 878082192, 2882400018, 2427178479, 305419896]);
+    }
+
+    #[test]
+    #[cfg(not(feature: "poseidon252_verifier"))]
+    fn test_encode_and_hash_memory_section() {
+        let memory_section = array![
+            (0, [0x12345678, 0x90abcdef, 0, 0, 0, 0, 0, 0]),
+            (1, [0xabcdef12, 0x34567890, 0, 0, 0, 0, 0, 0]),
+        ];
+        let hash = encode_and_hash_memory_section(@memory_section);
+        assert_eq!(hash.unbox(), [2421522214, 635981307, 2862863578, 1664236125, 1878536921, 1607560013, 4274188691, 2957079540]);
+    }
+
+    #[test]
+    fn test_construct_f252() {
+        let x = [2421522214, 635981307, 2862863578, 1664236125, 1878536921, 1607560013, 4274188691, 2957079540];
+        let f252 = construct_f252(BoxTrait::new(x));
+        assert_eq!(f252, 115645365096977585374207223166120623839439046970571781411593222716768222992);
+    }
+}
