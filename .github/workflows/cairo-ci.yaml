@@ -38,6 +38,7 @@ jobs:
       - run: scarb test --features=qm31_opcode --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
       - run: scarb test --features=qm31_opcode --package stwo_verifier_utils
+      - run: scarb execute --package stwo_cairo_verifier  --features qm31_opcode --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:
