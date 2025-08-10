@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::add_252::add_252_evaluate;
-use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
-use crate::components::subroutines::mul_252::mul_252_evaluate;
-use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::prelude::*;
 
 
 pub fn eval_operands_evaluate(
@@ -339,7 +319,7 @@ pub fn eval_operands_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    read_positive_num_bits_252_evaluate(
+    read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
         [(dst_src_col0 + eval_operands_input_offset0)],
         dst_id_col1,
         dst_limb_0_col2,
@@ -387,7 +367,7 @@ pub fn eval_operands_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    read_positive_num_bits_252_evaluate(
+    read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
         [(op0_src_col30 + eval_operands_input_offset1)],
         op0_id_col31,
         op0_limb_0_col32,
@@ -427,7 +407,7 @@ pub fn eval_operands_evaluate(
         random_coeff,
     );
 
-    let output: [QM31; 1] = cond_felt_252_as_addr_evaluate(
+    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
         [
             op0_limb_0_col32, op0_limb_1_col33, op0_limb_2_col34, op0_limb_3_col35,
             op0_limb_4_col36, op0_limb_5_col37, op0_limb_6_col38, op0_limb_7_col39,
@@ -453,7 +433,7 @@ pub fn eval_operands_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    read_positive_num_bits_252_evaluate(
+    read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
         [(op1_src_col60 + eval_operands_input_offset2)],
         op1_id_col61,
         op1_limb_0_col62,
@@ -493,7 +473,7 @@ pub fn eval_operands_evaluate(
         random_coeff,
     );
 
-    add_252_evaluate(
+    add_252::add_252_evaluate(
         [
             op0_limb_0_col32, op0_limb_1_col33, op0_limb_2_col34, op0_limb_3_col35,
             op0_limb_4_col36, op0_limb_5_col37, op0_limb_6_col38, op0_limb_7_col39,
@@ -566,7 +546,7 @@ pub fn eval_operands_evaluate(
         random_coeff,
     );
 
-    mul_252_evaluate(
+    mul_252::mul_252_evaluate(
         [
             op0_limb_0_col32, op0_limb_1_col33, op0_limb_2_col34, op0_limb_3_col35,
             op0_limb_4_col36, op0_limb_5_col37, op0_limb_6_col38, op0_limb_7_col39,

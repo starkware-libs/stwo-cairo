@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_161c9::decode_instruction_161c9_evaluate;
-use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 9;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
@@ -154,7 +136,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 1] = decode_instruction_161c9_evaluate(
+        let output: [QM31; 1] = decode_instruction_161c9::decode_instruction_161c9_evaluate(
             [input_pc_col0],
             offset0_col3,
             dst_base_fp_col4,
@@ -174,7 +156,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        mem_verify_equal_evaluate(
+        mem_verify_equal::mem_verify_equal_evaluate(
             [
                 (mem_dst_base_col6 + decode_instruction_161c9_output_tmp_bb09e_5_offset0),
                 (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),

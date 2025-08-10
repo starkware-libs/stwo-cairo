@@ -49,6 +49,7 @@ use cairo_air::*;
 
 pub mod cairo_component;
 pub mod components;
+mod prelude;
 
 
 #[cfg(test)]

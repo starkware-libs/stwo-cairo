@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
-use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
-use crate::components::subroutines::read_small::read_small_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 15;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
@@ -186,7 +167,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 2] = decode_instruction_d2a10_evaluate(
+        let output: [QM31; 2] = decode_instruction_d2a10::decode_instruction_d2a10_evaluate(
             [input_pc_col0],
             offset2_col3,
             op1_imm_col4,
@@ -216,7 +197,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 1] = read_small_evaluate(
+        let output: [QM31; 1] = read_small::read_small_evaluate(
             [(mem1_base_col6 + decode_instruction_d2a10_output_tmp_c921e_5_offset2)],
             op1_id_col7,
             msb_col8,
@@ -235,7 +216,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let [read_small_output_tmp_c921e_11_limb_0] = output;
         let next_ap_tmp_c921e_12: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_11_limb_0);
 
-        range_check_ap_evaluate(
+        range_check_ap::range_check_ap_evaluate(
             [next_ap_tmp_c921e_12],
             range_check_ap_bot8bits_col13,
             self.range_check_19_lookup_elements,

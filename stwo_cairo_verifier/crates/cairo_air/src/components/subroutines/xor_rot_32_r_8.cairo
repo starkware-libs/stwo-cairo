@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
-use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::prelude::*;
 
 
 pub fn xor_rot_32_r_8_evaluate(
@@ -47,7 +29,7 @@ pub fn xor_rot_32_r_8_evaluate(
     ] =
         input;
 
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
+    let output: [QM31; 1] = split_16_low_part_size_8::split_16_low_part_size_8_evaluate(
         [xor_rot_32_r_8_input_limb_0],
         ms_8_bits_col0,
         ref sum,
@@ -56,7 +38,7 @@ pub fn xor_rot_32_r_8_evaluate(
     );
     let [split_16_low_part_size_8_output_tmp_aa6bd_1_limb_0] = output;
 
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
+    let output: [QM31; 1] = split_16_low_part_size_8::split_16_low_part_size_8_evaluate(
         [xor_rot_32_r_8_input_limb_1],
         ms_8_bits_col1,
         ref sum,
@@ -65,7 +47,7 @@ pub fn xor_rot_32_r_8_evaluate(
     );
     let [split_16_low_part_size_8_output_tmp_aa6bd_3_limb_0] = output;
 
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
+    let output: [QM31; 1] = split_16_low_part_size_8::split_16_low_part_size_8_evaluate(
         [xor_rot_32_r_8_input_limb_2],
         ms_8_bits_col2,
         ref sum,
@@ -74,7 +56,7 @@ pub fn xor_rot_32_r_8_evaluate(
     );
     let [split_16_low_part_size_8_output_tmp_aa6bd_5_limb_0] = output;
 
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
+    let output: [QM31; 1] = split_16_low_part_size_8::split_16_low_part_size_8_evaluate(
         [xor_rot_32_r_8_input_limb_3],
         ms_8_bits_col3,
         ref sum,
@@ -83,7 +65,7 @@ pub fn xor_rot_32_r_8_evaluate(
     );
     let [split_16_low_part_size_8_output_tmp_aa6bd_7_limb_0] = output;
 
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate(
         [
             split_16_low_part_size_8_output_tmp_aa6bd_1_limb_0,
             split_16_low_part_size_8_output_tmp_aa6bd_5_limb_0,
@@ -96,7 +78,7 @@ pub fn xor_rot_32_r_8_evaluate(
         random_coeff,
     );
 
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col0, ms_8_bits_col2],
         xor_col5,
         verify_bitwise_xor_8_lookup_elements,
@@ -106,7 +88,7 @@ pub fn xor_rot_32_r_8_evaluate(
         random_coeff,
     );
 
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate(
         [
             split_16_low_part_size_8_output_tmp_aa6bd_3_limb_0,
             split_16_low_part_size_8_output_tmp_aa6bd_7_limb_0,
@@ -119,7 +101,7 @@ pub fn xor_rot_32_r_8_evaluate(
         random_coeff,
     );
 
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col1, ms_8_bits_col3],
         xor_col7,
         verify_bitwise_xor_8_lookup_elements,

@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate;
-use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
-use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 130;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 12] = [
@@ -627,7 +608,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 4] = decode_instruction_4b8cf_evaluate(
+        let output: [QM31; 4] = decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate(
             [input_pc_col0],
             offset0_col3,
             offset1_col4,
@@ -678,7 +659,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [(mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_42314_10_offset0)],
             dst_id_col14,
             dst_limb_0_col15,
@@ -718,7 +699,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [(mem0_base_col12 + decode_instruction_4b8cf_output_tmp_42314_10_offset1)],
             op0_id_col43,
             op0_limb_0_col44,
@@ -758,7 +739,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [(mem1_base_col13 + decode_instruction_4b8cf_output_tmp_42314_10_offset2)],
             op1_id_col72,
             op1_limb_0_col73,
@@ -798,7 +779,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_mul_252_evaluate(
+        verify_mul_252::verify_mul_252_evaluate(
             [
                 op0_limb_0_col44, op0_limb_1_col45, op0_limb_2_col46, op0_limb_3_col47,
                 op0_limb_4_col48, op0_limb_5_col49, op0_limb_6_col50, op0_limb_7_col51,

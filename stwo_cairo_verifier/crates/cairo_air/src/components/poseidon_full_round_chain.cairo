@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
-use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate;
-use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 126;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -893,7 +874,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        linear_combination_n_4_coefs_3_1_1_1_evaluate(
+        linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
@@ -935,7 +916,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        linear_combination_n_4_coefs_1_m1_1_1_evaluate(
+        linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
@@ -977,7 +958,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        linear_combination_n_4_coefs_1_1_m2_1_evaluate(
+        linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,

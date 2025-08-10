@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_cb32b::decode_instruction_cb32b_evaluate;
-use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
-use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -189,7 +170,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 3] = decode_instruction_cb32b_evaluate(
+        let output: [QM31; 3] = decode_instruction_cb32b::decode_instruction_cb32b_evaluate(
             [input_pc_col0],
             offset0_col3,
             offset1_col4,
@@ -224,7 +205,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
             [(mem0_base_col10 + decode_instruction_cb32b_output_tmp_b1151_8_offset1)],
             mem1_base_id_col11,
             mem1_base_limb_0_col12,
@@ -239,7 +220,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        mem_verify_equal_evaluate(
+        mem_verify_equal::mem_verify_equal_evaluate(
             [
                 (mem_dst_base_col9 + decode_instruction_cb32b_output_tmp_b1151_8_offset0),
                 (((mem1_base_limb_0_col12 + (mem1_base_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))

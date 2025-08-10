@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::single_karatsuba_n_8::single_karatsuba_n_8_evaluate;
+use crate::prelude::*;
 
 
 pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
@@ -92,7 +75,7 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
 
     core::internal::revoke_ap_tracking();
 
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
+    let output: [QM31; 31] = single_karatsuba_n_8::single_karatsuba_n_8_evaluate(
         [
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_0,
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_1,
@@ -166,7 +149,7 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
     ] =
         output;
 
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
+    let output: [QM31; 31] = single_karatsuba_n_8::single_karatsuba_n_8_evaluate(
         [
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_16,
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_17,
@@ -304,7 +287,7 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
     let y_sum_tmp_17aac_11_limb_15: QM31 = (double_karatsuba_n_8_limb_max_bound_4095_input_limb_47
         + double_karatsuba_n_8_limb_max_bound_4095_input_limb_63);
 
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
+    let output: [QM31; 31] = single_karatsuba_n_8::single_karatsuba_n_8_evaluate(
         [
             x_sum_tmp_17aac_10_limb_0, x_sum_tmp_17aac_10_limb_1, x_sum_tmp_17aac_10_limb_2,
             x_sum_tmp_17aac_10_limb_3, x_sum_tmp_17aac_10_limb_4, x_sum_tmp_17aac_10_limb_5,

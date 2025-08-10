@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
-use crate::components::subroutines::verify_add_252::verify_add_252_evaluate;
+use crate::prelude::*;
 
 
 pub fn sub_252_evaluate(
@@ -137,7 +119,7 @@ pub fn sub_252_evaluate(
     ] =
         input;
 
-    range_check_mem_value_n_28_evaluate(
+    range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate(
         [
             sub_res_limb_0_col0, sub_res_limb_1_col1, sub_res_limb_2_col2, sub_res_limb_3_col3,
             sub_res_limb_4_col4, sub_res_limb_5_col5, sub_res_limb_6_col6, sub_res_limb_7_col7,
@@ -176,7 +158,7 @@ pub fn sub_252_evaluate(
         random_coeff,
     );
 
-    verify_add_252_evaluate(
+    verify_add_252::verify_add_252_evaluate(
         [
             sub_252_input_a_limb_0, sub_252_input_a_limb_1, sub_252_input_a_limb_2,
             sub_252_input_a_limb_3, sub_252_input_a_limb_4, sub_252_input_a_limb_5,

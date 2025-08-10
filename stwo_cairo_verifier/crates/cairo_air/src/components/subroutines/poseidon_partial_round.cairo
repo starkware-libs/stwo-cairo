@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate;
-use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate;
+use crate::prelude::*;
 
 
 pub fn poseidon_partial_round_evaluate(
@@ -137,7 +119,7 @@ pub fn poseidon_partial_round_evaluate(
             ],
         );
 
-    linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
+    linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
         [
             poseidon_partial_round_input_z0_3_limb_0, poseidon_partial_round_input_z0_3_limb_1,
             poseidon_partial_round_input_z0_3_limb_2, poseidon_partial_round_input_z0_3_limb_3,
@@ -204,7 +186,7 @@ pub fn poseidon_partial_round_evaluate(
             ],
         );
 
-    linear_combination_n_1_coefs_2_evaluate(
+    linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate(
         [
             combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,
             combination_limb_3_col13, combination_limb_4_col14, combination_limb_5_col15,

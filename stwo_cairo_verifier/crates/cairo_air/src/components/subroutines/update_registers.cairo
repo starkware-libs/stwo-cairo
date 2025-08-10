@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
-use crate::components::subroutines::cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate;
-use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
+use crate::prelude::*;
 
 
 pub fn update_registers_evaluate(
@@ -144,7 +125,7 @@ pub fn update_registers_evaluate(
     ] =
         input;
 
-    let output: [QM31; 1] = cond_felt_252_as_addr_evaluate(
+    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
         [
             update_registers_input_res_limb_0, update_registers_input_res_limb_1,
             update_registers_input_res_limb_2, update_registers_input_res_limb_3,
@@ -168,7 +149,7 @@ pub fn update_registers_evaluate(
     );
     let [cond_felt_252_as_addr_output_tmp_783d5_0] = output;
 
-    let output: [QM31; 1] = cond_felt_252_as_addr_evaluate(
+    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
         [
             update_registers_input_dst_limb_0, update_registers_input_dst_limb_1,
             update_registers_input_dst_limb_2, update_registers_input_dst_limb_3,
@@ -192,7 +173,7 @@ pub fn update_registers_evaluate(
     );
     let [cond_felt_252_as_addr_output_tmp_783d5_1] = output;
 
-    let output: [QM31; 1] = cond_felt_252_as_rel_imm_evaluate(
+    let output: [QM31; 1] = cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate(
         [
             update_registers_input_res_limb_0, update_registers_input_res_limb_1,
             update_registers_input_res_limb_2, update_registers_input_res_limb_3,
@@ -293,7 +274,7 @@ pub fn update_registers_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    let output: [QM31; 1] = cond_felt_252_as_rel_imm_evaluate(
+    let output: [QM31; 1] = cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate(
         [
             update_registers_input_op1_limb_0, update_registers_input_op1_limb_1,
             update_registers_input_op1_limb_2, update_registers_input_op1_limb_3,
@@ -353,7 +334,7 @@ pub fn update_registers_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_ap_evaluate(
+    range_check_ap::range_check_ap_evaluate(
         [next_ap_col9],
         range_check_ap_bot8bits_col10,
         range_check_19_lookup_elements,

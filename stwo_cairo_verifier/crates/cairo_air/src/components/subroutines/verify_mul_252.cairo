@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate;
+use crate::prelude::*;
 
 
 pub fn verify_mul_252_evaluate(
@@ -177,7 +160,8 @@ pub fn verify_mul_252_evaluate(
     ] =
         input;
 
-    let output: [QM31; 55] = double_karatsuba_n_7_limb_max_bound_511_evaluate(
+    let output: [QM31; 55] =
+        double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate(
         [
             verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1,
             verify_mul_252_input_a_limb_2, verify_mul_252_input_a_limb_3,

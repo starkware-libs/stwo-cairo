@@ -1,24 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
-use crate::components::subroutines::mod_utils::mod_utils_evaluate;
-use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 410;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -2037,7 +2018,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        mod_utils_evaluate(
+        mod_utils::mod_utils_evaluate(
             [mul_mod_builtin_segment_start, seq],
             is_instance_0_col0,
             p0_id_col1,
@@ -2463,7 +2444,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             .range_check_12_lookup_elements
             .combine_qm31([ab_minus_c_div_p_limb_31_col267]);
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 p0_limb_0_col2, p0_limb_1_col3, p0_limb_2_col4, p0_limb_3_col5, p0_limb_4_col6,
                 p0_limb_5_col7, p0_limb_6_col8, p0_limb_7_col9, p0_limb_8_col10, p0_limb_9_col11,
@@ -2511,7 +2492,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 p2_limb_0_col26, p2_limb_1_col27, p2_limb_2_col28, p2_limb_3_col29, p2_limb_4_col30,
                 p2_limb_5_col31, p2_limb_6_col32, p2_limb_7_col33, p2_limb_8_col34, p2_limb_9_col35,
@@ -2559,7 +2540,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 a0_limb_0_col93, a0_limb_1_col94, a0_limb_2_col95, a0_limb_3_col96, a0_limb_4_col97,
                 a0_limb_5_col98, a0_limb_6_col99, a0_limb_7_col100, a0_limb_8_col101,
@@ -2608,7 +2589,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 a2_limb_0_col117, a2_limb_1_col118, a2_limb_2_col119, a2_limb_3_col120,
                 a2_limb_4_col121, a2_limb_5_col122, a2_limb_6_col123, a2_limb_7_col124,
@@ -2657,7 +2638,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 b0_limb_0_col141, b0_limb_1_col142, b0_limb_2_col143, b0_limb_3_col144,
                 b0_limb_4_col145, b0_limb_5_col146, b0_limb_6_col147, b0_limb_7_col148,
@@ -2706,7 +2687,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 b2_limb_0_col165, b2_limb_1_col166, b2_limb_2_col167, b2_limb_3_col168,
                 b2_limb_4_col169, b2_limb_5_col170, b2_limb_6_col171, b2_limb_7_col172,
@@ -2755,7 +2736,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 c0_limb_0_col189, c0_limb_1_col190, c0_limb_2_col191, c0_limb_3_col192,
                 c0_limb_4_col193, c0_limb_5_col194, c0_limb_6_col195, c0_limb_7_col196,
@@ -2804,7 +2785,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let output: [QM31; 16] = mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate(
             [
                 c2_limb_0_col213, c2_limb_1_col214, c2_limb_2_col215, c2_limb_3_col216,
                 c2_limb_4_col217, c2_limb_5_col218, c2_limb_6_col219, c2_limb_7_col220,
@@ -2853,7 +2834,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 63] = double_karatsuba_n_8_limb_max_bound_4095_evaluate(
+        let output: [QM31; 63] =
+            double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate(
             [
                 mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_0,
                 mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_1,
@@ -2991,7 +2973,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 63] = double_karatsuba_n_8_limb_max_bound_4095_evaluate(
+        let output: [QM31; 63] =
+            double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate(
             [
                 ab_minus_c_div_p_limb_0_col236, ab_minus_c_div_p_limb_1_col237,
                 ab_minus_c_div_p_limb_2_col238, ab_minus_c_div_p_limb_3_col239,

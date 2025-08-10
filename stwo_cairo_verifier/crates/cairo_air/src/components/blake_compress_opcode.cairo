@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::create_blake_output::create_blake_output_evaluate;
-use crate::components::subroutines::create_blake_round_input::create_blake_round_input_evaluate;
-use crate::components::subroutines::decode_blake_opcode::decode_blake_opcode_evaluate;
-use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
@@ -1032,7 +1012,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 4] = decode_blake_opcode_evaluate(
+        let output: [QM31; 4] = decode_blake_opcode::decode_blake_opcode_evaluate(
             [input_pc_col0, input_ap_col1, input_fp_col2],
             offset0_col3,
             offset1_col4,
@@ -1090,7 +1070,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 4] = create_blake_round_input_evaluate(
+        let output: [QM31; 4] = create_blake_round_input::create_blake_round_input_evaluate(
             [
                 decode_blake_opcode_output_tmp_53f39_29_limb_0, low_16_bits_col27,
                 high_16_bits_col28, decode_blake_opcode_output_tmp_53f39_29_limb_6,
@@ -1240,7 +1220,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        create_blake_output_evaluate(
+        create_blake_output::create_blake_output_evaluate(
             [
                 low_16_bits_col33, high_16_bits_col34, low_16_bits_col39, high_16_bits_col40,
                 low_16_bits_col45, high_16_bits_col46, low_16_bits_col51, high_16_bits_col52,
@@ -1293,7 +1273,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 decode_blake_opcode_output_tmp_53f39_29_limb_2, triple_xor_32_output_limb_0_col120,
                 triple_xor_32_output_limb_1_col121,
@@ -1313,7 +1293,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<1, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col122, triple_xor_32_output_limb_1_col123,
@@ -1333,7 +1313,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<2, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col124, triple_xor_32_output_limb_1_col125,
@@ -1353,7 +1333,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<3, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col126, triple_xor_32_output_limb_1_col127,
@@ -1373,7 +1353,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<4, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col128, triple_xor_32_output_limb_1_col129,
@@ -1393,7 +1373,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<5, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col130, triple_xor_32_output_limb_1_col131,
@@ -1413,7 +1393,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<6, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col132, triple_xor_32_output_limb_1_col133,
@@ -1433,7 +1413,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        verify_blake_word_evaluate(
+        verify_blake_word::verify_blake_word_evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<7, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col134, triple_xor_32_output_limb_1_col135,

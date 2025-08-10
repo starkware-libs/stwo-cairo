@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::prelude::*;
 
 
 pub fn verify_blake_word_evaluate(
@@ -52,7 +35,7 @@ pub fn verify_blake_word_evaluate(
             ],
         );
 
-    mem_verify_evaluate(
+    mem_verify::mem_verify_evaluate(
         [
             verify_blake_word_input_limb_0,
             (verify_blake_word_input_limb_1 - (low_7_ms_bits_col0 * qm31_const::<512, 0, 0, 0>())),

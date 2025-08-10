@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::mod_utils::mod_utils_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 251;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
@@ -1056,7 +1039,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        mod_utils_evaluate(
+        mod_utils::mod_utils_evaluate(
             [add_mod_builtin_segment_start, seq],
             is_instance_0_col0,
             p0_id_col1,
