@@ -218,19 +218,35 @@ pub fn lookup_sum(
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
 
     // TODO(Andrew): double check this is correct order.
-    sum += interaction_claim.opcodes.sum();
-    sum += *interaction_claim.verify_instruction.claimed_sum;
-    sum += interaction_claim.blake_context.sum();
-    sum += interaction_claim.builtins.sum();
-    sum += interaction_claim.pedersen_context.sum();
-    sum += interaction_claim.poseidon_context.sum();
-    sum += *interaction_claim.memory_address_to_id.claimed_sum;
-    sum += interaction_claim.memory_id_to_value.sum();
-    sum += interaction_claim.range_checks.sum();
-    sum += *interaction_claim.verify_bitwise_xor_4.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_7.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_8.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_9.claimed_sum;
+    let CairoInteractionClaim {
+        opcodes,
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_9,
+    } = interaction_claim;
+
+    sum += opcodes.sum();
+    sum += *verify_instruction.claimed_sum;
+    sum += blake_context.sum();
+    sum += builtins.sum();
+    sum += pedersen_context.sum();
+    sum += poseidon_context.sum();
+    sum += *memory_address_to_id.claimed_sum;
+    sum += memory_id_to_value.sum();
+    sum += range_checks.sum();
+    sum += *verify_bitwise_xor_4.claimed_sum;
+    sum += *verify_bitwise_xor_7.claimed_sum;
+    sum += *verify_bitwise_xor_8.claimed_sum;
+    sum += *verify_bitwise_xor_9.claimed_sum;
     sum
 }
 
@@ -546,7 +562,6 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
 
     fn present_segments(self: @PublicSegmentRanges) -> Array<@SegmentRange> {
         let mut segments = array![];
-
         let PublicSegmentRanges {
             output,
             pedersen,
