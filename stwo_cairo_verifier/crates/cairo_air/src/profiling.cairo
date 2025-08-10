@@ -39,5 +39,5 @@ fn test_output_logup_sum() {
     };
     let public_data = PublicData { public_memory, initial_state, final_state };
     let mut lookup_elements = dummy_interaction_lookup_elements();
-    let sum = public_data.logup_sum(@lookup_elements);
+    public_data.logup_sum(@lookup_elements);
 }
