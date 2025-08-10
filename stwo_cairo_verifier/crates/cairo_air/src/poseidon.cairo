@@ -26,22 +26,25 @@ use components::range_check_felt_252_width_27::{
 };
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-#[cfg(feature: "poseidon252_verifier")]
-use core::poseidon::poseidon_hash_span;
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_cairo_air::CairoInteractionElements;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::ColumnSpan;
+use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
-use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 #[derive(Drop, Serde)]
 pub struct PoseidonClaim {

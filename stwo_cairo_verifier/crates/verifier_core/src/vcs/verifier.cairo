@@ -1,11 +1,11 @@
 use core::array::{ArrayTrait, SpanTrait, ToSpanTrait};
 use core::cmp::min;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait};
+use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::BaseField;
-use crate::utils::{ArrayExTrait, DictTrait, SpanExTrait};
+use crate::utils::SpanExTrait;
 use crate::vcs::hasher::MerkleHasher;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {

@@ -1,7 +1,7 @@
 use crate::channel::Channel;
 use crate::circle::{CirclePointIndexImpl, CosetImpl};
 use crate::fields::qm31::qm31_const;
-use crate::fri::{FriConfig, FriVerificationError, FriVerifierImpl};
+use crate::fri::{FriConfig, FriVerifierImpl};
 use crate::poly::circle::CircleEvaluationImpl;
 use crate::poly::line::LineDomainImpl;
 use crate::queries::{Queries, QueriesImpl};
