@@ -31,6 +31,8 @@ use stwo_constraint_framework::{
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{M31, MulByM31Trait, P_U32};
+#[cfg(not(feature: "qm31_opcode"))]
+use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
 use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -761,13 +763,21 @@ fn sum_public_memory_entries(
     // Gather values to be inverted and summed.
     let mut values: Array<QM31> = array![];
 
-    let id_to_value_alpha_powers: Box<[QM31; 29]> = *(lookup_elements
-        .memory_id_to_value
-        .alpha_powers
+    let mut alpha_powers = lookup_elements.memory_id_to_value.alpha_powers.span();
+    // Remove the first element, which is 1.
+    let _ = alpha_powers.pop_front();
+    let unreduced_alpha_powers: Array<PackedUnreducedQM31> = alpha_powers
+        .into_iter()
+        .map(|alpha| -> PackedUnreducedQM31 {
+            (*alpha).into()
+        })
+        .collect();
+    let id_to_value_alpha_powers: Box<[PackedUnreducedQM31; 28]> = *(unreduced_alpha_powers
         .span()
         .try_into()
         .unwrap());
-    let id_to_value_z = *lookup_elements.memory_id_to_value.z;
+
+    let id_to_value_z: PackedUnreducedQM31 = (*lookup_elements.memory_id_to_value.z).into();
     let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
     let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
 
@@ -782,8 +792,9 @@ fn sum_public_memory_entries(
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
         let combined_limbs = combine::combine_felt252(val, id_to_value_alpha_powers);
-        let id_to_value = combined_limbs + id_m31.into() - id_to_value_z;
-        values.append(id_to_value);
+        let id_qm31: QM31 = id_m31.into();
+        let id_to_value = combined_limbs + id_qm31.into() - id_to_value_z;
+        values.append(id_to_value.reduce());
     }
 
     utils::sum_inverses_qm31(@values)

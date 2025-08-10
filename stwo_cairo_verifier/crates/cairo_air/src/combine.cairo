@@ -7,6 +7,8 @@ use bounded_int::{
 use stwo_verifier_core::fields::m31::MulByM31Trait;
 use stwo_verifier_core::fields::m31::{M31InnerT, M31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
+#[cfg(not(feature: "qm31_opcode"))]
+use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
 
 
 // Use a short name in this file as it is used in many places.
@@ -130,9 +132,10 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
 }
 
 #[cfg(not(feature: "qm31_opcode"))]
-pub fn combine_felt252(value: [u32; 8], alphas: Box<[QM31; 29]>) -> QM31 {
+pub fn combine_felt252(
+    value: [u32; 8], alphas: Box<[PackedUnreducedQM31; 28]>,
+) -> PackedUnreducedQM31 {
     let [
-        _,
         a1,
         a2,
         a3,
@@ -161,7 +164,7 @@ pub fn combine_felt252(value: [u32; 8], alphas: Box<[QM31; 29]>) -> QM31 {
         a26,
         a27,
         a28,
-    ]: [QM31; 29] =
+    ]: [PackedUnreducedQM31; 28] =
         alphas
         .unbox();
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
@@ -170,7 +173,8 @@ pub fn combine_felt252(value: [u32; 8], alphas: Box<[QM31; 29]>) -> QM31 {
     // Take 4 + 27 + 1 bits from v7
     let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
 
-    let mut sum: QM31 = a28.mul_m31(M31Trait::new(upcast(l27)).into());
+    let mut sum = PackedUnreducedQM31Trait::large_zero();
+    sum += a28.mul_m31(M31Trait::new(upcast(l27)).into());
     sum += a27.mul_m31(M31Trait::new(upcast(l26)).into());
     sum += a26.mul_m31(M31Trait::new(upcast(l25)).into());
 
