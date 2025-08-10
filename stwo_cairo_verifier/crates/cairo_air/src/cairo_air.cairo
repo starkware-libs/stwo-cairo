@@ -38,6 +38,7 @@ use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::opcodes::*;
+use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod poseidon252_verifier_imports {
@@ -406,7 +407,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 .len(),
         );
         let mut memory_id_to_value_components = array![];
-        let mut offset = 0;
+        let mut offset = pow2(30);
         for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
             let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
@@ -450,6 +451,8 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 );
             offset = offset + pow2(log_size);
         }
+        // Check that IDs in (ID -> Value) do not overflow P.
+        assert!(offset <= P_U32);
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
