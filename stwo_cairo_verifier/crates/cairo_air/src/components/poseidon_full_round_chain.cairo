@@ -14,11 +14,11 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate;
 use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 126;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -69,7 +69,30 @@ pub struct Component {
     pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
+            range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_3_3_3_3
+                .clone(),
+            poseidon_full_round_chain_lookup_elements: interaction_elements
+                .poseidon_full_round_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

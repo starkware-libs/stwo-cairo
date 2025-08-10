@@ -14,8 +14,8 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 1;
 const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck2(([9, 9], 0));
@@ -56,7 +56,22 @@ pub struct Component {
     pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

@@ -14,10 +14,10 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 21;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 1] = [('VerifyBitwiseXor_8', 8)];
@@ -63,7 +63,23 @@ pub struct Component {
     pub triple_xor_32_lookup_elements: crate::TripleXor32Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

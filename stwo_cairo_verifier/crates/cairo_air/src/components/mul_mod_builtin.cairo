@@ -14,11 +14,11 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 410;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -72,7 +72,29 @@ pub struct Component {
     pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
+            range_check_3_6_6_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_6_6_3
+                .clone(),
+            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

@@ -14,12 +14,12 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate;
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::poseidon_hades_permutation::poseidon_hades_permutation_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 341;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 9] = [
@@ -78,7 +78,42 @@ pub struct Component {
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            poseidon_full_round_chain_lookup_elements: interaction_elements
+                .poseidon_full_round_chain
+                .clone(),
+            range_check_felt_252_width_27_lookup_elements: interaction_elements
+                .range_check_felt_252_width_27
+                .clone(),
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_3_3_3_3
+                .clone(),
+            range_check_4_4_4_4_lookup_elements: interaction_elements
+                .range_checks
+                .rc_4_4_4_4
+                .clone(),
+            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                .poseidon_3_partial_rounds_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

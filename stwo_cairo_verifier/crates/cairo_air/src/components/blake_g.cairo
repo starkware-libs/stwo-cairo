@@ -14,13 +14,13 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
 use crate::cairo_component::CairoComponent;
 use crate::components::subroutines::triple_sum_32::triple_sum_32_evaluate;
 use crate::components::subroutines::xor_rot_32_r_12::xor_rot_32_r_12_evaluate;
 use crate::components::subroutines::xor_rot_32_r_16::xor_rot_32_r_16_evaluate;
 use crate::components::subroutines::xor_rot_32_r_7::xor_rot_32_r_7_evaluate;
 use crate::components::subroutines::xor_rot_32_r_8::xor_rot_32_r_8_evaluate;
+use crate::{CairoInteractionElements, PreprocessedColumnTrait};
 
 pub const N_TRACE_COLUMNS: usize = 53;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -73,7 +73,29 @@ pub struct Component {
     pub blake_g_lookup_elements: crate::BlakeGElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            verify_bitwise_xor_12_lookup_elements: interaction_elements
+                .verify_bitwise_xor_12
+                .clone(),
+            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
+            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
+            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
+            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

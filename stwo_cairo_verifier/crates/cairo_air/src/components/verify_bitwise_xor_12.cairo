@@ -10,6 +10,7 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::CairoInteractionElements;
 use crate::cairo_component::CairoComponent;
 
 mod constraints;
@@ -56,6 +57,23 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub verify_bitwise_xor_12_lookup_elements: crate::VerifyBitwiseXor_12Elements,
+}
+
+#[generate_trait]
+pub impl ComponentImpl of NewComponent {
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_bitwise_xor_12_lookup_elements: interaction_elements
+                .verify_bitwise_xor_12
+                .clone(),
+        }
+    }
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {

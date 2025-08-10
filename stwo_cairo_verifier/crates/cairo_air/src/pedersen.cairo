@@ -225,38 +225,15 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @PedersenInteractionClaim,
     ) -> PedersenComponents {
-        let partial_ec_mul_component = components::partial_ec_mul::Component {
-            claim: *claim.partial_ec_mul,
-            interaction_claim: *interaction_claim.partial_ec_mul,
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
-            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
-        };
+        let partial_ec_mul_component = components::partial_ec_mul::ComponentImpl::new(
+            claim.partial_ec_mul, interaction_claim.partial_ec_mul, interaction_elements,
+        );
 
-        let pedersen_points_table_component = components::pedersen_points_table::Component {
-            claim: *claim.pedersen_points_table,
-            interaction_claim: *interaction_claim.pedersen_points_table,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-        };
+        let pedersen_points_table_component = components::pedersen_points_table::ComponentImpl::new(
+            claim.pedersen_points_table,
+            interaction_claim.pedersen_points_table,
+            interaction_elements,
+        );
 
         PedersenComponents {
             partial_ec_mul: partial_ec_mul_component,

@@ -415,184 +415,93 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         interaction_claim: @RangeChecksInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
-            rc_6: components::range_check_6::Component {
-                claim: *claim.rc_6,
-                interaction_claim: *interaction_claim.rc_6,
-                range_check_6_lookup_elements: interaction_elements.range_checks.rc_6.clone(),
-            },
-            rc_8: components::range_check_8::Component {
-                claim: *claim.rc_8,
-                interaction_claim: *interaction_claim.rc_8,
-                range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
-            },
-            rc_11: components::range_check_11::Component {
-                claim: *claim.rc_11,
-                interaction_claim: *interaction_claim.rc_11,
-                range_check_11_lookup_elements: interaction_elements.range_checks.rc_11.clone(),
-            },
-            rc_12: components::range_check_12::Component {
-                claim: *claim.rc_12,
-                interaction_claim: *interaction_claim.rc_12,
-                range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
-            },
-            rc_18: components::range_check_18::Component {
-                claim: *claim.rc_18,
-                interaction_claim: *interaction_claim.rc_18,
-                range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
-            },
-            rc_18_b: components::range_check_18_b::Component {
-                claim: *claim.rc_18_b,
-                interaction_claim: *interaction_claim.rc_18_b,
-                range_check_18_b_lookup_elements: interaction_elements.range_checks.rc_18_b.clone(),
-            },
-            rc_19: components::range_check_19::Component {
-                claim: *claim.rc_19,
-                interaction_claim: *interaction_claim.rc_19,
-                range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            },
-            rc_19_b: components::range_check_19_b::Component {
-                claim: *claim.rc_19_b,
-                interaction_claim: *interaction_claim.rc_19_b,
-                range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-            },
-            rc_19_c: components::range_check_19_c::Component {
-                claim: *claim.rc_19_c,
-                interaction_claim: *interaction_claim.rc_19_c,
-                range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-            },
-            rc_19_d: components::range_check_19_d::Component {
-                claim: *claim.rc_19_d,
-                interaction_claim: *interaction_claim.rc_19_d,
-                range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-            },
-            rc_19_e: components::range_check_19_e::Component {
-                claim: *claim.rc_19_e,
-                interaction_claim: *interaction_claim.rc_19_e,
-                range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-            },
-            rc_19_f: components::range_check_19_f::Component {
-                claim: *claim.rc_19_f,
-                interaction_claim: *interaction_claim.rc_19_f,
-                range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-            },
-            rc_19_g: components::range_check_19_g::Component {
-                claim: *claim.rc_19_g,
-                interaction_claim: *interaction_claim.rc_19_g,
-                range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
-            },
-            rc_19_h: components::range_check_19_h::Component {
-                claim: *claim.rc_19_h,
-                interaction_claim: *interaction_claim.rc_19_h,
-                range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
-            },
-            rc_4_3: components::range_check_4_3::Component {
-                claim: *claim.rc_4_3,
-                interaction_claim: *interaction_claim.rc_4_3,
-                range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            },
-            rc_4_4: components::range_check_4_4::Component {
-                claim: *claim.rc_4_4,
-                interaction_claim: *interaction_claim.rc_4_4,
-                range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
-            },
-            rc_5_4: components::range_check_5_4::Component {
-                claim: *claim.rc_5_4,
-                interaction_claim: *interaction_claim.rc_5_4,
-                range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
-            },
-            rc_9_9: components::range_check_9_9::Component {
-                claim: *claim.rc_9_9,
-                interaction_claim: *interaction_claim.rc_9_9,
-                range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            },
-            rc_9_9_b: components::range_check_9_9_b::Component {
-                claim: *claim.rc_9_9_b,
-                interaction_claim: *interaction_claim.rc_9_9_b,
-                range_check_9_9_b_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_b
-                    .clone(),
-            },
-            rc_9_9_c: components::range_check_9_9_c::Component {
-                claim: *claim.rc_9_9_c,
-                interaction_claim: *interaction_claim.rc_9_9_c,
-                range_check_9_9_c_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_c
-                    .clone(),
-            },
-            rc_9_9_d: components::range_check_9_9_d::Component {
-                claim: *claim.rc_9_9_d,
-                interaction_claim: *interaction_claim.rc_9_9_d,
-                range_check_9_9_d_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_d
-                    .clone(),
-            },
-            rc_9_9_e: components::range_check_9_9_e::Component {
-                claim: *claim.rc_9_9_e,
-                interaction_claim: *interaction_claim.rc_9_9_e,
-                range_check_9_9_e_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_e
-                    .clone(),
-            },
-            rc_9_9_f: components::range_check_9_9_f::Component {
-                claim: *claim.rc_9_9_f,
-                interaction_claim: *interaction_claim.rc_9_9_f,
-                range_check_9_9_f_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_f
-                    .clone(),
-            },
-            rc_9_9_g: components::range_check_9_9_g::Component {
-                claim: *claim.rc_9_9_g,
-                interaction_claim: *interaction_claim.rc_9_9_g,
-                range_check_9_9_g_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_g
-                    .clone(),
-            },
-            rc_9_9_h: components::range_check_9_9_h::Component {
-                claim: *claim.rc_9_9_h,
-                interaction_claim: *interaction_claim.rc_9_9_h,
-                range_check_9_9_h_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_9_9_h
-                    .clone(),
-            },
-            rc_7_2_5: components::range_check_7_2_5::Component {
-                claim: *claim.rc_7_2_5,
-                interaction_claim: *interaction_claim.rc_7_2_5,
-                range_check_7_2_5_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_7_2_5
-                    .clone(),
-            },
-            rc_3_6_6_3: components::range_check_3_6_6_3::Component {
-                claim: *claim.rc_3_6_6_3,
-                interaction_claim: *interaction_claim.rc_3_6_6_3,
-                range_check_3_6_6_3_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_3_6_6_3
-                    .clone(),
-            },
-            rc_4_4_4_4: components::range_check_4_4_4_4::Component {
-                claim: *claim.rc_4_4_4_4,
-                interaction_claim: *interaction_claim.rc_4_4_4_4,
-                range_check_4_4_4_4_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_4_4_4_4
-                    .clone(),
-            },
-            rc_3_3_3_3_3: components::range_check_3_3_3_3_3::Component {
-                claim: *claim.rc_3_3_3_3_3,
-                interaction_claim: *interaction_claim.rc_3_3_3_3_3,
-                range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_3_3_3_3_3
-                    .clone(),
-            },
+            rc_6: components::range_check_6::ComponentImpl::new(
+                claim.rc_6, interaction_claim.rc_6, interaction_elements,
+            ),
+            rc_8: components::range_check_8::ComponentImpl::new(
+                claim.rc_8, interaction_claim.rc_8, interaction_elements,
+            ),
+            rc_11: components::range_check_11::ComponentImpl::new(
+                claim.rc_11, interaction_claim.rc_11, interaction_elements,
+            ),
+            rc_12: components::range_check_12::ComponentImpl::new(
+                claim.rc_12, interaction_claim.rc_12, interaction_elements,
+            ),
+            rc_18: components::range_check_18::ComponentImpl::new(
+                claim.rc_18, interaction_claim.rc_18, interaction_elements,
+            ),
+            rc_18_b: components::range_check_18_b::ComponentImpl::new(
+                claim.rc_18_b, interaction_claim.rc_18_b, interaction_elements,
+            ),
+            rc_19: components::range_check_19::ComponentImpl::new(
+                claim.rc_19, interaction_claim.rc_19, interaction_elements,
+            ),
+            rc_19_b: components::range_check_19_b::ComponentImpl::new(
+                claim.rc_19_b, interaction_claim.rc_19_b, interaction_elements,
+            ),
+            rc_19_c: components::range_check_19_c::ComponentImpl::new(
+                claim.rc_19_c, interaction_claim.rc_19_c, interaction_elements,
+            ),
+            rc_19_d: components::range_check_19_d::ComponentImpl::new(
+                claim.rc_19_d, interaction_claim.rc_19_d, interaction_elements,
+            ),
+            rc_19_e: components::range_check_19_e::ComponentImpl::new(
+                claim.rc_19_e, interaction_claim.rc_19_e, interaction_elements,
+            ),
+            rc_19_f: components::range_check_19_f::ComponentImpl::new(
+                claim.rc_19_f, interaction_claim.rc_19_f, interaction_elements,
+            ),
+            rc_19_g: components::range_check_19_g::ComponentImpl::new(
+                claim.rc_19_g, interaction_claim.rc_19_g, interaction_elements,
+            ),
+            rc_19_h: components::range_check_19_h::ComponentImpl::new(
+                claim.rc_19_h, interaction_claim.rc_19_h, interaction_elements,
+            ),
+            rc_4_3: components::range_check_4_3::ComponentImpl::new(
+                claim.rc_4_3, interaction_claim.rc_4_3, interaction_elements,
+            ),
+            rc_4_4: components::range_check_4_4::ComponentImpl::new(
+                claim.rc_4_4, interaction_claim.rc_4_4, interaction_elements,
+            ),
+            rc_5_4: components::range_check_5_4::ComponentImpl::new(
+                claim.rc_5_4, interaction_claim.rc_5_4, interaction_elements,
+            ),
+            rc_9_9: components::range_check_9_9::ComponentImpl::new(
+                claim.rc_9_9, interaction_claim.rc_9_9, interaction_elements,
+            ),
+            rc_9_9_b: components::range_check_9_9_b::ComponentImpl::new(
+                claim.rc_9_9_b, interaction_claim.rc_9_9_b, interaction_elements,
+            ),
+            rc_9_9_c: components::range_check_9_9_c::ComponentImpl::new(
+                claim.rc_9_9_c, interaction_claim.rc_9_9_c, interaction_elements,
+            ),
+            rc_9_9_d: components::range_check_9_9_d::ComponentImpl::new(
+                claim.rc_9_9_d, interaction_claim.rc_9_9_d, interaction_elements,
+            ),
+            rc_9_9_e: components::range_check_9_9_e::ComponentImpl::new(
+                claim.rc_9_9_e, interaction_claim.rc_9_9_e, interaction_elements,
+            ),
+            rc_9_9_f: components::range_check_9_9_f::ComponentImpl::new(
+                claim.rc_9_9_f, interaction_claim.rc_9_9_f, interaction_elements,
+            ),
+            rc_9_9_g: components::range_check_9_9_g::ComponentImpl::new(
+                claim.rc_9_9_g, interaction_claim.rc_9_9_g, interaction_elements,
+            ),
+            rc_9_9_h: components::range_check_9_9_h::ComponentImpl::new(
+                claim.rc_9_9_h, interaction_claim.rc_9_9_h, interaction_elements,
+            ),
+            rc_7_2_5: components::range_check_7_2_5::ComponentImpl::new(
+                claim.rc_7_2_5, interaction_claim.rc_7_2_5, interaction_elements,
+            ),
+            rc_3_6_6_3: components::range_check_3_6_6_3::ComponentImpl::new(
+                claim.rc_3_6_6_3, interaction_claim.rc_3_6_6_3, interaction_elements,
+            ),
+            rc_4_4_4_4: components::range_check_4_4_4_4::ComponentImpl::new(
+                claim.rc_4_4_4_4, interaction_claim.rc_4_4_4_4, interaction_elements,
+            ),
+            rc_3_3_3_3_3: components::range_check_3_3_3_3_3::ComponentImpl::new(
+                claim.rc_3_3_3_3_3, interaction_claim.rc_3_3_3_3_3, interaction_elements,
+            ),
         }
     }
 
