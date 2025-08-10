@@ -17,6 +17,7 @@ pub use stwo_verifier_core::fields::qm31::{
 pub use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 pub use stwo_verifier_core::utils::{ArrayImpl, pow2};
 pub use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-pub use crate::PreprocessedColumnTrait;
 pub use crate::cairo_component::CairoComponent;
+pub use crate::components::NewComponent;
 pub use crate::components::subroutines::*;
+pub use crate::{CairoInteractionElements, PreprocessedColumnTrait};

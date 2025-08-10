@@ -52,7 +52,36 @@ pub struct Component {
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            range_check_4_4_4_4_lookup_elements: interaction_elements
+                .range_checks
+                .rc_4_4_4_4
+                .clone(),
+            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+            range_check_felt_252_width_27_lookup_elements: interaction_elements
+                .range_check_felt_252_width_27
+                .clone(),
+            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                .poseidon_3_partial_rounds_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

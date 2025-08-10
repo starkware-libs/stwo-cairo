@@ -50,7 +50,32 @@ pub struct Component {
     pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
+            range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_3_3_3_3
+                .clone(),
+            poseidon_full_round_chain_lookup_elements: interaction_elements
+                .poseidon_full_round_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
