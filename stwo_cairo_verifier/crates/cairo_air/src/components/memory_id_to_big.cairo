@@ -15,6 +15,9 @@ use super::super::utils::UsizeImpl;
 mod constraints_big;
 mod constraints_small;
 
+/// The smallest ID yielded by the id_to_big component.
+pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x40000000; // 2^30.
+
 pub const N_BITS_PER_FELT: usize = 9;
 
 pub const MEMORY_ID_SIZE: usize = 1;

@@ -296,16 +296,6 @@ fn verify_claim(claim: @CairoClaim) {
         let (_relation_id, _first_uses, last_uses) = entry;
         assert!(last_uses < P_U32.into(), "A relation has more than P-1 uses");
     }
-
-    // Large value IDs reside in [2^30..P).
-    // Check that IDs in (ID -> Value) do not overflow P.
-    let mut n_unique_large_values = 0;
-    for log_size in claim.memory_id_to_value.big_log_sizes.span() {
-        n_unique_large_values += pow2(*log_size);
-    }
-    let large_id_offset = pow2(30);
-    let largest_id = n_unique_large_values + large_id_offset - 1;
-    assert!(largest_id < P_U32);
 }
 
 /// Checks that the ranges given by `segment_ranges` are valid given the claim.
