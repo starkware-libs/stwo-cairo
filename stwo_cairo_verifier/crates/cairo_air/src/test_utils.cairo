@@ -27,7 +27,7 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
         output.append((i, [i; 8]));
     }
     PublicMemory {
-        program: array![],
+        program: [].span(),
         public_segments: PublicSegmentRanges {
             output: SegmentRange {
                 start_ptr: MemorySmallValue { id: 0, value: 0 },
@@ -44,8 +44,8 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
             add_mod: None,
             mul_mod: None,
         },
-        output,
-        safe_call: array![(1, [1; 8]), (2, [2; 8])],
+        output: output.span(),
+        safe_call: [(1, [1; 8]), (2, [2; 8])].span(),
     }
 }
 

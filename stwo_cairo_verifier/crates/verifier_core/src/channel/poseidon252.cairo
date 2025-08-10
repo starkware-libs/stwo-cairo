@@ -105,10 +105,10 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.channel_time.next_challenges();
     }
 
-    fn mix_memory_section(ref self: Poseidon252Channel, data: @MemorySection) {
+    fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
         // TODO(Gali): Make this more efficient, use hash_memory_section.
         let mut flat_data = array![];
-        for entry in data.span() {
+        for entry in data {
             let (_, val) = entry;
             flat_data.append_span((*val).span());
         }
