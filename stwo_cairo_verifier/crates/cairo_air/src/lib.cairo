@@ -217,19 +217,35 @@ pub fn lookup_sum(
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
 
     // TODO(Andrew): double check this is correct order.
-    sum += interaction_claim.opcodes.sum();
-    sum += *interaction_claim.verify_instruction.claimed_sum;
-    sum += interaction_claim.blake_context.sum();
-    sum += interaction_claim.builtins.sum();
-    sum += interaction_claim.pedersen_context.sum();
-    sum += interaction_claim.poseidon_context.sum();
-    sum += *interaction_claim.memory_address_to_id.claimed_sum;
-    sum += interaction_claim.memory_id_to_value.sum();
-    sum += interaction_claim.range_checks.sum();
-    sum += *interaction_claim.verify_bitwise_xor_4.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_7.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_8.claimed_sum;
-    sum += *interaction_claim.verify_bitwise_xor_9.claimed_sum;
+    let CairoInteractionClaim {
+        opcodes,
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_9,
+    } = interaction_claim;
+
+    sum += opcodes.sum();
+    sum += *verify_instruction.claimed_sum;
+    sum += blake_context.sum();
+    sum += builtins.sum();
+    sum += pedersen_context.sum();
+    sum += poseidon_context.sum();
+    sum += *memory_address_to_id.claimed_sum;
+    sum += memory_id_to_value.sum();
+    sum += range_checks.sum();
+    sum += *verify_bitwise_xor_4.claimed_sum;
+    sum += *verify_bitwise_xor_7.claimed_sum;
+    sum += *verify_bitwise_xor_8.claimed_sum;
+    sum += *verify_bitwise_xor_9.claimed_sum;
     sum
 }
 
@@ -557,37 +573,50 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
     }
 
     fn present_segments(self: @PublicSegmentRanges) -> Array<@SegmentRange> {
+        let PublicSegmentRanges {
+            ec_op,
+            ecdsa,
+            keccak,
+            output,
+            pedersen,
+            range_check_128,
+            range_check_96,
+            bitwise,
+            add_mod,
+            mul_mod,
+            poseidon,
+        } = self;
         let mut segments = array![];
 
-        segments.append(self.output);
-        if let Some(pedersen) = self.pedersen {
+        segments.append(output);
+        if let Some(pedersen) = pedersen {
             segments.append(pedersen);
         }
-        if let Some(range_check_128) = self.range_check_128 {
+        if let Some(range_check_128) = range_check_128 {
             segments.append(range_check_128);
         }
-        if let Some(ecdsa) = self.ecdsa {
+        if let Some(ecdsa) = ecdsa {
             segments.append(ecdsa);
         }
-        if let Some(bitwise) = self.bitwise {
+        if let Some(bitwise) = bitwise {
             segments.append(bitwise);
         }
-        if let Some(ec_op) = self.ec_op {
+        if let Some(ec_op) = ec_op {
             segments.append(ec_op);
         }
-        if let Some(keccak) = self.keccak {
+        if let Some(keccak) = keccak {
             segments.append(keccak);
         }
-        if let Some(poseidon) = self.poseidon {
+        if let Some(poseidon) = poseidon {
             segments.append(poseidon);
         }
-        if let Some(range_check_96) = self.range_check_96 {
+        if let Some(range_check_96) = range_check_96 {
             segments.append(range_check_96);
         }
-        if let Some(add_mod) = self.add_mod {
+        if let Some(add_mod) = add_mod {
             segments.append(add_mod);
         }
-        if let Some(mul_mod) = self.mul_mod {
+        if let Some(mul_mod) = mul_mod {
             segments.append(mul_mod);
         }
         segments
