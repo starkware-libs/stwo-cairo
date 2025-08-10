@@ -1,6 +1,9 @@
 use core::num::traits::one::One;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_cairo_air::Invertible;
+use stwo_cairo_air::components::memory_address_to_id::{
+    LOG_MEMORY_ADDRESS_TO_ID_SPLIT, MEMORY_ADDRESS_TO_ID_SPLIT,
+};
 use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_cairo_air::{
     CairoInteractionElements, PublicData, PublicDataImpl, RelationUsesDict,
@@ -10,6 +13,7 @@ use stwo_constraint_framework::LookupElements;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_utils::{construct_f252, deconstruct_f252, hash_memory_section};
+use crate::pow2;
 #[test]
 #[cairofmt::skip]
 fn test_public_data_logup_sum() {
@@ -176,4 +180,7 @@ fn test_sum_inverses_qm31() {
 
     assert_eq!(sum, expected);
 }
-
+#[test]
+fn test_split_memory_address_to_id_constants_compatibility() {
+    assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
+}

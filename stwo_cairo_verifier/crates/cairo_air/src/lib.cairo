@@ -272,7 +272,6 @@ fn verify_claim(claim: @CairoClaim) {
     // To verify that, one needs to check that the size of the address_to_id component <=
     // 2^(27 - log2(MEMORY_ADDRESS_TO_ID_SPLIT)), because the component is split to
     // MEMORY_ADDRESS_TO_ID_SPLIT addresses in each row of the component.
-    assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
     assert!(*claim.memory_address_to_id.log_size <= 27_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
 
     // Count the number of uses of each relation.
