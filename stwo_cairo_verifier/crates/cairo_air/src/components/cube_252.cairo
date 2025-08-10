@@ -947,7 +947,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
             felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
             felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
+            _felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
         ] =
             output;
 
