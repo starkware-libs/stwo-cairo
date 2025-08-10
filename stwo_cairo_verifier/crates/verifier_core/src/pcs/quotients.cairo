@@ -1,6 +1,5 @@
-use bounded_int::BoundedInt;
 use core::array::ArrayImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait, SquashedFelt252DictTrait};
+use core::dict::{Felt252Dict, Felt252DictEntryTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::nullable::{FromNullableResult, Nullable, NullableTrait, match_nullable, null};
 use core::num::traits::{One, Zero};

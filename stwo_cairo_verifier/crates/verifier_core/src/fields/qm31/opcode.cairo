@@ -4,6 +4,8 @@ use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
 use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait};
+// TODO(Gali): Remove.
+#[allow(unused_imports)]
 use super::{PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE};
 
 #[derive(Copy, Drop, PartialEq)]

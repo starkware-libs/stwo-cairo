@@ -4,7 +4,7 @@ use core::num::traits::One;
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, MulByM31Trait};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
+use stwo_verifier_core::fields::qm31::QM31;
 
 #[cfg(test)]
 mod test;

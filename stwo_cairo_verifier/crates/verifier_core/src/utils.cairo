@@ -1,13 +1,10 @@
 use core::array::SpanTrait;
 use core::box::BoxTrait;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
-use core::iter::{IntoIterator, Iterator};
-use core::nullable::{FromNullableResult, NullableTrait, match_nullable, null};
-use core::num::traits::{BitSize, WrappingMul, WrappingSub};
+use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
+use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
-use crate::circle::M31_CIRCLE_LOG_ORDER;
 use crate::fields::m31::{M31, M31_SHIFT};
-use crate::{TreeArray, TreeSpan};
 
 /// Returns `2^n`.
 #[inline(always)]
