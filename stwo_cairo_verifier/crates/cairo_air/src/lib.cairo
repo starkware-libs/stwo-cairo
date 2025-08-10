@@ -241,7 +241,7 @@ pub fn lookup_sum(
 fn verify_claim(claim: @CairoClaim) {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call: _safe_call,
+            program, public_segments, output: _output, safe_call,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
@@ -269,6 +269,14 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
+
+    // Verify that the safe call area has the 2 values initial_fp and 0, in that order.
+    let mut safe_call = *safe_call;
+    let [(_, safe_call_value_0), (_, safe_call_value_1)] = (*safe_call.multi_pop_front().unwrap())
+        .unbox();
+    assert!(safe_call.is_empty());
+    assert!(safe_call_value_0 == [initial_fp, 0, 0, 0, 0, 0, 0, 0]);
+    assert!(safe_call_value_1 == [0, 0, 0, 0, 0, 0, 0, 0]);
 
     // When using address_to_id relation, it is assumed that address < 2^27.
     // To verify that, one needs to check that the size of the address_to_id component <=
