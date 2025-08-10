@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::poseidon_partial_round::poseidon_partial_round_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
@@ -1067,7 +1050,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
             [
                 input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
                 input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
@@ -1154,7 +1137,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
             [
                 input_limb_22_col22, input_limb_23_col23, input_limb_24_col24, input_limb_25_col25,
                 input_limb_26_col26, input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
@@ -1245,7 +1228,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
             [
                 cube_252_output_limb_0_col72, cube_252_output_limb_1_col73,
                 cube_252_output_limb_2_col74, cube_252_output_limb_3_col75,

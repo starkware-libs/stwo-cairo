@@ -1,22 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_df7a6::decode_instruction_df7a6_evaluate;
+use crate::prelude::*;
 
 
 pub fn decode_generic_instruction_evaluate(
@@ -47,7 +30,7 @@ pub fn decode_generic_instruction_evaluate(
 ) -> [QM31; 8] {
     let [decode_generic_instruction_input] = input;
 
-    let output: [QM31; 3] = decode_instruction_df7a6_evaluate(
+    let output: [QM31; 3] = decode_instruction_df7a6::decode_instruction_df7a6_evaluate(
         [decode_generic_instruction_input],
         offset0_col0,
         offset1_col1,

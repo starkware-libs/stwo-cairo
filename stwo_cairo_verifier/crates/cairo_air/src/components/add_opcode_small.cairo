@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate;
-use crate::components::subroutines::read_small::read_small_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 33;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -240,7 +222,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 4] = decode_instruction_bc3cd_evaluate(
+        let output: [QM31; 4] = decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate(
             [input_pc_col0],
             offset0_col3,
             offset1_col4,
@@ -291,7 +273,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 1] = read_small_evaluate(
+        let output: [QM31; 1] = read_small::read_small_evaluate(
             [(mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0)],
             dst_id_col14,
             msb_col15,
@@ -309,7 +291,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         );
         let [read_small_output_tmp_756b7_16_limb_0] = output;
 
-        let output: [QM31; 1] = read_small_evaluate(
+        let output: [QM31; 1] = read_small::read_small_evaluate(
             [(mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1)],
             op0_id_col20,
             msb_col21,
@@ -327,7 +309,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         );
         let [read_small_output_tmp_756b7_22_limb_0] = output;
 
-        let output: [QM31; 1] = read_small_evaluate(
+        let output: [QM31; 1] = read_small::read_small_evaluate(
             [(mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2)],
             op1_id_col26,
             msb_col27,

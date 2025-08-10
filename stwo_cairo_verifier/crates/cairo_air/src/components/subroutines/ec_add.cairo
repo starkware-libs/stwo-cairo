@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::add_252::add_252_evaluate;
-use crate::components::subroutines::div_252::div_252_evaluate;
-use crate::components::subroutines::mul_252::mul_252_evaluate;
-use crate::components::subroutines::sub_252::sub_252_evaluate;
+use crate::prelude::*;
 
 
 pub fn ec_add_evaluate(
@@ -712,7 +692,7 @@ pub fn ec_add_evaluate(
     ] =
         input;
 
-    sub_252_evaluate(
+    sub_252::sub_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
             ec_add_input_x2_limb_3, ec_add_input_x2_limb_4, ec_add_input_x2_limb_5,
@@ -790,7 +770,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    add_252_evaluate(
+    add_252::add_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
             ec_add_input_x2_limb_3, ec_add_input_x2_limb_4, ec_add_input_x2_limb_5,
@@ -868,7 +848,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    sub_252_evaluate(
+    sub_252::sub_252_evaluate(
         [
             ec_add_input_y2_limb_0, ec_add_input_y2_limb_1, ec_add_input_y2_limb_2,
             ec_add_input_y2_limb_3, ec_add_input_y2_limb_4, ec_add_input_y2_limb_5,
@@ -946,7 +926,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    div_252_evaluate(
+    div_252::div_252_evaluate(
         [
             sub_res_limb_0_col58, sub_res_limb_1_col59, sub_res_limb_2_col60, sub_res_limb_3_col61,
             sub_res_limb_4_col62, sub_res_limb_5_col63, sub_res_limb_6_col64, sub_res_limb_7_col65,
@@ -1085,7 +1065,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    mul_252_evaluate(
+    mul_252::mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
             div_res_limb_4_col91, div_res_limb_5_col92, div_res_limb_6_col93, div_res_limb_7_col94,
@@ -1225,7 +1205,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    sub_252_evaluate(
+    sub_252::sub_252_evaluate(
         [
             mul_res_limb_0_col143, mul_res_limb_1_col144, mul_res_limb_2_col145,
             mul_res_limb_3_col146, mul_res_limb_4_col147, mul_res_limb_5_col148,
@@ -1302,7 +1282,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    sub_252_evaluate(
+    sub_252::sub_252_evaluate(
         [
             ec_add_input_x1_limb_0, ec_add_input_x1_limb_1, ec_add_input_x1_limb_2,
             ec_add_input_x1_limb_3, ec_add_input_x1_limb_4, ec_add_input_x1_limb_5,
@@ -1380,7 +1360,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    mul_252_evaluate(
+    mul_252::mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
             div_res_limb_4_col91, div_res_limb_5_col92, div_res_limb_6_col93, div_res_limb_7_col94,
@@ -1520,7 +1500,7 @@ pub fn ec_add_evaluate(
         random_coeff,
     );
 
-    sub_252_evaluate(
+    sub_252::sub_252_evaluate(
         [
             mul_res_limb_0_col257, mul_res_limb_1_col258, mul_res_limb_2_col259,
             mul_res_limb_3_col260, mul_res_limb_4_col261, mul_res_limb_5_col262,

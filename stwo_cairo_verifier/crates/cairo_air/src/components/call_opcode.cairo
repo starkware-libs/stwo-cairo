@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_instruction_f1edd::decode_instruction_f1edd_evaluate;
-use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 19;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -210,7 +192,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 2] = decode_instruction_f1edd_evaluate(
+        let output: [QM31; 2] = decode_instruction_f1edd::decode_instruction_f1edd_evaluate(
             [input_pc_col0],
             offset2_col3,
             op1_base_fp_col4,
@@ -226,7 +208,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
             [input_ap_col1],
             stored_fp_id_col5,
             stored_fp_limb_0_col6,
@@ -249,7 +231,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
             [(input_ap_col1 + qm31_const::<1, 0, 0, 0>())],
             stored_ret_pc_id_col9,
             stored_ret_pc_limb_0_col10,
@@ -279,7 +261,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
             [(mem1_base_col13 + decode_instruction_f1edd_output_tmp_32b66_4_offset2)],
             next_pc_id_col14,
             next_pc_limb_0_col15,

@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::encode_offsets::encode_offsets_evaluate;
-use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -184,7 +166,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let output: [QM31; 2] = encode_offsets_evaluate(
+        let output: [QM31; 2] = encode_offsets::encode_offsets_evaluate(
             [input_offset0_col1, input_offset1_col2, input_offset2_col3],
             offset0_low_col7,
             offset0_mid_col8,
@@ -205,7 +187,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
             output;
 
-        mem_verify_evaluate(
+        mem_verify::mem_verify_evaluate(
             [
                 input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_16a4f_8_limb_1,
                 offset1_mid_col10, encode_offsets_output_tmp_16a4f_8_limb_3, offset2_mid_col13,

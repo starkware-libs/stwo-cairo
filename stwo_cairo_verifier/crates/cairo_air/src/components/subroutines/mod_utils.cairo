@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate;
-use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
-use crate::components::subroutines::read_positive_num_bits_99::read_positive_num_bits_99_evaluate;
-use crate::components::subroutines::read_small::read_small_evaluate;
+use crate::prelude::*;
 
 
 pub fn mod_utils_evaluate(
@@ -337,7 +317,7 @@ pub fn mod_utils_evaluate(
     let instance_addr_tmp_7b599_2: QM31 = (mod_utils_input_limb_0
         + (qm31_const::<7, 0, 0, 0>() * mod_utils_input_limb_1));
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [instance_addr_tmp_7b599_2],
         p0_id_col1,
         p0_limb_0_col2,
@@ -360,7 +340,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<1, 0, 0, 0>())],
         p1_id_col13,
         p1_limb_0_col14,
@@ -383,7 +363,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<2, 0, 0, 0>())],
         p2_id_col25,
         p2_limb_0_col26,
@@ -406,7 +386,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<3, 0, 0, 0>())],
         p3_id_col37,
         p3_limb_0_col38,
@@ -429,7 +409,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_27_evaluate(
+    read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<4, 0, 0, 0>())],
         values_ptr_id_col49,
         values_ptr_limb_0_col50,
@@ -444,7 +424,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_27_evaluate(
+    read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<5, 0, 0, 0>())],
         offsets_ptr_id_col53,
         offsets_ptr_limb_0_col54,
@@ -459,7 +439,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_27_evaluate(
+    read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
         [(prev_instance_addr_tmp_7b599_1 + qm31_const::<5, 0, 0, 0>())],
         offsets_ptr_prev_id_col57,
         offsets_ptr_prev_limb_0_col58,
@@ -474,7 +454,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_27_evaluate(
+    read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
         [(instance_addr_tmp_7b599_2 + qm31_const::<6, 0, 0, 0>())],
         n_id_col61,
         n_limb_0_col62,
@@ -489,7 +469,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_27_evaluate(
+    read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
         [(prev_instance_addr_tmp_7b599_1 + qm31_const::<6, 0, 0, 0>())],
         n_prev_id_col65,
         n_prev_limb_0_col66,
@@ -530,7 +510,7 @@ pub fn mod_utils_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    mem_cond_verify_equal_known_id_evaluate(
+    mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate(
         [
             (prev_instance_addr_tmp_7b599_1 + qm31_const::<4, 0, 0, 0>()), values_ptr_id_col49,
             block_reset_condition_tmp_7b599_30,
@@ -543,7 +523,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    mem_cond_verify_equal_known_id_evaluate(
+    mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate(
         [prev_instance_addr_tmp_7b599_1, p0_id_col1, block_reset_condition_tmp_7b599_30],
         p_prev0_id_col70,
         memory_address_to_id_lookup_elements,
@@ -553,7 +533,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    mem_cond_verify_equal_known_id_evaluate(
+    mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate(
         [
             (prev_instance_addr_tmp_7b599_1 + qm31_const::<1, 0, 0, 0>()), p1_id_col13,
             block_reset_condition_tmp_7b599_30,
@@ -566,7 +546,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    mem_cond_verify_equal_known_id_evaluate(
+    mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate(
         [
             (prev_instance_addr_tmp_7b599_1 + qm31_const::<2, 0, 0, 0>()), p2_id_col25,
             block_reset_condition_tmp_7b599_30,
@@ -579,7 +559,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    mem_cond_verify_equal_known_id_evaluate(
+    mem_cond_verify_equal_known_id::mem_cond_verify_equal_known_id_evaluate(
         [
             (prev_instance_addr_tmp_7b599_1 + qm31_const::<3, 0, 0, 0>()), p3_id_col37,
             block_reset_condition_tmp_7b599_30,
@@ -592,7 +572,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    let output: [QM31; 1] = read_small_evaluate(
+    let output: [QM31; 1] = read_small::read_small_evaluate(
         [
             ((offsets_ptr_limb_0_col54 + (offsets_ptr_limb_1_col55 * qm31_const::<512, 0, 0, 0>()))
                 + (offsets_ptr_limb_2_col56 * qm31_const::<262144, 0, 0, 0>()))
@@ -613,7 +593,7 @@ pub fn mod_utils_evaluate(
     );
     let [read_small_output_tmp_7b599_41_limb_0] = output;
 
-    let output: [QM31; 1] = read_small_evaluate(
+    let output: [QM31; 1] = read_small::read_small_evaluate(
         [
             (((offsets_ptr_limb_0_col54 + (offsets_ptr_limb_1_col55 * qm31_const::<512, 0, 0, 0>()))
                 + (offsets_ptr_limb_2_col56 * qm31_const::<262144, 0, 0, 0>()))
@@ -635,7 +615,7 @@ pub fn mod_utils_evaluate(
     );
     let [read_small_output_tmp_7b599_47_limb_0] = output;
 
-    let output: [QM31; 1] = read_small_evaluate(
+    let output: [QM31; 1] = read_small::read_small_evaluate(
         [
             (((offsets_ptr_limb_0_col54 + (offsets_ptr_limb_1_col55 * qm31_const::<512, 0, 0, 0>()))
                 + (offsets_ptr_limb_2_col56 * qm31_const::<262144, 0, 0, 0>()))
@@ -660,7 +640,7 @@ pub fn mod_utils_evaluate(
         + (values_ptr_limb_1_col51 * qm31_const::<512, 0, 0, 0>()))
         + (values_ptr_limb_2_col52 * qm31_const::<262144, 0, 0, 0>()));
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_41_limb_0)],
         a0_id_col92,
         a0_limb_0_col93,
@@ -683,7 +663,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_41_limb_0)
                 + qm31_const::<1, 0, 0, 0>())
@@ -709,7 +689,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_41_limb_0)
                 + qm31_const::<2, 0, 0, 0>())
@@ -735,7 +715,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_41_limb_0)
                 + qm31_const::<3, 0, 0, 0>())
@@ -761,7 +741,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_47_limb_0)],
         b0_id_col140,
         b0_limb_0_col141,
@@ -784,7 +764,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_47_limb_0)
                 + qm31_const::<1, 0, 0, 0>())
@@ -810,7 +790,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_47_limb_0)
                 + qm31_const::<2, 0, 0, 0>())
@@ -836,7 +816,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_47_limb_0)
                 + qm31_const::<3, 0, 0, 0>())
@@ -862,7 +842,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [(values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_53_limb_0)],
         c0_id_col188,
         c0_limb_0_col189,
@@ -885,7 +865,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_53_limb_0)
                 + qm31_const::<1, 0, 0, 0>())
@@ -911,7 +891,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_53_limb_0)
                 + qm31_const::<2, 0, 0, 0>())
@@ -937,7 +917,7 @@ pub fn mod_utils_evaluate(
         random_coeff,
     );
 
-    read_positive_num_bits_99_evaluate(
+    read_positive_num_bits_99::read_positive_num_bits_99_evaluate(
         [
             ((values_ptr_tmp_7b599_54 + read_small_output_tmp_7b599_53_limb_0)
                 + qm31_const::<3, 0, 0, 0>())

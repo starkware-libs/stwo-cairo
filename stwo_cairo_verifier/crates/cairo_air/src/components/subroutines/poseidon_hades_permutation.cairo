@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate;
-use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
-use crate::components::subroutines::linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate;
-use crate::components::subroutines::linear_combination_n_4_coefs_4_2_m2_1::linear_combination_n_4_coefs_4_2_m2_1_evaluate;
+use crate::prelude::*;
 
 
 pub fn poseidon_hades_permutation_evaluate(
@@ -288,7 +268,7 @@ pub fn poseidon_hades_permutation_evaluate(
     ] =
         input;
 
-    linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_0, poseidon_hades_permutation_input_limb_1,
             poseidon_hades_permutation_input_limb_2, poseidon_hades_permutation_input_limb_3,
@@ -317,7 +297,7 @@ pub fn poseidon_hades_permutation_evaluate(
         random_coeff,
     );
 
-    linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_10, poseidon_hades_permutation_input_limb_11,
             poseidon_hades_permutation_input_limb_12, poseidon_hades_permutation_input_limb_13,
@@ -346,7 +326,7 @@ pub fn poseidon_hades_permutation_evaluate(
         random_coeff,
     );
 
-    linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_20, poseidon_hades_permutation_input_limb_21,
             poseidon_hades_permutation_input_limb_22, poseidon_hades_permutation_input_limb_23,
@@ -483,7 +463,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ],
         );
 
-    linear_combination_n_4_coefs_1_1_m2_1_evaluate(
+    linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
             poseidon_full_round_chain_output_limb_1_col34,
@@ -550,7 +530,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ],
         );
 
-    linear_combination_n_4_coefs_4_2_m2_1_evaluate(
+    linear_combination_n_4_coefs_4_2_m2_1::linear_combination_n_4_coefs_4_2_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
             poseidon_full_round_chain_output_limb_1_col34,
@@ -669,7 +649,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ],
         );
 
-    linear_combination_n_4_coefs_4_2_1_1_evaluate(
+    linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
             poseidon_3_partial_rounds_chain_output_limb_0_col105,
             poseidon_3_partial_rounds_chain_output_limb_1_col106,
@@ -728,7 +708,7 @@ pub fn poseidon_hades_permutation_evaluate(
         random_coeff,
     );
 
-    linear_combination_n_4_coefs_4_2_1_1_evaluate(
+    linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
             poseidon_3_partial_rounds_chain_output_limb_20_col125,
             poseidon_3_partial_rounds_chain_output_limb_21_col126,

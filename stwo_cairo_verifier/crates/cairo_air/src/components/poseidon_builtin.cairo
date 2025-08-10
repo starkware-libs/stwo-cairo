@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate;
-use crate::components::subroutines::mem_verify::mem_verify_evaluate;
-use crate::components::subroutines::poseidon_hades_permutation::poseidon_hades_permutation_evaluate;
-use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 341;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 9] = [
@@ -2208,7 +2188,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [(poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))],
             input_state_0_id_col0,
             input_state_0_limb_0_col1,
@@ -2275,7 +2255,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             + (input_state_0_limb_25_col26 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_0_limb_26_col27 * qm31_const::<262144, 0, 0, 0>()));
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<1, 0, 0, 0>())
@@ -2345,7 +2325,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             + (input_state_1_limb_25_col55 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_1_limb_26_col56 * qm31_const::<262144, 0, 0, 0>()));
 
-        read_positive_num_bits_252_evaluate(
+        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<2, 0, 0, 0>())
@@ -2415,7 +2395,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             + (input_state_2_limb_25_col84 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_2_limb_26_col85 * qm31_const::<262144, 0, 0, 0>()));
 
-        poseidon_hades_permutation_evaluate(
+        poseidon_hades_permutation::poseidon_hades_permutation_evaluate(
             [
                 packed_input_state_0_tmp_51986_3_limb_0, packed_input_state_0_tmp_51986_3_limb_1,
                 packed_input_state_0_tmp_51986_3_limb_2, packed_input_state_0_tmp_51986_3_limb_3,
@@ -2664,7 +2644,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        let output: [QM31; 10] = felt_252_unpack_from_27_evaluate(
+        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_0_col254,
                 poseidon_full_round_chain_output_limb_1_col255,
@@ -2713,7 +2693,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        mem_verify_evaluate(
+        mem_verify::mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<3, 0, 0, 0>()),
@@ -2743,7 +2723,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        let output: [QM31; 10] = felt_252_unpack_from_27_evaluate(
+        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_10_col264,
                 poseidon_full_round_chain_output_limb_11_col265,
@@ -2792,7 +2772,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        mem_verify_evaluate(
+        mem_verify::mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<4, 0, 0, 0>()),
@@ -2822,7 +2802,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        let output: [QM31; 10] = felt_252_unpack_from_27_evaluate(
+        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_20_col274,
                 poseidon_full_round_chain_output_limb_21_col275,
@@ -2871,7 +2851,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        mem_verify_evaluate(
+        mem_verify::mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<5, 0, 0, 0>()),

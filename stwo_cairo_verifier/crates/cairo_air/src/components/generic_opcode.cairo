@@ -1,25 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::decode_generic_instruction::decode_generic_instruction_evaluate;
-use crate::components::subroutines::eval_operands::eval_operands_evaluate;
-use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
-use crate::components::subroutines::update_registers::update_registers_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 237;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 21] = [
@@ -1117,7 +1097,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 8] = decode_generic_instruction_evaluate(
+        let output: [QM31; 8] = decode_generic_instruction::decode_generic_instruction_evaluate(
             [input_pc_col0],
             offset0_col3,
             offset1_col4,
@@ -1155,7 +1135,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        eval_operands_evaluate(
+        eval_operands::eval_operands_evaluate(
             [
                 input_pc_col0, input_ap_col1, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7,
                 op1_imm_col8, op1_base_fp_col9, op1_base_ap_col10, res_add_col11, res_mul_col12,
@@ -1453,7 +1433,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        handle_opcodes_evaluate(
+        handle_opcodes::handle_opcodes_evaluate(
             [
                 input_pc_col0, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7, op1_base_fp_col9,
                 pc_update_jump_col13, opcode_call_col18, opcode_ret_col19, opcode_assert_eq_col20,
@@ -1489,7 +1469,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        update_registers_evaluate(
+        update_registers::update_registers_evaluate(
             [
                 input_pc_col0, input_ap_col1, input_fp_col2, pc_update_jump_col13,
                 pc_update_jump_rel_col14, pc_update_jnz_col15, ap_update_add_col16,

@@ -1,23 +1,5 @@
 // AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
-use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate;
-use crate::components::subroutines::mul_252::mul_252_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 16] = [
@@ -904,7 +886,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        let output: [QM31; 10] = felt_252_unpack_from_27_range_check_output_evaluate(
+        let output: [QM31; 10] =
+            felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate(
             [
                 input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
                 input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
@@ -968,7 +951,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
-        mul_252_evaluate(
+        mul_252::mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,
                 felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
@@ -1127,7 +1110,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        mul_252_evaluate(
+        mul_252::mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,
                 felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
