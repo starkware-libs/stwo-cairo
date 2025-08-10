@@ -1,7 +1,6 @@
 use core::box::BoxImpl;
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl,
-    PreprocessedColumnKey, PreprocessedColumnSet, PreprocessedColumnTrait, PreprocessedMaskValues,
+    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl, PreprocessedColumnKey,
     PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::Hash;

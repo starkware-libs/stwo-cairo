@@ -14,6 +14,7 @@ mod poseidon_hasher_test;
 
 pub mod verifier;
 #[cfg(test)]
+#[cfg(feature: "poseidon252_verifier")]
 mod verifier_test;
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub use blake2s_hasher::Blake2sMerkleHasher as MerkleHasher;

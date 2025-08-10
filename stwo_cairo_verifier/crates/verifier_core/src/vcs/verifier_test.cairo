@@ -1,15 +1,9 @@
-use core::array::ToSpanTrait;
-use core::dict::Felt252DictTrait;
-use core::nullable::NullableTrait;
-use core::result::ResultTrait;
 use crate::fields::m31::m31;
 use crate::utils::group_columns_by_log_size;
-#[cfg(feature: "poseidon252_verifier")]
 use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
 #[test]
-#[cfg(feature: "poseidon252_verifier")]
 fn test_verifier() {
     let root = 0x487d4619a3b49e2d33f289d6a47f4cdf3f71a03f48ac7012d36c2da9ed91d80;
     let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];

@@ -7,7 +7,7 @@ use crate::circle_mul_table::{
 };
 use crate::fields::Invertible;
 use crate::fields::m31::{M31, MulByM31Trait};
-use crate::fields::qm31::{QM31, QM31Trait};
+use crate::fields::qm31::QM31;
 use super::utils::pow2;
 
 /// A generator for the circle group over [`M31`].

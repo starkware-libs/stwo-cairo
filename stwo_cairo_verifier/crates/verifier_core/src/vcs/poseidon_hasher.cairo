@@ -1,5 +1,6 @@
 use core::array::ArrayTrait;
 use core::hash::HashStateTrait;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use core::num::traits::Zero;
 use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
 use crate::BaseField;

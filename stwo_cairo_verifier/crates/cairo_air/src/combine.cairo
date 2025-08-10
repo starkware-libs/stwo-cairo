@@ -1,7 +1,6 @@
 use bounded_int::impls::*;
 use bounded_int::{
-    AddHelper, BoundedInt, DivRemHelper, MulHelper, NZ_U9_SHIFT, add, bounded_int_mul, div_rem,
-    upcast,
+    AddHelper, BoundedInt, MulHelper, NZ_U9_SHIFT, add, bounded_int_mul, div_rem, upcast,
 };
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;

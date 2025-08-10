@@ -1,3 +1,4 @@
+#[cfg(feature: "poseidon252_verifier")]
 use crate::channel::Channel;
 use crate::queries::{Queries, QueriesImpl};
 
