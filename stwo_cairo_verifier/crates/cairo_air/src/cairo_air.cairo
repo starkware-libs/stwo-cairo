@@ -415,21 +415,18 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
         );
 
-        let verifyinstruction_component = components::verify_instruction::Component {
-            claim: *cairo_claim.verify_instruction,
-            interaction_claim: *interaction_claim.verify_instruction,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-        };
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
+            cairo_claim.verify_instruction,
+            interaction_claim.verify_instruction,
+            interaction_elements,
+        );
 
-        let memory_address_to_id_component = components::memory_address_to_id::Component {
-            claim: *cairo_claim.memory_address_to_id,
-            interaction_claim: *interaction_claim.memory_address_to_id,
-            lookup_elements: interaction_elements.memory_address_to_id.clone(),
-        };
+        let memory_address_to_id_component =
+            components::memory_address_to_id::NewComponentImpl::new(
+            cairo_claim.memory_address_to_id,
+            interaction_claim.memory_address_to_id,
+            interaction_elements,
+        );
 
         assert!(
             cairo_claim
@@ -447,84 +444,53 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
             memory_id_to_value_components
                 .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
+                    components::memory_id_to_big::NewBigComponentImpl::new(
+                        log_size, offset, claimed_sum, interaction_elements,
+                    ),
                 );
             offset = offset + pow2(log_size);
         }
         // Check that IDs in (ID -> Value) do not overflow P.
         assert!(offset <= P_U32);
 
-        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
-            log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
-            claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-        };
+        let small_memory_id_to_value_component =
+            components::memory_id_to_big::NewSmallComponentImpl::new(
+            *cairo_claim.memory_id_to_value.small_log_size,
+            *interaction_claim.memory_id_to_value.small_claimed_sum,
+            interaction_elements,
+        );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
             cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
         );
 
-        let verify_bitwise_xor_4_component = components::verify_bitwise_xor_4::Component {
-            claim: *cairo_claim.verify_bitwise_xor_4,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_4,
-            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
-        };
+        let verify_bitwise_xor_4_component =
+            components::verify_bitwise_xor_4::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_4,
+            interaction_claim.verify_bitwise_xor_4,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_7_component = components::verify_bitwise_xor_7::Component {
-            claim: *cairo_claim.verify_bitwise_xor_7,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_7,
-            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
-        };
+        let verify_bitwise_xor_7_component =
+            components::verify_bitwise_xor_7::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_7,
+            interaction_claim.verify_bitwise_xor_7,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_8_component = components::verify_bitwise_xor_8::Component {
-            claim: *cairo_claim.verify_bitwise_xor_8,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_8,
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-        };
+        let verify_bitwise_xor_8_component =
+            components::verify_bitwise_xor_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_8,
+            interaction_claim.verify_bitwise_xor_8,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_9_component = components::verify_bitwise_xor_9::Component {
-            claim: *cairo_claim.verify_bitwise_xor_9,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_9,
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-        };
+        let verify_bitwise_xor_9_component =
+            components::verify_bitwise_xor_9::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_9,
+            interaction_claim.verify_bitwise_xor_9,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,
@@ -936,21 +902,18 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
         );
 
-        let verifyinstruction_component = components::verify_instruction::Component {
-            claim: *cairo_claim.verify_instruction,
-            interaction_claim: *interaction_claim.verify_instruction,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-        };
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
+            cairo_claim.verify_instruction,
+            interaction_claim.verify_instruction,
+            interaction_elements,
+        );
 
-        let memory_address_to_id_component = components::memory_address_to_id::Component {
-            claim: *cairo_claim.memory_address_to_id,
-            interaction_claim: *interaction_claim.memory_address_to_id,
-            lookup_elements: interaction_elements.memory_address_to_id.clone(),
-        };
+        let memory_address_to_id_component =
+            components::memory_address_to_id::NewComponentImpl::new(
+            cairo_claim.memory_address_to_id,
+            interaction_claim.memory_address_to_id,
+            interaction_elements,
+        );
 
         assert!(
             cairo_claim
@@ -968,84 +931,53 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
             memory_id_to_value_components
                 .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
+                    components::memory_id_to_big::NewBigComponentImpl::new(
+                        log_size, offset, claimed_sum, interaction_elements,
+                    ),
                 );
             offset = offset + pow2(log_size);
         }
         // Check that IDs in (ID -> Value) do not overflow P.
         assert!(offset <= P_U32);
 
-        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
-            log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
-            claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-        };
+        let small_memory_id_to_value_component =
+            components::memory_id_to_big::NewSmallComponentImpl::new(
+            *cairo_claim.memory_id_to_value.small_log_size,
+            *interaction_claim.memory_id_to_value.small_claimed_sum,
+            interaction_elements,
+        );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
             cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
         );
 
-        let verify_bitwise_xor_4_component = components::verify_bitwise_xor_4::Component {
-            claim: *cairo_claim.verify_bitwise_xor_4,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_4,
-            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
-        };
+        let verify_bitwise_xor_4_component =
+            components::verify_bitwise_xor_4::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_4,
+            interaction_claim.verify_bitwise_xor_4,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_7_component = components::verify_bitwise_xor_7::Component {
-            claim: *cairo_claim.verify_bitwise_xor_7,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_7,
-            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
-        };
+        let verify_bitwise_xor_7_component =
+            components::verify_bitwise_xor_7::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_7,
+            interaction_claim.verify_bitwise_xor_7,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_8_component = components::verify_bitwise_xor_8::Component {
-            claim: *cairo_claim.verify_bitwise_xor_8,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_8,
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-        };
+        let verify_bitwise_xor_8_component =
+            components::verify_bitwise_xor_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_8,
+            interaction_claim.verify_bitwise_xor_8,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_9_component = components::verify_bitwise_xor_9::Component {
-            claim: *cairo_claim.verify_bitwise_xor_9,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_9,
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-        };
+        let verify_bitwise_xor_9_component =
+            components::verify_bitwise_xor_9::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_9,
+            interaction_claim.verify_bitwise_xor_9,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,

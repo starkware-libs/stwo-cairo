@@ -326,16 +326,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = add_mod_builtin {
             add_mod_builtin_component =
                 Option::Some(
-                    components::add_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.add_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                    },
+                    components::add_mod_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.add_mod_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -343,22 +336,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
-                    components::bitwise_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.bitwise_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        verify_bitwise_xor_9_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_9
-                            .clone(),
-                        verify_bitwise_xor_8_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_8
-                            .clone(),
-                    },
+                    components::bitwise_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -366,28 +346,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = mul_mod_builtin {
             mul_mod_builtin_component =
                 Option::Some(
-                    components::mul_mod_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.mul_mod_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_12_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_12
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_3_6_6_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_6_6_3
-                            .clone(),
-                    },
+                    components::mul_mod_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.mul_mod_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -395,25 +356,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = pedersen_builtin {
             pedersen_builtin_component =
                 Option::Some(
-                    components::pedersen_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.pedersen_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                        range_check_5_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_5_4
-                            .clone(),
-                        partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-                    },
+                    components::pedersen_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.pedersen_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -421,38 +366,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = poseidon_builtin {
             poseidon_builtin_component =
                 Option::Some(
-                    components::poseidon_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.poseidon_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-                        poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
-                            .poseidon_3_partial_rounds_chain
-                            .clone(),
-                        range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_3_3_3_3_3
-                            .clone(),
-                        range_check_4_4_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4_4_4
-                            .clone(),
-                        range_check_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4
-                            .clone(),
-                        poseidon_full_round_chain_lookup_elements: interaction_elements
-                            .poseidon_full_round_chain
-                            .clone(),
-                        range_check_felt_252_width_27_lookup_elements: interaction_elements
-                            .range_check_felt_252_width_27
-                            .clone(),
-                    },
+                    components::poseidon_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.poseidon_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -460,20 +376,11 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_96_builtin {
             range_check_96_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_96::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.range_check_96_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_6_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_6
-                            .clone(),
-                    },
+                    components::range_check_builtin_bits_96::NewComponentImpl::new(
+                        claim,
+                        @interaction_claim.range_check_96_builtin.unwrap(),
+                        interaction_elements,
+                    ),
                 );
         }
 
@@ -481,16 +388,11 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_128::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.range_check_128_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                    },
+                    components::range_check_builtin_bits_128::NewComponentImpl::new(
+                        claim,
+                        @interaction_claim.range_check_128_builtin.unwrap(),
+                        interaction_elements,
+                    ),
                 );
         }
 
@@ -769,22 +671,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = bitwise_builtin {
             bitwise_builtin_component =
                 Option::Some(
-                    components::bitwise_builtin::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.bitwise_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        verify_bitwise_xor_9_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_9
-                            .clone(),
-                        verify_bitwise_xor_8_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_8
-                            .clone(),
-                    },
+                    components::bitwise_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                    ),
                 );
         }
 
@@ -792,16 +681,11 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_128::Component {
-                        claim: *claim,
-                        interaction_claim: (*interaction_claim.range_check_128_builtin).unwrap(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                    },
+                    components::range_check_builtin_bits_128::NewComponentImpl::new(
+                        claim,
+                        @interaction_claim.range_check_128_builtin.unwrap(),
+                        interaction_elements,
+                    ),
                 );
         }
 

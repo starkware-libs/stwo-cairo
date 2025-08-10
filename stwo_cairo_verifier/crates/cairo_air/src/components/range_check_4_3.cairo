@@ -40,7 +40,24 @@ pub struct Component {
     pub range_check_4_3_lookup_elements: crate::RangeCheck_4_3Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

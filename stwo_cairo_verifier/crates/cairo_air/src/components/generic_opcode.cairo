@@ -71,7 +71,44 @@ pub struct Component {
     pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
+            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
+            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
+            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
+            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
+            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
+            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
+            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
+            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+            opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

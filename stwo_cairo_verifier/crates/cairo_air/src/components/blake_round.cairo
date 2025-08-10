@@ -52,7 +52,29 @@ pub struct Component {
     pub blake_round_lookup_elements: crate::BlakeRoundElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
+            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+            blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

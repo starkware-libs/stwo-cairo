@@ -260,50 +260,28 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @BlakeInteractionClaim,
     ) -> BlakeComponents {
-        let blake_round_component = components::blake_round::Component {
-            claim: *claim.blake_round,
-            interaction_claim: *interaction_claim.blake_round,
-            blake_round_lookup_elements: interaction_elements.blake_round.clone(),
-            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
-            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-        };
+        let blake_round_component = components::blake_round::NewComponentImpl::new(
+            claim.blake_round, interaction_claim.blake_round, interaction_elements,
+        );
 
-        let blake_g_component = components::blake_g::Component {
-            claim: *claim.blake_g,
-            interaction_claim: *interaction_claim.blake_g,
-            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
-            verify_bitwise_xor_12_lookup_elements: interaction_elements
-                .verify_bitwise_xor_12
-                .clone(),
-            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
-            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-        };
+        let blake_g_component = components::blake_g::NewComponentImpl::new(
+            claim.blake_g, interaction_claim.blake_g, interaction_elements,
+        );
 
-        let blake_round_sigma_component = components::blake_round_sigma::Component {
-            claim: *claim.blake_round_sigma,
-            interaction_claim: *interaction_claim.blake_round_sigma,
-            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
-        };
+        let blake_round_sigma_component = components::blake_round_sigma::NewComponentImpl::new(
+            claim.blake_round_sigma, interaction_claim.blake_round_sigma, interaction_elements,
+        );
 
-        let triple_xor_32_component = components::triple_xor_32::Component {
-            claim: *claim.triple_xor_32,
-            interaction_claim: *interaction_claim.triple_xor_32,
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-            triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
-        };
+        let triple_xor_32_component = components::triple_xor_32::NewComponentImpl::new(
+            claim.triple_xor_32, interaction_claim.triple_xor_32, interaction_elements,
+        );
 
-        let verify_bitwise_xor_12_component = components::verify_bitwise_xor_12::Component {
-            claim: *claim.verify_bitwise_xor_12,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_12,
-            verify_bitwise_xor_12_lookup_elements: interaction_elements
-                .verify_bitwise_xor_12
-                .clone(),
-        };
+        let verify_bitwise_xor_12_component =
+            components::verify_bitwise_xor_12::NewComponentImpl::new(
+            claim.verify_bitwise_xor_12,
+            interaction_claim.verify_bitwise_xor_12,
+            interaction_elements,
+        );
 
         BlakeComponents {
             blake_round: blake_round_component,

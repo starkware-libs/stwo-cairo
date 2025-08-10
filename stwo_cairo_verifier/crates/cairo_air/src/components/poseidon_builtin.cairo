@@ -58,7 +58,44 @@ pub struct Component {
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            poseidon_full_round_chain_lookup_elements: interaction_elements
+                .poseidon_full_round_chain
+                .clone(),
+            range_check_felt_252_width_27_lookup_elements: interaction_elements
+                .range_check_felt_252_width_27
+                .clone(),
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            range_check_3_3_3_3_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_3_3_3_3
+                .clone(),
+            range_check_4_4_4_4_lookup_elements: interaction_elements
+                .range_checks
+                .rc_4_4_4_4
+                .clone(),
+            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                .poseidon_3_partial_rounds_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,

@@ -1,3 +1,5 @@
+use crate::CairoInteractionElements;
+
 pub mod add_ap_opcode;
 pub mod add_mod_builtin;
 pub mod add_opcode;
@@ -74,3 +76,15 @@ pub mod verify_bitwise_xor_7;
 pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
+
+/// A trait for creating a new component.
+pub trait NewComponent<T> {
+    type Claim;
+    type InteractionClaim;
+
+    fn new(
+        claim: @Self::Claim,
+        interaction_claim: @Self::InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> T;
+}
