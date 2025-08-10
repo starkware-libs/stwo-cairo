@@ -25,7 +25,7 @@ const REGISTERS_END: ConstValue<2000> = 2000;
 #[test]
 fn test_output_encoding() {
     let public_memory = mock_public_memory_with_outputs(1000);
-    encode_and_hash_memory_section(@public_memory.output);
+    encode_and_hash_memory_section(public_memory.output);
 }
 #[test]
 fn test_output_mixing() {

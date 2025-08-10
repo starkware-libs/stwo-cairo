@@ -129,7 +129,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        encode_and_hash_memory_section(proof.claim.public_data.public_memory.program),
+        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.program),
     );
 
     let mut output = array![];
@@ -614,14 +614,14 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         // Program.
         let mut i: u32 = 0;
-        for (id, value) in self.program.span() {
+        for (id, value) in self.program {
             entries.append((initial_pc + i, *id, *value));
             i += 1;
         }
 
         // Output.
         i = 0;
-        for (id, value) in self.output.span() {
+        for (id, value) in self.output {
             entries.append((final_ap + i, *id, *value));
             i += 1;
         }
@@ -667,11 +667,11 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         public_segments.mix_into(ref channel);
 
         // Mix output memory section.
-        channel.mix_memory_section(output);
+        channel.mix_memory_section(*output);
 
         // Mix safe_call memory section.
         channel.mix_u64(safe_call.len().into());
-        for (id, value) in safe_call.span() {
+        for (id, value) in safe_call {
             channel.mix_u64((*id).into());
             // Mix each element of the array individually
             for val_element in (*value).span() {

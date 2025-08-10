@@ -94,7 +94,7 @@ fn test_hash_memory_section() {
     ];
 
     assert_eq!(
-        hash_memory_section(@section).unbox(),
+        hash_memory_section(section.span()).unbox(),
         [
             3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
             1207876589,
@@ -108,10 +108,11 @@ fn test_hash_memory_section() {
     let section = array![
         (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
         (0, [3, 4, 5, 6, 7, 8, 9, 10]),
-    ];
+    ]
+        .span();
 
     assert_eq!(
-        hash_memory_section(@section).unbox(),
+        hash_memory_section(section).unbox(),
         [
             2433336977, 2153250057, 881002283, 2835163344, 2300811583, 376217666, 1436681392,
             91789842,
