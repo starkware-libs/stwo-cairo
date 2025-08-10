@@ -4,6 +4,8 @@ use core::box::BoxImpl;
 #[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 
+#[cfg(test)]
+mod test;
 pub mod zip_eq;
 #[cfg(test)]
 mod zip_eq_test;
