@@ -254,7 +254,7 @@ fn verify_claim(claim: @CairoClaim) {
     // Currently only bootloader context is supported.
     // TODO: Change that fact post MVP.
     public_segments.assert_bootloader_context();
-    verify_program(program, public_segments);
+    verify_program(*program, public_segments);
 
     let initial_pc: u32 = (*initial_pc).into();
     let initial_ap: u32 = (*initial_ap).into();
@@ -478,8 +478,7 @@ struct BuiltinClaim {
     log_size: u32,
 }
 
-fn verify_program(program: @MemorySection, public_segments: @PublicSegmentRanges) {
-    let mut program = program.span();
+fn verify_program(mut program: MemorySection, public_segments: @PublicSegmentRanges) {
     let [
         (_, program_value_0),
         (_, program_value_1),
