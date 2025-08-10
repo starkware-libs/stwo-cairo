@@ -56,13 +56,18 @@ fn horner_step_with_split_input(
 }
 
 /// An unrolled implementation for combining a felt252 value as part of the combine_id_to_value
-/// flow.
+/// flow using Horner's method.
 /// This function takes a [u32; 8] value representing a felt252 in little endian, converts it to a
 /// [u9; 28] array of coefficients, and uses Horner evaluation to compute the value of the
 /// corresponding polynomial at alpha.
+/// 
+/// This version is optimized for where the QM31 opcode is available.
+/// 
+/// The coefficients are processed in reverse order as required by Horner evaluation, which makes the 
+/// [u32; 8] -> [u9; 28] transformation somewhat unnatural.
 ///
-/// Note that Horner evaluation expects the coefficients in reverse order, which makes the [u32; 8]
-/// -> [u9; 28] transformation somewhat unnatural.
+/// * `value` - A felt252 represented as 8 u32 values in little-endian order
+/// * `alpha` - The point at which to evaluate the polynomial
 #[cfg(feature: "qm31_opcode")]
 pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
@@ -131,6 +136,17 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     sum
 }
 
+/// An unrolled implementation for combining a felt252 value using pre-computed alpha powers.
+/// This function takes a [u32; 8] value representing a felt252 in little endian, converts it to a
+/// [u9; 28] array of coefficients, and computes their dot product with powers of alpha.
+/// 
+/// This version is optimized for where the QM31 opcode is not available.
+/// 
+/// Instead of using Horner's method, it uses pre-computed powers of alpha to reduce the number
+/// of multiplications required.
+///
+/// * `value` - A felt252 represented as 8 u32 values in little-endian order
+/// * `alphas` - An array of 28 powers of alpha, starting from alpha^1 up to alpha^28 (note: does not include alpha^0)
 #[cfg(not(feature: "qm31_opcode"))]
 pub fn combine_felt252(
     value: [u32; 8], alphas: Box<[PackedUnreducedQM31; 28]>,
