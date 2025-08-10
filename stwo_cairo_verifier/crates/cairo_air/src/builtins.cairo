@@ -55,57 +55,75 @@ pub struct BuiltinsClaim {
 #[generate_trait]
 pub impl BuiltinsClaimImpl of BuiltinsClaimTrait {
     fn mix_into(self: @BuiltinsClaim, ref channel: Channel) {
-        if let Some(claim) = self.add_mod_builtin {
+        let BuiltinsClaim {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+        if let Some(claim) = add_mod_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.bitwise_builtin {
+        if let Some(claim) = bitwise_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.mul_mod_builtin {
+        if let Some(claim) = mul_mod_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.pedersen_builtin {
+        if let Some(claim) = pedersen_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.poseidon_builtin {
+        if let Some(claim) = poseidon_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.range_check_96_builtin {
+        if let Some(claim) = range_check_96_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.range_check_128_builtin {
+        if let Some(claim) = range_check_128_builtin {
             claim.mix_into(ref channel);
         }
     }
 
     fn log_sizes(self: @BuiltinsClaim) -> TreeArray<Span<u32>> {
+        let BuiltinsClaim {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
         let mut log_sizes = array![];
 
-        if let Some(claim) = self.add_mod_builtin {
+        if let Some(claim) = add_mod_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.bitwise_builtin {
+        if let Some(claim) = bitwise_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.mul_mod_builtin {
+        if let Some(claim) = mul_mod_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.pedersen_builtin {
+        if let Some(claim) = pedersen_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.poseidon_builtin {
+        if let Some(claim) = poseidon_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.range_check_96_builtin {
+        if let Some(claim) = range_check_96_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
-        if let Some(claim) = self.range_check_128_builtin {
+        if let Some(claim) = range_check_128_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
@@ -189,57 +207,76 @@ pub struct BuiltinsInteractionClaim {
 #[generate_trait]
 pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
     fn mix_into(self: @BuiltinsInteractionClaim, ref channel: Channel) {
-        if let Some(claim) = self.add_mod_builtin {
+        let BuiltinsInteractionClaim {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+
+        if let Some(claim) = add_mod_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.bitwise_builtin {
+        if let Some(claim) = bitwise_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.mul_mod_builtin {
+        if let Some(claim) = mul_mod_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.pedersen_builtin {
+        if let Some(claim) = pedersen_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.poseidon_builtin {
+        if let Some(claim) = poseidon_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.range_check_96_builtin {
+        if let Some(claim) = range_check_96_builtin {
             claim.mix_into(ref channel);
         }
-        if let Some(claim) = self.range_check_128_builtin {
+        if let Some(claim) = range_check_128_builtin {
             claim.mix_into(ref channel);
         }
     }
 
     fn sum(self: @BuiltinsInteractionClaim) -> QM31 {
+        let BuiltinsInteractionClaim {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
         let mut sum = Zero::zero();
 
-        if let Some(claim) = self.add_mod_builtin {
+        if let Some(claim) = add_mod_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.bitwise_builtin {
+        if let Some(claim) = bitwise_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.mul_mod_builtin {
+        if let Some(claim) = mul_mod_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.pedersen_builtin {
+        if let Some(claim) = pedersen_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.poseidon_builtin {
+        if let Some(claim) = poseidon_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.range_check_96_builtin {
+        if let Some(claim) = range_check_96_builtin {
             sum += *claim.claimed_sum;
         }
 
-        if let Some(claim) = self.range_check_128_builtin {
+        if let Some(claim) = range_check_128_builtin {
             sum += *claim.claimed_sum;
         }
 
@@ -475,7 +512,17 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        if let Option::Some(component) = self.add_mod_builtin.as_snap() {
+        let BuiltinComponents {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+
+        if let Option::Some(component) = add_mod_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -485,7 +532,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -495,7 +542,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
+        if let Option::Some(component) = mul_mod_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -505,7 +552,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
+        if let Option::Some(component) = pedersen_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -515,7 +562,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.poseidon_builtin.as_snap() {
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -525,7 +572,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_96_builtin.as_snap() {
+        if let Option::Some(component) = range_check_96_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -535,7 +582,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -547,33 +594,42 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     }
 
     fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
+        let BuiltinComponents {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
         let mut max_degree = 0;
 
-        if let Option::Some(component) = self.add_mod_builtin.as_snap() {
+        if let Option::Some(component) = add_mod_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
+        if let Option::Some(component) = mul_mod_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
+        if let Option::Some(component) = pedersen_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.poseidon_builtin.as_snap() {
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.range_check_96_builtin.as_snap() {
+        if let Option::Some(component) = range_check_96_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -590,7 +646,17 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        if let Option::Some(component) = self.add_mod_builtin.as_snap() {
+        let BuiltinComponents {
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
+        } = self;
+
+        if let Option::Some(component) = add_mod_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -602,7 +668,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -614,7 +680,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.mul_mod_builtin.as_snap() {
+        if let Option::Some(component) = mul_mod_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -626,7 +692,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.pedersen_builtin.as_snap() {
+        if let Option::Some(component) = pedersen_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -638,7 +704,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.poseidon_builtin.as_snap() {
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -650,7 +716,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_96_builtin.as_snap() {
+        if let Option::Some(component) = range_check_96_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -662,7 +728,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -752,7 +818,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
+
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -762,7 +830,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -774,13 +842,14 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     }
 
     fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
+        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
         let mut max_degree = 0;
 
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -797,7 +866,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        if let Option::Some(component) = self.bitwise_builtin.as_snap() {
+        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
+
+        if let Option::Some(component) = bitwise_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -809,7 +880,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        if let Option::Some(component) = self.range_check_128_builtin.as_snap() {
+        if let Option::Some(component) = range_check_128_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
