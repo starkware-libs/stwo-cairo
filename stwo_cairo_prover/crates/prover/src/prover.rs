@@ -245,8 +245,8 @@ pub mod tests {
                 .expect("Failed to read generated proof file");
             let expected_proof_contents = std::fs::read_to_string(&expected_proof_file)
                 .expect("Failed to read expected proof file");
-            assert_eq!(
-                proof_file_contents, expected_proof_contents,
+            assert!(
+                proof_file_contents == expected_proof_contents,
                 "Generated proof file does not match the expected proof file"
             );
 
@@ -282,7 +282,9 @@ pub mod tests {
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
         use stwo_cairo_adapter::adapter::read_and_adapt_prover_input_info_file;
-        use stwo_cairo_adapter::test_utils::{get_prover_input_info_path, get_test_program};
+        use stwo_cairo_adapter::test_utils::{
+            get_proof_file_path, get_prover_input_info_path, get_test_program,
+        };
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
         use test_log::test;
@@ -345,6 +347,23 @@ pub mod tests {
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
                 .unwrap();
+
+            let expected_proof_file =
+                get_proof_file_path("test_prove_verify_all_opcode_components");
+            if std::env::var("FIX_PROOF").is_ok() {
+                std::fs::copy(proof_file.path(), &expected_proof_file)
+                    .expect("Failed to overwrite expected proof file");
+            }
+
+            // Compare the contents of proof_file and expected_proof_file
+            let proof_file_contents = std::fs::read_to_string(proof_file.path())
+                .expect("Failed to read generated proof file");
+            let expected_proof_contents = std::fs::read_to_string(&expected_proof_file)
+                .expect("Failed to read expected proof file");
+            assert!(
+                proof_file_contents == expected_proof_contents,
+                "Generated proof file does not match the expected proof file"
+            );
 
             let status = Command::new("bash")
                 .arg("-c")
