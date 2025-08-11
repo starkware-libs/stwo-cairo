@@ -1,9 +1,9 @@
-// AIR version d1591e2a
+// AIR version 86c76f30
 use crate::components::subroutines::decode_instruction_3b105::decode_instruction_3b105_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 15;
+pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1), ('Opcodes', 1),
 ];
@@ -97,6 +97,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -150,8 +152,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_limb_0_col11,
             next_pc_limb_1_col12,
             next_pc_limb_2_col13,
+            remainder_bits_col14,
+            partial_limb_msb_col15,
             enabler,
-        ]: [Span<QM31>; 15] =
+        ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -170,6 +174,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [next_pc_limb_0_col11]: [QM31; 1] = (*next_pc_limb_0_col11.try_into().unwrap()).unbox();
         let [next_pc_limb_1_col12]: [QM31; 1] = (*next_pc_limb_1_col12.try_into().unwrap()).unbox();
         let [next_pc_limb_2_col13]: [QM31; 1] = (*next_pc_limb_2_col13.try_into().unwrap()).unbox();
+        let [remainder_bits_col14]: [QM31; 1] = (*remainder_bits_col14.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col15]: [QM31; 1] = (*partial_limb_msb_col15.try_into().unwrap())
+            .unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -201,7 +208,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             - ((op1_base_fp_col4 * input_fp_col2) + (op1_base_ap_col5 * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_62dfc_12_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_62dfc_15_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col7 + decode_instruction_3b105_output_tmp_62dfc_6_offset2),
             next_pc_id_col8,
             msb_col9,
@@ -209,6 +216,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_limb_0_col11,
             next_pc_limb_1_col12,
             next_pc_limb_2_col13,
+            remainder_bits_col14,
+            partial_limb_msb_col15,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -226,7 +235,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    (input_pc_col0 + read_small_output_tmp_62dfc_12_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_62dfc_15_limb_0),
                     (input_ap_col1 + ap_update_add_1_col6), input_fp_col2,
                 ],
             );
