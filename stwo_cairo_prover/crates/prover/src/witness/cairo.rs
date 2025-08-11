@@ -1,3 +1,5 @@
+use std::array;
+
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
     PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -100,9 +102,14 @@ fn extract_sections_from_memory(
             .collect_vec()
     });
 
+    assert!(safe_call.len() == 2);
+
+    assert_eq!(safe_call[0].1, [initial_ap, 0, 0, 0, 0, 0, 0, 0]);
+    assert_eq!(safe_call[1].1, [0, 0, 0, 0, 0, 0, 0, 0]);
+
     PublicMemory {
         program,
-        safe_call,
+        safe_call_ids: array::from_fn(|i| safe_call[i].0),
         public_segments,
         output,
     }
