@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::ec_add::EcAdd;
 
@@ -89,6 +89,7 @@ pub struct Eval {
     pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
     pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
     pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
     pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
@@ -96,7 +97,6 @@ pub struct Eval {
     pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
     pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
     pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub partial_ec_mul_lookup_elements: relations::PartialEcMul,
 }
 

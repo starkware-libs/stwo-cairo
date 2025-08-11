@@ -1,6 +1,7 @@
+// AIR version c2e46f85
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct BitwiseXorNumBits7 {}
 
 impl BitwiseXorNumBits7 {
@@ -15,7 +16,7 @@ impl BitwiseXorNumBits7 {
         xor_col0: E::F,
         verify_bitwise_xor_7_lookup_elements: &relations::VerifyBitwiseXor_7,
         eval: &mut E,
-    ) -> E::F {
+    ) -> [E::F; 0] {
         eval.add_to_relation(RelationEntry::new(
             verify_bitwise_xor_7_lookup_elements,
             E::EF::one(),
@@ -26,6 +27,6 @@ impl BitwiseXorNumBits7 {
             ],
         ));
 
-        xor_col0.clone()
+        []
     }
 }

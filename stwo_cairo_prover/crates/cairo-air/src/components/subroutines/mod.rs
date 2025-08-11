@@ -86,3 +86,6 @@ pub mod xor_rot_32_r_12;
 pub mod xor_rot_32_r_16;
 pub mod xor_rot_32_r_7;
 pub mod xor_rot_32_r_8;
+pub mod read_positive_num_bits_29;
+pub mod cond_range_check_two;
+pub mod cond_range_check_2;

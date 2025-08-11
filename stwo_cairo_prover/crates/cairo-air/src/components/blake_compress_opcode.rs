@@ -1,10 +1,11 @@
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
 use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;
 use crate::components::subroutines::decode_blake_opcode::DecodeBlakeOpcode;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
 
-pub const N_TRACE_COLUMNS: usize = 169;
+pub const N_TRACE_COLUMNS: usize = 175;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
     RelationUse {
         relation_id: "BlakeRound",
@@ -132,115 +133,115 @@ impl FrameworkEval for Eval {
         let op0_limb_0_col14 = eval.next_trace_mask();
         let op0_limb_1_col15 = eval.next_trace_mask();
         let op0_limb_2_col16 = eval.next_trace_mask();
-        let mem1_base_col17 = eval.next_trace_mask();
-        let op1_id_col18 = eval.next_trace_mask();
-        let op1_limb_0_col19 = eval.next_trace_mask();
-        let op1_limb_1_col20 = eval.next_trace_mask();
-        let op1_limb_2_col21 = eval.next_trace_mask();
-        let ap_id_col22 = eval.next_trace_mask();
-        let ap_limb_0_col23 = eval.next_trace_mask();
-        let ap_limb_1_col24 = eval.next_trace_mask();
-        let ap_limb_2_col25 = eval.next_trace_mask();
-        let mem_dst_base_col26 = eval.next_trace_mask();
-        let low_16_bits_col27 = eval.next_trace_mask();
-        let high_16_bits_col28 = eval.next_trace_mask();
-        let low_7_ms_bits_col29 = eval.next_trace_mask();
-        let high_14_ms_bits_col30 = eval.next_trace_mask();
-        let high_5_ms_bits_col31 = eval.next_trace_mask();
-        let dst_id_col32 = eval.next_trace_mask();
+        let op0_limb_3_col17 = eval.next_trace_mask();
+        let partial_limb_msb_col18 = eval.next_trace_mask();
+        let mem1_base_col19 = eval.next_trace_mask();
+        let op1_id_col20 = eval.next_trace_mask();
+        let op1_limb_0_col21 = eval.next_trace_mask();
+        let op1_limb_1_col22 = eval.next_trace_mask();
+        let op1_limb_2_col23 = eval.next_trace_mask();
+        let op1_limb_3_col24 = eval.next_trace_mask();
+        let partial_limb_msb_col25 = eval.next_trace_mask();
+        let ap_id_col26 = eval.next_trace_mask();
+        let ap_limb_0_col27 = eval.next_trace_mask();
+        let ap_limb_1_col28 = eval.next_trace_mask();
+        let ap_limb_2_col29 = eval.next_trace_mask();
+        let ap_limb_3_col30 = eval.next_trace_mask();
+        let partial_limb_msb_col31 = eval.next_trace_mask();
+        let mem_dst_base_col32 = eval.next_trace_mask();
         let low_16_bits_col33 = eval.next_trace_mask();
         let high_16_bits_col34 = eval.next_trace_mask();
         let low_7_ms_bits_col35 = eval.next_trace_mask();
         let high_14_ms_bits_col36 = eval.next_trace_mask();
         let high_5_ms_bits_col37 = eval.next_trace_mask();
-        let state_0_id_col38 = eval.next_trace_mask();
+        let dst_id_col38 = eval.next_trace_mask();
         let low_16_bits_col39 = eval.next_trace_mask();
         let high_16_bits_col40 = eval.next_trace_mask();
         let low_7_ms_bits_col41 = eval.next_trace_mask();
         let high_14_ms_bits_col42 = eval.next_trace_mask();
         let high_5_ms_bits_col43 = eval.next_trace_mask();
-        let state_1_id_col44 = eval.next_trace_mask();
+        let state_0_id_col44 = eval.next_trace_mask();
         let low_16_bits_col45 = eval.next_trace_mask();
         let high_16_bits_col46 = eval.next_trace_mask();
         let low_7_ms_bits_col47 = eval.next_trace_mask();
         let high_14_ms_bits_col48 = eval.next_trace_mask();
         let high_5_ms_bits_col49 = eval.next_trace_mask();
-        let state_2_id_col50 = eval.next_trace_mask();
+        let state_1_id_col50 = eval.next_trace_mask();
         let low_16_bits_col51 = eval.next_trace_mask();
         let high_16_bits_col52 = eval.next_trace_mask();
         let low_7_ms_bits_col53 = eval.next_trace_mask();
         let high_14_ms_bits_col54 = eval.next_trace_mask();
         let high_5_ms_bits_col55 = eval.next_trace_mask();
-        let state_3_id_col56 = eval.next_trace_mask();
+        let state_2_id_col56 = eval.next_trace_mask();
         let low_16_bits_col57 = eval.next_trace_mask();
         let high_16_bits_col58 = eval.next_trace_mask();
         let low_7_ms_bits_col59 = eval.next_trace_mask();
         let high_14_ms_bits_col60 = eval.next_trace_mask();
         let high_5_ms_bits_col61 = eval.next_trace_mask();
-        let state_4_id_col62 = eval.next_trace_mask();
+        let state_3_id_col62 = eval.next_trace_mask();
         let low_16_bits_col63 = eval.next_trace_mask();
         let high_16_bits_col64 = eval.next_trace_mask();
         let low_7_ms_bits_col65 = eval.next_trace_mask();
         let high_14_ms_bits_col66 = eval.next_trace_mask();
         let high_5_ms_bits_col67 = eval.next_trace_mask();
-        let state_5_id_col68 = eval.next_trace_mask();
+        let state_4_id_col68 = eval.next_trace_mask();
         let low_16_bits_col69 = eval.next_trace_mask();
         let high_16_bits_col70 = eval.next_trace_mask();
         let low_7_ms_bits_col71 = eval.next_trace_mask();
         let high_14_ms_bits_col72 = eval.next_trace_mask();
         let high_5_ms_bits_col73 = eval.next_trace_mask();
-        let state_6_id_col74 = eval.next_trace_mask();
+        let state_5_id_col74 = eval.next_trace_mask();
         let low_16_bits_col75 = eval.next_trace_mask();
         let high_16_bits_col76 = eval.next_trace_mask();
         let low_7_ms_bits_col77 = eval.next_trace_mask();
         let high_14_ms_bits_col78 = eval.next_trace_mask();
         let high_5_ms_bits_col79 = eval.next_trace_mask();
-        let state_7_id_col80 = eval.next_trace_mask();
-        let ms_8_bits_col81 = eval.next_trace_mask();
-        let ms_8_bits_col82 = eval.next_trace_mask();
-        let xor_col83 = eval.next_trace_mask();
-        let xor_col84 = eval.next_trace_mask();
-        let xor_col85 = eval.next_trace_mask();
-        let xor_col86 = eval.next_trace_mask();
-        let blake_round_output_limb_0_col87 = eval.next_trace_mask();
-        let blake_round_output_limb_1_col88 = eval.next_trace_mask();
-        let blake_round_output_limb_2_col89 = eval.next_trace_mask();
-        let blake_round_output_limb_3_col90 = eval.next_trace_mask();
-        let blake_round_output_limb_4_col91 = eval.next_trace_mask();
-        let blake_round_output_limb_5_col92 = eval.next_trace_mask();
-        let blake_round_output_limb_6_col93 = eval.next_trace_mask();
-        let blake_round_output_limb_7_col94 = eval.next_trace_mask();
-        let blake_round_output_limb_8_col95 = eval.next_trace_mask();
-        let blake_round_output_limb_9_col96 = eval.next_trace_mask();
-        let blake_round_output_limb_10_col97 = eval.next_trace_mask();
-        let blake_round_output_limb_11_col98 = eval.next_trace_mask();
-        let blake_round_output_limb_12_col99 = eval.next_trace_mask();
-        let blake_round_output_limb_13_col100 = eval.next_trace_mask();
-        let blake_round_output_limb_14_col101 = eval.next_trace_mask();
-        let blake_round_output_limb_15_col102 = eval.next_trace_mask();
-        let blake_round_output_limb_16_col103 = eval.next_trace_mask();
-        let blake_round_output_limb_17_col104 = eval.next_trace_mask();
-        let blake_round_output_limb_18_col105 = eval.next_trace_mask();
-        let blake_round_output_limb_19_col106 = eval.next_trace_mask();
-        let blake_round_output_limb_20_col107 = eval.next_trace_mask();
-        let blake_round_output_limb_21_col108 = eval.next_trace_mask();
-        let blake_round_output_limb_22_col109 = eval.next_trace_mask();
-        let blake_round_output_limb_23_col110 = eval.next_trace_mask();
-        let blake_round_output_limb_24_col111 = eval.next_trace_mask();
-        let blake_round_output_limb_25_col112 = eval.next_trace_mask();
-        let blake_round_output_limb_26_col113 = eval.next_trace_mask();
-        let blake_round_output_limb_27_col114 = eval.next_trace_mask();
-        let blake_round_output_limb_28_col115 = eval.next_trace_mask();
-        let blake_round_output_limb_29_col116 = eval.next_trace_mask();
-        let blake_round_output_limb_30_col117 = eval.next_trace_mask();
-        let blake_round_output_limb_31_col118 = eval.next_trace_mask();
-        let blake_round_output_limb_32_col119 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col120 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col121 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col122 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col123 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col124 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col125 = eval.next_trace_mask();
+        let state_6_id_col80 = eval.next_trace_mask();
+        let low_16_bits_col81 = eval.next_trace_mask();
+        let high_16_bits_col82 = eval.next_trace_mask();
+        let low_7_ms_bits_col83 = eval.next_trace_mask();
+        let high_14_ms_bits_col84 = eval.next_trace_mask();
+        let high_5_ms_bits_col85 = eval.next_trace_mask();
+        let state_7_id_col86 = eval.next_trace_mask();
+        let ms_8_bits_col87 = eval.next_trace_mask();
+        let ms_8_bits_col88 = eval.next_trace_mask();
+        let xor_col89 = eval.next_trace_mask();
+        let xor_col90 = eval.next_trace_mask();
+        let xor_col91 = eval.next_trace_mask();
+        let xor_col92 = eval.next_trace_mask();
+        let blake_round_output_limb_0_col93 = eval.next_trace_mask();
+        let blake_round_output_limb_1_col94 = eval.next_trace_mask();
+        let blake_round_output_limb_2_col95 = eval.next_trace_mask();
+        let blake_round_output_limb_3_col96 = eval.next_trace_mask();
+        let blake_round_output_limb_4_col97 = eval.next_trace_mask();
+        let blake_round_output_limb_5_col98 = eval.next_trace_mask();
+        let blake_round_output_limb_6_col99 = eval.next_trace_mask();
+        let blake_round_output_limb_7_col100 = eval.next_trace_mask();
+        let blake_round_output_limb_8_col101 = eval.next_trace_mask();
+        let blake_round_output_limb_9_col102 = eval.next_trace_mask();
+        let blake_round_output_limb_10_col103 = eval.next_trace_mask();
+        let blake_round_output_limb_11_col104 = eval.next_trace_mask();
+        let blake_round_output_limb_12_col105 = eval.next_trace_mask();
+        let blake_round_output_limb_13_col106 = eval.next_trace_mask();
+        let blake_round_output_limb_14_col107 = eval.next_trace_mask();
+        let blake_round_output_limb_15_col108 = eval.next_trace_mask();
+        let blake_round_output_limb_16_col109 = eval.next_trace_mask();
+        let blake_round_output_limb_17_col110 = eval.next_trace_mask();
+        let blake_round_output_limb_18_col111 = eval.next_trace_mask();
+        let blake_round_output_limb_19_col112 = eval.next_trace_mask();
+        let blake_round_output_limb_20_col113 = eval.next_trace_mask();
+        let blake_round_output_limb_21_col114 = eval.next_trace_mask();
+        let blake_round_output_limb_22_col115 = eval.next_trace_mask();
+        let blake_round_output_limb_23_col116 = eval.next_trace_mask();
+        let blake_round_output_limb_24_col117 = eval.next_trace_mask();
+        let blake_round_output_limb_25_col118 = eval.next_trace_mask();
+        let blake_round_output_limb_26_col119 = eval.next_trace_mask();
+        let blake_round_output_limb_27_col120 = eval.next_trace_mask();
+        let blake_round_output_limb_28_col121 = eval.next_trace_mask();
+        let blake_round_output_limb_29_col122 = eval.next_trace_mask();
+        let blake_round_output_limb_30_col123 = eval.next_trace_mask();
+        let blake_round_output_limb_31_col124 = eval.next_trace_mask();
+        let blake_round_output_limb_32_col125 = eval.next_trace_mask();
         let triple_xor_32_output_limb_0_col126 = eval.next_trace_mask();
         let triple_xor_32_output_limb_1_col127 = eval.next_trace_mask();
         let triple_xor_32_output_limb_0_col128 = eval.next_trace_mask();
@@ -251,45 +252,51 @@ impl FrameworkEval for Eval {
         let triple_xor_32_output_limb_1_col133 = eval.next_trace_mask();
         let triple_xor_32_output_limb_0_col134 = eval.next_trace_mask();
         let triple_xor_32_output_limb_1_col135 = eval.next_trace_mask();
-        let low_7_ms_bits_col136 = eval.next_trace_mask();
-        let high_14_ms_bits_col137 = eval.next_trace_mask();
-        let high_5_ms_bits_col138 = eval.next_trace_mask();
-        let new_state_0_id_col139 = eval.next_trace_mask();
-        let low_7_ms_bits_col140 = eval.next_trace_mask();
-        let high_14_ms_bits_col141 = eval.next_trace_mask();
-        let high_5_ms_bits_col142 = eval.next_trace_mask();
-        let new_state_1_id_col143 = eval.next_trace_mask();
-        let low_7_ms_bits_col144 = eval.next_trace_mask();
-        let high_14_ms_bits_col145 = eval.next_trace_mask();
-        let high_5_ms_bits_col146 = eval.next_trace_mask();
-        let new_state_2_id_col147 = eval.next_trace_mask();
-        let low_7_ms_bits_col148 = eval.next_trace_mask();
-        let high_14_ms_bits_col149 = eval.next_trace_mask();
-        let high_5_ms_bits_col150 = eval.next_trace_mask();
-        let new_state_3_id_col151 = eval.next_trace_mask();
-        let low_7_ms_bits_col152 = eval.next_trace_mask();
-        let high_14_ms_bits_col153 = eval.next_trace_mask();
-        let high_5_ms_bits_col154 = eval.next_trace_mask();
-        let new_state_4_id_col155 = eval.next_trace_mask();
-        let low_7_ms_bits_col156 = eval.next_trace_mask();
-        let high_14_ms_bits_col157 = eval.next_trace_mask();
-        let high_5_ms_bits_col158 = eval.next_trace_mask();
-        let new_state_5_id_col159 = eval.next_trace_mask();
-        let low_7_ms_bits_col160 = eval.next_trace_mask();
-        let high_14_ms_bits_col161 = eval.next_trace_mask();
-        let high_5_ms_bits_col162 = eval.next_trace_mask();
-        let new_state_6_id_col163 = eval.next_trace_mask();
-        let low_7_ms_bits_col164 = eval.next_trace_mask();
-        let high_14_ms_bits_col165 = eval.next_trace_mask();
-        let high_5_ms_bits_col166 = eval.next_trace_mask();
-        let new_state_7_id_col167 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col136 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col137 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col138 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col139 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_0_col140 = eval.next_trace_mask();
+        let triple_xor_32_output_limb_1_col141 = eval.next_trace_mask();
+        let low_7_ms_bits_col142 = eval.next_trace_mask();
+        let high_14_ms_bits_col143 = eval.next_trace_mask();
+        let high_5_ms_bits_col144 = eval.next_trace_mask();
+        let new_state_0_id_col145 = eval.next_trace_mask();
+        let low_7_ms_bits_col146 = eval.next_trace_mask();
+        let high_14_ms_bits_col147 = eval.next_trace_mask();
+        let high_5_ms_bits_col148 = eval.next_trace_mask();
+        let new_state_1_id_col149 = eval.next_trace_mask();
+        let low_7_ms_bits_col150 = eval.next_trace_mask();
+        let high_14_ms_bits_col151 = eval.next_trace_mask();
+        let high_5_ms_bits_col152 = eval.next_trace_mask();
+        let new_state_2_id_col153 = eval.next_trace_mask();
+        let low_7_ms_bits_col154 = eval.next_trace_mask();
+        let high_14_ms_bits_col155 = eval.next_trace_mask();
+        let high_5_ms_bits_col156 = eval.next_trace_mask();
+        let new_state_3_id_col157 = eval.next_trace_mask();
+        let low_7_ms_bits_col158 = eval.next_trace_mask();
+        let high_14_ms_bits_col159 = eval.next_trace_mask();
+        let high_5_ms_bits_col160 = eval.next_trace_mask();
+        let new_state_4_id_col161 = eval.next_trace_mask();
+        let low_7_ms_bits_col162 = eval.next_trace_mask();
+        let high_14_ms_bits_col163 = eval.next_trace_mask();
+        let high_5_ms_bits_col164 = eval.next_trace_mask();
+        let new_state_5_id_col165 = eval.next_trace_mask();
+        let low_7_ms_bits_col166 = eval.next_trace_mask();
+        let high_14_ms_bits_col167 = eval.next_trace_mask();
+        let high_5_ms_bits_col168 = eval.next_trace_mask();
+        let new_state_6_id_col169 = eval.next_trace_mask();
+        let low_7_ms_bits_col170 = eval.next_trace_mask();
+        let high_14_ms_bits_col171 = eval.next_trace_mask();
+        let high_5_ms_bits_col172 = eval.next_trace_mask();
+        let new_state_7_id_col173 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_blake_opcode_output_tmp_53f39_29_limb_0, decode_blake_opcode_output_tmp_53f39_29_limb_1, decode_blake_opcode_output_tmp_53f39_29_limb_2, decode_blake_opcode_output_tmp_53f39_29_limb_6] =
+        let [decode_blake_opcode_output_tmp_53f39_35_limb_0, decode_blake_opcode_output_tmp_53f39_35_limb_1, decode_blake_opcode_output_tmp_53f39_35_limb_2, decode_blake_opcode_output_tmp_53f39_35_limb_6] =
             DecodeBlakeOpcode::evaluate(
                 [
                     input_pc_col0.clone(),
@@ -310,22 +317,28 @@ impl FrameworkEval for Eval {
                 op0_limb_0_col14.clone(),
                 op0_limb_1_col15.clone(),
                 op0_limb_2_col16.clone(),
-                mem1_base_col17.clone(),
-                op1_id_col18.clone(),
-                op1_limb_0_col19.clone(),
-                op1_limb_1_col20.clone(),
-                op1_limb_2_col21.clone(),
-                ap_id_col22.clone(),
-                ap_limb_0_col23.clone(),
-                ap_limb_1_col24.clone(),
-                ap_limb_2_col25.clone(),
-                mem_dst_base_col26.clone(),
-                low_16_bits_col27.clone(),
-                high_16_bits_col28.clone(),
-                low_7_ms_bits_col29.clone(),
-                high_14_ms_bits_col30.clone(),
-                high_5_ms_bits_col31.clone(),
-                dst_id_col32.clone(),
+                op0_limb_3_col17.clone(),
+                partial_limb_msb_col18.clone(),
+                mem1_base_col19.clone(),
+                op1_id_col20.clone(),
+                op1_limb_0_col21.clone(),
+                op1_limb_1_col22.clone(),
+                op1_limb_2_col23.clone(),
+                op1_limb_3_col24.clone(),
+                partial_limb_msb_col25.clone(),
+                ap_id_col26.clone(),
+                ap_limb_0_col27.clone(),
+                ap_limb_1_col28.clone(),
+                ap_limb_2_col29.clone(),
+                ap_limb_3_col30.clone(),
+                partial_limb_msb_col31.clone(),
+                mem_dst_base_col32.clone(),
+                low_16_bits_col33.clone(),
+                high_16_bits_col34.clone(),
+                low_7_ms_bits_col35.clone(),
+                high_14_ms_bits_col36.clone(),
+                high_5_ms_bits_col37.clone(),
+                dst_id_col38.clone(),
                 &self.verify_instruction_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
@@ -334,68 +347,68 @@ impl FrameworkEval for Eval {
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [create_blake_round_input_output_tmp_53f39_114_limb_24, create_blake_round_input_output_tmp_53f39_114_limb_25, create_blake_round_input_output_tmp_53f39_114_limb_28, create_blake_round_input_output_tmp_53f39_114_limb_29] =
+        let [create_blake_round_input_output_tmp_53f39_120_limb_24, create_blake_round_input_output_tmp_53f39_120_limb_25, create_blake_round_input_output_tmp_53f39_120_limb_28, create_blake_round_input_output_tmp_53f39_120_limb_29] =
             CreateBlakeRoundInput::evaluate(
                 [
-                    decode_blake_opcode_output_tmp_53f39_29_limb_0.clone(),
-                    low_16_bits_col27.clone(),
-                    high_16_bits_col28.clone(),
-                    decode_blake_opcode_output_tmp_53f39_29_limb_6.clone(),
+                    decode_blake_opcode_output_tmp_53f39_35_limb_0.clone(),
+                    low_16_bits_col33.clone(),
+                    high_16_bits_col34.clone(),
+                    decode_blake_opcode_output_tmp_53f39_35_limb_6.clone(),
                 ],
-                low_16_bits_col33.clone(),
-                high_16_bits_col34.clone(),
-                low_7_ms_bits_col35.clone(),
-                high_14_ms_bits_col36.clone(),
-                high_5_ms_bits_col37.clone(),
-                state_0_id_col38.clone(),
                 low_16_bits_col39.clone(),
                 high_16_bits_col40.clone(),
                 low_7_ms_bits_col41.clone(),
                 high_14_ms_bits_col42.clone(),
                 high_5_ms_bits_col43.clone(),
-                state_1_id_col44.clone(),
+                state_0_id_col44.clone(),
                 low_16_bits_col45.clone(),
                 high_16_bits_col46.clone(),
                 low_7_ms_bits_col47.clone(),
                 high_14_ms_bits_col48.clone(),
                 high_5_ms_bits_col49.clone(),
-                state_2_id_col50.clone(),
+                state_1_id_col50.clone(),
                 low_16_bits_col51.clone(),
                 high_16_bits_col52.clone(),
                 low_7_ms_bits_col53.clone(),
                 high_14_ms_bits_col54.clone(),
                 high_5_ms_bits_col55.clone(),
-                state_3_id_col56.clone(),
+                state_2_id_col56.clone(),
                 low_16_bits_col57.clone(),
                 high_16_bits_col58.clone(),
                 low_7_ms_bits_col59.clone(),
                 high_14_ms_bits_col60.clone(),
                 high_5_ms_bits_col61.clone(),
-                state_4_id_col62.clone(),
+                state_3_id_col62.clone(),
                 low_16_bits_col63.clone(),
                 high_16_bits_col64.clone(),
                 low_7_ms_bits_col65.clone(),
                 high_14_ms_bits_col66.clone(),
                 high_5_ms_bits_col67.clone(),
-                state_5_id_col68.clone(),
+                state_4_id_col68.clone(),
                 low_16_bits_col69.clone(),
                 high_16_bits_col70.clone(),
                 low_7_ms_bits_col71.clone(),
                 high_14_ms_bits_col72.clone(),
                 high_5_ms_bits_col73.clone(),
-                state_6_id_col74.clone(),
+                state_5_id_col74.clone(),
                 low_16_bits_col75.clone(),
                 high_16_bits_col76.clone(),
                 low_7_ms_bits_col77.clone(),
                 high_14_ms_bits_col78.clone(),
                 high_5_ms_bits_col79.clone(),
-                state_7_id_col80.clone(),
-                ms_8_bits_col81.clone(),
-                ms_8_bits_col82.clone(),
-                xor_col83.clone(),
-                xor_col84.clone(),
-                xor_col85.clone(),
-                xor_col86.clone(),
+                state_6_id_col80.clone(),
+                low_16_bits_col81.clone(),
+                high_16_bits_col82.clone(),
+                low_7_ms_bits_col83.clone(),
+                high_14_ms_bits_col84.clone(),
+                high_5_ms_bits_col85.clone(),
+                state_7_id_col86.clone(),
+                ms_8_bits_col87.clone(),
+                ms_8_bits_col88.clone(),
+                xor_col89.clone(),
+                xor_col90.clone(),
+                xor_col91.clone(),
+                xor_col92.clone(),
                 &self.range_check_7_2_5_lookup_elements,
                 &self.memory_address_to_id_lookup_elements,
                 &self.memory_id_to_big_lookup_elements,
@@ -408,8 +421,6 @@ impl FrameworkEval for Eval {
             &[
                 seq.clone(),
                 M31_0.clone(),
-                low_16_bits_col33.clone(),
-                high_16_bits_col34.clone(),
                 low_16_bits_col39.clone(),
                 high_16_bits_col40.clone(),
                 low_16_bits_col45.clone(),
@@ -424,6 +435,8 @@ impl FrameworkEval for Eval {
                 high_16_bits_col70.clone(),
                 low_16_bits_col75.clone(),
                 high_16_bits_col76.clone(),
+                low_16_bits_col81.clone(),
+                high_16_bits_col82.clone(),
                 M31_58983.clone(),
                 M31_27145.clone(),
                 M31_44677.clone(),
@@ -432,15 +445,15 @@ impl FrameworkEval for Eval {
                 M31_15470.clone(),
                 M31_62778.clone(),
                 M31_42319.clone(),
-                create_blake_round_input_output_tmp_53f39_114_limb_24.clone(),
-                create_blake_round_input_output_tmp_53f39_114_limb_25.clone(),
+                create_blake_round_input_output_tmp_53f39_120_limb_24.clone(),
+                create_blake_round_input_output_tmp_53f39_120_limb_25.clone(),
                 M31_26764.clone(),
                 M31_39685.clone(),
-                create_blake_round_input_output_tmp_53f39_114_limb_28.clone(),
-                create_blake_round_input_output_tmp_53f39_114_limb_29.clone(),
+                create_blake_round_input_output_tmp_53f39_120_limb_28.clone(),
+                create_blake_round_input_output_tmp_53f39_120_limb_29.clone(),
                 M31_52505.clone(),
                 M31_23520.clone(),
-                decode_blake_opcode_output_tmp_53f39_29_limb_1.clone(),
+                decode_blake_opcode_output_tmp_53f39_35_limb_1.clone(),
             ],
         ));
 
@@ -450,46 +463,44 @@ impl FrameworkEval for Eval {
             &[
                 seq.clone(),
                 M31_10.clone(),
-                blake_round_output_limb_0_col87.clone(),
-                blake_round_output_limb_1_col88.clone(),
-                blake_round_output_limb_2_col89.clone(),
-                blake_round_output_limb_3_col90.clone(),
-                blake_round_output_limb_4_col91.clone(),
-                blake_round_output_limb_5_col92.clone(),
-                blake_round_output_limb_6_col93.clone(),
-                blake_round_output_limb_7_col94.clone(),
-                blake_round_output_limb_8_col95.clone(),
-                blake_round_output_limb_9_col96.clone(),
-                blake_round_output_limb_10_col97.clone(),
-                blake_round_output_limb_11_col98.clone(),
-                blake_round_output_limb_12_col99.clone(),
-                blake_round_output_limb_13_col100.clone(),
-                blake_round_output_limb_14_col101.clone(),
-                blake_round_output_limb_15_col102.clone(),
-                blake_round_output_limb_16_col103.clone(),
-                blake_round_output_limb_17_col104.clone(),
-                blake_round_output_limb_18_col105.clone(),
-                blake_round_output_limb_19_col106.clone(),
-                blake_round_output_limb_20_col107.clone(),
-                blake_round_output_limb_21_col108.clone(),
-                blake_round_output_limb_22_col109.clone(),
-                blake_round_output_limb_23_col110.clone(),
-                blake_round_output_limb_24_col111.clone(),
-                blake_round_output_limb_25_col112.clone(),
-                blake_round_output_limb_26_col113.clone(),
-                blake_round_output_limb_27_col114.clone(),
-                blake_round_output_limb_28_col115.clone(),
-                blake_round_output_limb_29_col116.clone(),
-                blake_round_output_limb_30_col117.clone(),
-                blake_round_output_limb_31_col118.clone(),
-                blake_round_output_limb_32_col119.clone(),
+                blake_round_output_limb_0_col93.clone(),
+                blake_round_output_limb_1_col94.clone(),
+                blake_round_output_limb_2_col95.clone(),
+                blake_round_output_limb_3_col96.clone(),
+                blake_round_output_limb_4_col97.clone(),
+                blake_round_output_limb_5_col98.clone(),
+                blake_round_output_limb_6_col99.clone(),
+                blake_round_output_limb_7_col100.clone(),
+                blake_round_output_limb_8_col101.clone(),
+                blake_round_output_limb_9_col102.clone(),
+                blake_round_output_limb_10_col103.clone(),
+                blake_round_output_limb_11_col104.clone(),
+                blake_round_output_limb_12_col105.clone(),
+                blake_round_output_limb_13_col106.clone(),
+                blake_round_output_limb_14_col107.clone(),
+                blake_round_output_limb_15_col108.clone(),
+                blake_round_output_limb_16_col109.clone(),
+                blake_round_output_limb_17_col110.clone(),
+                blake_round_output_limb_18_col111.clone(),
+                blake_round_output_limb_19_col112.clone(),
+                blake_round_output_limb_20_col113.clone(),
+                blake_round_output_limb_21_col114.clone(),
+                blake_round_output_limb_22_col115.clone(),
+                blake_round_output_limb_23_col116.clone(),
+                blake_round_output_limb_24_col117.clone(),
+                blake_round_output_limb_25_col118.clone(),
+                blake_round_output_limb_26_col119.clone(),
+                blake_round_output_limb_27_col120.clone(),
+                blake_round_output_limb_28_col121.clone(),
+                blake_round_output_limb_29_col122.clone(),
+                blake_round_output_limb_30_col123.clone(),
+                blake_round_output_limb_31_col124.clone(),
+                blake_round_output_limb_32_col125.clone(),
             ],
         ));
 
         CreateBlakeOutput::evaluate(
             [
-                low_16_bits_col33.clone(),
-                high_16_bits_col34.clone(),
                 low_16_bits_col39.clone(),
                 high_16_bits_col40.clone(),
                 low_16_bits_col45.clone(),
@@ -504,45 +515,41 @@ impl FrameworkEval for Eval {
                 high_16_bits_col70.clone(),
                 low_16_bits_col75.clone(),
                 high_16_bits_col76.clone(),
-                blake_round_output_limb_0_col87.clone(),
-                blake_round_output_limb_1_col88.clone(),
-                blake_round_output_limb_2_col89.clone(),
-                blake_round_output_limb_3_col90.clone(),
-                blake_round_output_limb_4_col91.clone(),
-                blake_round_output_limb_5_col92.clone(),
-                blake_round_output_limb_6_col93.clone(),
-                blake_round_output_limb_7_col94.clone(),
-                blake_round_output_limb_8_col95.clone(),
-                blake_round_output_limb_9_col96.clone(),
-                blake_round_output_limb_10_col97.clone(),
-                blake_round_output_limb_11_col98.clone(),
-                blake_round_output_limb_12_col99.clone(),
-                blake_round_output_limb_13_col100.clone(),
-                blake_round_output_limb_14_col101.clone(),
-                blake_round_output_limb_15_col102.clone(),
-                blake_round_output_limb_16_col103.clone(),
-                blake_round_output_limb_17_col104.clone(),
-                blake_round_output_limb_18_col105.clone(),
-                blake_round_output_limb_19_col106.clone(),
-                blake_round_output_limb_20_col107.clone(),
-                blake_round_output_limb_21_col108.clone(),
-                blake_round_output_limb_22_col109.clone(),
-                blake_round_output_limb_23_col110.clone(),
-                blake_round_output_limb_24_col111.clone(),
-                blake_round_output_limb_25_col112.clone(),
-                blake_round_output_limb_26_col113.clone(),
-                blake_round_output_limb_27_col114.clone(),
-                blake_round_output_limb_28_col115.clone(),
-                blake_round_output_limb_29_col116.clone(),
-                blake_round_output_limb_30_col117.clone(),
-                blake_round_output_limb_31_col118.clone(),
+                low_16_bits_col81.clone(),
+                high_16_bits_col82.clone(),
+                blake_round_output_limb_0_col93.clone(),
+                blake_round_output_limb_1_col94.clone(),
+                blake_round_output_limb_2_col95.clone(),
+                blake_round_output_limb_3_col96.clone(),
+                blake_round_output_limb_4_col97.clone(),
+                blake_round_output_limb_5_col98.clone(),
+                blake_round_output_limb_6_col99.clone(),
+                blake_round_output_limb_7_col100.clone(),
+                blake_round_output_limb_8_col101.clone(),
+                blake_round_output_limb_9_col102.clone(),
+                blake_round_output_limb_10_col103.clone(),
+                blake_round_output_limb_11_col104.clone(),
+                blake_round_output_limb_12_col105.clone(),
+                blake_round_output_limb_13_col106.clone(),
+                blake_round_output_limb_14_col107.clone(),
+                blake_round_output_limb_15_col108.clone(),
+                blake_round_output_limb_16_col109.clone(),
+                blake_round_output_limb_17_col110.clone(),
+                blake_round_output_limb_18_col111.clone(),
+                blake_round_output_limb_19_col112.clone(),
+                blake_round_output_limb_20_col113.clone(),
+                blake_round_output_limb_21_col114.clone(),
+                blake_round_output_limb_22_col115.clone(),
+                blake_round_output_limb_23_col116.clone(),
+                blake_round_output_limb_24_col117.clone(),
+                blake_round_output_limb_25_col118.clone(),
+                blake_round_output_limb_26_col119.clone(),
+                blake_round_output_limb_27_col120.clone(),
+                blake_round_output_limb_28_col121.clone(),
+                blake_round_output_limb_29_col122.clone(),
+                blake_round_output_limb_30_col123.clone(),
+                blake_round_output_limb_31_col124.clone(),
             ],
-            triple_xor_32_output_limb_0_col120.clone(),
-            triple_xor_32_output_limb_1_col121.clone(),
-            triple_xor_32_output_limb_0_col122.clone(),
-            triple_xor_32_output_limb_1_col123.clone(),
-            triple_xor_32_output_limb_0_col124.clone(),
-            triple_xor_32_output_limb_1_col125.clone(),
             triple_xor_32_output_limb_0_col126.clone(),
             triple_xor_32_output_limb_1_col127.clone(),
             triple_xor_32_output_limb_0_col128.clone(),
@@ -553,64 +560,25 @@ impl FrameworkEval for Eval {
             triple_xor_32_output_limb_1_col133.clone(),
             triple_xor_32_output_limb_0_col134.clone(),
             triple_xor_32_output_limb_1_col135.clone(),
+            triple_xor_32_output_limb_0_col136.clone(),
+            triple_xor_32_output_limb_1_col137.clone(),
+            triple_xor_32_output_limb_0_col138.clone(),
+            triple_xor_32_output_limb_1_col139.clone(),
+            triple_xor_32_output_limb_0_col140.clone(),
+            triple_xor_32_output_limb_1_col141.clone(),
             &self.triple_xor_32_lookup_elements,
             &mut eval,
         );
         VerifyBlakeWord::evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_29_limb_2.clone(),
-                triple_xor_32_output_limb_0_col120.clone(),
-                triple_xor_32_output_limb_1_col121.clone(),
-            ],
-            low_7_ms_bits_col136.clone(),
-            high_14_ms_bits_col137.clone(),
-            high_5_ms_bits_col138.clone(),
-            new_state_0_id_col139.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
-            &mut eval,
-        );
-        VerifyBlakeWord::evaluate(
-            [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_1.clone()),
-                triple_xor_32_output_limb_0_col122.clone(),
-                triple_xor_32_output_limb_1_col123.clone(),
-            ],
-            low_7_ms_bits_col140.clone(),
-            high_14_ms_bits_col141.clone(),
-            high_5_ms_bits_col142.clone(),
-            new_state_1_id_col143.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
-            &mut eval,
-        );
-        VerifyBlakeWord::evaluate(
-            [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_2.clone()),
-                triple_xor_32_output_limb_0_col124.clone(),
-                triple_xor_32_output_limb_1_col125.clone(),
-            ],
-            low_7_ms_bits_col144.clone(),
-            high_14_ms_bits_col145.clone(),
-            high_5_ms_bits_col146.clone(),
-            new_state_2_id_col147.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
-            &mut eval,
-        );
-        VerifyBlakeWord::evaluate(
-            [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_3.clone()),
+                decode_blake_opcode_output_tmp_53f39_35_limb_2.clone(),
                 triple_xor_32_output_limb_0_col126.clone(),
                 triple_xor_32_output_limb_1_col127.clone(),
             ],
-            low_7_ms_bits_col148.clone(),
-            high_14_ms_bits_col149.clone(),
-            high_5_ms_bits_col150.clone(),
-            new_state_3_id_col151.clone(),
+            low_7_ms_bits_col142.clone(),
+            high_14_ms_bits_col143.clone(),
+            high_5_ms_bits_col144.clone(),
+            new_state_0_id_col145.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -618,14 +586,14 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_4.clone()),
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_1.clone()),
                 triple_xor_32_output_limb_0_col128.clone(),
                 triple_xor_32_output_limb_1_col129.clone(),
             ],
-            low_7_ms_bits_col152.clone(),
-            high_14_ms_bits_col153.clone(),
-            high_5_ms_bits_col154.clone(),
-            new_state_4_id_col155.clone(),
+            low_7_ms_bits_col146.clone(),
+            high_14_ms_bits_col147.clone(),
+            high_5_ms_bits_col148.clone(),
+            new_state_1_id_col149.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -633,14 +601,14 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_5.clone()),
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_2.clone()),
                 triple_xor_32_output_limb_0_col130.clone(),
                 triple_xor_32_output_limb_1_col131.clone(),
             ],
-            low_7_ms_bits_col156.clone(),
-            high_14_ms_bits_col157.clone(),
-            high_5_ms_bits_col158.clone(),
-            new_state_5_id_col159.clone(),
+            low_7_ms_bits_col150.clone(),
+            high_14_ms_bits_col151.clone(),
+            high_5_ms_bits_col152.clone(),
+            new_state_2_id_col153.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -648,14 +616,14 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_6.clone()),
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_3.clone()),
                 triple_xor_32_output_limb_0_col132.clone(),
                 triple_xor_32_output_limb_1_col133.clone(),
             ],
-            low_7_ms_bits_col160.clone(),
-            high_14_ms_bits_col161.clone(),
-            high_5_ms_bits_col162.clone(),
-            new_state_6_id_col163.clone(),
+            low_7_ms_bits_col154.clone(),
+            high_14_ms_bits_col155.clone(),
+            high_5_ms_bits_col156.clone(),
+            new_state_3_id_col157.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -663,14 +631,59 @@ impl FrameworkEval for Eval {
         );
         VerifyBlakeWord::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_7.clone()),
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_4.clone()),
                 triple_xor_32_output_limb_0_col134.clone(),
                 triple_xor_32_output_limb_1_col135.clone(),
             ],
-            low_7_ms_bits_col164.clone(),
-            high_14_ms_bits_col165.clone(),
-            high_5_ms_bits_col166.clone(),
-            new_state_7_id_col167.clone(),
+            low_7_ms_bits_col158.clone(),
+            high_14_ms_bits_col159.clone(),
+            high_5_ms_bits_col160.clone(),
+            new_state_4_id_col161.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        VerifyBlakeWord::evaluate(
+            [
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_5.clone()),
+                triple_xor_32_output_limb_0_col136.clone(),
+                triple_xor_32_output_limb_1_col137.clone(),
+            ],
+            low_7_ms_bits_col162.clone(),
+            high_14_ms_bits_col163.clone(),
+            high_5_ms_bits_col164.clone(),
+            new_state_5_id_col165.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        VerifyBlakeWord::evaluate(
+            [
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_6.clone()),
+                triple_xor_32_output_limb_0_col138.clone(),
+                triple_xor_32_output_limb_1_col139.clone(),
+            ],
+            low_7_ms_bits_col166.clone(),
+            high_14_ms_bits_col167.clone(),
+            high_5_ms_bits_col168.clone(),
+            new_state_6_id_col169.clone(),
+            &self.range_check_7_2_5_lookup_elements,
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        VerifyBlakeWord::evaluate(
+            [
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2.clone() + M31_7.clone()),
+                triple_xor_32_output_limb_0_col140.clone(),
+                triple_xor_32_output_limb_1_col141.clone(),
+            ],
+            low_7_ms_bits_col170.clone(),
+            high_14_ms_bits_col171.clone(),
+            high_5_ms_bits_col172.clone(),
+            new_state_7_id_col173.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,

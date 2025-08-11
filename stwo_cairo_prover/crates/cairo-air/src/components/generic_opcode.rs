@@ -1,12 +1,12 @@
-// AIR version d3fb930e
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_generic_instruction::DecodeGenericInstruction;
 use crate::components::subroutines::eval_operands::EvalOperands;
 use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
-pub const N_TRACE_COLUMNS: usize = 237;
-pub const RELATION_USES_PER_ROW: [RelationUse; 21] = [
+pub const N_TRACE_COLUMNS: usize = 244;
+pub const RELATION_USES_PER_ROW: [RelationUse; 22] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -20,8 +20,16 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 21] = [
         uses: 1,
     },
     RelationUse {
+        relation_id: "RangeCheck_11",
+        uses: 1,
+    },
+    RelationUse {
+        relation_id: "RangeCheck_18",
+        uses: 1,
+    },
+    RelationUse {
         relation_id: "RangeCheck_19",
-        uses: 5,
+        uses: 4,
     },
     RelationUse {
         relation_id: "RangeCheck_19_B",
@@ -50,10 +58,6 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 21] = [
     RelationUse {
         relation_id: "RangeCheck_19_H",
         uses: 4,
-    },
-    RelationUse {
-        relation_id: "RangeCheck_8",
-        uses: 1,
     },
     RelationUse {
         relation_id: "RangeCheck_9_9",
@@ -114,7 +118,8 @@ pub struct Eval {
     pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
     pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
     pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_8_lookup_elements: relations::RangeCheck_8,
+    pub range_check_18_lookup_elements: relations::RangeCheck_18,
+    pub range_check_11_lookup_elements: relations::RangeCheck_11,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -240,161 +245,168 @@ impl FrameworkEval for Eval {
         let op0_limb_25_col78 = eval.next_trace_mask();
         let op0_limb_26_col79 = eval.next_trace_mask();
         let op0_limb_27_col80 = eval.next_trace_mask();
-        let op1_src_col81 = eval.next_trace_mask();
-        let op1_id_col82 = eval.next_trace_mask();
-        let op1_limb_0_col83 = eval.next_trace_mask();
-        let op1_limb_1_col84 = eval.next_trace_mask();
-        let op1_limb_2_col85 = eval.next_trace_mask();
-        let op1_limb_3_col86 = eval.next_trace_mask();
-        let op1_limb_4_col87 = eval.next_trace_mask();
-        let op1_limb_5_col88 = eval.next_trace_mask();
-        let op1_limb_6_col89 = eval.next_trace_mask();
-        let op1_limb_7_col90 = eval.next_trace_mask();
-        let op1_limb_8_col91 = eval.next_trace_mask();
-        let op1_limb_9_col92 = eval.next_trace_mask();
-        let op1_limb_10_col93 = eval.next_trace_mask();
-        let op1_limb_11_col94 = eval.next_trace_mask();
-        let op1_limb_12_col95 = eval.next_trace_mask();
-        let op1_limb_13_col96 = eval.next_trace_mask();
-        let op1_limb_14_col97 = eval.next_trace_mask();
-        let op1_limb_15_col98 = eval.next_trace_mask();
-        let op1_limb_16_col99 = eval.next_trace_mask();
-        let op1_limb_17_col100 = eval.next_trace_mask();
-        let op1_limb_18_col101 = eval.next_trace_mask();
-        let op1_limb_19_col102 = eval.next_trace_mask();
-        let op1_limb_20_col103 = eval.next_trace_mask();
-        let op1_limb_21_col104 = eval.next_trace_mask();
-        let op1_limb_22_col105 = eval.next_trace_mask();
-        let op1_limb_23_col106 = eval.next_trace_mask();
-        let op1_limb_24_col107 = eval.next_trace_mask();
-        let op1_limb_25_col108 = eval.next_trace_mask();
-        let op1_limb_26_col109 = eval.next_trace_mask();
-        let op1_limb_27_col110 = eval.next_trace_mask();
-        let add_res_limb_0_col111 = eval.next_trace_mask();
-        let add_res_limb_1_col112 = eval.next_trace_mask();
-        let add_res_limb_2_col113 = eval.next_trace_mask();
-        let add_res_limb_3_col114 = eval.next_trace_mask();
-        let add_res_limb_4_col115 = eval.next_trace_mask();
-        let add_res_limb_5_col116 = eval.next_trace_mask();
-        let add_res_limb_6_col117 = eval.next_trace_mask();
-        let add_res_limb_7_col118 = eval.next_trace_mask();
-        let add_res_limb_8_col119 = eval.next_trace_mask();
-        let add_res_limb_9_col120 = eval.next_trace_mask();
-        let add_res_limb_10_col121 = eval.next_trace_mask();
-        let add_res_limb_11_col122 = eval.next_trace_mask();
-        let add_res_limb_12_col123 = eval.next_trace_mask();
-        let add_res_limb_13_col124 = eval.next_trace_mask();
-        let add_res_limb_14_col125 = eval.next_trace_mask();
-        let add_res_limb_15_col126 = eval.next_trace_mask();
-        let add_res_limb_16_col127 = eval.next_trace_mask();
-        let add_res_limb_17_col128 = eval.next_trace_mask();
-        let add_res_limb_18_col129 = eval.next_trace_mask();
-        let add_res_limb_19_col130 = eval.next_trace_mask();
-        let add_res_limb_20_col131 = eval.next_trace_mask();
-        let add_res_limb_21_col132 = eval.next_trace_mask();
-        let add_res_limb_22_col133 = eval.next_trace_mask();
-        let add_res_limb_23_col134 = eval.next_trace_mask();
-        let add_res_limb_24_col135 = eval.next_trace_mask();
-        let add_res_limb_25_col136 = eval.next_trace_mask();
-        let add_res_limb_26_col137 = eval.next_trace_mask();
-        let add_res_limb_27_col138 = eval.next_trace_mask();
-        let sub_p_bit_col139 = eval.next_trace_mask();
-        let mul_res_limb_0_col140 = eval.next_trace_mask();
-        let mul_res_limb_1_col141 = eval.next_trace_mask();
-        let mul_res_limb_2_col142 = eval.next_trace_mask();
-        let mul_res_limb_3_col143 = eval.next_trace_mask();
-        let mul_res_limb_4_col144 = eval.next_trace_mask();
-        let mul_res_limb_5_col145 = eval.next_trace_mask();
-        let mul_res_limb_6_col146 = eval.next_trace_mask();
-        let mul_res_limb_7_col147 = eval.next_trace_mask();
-        let mul_res_limb_8_col148 = eval.next_trace_mask();
-        let mul_res_limb_9_col149 = eval.next_trace_mask();
-        let mul_res_limb_10_col150 = eval.next_trace_mask();
-        let mul_res_limb_11_col151 = eval.next_trace_mask();
-        let mul_res_limb_12_col152 = eval.next_trace_mask();
-        let mul_res_limb_13_col153 = eval.next_trace_mask();
-        let mul_res_limb_14_col154 = eval.next_trace_mask();
-        let mul_res_limb_15_col155 = eval.next_trace_mask();
-        let mul_res_limb_16_col156 = eval.next_trace_mask();
-        let mul_res_limb_17_col157 = eval.next_trace_mask();
-        let mul_res_limb_18_col158 = eval.next_trace_mask();
-        let mul_res_limb_19_col159 = eval.next_trace_mask();
-        let mul_res_limb_20_col160 = eval.next_trace_mask();
-        let mul_res_limb_21_col161 = eval.next_trace_mask();
-        let mul_res_limb_22_col162 = eval.next_trace_mask();
-        let mul_res_limb_23_col163 = eval.next_trace_mask();
-        let mul_res_limb_24_col164 = eval.next_trace_mask();
-        let mul_res_limb_25_col165 = eval.next_trace_mask();
-        let mul_res_limb_26_col166 = eval.next_trace_mask();
-        let mul_res_limb_27_col167 = eval.next_trace_mask();
-        let k_col168 = eval.next_trace_mask();
-        let carry_0_col169 = eval.next_trace_mask();
-        let carry_1_col170 = eval.next_trace_mask();
-        let carry_2_col171 = eval.next_trace_mask();
-        let carry_3_col172 = eval.next_trace_mask();
-        let carry_4_col173 = eval.next_trace_mask();
-        let carry_5_col174 = eval.next_trace_mask();
-        let carry_6_col175 = eval.next_trace_mask();
-        let carry_7_col176 = eval.next_trace_mask();
-        let carry_8_col177 = eval.next_trace_mask();
-        let carry_9_col178 = eval.next_trace_mask();
-        let carry_10_col179 = eval.next_trace_mask();
-        let carry_11_col180 = eval.next_trace_mask();
-        let carry_12_col181 = eval.next_trace_mask();
-        let carry_13_col182 = eval.next_trace_mask();
-        let carry_14_col183 = eval.next_trace_mask();
-        let carry_15_col184 = eval.next_trace_mask();
-        let carry_16_col185 = eval.next_trace_mask();
-        let carry_17_col186 = eval.next_trace_mask();
-        let carry_18_col187 = eval.next_trace_mask();
-        let carry_19_col188 = eval.next_trace_mask();
-        let carry_20_col189 = eval.next_trace_mask();
-        let carry_21_col190 = eval.next_trace_mask();
-        let carry_22_col191 = eval.next_trace_mask();
-        let carry_23_col192 = eval.next_trace_mask();
-        let carry_24_col193 = eval.next_trace_mask();
-        let carry_25_col194 = eval.next_trace_mask();
-        let carry_26_col195 = eval.next_trace_mask();
-        let res_limb_0_col196 = eval.next_trace_mask();
-        let res_limb_1_col197 = eval.next_trace_mask();
-        let res_limb_2_col198 = eval.next_trace_mask();
-        let res_limb_3_col199 = eval.next_trace_mask();
-        let res_limb_4_col200 = eval.next_trace_mask();
-        let res_limb_5_col201 = eval.next_trace_mask();
-        let res_limb_6_col202 = eval.next_trace_mask();
-        let res_limb_7_col203 = eval.next_trace_mask();
-        let res_limb_8_col204 = eval.next_trace_mask();
-        let res_limb_9_col205 = eval.next_trace_mask();
-        let res_limb_10_col206 = eval.next_trace_mask();
-        let res_limb_11_col207 = eval.next_trace_mask();
-        let res_limb_12_col208 = eval.next_trace_mask();
-        let res_limb_13_col209 = eval.next_trace_mask();
-        let res_limb_14_col210 = eval.next_trace_mask();
-        let res_limb_15_col211 = eval.next_trace_mask();
-        let res_limb_16_col212 = eval.next_trace_mask();
-        let res_limb_17_col213 = eval.next_trace_mask();
-        let res_limb_18_col214 = eval.next_trace_mask();
-        let res_limb_19_col215 = eval.next_trace_mask();
-        let res_limb_20_col216 = eval.next_trace_mask();
-        let res_limb_21_col217 = eval.next_trace_mask();
-        let res_limb_22_col218 = eval.next_trace_mask();
-        let res_limb_23_col219 = eval.next_trace_mask();
-        let res_limb_24_col220 = eval.next_trace_mask();
-        let res_limb_25_col221 = eval.next_trace_mask();
-        let res_limb_26_col222 = eval.next_trace_mask();
-        let res_limb_27_col223 = eval.next_trace_mask();
-        let msb_col224 = eval.next_trace_mask();
-        let mid_limbs_set_col225 = eval.next_trace_mask();
-        let dst_sum_squares_inv_col226 = eval.next_trace_mask();
-        let dst_sum_inv_col227 = eval.next_trace_mask();
-        let op1_as_rel_imm_cond_col228 = eval.next_trace_mask();
+        let partial_limb_msb_col81 = eval.next_trace_mask();
+        let op1_src_col82 = eval.next_trace_mask();
+        let op1_id_col83 = eval.next_trace_mask();
+        let op1_limb_0_col84 = eval.next_trace_mask();
+        let op1_limb_1_col85 = eval.next_trace_mask();
+        let op1_limb_2_col86 = eval.next_trace_mask();
+        let op1_limb_3_col87 = eval.next_trace_mask();
+        let op1_limb_4_col88 = eval.next_trace_mask();
+        let op1_limb_5_col89 = eval.next_trace_mask();
+        let op1_limb_6_col90 = eval.next_trace_mask();
+        let op1_limb_7_col91 = eval.next_trace_mask();
+        let op1_limb_8_col92 = eval.next_trace_mask();
+        let op1_limb_9_col93 = eval.next_trace_mask();
+        let op1_limb_10_col94 = eval.next_trace_mask();
+        let op1_limb_11_col95 = eval.next_trace_mask();
+        let op1_limb_12_col96 = eval.next_trace_mask();
+        let op1_limb_13_col97 = eval.next_trace_mask();
+        let op1_limb_14_col98 = eval.next_trace_mask();
+        let op1_limb_15_col99 = eval.next_trace_mask();
+        let op1_limb_16_col100 = eval.next_trace_mask();
+        let op1_limb_17_col101 = eval.next_trace_mask();
+        let op1_limb_18_col102 = eval.next_trace_mask();
+        let op1_limb_19_col103 = eval.next_trace_mask();
+        let op1_limb_20_col104 = eval.next_trace_mask();
+        let op1_limb_21_col105 = eval.next_trace_mask();
+        let op1_limb_22_col106 = eval.next_trace_mask();
+        let op1_limb_23_col107 = eval.next_trace_mask();
+        let op1_limb_24_col108 = eval.next_trace_mask();
+        let op1_limb_25_col109 = eval.next_trace_mask();
+        let op1_limb_26_col110 = eval.next_trace_mask();
+        let op1_limb_27_col111 = eval.next_trace_mask();
+        let add_res_limb_0_col112 = eval.next_trace_mask();
+        let add_res_limb_1_col113 = eval.next_trace_mask();
+        let add_res_limb_2_col114 = eval.next_trace_mask();
+        let add_res_limb_3_col115 = eval.next_trace_mask();
+        let add_res_limb_4_col116 = eval.next_trace_mask();
+        let add_res_limb_5_col117 = eval.next_trace_mask();
+        let add_res_limb_6_col118 = eval.next_trace_mask();
+        let add_res_limb_7_col119 = eval.next_trace_mask();
+        let add_res_limb_8_col120 = eval.next_trace_mask();
+        let add_res_limb_9_col121 = eval.next_trace_mask();
+        let add_res_limb_10_col122 = eval.next_trace_mask();
+        let add_res_limb_11_col123 = eval.next_trace_mask();
+        let add_res_limb_12_col124 = eval.next_trace_mask();
+        let add_res_limb_13_col125 = eval.next_trace_mask();
+        let add_res_limb_14_col126 = eval.next_trace_mask();
+        let add_res_limb_15_col127 = eval.next_trace_mask();
+        let add_res_limb_16_col128 = eval.next_trace_mask();
+        let add_res_limb_17_col129 = eval.next_trace_mask();
+        let add_res_limb_18_col130 = eval.next_trace_mask();
+        let add_res_limb_19_col131 = eval.next_trace_mask();
+        let add_res_limb_20_col132 = eval.next_trace_mask();
+        let add_res_limb_21_col133 = eval.next_trace_mask();
+        let add_res_limb_22_col134 = eval.next_trace_mask();
+        let add_res_limb_23_col135 = eval.next_trace_mask();
+        let add_res_limb_24_col136 = eval.next_trace_mask();
+        let add_res_limb_25_col137 = eval.next_trace_mask();
+        let add_res_limb_26_col138 = eval.next_trace_mask();
+        let add_res_limb_27_col139 = eval.next_trace_mask();
+        let sub_p_bit_col140 = eval.next_trace_mask();
+        let mul_res_limb_0_col141 = eval.next_trace_mask();
+        let mul_res_limb_1_col142 = eval.next_trace_mask();
+        let mul_res_limb_2_col143 = eval.next_trace_mask();
+        let mul_res_limb_3_col144 = eval.next_trace_mask();
+        let mul_res_limb_4_col145 = eval.next_trace_mask();
+        let mul_res_limb_5_col146 = eval.next_trace_mask();
+        let mul_res_limb_6_col147 = eval.next_trace_mask();
+        let mul_res_limb_7_col148 = eval.next_trace_mask();
+        let mul_res_limb_8_col149 = eval.next_trace_mask();
+        let mul_res_limb_9_col150 = eval.next_trace_mask();
+        let mul_res_limb_10_col151 = eval.next_trace_mask();
+        let mul_res_limb_11_col152 = eval.next_trace_mask();
+        let mul_res_limb_12_col153 = eval.next_trace_mask();
+        let mul_res_limb_13_col154 = eval.next_trace_mask();
+        let mul_res_limb_14_col155 = eval.next_trace_mask();
+        let mul_res_limb_15_col156 = eval.next_trace_mask();
+        let mul_res_limb_16_col157 = eval.next_trace_mask();
+        let mul_res_limb_17_col158 = eval.next_trace_mask();
+        let mul_res_limb_18_col159 = eval.next_trace_mask();
+        let mul_res_limb_19_col160 = eval.next_trace_mask();
+        let mul_res_limb_20_col161 = eval.next_trace_mask();
+        let mul_res_limb_21_col162 = eval.next_trace_mask();
+        let mul_res_limb_22_col163 = eval.next_trace_mask();
+        let mul_res_limb_23_col164 = eval.next_trace_mask();
+        let mul_res_limb_24_col165 = eval.next_trace_mask();
+        let mul_res_limb_25_col166 = eval.next_trace_mask();
+        let mul_res_limb_26_col167 = eval.next_trace_mask();
+        let mul_res_limb_27_col168 = eval.next_trace_mask();
+        let k_col169 = eval.next_trace_mask();
+        let carry_0_col170 = eval.next_trace_mask();
+        let carry_1_col171 = eval.next_trace_mask();
+        let carry_2_col172 = eval.next_trace_mask();
+        let carry_3_col173 = eval.next_trace_mask();
+        let carry_4_col174 = eval.next_trace_mask();
+        let carry_5_col175 = eval.next_trace_mask();
+        let carry_6_col176 = eval.next_trace_mask();
+        let carry_7_col177 = eval.next_trace_mask();
+        let carry_8_col178 = eval.next_trace_mask();
+        let carry_9_col179 = eval.next_trace_mask();
+        let carry_10_col180 = eval.next_trace_mask();
+        let carry_11_col181 = eval.next_trace_mask();
+        let carry_12_col182 = eval.next_trace_mask();
+        let carry_13_col183 = eval.next_trace_mask();
+        let carry_14_col184 = eval.next_trace_mask();
+        let carry_15_col185 = eval.next_trace_mask();
+        let carry_16_col186 = eval.next_trace_mask();
+        let carry_17_col187 = eval.next_trace_mask();
+        let carry_18_col188 = eval.next_trace_mask();
+        let carry_19_col189 = eval.next_trace_mask();
+        let carry_20_col190 = eval.next_trace_mask();
+        let carry_21_col191 = eval.next_trace_mask();
+        let carry_22_col192 = eval.next_trace_mask();
+        let carry_23_col193 = eval.next_trace_mask();
+        let carry_24_col194 = eval.next_trace_mask();
+        let carry_25_col195 = eval.next_trace_mask();
+        let carry_26_col196 = eval.next_trace_mask();
+        let res_limb_0_col197 = eval.next_trace_mask();
+        let res_limb_1_col198 = eval.next_trace_mask();
+        let res_limb_2_col199 = eval.next_trace_mask();
+        let res_limb_3_col200 = eval.next_trace_mask();
+        let res_limb_4_col201 = eval.next_trace_mask();
+        let res_limb_5_col202 = eval.next_trace_mask();
+        let res_limb_6_col203 = eval.next_trace_mask();
+        let res_limb_7_col204 = eval.next_trace_mask();
+        let res_limb_8_col205 = eval.next_trace_mask();
+        let res_limb_9_col206 = eval.next_trace_mask();
+        let res_limb_10_col207 = eval.next_trace_mask();
+        let res_limb_11_col208 = eval.next_trace_mask();
+        let res_limb_12_col209 = eval.next_trace_mask();
+        let res_limb_13_col210 = eval.next_trace_mask();
+        let res_limb_14_col211 = eval.next_trace_mask();
+        let res_limb_15_col212 = eval.next_trace_mask();
+        let res_limb_16_col213 = eval.next_trace_mask();
+        let res_limb_17_col214 = eval.next_trace_mask();
+        let res_limb_18_col215 = eval.next_trace_mask();
+        let res_limb_19_col216 = eval.next_trace_mask();
+        let res_limb_20_col217 = eval.next_trace_mask();
+        let res_limb_21_col218 = eval.next_trace_mask();
+        let res_limb_22_col219 = eval.next_trace_mask();
+        let res_limb_23_col220 = eval.next_trace_mask();
+        let res_limb_24_col221 = eval.next_trace_mask();
+        let res_limb_25_col222 = eval.next_trace_mask();
+        let res_limb_26_col223 = eval.next_trace_mask();
+        let res_limb_27_col224 = eval.next_trace_mask();
+        let partial_limb_msb_col225 = eval.next_trace_mask();
+        let partial_limb_msb_col226 = eval.next_trace_mask();
+        let partial_limb_msb_col227 = eval.next_trace_mask();
+        let partial_limb_msb_col228 = eval.next_trace_mask();
         let msb_col229 = eval.next_trace_mask();
         let mid_limbs_set_col230 = eval.next_trace_mask();
-        let next_pc_jnz_col231 = eval.next_trace_mask();
-        let next_pc_col232 = eval.next_trace_mask();
-        let next_ap_col233 = eval.next_trace_mask();
-        let range_check_ap_bot8bits_col234 = eval.next_trace_mask();
-        let next_fp_col235 = eval.next_trace_mask();
+        let partial_limb_msb_col231 = eval.next_trace_mask();
+        let dst_sum_squares_inv_col232 = eval.next_trace_mask();
+        let dst_sum_inv_col233 = eval.next_trace_mask();
+        let op1_as_rel_imm_cond_col234 = eval.next_trace_mask();
+        let msb_col235 = eval.next_trace_mask();
+        let mid_limbs_set_col236 = eval.next_trace_mask();
+        let partial_limb_msb_col237 = eval.next_trace_mask();
+        let next_pc_jnz_col238 = eval.next_trace_mask();
+        let next_pc_col239 = eval.next_trace_mask();
+        let next_ap_col240 = eval.next_trace_mask();
+        let range_check_ap_bot11bits_col241 = eval.next_trace_mask();
+        let next_fp_col242 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -504,149 +516,150 @@ impl FrameworkEval for Eval {
             op0_limb_25_col78.clone(),
             op0_limb_26_col79.clone(),
             op0_limb_27_col80.clone(),
-            op1_src_col81.clone(),
-            op1_id_col82.clone(),
-            op1_limb_0_col83.clone(),
-            op1_limb_1_col84.clone(),
-            op1_limb_2_col85.clone(),
-            op1_limb_3_col86.clone(),
-            op1_limb_4_col87.clone(),
-            op1_limb_5_col88.clone(),
-            op1_limb_6_col89.clone(),
-            op1_limb_7_col90.clone(),
-            op1_limb_8_col91.clone(),
-            op1_limb_9_col92.clone(),
-            op1_limb_10_col93.clone(),
-            op1_limb_11_col94.clone(),
-            op1_limb_12_col95.clone(),
-            op1_limb_13_col96.clone(),
-            op1_limb_14_col97.clone(),
-            op1_limb_15_col98.clone(),
-            op1_limb_16_col99.clone(),
-            op1_limb_17_col100.clone(),
-            op1_limb_18_col101.clone(),
-            op1_limb_19_col102.clone(),
-            op1_limb_20_col103.clone(),
-            op1_limb_21_col104.clone(),
-            op1_limb_22_col105.clone(),
-            op1_limb_23_col106.clone(),
-            op1_limb_24_col107.clone(),
-            op1_limb_25_col108.clone(),
-            op1_limb_26_col109.clone(),
-            op1_limb_27_col110.clone(),
-            add_res_limb_0_col111.clone(),
-            add_res_limb_1_col112.clone(),
-            add_res_limb_2_col113.clone(),
-            add_res_limb_3_col114.clone(),
-            add_res_limb_4_col115.clone(),
-            add_res_limb_5_col116.clone(),
-            add_res_limb_6_col117.clone(),
-            add_res_limb_7_col118.clone(),
-            add_res_limb_8_col119.clone(),
-            add_res_limb_9_col120.clone(),
-            add_res_limb_10_col121.clone(),
-            add_res_limb_11_col122.clone(),
-            add_res_limb_12_col123.clone(),
-            add_res_limb_13_col124.clone(),
-            add_res_limb_14_col125.clone(),
-            add_res_limb_15_col126.clone(),
-            add_res_limb_16_col127.clone(),
-            add_res_limb_17_col128.clone(),
-            add_res_limb_18_col129.clone(),
-            add_res_limb_19_col130.clone(),
-            add_res_limb_20_col131.clone(),
-            add_res_limb_21_col132.clone(),
-            add_res_limb_22_col133.clone(),
-            add_res_limb_23_col134.clone(),
-            add_res_limb_24_col135.clone(),
-            add_res_limb_25_col136.clone(),
-            add_res_limb_26_col137.clone(),
-            add_res_limb_27_col138.clone(),
-            sub_p_bit_col139.clone(),
-            mul_res_limb_0_col140.clone(),
-            mul_res_limb_1_col141.clone(),
-            mul_res_limb_2_col142.clone(),
-            mul_res_limb_3_col143.clone(),
-            mul_res_limb_4_col144.clone(),
-            mul_res_limb_5_col145.clone(),
-            mul_res_limb_6_col146.clone(),
-            mul_res_limb_7_col147.clone(),
-            mul_res_limb_8_col148.clone(),
-            mul_res_limb_9_col149.clone(),
-            mul_res_limb_10_col150.clone(),
-            mul_res_limb_11_col151.clone(),
-            mul_res_limb_12_col152.clone(),
-            mul_res_limb_13_col153.clone(),
-            mul_res_limb_14_col154.clone(),
-            mul_res_limb_15_col155.clone(),
-            mul_res_limb_16_col156.clone(),
-            mul_res_limb_17_col157.clone(),
-            mul_res_limb_18_col158.clone(),
-            mul_res_limb_19_col159.clone(),
-            mul_res_limb_20_col160.clone(),
-            mul_res_limb_21_col161.clone(),
-            mul_res_limb_22_col162.clone(),
-            mul_res_limb_23_col163.clone(),
-            mul_res_limb_24_col164.clone(),
-            mul_res_limb_25_col165.clone(),
-            mul_res_limb_26_col166.clone(),
-            mul_res_limb_27_col167.clone(),
-            k_col168.clone(),
-            carry_0_col169.clone(),
-            carry_1_col170.clone(),
-            carry_2_col171.clone(),
-            carry_3_col172.clone(),
-            carry_4_col173.clone(),
-            carry_5_col174.clone(),
-            carry_6_col175.clone(),
-            carry_7_col176.clone(),
-            carry_8_col177.clone(),
-            carry_9_col178.clone(),
-            carry_10_col179.clone(),
-            carry_11_col180.clone(),
-            carry_12_col181.clone(),
-            carry_13_col182.clone(),
-            carry_14_col183.clone(),
-            carry_15_col184.clone(),
-            carry_16_col185.clone(),
-            carry_17_col186.clone(),
-            carry_18_col187.clone(),
-            carry_19_col188.clone(),
-            carry_20_col189.clone(),
-            carry_21_col190.clone(),
-            carry_22_col191.clone(),
-            carry_23_col192.clone(),
-            carry_24_col193.clone(),
-            carry_25_col194.clone(),
-            carry_26_col195.clone(),
-            res_limb_0_col196.clone(),
-            res_limb_1_col197.clone(),
-            res_limb_2_col198.clone(),
-            res_limb_3_col199.clone(),
-            res_limb_4_col200.clone(),
-            res_limb_5_col201.clone(),
-            res_limb_6_col202.clone(),
-            res_limb_7_col203.clone(),
-            res_limb_8_col204.clone(),
-            res_limb_9_col205.clone(),
-            res_limb_10_col206.clone(),
-            res_limb_11_col207.clone(),
-            res_limb_12_col208.clone(),
-            res_limb_13_col209.clone(),
-            res_limb_14_col210.clone(),
-            res_limb_15_col211.clone(),
-            res_limb_16_col212.clone(),
-            res_limb_17_col213.clone(),
-            res_limb_18_col214.clone(),
-            res_limb_19_col215.clone(),
-            res_limb_20_col216.clone(),
-            res_limb_21_col217.clone(),
-            res_limb_22_col218.clone(),
-            res_limb_23_col219.clone(),
-            res_limb_24_col220.clone(),
-            res_limb_25_col221.clone(),
-            res_limb_26_col222.clone(),
-            res_limb_27_col223.clone(),
+            partial_limb_msb_col81.clone(),
+            op1_src_col82.clone(),
+            op1_id_col83.clone(),
+            op1_limb_0_col84.clone(),
+            op1_limb_1_col85.clone(),
+            op1_limb_2_col86.clone(),
+            op1_limb_3_col87.clone(),
+            op1_limb_4_col88.clone(),
+            op1_limb_5_col89.clone(),
+            op1_limb_6_col90.clone(),
+            op1_limb_7_col91.clone(),
+            op1_limb_8_col92.clone(),
+            op1_limb_9_col93.clone(),
+            op1_limb_10_col94.clone(),
+            op1_limb_11_col95.clone(),
+            op1_limb_12_col96.clone(),
+            op1_limb_13_col97.clone(),
+            op1_limb_14_col98.clone(),
+            op1_limb_15_col99.clone(),
+            op1_limb_16_col100.clone(),
+            op1_limb_17_col101.clone(),
+            op1_limb_18_col102.clone(),
+            op1_limb_19_col103.clone(),
+            op1_limb_20_col104.clone(),
+            op1_limb_21_col105.clone(),
+            op1_limb_22_col106.clone(),
+            op1_limb_23_col107.clone(),
+            op1_limb_24_col108.clone(),
+            op1_limb_25_col109.clone(),
+            op1_limb_26_col110.clone(),
+            op1_limb_27_col111.clone(),
+            add_res_limb_0_col112.clone(),
+            add_res_limb_1_col113.clone(),
+            add_res_limb_2_col114.clone(),
+            add_res_limb_3_col115.clone(),
+            add_res_limb_4_col116.clone(),
+            add_res_limb_5_col117.clone(),
+            add_res_limb_6_col118.clone(),
+            add_res_limb_7_col119.clone(),
+            add_res_limb_8_col120.clone(),
+            add_res_limb_9_col121.clone(),
+            add_res_limb_10_col122.clone(),
+            add_res_limb_11_col123.clone(),
+            add_res_limb_12_col124.clone(),
+            add_res_limb_13_col125.clone(),
+            add_res_limb_14_col126.clone(),
+            add_res_limb_15_col127.clone(),
+            add_res_limb_16_col128.clone(),
+            add_res_limb_17_col129.clone(),
+            add_res_limb_18_col130.clone(),
+            add_res_limb_19_col131.clone(),
+            add_res_limb_20_col132.clone(),
+            add_res_limb_21_col133.clone(),
+            add_res_limb_22_col134.clone(),
+            add_res_limb_23_col135.clone(),
+            add_res_limb_24_col136.clone(),
+            add_res_limb_25_col137.clone(),
+            add_res_limb_26_col138.clone(),
+            add_res_limb_27_col139.clone(),
+            sub_p_bit_col140.clone(),
+            mul_res_limb_0_col141.clone(),
+            mul_res_limb_1_col142.clone(),
+            mul_res_limb_2_col143.clone(),
+            mul_res_limb_3_col144.clone(),
+            mul_res_limb_4_col145.clone(),
+            mul_res_limb_5_col146.clone(),
+            mul_res_limb_6_col147.clone(),
+            mul_res_limb_7_col148.clone(),
+            mul_res_limb_8_col149.clone(),
+            mul_res_limb_9_col150.clone(),
+            mul_res_limb_10_col151.clone(),
+            mul_res_limb_11_col152.clone(),
+            mul_res_limb_12_col153.clone(),
+            mul_res_limb_13_col154.clone(),
+            mul_res_limb_14_col155.clone(),
+            mul_res_limb_15_col156.clone(),
+            mul_res_limb_16_col157.clone(),
+            mul_res_limb_17_col158.clone(),
+            mul_res_limb_18_col159.clone(),
+            mul_res_limb_19_col160.clone(),
+            mul_res_limb_20_col161.clone(),
+            mul_res_limb_21_col162.clone(),
+            mul_res_limb_22_col163.clone(),
+            mul_res_limb_23_col164.clone(),
+            mul_res_limb_24_col165.clone(),
+            mul_res_limb_25_col166.clone(),
+            mul_res_limb_26_col167.clone(),
+            mul_res_limb_27_col168.clone(),
+            k_col169.clone(),
+            carry_0_col170.clone(),
+            carry_1_col171.clone(),
+            carry_2_col172.clone(),
+            carry_3_col173.clone(),
+            carry_4_col174.clone(),
+            carry_5_col175.clone(),
+            carry_6_col176.clone(),
+            carry_7_col177.clone(),
+            carry_8_col178.clone(),
+            carry_9_col179.clone(),
+            carry_10_col180.clone(),
+            carry_11_col181.clone(),
+            carry_12_col182.clone(),
+            carry_13_col183.clone(),
+            carry_14_col184.clone(),
+            carry_15_col185.clone(),
+            carry_16_col186.clone(),
+            carry_17_col187.clone(),
+            carry_18_col188.clone(),
+            carry_19_col189.clone(),
+            carry_20_col190.clone(),
+            carry_21_col191.clone(),
+            carry_22_col192.clone(),
+            carry_23_col193.clone(),
+            carry_24_col194.clone(),
+            carry_25_col195.clone(),
+            carry_26_col196.clone(),
+            res_limb_0_col197.clone(),
+            res_limb_1_col198.clone(),
+            res_limb_2_col199.clone(),
+            res_limb_3_col200.clone(),
+            res_limb_4_col201.clone(),
+            res_limb_5_col202.clone(),
+            res_limb_6_col203.clone(),
+            res_limb_7_col204.clone(),
+            res_limb_8_col205.clone(),
+            res_limb_9_col206.clone(),
+            res_limb_10_col207.clone(),
+            res_limb_11_col208.clone(),
+            res_limb_12_col209.clone(),
+            res_limb_13_col210.clone(),
+            res_limb_14_col211.clone(),
+            res_limb_15_col212.clone(),
+            res_limb_16_col213.clone(),
+            res_limb_17_col214.clone(),
+            res_limb_18_col215.clone(),
+            res_limb_19_col216.clone(),
+            res_limb_20_col217.clone(),
+            res_limb_21_col218.clone(),
+            res_limb_22_col219.clone(),
+            res_limb_23_col220.clone(),
+            res_limb_24_col221.clone(),
+            res_limb_25_col222.clone(),
+            res_limb_26_col223.clone(),
+            res_limb_27_col224.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &self.range_check_9_9_lookup_elements,
@@ -739,35 +752,37 @@ impl FrameworkEval for Eval {
                 op0_limb_25_col78.clone(),
                 op0_limb_26_col79.clone(),
                 op0_limb_27_col80.clone(),
-                res_limb_0_col196.clone(),
-                res_limb_1_col197.clone(),
-                res_limb_2_col198.clone(),
-                res_limb_3_col199.clone(),
-                res_limb_4_col200.clone(),
-                res_limb_5_col201.clone(),
-                res_limb_6_col202.clone(),
-                res_limb_7_col203.clone(),
-                res_limb_8_col204.clone(),
-                res_limb_9_col205.clone(),
-                res_limb_10_col206.clone(),
-                res_limb_11_col207.clone(),
-                res_limb_12_col208.clone(),
-                res_limb_13_col209.clone(),
-                res_limb_14_col210.clone(),
-                res_limb_15_col211.clone(),
-                res_limb_16_col212.clone(),
-                res_limb_17_col213.clone(),
-                res_limb_18_col214.clone(),
-                res_limb_19_col215.clone(),
-                res_limb_20_col216.clone(),
-                res_limb_21_col217.clone(),
-                res_limb_22_col218.clone(),
-                res_limb_23_col219.clone(),
-                res_limb_24_col220.clone(),
-                res_limb_25_col221.clone(),
-                res_limb_26_col222.clone(),
-                res_limb_27_col223.clone(),
+                res_limb_0_col197.clone(),
+                res_limb_1_col198.clone(),
+                res_limb_2_col199.clone(),
+                res_limb_3_col200.clone(),
+                res_limb_4_col201.clone(),
+                res_limb_5_col202.clone(),
+                res_limb_6_col203.clone(),
+                res_limb_7_col204.clone(),
+                res_limb_8_col205.clone(),
+                res_limb_9_col206.clone(),
+                res_limb_10_col207.clone(),
+                res_limb_11_col208.clone(),
+                res_limb_12_col209.clone(),
+                res_limb_13_col210.clone(),
+                res_limb_14_col211.clone(),
+                res_limb_15_col212.clone(),
+                res_limb_16_col213.clone(),
+                res_limb_17_col214.clone(),
+                res_limb_18_col215.clone(),
+                res_limb_19_col216.clone(),
+                res_limb_20_col217.clone(),
+                res_limb_21_col218.clone(),
+                res_limb_22_col219.clone(),
+                res_limb_23_col220.clone(),
+                res_limb_24_col221.clone(),
+                res_limb_25_col222.clone(),
+                res_limb_26_col223.clone(),
+                res_limb_27_col224.clone(),
             ],
+            partial_limb_msb_col225.clone(),
+            partial_limb_msb_col226.clone(),
             &mut eval,
         );
         UpdateRegisters::evaluate(
@@ -813,77 +828,81 @@ impl FrameworkEval for Eval {
                 dst_limb_25_col48.clone(),
                 dst_limb_26_col49.clone(),
                 dst_limb_27_col50.clone(),
-                op1_limb_0_col83.clone(),
-                op1_limb_1_col84.clone(),
-                op1_limb_2_col85.clone(),
-                op1_limb_3_col86.clone(),
-                op1_limb_4_col87.clone(),
-                op1_limb_5_col88.clone(),
-                op1_limb_6_col89.clone(),
-                op1_limb_7_col90.clone(),
-                op1_limb_8_col91.clone(),
-                op1_limb_9_col92.clone(),
-                op1_limb_10_col93.clone(),
-                op1_limb_11_col94.clone(),
-                op1_limb_12_col95.clone(),
-                op1_limb_13_col96.clone(),
-                op1_limb_14_col97.clone(),
-                op1_limb_15_col98.clone(),
-                op1_limb_16_col99.clone(),
-                op1_limb_17_col100.clone(),
-                op1_limb_18_col101.clone(),
-                op1_limb_19_col102.clone(),
-                op1_limb_20_col103.clone(),
-                op1_limb_21_col104.clone(),
-                op1_limb_22_col105.clone(),
-                op1_limb_23_col106.clone(),
-                op1_limb_24_col107.clone(),
-                op1_limb_25_col108.clone(),
-                op1_limb_26_col109.clone(),
-                op1_limb_27_col110.clone(),
-                res_limb_0_col196.clone(),
-                res_limb_1_col197.clone(),
-                res_limb_2_col198.clone(),
-                res_limb_3_col199.clone(),
-                res_limb_4_col200.clone(),
-                res_limb_5_col201.clone(),
-                res_limb_6_col202.clone(),
-                res_limb_7_col203.clone(),
-                res_limb_8_col204.clone(),
-                res_limb_9_col205.clone(),
-                res_limb_10_col206.clone(),
-                res_limb_11_col207.clone(),
-                res_limb_12_col208.clone(),
-                res_limb_13_col209.clone(),
-                res_limb_14_col210.clone(),
-                res_limb_15_col211.clone(),
-                res_limb_16_col212.clone(),
-                res_limb_17_col213.clone(),
-                res_limb_18_col214.clone(),
-                res_limb_19_col215.clone(),
-                res_limb_20_col216.clone(),
-                res_limb_21_col217.clone(),
-                res_limb_22_col218.clone(),
-                res_limb_23_col219.clone(),
-                res_limb_24_col220.clone(),
-                res_limb_25_col221.clone(),
-                res_limb_26_col222.clone(),
-                res_limb_27_col223.clone(),
+                op1_limb_0_col84.clone(),
+                op1_limb_1_col85.clone(),
+                op1_limb_2_col86.clone(),
+                op1_limb_3_col87.clone(),
+                op1_limb_4_col88.clone(),
+                op1_limb_5_col89.clone(),
+                op1_limb_6_col90.clone(),
+                op1_limb_7_col91.clone(),
+                op1_limb_8_col92.clone(),
+                op1_limb_9_col93.clone(),
+                op1_limb_10_col94.clone(),
+                op1_limb_11_col95.clone(),
+                op1_limb_12_col96.clone(),
+                op1_limb_13_col97.clone(),
+                op1_limb_14_col98.clone(),
+                op1_limb_15_col99.clone(),
+                op1_limb_16_col100.clone(),
+                op1_limb_17_col101.clone(),
+                op1_limb_18_col102.clone(),
+                op1_limb_19_col103.clone(),
+                op1_limb_20_col104.clone(),
+                op1_limb_21_col105.clone(),
+                op1_limb_22_col106.clone(),
+                op1_limb_23_col107.clone(),
+                op1_limb_24_col108.clone(),
+                op1_limb_25_col109.clone(),
+                op1_limb_26_col110.clone(),
+                op1_limb_27_col111.clone(),
+                res_limb_0_col197.clone(),
+                res_limb_1_col198.clone(),
+                res_limb_2_col199.clone(),
+                res_limb_3_col200.clone(),
+                res_limb_4_col201.clone(),
+                res_limb_5_col202.clone(),
+                res_limb_6_col203.clone(),
+                res_limb_7_col204.clone(),
+                res_limb_8_col205.clone(),
+                res_limb_9_col206.clone(),
+                res_limb_10_col207.clone(),
+                res_limb_11_col208.clone(),
+                res_limb_12_col209.clone(),
+                res_limb_13_col210.clone(),
+                res_limb_14_col211.clone(),
+                res_limb_15_col212.clone(),
+                res_limb_16_col213.clone(),
+                res_limb_17_col214.clone(),
+                res_limb_18_col215.clone(),
+                res_limb_19_col216.clone(),
+                res_limb_20_col217.clone(),
+                res_limb_21_col218.clone(),
+                res_limb_22_col219.clone(),
+                res_limb_23_col220.clone(),
+                res_limb_24_col221.clone(),
+                res_limb_25_col222.clone(),
+                res_limb_26_col223.clone(),
+                res_limb_27_col224.clone(),
             ],
-            msb_col224.clone(),
-            mid_limbs_set_col225.clone(),
-            dst_sum_squares_inv_col226.clone(),
-            dst_sum_inv_col227.clone(),
-            op1_as_rel_imm_cond_col228.clone(),
+            partial_limb_msb_col227.clone(),
+            partial_limb_msb_col228.clone(),
             msb_col229.clone(),
             mid_limbs_set_col230.clone(),
-            next_pc_jnz_col231.clone(),
-            next_pc_col232.clone(),
-            next_ap_col233.clone(),
-            range_check_ap_bot8bits_col234.clone(),
-            next_fp_col235.clone(),
-            &self.range_check_19_lookup_elements,
-            &self.range_check_8_lookup_elements,
+            partial_limb_msb_col231.clone(),
+            dst_sum_squares_inv_col232.clone(),
+            dst_sum_inv_col233.clone(),
+            op1_as_rel_imm_cond_col234.clone(),
+            msb_col235.clone(),
+            mid_limbs_set_col236.clone(),
+            partial_limb_msb_col237.clone(),
+            next_pc_jnz_col238.clone(),
+            next_pc_col239.clone(),
+            next_ap_col240.clone(),
+            range_check_ap_bot11bits_col241.clone(),
+            next_fp_col242.clone(),
+            &self.range_check_18_lookup_elements,
+            &self.range_check_11_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -900,9 +919,9 @@ impl FrameworkEval for Eval {
             &self.opcodes_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
-                next_pc_col232.clone(),
-                next_ap_col233.clone(),
-                next_fp_col235.clone(),
+                next_pc_col239.clone(),
+                next_ap_col240.clone(),
+                next_fp_col242.clone(),
             ],
         ));
 
@@ -946,7 +965,8 @@ mod tests {
             range_check_19_e_lookup_elements: relations::RangeCheck_19_E::dummy(),
             range_check_19_f_lookup_elements: relations::RangeCheck_19_F::dummy(),
             range_check_19_g_lookup_elements: relations::RangeCheck_19_G::dummy(),
-            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
+            range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
+            range_check_11_lookup_elements: relations::RangeCheck_11::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

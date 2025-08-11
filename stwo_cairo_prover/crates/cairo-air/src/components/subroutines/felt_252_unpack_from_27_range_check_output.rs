@@ -1,8 +1,8 @@
-// AIR version d4d3b5d6
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Felt252UnpackFrom27RangeCheckOutput {}
 
 impl Felt252UnpackFrom27RangeCheckOutput {

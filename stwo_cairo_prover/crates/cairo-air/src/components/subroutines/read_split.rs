@@ -1,7 +1,8 @@
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadSplit {}
 
 impl ReadSplit {

@@ -1,7 +1,8 @@
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_6::RangeCheckLastLimbBitsInMsLimb6;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadPositiveNumBits96 {}
 
 impl ReadPositiveNumBits96 {

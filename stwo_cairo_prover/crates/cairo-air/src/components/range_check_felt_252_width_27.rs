@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version c2e46f85
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
@@ -36,12 +36,12 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 7] = [
 pub struct Eval {
     pub claim: Claim,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
+    pub range_check_18_lookup_elements: relations::RangeCheck_18,
     pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
+    pub range_check_18_b_lookup_elements: relations::RangeCheck_18_B,
     pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
     pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
     pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_18_lookup_elements: relations::RangeCheck_18,
-    pub range_check_18_b_lookup_elements: relations::RangeCheck_18_B,
     pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
 }
 

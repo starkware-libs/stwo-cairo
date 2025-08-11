@@ -1,11 +1,11 @@
-// AIR version d4d3b5d6
+// AIR version c2e46f85
 use crate::components::prelude::*;
 use crate::components::subroutines::add_252::Add252;
 use crate::components::subroutines::div_252::Div252;
 use crate::components::subroutines::mul_252::Mul252;
 use crate::components::subroutines::sub_252::Sub252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct EcAdd {}
 
 impl EcAdd {

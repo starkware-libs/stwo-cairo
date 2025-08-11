@@ -1,6 +1,7 @@
+// AIR version c2e46f85
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct LinearCombinationN6Coefs4231M11 {}
 
 impl LinearCombinationN6Coefs4231M11 {
