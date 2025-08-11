@@ -68,7 +68,7 @@ fn test_public_data_logup_sum() {
                 },
             },
             output: [].span(),
-            safe_call: [(227, [1336, 0, 0, 0, 0, 0, 0, 0]), (5, [0, 0, 0, 0, 0, 0, 0, 0])].span(),
+            safe_call_ids: [227, 5],
         },
         initial_state: CasmState {
             pc: M31Trait::new(1), ap: M31Trait::new(1336), fp: M31Trait::new(1336),
