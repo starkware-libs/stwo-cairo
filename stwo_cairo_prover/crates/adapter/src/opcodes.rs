@@ -696,12 +696,12 @@ fn u256_from_le_array(arr: [u32; 8]) -> U256 {
     U256::from_le_slice(&buf)
 }
 
-/// Small add ranges: [0 … 2^27 − 1] (positive) | [P − 2^27 … P − 1] (negative mod P).
-// 2^27 - 1
-const SMALL_ADD_POSITIVE_UPPER_BOUND: U256 = U256::from_u32(2_u32.pow(27) - 1);
-// P - 2^27
+/// Small add ranges: [0 … 2^29 − 1] (positive) | [P − 2^29 - 1 … P − 1] (negative mod P).
+// 2^29 - 1
+const SMALL_ADD_POSITIVE_UPPER_BOUND: U256 = U256::from_u32(2_u32.pow(29) - 1);
+// P - 2^29 - 1
 const SMALL_ADD_NEGATIVE_LOWER_BOUND: U256 = U256::from_words([
-    0xFFFFFFFFF8000001,
+    0xFFFFFFFFE0000000,
     0xFFFFFFFFFFFFFFFF,
     0xFFFFFFFFFFFFFFFF,
     0x0800000000000010,
@@ -714,7 +714,7 @@ const SMALL_ADD_NEGATIVE_UPPER_BOUND: U256 = U256::from_words([
     0x0800000000000011,
 ]);
 
-// Returns 'true' if all the operands modulo P are within the range of [-2^27, 2^27 - 1].
+// Returns 'true' if all the operands modulo P are within the range of [-2^29 - 1, 2^29 - 1].
 fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
     [dst, op0, op_1].iter().all(|val| {
         let value = u256_from_le_array(val.as_u256());
@@ -785,7 +785,7 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
 
         // upper bound
-        let positive_upper_bound = 2_u128.pow(27) - 1;
+        let positive_upper_bound = 2_u128.pow(29) - 1;
         dst = MemoryValue::Small(positive_upper_bound);
         op0 = MemoryValue::Small(positive_upper_bound);
         op1 = MemoryValue::Small(positive_upper_bound);
@@ -797,7 +797,7 @@ mod mappings_tests {
         assert!(is_small_add(dst, op0, op1));
 
         // value in the range
-        let value_in_range = MemoryValue::Small(2_u128.pow(25) - 10);
+        let value_in_range = MemoryValue::Small(2_u128.pow(27) - 10);
         dst = value_in_range;
         op0 = value_in_range;
         op1 = value_in_range;
@@ -807,8 +807,8 @@ mod mappings_tests {
     #[test]
     fn test_small_add_negative_range() {
         // lower bound
-        let p_min_2_to_27: [u32; 8] = [
-            0xF800_0001,
+        let p_min_2_to_29_min_1: [u32; 8] = [
+            0xE000_0000,
             0xFFFF_FFFF,
             0xFFFF_FFFF,
             0xFFFF_FFFF,
@@ -817,9 +817,9 @@ mod mappings_tests {
             0x0000_0010,
             0x0800_0000,
         ];
-        let mut dst = MemoryValue::F252(p_min_2_to_27);
-        let mut op0 = MemoryValue::F252(p_min_2_to_27);
-        let mut op1 = MemoryValue::F252(p_min_2_to_27);
+        let mut dst = MemoryValue::F252(p_min_2_to_29_min_1);
+        let mut op0 = MemoryValue::F252(p_min_2_to_29_min_1);
+        let mut op1 = MemoryValue::F252(p_min_2_to_29_min_1);
         assert!(is_small_add(dst, op0, op1));
 
         // upper bound
@@ -840,14 +840,14 @@ mod mappings_tests {
 
     #[test]
     fn test_not_small_add() {
-        let value = 2_u128.pow(27);
+        let value = 2_u128.pow(29);
         let mut dst = MemoryValue::Small(value);
         let mut op0 = MemoryValue::Small(value);
         let mut op1 = MemoryValue::Small(value);
         assert!(!is_small_add(dst, op0, op1));
 
-        let p_min_2_to_27_min_1: [u32; 8] = [
-            0xF800_0000,
+        let p_min_2_to_29_min_2: [u32; 8] = [
+            0xDFFF_FFFF,
             0xFFFF_FFFF,
             0xFFFF_FFFF,
             0xFFFF_FFFF,
@@ -856,19 +856,9 @@ mod mappings_tests {
             0x0000_0010,
             0x0800_0000,
         ];
-        dst = MemoryValue::F252(p_min_2_to_27_min_1);
-        op0 = MemoryValue::F252(p_min_2_to_27_min_1);
-        op1 = MemoryValue::F252(p_min_2_to_27_min_1);
-        assert!(!is_small_add(dst, op0, op1));
-
-        let p_plus_2_to_27: [u32; 8] = [
-            0x08000001, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000011,
-            0x08000000,
-        ];
-
-        dst = MemoryValue::F252(p_plus_2_to_27);
-        op0 = MemoryValue::F252(p_plus_2_to_27);
-        op1 = MemoryValue::F252(p_plus_2_to_27);
+        dst = MemoryValue::F252(p_min_2_to_29_min_2);
+        op0 = MemoryValue::F252(p_min_2_to_29_min_2);
+        op1 = MemoryValue::F252(p_min_2_to_29_min_2);
         assert!(!is_small_add(dst, op0, op1));
     }
 
@@ -1074,12 +1064,12 @@ mod mappings_tests {
     fn test_add_small() {
         let instructions = casm! {
             call rel 2;
-            [ap] = 134217725, ap++;
+            [ap] = 536870909, ap++;
             [ap] = 2, ap++;
-            // 134217725 + 2= 2^27-1.
+            // 536870909 + 2= 2^29-1.
             [ap] = [fp] + [ap-1], ap++;
-            // 134217724 + 3 = 2^27-1.
-            [ap] = [fp-1] + 134217724, ap++;
+            // 536870908 + 3 = 2^29-1.
+            [ap] = [fp-1] + 536870908, ap++;
             [ap] = 1, ap++;
         }
         .instructions;
@@ -1136,9 +1126,9 @@ mod mappings_tests {
     fn test_add_big() {
         let instructions = casm! {
             call rel 2;
-            [ap] = 134217725, ap++;
+            [ap] = 536870909, ap++;
             [ap] = 3, ap++;
-            // 134217725 + 3 = is 2^27.
+            // 536870909 + 3 = is 2^29.
             [ap] = [fp] + [ap-1], ap++;
             [ap] = [ap-1] + 1, ap++;
             [ap] = 1, ap++;
@@ -1313,9 +1303,9 @@ mod mappings_tests {
     }
 
     #[test]
-    #[should_panic(expected = "AP out of address range: 134217728")]
+    #[should_panic(expected = "AP out of address range: 536870912")]
     fn test_ap_out_of_range_from_iter() {
-        let reloctated_trace = [relocated_trace_entry!(2usize.pow(27), 1, 1)];
+        let reloctated_trace = [relocated_trace_entry!(2usize.pow(29), 1, 1)];
         StateTransitions::from_iter(
             reloctated_trace.into_iter(),
             &MemoryBuilder::new(MemoryConfig::default()),
@@ -1323,10 +1313,10 @@ mod mappings_tests {
     }
 
     #[test]
-    #[should_panic(expected = "AP out of address range: 134217728")]
+    #[should_panic(expected = "AP out of address range: 536870912")]
     fn test_ap_out_of_range_from_slice() {
         let mut reloctated_trace = [relocated_trace_entry!(2, 1, 1); 80];
-        reloctated_trace[68] = relocated_trace_entry!(2usize.pow(27), 1, 1);
+        reloctated_trace[68] = relocated_trace_entry!(2usize.pow(29), 1, 1);
 
         let encoded_blake_finalize_inst =
             0b10000000000001011011111111111110101111111111111000111111111111011;
