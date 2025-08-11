@@ -120,6 +120,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     } = range_checks;
     assert_many(add, &trace);
     assert_many(add_small, &trace);
+
     assert_many(add_ap, &trace);
     assert_many(assert_eq, &trace);
     assert_many(assert_eq_imm, &trace);

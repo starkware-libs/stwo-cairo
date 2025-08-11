@@ -1,9 +1,9 @@
-// AIR version d1591e2a
+// AIR version 86c76f30
 use crate::components::subroutines::decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 33;
+pub const N_TRACE_COLUMNS: usize = 39;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('Opcodes', 1),
 ];
@@ -115,6 +115,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -186,20 +192,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             dst_limb_0_col17,
             dst_limb_1_col18,
             dst_limb_2_col19,
-            op0_id_col20,
-            msb_col21,
-            mid_limbs_set_col22,
-            op0_limb_0_col23,
-            op0_limb_1_col24,
-            op0_limb_2_col25,
-            op1_id_col26,
-            msb_col27,
-            mid_limbs_set_col28,
-            op1_limb_0_col29,
-            op1_limb_1_col30,
-            op1_limb_2_col31,
+            remainder_bits_col20,
+            partial_limb_msb_col21,
+            op0_id_col22,
+            msb_col23,
+            mid_limbs_set_col24,
+            op0_limb_0_col25,
+            op0_limb_1_col26,
+            op0_limb_2_col27,
+            remainder_bits_col28,
+            partial_limb_msb_col29,
+            op1_id_col30,
+            msb_col31,
+            mid_limbs_set_col32,
+            op1_limb_0_col33,
+            op1_limb_1_col34,
+            op1_limb_2_col35,
+            remainder_bits_col36,
+            partial_limb_msb_col37,
             enabler,
-        ]: [Span<QM31>; 33] =
+        ]: [Span<QM31>; 39] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -225,18 +237,27 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [dst_limb_0_col17]: [QM31; 1] = (*dst_limb_0_col17.try_into().unwrap()).unbox();
         let [dst_limb_1_col18]: [QM31; 1] = (*dst_limb_1_col18.try_into().unwrap()).unbox();
         let [dst_limb_2_col19]: [QM31; 1] = (*dst_limb_2_col19.try_into().unwrap()).unbox();
-        let [op0_id_col20]: [QM31; 1] = (*op0_id_col20.try_into().unwrap()).unbox();
-        let [msb_col21]: [QM31; 1] = (*msb_col21.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col22]: [QM31; 1] = (*mid_limbs_set_col22.try_into().unwrap()).unbox();
-        let [op0_limb_0_col23]: [QM31; 1] = (*op0_limb_0_col23.try_into().unwrap()).unbox();
-        let [op0_limb_1_col24]: [QM31; 1] = (*op0_limb_1_col24.try_into().unwrap()).unbox();
-        let [op0_limb_2_col25]: [QM31; 1] = (*op0_limb_2_col25.try_into().unwrap()).unbox();
-        let [op1_id_col26]: [QM31; 1] = (*op1_id_col26.try_into().unwrap()).unbox();
-        let [msb_col27]: [QM31; 1] = (*msb_col27.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col28]: [QM31; 1] = (*mid_limbs_set_col28.try_into().unwrap()).unbox();
-        let [op1_limb_0_col29]: [QM31; 1] = (*op1_limb_0_col29.try_into().unwrap()).unbox();
-        let [op1_limb_1_col30]: [QM31; 1] = (*op1_limb_1_col30.try_into().unwrap()).unbox();
-        let [op1_limb_2_col31]: [QM31; 1] = (*op1_limb_2_col31.try_into().unwrap()).unbox();
+        let [remainder_bits_col20]: [QM31; 1] = (*remainder_bits_col20.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col21]: [QM31; 1] = (*partial_limb_msb_col21.try_into().unwrap())
+            .unbox();
+        let [op0_id_col22]: [QM31; 1] = (*op0_id_col22.try_into().unwrap()).unbox();
+        let [msb_col23]: [QM31; 1] = (*msb_col23.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col24]: [QM31; 1] = (*mid_limbs_set_col24.try_into().unwrap()).unbox();
+        let [op0_limb_0_col25]: [QM31; 1] = (*op0_limb_0_col25.try_into().unwrap()).unbox();
+        let [op0_limb_1_col26]: [QM31; 1] = (*op0_limb_1_col26.try_into().unwrap()).unbox();
+        let [op0_limb_2_col27]: [QM31; 1] = (*op0_limb_2_col27.try_into().unwrap()).unbox();
+        let [remainder_bits_col28]: [QM31; 1] = (*remainder_bits_col28.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col29]: [QM31; 1] = (*partial_limb_msb_col29.try_into().unwrap())
+            .unbox();
+        let [op1_id_col30]: [QM31; 1] = (*op1_id_col30.try_into().unwrap()).unbox();
+        let [msb_col31]: [QM31; 1] = (*msb_col31.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col32]: [QM31; 1] = (*mid_limbs_set_col32.try_into().unwrap()).unbox();
+        let [op1_limb_0_col33]: [QM31; 1] = (*op1_limb_0_col33.try_into().unwrap()).unbox();
+        let [op1_limb_1_col34]: [QM31; 1] = (*op1_limb_1_col34.try_into().unwrap()).unbox();
+        let [op1_limb_2_col35]: [QM31; 1] = (*op1_limb_2_col35.try_into().unwrap()).unbox();
+        let [remainder_bits_col36]: [QM31; 1] = (*remainder_bits_col36.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col37]: [QM31; 1] = (*partial_limb_msb_col37.try_into().unwrap())
+            .unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -292,7 +313,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_756b7_16_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_19_limb_0: QM31 = read_small_evaluate(
             (mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0),
             dst_id_col14,
             msb_col15,
@@ -300,6 +321,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             dst_limb_0_col17,
             dst_limb_1_col18,
             dst_limb_2_col19,
+            remainder_bits_col20,
+            partial_limb_msb_col21,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -308,14 +331,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_22_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_28_limb_0: QM31 = read_small_evaluate(
             (mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1),
-            op0_id_col20,
-            msb_col21,
-            mid_limbs_set_col22,
-            op0_limb_0_col23,
-            op0_limb_1_col24,
-            op0_limb_2_col25,
+            op0_id_col22,
+            msb_col23,
+            mid_limbs_set_col24,
+            op0_limb_0_col25,
+            op0_limb_1_col26,
+            op0_limb_2_col27,
+            remainder_bits_col28,
+            partial_limb_msb_col29,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_3,
@@ -324,14 +349,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_28_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_37_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2),
-            op1_id_col26,
-            msb_col27,
-            mid_limbs_set_col28,
-            op1_limb_0_col29,
-            op1_limb_1_col30,
-            op1_limb_2_col31,
+            op1_id_col30,
+            msb_col31,
+            mid_limbs_set_col32,
+            op1_limb_0_col33,
+            op1_limb_1_col34,
+            op1_limb_2_col35,
+            remainder_bits_col36,
+            partial_limb_msb_col37,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_5,
@@ -342,8 +369,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         // Constraint - dst equals op0 + op1
-        let constraint_quotient = ((read_small_output_tmp_756b7_16_limb_0
-            - (read_small_output_tmp_756b7_22_limb_0 + read_small_output_tmp_756b7_28_limb_0)))
+        let constraint_quotient = ((read_small_output_tmp_756b7_19_limb_0
+            - (read_small_output_tmp_756b7_28_limb_0 + read_small_output_tmp_756b7_37_limb_0)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 

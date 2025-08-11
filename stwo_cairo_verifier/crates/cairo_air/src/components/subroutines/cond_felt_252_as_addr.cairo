@@ -1,9 +1,14 @@
-// AIR version d1591e2a
+// AIR version 86c76f30
+use crate::components::subroutines::cond_range_check_2::cond_range_check_2_evaluate;
 use crate::prelude::*;
 
 
 pub fn cond_felt_252_as_addr_evaluate(
-    input: [QM31; 29], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,
+    input: [QM31; 29],
+    partial_limb_msb_col0: QM31,
+    ref sum: QM31,
+    domain_vanishing_eval_inv: QM31,
+    random_coeff: QM31,
 ) -> QM31 {
     let [
         cond_felt_252_as_addr_input_limb_0,
@@ -37,12 +42,6 @@ pub fn cond_felt_252_as_addr_evaluate(
         cond_felt_252_as_addr_input_limb_28,
     ] =
         input;
-
-    // Constraint - Address limb 3 equals 0
-    let constraint_quotient = ((cond_felt_252_as_addr_input_limb_28
-        * cond_felt_252_as_addr_input_limb_3))
-        * domain_vanishing_eval_inv;
-    sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Address limb 4 equals 0
     let constraint_quotient = ((cond_felt_252_as_addr_input_limb_28
@@ -187,8 +186,16 @@ pub fn cond_felt_252_as_addr_evaluate(
         * cond_felt_252_as_addr_input_limb_27))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+    cond_range_check_2_evaluate(
+        [cond_felt_252_as_addr_input_limb_3, cond_felt_252_as_addr_input_limb_28],
+        partial_limb_msb_col0,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
 
-    ((cond_felt_252_as_addr_input_limb_0
+    (((cond_felt_252_as_addr_input_limb_0
         + (cond_felt_252_as_addr_input_limb_1 * qm31_const::<512, 0, 0, 0>()))
         + (cond_felt_252_as_addr_input_limb_2 * qm31_const::<262144, 0, 0, 0>()))
+        + (cond_felt_252_as_addr_input_limb_3 * qm31_const::<134217728, 0, 0, 0>()))
 }
