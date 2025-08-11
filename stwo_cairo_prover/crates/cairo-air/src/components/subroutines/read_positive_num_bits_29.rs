@@ -1,10 +1,11 @@
-// AIR version d1591e2a
+// AIR version ff1c6468
 use crate::components::prelude::*;
+use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_2::RangeCheckLastLimbBitsInMsLimb2;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct ReadPositiveNumBits27 {}
+pub struct ReadPositiveNumBits29 {}
 
-impl ReadPositiveNumBits27 {
+impl ReadPositiveNumBits29 {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -12,11 +13,13 @@ impl ReadPositiveNumBits27 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [read_positive_num_bits_27_input]: [E::F; 1],
+        [read_positive_num_bits_29_input]: [E::F; 1],
         id_col0: E::F,
         value_limb_0_col1: E::F,
         value_limb_1_col2: E::F,
         value_limb_2_col3: E::F,
+        value_limb_3_col4: E::F,
+        partial_limb_msb_col5: E::F,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
@@ -24,9 +27,14 @@ impl ReadPositiveNumBits27 {
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),
-            &[read_positive_num_bits_27_input.clone(), id_col0.clone()],
+            &[read_positive_num_bits_29_input.clone(), id_col0.clone()],
         ));
 
+        RangeCheckLastLimbBitsInMsLimb2::evaluate(
+            [value_limb_3_col4.clone()],
+            partial_limb_msb_col5.clone(),
+            eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             memory_id_to_big_lookup_elements,
             E::EF::one(),
@@ -35,6 +43,7 @@ impl ReadPositiveNumBits27 {
                 value_limb_0_col1.clone(),
                 value_limb_1_col2.clone(),
                 value_limb_2_col3.clone(),
+                value_limb_3_col4.clone(),
             ],
         ));
 
