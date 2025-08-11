@@ -84,6 +84,7 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
+#[cfg(feature: "poseidon252_verifier")]
 use stwo_verifier_utils::zip_eq::zip_eq;
 
 
