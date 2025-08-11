@@ -1,11 +1,11 @@
-// AIR version d1591e2a
+// AIR version 9acd5104
 use crate::components::subroutines::create_blake_output::create_blake_output_evaluate;
 use crate::components::subroutines::create_blake_round_input::create_blake_round_input_evaluate;
 use crate::components::subroutines::decode_blake_opcode::decode_blake_opcode_evaluate;
 use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 169;
+pub const N_TRACE_COLUMNS: usize = 175;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 8] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 20), ('MemoryIdToBig', 20),
     ('RangeCheck_7_2_5', 17), ('VerifyBitwiseXor_8', 4), ('BlakeRound', 1), ('TripleXor32', 8),
@@ -95,6 +95,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
         preprocessed_column_set.insert(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -526,115 +532,115 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op0_limb_0_col14,
             op0_limb_1_col15,
             op0_limb_2_col16,
-            mem1_base_col17,
-            op1_id_col18,
-            op1_limb_0_col19,
-            op1_limb_1_col20,
-            op1_limb_2_col21,
-            ap_id_col22,
-            ap_limb_0_col23,
-            ap_limb_1_col24,
-            ap_limb_2_col25,
-            mem_dst_base_col26,
-            low_16_bits_col27,
-            high_16_bits_col28,
-            low_7_ms_bits_col29,
-            high_14_ms_bits_col30,
-            high_5_ms_bits_col31,
-            dst_id_col32,
+            op0_limb_3_col17,
+            partial_limb_msb_col18,
+            mem1_base_col19,
+            op1_id_col20,
+            op1_limb_0_col21,
+            op1_limb_1_col22,
+            op1_limb_2_col23,
+            op1_limb_3_col24,
+            partial_limb_msb_col25,
+            ap_id_col26,
+            ap_limb_0_col27,
+            ap_limb_1_col28,
+            ap_limb_2_col29,
+            ap_limb_3_col30,
+            partial_limb_msb_col31,
+            mem_dst_base_col32,
             low_16_bits_col33,
             high_16_bits_col34,
             low_7_ms_bits_col35,
             high_14_ms_bits_col36,
             high_5_ms_bits_col37,
-            state_0_id_col38,
+            dst_id_col38,
             low_16_bits_col39,
             high_16_bits_col40,
             low_7_ms_bits_col41,
             high_14_ms_bits_col42,
             high_5_ms_bits_col43,
-            state_1_id_col44,
+            state_0_id_col44,
             low_16_bits_col45,
             high_16_bits_col46,
             low_7_ms_bits_col47,
             high_14_ms_bits_col48,
             high_5_ms_bits_col49,
-            state_2_id_col50,
+            state_1_id_col50,
             low_16_bits_col51,
             high_16_bits_col52,
             low_7_ms_bits_col53,
             high_14_ms_bits_col54,
             high_5_ms_bits_col55,
-            state_3_id_col56,
+            state_2_id_col56,
             low_16_bits_col57,
             high_16_bits_col58,
             low_7_ms_bits_col59,
             high_14_ms_bits_col60,
             high_5_ms_bits_col61,
-            state_4_id_col62,
+            state_3_id_col62,
             low_16_bits_col63,
             high_16_bits_col64,
             low_7_ms_bits_col65,
             high_14_ms_bits_col66,
             high_5_ms_bits_col67,
-            state_5_id_col68,
+            state_4_id_col68,
             low_16_bits_col69,
             high_16_bits_col70,
             low_7_ms_bits_col71,
             high_14_ms_bits_col72,
             high_5_ms_bits_col73,
-            state_6_id_col74,
+            state_5_id_col74,
             low_16_bits_col75,
             high_16_bits_col76,
             low_7_ms_bits_col77,
             high_14_ms_bits_col78,
             high_5_ms_bits_col79,
-            state_7_id_col80,
-            ms_8_bits_col81,
-            ms_8_bits_col82,
-            xor_col83,
-            xor_col84,
-            xor_col85,
-            xor_col86,
-            blake_round_output_limb_0_col87,
-            blake_round_output_limb_1_col88,
-            blake_round_output_limb_2_col89,
-            blake_round_output_limb_3_col90,
-            blake_round_output_limb_4_col91,
-            blake_round_output_limb_5_col92,
-            blake_round_output_limb_6_col93,
-            blake_round_output_limb_7_col94,
-            blake_round_output_limb_8_col95,
-            blake_round_output_limb_9_col96,
-            blake_round_output_limb_10_col97,
-            blake_round_output_limb_11_col98,
-            blake_round_output_limb_12_col99,
-            blake_round_output_limb_13_col100,
-            blake_round_output_limb_14_col101,
-            blake_round_output_limb_15_col102,
-            blake_round_output_limb_16_col103,
-            blake_round_output_limb_17_col104,
-            blake_round_output_limb_18_col105,
-            blake_round_output_limb_19_col106,
-            blake_round_output_limb_20_col107,
-            blake_round_output_limb_21_col108,
-            blake_round_output_limb_22_col109,
-            blake_round_output_limb_23_col110,
-            blake_round_output_limb_24_col111,
-            blake_round_output_limb_25_col112,
-            blake_round_output_limb_26_col113,
-            blake_round_output_limb_27_col114,
-            blake_round_output_limb_28_col115,
-            blake_round_output_limb_29_col116,
-            blake_round_output_limb_30_col117,
-            blake_round_output_limb_31_col118,
-            blake_round_output_limb_32_col119,
-            triple_xor_32_output_limb_0_col120,
-            triple_xor_32_output_limb_1_col121,
-            triple_xor_32_output_limb_0_col122,
-            triple_xor_32_output_limb_1_col123,
-            triple_xor_32_output_limb_0_col124,
-            triple_xor_32_output_limb_1_col125,
+            state_6_id_col80,
+            low_16_bits_col81,
+            high_16_bits_col82,
+            low_7_ms_bits_col83,
+            high_14_ms_bits_col84,
+            high_5_ms_bits_col85,
+            state_7_id_col86,
+            ms_8_bits_col87,
+            ms_8_bits_col88,
+            xor_col89,
+            xor_col90,
+            xor_col91,
+            xor_col92,
+            blake_round_output_limb_0_col93,
+            blake_round_output_limb_1_col94,
+            blake_round_output_limb_2_col95,
+            blake_round_output_limb_3_col96,
+            blake_round_output_limb_4_col97,
+            blake_round_output_limb_5_col98,
+            blake_round_output_limb_6_col99,
+            blake_round_output_limb_7_col100,
+            blake_round_output_limb_8_col101,
+            blake_round_output_limb_9_col102,
+            blake_round_output_limb_10_col103,
+            blake_round_output_limb_11_col104,
+            blake_round_output_limb_12_col105,
+            blake_round_output_limb_13_col106,
+            blake_round_output_limb_14_col107,
+            blake_round_output_limb_15_col108,
+            blake_round_output_limb_16_col109,
+            blake_round_output_limb_17_col110,
+            blake_round_output_limb_18_col111,
+            blake_round_output_limb_19_col112,
+            blake_round_output_limb_20_col113,
+            blake_round_output_limb_21_col114,
+            blake_round_output_limb_22_col115,
+            blake_round_output_limb_23_col116,
+            blake_round_output_limb_24_col117,
+            blake_round_output_limb_25_col118,
+            blake_round_output_limb_26_col119,
+            blake_round_output_limb_27_col120,
+            blake_round_output_limb_28_col121,
+            blake_round_output_limb_29_col122,
+            blake_round_output_limb_30_col123,
+            blake_round_output_limb_31_col124,
+            blake_round_output_limb_32_col125,
             triple_xor_32_output_limb_0_col126,
             triple_xor_32_output_limb_1_col127,
             triple_xor_32_output_limb_0_col128,
@@ -645,40 +651,46 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             triple_xor_32_output_limb_1_col133,
             triple_xor_32_output_limb_0_col134,
             triple_xor_32_output_limb_1_col135,
-            low_7_ms_bits_col136,
-            high_14_ms_bits_col137,
-            high_5_ms_bits_col138,
-            new_state_0_id_col139,
-            low_7_ms_bits_col140,
-            high_14_ms_bits_col141,
-            high_5_ms_bits_col142,
-            new_state_1_id_col143,
-            low_7_ms_bits_col144,
-            high_14_ms_bits_col145,
-            high_5_ms_bits_col146,
-            new_state_2_id_col147,
-            low_7_ms_bits_col148,
-            high_14_ms_bits_col149,
-            high_5_ms_bits_col150,
-            new_state_3_id_col151,
-            low_7_ms_bits_col152,
-            high_14_ms_bits_col153,
-            high_5_ms_bits_col154,
-            new_state_4_id_col155,
-            low_7_ms_bits_col156,
-            high_14_ms_bits_col157,
-            high_5_ms_bits_col158,
-            new_state_5_id_col159,
-            low_7_ms_bits_col160,
-            high_14_ms_bits_col161,
-            high_5_ms_bits_col162,
-            new_state_6_id_col163,
-            low_7_ms_bits_col164,
-            high_14_ms_bits_col165,
-            high_5_ms_bits_col166,
-            new_state_7_id_col167,
+            triple_xor_32_output_limb_0_col136,
+            triple_xor_32_output_limb_1_col137,
+            triple_xor_32_output_limb_0_col138,
+            triple_xor_32_output_limb_1_col139,
+            triple_xor_32_output_limb_0_col140,
+            triple_xor_32_output_limb_1_col141,
+            low_7_ms_bits_col142,
+            high_14_ms_bits_col143,
+            high_5_ms_bits_col144,
+            new_state_0_id_col145,
+            low_7_ms_bits_col146,
+            high_14_ms_bits_col147,
+            high_5_ms_bits_col148,
+            new_state_1_id_col149,
+            low_7_ms_bits_col150,
+            high_14_ms_bits_col151,
+            high_5_ms_bits_col152,
+            new_state_2_id_col153,
+            low_7_ms_bits_col154,
+            high_14_ms_bits_col155,
+            high_5_ms_bits_col156,
+            new_state_3_id_col157,
+            low_7_ms_bits_col158,
+            high_14_ms_bits_col159,
+            high_5_ms_bits_col160,
+            new_state_4_id_col161,
+            low_7_ms_bits_col162,
+            high_14_ms_bits_col163,
+            high_5_ms_bits_col164,
+            new_state_5_id_col165,
+            low_7_ms_bits_col166,
+            high_14_ms_bits_col167,
+            high_5_ms_bits_col168,
+            new_state_6_id_col169,
+            low_7_ms_bits_col170,
+            high_14_ms_bits_col171,
+            high_5_ms_bits_col172,
+            new_state_7_id_col173,
             enabler,
-        ]: [Span<QM31>; 169] =
+        ]: [Span<QM31>; 175] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -702,238 +714,223 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [op0_limb_0_col14]: [QM31; 1] = (*op0_limb_0_col14.try_into().unwrap()).unbox();
         let [op0_limb_1_col15]: [QM31; 1] = (*op0_limb_1_col15.try_into().unwrap()).unbox();
         let [op0_limb_2_col16]: [QM31; 1] = (*op0_limb_2_col16.try_into().unwrap()).unbox();
-        let [mem1_base_col17]: [QM31; 1] = (*mem1_base_col17.try_into().unwrap()).unbox();
-        let [op1_id_col18]: [QM31; 1] = (*op1_id_col18.try_into().unwrap()).unbox();
-        let [op1_limb_0_col19]: [QM31; 1] = (*op1_limb_0_col19.try_into().unwrap()).unbox();
-        let [op1_limb_1_col20]: [QM31; 1] = (*op1_limb_1_col20.try_into().unwrap()).unbox();
-        let [op1_limb_2_col21]: [QM31; 1] = (*op1_limb_2_col21.try_into().unwrap()).unbox();
-        let [ap_id_col22]: [QM31; 1] = (*ap_id_col22.try_into().unwrap()).unbox();
-        let [ap_limb_0_col23]: [QM31; 1] = (*ap_limb_0_col23.try_into().unwrap()).unbox();
-        let [ap_limb_1_col24]: [QM31; 1] = (*ap_limb_1_col24.try_into().unwrap()).unbox();
-        let [ap_limb_2_col25]: [QM31; 1] = (*ap_limb_2_col25.try_into().unwrap()).unbox();
-        let [mem_dst_base_col26]: [QM31; 1] = (*mem_dst_base_col26.try_into().unwrap()).unbox();
-        let [low_16_bits_col27]: [QM31; 1] = (*low_16_bits_col27.try_into().unwrap()).unbox();
-        let [high_16_bits_col28]: [QM31; 1] = (*high_16_bits_col28.try_into().unwrap()).unbox();
-        let [low_7_ms_bits_col29]: [QM31; 1] = (*low_7_ms_bits_col29.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col30]: [QM31; 1] = (*high_14_ms_bits_col30.try_into().unwrap())
+        let [op0_limb_3_col17]: [QM31; 1] = (*op0_limb_3_col17.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col18]: [QM31; 1] = (*partial_limb_msb_col18.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col31]: [QM31; 1] = (*high_5_ms_bits_col31.try_into().unwrap()).unbox();
-        let [dst_id_col32]: [QM31; 1] = (*dst_id_col32.try_into().unwrap()).unbox();
+        let [mem1_base_col19]: [QM31; 1] = (*mem1_base_col19.try_into().unwrap()).unbox();
+        let [op1_id_col20]: [QM31; 1] = (*op1_id_col20.try_into().unwrap()).unbox();
+        let [op1_limb_0_col21]: [QM31; 1] = (*op1_limb_0_col21.try_into().unwrap()).unbox();
+        let [op1_limb_1_col22]: [QM31; 1] = (*op1_limb_1_col22.try_into().unwrap()).unbox();
+        let [op1_limb_2_col23]: [QM31; 1] = (*op1_limb_2_col23.try_into().unwrap()).unbox();
+        let [op1_limb_3_col24]: [QM31; 1] = (*op1_limb_3_col24.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col25]: [QM31; 1] = (*partial_limb_msb_col25.try_into().unwrap())
+            .unbox();
+        let [ap_id_col26]: [QM31; 1] = (*ap_id_col26.try_into().unwrap()).unbox();
+        let [ap_limb_0_col27]: [QM31; 1] = (*ap_limb_0_col27.try_into().unwrap()).unbox();
+        let [ap_limb_1_col28]: [QM31; 1] = (*ap_limb_1_col28.try_into().unwrap()).unbox();
+        let [ap_limb_2_col29]: [QM31; 1] = (*ap_limb_2_col29.try_into().unwrap()).unbox();
+        let [ap_limb_3_col30]: [QM31; 1] = (*ap_limb_3_col30.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col31]: [QM31; 1] = (*partial_limb_msb_col31.try_into().unwrap())
+            .unbox();
+        let [mem_dst_base_col32]: [QM31; 1] = (*mem_dst_base_col32.try_into().unwrap()).unbox();
         let [low_16_bits_col33]: [QM31; 1] = (*low_16_bits_col33.try_into().unwrap()).unbox();
         let [high_16_bits_col34]: [QM31; 1] = (*high_16_bits_col34.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col35]: [QM31; 1] = (*low_7_ms_bits_col35.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col36]: [QM31; 1] = (*high_14_ms_bits_col36.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col37]: [QM31; 1] = (*high_5_ms_bits_col37.try_into().unwrap()).unbox();
-        let [state_0_id_col38]: [QM31; 1] = (*state_0_id_col38.try_into().unwrap()).unbox();
+        let [dst_id_col38]: [QM31; 1] = (*dst_id_col38.try_into().unwrap()).unbox();
         let [low_16_bits_col39]: [QM31; 1] = (*low_16_bits_col39.try_into().unwrap()).unbox();
         let [high_16_bits_col40]: [QM31; 1] = (*high_16_bits_col40.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col41]: [QM31; 1] = (*low_7_ms_bits_col41.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col42]: [QM31; 1] = (*high_14_ms_bits_col42.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col43]: [QM31; 1] = (*high_5_ms_bits_col43.try_into().unwrap()).unbox();
-        let [state_1_id_col44]: [QM31; 1] = (*state_1_id_col44.try_into().unwrap()).unbox();
+        let [state_0_id_col44]: [QM31; 1] = (*state_0_id_col44.try_into().unwrap()).unbox();
         let [low_16_bits_col45]: [QM31; 1] = (*low_16_bits_col45.try_into().unwrap()).unbox();
         let [high_16_bits_col46]: [QM31; 1] = (*high_16_bits_col46.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col47]: [QM31; 1] = (*low_7_ms_bits_col47.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col48]: [QM31; 1] = (*high_14_ms_bits_col48.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col49]: [QM31; 1] = (*high_5_ms_bits_col49.try_into().unwrap()).unbox();
-        let [state_2_id_col50]: [QM31; 1] = (*state_2_id_col50.try_into().unwrap()).unbox();
+        let [state_1_id_col50]: [QM31; 1] = (*state_1_id_col50.try_into().unwrap()).unbox();
         let [low_16_bits_col51]: [QM31; 1] = (*low_16_bits_col51.try_into().unwrap()).unbox();
         let [high_16_bits_col52]: [QM31; 1] = (*high_16_bits_col52.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col53]: [QM31; 1] = (*low_7_ms_bits_col53.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col54]: [QM31; 1] = (*high_14_ms_bits_col54.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col55]: [QM31; 1] = (*high_5_ms_bits_col55.try_into().unwrap()).unbox();
-        let [state_3_id_col56]: [QM31; 1] = (*state_3_id_col56.try_into().unwrap()).unbox();
+        let [state_2_id_col56]: [QM31; 1] = (*state_2_id_col56.try_into().unwrap()).unbox();
         let [low_16_bits_col57]: [QM31; 1] = (*low_16_bits_col57.try_into().unwrap()).unbox();
         let [high_16_bits_col58]: [QM31; 1] = (*high_16_bits_col58.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col59]: [QM31; 1] = (*low_7_ms_bits_col59.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col60]: [QM31; 1] = (*high_14_ms_bits_col60.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col61]: [QM31; 1] = (*high_5_ms_bits_col61.try_into().unwrap()).unbox();
-        let [state_4_id_col62]: [QM31; 1] = (*state_4_id_col62.try_into().unwrap()).unbox();
+        let [state_3_id_col62]: [QM31; 1] = (*state_3_id_col62.try_into().unwrap()).unbox();
         let [low_16_bits_col63]: [QM31; 1] = (*low_16_bits_col63.try_into().unwrap()).unbox();
         let [high_16_bits_col64]: [QM31; 1] = (*high_16_bits_col64.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col65]: [QM31; 1] = (*low_7_ms_bits_col65.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col66]: [QM31; 1] = (*high_14_ms_bits_col66.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col67]: [QM31; 1] = (*high_5_ms_bits_col67.try_into().unwrap()).unbox();
-        let [state_5_id_col68]: [QM31; 1] = (*state_5_id_col68.try_into().unwrap()).unbox();
+        let [state_4_id_col68]: [QM31; 1] = (*state_4_id_col68.try_into().unwrap()).unbox();
         let [low_16_bits_col69]: [QM31; 1] = (*low_16_bits_col69.try_into().unwrap()).unbox();
         let [high_16_bits_col70]: [QM31; 1] = (*high_16_bits_col70.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col71]: [QM31; 1] = (*low_7_ms_bits_col71.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col72]: [QM31; 1] = (*high_14_ms_bits_col72.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col73]: [QM31; 1] = (*high_5_ms_bits_col73.try_into().unwrap()).unbox();
-        let [state_6_id_col74]: [QM31; 1] = (*state_6_id_col74.try_into().unwrap()).unbox();
+        let [state_5_id_col74]: [QM31; 1] = (*state_5_id_col74.try_into().unwrap()).unbox();
         let [low_16_bits_col75]: [QM31; 1] = (*low_16_bits_col75.try_into().unwrap()).unbox();
         let [high_16_bits_col76]: [QM31; 1] = (*high_16_bits_col76.try_into().unwrap()).unbox();
         let [low_7_ms_bits_col77]: [QM31; 1] = (*low_7_ms_bits_col77.try_into().unwrap()).unbox();
         let [high_14_ms_bits_col78]: [QM31; 1] = (*high_14_ms_bits_col78.try_into().unwrap())
             .unbox();
         let [high_5_ms_bits_col79]: [QM31; 1] = (*high_5_ms_bits_col79.try_into().unwrap()).unbox();
-        let [state_7_id_col80]: [QM31; 1] = (*state_7_id_col80.try_into().unwrap()).unbox();
-        let [ms_8_bits_col81]: [QM31; 1] = (*ms_8_bits_col81.try_into().unwrap()).unbox();
-        let [ms_8_bits_col82]: [QM31; 1] = (*ms_8_bits_col82.try_into().unwrap()).unbox();
-        let [xor_col83]: [QM31; 1] = (*xor_col83.try_into().unwrap()).unbox();
-        let [xor_col84]: [QM31; 1] = (*xor_col84.try_into().unwrap()).unbox();
-        let [xor_col85]: [QM31; 1] = (*xor_col85.try_into().unwrap()).unbox();
-        let [xor_col86]: [QM31; 1] = (*xor_col86.try_into().unwrap()).unbox();
-        let [blake_round_output_limb_0_col87]: [QM31; 1] = (*blake_round_output_limb_0_col87
+        let [state_6_id_col80]: [QM31; 1] = (*state_6_id_col80.try_into().unwrap()).unbox();
+        let [low_16_bits_col81]: [QM31; 1] = (*low_16_bits_col81.try_into().unwrap()).unbox();
+        let [high_16_bits_col82]: [QM31; 1] = (*high_16_bits_col82.try_into().unwrap()).unbox();
+        let [low_7_ms_bits_col83]: [QM31; 1] = (*low_7_ms_bits_col83.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col84]: [QM31; 1] = (*high_14_ms_bits_col84.try_into().unwrap())
+            .unbox();
+        let [high_5_ms_bits_col85]: [QM31; 1] = (*high_5_ms_bits_col85.try_into().unwrap()).unbox();
+        let [state_7_id_col86]: [QM31; 1] = (*state_7_id_col86.try_into().unwrap()).unbox();
+        let [ms_8_bits_col87]: [QM31; 1] = (*ms_8_bits_col87.try_into().unwrap()).unbox();
+        let [ms_8_bits_col88]: [QM31; 1] = (*ms_8_bits_col88.try_into().unwrap()).unbox();
+        let [xor_col89]: [QM31; 1] = (*xor_col89.try_into().unwrap()).unbox();
+        let [xor_col90]: [QM31; 1] = (*xor_col90.try_into().unwrap()).unbox();
+        let [xor_col91]: [QM31; 1] = (*xor_col91.try_into().unwrap()).unbox();
+        let [xor_col92]: [QM31; 1] = (*xor_col92.try_into().unwrap()).unbox();
+        let [blake_round_output_limb_0_col93]: [QM31; 1] = (*blake_round_output_limb_0_col93
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_1_col88]: [QM31; 1] = (*blake_round_output_limb_1_col88
+        let [blake_round_output_limb_1_col94]: [QM31; 1] = (*blake_round_output_limb_1_col94
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_2_col89]: [QM31; 1] = (*blake_round_output_limb_2_col89
+        let [blake_round_output_limb_2_col95]: [QM31; 1] = (*blake_round_output_limb_2_col95
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_3_col90]: [QM31; 1] = (*blake_round_output_limb_3_col90
+        let [blake_round_output_limb_3_col96]: [QM31; 1] = (*blake_round_output_limb_3_col96
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_4_col91]: [QM31; 1] = (*blake_round_output_limb_4_col91
+        let [blake_round_output_limb_4_col97]: [QM31; 1] = (*blake_round_output_limb_4_col97
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_5_col92]: [QM31; 1] = (*blake_round_output_limb_5_col92
+        let [blake_round_output_limb_5_col98]: [QM31; 1] = (*blake_round_output_limb_5_col98
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_6_col93]: [QM31; 1] = (*blake_round_output_limb_6_col93
+        let [blake_round_output_limb_6_col99]: [QM31; 1] = (*blake_round_output_limb_6_col99
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_7_col94]: [QM31; 1] = (*blake_round_output_limb_7_col94
+        let [blake_round_output_limb_7_col100]: [QM31; 1] = (*blake_round_output_limb_7_col100
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_8_col95]: [QM31; 1] = (*blake_round_output_limb_8_col95
+        let [blake_round_output_limb_8_col101]: [QM31; 1] = (*blake_round_output_limb_8_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_9_col96]: [QM31; 1] = (*blake_round_output_limb_9_col96
+        let [blake_round_output_limb_9_col102]: [QM31; 1] = (*blake_round_output_limb_9_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_10_col97]: [QM31; 1] = (*blake_round_output_limb_10_col97
+        let [blake_round_output_limb_10_col103]: [QM31; 1] = (*blake_round_output_limb_10_col103
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_11_col98]: [QM31; 1] = (*blake_round_output_limb_11_col98
+        let [blake_round_output_limb_11_col104]: [QM31; 1] = (*blake_round_output_limb_11_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_12_col99]: [QM31; 1] = (*blake_round_output_limb_12_col99
+        let [blake_round_output_limb_12_col105]: [QM31; 1] = (*blake_round_output_limb_12_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_13_col100]: [QM31; 1] = (*blake_round_output_limb_13_col100
+        let [blake_round_output_limb_13_col106]: [QM31; 1] = (*blake_round_output_limb_13_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_14_col101]: [QM31; 1] = (*blake_round_output_limb_14_col101
+        let [blake_round_output_limb_14_col107]: [QM31; 1] = (*blake_round_output_limb_14_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_15_col102]: [QM31; 1] = (*blake_round_output_limb_15_col102
+        let [blake_round_output_limb_15_col108]: [QM31; 1] = (*blake_round_output_limb_15_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_16_col103]: [QM31; 1] = (*blake_round_output_limb_16_col103
+        let [blake_round_output_limb_16_col109]: [QM31; 1] = (*blake_round_output_limb_16_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_17_col104]: [QM31; 1] = (*blake_round_output_limb_17_col104
+        let [blake_round_output_limb_17_col110]: [QM31; 1] = (*blake_round_output_limb_17_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_18_col105]: [QM31; 1] = (*blake_round_output_limb_18_col105
+        let [blake_round_output_limb_18_col111]: [QM31; 1] = (*blake_round_output_limb_18_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_19_col106]: [QM31; 1] = (*blake_round_output_limb_19_col106
+        let [blake_round_output_limb_19_col112]: [QM31; 1] = (*blake_round_output_limb_19_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_20_col107]: [QM31; 1] = (*blake_round_output_limb_20_col107
+        let [blake_round_output_limb_20_col113]: [QM31; 1] = (*blake_round_output_limb_20_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_21_col108]: [QM31; 1] = (*blake_round_output_limb_21_col108
+        let [blake_round_output_limb_21_col114]: [QM31; 1] = (*blake_round_output_limb_21_col114
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_22_col109]: [QM31; 1] = (*blake_round_output_limb_22_col109
+        let [blake_round_output_limb_22_col115]: [QM31; 1] = (*blake_round_output_limb_22_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_23_col110]: [QM31; 1] = (*blake_round_output_limb_23_col110
+        let [blake_round_output_limb_23_col116]: [QM31; 1] = (*blake_round_output_limb_23_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_24_col111]: [QM31; 1] = (*blake_round_output_limb_24_col111
+        let [blake_round_output_limb_24_col117]: [QM31; 1] = (*blake_round_output_limb_24_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_25_col112]: [QM31; 1] = (*blake_round_output_limb_25_col112
+        let [blake_round_output_limb_25_col118]: [QM31; 1] = (*blake_round_output_limb_25_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_26_col113]: [QM31; 1] = (*blake_round_output_limb_26_col113
+        let [blake_round_output_limb_26_col119]: [QM31; 1] = (*blake_round_output_limb_26_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_27_col114]: [QM31; 1] = (*blake_round_output_limb_27_col114
+        let [blake_round_output_limb_27_col120]: [QM31; 1] = (*blake_round_output_limb_27_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_28_col115]: [QM31; 1] = (*blake_round_output_limb_28_col115
+        let [blake_round_output_limb_28_col121]: [QM31; 1] = (*blake_round_output_limb_28_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_29_col116]: [QM31; 1] = (*blake_round_output_limb_29_col116
+        let [blake_round_output_limb_29_col122]: [QM31; 1] = (*blake_round_output_limb_29_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_30_col117]: [QM31; 1] = (*blake_round_output_limb_30_col117
+        let [blake_round_output_limb_30_col123]: [QM31; 1] = (*blake_round_output_limb_30_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_31_col118]: [QM31; 1] = (*blake_round_output_limb_31_col118
+        let [blake_round_output_limb_31_col124]: [QM31; 1] = (*blake_round_output_limb_31_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [blake_round_output_limb_32_col119]: [QM31; 1] = (*blake_round_output_limb_32_col119
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_0_col120]: [QM31; 1] = (*triple_xor_32_output_limb_0_col120
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_1_col121]: [QM31; 1] = (*triple_xor_32_output_limb_1_col121
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_0_col122]: [QM31; 1] = (*triple_xor_32_output_limb_0_col122
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_1_col123]: [QM31; 1] = (*triple_xor_32_output_limb_1_col123
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_0_col124]: [QM31; 1] = (*triple_xor_32_output_limb_0_col124
-            .try_into()
-            .unwrap())
-            .unbox();
-        let [triple_xor_32_output_limb_1_col125]: [QM31; 1] = (*triple_xor_32_output_limb_1_col125
+        let [blake_round_output_limb_32_col125]: [QM31; 1] = (*blake_round_output_limb_32_col125
             .try_into()
             .unwrap())
             .unbox();
@@ -977,61 +974,85 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [low_7_ms_bits_col136]: [QM31; 1] = (*low_7_ms_bits_col136.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col137]: [QM31; 1] = (*high_14_ms_bits_col137.try_into().unwrap())
+        let [triple_xor_32_output_limb_0_col136]: [QM31; 1] = (*triple_xor_32_output_limb_0_col136
+            .try_into()
+            .unwrap())
             .unbox();
-        let [high_5_ms_bits_col138]: [QM31; 1] = (*high_5_ms_bits_col138.try_into().unwrap())
+        let [triple_xor_32_output_limb_1_col137]: [QM31; 1] = (*triple_xor_32_output_limb_1_col137
+            .try_into()
+            .unwrap())
             .unbox();
-        let [new_state_0_id_col139]: [QM31; 1] = (*new_state_0_id_col139.try_into().unwrap())
+        let [triple_xor_32_output_limb_0_col138]: [QM31; 1] = (*triple_xor_32_output_limb_0_col138
+            .try_into()
+            .unwrap())
             .unbox();
-        let [low_7_ms_bits_col140]: [QM31; 1] = (*low_7_ms_bits_col140.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col141]: [QM31; 1] = (*high_14_ms_bits_col141.try_into().unwrap())
+        let [triple_xor_32_output_limb_1_col139]: [QM31; 1] = (*triple_xor_32_output_limb_1_col139
+            .try_into()
+            .unwrap())
             .unbox();
-        let [high_5_ms_bits_col142]: [QM31; 1] = (*high_5_ms_bits_col142.try_into().unwrap())
+        let [triple_xor_32_output_limb_0_col140]: [QM31; 1] = (*triple_xor_32_output_limb_0_col140
+            .try_into()
+            .unwrap())
             .unbox();
-        let [new_state_1_id_col143]: [QM31; 1] = (*new_state_1_id_col143.try_into().unwrap())
+        let [triple_xor_32_output_limb_1_col141]: [QM31; 1] = (*triple_xor_32_output_limb_1_col141
+            .try_into()
+            .unwrap())
             .unbox();
-        let [low_7_ms_bits_col144]: [QM31; 1] = (*low_7_ms_bits_col144.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col145]: [QM31; 1] = (*high_14_ms_bits_col145.try_into().unwrap())
+        let [low_7_ms_bits_col142]: [QM31; 1] = (*low_7_ms_bits_col142.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col143]: [QM31; 1] = (*high_14_ms_bits_col143.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col146]: [QM31; 1] = (*high_5_ms_bits_col146.try_into().unwrap())
+        let [high_5_ms_bits_col144]: [QM31; 1] = (*high_5_ms_bits_col144.try_into().unwrap())
             .unbox();
-        let [new_state_2_id_col147]: [QM31; 1] = (*new_state_2_id_col147.try_into().unwrap())
+        let [new_state_0_id_col145]: [QM31; 1] = (*new_state_0_id_col145.try_into().unwrap())
             .unbox();
-        let [low_7_ms_bits_col148]: [QM31; 1] = (*low_7_ms_bits_col148.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col149]: [QM31; 1] = (*high_14_ms_bits_col149.try_into().unwrap())
+        let [low_7_ms_bits_col146]: [QM31; 1] = (*low_7_ms_bits_col146.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col147]: [QM31; 1] = (*high_14_ms_bits_col147.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col150]: [QM31; 1] = (*high_5_ms_bits_col150.try_into().unwrap())
+        let [high_5_ms_bits_col148]: [QM31; 1] = (*high_5_ms_bits_col148.try_into().unwrap())
             .unbox();
-        let [new_state_3_id_col151]: [QM31; 1] = (*new_state_3_id_col151.try_into().unwrap())
+        let [new_state_1_id_col149]: [QM31; 1] = (*new_state_1_id_col149.try_into().unwrap())
             .unbox();
-        let [low_7_ms_bits_col152]: [QM31; 1] = (*low_7_ms_bits_col152.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col153]: [QM31; 1] = (*high_14_ms_bits_col153.try_into().unwrap())
+        let [low_7_ms_bits_col150]: [QM31; 1] = (*low_7_ms_bits_col150.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col151]: [QM31; 1] = (*high_14_ms_bits_col151.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col154]: [QM31; 1] = (*high_5_ms_bits_col154.try_into().unwrap())
+        let [high_5_ms_bits_col152]: [QM31; 1] = (*high_5_ms_bits_col152.try_into().unwrap())
             .unbox();
-        let [new_state_4_id_col155]: [QM31; 1] = (*new_state_4_id_col155.try_into().unwrap())
+        let [new_state_2_id_col153]: [QM31; 1] = (*new_state_2_id_col153.try_into().unwrap())
             .unbox();
-        let [low_7_ms_bits_col156]: [QM31; 1] = (*low_7_ms_bits_col156.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col157]: [QM31; 1] = (*high_14_ms_bits_col157.try_into().unwrap())
+        let [low_7_ms_bits_col154]: [QM31; 1] = (*low_7_ms_bits_col154.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col155]: [QM31; 1] = (*high_14_ms_bits_col155.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col158]: [QM31; 1] = (*high_5_ms_bits_col158.try_into().unwrap())
+        let [high_5_ms_bits_col156]: [QM31; 1] = (*high_5_ms_bits_col156.try_into().unwrap())
             .unbox();
-        let [new_state_5_id_col159]: [QM31; 1] = (*new_state_5_id_col159.try_into().unwrap())
+        let [new_state_3_id_col157]: [QM31; 1] = (*new_state_3_id_col157.try_into().unwrap())
             .unbox();
-        let [low_7_ms_bits_col160]: [QM31; 1] = (*low_7_ms_bits_col160.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col161]: [QM31; 1] = (*high_14_ms_bits_col161.try_into().unwrap())
+        let [low_7_ms_bits_col158]: [QM31; 1] = (*low_7_ms_bits_col158.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col159]: [QM31; 1] = (*high_14_ms_bits_col159.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col162]: [QM31; 1] = (*high_5_ms_bits_col162.try_into().unwrap())
+        let [high_5_ms_bits_col160]: [QM31; 1] = (*high_5_ms_bits_col160.try_into().unwrap())
             .unbox();
-        let [new_state_6_id_col163]: [QM31; 1] = (*new_state_6_id_col163.try_into().unwrap())
+        let [new_state_4_id_col161]: [QM31; 1] = (*new_state_4_id_col161.try_into().unwrap())
             .unbox();
-        let [low_7_ms_bits_col164]: [QM31; 1] = (*low_7_ms_bits_col164.try_into().unwrap()).unbox();
-        let [high_14_ms_bits_col165]: [QM31; 1] = (*high_14_ms_bits_col165.try_into().unwrap())
+        let [low_7_ms_bits_col162]: [QM31; 1] = (*low_7_ms_bits_col162.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col163]: [QM31; 1] = (*high_14_ms_bits_col163.try_into().unwrap())
             .unbox();
-        let [high_5_ms_bits_col166]: [QM31; 1] = (*high_5_ms_bits_col166.try_into().unwrap())
+        let [high_5_ms_bits_col164]: [QM31; 1] = (*high_5_ms_bits_col164.try_into().unwrap())
             .unbox();
-        let [new_state_7_id_col167]: [QM31; 1] = (*new_state_7_id_col167.try_into().unwrap())
+        let [new_state_5_id_col165]: [QM31; 1] = (*new_state_5_id_col165.try_into().unwrap())
+            .unbox();
+        let [low_7_ms_bits_col166]: [QM31; 1] = (*low_7_ms_bits_col166.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col167]: [QM31; 1] = (*high_14_ms_bits_col167.try_into().unwrap())
+            .unbox();
+        let [high_5_ms_bits_col168]: [QM31; 1] = (*high_5_ms_bits_col168.try_into().unwrap())
+            .unbox();
+        let [new_state_6_id_col169]: [QM31; 1] = (*new_state_6_id_col169.try_into().unwrap())
+            .unbox();
+        let [low_7_ms_bits_col170]: [QM31; 1] = (*low_7_ms_bits_col170.try_into().unwrap()).unbox();
+        let [high_14_ms_bits_col171]: [QM31; 1] = (*high_14_ms_bits_col171.try_into().unwrap())
+            .unbox();
+        let [high_5_ms_bits_col172]: [QM31; 1] = (*high_5_ms_bits_col172.try_into().unwrap())
+            .unbox();
+        let [new_state_7_id_col173]: [QM31; 1] = (*new_state_7_id_col173.try_into().unwrap())
             .unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
@@ -1040,10 +1061,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
-            decode_blake_opcode_output_tmp_53f39_29_limb_0,
-            decode_blake_opcode_output_tmp_53f39_29_limb_1,
-            decode_blake_opcode_output_tmp_53f39_29_limb_2,
-            decode_blake_opcode_output_tmp_53f39_29_limb_6,
+            decode_blake_opcode_output_tmp_53f39_35_limb_0,
+            decode_blake_opcode_output_tmp_53f39_35_limb_1,
+            decode_blake_opcode_output_tmp_53f39_35_limb_2,
+            decode_blake_opcode_output_tmp_53f39_35_limb_6,
         ] =
             decode_blake_opcode_evaluate(
             [input_pc_col0, input_ap_col1, input_fp_col2],
@@ -1061,22 +1082,28 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op0_limb_0_col14,
             op0_limb_1_col15,
             op0_limb_2_col16,
-            mem1_base_col17,
-            op1_id_col18,
-            op1_limb_0_col19,
-            op1_limb_1_col20,
-            op1_limb_2_col21,
-            ap_id_col22,
-            ap_limb_0_col23,
-            ap_limb_1_col24,
-            ap_limb_2_col25,
-            mem_dst_base_col26,
-            low_16_bits_col27,
-            high_16_bits_col28,
-            low_7_ms_bits_col29,
-            high_14_ms_bits_col30,
-            high_5_ms_bits_col31,
-            dst_id_col32,
+            op0_limb_3_col17,
+            partial_limb_msb_col18,
+            mem1_base_col19,
+            op1_id_col20,
+            op1_limb_0_col21,
+            op1_limb_1_col22,
+            op1_limb_2_col23,
+            op1_limb_3_col24,
+            partial_limb_msb_col25,
+            ap_id_col26,
+            ap_limb_0_col27,
+            ap_limb_1_col28,
+            ap_limb_2_col29,
+            ap_limb_3_col30,
+            partial_limb_msb_col31,
+            mem_dst_base_col32,
+            low_16_bits_col33,
+            high_16_bits_col34,
+            low_7_ms_bits_col35,
+            high_14_ms_bits_col36,
+            high_5_ms_bits_col37,
+            dst_id_col38,
             self.verify_instruction_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1096,70 +1123,70 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            create_blake_round_input_output_tmp_53f39_114_limb_24,
-            create_blake_round_input_output_tmp_53f39_114_limb_25,
-            create_blake_round_input_output_tmp_53f39_114_limb_28,
-            create_blake_round_input_output_tmp_53f39_114_limb_29,
+            create_blake_round_input_output_tmp_53f39_120_limb_24,
+            create_blake_round_input_output_tmp_53f39_120_limb_25,
+            create_blake_round_input_output_tmp_53f39_120_limb_28,
+            create_blake_round_input_output_tmp_53f39_120_limb_29,
         ] =
             create_blake_round_input_evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_29_limb_0, low_16_bits_col27,
-                high_16_bits_col28, decode_blake_opcode_output_tmp_53f39_29_limb_6,
+                decode_blake_opcode_output_tmp_53f39_35_limb_0, low_16_bits_col33,
+                high_16_bits_col34, decode_blake_opcode_output_tmp_53f39_35_limb_6,
             ],
-            low_16_bits_col33,
-            high_16_bits_col34,
-            low_7_ms_bits_col35,
-            high_14_ms_bits_col36,
-            high_5_ms_bits_col37,
-            state_0_id_col38,
             low_16_bits_col39,
             high_16_bits_col40,
             low_7_ms_bits_col41,
             high_14_ms_bits_col42,
             high_5_ms_bits_col43,
-            state_1_id_col44,
+            state_0_id_col44,
             low_16_bits_col45,
             high_16_bits_col46,
             low_7_ms_bits_col47,
             high_14_ms_bits_col48,
             high_5_ms_bits_col49,
-            state_2_id_col50,
+            state_1_id_col50,
             low_16_bits_col51,
             high_16_bits_col52,
             low_7_ms_bits_col53,
             high_14_ms_bits_col54,
             high_5_ms_bits_col55,
-            state_3_id_col56,
+            state_2_id_col56,
             low_16_bits_col57,
             high_16_bits_col58,
             low_7_ms_bits_col59,
             high_14_ms_bits_col60,
             high_5_ms_bits_col61,
-            state_4_id_col62,
+            state_3_id_col62,
             low_16_bits_col63,
             high_16_bits_col64,
             low_7_ms_bits_col65,
             high_14_ms_bits_col66,
             high_5_ms_bits_col67,
-            state_5_id_col68,
+            state_4_id_col68,
             low_16_bits_col69,
             high_16_bits_col70,
             low_7_ms_bits_col71,
             high_14_ms_bits_col72,
             high_5_ms_bits_col73,
-            state_6_id_col74,
+            state_5_id_col74,
             low_16_bits_col75,
             high_16_bits_col76,
             low_7_ms_bits_col77,
             high_14_ms_bits_col78,
             high_5_ms_bits_col79,
-            state_7_id_col80,
-            ms_8_bits_col81,
-            ms_8_bits_col82,
-            xor_col83,
-            xor_col84,
-            xor_col85,
-            xor_col86,
+            state_6_id_col80,
+            low_16_bits_col81,
+            high_16_bits_col82,
+            low_7_ms_bits_col83,
+            high_14_ms_bits_col84,
+            high_5_ms_bits_col85,
+            state_7_id_col86,
+            ms_8_bits_col87,
+            ms_8_bits_col88,
+            xor_col89,
+            xor_col90,
+            xor_col91,
+            xor_col92,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1201,22 +1228,22 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .blake_round_lookup_elements
             .combine_qm31(
                 [
-                    seq, qm31_const::<0, 0, 0, 0>(), low_16_bits_col33, high_16_bits_col34,
-                    low_16_bits_col39, high_16_bits_col40, low_16_bits_col45, high_16_bits_col46,
-                    low_16_bits_col51, high_16_bits_col52, low_16_bits_col57, high_16_bits_col58,
-                    low_16_bits_col63, high_16_bits_col64, low_16_bits_col69, high_16_bits_col70,
-                    low_16_bits_col75, high_16_bits_col76, qm31_const::<58983, 0, 0, 0>(),
+                    seq, qm31_const::<0, 0, 0, 0>(), low_16_bits_col39, high_16_bits_col40,
+                    low_16_bits_col45, high_16_bits_col46, low_16_bits_col51, high_16_bits_col52,
+                    low_16_bits_col57, high_16_bits_col58, low_16_bits_col63, high_16_bits_col64,
+                    low_16_bits_col69, high_16_bits_col70, low_16_bits_col75, high_16_bits_col76,
+                    low_16_bits_col81, high_16_bits_col82, qm31_const::<58983, 0, 0, 0>(),
                     qm31_const::<27145, 0, 0, 0>(), qm31_const::<44677, 0, 0, 0>(),
                     qm31_const::<47975, 0, 0, 0>(), qm31_const::<62322, 0, 0, 0>(),
                     qm31_const::<15470, 0, 0, 0>(), qm31_const::<62778, 0, 0, 0>(),
                     qm31_const::<42319, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_53f39_114_limb_24,
-                    create_blake_round_input_output_tmp_53f39_114_limb_25,
+                    create_blake_round_input_output_tmp_53f39_120_limb_24,
+                    create_blake_round_input_output_tmp_53f39_120_limb_25,
                     qm31_const::<26764, 0, 0, 0>(), qm31_const::<39685, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_53f39_114_limb_28,
-                    create_blake_round_input_output_tmp_53f39_114_limb_29,
+                    create_blake_round_input_output_tmp_53f39_120_limb_28,
+                    create_blake_round_input_output_tmp_53f39_120_limb_29,
                     qm31_const::<52505, 0, 0, 0>(), qm31_const::<23520, 0, 0, 0>(),
-                    decode_blake_opcode_output_tmp_53f39_29_limb_1,
+                    decode_blake_opcode_output_tmp_53f39_35_limb_1,
                 ],
             );
 
@@ -1224,54 +1251,48 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .blake_round_lookup_elements
             .combine_qm31(
                 [
-                    seq, qm31_const::<10, 0, 0, 0>(), blake_round_output_limb_0_col87,
-                    blake_round_output_limb_1_col88, blake_round_output_limb_2_col89,
-                    blake_round_output_limb_3_col90, blake_round_output_limb_4_col91,
-                    blake_round_output_limb_5_col92, blake_round_output_limb_6_col93,
-                    blake_round_output_limb_7_col94, blake_round_output_limb_8_col95,
-                    blake_round_output_limb_9_col96, blake_round_output_limb_10_col97,
-                    blake_round_output_limb_11_col98, blake_round_output_limb_12_col99,
-                    blake_round_output_limb_13_col100, blake_round_output_limb_14_col101,
-                    blake_round_output_limb_15_col102, blake_round_output_limb_16_col103,
-                    blake_round_output_limb_17_col104, blake_round_output_limb_18_col105,
-                    blake_round_output_limb_19_col106, blake_round_output_limb_20_col107,
-                    blake_round_output_limb_21_col108, blake_round_output_limb_22_col109,
-                    blake_round_output_limb_23_col110, blake_round_output_limb_24_col111,
-                    blake_round_output_limb_25_col112, blake_round_output_limb_26_col113,
-                    blake_round_output_limb_27_col114, blake_round_output_limb_28_col115,
-                    blake_round_output_limb_29_col116, blake_round_output_limb_30_col117,
-                    blake_round_output_limb_31_col118, blake_round_output_limb_32_col119,
+                    seq, qm31_const::<10, 0, 0, 0>(), blake_round_output_limb_0_col93,
+                    blake_round_output_limb_1_col94, blake_round_output_limb_2_col95,
+                    blake_round_output_limb_3_col96, blake_round_output_limb_4_col97,
+                    blake_round_output_limb_5_col98, blake_round_output_limb_6_col99,
+                    blake_round_output_limb_7_col100, blake_round_output_limb_8_col101,
+                    blake_round_output_limb_9_col102, blake_round_output_limb_10_col103,
+                    blake_round_output_limb_11_col104, blake_round_output_limb_12_col105,
+                    blake_round_output_limb_13_col106, blake_round_output_limb_14_col107,
+                    blake_round_output_limb_15_col108, blake_round_output_limb_16_col109,
+                    blake_round_output_limb_17_col110, blake_round_output_limb_18_col111,
+                    blake_round_output_limb_19_col112, blake_round_output_limb_20_col113,
+                    blake_round_output_limb_21_col114, blake_round_output_limb_22_col115,
+                    blake_round_output_limb_23_col116, blake_round_output_limb_24_col117,
+                    blake_round_output_limb_25_col118, blake_round_output_limb_26_col119,
+                    blake_round_output_limb_27_col120, blake_round_output_limb_28_col121,
+                    blake_round_output_limb_29_col122, blake_round_output_limb_30_col123,
+                    blake_round_output_limb_31_col124, blake_round_output_limb_32_col125,
                 ],
             );
         create_blake_output_evaluate(
             [
-                low_16_bits_col33, high_16_bits_col34, low_16_bits_col39, high_16_bits_col40,
-                low_16_bits_col45, high_16_bits_col46, low_16_bits_col51, high_16_bits_col52,
-                low_16_bits_col57, high_16_bits_col58, low_16_bits_col63, high_16_bits_col64,
-                low_16_bits_col69, high_16_bits_col70, low_16_bits_col75, high_16_bits_col76,
-                blake_round_output_limb_0_col87, blake_round_output_limb_1_col88,
-                blake_round_output_limb_2_col89, blake_round_output_limb_3_col90,
-                blake_round_output_limb_4_col91, blake_round_output_limb_5_col92,
-                blake_round_output_limb_6_col93, blake_round_output_limb_7_col94,
-                blake_round_output_limb_8_col95, blake_round_output_limb_9_col96,
-                blake_round_output_limb_10_col97, blake_round_output_limb_11_col98,
-                blake_round_output_limb_12_col99, blake_round_output_limb_13_col100,
-                blake_round_output_limb_14_col101, blake_round_output_limb_15_col102,
-                blake_round_output_limb_16_col103, blake_round_output_limb_17_col104,
-                blake_round_output_limb_18_col105, blake_round_output_limb_19_col106,
-                blake_round_output_limb_20_col107, blake_round_output_limb_21_col108,
-                blake_round_output_limb_22_col109, blake_round_output_limb_23_col110,
-                blake_round_output_limb_24_col111, blake_round_output_limb_25_col112,
-                blake_round_output_limb_26_col113, blake_round_output_limb_27_col114,
-                blake_round_output_limb_28_col115, blake_round_output_limb_29_col116,
-                blake_round_output_limb_30_col117, blake_round_output_limb_31_col118,
+                low_16_bits_col39, high_16_bits_col40, low_16_bits_col45, high_16_bits_col46,
+                low_16_bits_col51, high_16_bits_col52, low_16_bits_col57, high_16_bits_col58,
+                low_16_bits_col63, high_16_bits_col64, low_16_bits_col69, high_16_bits_col70,
+                low_16_bits_col75, high_16_bits_col76, low_16_bits_col81, high_16_bits_col82,
+                blake_round_output_limb_0_col93, blake_round_output_limb_1_col94,
+                blake_round_output_limb_2_col95, blake_round_output_limb_3_col96,
+                blake_round_output_limb_4_col97, blake_round_output_limb_5_col98,
+                blake_round_output_limb_6_col99, blake_round_output_limb_7_col100,
+                blake_round_output_limb_8_col101, blake_round_output_limb_9_col102,
+                blake_round_output_limb_10_col103, blake_round_output_limb_11_col104,
+                blake_round_output_limb_12_col105, blake_round_output_limb_13_col106,
+                blake_round_output_limb_14_col107, blake_round_output_limb_15_col108,
+                blake_round_output_limb_16_col109, blake_round_output_limb_17_col110,
+                blake_round_output_limb_18_col111, blake_round_output_limb_19_col112,
+                blake_round_output_limb_20_col113, blake_round_output_limb_21_col114,
+                blake_round_output_limb_22_col115, blake_round_output_limb_23_col116,
+                blake_round_output_limb_24_col117, blake_round_output_limb_25_col118,
+                blake_round_output_limb_26_col119, blake_round_output_limb_27_col120,
+                blake_round_output_limb_28_col121, blake_round_output_limb_29_col122,
+                blake_round_output_limb_30_col123, blake_round_output_limb_31_col124,
             ],
-            triple_xor_32_output_limb_0_col120,
-            triple_xor_32_output_limb_1_col121,
-            triple_xor_32_output_limb_0_col122,
-            triple_xor_32_output_limb_1_col123,
-            triple_xor_32_output_limb_0_col124,
-            triple_xor_32_output_limb_1_col125,
             triple_xor_32_output_limb_0_col126,
             triple_xor_32_output_limb_1_col127,
             triple_xor_32_output_limb_0_col128,
@@ -1282,6 +1303,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             triple_xor_32_output_limb_1_col133,
             triple_xor_32_output_limb_0_col134,
             triple_xor_32_output_limb_1_col135,
+            triple_xor_32_output_limb_0_col136,
+            triple_xor_32_output_limb_1_col137,
+            triple_xor_32_output_limb_0_col138,
+            triple_xor_32_output_limb_1_col139,
+            triple_xor_32_output_limb_0_col140,
+            triple_xor_32_output_limb_1_col141,
             self.triple_xor_32_lookup_elements,
             ref triple_xor_32_sum_40,
             ref triple_xor_32_sum_41,
@@ -1297,13 +1324,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_29_limb_2, triple_xor_32_output_limb_0_col120,
-                triple_xor_32_output_limb_1_col121,
+                decode_blake_opcode_output_tmp_53f39_35_limb_2, triple_xor_32_output_limb_0_col126,
+                triple_xor_32_output_limb_1_col127,
             ],
-            low_7_ms_bits_col136,
-            high_14_ms_bits_col137,
-            high_5_ms_bits_col138,
-            new_state_0_id_col139,
+            low_7_ms_bits_col142,
+            high_14_ms_bits_col143,
+            high_5_ms_bits_col144,
+            new_state_0_id_col145,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1316,13 +1343,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<1, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col122, triple_xor_32_output_limb_1_col123,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<1, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col128, triple_xor_32_output_limb_1_col129,
             ],
-            low_7_ms_bits_col140,
-            high_14_ms_bits_col141,
-            high_5_ms_bits_col142,
-            new_state_1_id_col143,
+            low_7_ms_bits_col146,
+            high_14_ms_bits_col147,
+            high_5_ms_bits_col148,
+            new_state_1_id_col149,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1335,13 +1362,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<2, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col124, triple_xor_32_output_limb_1_col125,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<2, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col130, triple_xor_32_output_limb_1_col131,
             ],
-            low_7_ms_bits_col144,
-            high_14_ms_bits_col145,
-            high_5_ms_bits_col146,
-            new_state_2_id_col147,
+            low_7_ms_bits_col150,
+            high_14_ms_bits_col151,
+            high_5_ms_bits_col152,
+            new_state_2_id_col153,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1354,13 +1381,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<3, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col126, triple_xor_32_output_limb_1_col127,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<3, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col132, triple_xor_32_output_limb_1_col133,
             ],
-            low_7_ms_bits_col148,
-            high_14_ms_bits_col149,
-            high_5_ms_bits_col150,
-            new_state_3_id_col151,
+            low_7_ms_bits_col154,
+            high_14_ms_bits_col155,
+            high_5_ms_bits_col156,
+            new_state_3_id_col157,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1373,13 +1400,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<4, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col128, triple_xor_32_output_limb_1_col129,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<4, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col134, triple_xor_32_output_limb_1_col135,
             ],
-            low_7_ms_bits_col152,
-            high_14_ms_bits_col153,
-            high_5_ms_bits_col154,
-            new_state_4_id_col155,
+            low_7_ms_bits_col158,
+            high_14_ms_bits_col159,
+            high_5_ms_bits_col160,
+            new_state_4_id_col161,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1392,13 +1419,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<5, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col130, triple_xor_32_output_limb_1_col131,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<5, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col136, triple_xor_32_output_limb_1_col137,
             ],
-            low_7_ms_bits_col156,
-            high_14_ms_bits_col157,
-            high_5_ms_bits_col158,
-            new_state_5_id_col159,
+            low_7_ms_bits_col162,
+            high_14_ms_bits_col163,
+            high_5_ms_bits_col164,
+            new_state_5_id_col165,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1411,13 +1438,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<6, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col132, triple_xor_32_output_limb_1_col133,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<6, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col138, triple_xor_32_output_limb_1_col139,
             ],
-            low_7_ms_bits_col160,
-            high_14_ms_bits_col161,
-            high_5_ms_bits_col162,
-            new_state_6_id_col163,
+            low_7_ms_bits_col166,
+            high_14_ms_bits_col167,
+            high_5_ms_bits_col168,
+            new_state_6_id_col169,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
@@ -1430,13 +1457,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_29_limb_2 + qm31_const::<7, 0, 0, 0>()),
-                triple_xor_32_output_limb_0_col134, triple_xor_32_output_limb_1_col135,
+                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<7, 0, 0, 0>()),
+                triple_xor_32_output_limb_0_col140, triple_xor_32_output_limb_1_col141,
             ],
-            low_7_ms_bits_col164,
-            high_14_ms_bits_col165,
-            high_5_ms_bits_col166,
-            new_state_7_id_col167,
+            low_7_ms_bits_col170,
+            high_14_ms_bits_col171,
+            high_5_ms_bits_col172,
+            new_state_7_id_col173,
             self.range_check_7_2_5_lookup_elements,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
