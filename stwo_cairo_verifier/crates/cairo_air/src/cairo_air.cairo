@@ -142,7 +142,7 @@ pub struct CairoClaim {
     pub verify_bitwise_xor_7: components::verify_bitwise_xor_7::Claim,
     pub verify_bitwise_xor_8: components::verify_bitwise_xor_8::Claim,
     pub verify_bitwise_xor_9: components::verify_bitwise_xor_9::Claim,
-    // ...
+    // TODO(audit): Consider move verify_bitwise_xor_12 here.
 }
 
 #[generate_trait]

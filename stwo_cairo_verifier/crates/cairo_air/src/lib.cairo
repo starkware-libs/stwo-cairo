@@ -137,7 +137,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
 
     let mut output = array![];
     for entry in proof.claim.public_data.public_memory.output {
-        let (_, val) = entry;
+        let (_id, val) = entry;
         output.append(construct_f252(BoxTrait::new(*val)));
     }
 
@@ -242,7 +242,7 @@ pub fn lookup_sum(
 fn verify_claim(claim: @CairoClaim) {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call: _safe_call,
+            program, public_segments, output: _, safe_call: _,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
@@ -319,12 +319,16 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     } = segment_ranges;
 
     // Check that non-supported builtins aren't used.
+    // TODO(audit): Consider using is_empty().
     assert!(ec_op_segment_range.start_ptr.value == ec_op_segment_range.stop_ptr.value);
     assert!(ecdsa_segment_range.start_ptr.value == ecdsa_segment_range.stop_ptr.value);
     assert!(keccak_segment_range.start_ptr.value == keccak_segment_range.stop_ptr.value);
 
     // Output builtin.
-    assert!(output_segment_range.stop_ptr.value <= @pow2(31));
+    // TODO(audit): stop - start = output.len
+    // TODO(audit): start = final_ap.
+    // TODO(audit): Use a constant MAX_ADDRESS = 2^29 - 1.
+    assert!(output_segment_range.stop_ptr.value < @pow2(29));
     assert!(output_segment_range.start_ptr.value <= output_segment_range.stop_ptr.value);
 
     // All other supported builtins.
@@ -341,7 +345,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         range_check_128_builtin
             .map(
                 |
-                    claim,
+                    claim
                 | BuiltinClaim {
                     segment_start: claim.range_check_builtin_segment_start,
                     log_size: claim.log_size,
@@ -426,22 +430,22 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
 }
 
 fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
-    if segment_range.is_empty() {
+    let BuiltinClaim { segment_start, log_size } = builtin_claim else {
+        assert!(segment_range.is_empty());
         return;
     }
-
-    let BuiltinClaim { segment_start, log_size } = builtin_claim.unwrap();
 
     let segment_end = segment_start + pow2(log_size) * n_cells;
     let start_ptr = segment_range.start_ptr.value;
     let stop_ptr = segment_range.stop_ptr.value;
     assert!((stop_ptr - start_ptr) % n_cells == 0);
 
-    // Check that segment_start == start_ptr <= stop_ptr <= segment_end <= 2**31.
+    // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**29.
     assert!(start_ptr == segment_start);
     assert!(start_ptr <= stop_ptr);
     assert!(stop_ptr <= segment_end);
-    assert!(segment_end <= pow2(31));
+    // TODO(audit): Use the constant MAX_ADDRESS = 2^29 - 1.
+    assert!(segment_end < pow2(29));
 }
 
 #[derive(Drop)]
@@ -544,6 +548,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         }
     }
 
+    // TODO(audit): Use a fixed size array.
     fn present_segments(self: @PublicSegmentRanges) -> Array<@SegmentRange> {
         let mut segments = array![];
 
@@ -581,6 +586,7 @@ pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
+    // TODO(audit): Fix safe_call - two const values that should be verified. Can mix only ids.
     pub safe_call: MemorySection,
 }
 
@@ -607,9 +613,9 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         // Safe call.
         let (id, value) = self.safe_call[0];
-        entries.append((initial_ap - 2, *id, *value));
+        entries.append((initial_ap - 2, *id, initial_ap));
         let (id, value) = self.safe_call[1];
-        entries.append((initial_ap - 1, *id, *value));
+        entries.append((initial_ap - 1, *id, 0));
 
         let present_segments = self.public_segments.present_segments();
         let n_segments = present_segments.len();
@@ -636,10 +642,12 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         entries
     }
+
     fn mix_into(self: @PublicMemory, ref channel: Channel) {
         let PublicMemory { program, public_segments, output, safe_call } = self;
 
         // Program is the bootloader and doesn't need to be mixed into the channel.
+        // TODO(audit): mix the program hash, length and ids into the channel.
         let _ = program;
 
         // Mix public segments.
@@ -722,6 +730,7 @@ fn sum_public_memory_entries(
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
         let mut combine_sum = combine::combine_felt252(val, id_to_value_alpha);
+        // TODO(audit): Move the `* id_to_value_alpha` to the `combine` function.
         combine_sum = combine_sum * id_to_value_alpha + id_m31.into() - id_to_value_z;
         let id_to_value = combine_sum.inverse();
 
@@ -791,6 +800,7 @@ impl CasmStateImpl of CasmStateTrait {
         let pc_u32: u32 = (*self.pc).into();
         let ap_u32: u32 = (*self.ap).into();
         let fp_u32: u32 = (*self.fp).into();
+        // TODO(audit): Consider using mix_u32s for [pc, ap, fp] instead.
         channel.mix_u64(pc_u32.into());
         channel.mix_u64(ap_u32.into());
         channel.mix_u64(fp_u32.into());

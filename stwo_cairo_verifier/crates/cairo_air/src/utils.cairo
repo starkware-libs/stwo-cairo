@@ -118,15 +118,13 @@ fn split<
 #[cfg(not(feature: "qm31_opcode"))]
 pub fn sum_inverses_qm31(values: @Array<QM31>) -> QM31 {
     let mut values = values.span();
-    let first_value = *values.pop_front().expect('values cannot be empty');
-    let mut prefix_mul = array![first_value];
+    let mut curr_mul = *values.pop_front().expect('values cannot be empty');
+    let mut prefix_mul = array![curr_mul];
 
     // First pass.
-    let mut curr_mul = first_value;
     for value in values {
-        let mul = curr_mul * *value;
-        prefix_mul.append(mul);
-        curr_mul = mul;
+        curr_mul = curr_mul * *value;
+        prefix_mul.append(curr_mul);
     }
     let mut prefix_mul = prefix_mul.span();
 
@@ -135,6 +133,7 @@ pub fn sum_inverses_qm31(values: @Array<QM31>) -> QM31 {
 
     // Second pass.
     let mut sum = Zero::zero();
+    // TODO(audit): Make sure both are empty.
     while let (Some(prefix), Some(value)) = (prefix_mul.pop_back(), values.pop_back()) {
         sum += *prefix * curr_inverse;
         curr_inverse *= *value;

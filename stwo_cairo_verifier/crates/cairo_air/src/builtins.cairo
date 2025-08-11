@@ -43,6 +43,7 @@ use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 #[derive(Drop, Serde, Copy)]
 pub struct BuiltinsClaim {
+    // TODO(audit): Change to BuiltinClaim.
     pub add_mod_builtin: Option<components::add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<components::bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,

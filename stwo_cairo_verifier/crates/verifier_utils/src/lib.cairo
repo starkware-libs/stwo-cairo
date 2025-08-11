@@ -112,11 +112,10 @@ fn hash_memory_section_ex(
 pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     let mut encoded_values = array![];
     for entry in section {
-        let (_, val) = *entry;
+        let (_id, val) = *entry;
         encode_felt_in_limbs_to_array(val, ref encoded_values);
     }
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    hash_u32s(encoded_values.span(), state)
+    hash_u32s(encoded_values.span())
 }
 
 /// Encodes a felt, represented by 8 u32 limbs in little-endian order, and appends the encoded limbs
@@ -144,9 +143,8 @@ fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
 }
 
 #[cfg(not(feature: "poseidon252_verifier"))]
-fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
-    let mut state = state;
-    let mut section = section;
+fn hash_u32s(mut section: Span<u32>) -> Box<[u32; 8]> {
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
 
     // Fill the buffer with the first 16 values.
     // TODO(Gali): Use `let ... else ...` when supported.
@@ -155,9 +153,8 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
     } else {
         // Append values to the buffer and pad to blake hash message size.
         let mut buffer = array![];
-        let mut i = 0;
         buffer.append_span(section);
-        i += section.len();
+        let i = section.len();
         for _ in i..16 {
             buffer.append(0);
         }
@@ -201,10 +198,12 @@ pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(feature: "poseidon252_verifier")]
+// TODO(audit): Consider inline this function into encode_and_hash_memory_section.
 pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     let mut felts = array![];
     for entry in section {
-        let (_, val) = *entry;
+        let (_id, val) = *entry;
+        // TODO(audit): Creating a box is inefficient, consider using a different approach.
         felts.append(construct_f252(BoxTrait::new(val)));
     }
     deconstruct_f252(poseidon_hash_span(felts.span()))

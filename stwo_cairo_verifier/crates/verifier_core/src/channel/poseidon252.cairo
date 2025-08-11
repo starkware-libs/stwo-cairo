@@ -81,10 +81,9 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.mix_felt252(nonce.into());
     }
 
-    fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
+    fn mix_u32s(ref self: Poseidon252Channel, mut data: Span<u32>) {
+        // TODO(audit): Mix the length before the padding.
         let mut res = array![self.digest];
-
-        let mut data = data;
 
         while let Some(chunk) = data.multi_pop_front::<7>() {
             res.append(construct_f252_be(*chunk));
@@ -106,7 +105,9 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 
     fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
-        // TODO(Gali): Make this more efficient, use hash_memory_section.
+        // TODO(Gali): Make this more efficient, use hash_memory_section. - Cannot use hash_memory_section because it constructs felt252.
+        // Want to mix the entire [u32;8] into the channel, rather than the felt252.
+        // TODO(audit): Mix the ids into the channel.
         let mut flat_data = array![];
         for entry in data {
             let (_, val) = entry;

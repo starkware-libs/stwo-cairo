@@ -180,10 +180,10 @@ pub fn combine_felt252(
 
     // Take 8 + 18 + 6 bits from v6
     let (l24_low, l23, l22, l21_high) = split_u32_to_4_chunks(v6, 0x40);
+    let l24 = add(bounded_int_mul(l24_high, 0x100), l24_low);
     sum += a25
         .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l24_high, 0x100), l24_low)))
-                .into(),
+            M31Trait::new(upcast(l24)).into(),
         );
 
     sum += a24.mul_m31(M31Trait::new(upcast(l23)).into());
