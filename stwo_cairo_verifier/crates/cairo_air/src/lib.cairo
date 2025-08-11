@@ -1,6 +1,5 @@
 use components::memory_address_to_id::{
     InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
-    MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
 
@@ -243,7 +242,7 @@ pub fn lookup_sum(
 fn verify_claim(claim: @CairoClaim) {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call_ids,
+            program, public_segments, output: _output, safe_call_ids: _safe_call_ids,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
@@ -650,7 +649,7 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         channel.mix_memory_section(*output);
 
         // Mix safe_call_ids.
-        let [safe_call_id_0, safe_call_id_1] = self.safe_call_ids;
+        let [safe_call_id_0, safe_call_id_1] = safe_call_ids;
         channel.mix_u64((*safe_call_id_0).into());
         channel.mix_u64((*safe_call_id_1).into());
     }
