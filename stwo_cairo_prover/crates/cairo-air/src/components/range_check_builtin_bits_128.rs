@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version d9e7e480
 use crate::components::prelude::*;
 use crate::components::subroutines::read_positive_num_bits_128::ReadPositiveNumBits128;
 
@@ -80,7 +80,7 @@ impl FrameworkEval for Eval {
         let value_limb_12_col13 = eval.next_trace_mask();
         let value_limb_13_col14 = eval.next_trace_mask();
         let value_limb_14_col15 = eval.next_trace_mask();
-        let msb_col16 = eval.next_trace_mask();
+        let partial_limb_msb_col16 = eval.next_trace_mask();
 
         ReadPositiveNumBits128::evaluate(
             [(E::F::from(M31::from(self.claim.range_check_builtin_segment_start)) + seq.clone())],
@@ -100,7 +100,7 @@ impl FrameworkEval for Eval {
             value_limb_12_col13.clone(),
             value_limb_13_col14.clone(),
             value_limb_14_col15.clone(),
-            msb_col16.clone(),
+            partial_limb_msb_col16.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
