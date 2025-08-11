@@ -324,7 +324,7 @@ impl SegmentRange {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -337,6 +337,91 @@ pub struct PublicSegmentRanges {
     pub range_check_96: Option<SegmentRange>,
     pub add_mod: Option<SegmentRange>,
     pub mul_mod: Option<SegmentRange>,
+}
+
+// Same as PublicSegmentRanges, but with all segments present.
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+pub struct FullSegmentRanges {
+    pub output: SegmentRange,
+    pub pedersen: SegmentRange,
+    pub range_check_128: SegmentRange,
+    pub ecdsa: SegmentRange,
+    pub bitwise: SegmentRange,
+    pub ec_op: SegmentRange,
+    pub keccak: SegmentRange,
+    pub poseidon: SegmentRange,
+    pub range_check_96: SegmentRange,
+    pub add_mod: SegmentRange,
+    pub mul_mod: SegmentRange,
+}
+
+
+// The Cairo1 verifier currently requires all the segments to be present.
+impl CairoSerialize for PublicSegmentRanges {
+    fn serialize(&self, serialized: &mut Vec<starknet_ff::FieldElement>) {
+        let Self {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = self;
+
+        CairoSerialize::serialize(
+            &FullSegmentRanges {
+                output: *output,
+                pedersen: pedersen.unwrap(),
+                range_check_128: range_check_128.unwrap(),
+                ecdsa: ecdsa.unwrap(),
+                bitwise: bitwise.unwrap(),
+                ec_op: ec_op.unwrap(),
+                keccak: keccak.unwrap(),
+                poseidon: poseidon.unwrap(),
+                range_check_96: range_check_96.unwrap(),
+                add_mod: add_mod.unwrap(),
+                mul_mod: mul_mod.unwrap(),
+            },
+            serialized,
+        );
+    }
+}
+
+impl CairoDeserialize for PublicSegmentRanges {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+        let FullSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = CairoDeserialize::deserialize(data);
+
+        Self {
+            output,
+            pedersen: Some(pedersen),
+            range_check_128: Some(range_check_128),
+            ecdsa: Some(ecdsa),
+            bitwise: Some(bitwise),
+            ec_op: Some(ec_op),
+            keccak: Some(keccak),
+            poseidon: Some(poseidon),
+            range_check_96: Some(range_check_96),
+            add_mod: Some(add_mod),
+            mul_mod: Some(mul_mod),
+        }
+    }
 }
 
 impl PublicSegmentRanges {
