@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version d9e7e480
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -13,26 +13,26 @@ impl RangeCheckAp {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [range_check_ap_input]: [E::F; 1],
-        range_check_ap_bot8bits_col0: E::F,
-        range_check_19_lookup_elements: &relations::RangeCheck_19,
-        range_check_8_lookup_elements: &relations::RangeCheck_8,
+        range_check_ap_bot11bits_col0: E::F,
+        range_check_18_lookup_elements: &relations::RangeCheck_18,
+        range_check_11_lookup_elements: &relations::RangeCheck_11,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_8388608 = E::F::from(M31::from(8388608));
+        let M31_1048576 = E::F::from(M31::from(1048576));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_19_lookup_elements,
+            range_check_18_lookup_elements,
             E::EF::one(),
             &[
-                ((range_check_ap_input.clone() - range_check_ap_bot8bits_col0.clone())
-                    * M31_8388608.clone()),
+                ((range_check_ap_input.clone() - range_check_ap_bot11bits_col0.clone())
+                    * M31_1048576.clone()),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_8_lookup_elements,
+            range_check_11_lookup_elements,
             E::EF::one(),
-            &[range_check_ap_bot8bits_col0.clone()],
+            &[range_check_ap_bot11bits_col0.clone()],
         ));
 
         []
