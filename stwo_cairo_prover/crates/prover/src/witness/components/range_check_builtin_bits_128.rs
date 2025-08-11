@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 9acd5104
 #![allow(unused_parens)]
 use cairo_air::components::range_check_builtin_bits_128::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -157,10 +157,12 @@ fn write_trace_simd(
 
                 // Range Check Last Limb Bits In Ms Limb 2.
 
-                let msb_tmp_66b3a_2 =
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_66b3a_2 =
                     (((PackedUInt16::from_m31(value_limb_14_col15)) & (UInt16_2)) >> (UInt16_1));
-                let msb_col16 = msb_tmp_66b3a_2.as_m31();
-                *row[16] = msb_col16;
+                let partial_limb_msb_col16 = partial_limb_msb_tmp_66b3a_2.as_m31();
+                *row[16] = partial_limb_msb_col16;
 
                 *sub_component_inputs.memory_id_to_big[0] = value_id_col0;
                 *lookup_data.memory_id_to_big_0 = [
