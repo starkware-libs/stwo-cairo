@@ -502,7 +502,7 @@ pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
-    pub safe_call: MemorySection,
+    pub safe_call_ids: [u32; 2],
 }
 
 impl PublicMemory {
@@ -513,12 +513,25 @@ impl PublicMemory {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
-            .map(|section| section.clone().into_iter().enumerate());
+        let [program, output] =
+            [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
         let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
-        let safe_call_iter =
-            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+
+        // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
+        // initial_ap.
+        let safe_call_iter = [
+            (
+                initial_ap - 2,
+                self.safe_call_ids[0],
+                [initial_ap, 0, 0, 0, 0, 0, 0, 0],
+            ),
+            (
+                initial_ap - 1,
+                self.safe_call_ids[1],
+                [0, 0, 0, 0, 0, 0, 0, 0],
+            ),
+        ];
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
         program_iter
@@ -532,7 +545,7 @@ impl PublicMemory {
             program,
             public_segments,
             output,
-            safe_call,
+            safe_call_ids,
         } = self;
 
         // Program is the bootloader and doesn't need to be mixed into the channel.
@@ -544,13 +557,9 @@ impl PublicMemory {
         // Mix output memory section.
         channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
 
-        // Mix safe_call memory section.
-        channel.mix_u64(safe_call.len() as u64);
-        for (id, value) in safe_call {
+        // Mix safe_ids memory section.
+        for id in safe_call_ids {
             channel.mix_u64(*id as u64);
-            for limb in value.iter() {
-                channel.mix_u64(*limb as u64);
-            }
         }
     }
 }

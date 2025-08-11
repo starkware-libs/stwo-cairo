@@ -242,7 +242,7 @@ pub fn lookup_sum(
 fn verify_claim(claim: @CairoClaim) {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call: _safe_call,
+            program, public_segments, output: _output, safe_call_ids,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
@@ -581,7 +581,7 @@ pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
-    pub safe_call: MemorySection,
+    pub safe_call_ids: [u32; 2],
 }
 
 #[generate_trait]
@@ -605,11 +605,11 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
             i += 1;
         }
 
-        // Safe call.
-        let (id, value) = self.safe_call[0];
-        entries.append((initial_ap - 2, *id, *value));
-        let (id, value) = self.safe_call[1];
-        entries.append((initial_ap - 1, *id, *value));
+        // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
+        // initial_ap.
+        let [safe_call_id_0, safe_call_id_1] = self.safe_call_ids;
+        entries.append((initial_ap - 2, *safe_call_id_0, [initial_ap, 0, 0, 0, 0, 0, 0, 0]));
+        entries.append((initial_ap - 1, *safe_call_id_1, [0, 0, 0, 0, 0, 0, 0, 0]));
 
         let present_segments = self.public_segments.present_segments();
         let n_segments = present_segments.len();
@@ -637,7 +637,7 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         entries
     }
     fn mix_into(self: @PublicMemory, ref channel: Channel) {
-        let PublicMemory { program, public_segments, output, safe_call } = self;
+        let PublicMemory { program, public_segments, output, safe_call_ids } = self;
 
         // Program is the bootloader and doesn't need to be mixed into the channel.
         let _ = program;
@@ -648,15 +648,10 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
         // Mix output memory section.
         channel.mix_memory_section(*output);
 
-        // Mix safe_call memory section.
-        channel.mix_u64(safe_call.len().into());
-        for (id, value) in safe_call {
-            channel.mix_u64((*id).into());
-            // Mix each element of the array individually
-            for val_element in (*value).span() {
-                channel.mix_u64((*val_element).into());
-            }
-        }
+        // Mix safe_call_ids.
+        let [safe_call_id_0, safe_call_id_1] = self.safe_call_ids;
+        channel.mix_u64((*safe_call_id_0).into());
+        channel.mix_u64((*safe_call_id_1).into());
     }
 }
 
