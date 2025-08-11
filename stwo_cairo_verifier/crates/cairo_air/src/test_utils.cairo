@@ -48,7 +48,7 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
             mul_mod: empty_segment,
         },
         output: output.span(),
-        safe_call: [(1, [1; 8]), (2, [2; 8])].span(),
+        safe_call_ids: [1, 2],
     }
 }
 

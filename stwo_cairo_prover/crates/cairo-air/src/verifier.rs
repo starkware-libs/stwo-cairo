@@ -32,7 +32,7 @@ fn verify_claim(claim: &CairoClaim) {
                 program,
                 public_segments,
                 output: _output,
-                safe_call: _safe_call,
+                safe_call_ids: _safe_call_ids,
             },
         initial_state:
             CasmState {
