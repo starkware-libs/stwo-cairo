@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 9acd5104
 #![allow(unused_parens)]
 use cairo_air::components::ret_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -104,6 +104,7 @@ fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_130 = PackedM31::broadcast(M31::from(130));
+    let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_2147483645 = PackedM31::broadcast(M31::from(2147483645));
     let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
@@ -112,6 +113,8 @@ fn write_trace_simd(
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_512 = PackedM31::broadcast(M31::from(512));
     let M31_88 = PackedM31::broadcast(M31::from(88));
+    let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
+    let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
     let enabler_col = Enabler::new(n_rows);
 
     (
@@ -161,7 +164,7 @@ fn write_trace_simd(
                     M31_0,
                 );
 
-                // Read Positive Num Bits 27.
+                // Read Positive Num Bits 29.
 
                 let memory_address_to_id_value_tmp_e23a5_3 =
                     memory_address_to_id_state.deduce_output(((input_fp_col2) - (M31_1)));
@@ -178,13 +181,25 @@ fn write_trace_simd(
                 *row[5] = next_pc_limb_1_col5;
                 let next_pc_limb_2_col6 = memory_id_to_big_value_tmp_e23a5_4.get_m31(2);
                 *row[6] = next_pc_limb_2_col6;
+                let next_pc_limb_3_col7 = memory_id_to_big_value_tmp_e23a5_4.get_m31(3);
+                *row[7] = next_pc_limb_3_col7;
+
+                // Range Check Last Limb Bits In Ms Limb 2.
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_e23a5_5 =
+                    (((PackedUInt16::from_m31(next_pc_limb_3_col7)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col8 = partial_limb_msb_tmp_e23a5_5.as_m31();
+                *row[8] = partial_limb_msb_col8;
+
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col3;
                 *lookup_data.memory_id_to_big_0 = [
                     next_pc_id_col3,
                     next_pc_limb_0_col4,
                     next_pc_limb_1_col5,
                     next_pc_limb_2_col6,
-                    M31_0,
+                    next_pc_limb_3_col7,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -210,12 +225,12 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_e23a5_5 = (
+                let read_positive_num_bits_29_output_tmp_e23a5_7 = (
                     PackedFelt252::from_limbs([
                         next_pc_limb_0_col4,
                         next_pc_limb_1_col5,
                         next_pc_limb_2_col6,
-                        M31_0,
+                        next_pc_limb_3_col7,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -244,30 +259,42 @@ fn write_trace_simd(
                     next_pc_id_col3,
                 );
 
-                // Read Positive Num Bits 27.
+                // Read Positive Num Bits 29.
 
-                let memory_address_to_id_value_tmp_e23a5_6 =
+                let memory_address_to_id_value_tmp_e23a5_8 =
                     memory_address_to_id_state.deduce_output(((input_fp_col2) - (M31_2)));
-                let memory_id_to_big_value_tmp_e23a5_7 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_e23a5_6);
-                let next_fp_id_col7 = memory_address_to_id_value_tmp_e23a5_6;
-                *row[7] = next_fp_id_col7;
+                let memory_id_to_big_value_tmp_e23a5_9 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_e23a5_8);
+                let next_fp_id_col9 = memory_address_to_id_value_tmp_e23a5_8;
+                *row[9] = next_fp_id_col9;
                 *sub_component_inputs.memory_address_to_id[1] = ((input_fp_col2) - (M31_2));
                 *lookup_data.memory_address_to_id_1 =
-                    [((input_fp_col2) - (M31_2)), next_fp_id_col7];
-                let next_fp_limb_0_col8 = memory_id_to_big_value_tmp_e23a5_7.get_m31(0);
-                *row[8] = next_fp_limb_0_col8;
-                let next_fp_limb_1_col9 = memory_id_to_big_value_tmp_e23a5_7.get_m31(1);
-                *row[9] = next_fp_limb_1_col9;
-                let next_fp_limb_2_col10 = memory_id_to_big_value_tmp_e23a5_7.get_m31(2);
-                *row[10] = next_fp_limb_2_col10;
-                *sub_component_inputs.memory_id_to_big[1] = next_fp_id_col7;
+                    [((input_fp_col2) - (M31_2)), next_fp_id_col9];
+                let next_fp_limb_0_col10 = memory_id_to_big_value_tmp_e23a5_9.get_m31(0);
+                *row[10] = next_fp_limb_0_col10;
+                let next_fp_limb_1_col11 = memory_id_to_big_value_tmp_e23a5_9.get_m31(1);
+                *row[11] = next_fp_limb_1_col11;
+                let next_fp_limb_2_col12 = memory_id_to_big_value_tmp_e23a5_9.get_m31(2);
+                *row[12] = next_fp_limb_2_col12;
+                let next_fp_limb_3_col13 = memory_id_to_big_value_tmp_e23a5_9.get_m31(3);
+                *row[13] = next_fp_limb_3_col13;
+
+                // Range Check Last Limb Bits In Ms Limb 2.
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_e23a5_10 =
+                    (((PackedUInt16::from_m31(next_fp_limb_3_col13)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col14 = partial_limb_msb_tmp_e23a5_10.as_m31();
+                *row[14] = partial_limb_msb_col14;
+
+                *sub_component_inputs.memory_id_to_big[1] = next_fp_id_col9;
                 *lookup_data.memory_id_to_big_1 = [
-                    next_fp_id_col7,
-                    next_fp_limb_0_col8,
-                    next_fp_limb_1_col9,
-                    next_fp_limb_2_col10,
-                    M31_0,
+                    next_fp_id_col9,
+                    next_fp_limb_0_col10,
+                    next_fp_limb_1_col11,
+                    next_fp_limb_2_col12,
+                    next_fp_limb_3_col13,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -293,12 +320,12 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_e23a5_8 = (
+                let read_positive_num_bits_29_output_tmp_e23a5_12 = (
                     PackedFelt252::from_limbs([
-                        next_fp_limb_0_col8,
-                        next_fp_limb_1_col9,
-                        next_fp_limb_2_col10,
-                        M31_0,
+                        next_fp_limb_0_col10,
+                        next_fp_limb_1_col11,
+                        next_fp_limb_2_col12,
+                        next_fp_limb_3_col13,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -324,18 +351,20 @@ fn write_trace_simd(
                         M31_0,
                         M31_0,
                     ]),
-                    next_fp_id_col7,
+                    next_fp_id_col9,
                 );
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    (((next_pc_limb_0_col4) + ((next_pc_limb_1_col5) * (M31_512)))
-                        + ((next_pc_limb_2_col6) * (M31_262144))),
+                    ((((next_pc_limb_0_col4) + ((next_pc_limb_1_col5) * (M31_512)))
+                        + ((next_pc_limb_2_col6) * (M31_262144)))
+                        + ((next_pc_limb_3_col7) * (M31_134217728))),
                     input_ap_col1,
-                    (((next_fp_limb_0_col8) + ((next_fp_limb_1_col9) * (M31_512)))
-                        + ((next_fp_limb_2_col10) * (M31_262144))),
+                    ((((next_fp_limb_0_col10) + ((next_fp_limb_1_col11) * (M31_512)))
+                        + ((next_fp_limb_2_col12) * (M31_262144)))
+                        + ((next_fp_limb_3_col13) * (M31_134217728))),
                 ];
-                *row[11] = enabler_col.packed_at(row_index);
+                *row[15] = enabler_col.packed_at(row_index);
             },
         );
 
