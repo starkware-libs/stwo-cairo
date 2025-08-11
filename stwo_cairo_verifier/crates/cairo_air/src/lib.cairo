@@ -251,10 +251,6 @@ fn verify_claim(claim: @CairoClaim) {
     } = claim.public_data;
 
     verify_builtins(claim.builtins, public_segments);
-
-    // Currently only bootloader context is supported.
-    // TODO: Change that fact post MVP.
-    public_segments.assert_bootloader_context();
     verify_program(*program, public_segments);
 
     let initial_pc: u32 = (*initial_pc).into();
@@ -323,15 +319,9 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     } = segment_ranges;
 
     // Check that non-supported builtins aren't used.
-    if let Some(ec_op) = ec_op_segment_range {
-        assert!(ec_op.start_ptr.value == ec_op.stop_ptr.value);
-    }
-    if let Some(ecdsa) = ecdsa_segment_range {
-        assert!(ecdsa.start_ptr.value == ecdsa.stop_ptr.value);
-    }
-    if let Some(keccak) = keccak_segment_range {
-        assert!(keccak.start_ptr.value == keccak.stop_ptr.value);
-    }
+    assert!(ec_op_segment_range.start_ptr.value == ec_op_segment_range.stop_ptr.value);
+    assert!(ecdsa_segment_range.start_ptr.value == ecdsa_segment_range.stop_ptr.value);
+    assert!(keccak_segment_range.start_ptr.value == keccak_segment_range.stop_ptr.value);
 
     // Output builtin.
     assert!(output_segment_range.stop_ptr.value <= @pow2(31));
@@ -435,18 +425,10 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     );
 }
 
-fn check_builtin(
-    builtin_claim: Option<BuiltinClaim>, segment_range: Option<SegmentRange>, n_cells: usize,
-) {
-    let segment_range = match segment_range {
-        None => { return; },
-        Some(segment_range) => {
-            if segment_range.is_empty() {
-                return;
-            }
-            segment_range
-        },
-    };
+fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
+    if segment_range.is_empty() {
+        return;
+    }
 
     let BuiltinClaim { segment_start, log_size } = builtin_claim.unwrap();
 
@@ -542,16 +524,16 @@ impl SegmentRangeImpl of SegmentRangeTrait {
 #[derive(Clone, Debug, Serde, Copy, Drop)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
-    pub pedersen: Option<SegmentRange>,
-    pub range_check_128: Option<SegmentRange>,
-    pub ecdsa: Option<SegmentRange>,
-    pub bitwise: Option<SegmentRange>,
-    pub ec_op: Option<SegmentRange>,
-    pub keccak: Option<SegmentRange>,
-    pub poseidon: Option<SegmentRange>,
-    pub range_check_96: Option<SegmentRange>,
-    pub add_mod: Option<SegmentRange>,
-    pub mul_mod: Option<SegmentRange>,
+    pub pedersen: SegmentRange,
+    pub range_check_128: SegmentRange,
+    pub ecdsa: SegmentRange,
+    pub bitwise: SegmentRange,
+    pub ec_op: SegmentRange,
+    pub keccak: SegmentRange,
+    pub poseidon: SegmentRange,
+    pub range_check_96: SegmentRange,
+    pub add_mod: SegmentRange,
+    pub mul_mod: SegmentRange,
 }
 
 #[generate_trait]
@@ -565,43 +547,32 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
     fn present_segments(self: @PublicSegmentRanges) -> Array<@SegmentRange> {
         let mut segments = array![];
 
-        segments.append(self.output);
-        if let Some(pedersen) = self.pedersen {
-            segments.append(pedersen);
-        }
-        if let Some(range_check_128) = self.range_check_128 {
-            segments.append(range_check_128);
-        }
-        if let Some(ecdsa) = self.ecdsa {
-            segments.append(ecdsa);
-        }
-        if let Some(bitwise) = self.bitwise {
-            segments.append(bitwise);
-        }
-        if let Some(ec_op) = self.ec_op {
-            segments.append(ec_op);
-        }
-        if let Some(keccak) = self.keccak {
-            segments.append(keccak);
-        }
-        if let Some(poseidon) = self.poseidon {
-            segments.append(poseidon);
-        }
-        if let Some(range_check_96) = self.range_check_96 {
-            segments.append(range_check_96);
-        }
-        if let Some(add_mod) = self.add_mod {
-            segments.append(add_mod);
-        }
-        if let Some(mul_mod) = self.mul_mod {
-            segments.append(mul_mod);
-        }
-        segments
-    }
+        let PublicSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = self;
 
-    fn assert_bootloader_context(self: @PublicSegmentRanges) {
-        let n_builtins = self.present_segments().len();
-        assert!(n_builtins == 11);
+        segments.append(output);
+        segments.append(pedersen);
+        segments.append(range_check_128);
+        segments.append(ecdsa);
+        segments.append(bitwise);
+        segments.append(ec_op);
+        segments.append(keccak);
+        segments.append(poseidon);
+        segments.append(range_check_96);
+        segments.append(add_mod);
+        segments.append(mul_mod);
+        segments
     }
 }
 
