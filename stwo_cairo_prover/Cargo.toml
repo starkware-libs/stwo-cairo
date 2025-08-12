@@ -21,7 +21,7 @@ bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "d3c649c129e6877d4af2ffda1e95781707aa1ad1", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
@@ -33,7 +33,7 @@ num-traits = "0.2.17"
 paste = "1.0"
 rand = "0.8.5"
 ruint = "1.12.3"
-serde = "1.0.207"
+serde = "1.0.219"
 serde_json = "1.0.1"
 sonic-rs = "0.3.17"
 starknet-ff = "0.3.7"
@@ -47,16 +47,16 @@ cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(Ohad): re export stwo from constraint-framework.
 # TODO(Ohad): separate cairo-air from prover code and use prover features only in the prover crate.
-stwo = { git = "https://github.com/starkware-libs/stwo", rev = "d9c929d", features = [
+stwo = { git = "https://github.com/starkware-libs/stwo", rev = "d9176e6e22319370a8501f799829b920c0db2eac", features = [
     "parallel",
     "prover",
 ], default-features = false }
-stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "d9c929d", features = [
+stwo-constraint-framework = { git = "https://github.com/starkware-libs/stwo", rev = "d9176e6e22319370a8501f799829b920c0db2eac", features = [
     "parallel",
     "prover",
 ] }
-stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "d9c929d" }
-stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "d9c929d" }
+stwo-air-utils-derive = { git = "https://github.com/starkware-libs/stwo", rev = "d9176e6e22319370a8501f799829b920c0db2eac" }
+stwo-air-utils = { git = "https://github.com/starkware-libs/stwo", rev = "d9176e6e22319370a8501f799829b920c0db2eac" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.12", default-features = false }
 tracing = "0.1.40"
