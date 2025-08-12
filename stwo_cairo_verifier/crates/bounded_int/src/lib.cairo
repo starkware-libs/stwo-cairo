@@ -2,6 +2,7 @@
 //! This crate is compiled with an older edition that does not enforce visibity rules.
 
 use core::integer::upcast;
+#[feature("bounded-int-utils")]
 use core::internal::bounded_int::{
     AddHelper, BoundedInt, ConstrainHelper, DivRemHelper, MulHelper, SubHelper, add,
     bounded_int_mul, constrain, div_rem, sub,
