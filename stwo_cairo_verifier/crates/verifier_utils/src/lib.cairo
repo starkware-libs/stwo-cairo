@@ -14,9 +14,35 @@ mod zip_eq_test;
 // (id, value)
 pub type PubMemoryValue = (u32, [u32; 8]);
 
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
+
 // (address, id, value)
-pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+type PublicMemoryEntry = (u32, u32, [u32; 8]);
+
+#[derive(PanicDestruct)]
+pub struct PublicMemoryEntries {
+    entries: Array<PublicMemoryEntry>,
+}
+
+#[generate_trait]
+pub impl PublicMemoryEntriesImpl of PublicMemoryEntriesTrait {
+    #[inline(always)]
+    fn empty() -> PublicMemoryEntries {
+        PublicMemoryEntries { entries: array![] }
+    }
+
+    #[inline(always)]
+    fn add_memory_entry(ref self: PublicMemoryEntries, address: u32, id: u32, value: [u32; 8]) {
+        self.entries.append((address, id, value));
+    }
+}
+
+
+impl PublicMemoryEntriesIntoIterator of core::iter::IntoIterator<PublicMemoryEntries> {
+    type IntoIter = core::array::ArrayIter<PublicMemoryEntry>;
+    fn into_iter(self: PublicMemoryEntries) -> Self::IntoIter {
+        self.entries.into_iter()
+    }
+}
 
 /// A contiguous memory section.
 pub type MemorySection = Span<PubMemoryValue>;
