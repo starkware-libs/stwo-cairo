@@ -37,6 +37,15 @@ pub impl PublicMemoryEntriesImpl of PublicMemoryEntriesTrait {
     fn add_memory_entry(ref self: PublicMemoryEntries, address: u32, id: u32, value: [u32; 8]) {
         self.entries.append((address, id, value));
     }
+
+    /// Add `memory_section` at a given `address`.
+    #[inline(always)]
+    fn add_memory_section(ref self: PublicMemoryEntries, memory_section: @MemorySection, mut address: u32) {
+        for (id, value) in *memory_section {
+           self.add_memory_entry(:address, id: *id, value: *value);
+           address += 1;
+        }
+    }
 }
 
 
