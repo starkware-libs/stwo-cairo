@@ -3,8 +3,7 @@ use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::BaseField;
-use crate::fields::m31::M31Zero;
-use crate::utils::SpanExTrait;
+use crate::fields::m31::{M31, M31Zero};
 use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENTS_IN_MSG: usize = 16;
@@ -51,48 +50,71 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             state = blake2s_compress(:state, :byte_count, :msg);
         }
 
-        // This loop doesn't handle padding.
-        // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
-        // functionality here to do all packing and hashing in a single pass.
-        // TODO(andrew): Consider handling single column case (used lots due to FRI).
-        let rem = column_values.len() % M31_ELEMENTS_IN_MSG;
-        let last_block_length = match rem {
-            0 => M31_ELEMENTS_IN_MSG,
-            _ => rem,
-        };
-
-        let (mut column_values, last_block) = column_values
-            .split_at(column_values.len() - last_block_length);
-
-        while let Some(values) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
-            let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
-                .unbox();
+        // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
+        // decommitment phase.
+        if let Some(quadruplet_box) = column_values.try_into() {
+            let [v0, v1, v2, v3]: [M31; 4] = (*quadruplet_box).unbox();
             let msg = BoxImpl::new(
-                [
-                    v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(),
-                    v7.into(), v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(),
-                    v14.into(), v15.into(),
-                ],
+                [v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             );
+            byte_count += 16;
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        // Special case #2: Single M31 column, queried value decommitment phase, common for PP tree.
+        if let Some(singleton_box) = column_values.try_into() {
+            let [v0]: [M31; 1] = (*singleton_box).unbox();
+            let msg = BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            byte_count += 4;
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        // Compress full 16-element blocks except the last one.
+        if let Some(mut full_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
+            // Compress intermediate blocks.
+            while let Some(next_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
+                let msg = m31x16_to_u32x16_boxed(full_block);
+                byte_count += 64;
+                state = blake2s_compress(:state, :byte_count, :msg);
+                full_block = next_block;
+            }
+
+            // Handle the last full block.
+            let msg = m31x16_to_u32x16_boxed(full_block);
             byte_count += 64;
-            state = blake2s_compress(:state, :byte_count, :msg);
+            if column_values.is_empty() {
+                return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+            } else {
+                state = blake2s_compress(:state, :byte_count, :msg);
+            }
         }
 
-        // Padding last column_values with zeros.
-        let mut padded_column_values = array![];
-        for value in last_block {
-            padded_column_values.append((*value).into());
-        }
+        // Handle the last partial block.
+        let mut padded_values: Array<u32> = column_values
+            .into_iter()
+            .map(|v| (*v).into())
+            .collect();
+        let last_block_length = padded_values.len();
         for _ in last_block_length..M31_ELEMENTS_IN_MSG {
-            padded_column_values.append(0);
+            padded_values.append(0);
         }
-
+        let msg = *padded_values.span().try_into().unwrap();
         byte_count += last_block_length * 4;
-        let msg = *padded_column_values.span().try_into().unwrap();
-        state = blake2s_finalize(:state, :byte_count, :msg);
-
-        Blake2sHash { hash: state }
+        Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }
+}
+
+/// Converts a full 16-element block of M31 values to a 16-element block of u32 values.
+#[inline]
+fn m31x16_to_u32x16_boxed(full_block: @Box<[M31; 16]>) -> Box<[u32; 16]> {
+    let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = full_block.unbox();
+    BoxImpl::new(
+        [
+            v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(), v7.into(),
+            v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(), v14.into(),
+            v15.into(),
+        ],
+    )
 }
 
 #[derive(Drop, Copy, Debug)]
