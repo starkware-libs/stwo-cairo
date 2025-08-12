@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::ec_add::ec_add_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 472;
@@ -2745,8 +2746,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     pedersen_points_table_output_limb_55_col128,
                 ],
             );
-
-        ec_add::ec_add_evaluate(
+        ec_add_evaluate(
             [
                 input_limb_17_col17, input_limb_18_col18, input_limb_19_col19, input_limb_20_col20,
                 input_limb_21_col21, input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,

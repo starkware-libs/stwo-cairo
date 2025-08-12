@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_f1edd::decode_instruction_f1edd_evaluate;
+use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 19;
@@ -211,9 +213,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 2] = decode_instruction_f1edd::decode_instruction_f1edd_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_f1edd_output_tmp_32b66_4_offset2,
+            decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap,
+        ] =
+            decode_instruction_f1edd_evaluate(
+            input_pc_col0,
             offset2_col3,
             op1_base_fp_col4,
             self.verify_instruction_lookup_elements,
@@ -222,14 +227,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_f1edd_output_tmp_32b66_4_offset2,
-            decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap,
-        ] =
-            output;
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [input_ap_col1],
+        read_positive_num_bits_27_evaluate(
+            input_ap_col1,
             stored_fp_id_col5,
             stored_fp_limb_0_col6,
             stored_fp_limb_1_col7,
@@ -250,9 +249,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             - input_fp_col2))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [(input_ap_col1 + qm31_const::<1, 0, 0, 0>())],
+        read_positive_num_bits_27_evaluate(
+            (input_ap_col1 + qm31_const::<1, 0, 0, 0>()),
             stored_ret_pc_id_col9,
             stored_ret_pc_limb_0_col10,
             stored_ret_pc_limb_1_col11,
@@ -280,9 +278,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [(mem1_base_col13 + decode_instruction_f1edd_output_tmp_32b66_4_offset2)],
+        read_positive_num_bits_27_evaluate(
+            (mem1_base_col13 + decode_instruction_f1edd_output_tmp_32b66_4_offset2),
             next_pc_id_col14,
             next_pc_limb_0_col15,
             next_pc_limb_1_col16,

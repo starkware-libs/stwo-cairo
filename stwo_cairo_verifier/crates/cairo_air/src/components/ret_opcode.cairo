@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_15a61::decode_instruction_15a61_evaluate;
+use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 12;
@@ -171,18 +173,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        decode_instruction_15a61::decode_instruction_15a61_evaluate(
-            [input_pc_col0],
+        decode_instruction_15a61_evaluate(
+            input_pc_col0,
             self.verify_instruction_lookup_elements,
             ref verify_instruction_sum_0,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [(input_fp_col2 - qm31_const::<1, 0, 0, 0>())],
+        read_positive_num_bits_27_evaluate(
+            (input_fp_col2 - qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col3,
             next_pc_limb_0_col4,
             next_pc_limb_1_col5,
@@ -195,9 +195,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [(input_fp_col2 - qm31_const::<2, 0, 0, 0>())],
+        read_positive_num_bits_27_evaluate(
+            (input_fp_col2 - qm31_const::<2, 0, 0, 0>()),
             next_fp_id_col7,
             next_fp_limb_0_col8,
             next_fp_limb_1_col9,

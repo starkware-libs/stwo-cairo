@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 251;
@@ -1057,7 +1058,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        mod_utils::mod_utils_evaluate(
+        mod_utils_evaluate(
             [add_mod_builtin_segment_start, seq],
             is_instance_0_col0,
             p0_id_col1,

@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
+use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
 use crate::prelude::*;
 
 
@@ -181,8 +183,7 @@ pub fn mul_252_evaluate(
         mul_252_input_b_limb_27,
     ] =
         input;
-
-    range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate(
+    range_check_mem_value_n_28_evaluate(
         [
             mul_res_limb_0_col0, mul_res_limb_1_col1, mul_res_limb_2_col2, mul_res_limb_3_col3,
             mul_res_limb_4_col4, mul_res_limb_5_col5, mul_res_limb_6_col6, mul_res_limb_7_col7,
@@ -220,8 +221,7 @@ pub fn mul_252_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    verify_mul_252::verify_mul_252_evaluate(
+    verify_mul_252_evaluate(
         [
             mul_252_input_a_limb_0, mul_252_input_a_limb_1, mul_252_input_a_limb_2,
             mul_252_input_a_limb_3, mul_252_input_a_limb_4, mul_252_input_a_limb_5,

@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_3802d::decode_instruction_3802d_evaluate;
+use crate::components::subroutines::qm_31_read_reduced::qm_31_read_reduced_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 73;
@@ -380,9 +382,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 5] = decode_instruction_3802d::decode_instruction_3802d_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_3802d_output_tmp_fa85a_11_offset0,
+            decode_instruction_3802d_output_tmp_fa85a_11_offset1,
+            decode_instruction_3802d_output_tmp_fa85a_11_offset2,
+            decode_instruction_3802d_output_tmp_fa85a_11_op1_base_ap,
+            decode_instruction_3802d_output_tmp_fa85a_11_res_mul,
+        ] =
+            decode_instruction_3802d_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset1_col4,
             offset2_col5,
@@ -398,14 +406,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_3802d_output_tmp_fa85a_11_offset0,
-            decode_instruction_3802d_output_tmp_fa85a_11_offset1,
-            decode_instruction_3802d_output_tmp_fa85a_11_offset2,
-            decode_instruction_3802d_output_tmp_fa85a_11_op1_base_ap,
-            decode_instruction_3802d_output_tmp_fa85a_11_res_mul,
-        ] =
-            output;
 
         // Constraint - Either flag op1_imm is off or offset2 is equal to 1
         let constraint_quotient = ((op1_imm_col8
@@ -434,9 +434,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (op1_imm_col8 * input_pc_col0))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 4] = qm_31_read_reduced::qm_31_read_reduced_evaluate(
-            [(mem_dst_base_col12 + decode_instruction_3802d_output_tmp_fa85a_11_offset0)],
+        let [
+            qm_31_read_reduced_output_tmp_fa85a_15_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_15_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_15_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_15_limb_3,
+        ] =
+            qm_31_read_reduced_evaluate(
+            (mem_dst_base_col12 + decode_instruction_3802d_output_tmp_fa85a_11_offset0),
             dst_id_col15,
             dst_limb_0_col16,
             dst_limb_1_col17,
@@ -467,15 +472,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_3,
+            qm_31_read_reduced_output_tmp_fa85a_19_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_19_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_19_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_19_limb_3,
         ] =
-            output;
-
-        let output: [QM31; 4] = qm_31_read_reduced::qm_31_read_reduced_evaluate(
-            [(mem0_base_col13 + decode_instruction_3802d_output_tmp_fa85a_11_offset1)],
+            qm_31_read_reduced_evaluate(
+            (mem0_base_col13 + decode_instruction_3802d_output_tmp_fa85a_11_offset1),
             op0_id_col34,
             op0_limb_0_col35,
             op0_limb_1_col36,
@@ -506,15 +509,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_3,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_3,
         ] =
-            output;
-
-        let output: [QM31; 4] = qm_31_read_reduced::qm_31_read_reduced_evaluate(
-            [(mem1_base_col14 + decode_instruction_3802d_output_tmp_fa85a_11_offset2)],
+            qm_31_read_reduced_evaluate(
+            (mem1_base_col14 + decode_instruction_3802d_output_tmp_fa85a_11_offset2),
             op1_id_col53,
             op1_limb_0_col54,
             op1_limb_1_col55,
@@ -544,13 +545,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_3,
-        ] =
-            output;
 
         // Constraint - dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul)
         let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_15_limb_0

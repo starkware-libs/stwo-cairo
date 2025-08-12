@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_9bd86::decode_instruction_9bd86_evaluate;
+use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
@@ -189,9 +191,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 2] = decode_instruction_9bd86::decode_instruction_9bd86_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_9bd86_output_tmp_22134_6_offset1,
+            decode_instruction_9bd86_output_tmp_22134_6_offset2,
+        ] =
+            decode_instruction_9bd86_evaluate(
+            input_pc_col0,
             offset1_col3,
             offset2_col4,
             op0_base_fp_col5,
@@ -202,11 +207,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_9bd86_output_tmp_22134_6_offset1,
-            decode_instruction_9bd86_output_tmp_22134_6_offset2,
-        ] =
-            output;
 
         // Constraint - mem0_base
         let constraint_quotient = ((mem0_base_col7
@@ -214,9 +214,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col5) * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [(mem0_base_col7 + decode_instruction_9bd86_output_tmp_22134_6_offset1)],
+        read_positive_num_bits_27_evaluate(
+            (mem0_base_col7 + decode_instruction_9bd86_output_tmp_22134_6_offset1),
             mem1_base_id_col8,
             mem1_base_limb_0_col9,
             mem1_base_limb_1_col10,
@@ -229,13 +228,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_27::read_positive_num_bits_27_evaluate(
-            [
-                (((mem1_base_limb_0_col9 + (mem1_base_limb_1_col10 * qm31_const::<512, 0, 0, 0>()))
-                    + (mem1_base_limb_2_col11 * qm31_const::<262144, 0, 0, 0>()))
-                    + decode_instruction_9bd86_output_tmp_22134_6_offset2)
-            ],
+        read_positive_num_bits_27_evaluate(
+            (((mem1_base_limb_0_col9 + (mem1_base_limb_1_col10 * qm31_const::<512, 0, 0, 0>()))
+                + (mem1_base_limb_2_col11 * qm31_const::<262144, 0, 0, 0>()))
+                + decode_instruction_9bd86_output_tmp_22134_6_offset2),
             next_pc_id_col12,
             next_pc_limb_0_col13,
             next_pc_limb_1_col14,

@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_7ebc4::decode_instruction_7ebc4_evaluate;
+use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 11;
@@ -162,9 +164,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        decode_instruction_7ebc4::decode_instruction_7ebc4_evaluate(
-            [input_pc_col0],
+        decode_instruction_7ebc4_evaluate(
+            input_pc_col0,
             ap_update_add_1_col3,
             self.verify_instruction_lookup_elements,
             ref verify_instruction_sum_0,
@@ -172,9 +173,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(input_pc_col0 + qm31_const::<1, 0, 0, 0>())],
+        let read_small_output_tmp_81a39_9_limb_0: QM31 = read_small_evaluate(
+            (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col4,
             msb_col5,
             mid_limbs_set_col6,
@@ -189,7 +189,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_81a39_9_limb_0] = output;
 
         opcodes_sum_3 = self
             .opcodes_lookup_elements

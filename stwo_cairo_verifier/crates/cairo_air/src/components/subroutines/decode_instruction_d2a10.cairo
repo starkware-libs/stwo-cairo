@@ -1,9 +1,9 @@
-// AIR version aca38612
+// AIR version d1591e2a
 use crate::prelude::*;
 
 
 pub fn decode_instruction_d2a10_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     offset2_col0: QM31,
     op1_imm_col1: QM31,
     op1_base_fp_col2: QM31,
@@ -13,7 +13,7 @@ pub fn decode_instruction_d2a10_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 2] {
-    let [decode_instruction_d2a10_input_pc] = input;
+    let decode_instruction_d2a10_input_pc = input;
 
     // Constraint - Flag op1_imm is a bit
     let constraint_quotient = ((op1_imm_col1 * (qm31_const::<1, 0, 0, 0>() - op1_imm_col1)))

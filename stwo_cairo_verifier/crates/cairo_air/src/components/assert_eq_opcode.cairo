@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_fe864::decode_instruction_fe864_evaluate;
+use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 12;
@@ -163,9 +165,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 3] = decode_instruction_fe864::decode_instruction_fe864_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_fe864_output_tmp_d6f03_7_offset0,
+            decode_instruction_fe864_output_tmp_d6f03_7_offset2,
+            decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap,
+        ] =
+            decode_instruction_fe864_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset2_col4,
             dst_base_fp_col5,
@@ -177,12 +183,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_fe864_output_tmp_d6f03_7_offset0,
-            decode_instruction_fe864_output_tmp_d6f03_7_offset2,
-            decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap,
-        ] =
-            output;
 
         // Constraint - mem_dst_base
         let constraint_quotient = ((mem_dst_base_col8
@@ -197,8 +197,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_fe864_output_tmp_d6f03_7_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        mem_verify_equal::mem_verify_equal_evaluate(
+        mem_verify_equal_evaluate(
             [
                 (mem_dst_base_col8 + decode_instruction_fe864_output_tmp_d6f03_7_offset0),
                 (mem1_base_col9 + decode_instruction_fe864_output_tmp_d6f03_7_offset2),

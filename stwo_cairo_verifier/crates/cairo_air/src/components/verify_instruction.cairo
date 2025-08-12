@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::encode_offsets::encode_offsets_evaluate;
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
@@ -187,7 +189,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let output: [QM31; 2] = encode_offsets::encode_offsets_evaluate(
+        let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
+            encode_offsets_evaluate(
             [input_offset0_col1, input_offset1_col2, input_offset2_col3],
             offset0_low_col7,
             offset0_mid_col8,
@@ -205,10 +208,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [encode_offsets_output_tmp_16a4f_8_limb_1, encode_offsets_output_tmp_16a4f_8_limb_3] =
-            output;
-
-        mem_verify::mem_verify_evaluate(
+        mem_verify_evaluate(
             [
                 input_pc_col0, offset0_low_col7, encode_offsets_output_tmp_16a4f_8_limb_1,
                 offset1_mid_col10, encode_offsets_output_tmp_16a4f_8_limb_3, offset2_mid_col13,

@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::components::subroutines::read_split::read_split_evaluate;
+use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 351;
@@ -2318,9 +2321,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let instance_addr_tmp_d00c6_0: QM31 = ((seq * qm31_const::<3, 0, 0, 0>())
             + pedersen_builtin_segment_start);
-
-        let output: [QM31; 1] = read_split::read_split_evaluate(
-            [instance_addr_tmp_d00c6_0],
+        let read_split_output_tmp_d00c6_6_original_limb_27: QM31 = read_split_evaluate(
+            instance_addr_tmp_d00c6_0,
             value_limb_0_col0,
             value_limb_1_col1,
             value_limb_2_col2,
@@ -2361,10 +2363,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_split_output_tmp_d00c6_6_original_limb_27] = output;
-
-        let output: [QM31; 1] = read_split::read_split_evaluate(
-            [(instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>())],
+        let read_split_output_tmp_d00c6_12_original_limb_27: QM31 = read_split_evaluate(
+            (instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>()),
             value_limb_0_col30,
             value_limb_1_col31,
             value_limb_2_col32,
@@ -2405,9 +2405,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_split_output_tmp_d00c6_12_original_limb_27] = output;
-
-        verify_reduced_252::verify_reduced_252_evaluate(
+        verify_reduced_252_evaluate(
             [
                 value_limb_0_col0, value_limb_1_col1, value_limb_2_col2, value_limb_3_col3,
                 value_limb_4_col4, value_limb_5_col5, value_limb_6_col6, value_limb_7_col7,
@@ -2428,8 +2426,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        verify_reduced_252::verify_reduced_252_evaluate(
+        verify_reduced_252_evaluate(
             [
                 value_limb_0_col30, value_limb_1_col31, value_limb_2_col32, value_limb_3_col33,
                 value_limb_4_col34, value_limb_5_col35, value_limb_6_col36, value_limb_7_col37,
@@ -2823,8 +2820,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_70_col349,
                 ],
             );
-
-        mem_verify::mem_verify_evaluate(
+        mem_verify_evaluate(
             [
                 (instance_addr_tmp_d00c6_0 + qm31_const::<2, 0, 0, 0>()),
                 partial_ec_mul_output_limb_15_col294, partial_ec_mul_output_limb_16_col295,

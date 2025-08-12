@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate;
+use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 33;
@@ -241,9 +243,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 4] = decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_bc3cd_output_tmp_756b7_10_offset0,
+            decode_instruction_bc3cd_output_tmp_756b7_10_offset1,
+            decode_instruction_bc3cd_output_tmp_756b7_10_offset2,
+            decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap,
+        ] =
+            decode_instruction_bc3cd_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset1_col4,
             offset2_col5,
@@ -258,13 +265,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_bc3cd_output_tmp_756b7_10_offset0,
-            decode_instruction_bc3cd_output_tmp_756b7_10_offset1,
-            decode_instruction_bc3cd_output_tmp_756b7_10_offset2,
-            decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap,
-        ] =
-            output;
 
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col8
@@ -292,9 +292,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0)],
+        let read_small_output_tmp_756b7_16_limb_0: QM31 = read_small_evaluate(
+            (mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0),
             dst_id_col14,
             msb_col15,
             mid_limbs_set_col16,
@@ -309,10 +308,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_756b7_16_limb_0] = output;
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1)],
+        let read_small_output_tmp_756b7_22_limb_0: QM31 = read_small_evaluate(
+            (mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1),
             op0_id_col20,
             msb_col21,
             mid_limbs_set_col22,
@@ -327,10 +324,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_756b7_22_limb_0] = output;
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2)],
+        let read_small_output_tmp_756b7_28_limb_0: QM31 = read_small_evaluate(
+            (mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2),
             op1_id_col26,
             msb_col27,
             mid_limbs_set_col28,
@@ -345,7 +340,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_756b7_28_limb_0] = output;
 
         // Constraint - dst equals op0 + op1
         let constraint_quotient = ((read_small_output_tmp_756b7_16_limb_0

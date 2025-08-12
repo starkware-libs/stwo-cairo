@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate;
 use crate::prelude::*;
 
 
@@ -159,43 +160,6 @@ pub fn verify_mul_252_evaluate(
         verify_mul_252_input_c_limb_27,
     ] =
         input;
-
-    let output: [QM31; 55] =
-        double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate(
-        [
-            verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1,
-            verify_mul_252_input_a_limb_2, verify_mul_252_input_a_limb_3,
-            verify_mul_252_input_a_limb_4, verify_mul_252_input_a_limb_5,
-            verify_mul_252_input_a_limb_6, verify_mul_252_input_a_limb_7,
-            verify_mul_252_input_a_limb_8, verify_mul_252_input_a_limb_9,
-            verify_mul_252_input_a_limb_10, verify_mul_252_input_a_limb_11,
-            verify_mul_252_input_a_limb_12, verify_mul_252_input_a_limb_13,
-            verify_mul_252_input_a_limb_14, verify_mul_252_input_a_limb_15,
-            verify_mul_252_input_a_limb_16, verify_mul_252_input_a_limb_17,
-            verify_mul_252_input_a_limb_18, verify_mul_252_input_a_limb_19,
-            verify_mul_252_input_a_limb_20, verify_mul_252_input_a_limb_21,
-            verify_mul_252_input_a_limb_22, verify_mul_252_input_a_limb_23,
-            verify_mul_252_input_a_limb_24, verify_mul_252_input_a_limb_25,
-            verify_mul_252_input_a_limb_26, verify_mul_252_input_a_limb_27,
-            verify_mul_252_input_b_limb_0, verify_mul_252_input_b_limb_1,
-            verify_mul_252_input_b_limb_2, verify_mul_252_input_b_limb_3,
-            verify_mul_252_input_b_limb_4, verify_mul_252_input_b_limb_5,
-            verify_mul_252_input_b_limb_6, verify_mul_252_input_b_limb_7,
-            verify_mul_252_input_b_limb_8, verify_mul_252_input_b_limb_9,
-            verify_mul_252_input_b_limb_10, verify_mul_252_input_b_limb_11,
-            verify_mul_252_input_b_limb_12, verify_mul_252_input_b_limb_13,
-            verify_mul_252_input_b_limb_14, verify_mul_252_input_b_limb_15,
-            verify_mul_252_input_b_limb_16, verify_mul_252_input_b_limb_17,
-            verify_mul_252_input_b_limb_18, verify_mul_252_input_b_limb_19,
-            verify_mul_252_input_b_limb_20, verify_mul_252_input_b_limb_21,
-            verify_mul_252_input_b_limb_22, verify_mul_252_input_b_limb_23,
-            verify_mul_252_input_b_limb_24, verify_mul_252_input_b_limb_25,
-            verify_mul_252_input_b_limb_26, verify_mul_252_input_b_limb_27,
-        ],
-        ref sum,
-        domain_vanishing_eval_inv,
-        random_coeff,
-    );
     let [
         double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_0,
         double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_1,
@@ -253,7 +217,41 @@ pub fn verify_mul_252_evaluate(
         double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_53,
         double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_54,
     ] =
-        output;
+        double_karatsuba_n_7_limb_max_bound_511_evaluate(
+        [
+            verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1,
+            verify_mul_252_input_a_limb_2, verify_mul_252_input_a_limb_3,
+            verify_mul_252_input_a_limb_4, verify_mul_252_input_a_limb_5,
+            verify_mul_252_input_a_limb_6, verify_mul_252_input_a_limb_7,
+            verify_mul_252_input_a_limb_8, verify_mul_252_input_a_limb_9,
+            verify_mul_252_input_a_limb_10, verify_mul_252_input_a_limb_11,
+            verify_mul_252_input_a_limb_12, verify_mul_252_input_a_limb_13,
+            verify_mul_252_input_a_limb_14, verify_mul_252_input_a_limb_15,
+            verify_mul_252_input_a_limb_16, verify_mul_252_input_a_limb_17,
+            verify_mul_252_input_a_limb_18, verify_mul_252_input_a_limb_19,
+            verify_mul_252_input_a_limb_20, verify_mul_252_input_a_limb_21,
+            verify_mul_252_input_a_limb_22, verify_mul_252_input_a_limb_23,
+            verify_mul_252_input_a_limb_24, verify_mul_252_input_a_limb_25,
+            verify_mul_252_input_a_limb_26, verify_mul_252_input_a_limb_27,
+            verify_mul_252_input_b_limb_0, verify_mul_252_input_b_limb_1,
+            verify_mul_252_input_b_limb_2, verify_mul_252_input_b_limb_3,
+            verify_mul_252_input_b_limb_4, verify_mul_252_input_b_limb_5,
+            verify_mul_252_input_b_limb_6, verify_mul_252_input_b_limb_7,
+            verify_mul_252_input_b_limb_8, verify_mul_252_input_b_limb_9,
+            verify_mul_252_input_b_limb_10, verify_mul_252_input_b_limb_11,
+            verify_mul_252_input_b_limb_12, verify_mul_252_input_b_limb_13,
+            verify_mul_252_input_b_limb_14, verify_mul_252_input_b_limb_15,
+            verify_mul_252_input_b_limb_16, verify_mul_252_input_b_limb_17,
+            verify_mul_252_input_b_limb_18, verify_mul_252_input_b_limb_19,
+            verify_mul_252_input_b_limb_20, verify_mul_252_input_b_limb_21,
+            verify_mul_252_input_b_limb_22, verify_mul_252_input_b_limb_23,
+            verify_mul_252_input_b_limb_24, verify_mul_252_input_b_limb_25,
+            verify_mul_252_input_b_limb_26, verify_mul_252_input_b_limb_27,
+        ],
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
     let conv_tmp_9a554_18_limb_0: QM31 =
         (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_0
         - verify_mul_252_input_c_limb_0);

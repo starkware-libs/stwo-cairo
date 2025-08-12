@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate;
+use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate;
 use crate::prelude::*;
 
 
@@ -48,7 +50,7 @@ pub fn poseidon_partial_round_evaluate(
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
-) -> [QM31; 20] {
+) -> [QM31; 0] {
     let [
         poseidon_partial_round_input_z0_3_limb_0,
         poseidon_partial_round_input_z0_3_limb_1,
@@ -118,8 +120,7 @@ pub fn poseidon_partial_round_evaluate(
                 cube_252_output_limb_8_col8, cube_252_output_limb_9_col9,
             ],
         );
-
-    linear_combination_n_6_coefs_4_2_3_1_m1_1::linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
+    linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
         [
             poseidon_partial_round_input_z0_3_limb_0, poseidon_partial_round_input_z0_3_limb_1,
             poseidon_partial_round_input_z0_3_limb_2, poseidon_partial_round_input_z0_3_limb_3,
@@ -185,8 +186,7 @@ pub fn poseidon_partial_round_evaluate(
                 combination_limb_9_col19,
             ],
         );
-
-    linear_combination_n_1_coefs_2::linear_combination_n_1_coefs_2_evaluate(
+    linear_combination_n_1_coefs_2_evaluate(
         [
             combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,
             combination_limb_3_col13, combination_limb_4_col14, combination_limb_5_col15,
@@ -209,16 +209,5 @@ pub fn poseidon_partial_round_evaluate(
         random_coeff,
     );
 
-    [
-        poseidon_partial_round_input_z1_3_limb_0, poseidon_partial_round_input_z1_3_limb_1,
-        poseidon_partial_round_input_z1_3_limb_2, poseidon_partial_round_input_z1_3_limb_3,
-        poseidon_partial_round_input_z1_3_limb_4, poseidon_partial_round_input_z1_3_limb_5,
-        poseidon_partial_round_input_z1_3_limb_6, poseidon_partial_round_input_z1_3_limb_7,
-        poseidon_partial_round_input_z1_3_limb_8, poseidon_partial_round_input_z1_3_limb_9,
-        poseidon_partial_round_input_z2_limb_0, poseidon_partial_round_input_z2_limb_1,
-        poseidon_partial_round_input_z2_limb_2, poseidon_partial_round_input_z2_limb_3,
-        poseidon_partial_round_input_z2_limb_4, poseidon_partial_round_input_z2_limb_5,
-        poseidon_partial_round_input_z2_limb_6, poseidon_partial_round_input_z2_limb_7,
-        poseidon_partial_round_input_z2_limb_8, poseidon_partial_round_input_z2_limb_9,
-    ]
+    []
 }

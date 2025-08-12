@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_161c9::decode_instruction_161c9_evaluate;
+use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 9;
@@ -154,9 +156,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = decode_instruction_161c9::decode_instruction_161c9_evaluate(
-            [input_pc_col0],
+        let decode_instruction_161c9_output_tmp_bb09e_5_offset0: QM31 =
+            decode_instruction_161c9_evaluate(
+            input_pc_col0,
             offset0_col3,
             dst_base_fp_col4,
             ap_update_add_1_col5,
@@ -166,7 +168,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [decode_instruction_161c9_output_tmp_bb09e_5_offset0] = output;
 
         // Constraint - mem_dst_base
         let constraint_quotient = ((mem_dst_base_col6
@@ -174,8 +175,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col4) * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        mem_verify_equal::mem_verify_equal_evaluate(
+        mem_verify_equal_evaluate(
             [
                 (mem_dst_base_col6 + decode_instruction_161c9_output_tmp_bb09e_5_offset0),
                 (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),

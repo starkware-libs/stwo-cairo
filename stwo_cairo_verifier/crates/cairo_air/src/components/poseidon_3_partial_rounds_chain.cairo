@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::poseidon_partial_round::poseidon_partial_round_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 169;
@@ -1078,8 +1079,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     poseidon_round_keys_output_limb_29_col71,
                 ],
             );
-
-        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
                 input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
@@ -1142,31 +1142,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            _poseidon_partial_round_output_tmp_44f04_36_limb_0,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_1,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_2,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_3,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_4,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_5,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_6,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_7,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_8,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_9,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_10,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_11,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_12,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_13,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_14,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_15,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_16,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_17,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_18,
-            _poseidon_partial_round_output_tmp_44f04_36_limb_19,
-        ] =
-            output;
-
-        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 input_limb_22_col22, input_limb_23_col23, input_limb_24_col24, input_limb_25_col25,
                 input_limb_26_col26, input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
@@ -1233,31 +1209,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            _poseidon_partial_round_output_tmp_44f04_72_limb_0,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_1,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_2,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_3,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_4,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_5,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_6,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_7,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_8,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_9,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_10,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_11,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_12,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_13,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_14,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_15,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_16,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_17,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_18,
-            _poseidon_partial_round_output_tmp_44f04_72_limb_19,
-        ] =
-            output;
-
-        let output: [QM31; 20] = poseidon_partial_round::poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 cube_252_output_limb_0_col72, cube_252_output_limb_1_col73,
                 cube_252_output_limb_2_col74, cube_252_output_limb_3_col75,
@@ -1327,29 +1279,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            _poseidon_partial_round_output_tmp_44f04_108_limb_0,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_1,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_2,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_3,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_4,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_5,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_6,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_7,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_8,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_9,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_10,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_11,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_12,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_13,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_14,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_15,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_16,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_17,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_18,
-            _poseidon_partial_round_output_tmp_44f04_108_limb_19,
-        ] =
-            output;
 
         poseidon_3_partial_rounds_chain_sum_16 = self
             .poseidon_3_partial_rounds_chain_lookup_elements

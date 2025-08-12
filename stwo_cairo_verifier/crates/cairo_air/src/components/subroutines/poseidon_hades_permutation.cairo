@@ -1,4 +1,8 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate;
+use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
+use crate::components::subroutines::linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate;
+use crate::components::subroutines::linear_combination_n_4_coefs_4_2_m2_1::linear_combination_n_4_coefs_4_2_m2_1_evaluate;
 use crate::prelude::*;
 
 
@@ -267,8 +271,7 @@ pub fn poseidon_hades_permutation_evaluate(
         poseidon_hades_permutation_input_limb_29,
     ] =
         input;
-
-    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_0, poseidon_hades_permutation_input_limb_1,
             poseidon_hades_permutation_input_limb_2, poseidon_hades_permutation_input_limb_3,
@@ -296,8 +299,7 @@ pub fn poseidon_hades_permutation_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_10, poseidon_hades_permutation_input_limb_11,
             poseidon_hades_permutation_input_limb_12, poseidon_hades_permutation_input_limb_13,
@@ -325,8 +327,7 @@ pub fn poseidon_hades_permutation_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    linear_combination_n_2_coefs_1_1::linear_combination_n_2_coefs_1_1_evaluate(
+    linear_combination_n_2_coefs_1_1_evaluate(
         [
             poseidon_hades_permutation_input_limb_20, poseidon_hades_permutation_input_limb_21,
             poseidon_hades_permutation_input_limb_22, poseidon_hades_permutation_input_limb_23,
@@ -462,8 +463,7 @@ pub fn poseidon_hades_permutation_evaluate(
                 cube_252_output_limb_9_col72,
             ],
         );
-
-    linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate(
+    linear_combination_n_4_coefs_1_1_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
             poseidon_full_round_chain_output_limb_1_col34,
@@ -529,8 +529,7 @@ pub fn poseidon_hades_permutation_evaluate(
                 cube_252_output_limb_9_col93,
             ],
         );
-
-    linear_combination_n_4_coefs_4_2_m2_1::linear_combination_n_4_coefs_4_2_m2_1_evaluate(
+    linear_combination_n_4_coefs_4_2_m2_1_evaluate(
         [
             poseidon_full_round_chain_output_limb_0_col33,
             poseidon_full_round_chain_output_limb_1_col34,
@@ -648,8 +647,7 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_3_partial_rounds_chain_output_limb_39_col144,
             ],
         );
-
-    linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate(
+    linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
             poseidon_3_partial_rounds_chain_output_limb_0_col105,
             poseidon_3_partial_rounds_chain_output_limb_1_col106,
@@ -707,8 +705,7 @@ pub fn poseidon_hades_permutation_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    linear_combination_n_4_coefs_4_2_1_1::linear_combination_n_4_coefs_4_2_1_1_evaluate(
+    linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
             poseidon_3_partial_rounds_chain_output_limb_20_col125,
             poseidon_3_partial_rounds_chain_output_limb_21_col126,

@@ -1,4 +1,8 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate;
+use crate::components::subroutines::read_positive_num_bits_36::read_positive_num_bits_36_evaluate;
+use crate::components::subroutines::read_positive_num_bits_72::read_positive_num_bits_72_evaluate;
+use crate::components::subroutines::verify_mul_small::verify_mul_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 37;
@@ -263,9 +267,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 4] = decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset0,
+            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset1,
+            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset2,
+            decode_instruction_4b8cf_output_tmp_9d1ad_10_op1_base_ap,
+        ] =
+            decode_instruction_4b8cf_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset1_col4,
             offset2_col5,
@@ -280,13 +289,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset0,
-            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset1,
-            decode_instruction_4b8cf_output_tmp_9d1ad_10_offset2,
-            decode_instruction_4b8cf_output_tmp_9d1ad_10_op1_base_ap,
-        ] =
-            output;
 
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col8
@@ -314,9 +316,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_4b8cf_output_tmp_9d1ad_10_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_72::read_positive_num_bits_72_evaluate(
-            [(mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset0)],
+        read_positive_num_bits_72_evaluate(
+            (mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset0),
             dst_id_col14,
             dst_limb_0_col15,
             dst_limb_1_col16,
@@ -334,9 +335,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_36::read_positive_num_bits_36_evaluate(
-            [(mem0_base_col12 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset1)],
+        read_positive_num_bits_36_evaluate(
+            (mem0_base_col12 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset1),
             op0_id_col23,
             op0_limb_0_col24,
             op0_limb_1_col25,
@@ -350,9 +350,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_36::read_positive_num_bits_36_evaluate(
-            [(mem1_base_col13 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset2)],
+        read_positive_num_bits_36_evaluate(
+            (mem1_base_col13 + decode_instruction_4b8cf_output_tmp_9d1ad_10_offset2),
             op1_id_col28,
             op1_limb_0_col29,
             op1_limb_1_col30,
@@ -366,8 +365,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        verify_mul_small::verify_mul_small_evaluate(
+        verify_mul_small_evaluate(
             [
                 op0_limb_0_col24, op0_limb_1_col25, op0_limb_2_col26, op0_limb_3_col27,
                 op1_limb_0_col29, op1_limb_1_col30, op1_limb_2_col31, op1_limb_3_col32,

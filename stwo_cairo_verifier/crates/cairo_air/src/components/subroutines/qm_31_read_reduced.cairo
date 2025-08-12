@@ -1,9 +1,10 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::read_positive_num_bits_144::read_positive_num_bits_144_evaluate;
 use crate::prelude::*;
 
 
 pub fn qm_31_read_reduced_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -33,10 +34,9 @@ pub fn qm_31_read_reduced_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
-    let [qm_31_read_reduced_input] = input;
-
-    read_positive_num_bits_144::read_positive_num_bits_144_evaluate(
-        [qm_31_read_reduced_input],
+    let qm_31_read_reduced_input = input;
+    read_positive_num_bits_144_evaluate(
+        qm_31_read_reduced_input,
         id_col0,
         value_limb_0_col1,
         value_limb_1_col2,

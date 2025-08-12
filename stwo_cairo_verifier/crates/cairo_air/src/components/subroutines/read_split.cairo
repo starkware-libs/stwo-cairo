@@ -1,9 +1,10 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
 
 pub fn read_split_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     value_limb_0_col0: QM31,
     value_limb_1_col1: QM31,
     value_limb_2_col2: QM31,
@@ -43,13 +44,12 @@ pub fn read_split_evaluate(
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
-) -> [QM31; 1] {
-    let [read_split_input_address] = input;
+) -> QM31 {
+    let read_split_input_address = input;
 
     range_check_5_4_sum_0 = range_check_5_4_lookup_elements
         .combine_qm31([ms_limb_low_col27, ms_limb_high_col28]);
-
-    mem_verify::mem_verify_evaluate(
+    mem_verify_evaluate(
         [
             read_split_input_address, value_limb_0_col0, value_limb_1_col1, value_limb_2_col2,
             value_limb_3_col3, value_limb_4_col4, value_limb_5_col5, value_limb_6_col6,
@@ -70,5 +70,5 @@ pub fn read_split_evaluate(
         random_coeff,
     );
 
-    [((ms_limb_high_col28 * qm31_const::<32, 0, 0, 0>()) + ms_limb_low_col27)]
+    ((ms_limb_high_col28 * qm31_const::<32, 0, 0, 0>()) + ms_limb_low_col27)
 }

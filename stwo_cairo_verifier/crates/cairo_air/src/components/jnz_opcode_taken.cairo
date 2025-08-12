@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_de75a::decode_instruction_de75a_evaluate;
+use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 45;
@@ -270,9 +273,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = decode_instruction_de75a::decode_instruction_de75a_evaluate(
-            [input_pc_col0],
+        let decode_instruction_de75a_output_tmp_f51a9_5_offset0: QM31 =
+            decode_instruction_de75a_evaluate(
+            input_pc_col0,
             offset0_col3,
             dst_base_fp_col4,
             ap_update_add_1_col5,
@@ -282,7 +285,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [decode_instruction_de75a_output_tmp_f51a9_5_offset0] = output;
 
         // Constraint - mem_dst_base
         let constraint_quotient = ((mem_dst_base_col6
@@ -290,9 +292,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col4) * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [(mem_dst_base_col6 + decode_instruction_de75a_output_tmp_f51a9_5_offset0)],
+        read_positive_num_bits_252_evaluate(
+            (mem_dst_base_col6 + decode_instruction_de75a_output_tmp_f51a9_5_offset0),
             dst_id_col7,
             dst_limb_0_col8,
             dst_limb_1_col9,
@@ -401,9 +402,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             - qm31_const::<1, 0, 0, 0>()))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(input_pc_col0 + qm31_const::<1, 0, 0, 0>())],
+        let read_small_output_tmp_f51a9_17_limb_0: QM31 = read_small_evaluate(
+            (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col38,
             msb_col39,
             mid_limbs_set_col40,
@@ -418,7 +418,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_f51a9_17_limb_0] = output;
 
         opcodes_sum_5 = self
             .opcodes_lookup_elements

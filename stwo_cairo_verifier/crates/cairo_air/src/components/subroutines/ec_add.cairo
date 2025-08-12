@@ -1,4 +1,8 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::add_252::add_252_evaluate;
+use crate::components::subroutines::div_252::div_252_evaluate;
+use crate::components::subroutines::mul_252::mul_252_evaluate;
+use crate::components::subroutines::sub_252::sub_252_evaluate;
 use crate::prelude::*;
 
 
@@ -691,8 +695,7 @@ pub fn ec_add_evaluate(
         ec_add_input_y2_limb_27,
     ] =
         input;
-
-    sub_252::sub_252_evaluate(
+    sub_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
             ec_add_input_x2_limb_3, ec_add_input_x2_limb_4, ec_add_input_x2_limb_5,
@@ -769,8 +772,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    add_252::add_252_evaluate(
+    add_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
             ec_add_input_x2_limb_3, ec_add_input_x2_limb_4, ec_add_input_x2_limb_5,
@@ -847,8 +849,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    sub_252::sub_252_evaluate(
+    sub_252_evaluate(
         [
             ec_add_input_y2_limb_0, ec_add_input_y2_limb_1, ec_add_input_y2_limb_2,
             ec_add_input_y2_limb_3, ec_add_input_y2_limb_4, ec_add_input_y2_limb_5,
@@ -925,8 +926,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    div_252::div_252_evaluate(
+    div_252_evaluate(
         [
             sub_res_limb_0_col58, sub_res_limb_1_col59, sub_res_limb_2_col60, sub_res_limb_3_col61,
             sub_res_limb_4_col62, sub_res_limb_5_col63, sub_res_limb_6_col64, sub_res_limb_7_col65,
@@ -1064,8 +1064,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    mul_252::mul_252_evaluate(
+    mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
             div_res_limb_4_col91, div_res_limb_5_col92, div_res_limb_6_col93, div_res_limb_7_col94,
@@ -1204,8 +1203,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    sub_252::sub_252_evaluate(
+    sub_252_evaluate(
         [
             mul_res_limb_0_col143, mul_res_limb_1_col144, mul_res_limb_2_col145,
             mul_res_limb_3_col146, mul_res_limb_4_col147, mul_res_limb_5_col148,
@@ -1281,8 +1279,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    sub_252::sub_252_evaluate(
+    sub_252_evaluate(
         [
             ec_add_input_x1_limb_0, ec_add_input_x1_limb_1, ec_add_input_x1_limb_2,
             ec_add_input_x1_limb_3, ec_add_input_x1_limb_4, ec_add_input_x1_limb_5,
@@ -1359,8 +1356,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    mul_252::mul_252_evaluate(
+    mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
             div_res_limb_4_col91, div_res_limb_5_col92, div_res_limb_6_col93, div_res_limb_7_col94,
@@ -1499,8 +1495,7 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    sub_252::sub_252_evaluate(
+    sub_252_evaluate(
         [
             mul_res_limb_0_col257, mul_res_limb_1_col258, mul_res_limb_2_col259,
             mul_res_limb_3_col260, mul_res_limb_4_col261, mul_res_limb_5_col262,
