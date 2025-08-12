@@ -112,6 +112,22 @@ pub struct OpcodeInteractionClaim {
     ret: Array<components::ret_opcode::InteractionClaim>,
 }
 
+// macro mix_interaction_claim {
+//     ($component_name:ident) => {
+//         for interaction_claim in self.$(component_name).span() {
+//             interaction_claim.mix_into(ref channel);
+//         }
+//     };
+// }
+
+macro add_interaction_claim_sum {
+    ($component_name:ident) => {
+        for interaction_claim in self.$(component_name).span() {
+            sum += *interaction_claim.claimed_sum;
+        }
+    };
+}
+
 #[generate_trait]
 pub impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     fn mix_into(self: @OpcodeInteractionClaim, ref channel: Channel) {
@@ -199,85 +215,26 @@ pub impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     fn sum(self: @OpcodeInteractionClaim) -> QM31 {
         let mut sum = Zero::zero();
 
-        for interaction_claim in self.add.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.add_small.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.add_ap.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.assert_eq.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.assert_eq_imm.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.assert_eq_double_deref.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.blake.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.call.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.call_rel_imm.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.generic.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jnz.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jnz_taken.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jump.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jump_double_deref.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jump_rel.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.jump_rel_imm.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.mul.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.mul_small.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.qm31.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
-
-        for interaction_claim in self.ret.span() {
-            sum += *interaction_claim.claimed_sum;
-        }
+        add_interaction_claim_sum!(add);
+        add_interaction_claim_sum!(add_small);
+        add_interaction_claim_sum!(add_ap);
+        add_interaction_claim_sum!(assert_eq);
+        add_interaction_claim_sum!(assert_eq_imm);
+        add_interaction_claim_sum!(assert_eq_double_deref);
+        add_interaction_claim_sum!(blake);
+        add_interaction_claim_sum!(call);
+        add_interaction_claim_sum!(call_rel_imm);
+        add_interaction_claim_sum!(generic);
+        add_interaction_claim_sum!(jnz);
+        add_interaction_claim_sum!(jnz_taken);
+        add_interaction_claim_sum!(jump);
+        add_interaction_claim_sum!(jump_double_deref);
+        add_interaction_claim_sum!(jump_rel);
+        add_interaction_claim_sum!(jump_rel_imm);
+        add_interaction_claim_sum!(mul);
+        add_interaction_claim_sum!(mul_small);
+        add_interaction_claim_sum!(qm31);
+        add_interaction_claim_sum!(ret);
 
         sum
     }
