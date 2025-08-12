@@ -231,7 +231,7 @@ fn cairo_relation_entries(
         blake_round,
         blake_g,
         blake_sigma,
-        triple_xor_32,
+        triple_xor_16,
         verify_bitwise_xor_12,
     }) = &blake_context.components
     {
@@ -239,7 +239,7 @@ fn cairo_relation_entries(
             add_to_relation_entries(blake_round, trace),
             add_to_relation_entries(blake_g, trace),
             add_to_relation_entries(blake_sigma, trace),
-            add_to_relation_entries(triple_xor_32, trace),
+            add_to_relation_entries(triple_xor_16, trace),
             add_to_relation_entries(verify_bitwise_xor_12, trace),
         ));
     }

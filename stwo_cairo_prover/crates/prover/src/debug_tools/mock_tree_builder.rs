@@ -74,26 +74,26 @@ impl<B: Backend> TreeBuilder<B> for MockTreeBuilder<'_> {
 
 mod tests {
     use std::array;
-    use std::simd::u32x16;
+    use std::simd::u16x16;
 
     use cairo_air::relations;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
-    use stwo_cairo_common::prover_types::simd::PackedUInt32;
+    use stwo_cairo_common::prover_types::simd::PackedUInt16;
 
     use super::MockCommitmentScheme;
-    use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8};
+    use crate::witness::components::{triple_xor_16, verify_bitwise_xor_8};
 
     #[test]
     fn test_mock_commitment_scheme() {
         let mut rng = SmallRng::seed_from_u64(0);
-        let input = array::from_fn(|_| array::from_fn(|_| rng.gen()))
-            .map(u32x16::from_array)
-            .map(PackedUInt32::from_simd);
+        let input = array::from_fn(|_| array::from_fn(|_| rng.gen::<u16>()))
+            .map(u16x16::from_array)
+            .map(PackedUInt16::from_simd);
         let veirfy_bitwise_xor_8_trace_gen = &verify_bitwise_xor_8::ClaimGenerator::new();
-        let mut triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
-        triple_xor_32_trace_gen.add_packed_inputs(&[input]);
-        let triple_xor_relation = relations::TripleXor32::dummy();
+        let mut triple_xor_16_trace_gen = triple_xor_16::ClaimGenerator::new();
+        triple_xor_16_trace_gen.add_packed_inputs(&[input]);
+        let triple_xor_relation = relations::TripleXor16::dummy();
         let verify_bitwise_xor_8_relation = relations::VerifyBitwiseXor_8::dummy();
 
         let mut mock_commitment_scheme = MockCommitmentScheme::default();
@@ -103,7 +103,7 @@ mod tests {
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
         // Base trace.
-        let (_, interaction_gen) = triple_xor_32_trace_gen
+        let (_, interaction_gen) = triple_xor_16_trace_gen
             .write_trace(&mut mock_tree_builder, veirfy_bitwise_xor_8_trace_gen);
         mock_tree_builder.finalize_interaction();
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();

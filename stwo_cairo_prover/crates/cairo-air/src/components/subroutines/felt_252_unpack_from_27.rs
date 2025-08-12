@@ -1,7 +1,7 @@
-// AIR version d4d3b5d6
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Felt252UnpackFrom27 {}
 
 impl Felt252UnpackFrom27 {

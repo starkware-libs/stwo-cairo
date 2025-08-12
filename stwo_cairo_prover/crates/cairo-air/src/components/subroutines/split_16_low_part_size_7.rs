@@ -1,6 +1,7 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct Split16LowPartSize7 {}
 
 impl Split16LowPartSize7 {

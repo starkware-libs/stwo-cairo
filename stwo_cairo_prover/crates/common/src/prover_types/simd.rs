@@ -74,6 +74,9 @@ impl PackedUInt16 {
             }
         }
     }
+    pub fn from_simd(value: Simd<u16, N_LANES>) -> Self {
+        Self { value }
+    }
     pub fn as_array(&self) -> [UInt16; N_LANES] {
         // Safe because UInt16 is u16.
         unsafe { transmute(self.value.to_array()) }

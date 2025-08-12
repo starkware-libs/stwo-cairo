@@ -1,3 +1,4 @@
+// AIR version 4d2a52df
 use crate::components::prelude::*;
 use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
 use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;
@@ -27,8 +28,8 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
         uses: 17,
     },
     RelationUse {
-        relation_id: "TripleXor32",
-        uses: 8,
+        relation_id: "TripleXor16",
+        uses: 16,
     },
     RelationUse {
         relation_id: "VerifyBitwiseXor_8",
@@ -48,7 +49,7 @@ pub struct Eval {
     pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
     pub blake_round_lookup_elements: relations::BlakeRound,
-    pub triple_xor_32_lookup_elements: relations::TripleXor32,
+    pub triple_xor_16_lookup_elements: relations::TripleXor16,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 
@@ -59,7 +60,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 37];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 41];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -235,22 +236,22 @@ impl FrameworkEval for Eval {
         let blake_round_output_limb_30_col117 = eval.next_trace_mask();
         let blake_round_output_limb_31_col118 = eval.next_trace_mask();
         let blake_round_output_limb_32_col119 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col120 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col121 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col122 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col123 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col124 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col125 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col126 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col127 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col128 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col129 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col130 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col131 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col132 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col133 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_0_col134 = eval.next_trace_mask();
-        let triple_xor_32_output_limb_1_col135 = eval.next_trace_mask();
+        let triple_xor_16_output_col120 = eval.next_trace_mask();
+        let triple_xor_16_output_col121 = eval.next_trace_mask();
+        let triple_xor_16_output_col122 = eval.next_trace_mask();
+        let triple_xor_16_output_col123 = eval.next_trace_mask();
+        let triple_xor_16_output_col124 = eval.next_trace_mask();
+        let triple_xor_16_output_col125 = eval.next_trace_mask();
+        let triple_xor_16_output_col126 = eval.next_trace_mask();
+        let triple_xor_16_output_col127 = eval.next_trace_mask();
+        let triple_xor_16_output_col128 = eval.next_trace_mask();
+        let triple_xor_16_output_col129 = eval.next_trace_mask();
+        let triple_xor_16_output_col130 = eval.next_trace_mask();
+        let triple_xor_16_output_col131 = eval.next_trace_mask();
+        let triple_xor_16_output_col132 = eval.next_trace_mask();
+        let triple_xor_16_output_col133 = eval.next_trace_mask();
+        let triple_xor_16_output_col134 = eval.next_trace_mask();
+        let triple_xor_16_output_col135 = eval.next_trace_mask();
         let low_7_ms_bits_col136 = eval.next_trace_mask();
         let high_14_ms_bits_col137 = eval.next_trace_mask();
         let high_5_ms_bits_col138 = eval.next_trace_mask();
@@ -537,30 +538,30 @@ impl FrameworkEval for Eval {
                 blake_round_output_limb_30_col117.clone(),
                 blake_round_output_limb_31_col118.clone(),
             ],
-            triple_xor_32_output_limb_0_col120.clone(),
-            triple_xor_32_output_limb_1_col121.clone(),
-            triple_xor_32_output_limb_0_col122.clone(),
-            triple_xor_32_output_limb_1_col123.clone(),
-            triple_xor_32_output_limb_0_col124.clone(),
-            triple_xor_32_output_limb_1_col125.clone(),
-            triple_xor_32_output_limb_0_col126.clone(),
-            triple_xor_32_output_limb_1_col127.clone(),
-            triple_xor_32_output_limb_0_col128.clone(),
-            triple_xor_32_output_limb_1_col129.clone(),
-            triple_xor_32_output_limb_0_col130.clone(),
-            triple_xor_32_output_limb_1_col131.clone(),
-            triple_xor_32_output_limb_0_col132.clone(),
-            triple_xor_32_output_limb_1_col133.clone(),
-            triple_xor_32_output_limb_0_col134.clone(),
-            triple_xor_32_output_limb_1_col135.clone(),
-            &self.triple_xor_32_lookup_elements,
+            triple_xor_16_output_col120.clone(),
+            triple_xor_16_output_col121.clone(),
+            triple_xor_16_output_col122.clone(),
+            triple_xor_16_output_col123.clone(),
+            triple_xor_16_output_col124.clone(),
+            triple_xor_16_output_col125.clone(),
+            triple_xor_16_output_col126.clone(),
+            triple_xor_16_output_col127.clone(),
+            triple_xor_16_output_col128.clone(),
+            triple_xor_16_output_col129.clone(),
+            triple_xor_16_output_col130.clone(),
+            triple_xor_16_output_col131.clone(),
+            triple_xor_16_output_col132.clone(),
+            triple_xor_16_output_col133.clone(),
+            triple_xor_16_output_col134.clone(),
+            triple_xor_16_output_col135.clone(),
+            &self.triple_xor_16_lookup_elements,
             &mut eval,
         );
         VerifyBlakeWord::evaluate(
             [
                 decode_blake_opcode_output_tmp_53f39_29_limb_2.clone(),
-                triple_xor_32_output_limb_0_col120.clone(),
-                triple_xor_32_output_limb_1_col121.clone(),
+                triple_xor_16_output_col120.clone(),
+                triple_xor_16_output_col121.clone(),
             ],
             low_7_ms_bits_col136.clone(),
             high_14_ms_bits_col137.clone(),
@@ -574,8 +575,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_1.clone()),
-                triple_xor_32_output_limb_0_col122.clone(),
-                triple_xor_32_output_limb_1_col123.clone(),
+                triple_xor_16_output_col122.clone(),
+                triple_xor_16_output_col123.clone(),
             ],
             low_7_ms_bits_col140.clone(),
             high_14_ms_bits_col141.clone(),
@@ -589,8 +590,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_2.clone()),
-                triple_xor_32_output_limb_0_col124.clone(),
-                triple_xor_32_output_limb_1_col125.clone(),
+                triple_xor_16_output_col124.clone(),
+                triple_xor_16_output_col125.clone(),
             ],
             low_7_ms_bits_col144.clone(),
             high_14_ms_bits_col145.clone(),
@@ -604,8 +605,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_3.clone()),
-                triple_xor_32_output_limb_0_col126.clone(),
-                triple_xor_32_output_limb_1_col127.clone(),
+                triple_xor_16_output_col126.clone(),
+                triple_xor_16_output_col127.clone(),
             ],
             low_7_ms_bits_col148.clone(),
             high_14_ms_bits_col149.clone(),
@@ -619,8 +620,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_4.clone()),
-                triple_xor_32_output_limb_0_col128.clone(),
-                triple_xor_32_output_limb_1_col129.clone(),
+                triple_xor_16_output_col128.clone(),
+                triple_xor_16_output_col129.clone(),
             ],
             low_7_ms_bits_col152.clone(),
             high_14_ms_bits_col153.clone(),
@@ -634,8 +635,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_5.clone()),
-                triple_xor_32_output_limb_0_col130.clone(),
-                triple_xor_32_output_limb_1_col131.clone(),
+                triple_xor_16_output_col130.clone(),
+                triple_xor_16_output_col131.clone(),
             ],
             low_7_ms_bits_col156.clone(),
             high_14_ms_bits_col157.clone(),
@@ -649,8 +650,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_6.clone()),
-                triple_xor_32_output_limb_0_col132.clone(),
-                triple_xor_32_output_limb_1_col133.clone(),
+                triple_xor_16_output_col132.clone(),
+                triple_xor_16_output_col133.clone(),
             ],
             low_7_ms_bits_col160.clone(),
             high_14_ms_bits_col161.clone(),
@@ -664,8 +665,8 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 (decode_blake_opcode_output_tmp_53f39_29_limb_2.clone() + M31_7.clone()),
-                triple_xor_32_output_limb_0_col134.clone(),
-                triple_xor_32_output_limb_1_col135.clone(),
+                triple_xor_16_output_col134.clone(),
+                triple_xor_16_output_col135.clone(),
             ],
             low_7_ms_bits_col164.clone(),
             high_14_ms_bits_col165.clone(),
@@ -723,7 +724,7 @@ mod tests {
             range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
             blake_round_lookup_elements: relations::BlakeRound::dummy(),
-            triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
+            triple_xor_16_lookup_elements: relations::TripleXor16::dummy(),
             opcodes_lookup_elements: relations::Opcodes::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

@@ -3,7 +3,7 @@ use std::simd::u32x16;
 
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_consts::blake::{BLAKE_SIGMA, N_BLAKE_SIGMA_COLS};
-use stwo_cairo_common::prover_types::simd::{PackedUInt32, N_LANES};
+use stwo_cairo_common::prover_types::simd::{PackedUInt16, PackedUInt32, N_LANES};
 
 use crate::stwo::prover::backend::simd::m31::PackedM31;
 
@@ -60,10 +60,10 @@ impl PackedBlakeG {
 }
 
 #[derive(Debug)]
-pub struct PackedTripleXor32 {}
+pub struct PackedTripleXor16 {}
 
-impl PackedTripleXor32 {
-    pub fn deduce_output([a, b, c]: [PackedUInt32; 3]) -> PackedUInt32 {
+impl PackedTripleXor16 {
+    pub fn deduce_output([a, b, c]: [PackedUInt16; 3]) -> PackedUInt16 {
         a ^ b ^ c
     }
 }

@@ -1,6 +1,7 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct DecodeInstruction161C9 {}
 
 impl DecodeInstruction161C9 {

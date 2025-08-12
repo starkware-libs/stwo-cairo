@@ -7,7 +7,7 @@ use stwo_cairo_adapter::memory::Memory;
 use tracing::{span, Level};
 
 use crate::witness::components::{
-    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
+    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_16,
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
     verify_bitwise_xor_9,
 };
@@ -18,7 +18,7 @@ pub struct BlakeContextClaimGenerator {
     pub blake_round: blake_round::ClaimGenerator,
     pub blake_g: blake_g::ClaimGenerator,
     pub blake_sigma: blake_round_sigma::ClaimGenerator,
-    pub triple_xor_32: triple_xor_32::ClaimGenerator,
+    pub triple_xor_16: triple_xor_16::ClaimGenerator,
     pub verify_bitwise_xor_12: verify_bitwise_xor_12::ClaimGenerator,
 }
 impl BlakeContextClaimGenerator {
@@ -26,14 +26,14 @@ impl BlakeContextClaimGenerator {
         let blake_round = blake_round::ClaimGenerator::new(memory);
         let blake_g = blake_g::ClaimGenerator::new();
         let blake_sigma = blake_round_sigma::ClaimGenerator::new();
-        let triple_xor_32 = triple_xor_32::ClaimGenerator::new();
+        let triple_xor_16 = triple_xor_16::ClaimGenerator::new();
         let verify_bitwise_xor_12 = verify_bitwise_xor_12::ClaimGenerator::new();
 
         Self {
             blake_round,
             blake_g,
             blake_sigma,
-            triple_xor_32,
+            triple_xor_16,
             verify_bitwise_xor_12,
         }
     }
@@ -74,8 +74,8 @@ impl BlakeContextClaimGenerator {
         );
         let (blake_sigma_claim, blake_sigma_interaction_gen) =
             self.blake_sigma.write_trace(tree_builder);
-        let (triple_xor_32_claim, triple_xor_32_interaction_gen) = self
-            .triple_xor_32
+        let (triple_xor_16_claim, triple_xor_16_interaction_gen) = self
+            .triple_xor_16
             .write_trace(tree_builder, verify_bitwise_xor_8_trace_generator);
         let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
             self.verify_bitwise_xor_12.write_trace(tree_builder);
@@ -85,14 +85,14 @@ impl BlakeContextClaimGenerator {
             blake_round: blake_round_claim,
             blake_g: blake_g_claim,
             blake_sigma: blake_sigma_claim,
-            triple_xor_32: triple_xor_32_claim,
+            triple_xor_16: triple_xor_16_claim,
             verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
         });
         let gen = Some(InteractionClaimGenerator {
             blake_round_interaction_gen,
             blake_g_interaction_gen,
             blake_sigma_interaction_gen,
-            triple_xor_32_interaction_gen,
+            triple_xor_16_interaction_gen,
             verify_bitwise_xor_12_interaction_gen,
         });
         (
@@ -123,7 +123,7 @@ struct InteractionClaimGenerator {
     blake_round_interaction_gen: blake_round::InteractionClaimGenerator,
     blake_g_interaction_gen: blake_g::InteractionClaimGenerator,
     blake_sigma_interaction_gen: blake_round_sigma::InteractionClaimGenerator,
-    triple_xor_32_interaction_gen: triple_xor_32::InteractionClaimGenerator,
+    triple_xor_16_interaction_gen: triple_xor_16::InteractionClaimGenerator,
     verify_bitwise_xor_12_interaction_gen: verify_bitwise_xor_12::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
@@ -154,10 +154,10 @@ impl InteractionClaimGenerator {
         let blake_sigma_interaction_claim = self
             .blake_sigma_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.blake_sigma);
-        let triple_xor_32_interaction_claim =
-            self.triple_xor_32_interaction_gen.write_interaction_trace(
+        let triple_xor_16_interaction_claim =
+            self.triple_xor_16_interaction_gen.write_interaction_trace(
                 tree_builder,
-                &interaction_elements.triple_xor_32,
+                &interaction_elements.triple_xor_16,
                 &interaction_elements.verify_bitwise_xor_8,
             );
         let verify_bitwise_xor_12_interaction_claim = self
@@ -168,7 +168,7 @@ impl InteractionClaimGenerator {
             blake_round: blake_round_interaction_claim,
             blake_g: blake_g_interaction_claim,
             blake_sigma: blake_sigma_interaction_claim,
-            triple_xor_32: triple_xor_32_interaction_claim,
+            triple_xor_16: triple_xor_16_interaction_claim,
             verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
         }
     }

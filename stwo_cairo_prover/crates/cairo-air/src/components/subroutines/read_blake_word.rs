@@ -1,7 +1,8 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadBlakeWord {}
 
 impl ReadBlakeWord {

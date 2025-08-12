@@ -183,14 +183,14 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         blake_round,
         blake_g,
         blake_sigma,
-        triple_xor_32,
+        triple_xor_16,
         verify_bitwise_xor_12,
     }) = &blake_context.components
     {
         assert_component(blake_round, &trace);
         assert_component(blake_g, &trace);
         assert_component(blake_sigma, &trace);
-        assert_component(triple_xor_32, &trace);
+        assert_component(triple_xor_16, &trace);
         assert_component(verify_bitwise_xor_12, &trace);
     }
 

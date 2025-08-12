@@ -10,7 +10,7 @@ use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::{
-    blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
+    blake_g, blake_round, blake_round_sigma, triple_xor_16, verify_bitwise_xor_12,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -43,7 +43,7 @@ pub struct Claim {
     pub blake_round: blake_round::Claim,
     pub blake_g: blake_g::Claim,
     pub blake_sigma: blake_round_sigma::Claim,
-    pub triple_xor_32: triple_xor_32::Claim,
+    pub triple_xor_16: triple_xor_16::Claim,
     pub verify_bitwise_xor_12: verify_bitwise_xor_12::Claim,
 }
 impl Claim {
@@ -51,7 +51,7 @@ impl Claim {
         self.blake_round.mix_into(channel);
         self.blake_g.mix_into(channel);
         self.blake_sigma.mix_into(channel);
-        self.triple_xor_32.mix_into(channel);
+        self.triple_xor_16.mix_into(channel);
         self.verify_bitwise_xor_12.mix_into(channel);
     }
 
@@ -60,7 +60,7 @@ impl Claim {
             self.blake_round.log_sizes(),
             self.blake_g.log_sizes(),
             self.blake_sigma.log_sizes(),
-            self.triple_xor_32.log_sizes(),
+            self.triple_xor_16.log_sizes(),
             self.verify_bitwise_xor_12.log_sizes(),
         ]
         .into_iter();
@@ -73,7 +73,7 @@ impl Claim {
             blake_round,
             blake_g,
             blake_sigma: _,
-            triple_xor_32,
+            triple_xor_16,
             verify_bitwise_xor_12: _,
         } = self;
 
@@ -93,8 +93,8 @@ impl Claim {
         );
         accumulate_relation_uses(
             relation_uses,
-            triple_xor_32::RELATION_USES_PER_ROW,
-            triple_xor_32.log_size,
+            triple_xor_16::RELATION_USES_PER_ROW,
+            triple_xor_16.log_size,
         );
     }
 }
@@ -123,7 +123,7 @@ pub struct InteractionClaim {
     pub blake_round: blake_round::InteractionClaim,
     pub blake_g: blake_g::InteractionClaim,
     pub blake_sigma: blake_round_sigma::InteractionClaim,
-    pub triple_xor_32: triple_xor_32::InteractionClaim,
+    pub triple_xor_16: triple_xor_16::InteractionClaim,
     pub verify_bitwise_xor_12: verify_bitwise_xor_12::InteractionClaim,
 }
 impl InteractionClaim {
@@ -131,7 +131,7 @@ impl InteractionClaim {
         self.blake_round.mix_into(channel);
         self.blake_g.mix_into(channel);
         self.blake_sigma.mix_into(channel);
-        self.triple_xor_32.mix_into(channel);
+        self.triple_xor_16.mix_into(channel);
         self.verify_bitwise_xor_12.mix_into(channel);
     }
 
@@ -139,7 +139,7 @@ impl InteractionClaim {
         self.blake_round.claimed_sum
             + self.blake_g.claimed_sum
             + self.blake_sigma.claimed_sum
-            + self.triple_xor_32.claimed_sum
+            + self.triple_xor_16.claimed_sum
             + self.verify_bitwise_xor_12.claimed_sum
     }
 }
@@ -182,7 +182,7 @@ pub struct Components {
     pub blake_round: blake_round::Component,
     pub blake_g: blake_g::Component,
     pub blake_sigma: blake_round_sigma::Component,
-    pub triple_xor_32: triple_xor_32::Component,
+    pub triple_xor_16: triple_xor_16::Component,
     pub verify_bitwise_xor_12: verify_bitwise_xor_12::Component,
 }
 impl Components {
@@ -244,16 +244,16 @@ impl Components {
             interaction_claim.blake_sigma.claimed_sum,
         );
 
-        let triple_xor_32_component = triple_xor_32::Component::new(
+        let triple_xor_16_component = triple_xor_16::Component::new(
             tree_span_provider,
-            triple_xor_32::Eval {
-                claim: claim.claim.as_ref().unwrap().triple_xor_32,
-                triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+            triple_xor_16::Eval {
+                claim: claim.claim.as_ref().unwrap().triple_xor_16,
+                triple_xor_16_lookup_elements: interaction_elements.triple_xor_16.clone(),
                 verify_bitwise_xor_8_lookup_elements: interaction_elements
                     .verify_bitwise_xor_8
                     .clone(),
             },
-            interaction_claim.triple_xor_32.claimed_sum,
+            interaction_claim.triple_xor_16.claimed_sum,
         );
         let verify_bitwise_xor_12_component = verify_bitwise_xor_12::Component::new(
             tree_span_provider,
@@ -269,7 +269,7 @@ impl Components {
             blake_round: blake_round_component,
             blake_g: blake_g_component,
             blake_sigma: blake_sigma_component,
-            triple_xor_32: triple_xor_32_component,
+            triple_xor_16: triple_xor_16_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
         }
     }
@@ -279,7 +279,7 @@ impl Components {
             &self.blake_round,
             &self.blake_g,
             &self.blake_sigma,
-            &self.triple_xor_32,
+            &self.triple_xor_16,
             &self.verify_bitwise_xor_12,
         ]
     }
@@ -290,7 +290,7 @@ impl std::fmt::Display for Components {
         writeln!(f, "BlakeRound: {}", self.blake_round)?;
         writeln!(f, "BlakeG: {}", self.blake_g)?;
         writeln!(f, "BlakeSigma: {}", self.blake_sigma)?;
-        writeln!(f, "TripleXor32: {}", self.triple_xor_32)?;
+        writeln!(f, "TripleXor16: {}", self.triple_xor_16)?;
         writeln!(f, "VerifyBitwiseXor12: {}", self.verify_bitwise_xor_12)?;
         Ok(())
     }

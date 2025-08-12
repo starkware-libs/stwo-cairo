@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_4b8cf::DecodeInstruction4B8Cf;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
@@ -61,6 +61,7 @@ pub struct Eval {
     pub verify_instruction_lookup_elements: relations::VerifyInstruction,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
     pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
@@ -68,7 +69,6 @@ pub struct Eval {
     pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
     pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
     pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub opcodes_lookup_elements: relations::Opcodes,
 }
 

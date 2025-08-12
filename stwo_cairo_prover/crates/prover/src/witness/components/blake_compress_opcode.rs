@@ -2,7 +2,7 @@
 use cairo_air::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{
-    blake_round, memory_address_to_id, memory_id_to_big, range_check_7_2_5, triple_xor_32,
+    blake_round, memory_address_to_id, memory_id_to_big, range_check_7_2_5, triple_xor_16,
     verify_bitwise_xor_8, verify_instruction,
 };
 use crate::witness::prelude::*;
@@ -26,7 +26,7 @@ impl ClaimGenerator {
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-        triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
+        triple_xor_16_state: &mut triple_xor_16::ClaimGenerator,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
@@ -44,7 +44,7 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
             range_check_7_2_5_state,
-            triple_xor_32_state,
+            triple_xor_16_state,
             verify_bitwise_xor_8_state,
             verify_instruction_state,
         );
@@ -82,10 +82,10 @@ impl ClaimGenerator {
             blake_round_state.add_packed_inputs(inputs);
         });
         sub_component_inputs
-            .triple_xor_32
+            .triple_xor_16
             .iter()
             .for_each(|inputs| {
-                triple_xor_32_state.add_packed_inputs(inputs);
+                triple_xor_16_state.add_packed_inputs(inputs);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -108,7 +108,7 @@ struct SubComponentInputs {
     range_check_7_2_5: [Vec<range_check_7_2_5::PackedInputType>; 17],
     verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
     blake_round: [Vec<blake_round::PackedInputType>; 10],
-    triple_xor_32: [Vec<triple_xor_32::PackedInputType>; 8],
+    triple_xor_16: [Vec<triple_xor_16::PackedInputType>; 16],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -122,7 +122,7 @@ fn write_trace_simd(
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-    triple_xor_32_state: &triple_xor_32::ClaimGenerator,
+    triple_xor_16_state: &triple_xor_16::ClaimGenerator,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
 ) -> (
@@ -1684,7 +1684,7 @@ fn write_trace_simd(
                         decode_blake_opcode_output_tmp_53f39_29.0[1],
                     ),
                 );
-                let blake_round_output_round_0_tmp_53f39_115 = blake_round_state.deduce_output((
+                let blake_round_output_round_0_tmp_53f39_116 = blake_round_state.deduce_output((
                     seq,
                     M31_0,
                     (
@@ -1714,49 +1714,49 @@ fn write_trace_simd(
                     M31_1,
                     (
                         [
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[0],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[1],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[2],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[3],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[4],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[5],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[6],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[7],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[8],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[9],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[10],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[11],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[12],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[13],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[14],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[15],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[0],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[1],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[2],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[3],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[4],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[5],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[6],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[7],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[8],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[9],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[10],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[11],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[12],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[13],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[14],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[15],
                         ],
-                        blake_round_output_round_0_tmp_53f39_115.2 .1,
+                        blake_round_output_round_0_tmp_53f39_116.2 .1,
                     ),
                 );
-                let blake_round_output_round_1_tmp_53f39_116 = blake_round_state.deduce_output((
+                let blake_round_output_round_1_tmp_53f39_117 = blake_round_state.deduce_output((
                     seq,
                     M31_1,
                     (
                         [
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[0],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[1],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[2],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[3],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[4],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[5],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[6],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[7],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[8],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[9],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[10],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[11],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[12],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[13],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[14],
-                            blake_round_output_round_0_tmp_53f39_115.2 .0[15],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[0],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[1],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[2],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[3],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[4],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[5],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[6],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[7],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[8],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[9],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[10],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[11],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[12],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[13],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[14],
+                            blake_round_output_round_0_tmp_53f39_116.2 .0[15],
                         ],
-                        blake_round_output_round_0_tmp_53f39_115.2 .1,
+                        blake_round_output_round_0_tmp_53f39_116.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[2] = (
@@ -1764,49 +1764,49 @@ fn write_trace_simd(
                     M31_2,
                     (
                         [
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[0],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[1],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[2],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[3],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[4],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[5],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[6],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[7],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[8],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[9],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[10],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[11],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[12],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[13],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[14],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[15],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[0],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[1],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[2],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[3],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[4],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[5],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[6],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[7],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[8],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[9],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[10],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[11],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[12],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[13],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[14],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[15],
                         ],
-                        blake_round_output_round_1_tmp_53f39_116.2 .1,
+                        blake_round_output_round_1_tmp_53f39_117.2 .1,
                     ),
                 );
-                let blake_round_output_round_2_tmp_53f39_117 = blake_round_state.deduce_output((
+                let blake_round_output_round_2_tmp_53f39_118 = blake_round_state.deduce_output((
                     seq,
                     M31_2,
                     (
                         [
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[0],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[1],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[2],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[3],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[4],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[5],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[6],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[7],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[8],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[9],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[10],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[11],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[12],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[13],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[14],
-                            blake_round_output_round_1_tmp_53f39_116.2 .0[15],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[0],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[1],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[2],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[3],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[4],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[5],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[6],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[7],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[8],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[9],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[10],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[11],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[12],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[13],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[14],
+                            blake_round_output_round_1_tmp_53f39_117.2 .0[15],
                         ],
-                        blake_round_output_round_1_tmp_53f39_116.2 .1,
+                        blake_round_output_round_1_tmp_53f39_117.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[3] = (
@@ -1814,49 +1814,49 @@ fn write_trace_simd(
                     M31_3,
                     (
                         [
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[0],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[1],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[2],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[3],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[4],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[5],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[6],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[7],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[8],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[9],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[10],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[11],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[12],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[13],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[14],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[15],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[0],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[1],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[2],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[3],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[4],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[5],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[6],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[7],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[8],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[9],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[10],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[11],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[12],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[13],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[14],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[15],
                         ],
-                        blake_round_output_round_2_tmp_53f39_117.2 .1,
+                        blake_round_output_round_2_tmp_53f39_118.2 .1,
                     ),
                 );
-                let blake_round_output_round_3_tmp_53f39_118 = blake_round_state.deduce_output((
+                let blake_round_output_round_3_tmp_53f39_119 = blake_round_state.deduce_output((
                     seq,
                     M31_3,
                     (
                         [
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[0],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[1],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[2],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[3],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[4],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[5],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[6],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[7],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[8],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[9],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[10],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[11],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[12],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[13],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[14],
-                            blake_round_output_round_2_tmp_53f39_117.2 .0[15],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[0],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[1],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[2],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[3],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[4],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[5],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[6],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[7],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[8],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[9],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[10],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[11],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[12],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[13],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[14],
+                            blake_round_output_round_2_tmp_53f39_118.2 .0[15],
                         ],
-                        blake_round_output_round_2_tmp_53f39_117.2 .1,
+                        blake_round_output_round_2_tmp_53f39_118.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[4] = (
@@ -1864,49 +1864,49 @@ fn write_trace_simd(
                     M31_4,
                     (
                         [
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[0],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[1],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[2],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[3],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[4],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[5],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[6],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[7],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[8],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[9],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[10],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[11],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[12],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[13],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[14],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[15],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[0],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[1],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[2],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[3],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[4],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[5],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[6],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[7],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[8],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[9],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[10],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[11],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[12],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[13],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[14],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[15],
                         ],
-                        blake_round_output_round_3_tmp_53f39_118.2 .1,
+                        blake_round_output_round_3_tmp_53f39_119.2 .1,
                     ),
                 );
-                let blake_round_output_round_4_tmp_53f39_119 = blake_round_state.deduce_output((
+                let blake_round_output_round_4_tmp_53f39_120 = blake_round_state.deduce_output((
                     seq,
                     M31_4,
                     (
                         [
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[0],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[1],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[2],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[3],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[4],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[5],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[6],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[7],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[8],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[9],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[10],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[11],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[12],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[13],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[14],
-                            blake_round_output_round_3_tmp_53f39_118.2 .0[15],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[0],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[1],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[2],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[3],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[4],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[5],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[6],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[7],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[8],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[9],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[10],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[11],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[12],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[13],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[14],
+                            blake_round_output_round_3_tmp_53f39_119.2 .0[15],
                         ],
-                        blake_round_output_round_3_tmp_53f39_118.2 .1,
+                        blake_round_output_round_3_tmp_53f39_119.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[5] = (
@@ -1914,49 +1914,49 @@ fn write_trace_simd(
                     M31_5,
                     (
                         [
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[0],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[1],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[2],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[3],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[4],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[5],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[6],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[7],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[8],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[9],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[10],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[11],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[12],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[13],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[14],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[15],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[0],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[1],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[2],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[3],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[4],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[5],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[6],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[7],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[8],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[9],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[10],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[11],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[12],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[13],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[14],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[15],
                         ],
-                        blake_round_output_round_4_tmp_53f39_119.2 .1,
+                        blake_round_output_round_4_tmp_53f39_120.2 .1,
                     ),
                 );
-                let blake_round_output_round_5_tmp_53f39_120 = blake_round_state.deduce_output((
+                let blake_round_output_round_5_tmp_53f39_121 = blake_round_state.deduce_output((
                     seq,
                     M31_5,
                     (
                         [
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[0],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[1],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[2],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[3],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[4],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[5],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[6],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[7],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[8],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[9],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[10],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[11],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[12],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[13],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[14],
-                            blake_round_output_round_4_tmp_53f39_119.2 .0[15],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[0],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[1],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[2],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[3],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[4],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[5],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[6],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[7],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[8],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[9],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[10],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[11],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[12],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[13],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[14],
+                            blake_round_output_round_4_tmp_53f39_120.2 .0[15],
                         ],
-                        blake_round_output_round_4_tmp_53f39_119.2 .1,
+                        blake_round_output_round_4_tmp_53f39_120.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[6] = (
@@ -1964,49 +1964,49 @@ fn write_trace_simd(
                     M31_6,
                     (
                         [
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[0],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[1],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[2],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[3],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[4],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[5],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[6],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[7],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[8],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[9],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[10],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[11],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[12],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[13],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[14],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[15],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[0],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[1],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[2],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[3],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[4],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[5],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[6],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[7],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[8],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[9],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[10],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[11],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[12],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[13],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[14],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[15],
                         ],
-                        blake_round_output_round_5_tmp_53f39_120.2 .1,
+                        blake_round_output_round_5_tmp_53f39_121.2 .1,
                     ),
                 );
-                let blake_round_output_round_6_tmp_53f39_121 = blake_round_state.deduce_output((
+                let blake_round_output_round_6_tmp_53f39_122 = blake_round_state.deduce_output((
                     seq,
                     M31_6,
                     (
                         [
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[0],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[1],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[2],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[3],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[4],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[5],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[6],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[7],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[8],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[9],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[10],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[11],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[12],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[13],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[14],
-                            blake_round_output_round_5_tmp_53f39_120.2 .0[15],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[0],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[1],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[2],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[3],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[4],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[5],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[6],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[7],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[8],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[9],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[10],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[11],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[12],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[13],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[14],
+                            blake_round_output_round_5_tmp_53f39_121.2 .0[15],
                         ],
-                        blake_round_output_round_5_tmp_53f39_120.2 .1,
+                        blake_round_output_round_5_tmp_53f39_121.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[7] = (
@@ -2014,49 +2014,49 @@ fn write_trace_simd(
                     M31_7,
                     (
                         [
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[0],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[1],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[2],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[3],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[4],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[5],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[6],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[7],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[8],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[9],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[10],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[11],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[12],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[13],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[14],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[15],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[0],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[1],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[2],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[3],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[4],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[5],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[6],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[7],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[8],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[9],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[10],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[11],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[12],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[13],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[14],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[15],
                         ],
-                        blake_round_output_round_6_tmp_53f39_121.2 .1,
+                        blake_round_output_round_6_tmp_53f39_122.2 .1,
                     ),
                 );
-                let blake_round_output_round_7_tmp_53f39_122 = blake_round_state.deduce_output((
+                let blake_round_output_round_7_tmp_53f39_123 = blake_round_state.deduce_output((
                     seq,
                     M31_7,
                     (
                         [
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[0],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[1],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[2],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[3],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[4],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[5],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[6],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[7],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[8],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[9],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[10],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[11],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[12],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[13],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[14],
-                            blake_round_output_round_6_tmp_53f39_121.2 .0[15],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[0],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[1],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[2],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[3],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[4],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[5],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[6],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[7],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[8],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[9],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[10],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[11],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[12],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[13],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[14],
+                            blake_round_output_round_6_tmp_53f39_122.2 .0[15],
                         ],
-                        blake_round_output_round_6_tmp_53f39_121.2 .1,
+                        blake_round_output_round_6_tmp_53f39_122.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[8] = (
@@ -2064,49 +2064,49 @@ fn write_trace_simd(
                     M31_8,
                     (
                         [
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[0],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[1],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[2],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[3],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[4],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[5],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[6],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[7],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[8],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[9],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[10],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[11],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[12],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[13],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[14],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[15],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[0],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[1],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[2],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[3],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[4],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[5],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[6],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[7],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[8],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[9],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[10],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[11],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[12],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[13],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[14],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[15],
                         ],
-                        blake_round_output_round_7_tmp_53f39_122.2 .1,
+                        blake_round_output_round_7_tmp_53f39_123.2 .1,
                     ),
                 );
-                let blake_round_output_round_8_tmp_53f39_123 = blake_round_state.deduce_output((
+                let blake_round_output_round_8_tmp_53f39_124 = blake_round_state.deduce_output((
                     seq,
                     M31_8,
                     (
                         [
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[0],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[1],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[2],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[3],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[4],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[5],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[6],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[7],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[8],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[9],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[10],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[11],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[12],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[13],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[14],
-                            blake_round_output_round_7_tmp_53f39_122.2 .0[15],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[0],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[1],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[2],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[3],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[4],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[5],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[6],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[7],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[8],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[9],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[10],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[11],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[12],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[13],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[14],
+                            blake_round_output_round_7_tmp_53f39_123.2 .0[15],
                         ],
-                        blake_round_output_round_7_tmp_53f39_122.2 .1,
+                        blake_round_output_round_7_tmp_53f39_123.2 .1,
                     ),
                 ));
                 *sub_component_inputs.blake_round[9] = (
@@ -2114,213 +2114,213 @@ fn write_trace_simd(
                     M31_9,
                     (
                         [
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[0],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[1],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[2],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[3],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[4],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[5],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[6],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[7],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[8],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[9],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[10],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[11],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[12],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[13],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[14],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[15],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[0],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[1],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[2],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[3],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[4],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[5],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[6],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[7],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[8],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[9],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[10],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[11],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[12],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[13],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[14],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[15],
                         ],
-                        blake_round_output_round_8_tmp_53f39_123.2 .1,
+                        blake_round_output_round_8_tmp_53f39_124.2 .1,
                     ),
                 );
-                let blake_round_output_round_9_tmp_53f39_124 = blake_round_state.deduce_output((
+                let blake_round_output_round_9_tmp_53f39_125 = blake_round_state.deduce_output((
                     seq,
                     M31_9,
                     (
                         [
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[0],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[1],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[2],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[3],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[4],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[5],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[6],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[7],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[8],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[9],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[10],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[11],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[12],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[13],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[14],
-                            blake_round_output_round_8_tmp_53f39_123.2 .0[15],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[0],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[1],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[2],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[3],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[4],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[5],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[6],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[7],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[8],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[9],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[10],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[11],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[12],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[13],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[14],
+                            blake_round_output_round_8_tmp_53f39_124.2 .0[15],
                         ],
-                        blake_round_output_round_8_tmp_53f39_123.2 .1,
+                        blake_round_output_round_8_tmp_53f39_124.2 .1,
                     ),
                 ));
-                let blake_round_output_limb_0_col87 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_0_col87 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [0]
                 .low()
                 .as_m31();
                 *row[87] = blake_round_output_limb_0_col87;
-                let blake_round_output_limb_1_col88 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_1_col88 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [0]
                 .high()
                 .as_m31();
                 *row[88] = blake_round_output_limb_1_col88;
-                let blake_round_output_limb_2_col89 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_2_col89 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [1]
                 .low()
                 .as_m31();
                 *row[89] = blake_round_output_limb_2_col89;
-                let blake_round_output_limb_3_col90 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_3_col90 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [1]
                 .high()
                 .as_m31();
                 *row[90] = blake_round_output_limb_3_col90;
-                let blake_round_output_limb_4_col91 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_4_col91 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [2]
                 .low()
                 .as_m31();
                 *row[91] = blake_round_output_limb_4_col91;
-                let blake_round_output_limb_5_col92 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_5_col92 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [2]
                 .high()
                 .as_m31();
                 *row[92] = blake_round_output_limb_5_col92;
-                let blake_round_output_limb_6_col93 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_6_col93 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [3]
                 .low()
                 .as_m31();
                 *row[93] = blake_round_output_limb_6_col93;
-                let blake_round_output_limb_7_col94 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_7_col94 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [3]
                 .high()
                 .as_m31();
                 *row[94] = blake_round_output_limb_7_col94;
-                let blake_round_output_limb_8_col95 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_8_col95 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [4]
                 .low()
                 .as_m31();
                 *row[95] = blake_round_output_limb_8_col95;
-                let blake_round_output_limb_9_col96 = blake_round_output_round_9_tmp_53f39_124.2 .0
+                let blake_round_output_limb_9_col96 = blake_round_output_round_9_tmp_53f39_125.2 .0
                     [4]
                 .high()
                 .as_m31();
                 *row[96] = blake_round_output_limb_9_col96;
                 let blake_round_output_limb_10_col97 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[5]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5]
                         .low()
                         .as_m31();
                 *row[97] = blake_round_output_limb_10_col97;
                 let blake_round_output_limb_11_col98 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[5]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5]
                         .high()
                         .as_m31();
                 *row[98] = blake_round_output_limb_11_col98;
                 let blake_round_output_limb_12_col99 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[6]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6]
                         .low()
                         .as_m31();
                 *row[99] = blake_round_output_limb_12_col99;
                 let blake_round_output_limb_13_col100 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[6]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6]
                         .high()
                         .as_m31();
                 *row[100] = blake_round_output_limb_13_col100;
                 let blake_round_output_limb_14_col101 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[7]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7]
                         .low()
                         .as_m31();
                 *row[101] = blake_round_output_limb_14_col101;
                 let blake_round_output_limb_15_col102 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[7]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7]
                         .high()
                         .as_m31();
                 *row[102] = blake_round_output_limb_15_col102;
                 let blake_round_output_limb_16_col103 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[8]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8]
                         .low()
                         .as_m31();
                 *row[103] = blake_round_output_limb_16_col103;
                 let blake_round_output_limb_17_col104 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[8]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8]
                         .high()
                         .as_m31();
                 *row[104] = blake_round_output_limb_17_col104;
                 let blake_round_output_limb_18_col105 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[9]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9]
                         .low()
                         .as_m31();
                 *row[105] = blake_round_output_limb_18_col105;
                 let blake_round_output_limb_19_col106 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[9]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9]
                         .high()
                         .as_m31();
                 *row[106] = blake_round_output_limb_19_col106;
                 let blake_round_output_limb_20_col107 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[10]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10]
                         .low()
                         .as_m31();
                 *row[107] = blake_round_output_limb_20_col107;
                 let blake_round_output_limb_21_col108 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[10]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10]
                         .high()
                         .as_m31();
                 *row[108] = blake_round_output_limb_21_col108;
                 let blake_round_output_limb_22_col109 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[11]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11]
                         .low()
                         .as_m31();
                 *row[109] = blake_round_output_limb_22_col109;
                 let blake_round_output_limb_23_col110 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[11]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11]
                         .high()
                         .as_m31();
                 *row[110] = blake_round_output_limb_23_col110;
                 let blake_round_output_limb_24_col111 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[12]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12]
                         .low()
                         .as_m31();
                 *row[111] = blake_round_output_limb_24_col111;
                 let blake_round_output_limb_25_col112 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[12]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12]
                         .high()
                         .as_m31();
                 *row[112] = blake_round_output_limb_25_col112;
                 let blake_round_output_limb_26_col113 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[13]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13]
                         .low()
                         .as_m31();
                 *row[113] = blake_round_output_limb_26_col113;
                 let blake_round_output_limb_27_col114 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[13]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13]
                         .high()
                         .as_m31();
                 *row[114] = blake_round_output_limb_27_col114;
                 let blake_round_output_limb_28_col115 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[14]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14]
                         .low()
                         .as_m31();
                 *row[115] = blake_round_output_limb_28_col115;
                 let blake_round_output_limb_29_col116 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[14]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14]
                         .high()
                         .as_m31();
                 *row[116] = blake_round_output_limb_29_col116;
                 let blake_round_output_limb_30_col117 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[15]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15]
                         .low()
                         .as_m31();
                 *row[117] = blake_round_output_limb_30_col117;
                 let blake_round_output_limb_31_col118 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[15]
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15]
                         .high()
                         .as_m31();
                 *row[118] = blake_round_output_limb_31_col118;
                 let blake_round_output_limb_32_col119 =
-                    blake_round_output_round_9_tmp_53f39_124.2 .1;
+                    blake_round_output_round_9_tmp_53f39_125.2 .1;
                 *row[119] = blake_round_output_limb_32_col119;
                 *lookup_data.blake_round_1 = [
                     seq,
@@ -2362,254 +2362,358 @@ fn write_trace_simd(
 
                 // Create Blake Output.
 
-                *sub_component_inputs.triple_xor_32[0] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[0],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[8],
-                    create_blake_round_input_output_tmp_53f39_114[0],
+                *sub_component_inputs.triple_xor_16[0] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[0].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8].low(),
+                    create_blake_round_input_output_tmp_53f39_114[0].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_125 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[0],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[8],
-                    create_blake_round_input_output_tmp_53f39_114[0],
+                let triple_xor_16_output_tmp_53f39_126 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[0].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8].low(),
+                    create_blake_round_input_output_tmp_53f39_114[0].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col120 =
-                    triple_xor_32_output_tmp_53f39_125.low().as_m31();
-                *row[120] = triple_xor_32_output_limb_0_col120;
-                let triple_xor_32_output_limb_1_col121 =
-                    triple_xor_32_output_tmp_53f39_125.high().as_m31();
-                *row[121] = triple_xor_32_output_limb_1_col121;
-                *lookup_data.triple_xor_32_0 = [
+                let triple_xor_16_output_col120 = triple_xor_16_output_tmp_53f39_126.as_m31();
+                *row[120] = triple_xor_16_output_col120;
+                *lookup_data.triple_xor_16_0 = [
                     blake_round_output_limb_0_col87,
-                    blake_round_output_limb_1_col88,
                     blake_round_output_limb_16_col103,
-                    blake_round_output_limb_17_col104,
                     low_16_bits_col33,
+                    triple_xor_16_output_col120,
+                ];
+                *sub_component_inputs.triple_xor_16[1] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[0].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8].high(),
+                    create_blake_round_input_output_tmp_53f39_114[0].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_127 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[0].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[8].high(),
+                    create_blake_round_input_output_tmp_53f39_114[0].high(),
+                ]);
+                let triple_xor_16_output_col121 = triple_xor_16_output_tmp_53f39_127.as_m31();
+                *row[121] = triple_xor_16_output_col121;
+                *lookup_data.triple_xor_16_1 = [
+                    blake_round_output_limb_1_col88,
+                    blake_round_output_limb_17_col104,
                     high_16_bits_col34,
-                    triple_xor_32_output_limb_0_col120,
-                    triple_xor_32_output_limb_1_col121,
+                    triple_xor_16_output_col121,
                 ];
-                *sub_component_inputs.triple_xor_32[1] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[1],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[9],
-                    create_blake_round_input_output_tmp_53f39_114[1],
+                *sub_component_inputs.triple_xor_16[2] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[1].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9].low(),
+                    create_blake_round_input_output_tmp_53f39_114[1].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_126 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[1],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[9],
-                    create_blake_round_input_output_tmp_53f39_114[1],
+                let triple_xor_16_output_tmp_53f39_128 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[1].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9].low(),
+                    create_blake_round_input_output_tmp_53f39_114[1].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col122 =
-                    triple_xor_32_output_tmp_53f39_126.low().as_m31();
-                *row[122] = triple_xor_32_output_limb_0_col122;
-                let triple_xor_32_output_limb_1_col123 =
-                    triple_xor_32_output_tmp_53f39_126.high().as_m31();
-                *row[123] = triple_xor_32_output_limb_1_col123;
-                *lookup_data.triple_xor_32_1 = [
+                let triple_xor_16_output_col122 = triple_xor_16_output_tmp_53f39_128.as_m31();
+                *row[122] = triple_xor_16_output_col122;
+                *lookup_data.triple_xor_16_2 = [
                     blake_round_output_limb_2_col89,
-                    blake_round_output_limb_3_col90,
                     blake_round_output_limb_18_col105,
-                    blake_round_output_limb_19_col106,
                     low_16_bits_col39,
+                    triple_xor_16_output_col122,
+                ];
+                *sub_component_inputs.triple_xor_16[3] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[1].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9].high(),
+                    create_blake_round_input_output_tmp_53f39_114[1].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_129 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[1].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[9].high(),
+                    create_blake_round_input_output_tmp_53f39_114[1].high(),
+                ]);
+                let triple_xor_16_output_col123 = triple_xor_16_output_tmp_53f39_129.as_m31();
+                *row[123] = triple_xor_16_output_col123;
+                *lookup_data.triple_xor_16_3 = [
+                    blake_round_output_limb_3_col90,
+                    blake_round_output_limb_19_col106,
                     high_16_bits_col40,
-                    triple_xor_32_output_limb_0_col122,
-                    triple_xor_32_output_limb_1_col123,
+                    triple_xor_16_output_col123,
                 ];
-                *sub_component_inputs.triple_xor_32[2] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[2],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[10],
-                    create_blake_round_input_output_tmp_53f39_114[2],
+                *sub_component_inputs.triple_xor_16[4] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[2].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10].low(),
+                    create_blake_round_input_output_tmp_53f39_114[2].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_127 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[2],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[10],
-                    create_blake_round_input_output_tmp_53f39_114[2],
+                let triple_xor_16_output_tmp_53f39_130 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[2].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10].low(),
+                    create_blake_round_input_output_tmp_53f39_114[2].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col124 =
-                    triple_xor_32_output_tmp_53f39_127.low().as_m31();
-                *row[124] = triple_xor_32_output_limb_0_col124;
-                let triple_xor_32_output_limb_1_col125 =
-                    triple_xor_32_output_tmp_53f39_127.high().as_m31();
-                *row[125] = triple_xor_32_output_limb_1_col125;
-                *lookup_data.triple_xor_32_2 = [
+                let triple_xor_16_output_col124 = triple_xor_16_output_tmp_53f39_130.as_m31();
+                *row[124] = triple_xor_16_output_col124;
+                *lookup_data.triple_xor_16_4 = [
                     blake_round_output_limb_4_col91,
-                    blake_round_output_limb_5_col92,
                     blake_round_output_limb_20_col107,
-                    blake_round_output_limb_21_col108,
                     low_16_bits_col45,
+                    triple_xor_16_output_col124,
+                ];
+                *sub_component_inputs.triple_xor_16[5] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[2].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10].high(),
+                    create_blake_round_input_output_tmp_53f39_114[2].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_131 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[2].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[10].high(),
+                    create_blake_round_input_output_tmp_53f39_114[2].high(),
+                ]);
+                let triple_xor_16_output_col125 = triple_xor_16_output_tmp_53f39_131.as_m31();
+                *row[125] = triple_xor_16_output_col125;
+                *lookup_data.triple_xor_16_5 = [
+                    blake_round_output_limb_5_col92,
+                    blake_round_output_limb_21_col108,
                     high_16_bits_col46,
-                    triple_xor_32_output_limb_0_col124,
-                    triple_xor_32_output_limb_1_col125,
+                    triple_xor_16_output_col125,
                 ];
-                *sub_component_inputs.triple_xor_32[3] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[3],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[11],
-                    create_blake_round_input_output_tmp_53f39_114[3],
+                *sub_component_inputs.triple_xor_16[6] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[3].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11].low(),
+                    create_blake_round_input_output_tmp_53f39_114[3].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_128 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[3],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[11],
-                    create_blake_round_input_output_tmp_53f39_114[3],
+                let triple_xor_16_output_tmp_53f39_132 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[3].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11].low(),
+                    create_blake_round_input_output_tmp_53f39_114[3].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col126 =
-                    triple_xor_32_output_tmp_53f39_128.low().as_m31();
-                *row[126] = triple_xor_32_output_limb_0_col126;
-                let triple_xor_32_output_limb_1_col127 =
-                    triple_xor_32_output_tmp_53f39_128.high().as_m31();
-                *row[127] = triple_xor_32_output_limb_1_col127;
-                *lookup_data.triple_xor_32_3 = [
+                let triple_xor_16_output_col126 = triple_xor_16_output_tmp_53f39_132.as_m31();
+                *row[126] = triple_xor_16_output_col126;
+                *lookup_data.triple_xor_16_6 = [
                     blake_round_output_limb_6_col93,
-                    blake_round_output_limb_7_col94,
                     blake_round_output_limb_22_col109,
-                    blake_round_output_limb_23_col110,
                     low_16_bits_col51,
+                    triple_xor_16_output_col126,
+                ];
+                *sub_component_inputs.triple_xor_16[7] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[3].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11].high(),
+                    create_blake_round_input_output_tmp_53f39_114[3].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_133 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[3].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[11].high(),
+                    create_blake_round_input_output_tmp_53f39_114[3].high(),
+                ]);
+                let triple_xor_16_output_col127 = triple_xor_16_output_tmp_53f39_133.as_m31();
+                *row[127] = triple_xor_16_output_col127;
+                *lookup_data.triple_xor_16_7 = [
+                    blake_round_output_limb_7_col94,
+                    blake_round_output_limb_23_col110,
                     high_16_bits_col52,
-                    triple_xor_32_output_limb_0_col126,
-                    triple_xor_32_output_limb_1_col127,
+                    triple_xor_16_output_col127,
                 ];
-                *sub_component_inputs.triple_xor_32[4] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[4],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[12],
-                    create_blake_round_input_output_tmp_53f39_114[4],
+                *sub_component_inputs.triple_xor_16[8] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[4].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12].low(),
+                    create_blake_round_input_output_tmp_53f39_114[4].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_129 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[4],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[12],
-                    create_blake_round_input_output_tmp_53f39_114[4],
+                let triple_xor_16_output_tmp_53f39_134 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[4].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12].low(),
+                    create_blake_round_input_output_tmp_53f39_114[4].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col128 =
-                    triple_xor_32_output_tmp_53f39_129.low().as_m31();
-                *row[128] = triple_xor_32_output_limb_0_col128;
-                let triple_xor_32_output_limb_1_col129 =
-                    triple_xor_32_output_tmp_53f39_129.high().as_m31();
-                *row[129] = triple_xor_32_output_limb_1_col129;
-                *lookup_data.triple_xor_32_4 = [
+                let triple_xor_16_output_col128 = triple_xor_16_output_tmp_53f39_134.as_m31();
+                *row[128] = triple_xor_16_output_col128;
+                *lookup_data.triple_xor_16_8 = [
                     blake_round_output_limb_8_col95,
-                    blake_round_output_limb_9_col96,
                     blake_round_output_limb_24_col111,
-                    blake_round_output_limb_25_col112,
                     low_16_bits_col57,
+                    triple_xor_16_output_col128,
+                ];
+                *sub_component_inputs.triple_xor_16[9] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[4].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12].high(),
+                    create_blake_round_input_output_tmp_53f39_114[4].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_135 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[4].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[12].high(),
+                    create_blake_round_input_output_tmp_53f39_114[4].high(),
+                ]);
+                let triple_xor_16_output_col129 = triple_xor_16_output_tmp_53f39_135.as_m31();
+                *row[129] = triple_xor_16_output_col129;
+                *lookup_data.triple_xor_16_9 = [
+                    blake_round_output_limb_9_col96,
+                    blake_round_output_limb_25_col112,
                     high_16_bits_col58,
-                    triple_xor_32_output_limb_0_col128,
-                    triple_xor_32_output_limb_1_col129,
+                    triple_xor_16_output_col129,
                 ];
-                *sub_component_inputs.triple_xor_32[5] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[5],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[13],
-                    create_blake_round_input_output_tmp_53f39_114[5],
+                *sub_component_inputs.triple_xor_16[10] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13].low(),
+                    create_blake_round_input_output_tmp_53f39_114[5].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_130 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[5],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[13],
-                    create_blake_round_input_output_tmp_53f39_114[5],
+                let triple_xor_16_output_tmp_53f39_136 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13].low(),
+                    create_blake_round_input_output_tmp_53f39_114[5].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col130 =
-                    triple_xor_32_output_tmp_53f39_130.low().as_m31();
-                *row[130] = triple_xor_32_output_limb_0_col130;
-                let triple_xor_32_output_limb_1_col131 =
-                    triple_xor_32_output_tmp_53f39_130.high().as_m31();
-                *row[131] = triple_xor_32_output_limb_1_col131;
-                *lookup_data.triple_xor_32_5 = [
+                let triple_xor_16_output_col130 = triple_xor_16_output_tmp_53f39_136.as_m31();
+                *row[130] = triple_xor_16_output_col130;
+                *lookup_data.triple_xor_16_10 = [
                     blake_round_output_limb_10_col97,
-                    blake_round_output_limb_11_col98,
                     blake_round_output_limb_26_col113,
-                    blake_round_output_limb_27_col114,
                     low_16_bits_col63,
+                    triple_xor_16_output_col130,
+                ];
+                *sub_component_inputs.triple_xor_16[11] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13].high(),
+                    create_blake_round_input_output_tmp_53f39_114[5].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_137 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[5].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[13].high(),
+                    create_blake_round_input_output_tmp_53f39_114[5].high(),
+                ]);
+                let triple_xor_16_output_col131 = triple_xor_16_output_tmp_53f39_137.as_m31();
+                *row[131] = triple_xor_16_output_col131;
+                *lookup_data.triple_xor_16_11 = [
+                    blake_round_output_limb_11_col98,
+                    blake_round_output_limb_27_col114,
                     high_16_bits_col64,
-                    triple_xor_32_output_limb_0_col130,
-                    triple_xor_32_output_limb_1_col131,
+                    triple_xor_16_output_col131,
                 ];
-                *sub_component_inputs.triple_xor_32[6] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[6],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[14],
-                    create_blake_round_input_output_tmp_53f39_114[6],
+                *sub_component_inputs.triple_xor_16[12] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14].low(),
+                    create_blake_round_input_output_tmp_53f39_114[6].low(),
                 ];
-                let triple_xor_32_output_tmp_53f39_131 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[6],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[14],
-                    create_blake_round_input_output_tmp_53f39_114[6],
+                let triple_xor_16_output_tmp_53f39_138 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14].low(),
+                    create_blake_round_input_output_tmp_53f39_114[6].low(),
                 ]);
-                let triple_xor_32_output_limb_0_col132 =
-                    triple_xor_32_output_tmp_53f39_131.low().as_m31();
-                *row[132] = triple_xor_32_output_limb_0_col132;
-                let triple_xor_32_output_limb_1_col133 =
-                    triple_xor_32_output_tmp_53f39_131.high().as_m31();
-                *row[133] = triple_xor_32_output_limb_1_col133;
-                *lookup_data.triple_xor_32_6 = [
+                let triple_xor_16_output_col132 = triple_xor_16_output_tmp_53f39_138.as_m31();
+                *row[132] = triple_xor_16_output_col132;
+                *lookup_data.triple_xor_16_12 = [
                     blake_round_output_limb_12_col99,
-                    blake_round_output_limb_13_col100,
                     blake_round_output_limb_28_col115,
-                    blake_round_output_limb_29_col116,
                     low_16_bits_col69,
-                    high_16_bits_col70,
-                    triple_xor_32_output_limb_0_col132,
-                    triple_xor_32_output_limb_1_col133,
+                    triple_xor_16_output_col132,
                 ];
-                *sub_component_inputs.triple_xor_32[7] = [
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[7],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[15],
-                    create_blake_round_input_output_tmp_53f39_114[7],
+                *sub_component_inputs.triple_xor_16[13] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14].high(),
+                    create_blake_round_input_output_tmp_53f39_114[6].high(),
                 ];
-                let triple_xor_32_output_tmp_53f39_132 = PackedTripleXor32::deduce_output([
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[7],
-                    blake_round_output_round_9_tmp_53f39_124.2 .0[15],
-                    create_blake_round_input_output_tmp_53f39_114[7],
+                let triple_xor_16_output_tmp_53f39_139 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[6].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[14].high(),
+                    create_blake_round_input_output_tmp_53f39_114[6].high(),
                 ]);
-                let triple_xor_32_output_limb_0_col134 =
-                    triple_xor_32_output_tmp_53f39_132.low().as_m31();
-                *row[134] = triple_xor_32_output_limb_0_col134;
-                let triple_xor_32_output_limb_1_col135 =
-                    triple_xor_32_output_tmp_53f39_132.high().as_m31();
-                *row[135] = triple_xor_32_output_limb_1_col135;
-                *lookup_data.triple_xor_32_7 = [
-                    blake_round_output_limb_14_col101,
-                    blake_round_output_limb_15_col102,
-                    blake_round_output_limb_30_col117,
-                    blake_round_output_limb_31_col118,
-                    low_16_bits_col75,
-                    high_16_bits_col76,
-                    triple_xor_32_output_limb_0_col134,
-                    triple_xor_32_output_limb_1_col135,
+                let triple_xor_16_output_col133 = triple_xor_16_output_tmp_53f39_139.as_m31();
+                *row[133] = triple_xor_16_output_col133;
+                *lookup_data.triple_xor_16_13 = [
+                    blake_round_output_limb_13_col100,
+                    blake_round_output_limb_29_col116,
+                    high_16_bits_col70,
+                    triple_xor_16_output_col133,
                 ];
-                let create_blake_output_output_tmp_53f39_133 = [
-                    triple_xor_32_output_tmp_53f39_125,
-                    triple_xor_32_output_tmp_53f39_126,
-                    triple_xor_32_output_tmp_53f39_127,
-                    triple_xor_32_output_tmp_53f39_128,
-                    triple_xor_32_output_tmp_53f39_129,
-                    triple_xor_32_output_tmp_53f39_130,
-                    triple_xor_32_output_tmp_53f39_131,
-                    triple_xor_32_output_tmp_53f39_132,
+                *sub_component_inputs.triple_xor_16[14] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15].low(),
+                    create_blake_round_input_output_tmp_53f39_114[7].low(),
+                ];
+                let triple_xor_16_output_tmp_53f39_140 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7].low(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15].low(),
+                    create_blake_round_input_output_tmp_53f39_114[7].low(),
+                ]);
+                let triple_xor_16_output_col134 = triple_xor_16_output_tmp_53f39_140.as_m31();
+                *row[134] = triple_xor_16_output_col134;
+                *lookup_data.triple_xor_16_14 = [
+                    blake_round_output_limb_14_col101,
+                    blake_round_output_limb_30_col117,
+                    low_16_bits_col75,
+                    triple_xor_16_output_col134,
+                ];
+                *sub_component_inputs.triple_xor_16[15] = [
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15].high(),
+                    create_blake_round_input_output_tmp_53f39_114[7].high(),
+                ];
+                let triple_xor_16_output_tmp_53f39_141 = PackedTripleXor16::deduce_output([
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[7].high(),
+                    blake_round_output_round_9_tmp_53f39_125.2 .0[15].high(),
+                    create_blake_round_input_output_tmp_53f39_114[7].high(),
+                ]);
+                let triple_xor_16_output_col135 = triple_xor_16_output_tmp_53f39_141.as_m31();
+                *row[135] = triple_xor_16_output_col135;
+                *lookup_data.triple_xor_16_15 = [
+                    blake_round_output_limb_15_col102,
+                    blake_round_output_limb_31_col118,
+                    high_16_bits_col76,
+                    triple_xor_16_output_col135,
+                ];
+                let create_blake_output_output_tmp_53f39_142 = [
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col120,
+                        triple_xor_16_output_col121,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col122,
+                        triple_xor_16_output_col123,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col124,
+                        triple_xor_16_output_col125,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col126,
+                        triple_xor_16_output_col127,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col128,
+                        triple_xor_16_output_col129,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col130,
+                        triple_xor_16_output_col131,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col132,
+                        triple_xor_16_output_col133,
+                    ]),
+                    PackedUInt32::from_limbs([
+                        triple_xor_16_output_col134,
+                        triple_xor_16_output_col135,
+                    ]),
                 ];
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_134 =
-                    ((create_blake_output_output_tmp_53f39_133[0].low()) >> (UInt16_9));
-                let low_7_ms_bits_col136 = low_7_ms_bits_tmp_53f39_134.as_m31();
+                let low_7_ms_bits_tmp_53f39_143 =
+                    ((create_blake_output_output_tmp_53f39_142[0].low()) >> (UInt16_9));
+                let low_7_ms_bits_col136 = low_7_ms_bits_tmp_53f39_143.as_m31();
                 *row[136] = low_7_ms_bits_col136;
-                let high_14_ms_bits_tmp_53f39_135 =
-                    ((create_blake_output_output_tmp_53f39_133[0].high()) >> (UInt16_2));
-                let high_14_ms_bits_col137 = high_14_ms_bits_tmp_53f39_135.as_m31();
+                let high_14_ms_bits_tmp_53f39_144 =
+                    ((create_blake_output_output_tmp_53f39_142[0].high()) >> (UInt16_2));
+                let high_14_ms_bits_col137 = high_14_ms_bits_tmp_53f39_144.as_m31();
                 *row[137] = high_14_ms_bits_col137;
-                let high_5_ms_bits_tmp_53f39_136 = ((high_14_ms_bits_tmp_53f39_135) >> (UInt16_9));
-                let high_5_ms_bits_col138 = high_5_ms_bits_tmp_53f39_136.as_m31();
+                let high_5_ms_bits_tmp_53f39_145 = ((high_14_ms_bits_tmp_53f39_144) >> (UInt16_9));
+                let high_5_ms_bits_col138 = high_5_ms_bits_tmp_53f39_145.as_m31();
                 *row[138] = high_5_ms_bits_col138;
                 *sub_component_inputs.range_check_7_2_5[9] = [
                     low_7_ms_bits_col136,
-                    ((triple_xor_32_output_limb_1_col121) - ((high_14_ms_bits_col137) * (M31_4))),
+                    ((triple_xor_16_output_col121) - ((high_14_ms_bits_col137) * (M31_4))),
                     high_5_ms_bits_col138,
                 ];
                 *lookup_data.range_check_7_2_5_9 = [
                     low_7_ms_bits_col136,
-                    ((triple_xor_32_output_limb_1_col121) - ((high_14_ms_bits_col137) * (M31_4))),
+                    ((triple_xor_16_output_col121) - ((high_14_ms_bits_col137) * (M31_4))),
                     high_5_ms_bits_col138,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_137 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_146 = memory_address_to_id_state
                     .deduce_output(decode_blake_opcode_output_tmp_53f39_29.0[2]);
-                let new_state_0_id_col139 = memory_address_to_id_value_tmp_53f39_137;
+                let new_state_0_id_col139 = memory_address_to_id_value_tmp_53f39_146;
                 *row[139] = new_state_0_id_col139;
                 *sub_component_inputs.memory_address_to_id[12] =
                     decode_blake_opcode_output_tmp_53f39_29.0[2];
@@ -2620,10 +2724,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[12] = new_state_0_id_col139;
                 *lookup_data.memory_id_to_big_12 = [
                     new_state_0_id_col139,
-                    ((triple_xor_32_output_limb_0_col120) - ((low_7_ms_bits_col136) * (M31_512))),
+                    ((triple_xor_16_output_col120) - ((low_7_ms_bits_col136) * (M31_512))),
                     ((low_7_ms_bits_col136)
-                        + (((triple_xor_32_output_limb_1_col121)
-                            - ((high_14_ms_bits_col137) * (M31_4)))
+                        + (((triple_xor_16_output_col121) - ((high_14_ms_bits_col137) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col137) - ((high_5_ms_bits_col138) * (M31_512))),
                     high_5_ms_bits_col138,
@@ -2655,33 +2758,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_138 =
-                    ((create_blake_output_output_tmp_53f39_133[1].low()) >> (UInt16_9));
-                let low_7_ms_bits_col140 = low_7_ms_bits_tmp_53f39_138.as_m31();
+                let low_7_ms_bits_tmp_53f39_147 =
+                    ((create_blake_output_output_tmp_53f39_142[1].low()) >> (UInt16_9));
+                let low_7_ms_bits_col140 = low_7_ms_bits_tmp_53f39_147.as_m31();
                 *row[140] = low_7_ms_bits_col140;
-                let high_14_ms_bits_tmp_53f39_139 =
-                    ((create_blake_output_output_tmp_53f39_133[1].high()) >> (UInt16_2));
-                let high_14_ms_bits_col141 = high_14_ms_bits_tmp_53f39_139.as_m31();
+                let high_14_ms_bits_tmp_53f39_148 =
+                    ((create_blake_output_output_tmp_53f39_142[1].high()) >> (UInt16_2));
+                let high_14_ms_bits_col141 = high_14_ms_bits_tmp_53f39_148.as_m31();
                 *row[141] = high_14_ms_bits_col141;
-                let high_5_ms_bits_tmp_53f39_140 = ((high_14_ms_bits_tmp_53f39_139) >> (UInt16_9));
-                let high_5_ms_bits_col142 = high_5_ms_bits_tmp_53f39_140.as_m31();
+                let high_5_ms_bits_tmp_53f39_149 = ((high_14_ms_bits_tmp_53f39_148) >> (UInt16_9));
+                let high_5_ms_bits_col142 = high_5_ms_bits_tmp_53f39_149.as_m31();
                 *row[142] = high_5_ms_bits_col142;
                 *sub_component_inputs.range_check_7_2_5[10] = [
                     low_7_ms_bits_col140,
-                    ((triple_xor_32_output_limb_1_col123) - ((high_14_ms_bits_col141) * (M31_4))),
+                    ((triple_xor_16_output_col123) - ((high_14_ms_bits_col141) * (M31_4))),
                     high_5_ms_bits_col142,
                 ];
                 *lookup_data.range_check_7_2_5_10 = [
                     low_7_ms_bits_col140,
-                    ((triple_xor_32_output_limb_1_col123) - ((high_14_ms_bits_col141) * (M31_4))),
+                    ((triple_xor_16_output_col123) - ((high_14_ms_bits_col141) * (M31_4))),
                     high_5_ms_bits_col142,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_141 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_150 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_1)));
-                let new_state_1_id_col143 = memory_address_to_id_value_tmp_53f39_141;
+                let new_state_1_id_col143 = memory_address_to_id_value_tmp_53f39_150;
                 *row[143] = new_state_1_id_col143;
                 *sub_component_inputs.memory_address_to_id[13] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_1));
@@ -2692,10 +2795,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[13] = new_state_1_id_col143;
                 *lookup_data.memory_id_to_big_13 = [
                     new_state_1_id_col143,
-                    ((triple_xor_32_output_limb_0_col122) - ((low_7_ms_bits_col140) * (M31_512))),
+                    ((triple_xor_16_output_col122) - ((low_7_ms_bits_col140) * (M31_512))),
                     ((low_7_ms_bits_col140)
-                        + (((triple_xor_32_output_limb_1_col123)
-                            - ((high_14_ms_bits_col141) * (M31_4)))
+                        + (((triple_xor_16_output_col123) - ((high_14_ms_bits_col141) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col141) - ((high_5_ms_bits_col142) * (M31_512))),
                     high_5_ms_bits_col142,
@@ -2727,33 +2829,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_142 =
-                    ((create_blake_output_output_tmp_53f39_133[2].low()) >> (UInt16_9));
-                let low_7_ms_bits_col144 = low_7_ms_bits_tmp_53f39_142.as_m31();
+                let low_7_ms_bits_tmp_53f39_151 =
+                    ((create_blake_output_output_tmp_53f39_142[2].low()) >> (UInt16_9));
+                let low_7_ms_bits_col144 = low_7_ms_bits_tmp_53f39_151.as_m31();
                 *row[144] = low_7_ms_bits_col144;
-                let high_14_ms_bits_tmp_53f39_143 =
-                    ((create_blake_output_output_tmp_53f39_133[2].high()) >> (UInt16_2));
-                let high_14_ms_bits_col145 = high_14_ms_bits_tmp_53f39_143.as_m31();
+                let high_14_ms_bits_tmp_53f39_152 =
+                    ((create_blake_output_output_tmp_53f39_142[2].high()) >> (UInt16_2));
+                let high_14_ms_bits_col145 = high_14_ms_bits_tmp_53f39_152.as_m31();
                 *row[145] = high_14_ms_bits_col145;
-                let high_5_ms_bits_tmp_53f39_144 = ((high_14_ms_bits_tmp_53f39_143) >> (UInt16_9));
-                let high_5_ms_bits_col146 = high_5_ms_bits_tmp_53f39_144.as_m31();
+                let high_5_ms_bits_tmp_53f39_153 = ((high_14_ms_bits_tmp_53f39_152) >> (UInt16_9));
+                let high_5_ms_bits_col146 = high_5_ms_bits_tmp_53f39_153.as_m31();
                 *row[146] = high_5_ms_bits_col146;
                 *sub_component_inputs.range_check_7_2_5[11] = [
                     low_7_ms_bits_col144,
-                    ((triple_xor_32_output_limb_1_col125) - ((high_14_ms_bits_col145) * (M31_4))),
+                    ((triple_xor_16_output_col125) - ((high_14_ms_bits_col145) * (M31_4))),
                     high_5_ms_bits_col146,
                 ];
                 *lookup_data.range_check_7_2_5_11 = [
                     low_7_ms_bits_col144,
-                    ((triple_xor_32_output_limb_1_col125) - ((high_14_ms_bits_col145) * (M31_4))),
+                    ((triple_xor_16_output_col125) - ((high_14_ms_bits_col145) * (M31_4))),
                     high_5_ms_bits_col146,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_145 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_154 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_2)));
-                let new_state_2_id_col147 = memory_address_to_id_value_tmp_53f39_145;
+                let new_state_2_id_col147 = memory_address_to_id_value_tmp_53f39_154;
                 *row[147] = new_state_2_id_col147;
                 *sub_component_inputs.memory_address_to_id[14] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_2));
@@ -2764,10 +2866,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[14] = new_state_2_id_col147;
                 *lookup_data.memory_id_to_big_14 = [
                     new_state_2_id_col147,
-                    ((triple_xor_32_output_limb_0_col124) - ((low_7_ms_bits_col144) * (M31_512))),
+                    ((triple_xor_16_output_col124) - ((low_7_ms_bits_col144) * (M31_512))),
                     ((low_7_ms_bits_col144)
-                        + (((triple_xor_32_output_limb_1_col125)
-                            - ((high_14_ms_bits_col145) * (M31_4)))
+                        + (((triple_xor_16_output_col125) - ((high_14_ms_bits_col145) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col145) - ((high_5_ms_bits_col146) * (M31_512))),
                     high_5_ms_bits_col146,
@@ -2799,33 +2900,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_146 =
-                    ((create_blake_output_output_tmp_53f39_133[3].low()) >> (UInt16_9));
-                let low_7_ms_bits_col148 = low_7_ms_bits_tmp_53f39_146.as_m31();
+                let low_7_ms_bits_tmp_53f39_155 =
+                    ((create_blake_output_output_tmp_53f39_142[3].low()) >> (UInt16_9));
+                let low_7_ms_bits_col148 = low_7_ms_bits_tmp_53f39_155.as_m31();
                 *row[148] = low_7_ms_bits_col148;
-                let high_14_ms_bits_tmp_53f39_147 =
-                    ((create_blake_output_output_tmp_53f39_133[3].high()) >> (UInt16_2));
-                let high_14_ms_bits_col149 = high_14_ms_bits_tmp_53f39_147.as_m31();
+                let high_14_ms_bits_tmp_53f39_156 =
+                    ((create_blake_output_output_tmp_53f39_142[3].high()) >> (UInt16_2));
+                let high_14_ms_bits_col149 = high_14_ms_bits_tmp_53f39_156.as_m31();
                 *row[149] = high_14_ms_bits_col149;
-                let high_5_ms_bits_tmp_53f39_148 = ((high_14_ms_bits_tmp_53f39_147) >> (UInt16_9));
-                let high_5_ms_bits_col150 = high_5_ms_bits_tmp_53f39_148.as_m31();
+                let high_5_ms_bits_tmp_53f39_157 = ((high_14_ms_bits_tmp_53f39_156) >> (UInt16_9));
+                let high_5_ms_bits_col150 = high_5_ms_bits_tmp_53f39_157.as_m31();
                 *row[150] = high_5_ms_bits_col150;
                 *sub_component_inputs.range_check_7_2_5[12] = [
                     low_7_ms_bits_col148,
-                    ((triple_xor_32_output_limb_1_col127) - ((high_14_ms_bits_col149) * (M31_4))),
+                    ((triple_xor_16_output_col127) - ((high_14_ms_bits_col149) * (M31_4))),
                     high_5_ms_bits_col150,
                 ];
                 *lookup_data.range_check_7_2_5_12 = [
                     low_7_ms_bits_col148,
-                    ((triple_xor_32_output_limb_1_col127) - ((high_14_ms_bits_col149) * (M31_4))),
+                    ((triple_xor_16_output_col127) - ((high_14_ms_bits_col149) * (M31_4))),
                     high_5_ms_bits_col150,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_149 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_158 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_3)));
-                let new_state_3_id_col151 = memory_address_to_id_value_tmp_53f39_149;
+                let new_state_3_id_col151 = memory_address_to_id_value_tmp_53f39_158;
                 *row[151] = new_state_3_id_col151;
                 *sub_component_inputs.memory_address_to_id[15] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_3));
@@ -2836,10 +2937,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[15] = new_state_3_id_col151;
                 *lookup_data.memory_id_to_big_15 = [
                     new_state_3_id_col151,
-                    ((triple_xor_32_output_limb_0_col126) - ((low_7_ms_bits_col148) * (M31_512))),
+                    ((triple_xor_16_output_col126) - ((low_7_ms_bits_col148) * (M31_512))),
                     ((low_7_ms_bits_col148)
-                        + (((triple_xor_32_output_limb_1_col127)
-                            - ((high_14_ms_bits_col149) * (M31_4)))
+                        + (((triple_xor_16_output_col127) - ((high_14_ms_bits_col149) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col149) - ((high_5_ms_bits_col150) * (M31_512))),
                     high_5_ms_bits_col150,
@@ -2871,33 +2971,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_150 =
-                    ((create_blake_output_output_tmp_53f39_133[4].low()) >> (UInt16_9));
-                let low_7_ms_bits_col152 = low_7_ms_bits_tmp_53f39_150.as_m31();
+                let low_7_ms_bits_tmp_53f39_159 =
+                    ((create_blake_output_output_tmp_53f39_142[4].low()) >> (UInt16_9));
+                let low_7_ms_bits_col152 = low_7_ms_bits_tmp_53f39_159.as_m31();
                 *row[152] = low_7_ms_bits_col152;
-                let high_14_ms_bits_tmp_53f39_151 =
-                    ((create_blake_output_output_tmp_53f39_133[4].high()) >> (UInt16_2));
-                let high_14_ms_bits_col153 = high_14_ms_bits_tmp_53f39_151.as_m31();
+                let high_14_ms_bits_tmp_53f39_160 =
+                    ((create_blake_output_output_tmp_53f39_142[4].high()) >> (UInt16_2));
+                let high_14_ms_bits_col153 = high_14_ms_bits_tmp_53f39_160.as_m31();
                 *row[153] = high_14_ms_bits_col153;
-                let high_5_ms_bits_tmp_53f39_152 = ((high_14_ms_bits_tmp_53f39_151) >> (UInt16_9));
-                let high_5_ms_bits_col154 = high_5_ms_bits_tmp_53f39_152.as_m31();
+                let high_5_ms_bits_tmp_53f39_161 = ((high_14_ms_bits_tmp_53f39_160) >> (UInt16_9));
+                let high_5_ms_bits_col154 = high_5_ms_bits_tmp_53f39_161.as_m31();
                 *row[154] = high_5_ms_bits_col154;
                 *sub_component_inputs.range_check_7_2_5[13] = [
                     low_7_ms_bits_col152,
-                    ((triple_xor_32_output_limb_1_col129) - ((high_14_ms_bits_col153) * (M31_4))),
+                    ((triple_xor_16_output_col129) - ((high_14_ms_bits_col153) * (M31_4))),
                     high_5_ms_bits_col154,
                 ];
                 *lookup_data.range_check_7_2_5_13 = [
                     low_7_ms_bits_col152,
-                    ((triple_xor_32_output_limb_1_col129) - ((high_14_ms_bits_col153) * (M31_4))),
+                    ((triple_xor_16_output_col129) - ((high_14_ms_bits_col153) * (M31_4))),
                     high_5_ms_bits_col154,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_153 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_162 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_4)));
-                let new_state_4_id_col155 = memory_address_to_id_value_tmp_53f39_153;
+                let new_state_4_id_col155 = memory_address_to_id_value_tmp_53f39_162;
                 *row[155] = new_state_4_id_col155;
                 *sub_component_inputs.memory_address_to_id[16] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_4));
@@ -2908,10 +3008,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[16] = new_state_4_id_col155;
                 *lookup_data.memory_id_to_big_16 = [
                     new_state_4_id_col155,
-                    ((triple_xor_32_output_limb_0_col128) - ((low_7_ms_bits_col152) * (M31_512))),
+                    ((triple_xor_16_output_col128) - ((low_7_ms_bits_col152) * (M31_512))),
                     ((low_7_ms_bits_col152)
-                        + (((triple_xor_32_output_limb_1_col129)
-                            - ((high_14_ms_bits_col153) * (M31_4)))
+                        + (((triple_xor_16_output_col129) - ((high_14_ms_bits_col153) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col153) - ((high_5_ms_bits_col154) * (M31_512))),
                     high_5_ms_bits_col154,
@@ -2943,33 +3042,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_154 =
-                    ((create_blake_output_output_tmp_53f39_133[5].low()) >> (UInt16_9));
-                let low_7_ms_bits_col156 = low_7_ms_bits_tmp_53f39_154.as_m31();
+                let low_7_ms_bits_tmp_53f39_163 =
+                    ((create_blake_output_output_tmp_53f39_142[5].low()) >> (UInt16_9));
+                let low_7_ms_bits_col156 = low_7_ms_bits_tmp_53f39_163.as_m31();
                 *row[156] = low_7_ms_bits_col156;
-                let high_14_ms_bits_tmp_53f39_155 =
-                    ((create_blake_output_output_tmp_53f39_133[5].high()) >> (UInt16_2));
-                let high_14_ms_bits_col157 = high_14_ms_bits_tmp_53f39_155.as_m31();
+                let high_14_ms_bits_tmp_53f39_164 =
+                    ((create_blake_output_output_tmp_53f39_142[5].high()) >> (UInt16_2));
+                let high_14_ms_bits_col157 = high_14_ms_bits_tmp_53f39_164.as_m31();
                 *row[157] = high_14_ms_bits_col157;
-                let high_5_ms_bits_tmp_53f39_156 = ((high_14_ms_bits_tmp_53f39_155) >> (UInt16_9));
-                let high_5_ms_bits_col158 = high_5_ms_bits_tmp_53f39_156.as_m31();
+                let high_5_ms_bits_tmp_53f39_165 = ((high_14_ms_bits_tmp_53f39_164) >> (UInt16_9));
+                let high_5_ms_bits_col158 = high_5_ms_bits_tmp_53f39_165.as_m31();
                 *row[158] = high_5_ms_bits_col158;
                 *sub_component_inputs.range_check_7_2_5[14] = [
                     low_7_ms_bits_col156,
-                    ((triple_xor_32_output_limb_1_col131) - ((high_14_ms_bits_col157) * (M31_4))),
+                    ((triple_xor_16_output_col131) - ((high_14_ms_bits_col157) * (M31_4))),
                     high_5_ms_bits_col158,
                 ];
                 *lookup_data.range_check_7_2_5_14 = [
                     low_7_ms_bits_col156,
-                    ((triple_xor_32_output_limb_1_col131) - ((high_14_ms_bits_col157) * (M31_4))),
+                    ((triple_xor_16_output_col131) - ((high_14_ms_bits_col157) * (M31_4))),
                     high_5_ms_bits_col158,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_157 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_166 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_5)));
-                let new_state_5_id_col159 = memory_address_to_id_value_tmp_53f39_157;
+                let new_state_5_id_col159 = memory_address_to_id_value_tmp_53f39_166;
                 *row[159] = new_state_5_id_col159;
                 *sub_component_inputs.memory_address_to_id[17] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_5));
@@ -2980,10 +3079,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[17] = new_state_5_id_col159;
                 *lookup_data.memory_id_to_big_17 = [
                     new_state_5_id_col159,
-                    ((triple_xor_32_output_limb_0_col130) - ((low_7_ms_bits_col156) * (M31_512))),
+                    ((triple_xor_16_output_col130) - ((low_7_ms_bits_col156) * (M31_512))),
                     ((low_7_ms_bits_col156)
-                        + (((triple_xor_32_output_limb_1_col131)
-                            - ((high_14_ms_bits_col157) * (M31_4)))
+                        + (((triple_xor_16_output_col131) - ((high_14_ms_bits_col157) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col157) - ((high_5_ms_bits_col158) * (M31_512))),
                     high_5_ms_bits_col158,
@@ -3015,33 +3113,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_158 =
-                    ((create_blake_output_output_tmp_53f39_133[6].low()) >> (UInt16_9));
-                let low_7_ms_bits_col160 = low_7_ms_bits_tmp_53f39_158.as_m31();
+                let low_7_ms_bits_tmp_53f39_167 =
+                    ((create_blake_output_output_tmp_53f39_142[6].low()) >> (UInt16_9));
+                let low_7_ms_bits_col160 = low_7_ms_bits_tmp_53f39_167.as_m31();
                 *row[160] = low_7_ms_bits_col160;
-                let high_14_ms_bits_tmp_53f39_159 =
-                    ((create_blake_output_output_tmp_53f39_133[6].high()) >> (UInt16_2));
-                let high_14_ms_bits_col161 = high_14_ms_bits_tmp_53f39_159.as_m31();
+                let high_14_ms_bits_tmp_53f39_168 =
+                    ((create_blake_output_output_tmp_53f39_142[6].high()) >> (UInt16_2));
+                let high_14_ms_bits_col161 = high_14_ms_bits_tmp_53f39_168.as_m31();
                 *row[161] = high_14_ms_bits_col161;
-                let high_5_ms_bits_tmp_53f39_160 = ((high_14_ms_bits_tmp_53f39_159) >> (UInt16_9));
-                let high_5_ms_bits_col162 = high_5_ms_bits_tmp_53f39_160.as_m31();
+                let high_5_ms_bits_tmp_53f39_169 = ((high_14_ms_bits_tmp_53f39_168) >> (UInt16_9));
+                let high_5_ms_bits_col162 = high_5_ms_bits_tmp_53f39_169.as_m31();
                 *row[162] = high_5_ms_bits_col162;
                 *sub_component_inputs.range_check_7_2_5[15] = [
                     low_7_ms_bits_col160,
-                    ((triple_xor_32_output_limb_1_col133) - ((high_14_ms_bits_col161) * (M31_4))),
+                    ((triple_xor_16_output_col133) - ((high_14_ms_bits_col161) * (M31_4))),
                     high_5_ms_bits_col162,
                 ];
                 *lookup_data.range_check_7_2_5_15 = [
                     low_7_ms_bits_col160,
-                    ((triple_xor_32_output_limb_1_col133) - ((high_14_ms_bits_col161) * (M31_4))),
+                    ((triple_xor_16_output_col133) - ((high_14_ms_bits_col161) * (M31_4))),
                     high_5_ms_bits_col162,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_161 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_170 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_6)));
-                let new_state_6_id_col163 = memory_address_to_id_value_tmp_53f39_161;
+                let new_state_6_id_col163 = memory_address_to_id_value_tmp_53f39_170;
                 *row[163] = new_state_6_id_col163;
                 *sub_component_inputs.memory_address_to_id[18] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_6));
@@ -3052,10 +3150,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[18] = new_state_6_id_col163;
                 *lookup_data.memory_id_to_big_18 = [
                     new_state_6_id_col163,
-                    ((triple_xor_32_output_limb_0_col132) - ((low_7_ms_bits_col160) * (M31_512))),
+                    ((triple_xor_16_output_col132) - ((low_7_ms_bits_col160) * (M31_512))),
                     ((low_7_ms_bits_col160)
-                        + (((triple_xor_32_output_limb_1_col133)
-                            - ((high_14_ms_bits_col161) * (M31_4)))
+                        + (((triple_xor_16_output_col133) - ((high_14_ms_bits_col161) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col161) - ((high_5_ms_bits_col162) * (M31_512))),
                     high_5_ms_bits_col162,
@@ -3087,33 +3184,33 @@ fn write_trace_simd(
 
                 // Verify Blake Word.
 
-                let low_7_ms_bits_tmp_53f39_162 =
-                    ((create_blake_output_output_tmp_53f39_133[7].low()) >> (UInt16_9));
-                let low_7_ms_bits_col164 = low_7_ms_bits_tmp_53f39_162.as_m31();
+                let low_7_ms_bits_tmp_53f39_171 =
+                    ((create_blake_output_output_tmp_53f39_142[7].low()) >> (UInt16_9));
+                let low_7_ms_bits_col164 = low_7_ms_bits_tmp_53f39_171.as_m31();
                 *row[164] = low_7_ms_bits_col164;
-                let high_14_ms_bits_tmp_53f39_163 =
-                    ((create_blake_output_output_tmp_53f39_133[7].high()) >> (UInt16_2));
-                let high_14_ms_bits_col165 = high_14_ms_bits_tmp_53f39_163.as_m31();
+                let high_14_ms_bits_tmp_53f39_172 =
+                    ((create_blake_output_output_tmp_53f39_142[7].high()) >> (UInt16_2));
+                let high_14_ms_bits_col165 = high_14_ms_bits_tmp_53f39_172.as_m31();
                 *row[165] = high_14_ms_bits_col165;
-                let high_5_ms_bits_tmp_53f39_164 = ((high_14_ms_bits_tmp_53f39_163) >> (UInt16_9));
-                let high_5_ms_bits_col166 = high_5_ms_bits_tmp_53f39_164.as_m31();
+                let high_5_ms_bits_tmp_53f39_173 = ((high_14_ms_bits_tmp_53f39_172) >> (UInt16_9));
+                let high_5_ms_bits_col166 = high_5_ms_bits_tmp_53f39_173.as_m31();
                 *row[166] = high_5_ms_bits_col166;
                 *sub_component_inputs.range_check_7_2_5[16] = [
                     low_7_ms_bits_col164,
-                    ((triple_xor_32_output_limb_1_col135) - ((high_14_ms_bits_col165) * (M31_4))),
+                    ((triple_xor_16_output_col135) - ((high_14_ms_bits_col165) * (M31_4))),
                     high_5_ms_bits_col166,
                 ];
                 *lookup_data.range_check_7_2_5_16 = [
                     low_7_ms_bits_col164,
-                    ((triple_xor_32_output_limb_1_col135) - ((high_14_ms_bits_col165) * (M31_4))),
+                    ((triple_xor_16_output_col135) - ((high_14_ms_bits_col165) * (M31_4))),
                     high_5_ms_bits_col166,
                 ];
 
                 // Mem Verify.
 
-                let memory_address_to_id_value_tmp_53f39_165 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_53f39_174 = memory_address_to_id_state
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_7)));
-                let new_state_7_id_col167 = memory_address_to_id_value_tmp_53f39_165;
+                let new_state_7_id_col167 = memory_address_to_id_value_tmp_53f39_174;
                 *row[167] = new_state_7_id_col167;
                 *sub_component_inputs.memory_address_to_id[19] =
                     ((decode_blake_opcode_output_tmp_53f39_29.0[2]) + (M31_7));
@@ -3124,10 +3221,9 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_id_to_big[19] = new_state_7_id_col167;
                 *lookup_data.memory_id_to_big_19 = [
                     new_state_7_id_col167,
-                    ((triple_xor_32_output_limb_0_col134) - ((low_7_ms_bits_col164) * (M31_512))),
+                    ((triple_xor_16_output_col134) - ((low_7_ms_bits_col164) * (M31_512))),
                     ((low_7_ms_bits_col164)
-                        + (((triple_xor_32_output_limb_1_col135)
-                            - ((high_14_ms_bits_col165) * (M31_4)))
+                        + (((triple_xor_16_output_col135) - ((high_14_ms_bits_col165) * (M31_4)))
                             * (M31_128))),
                     ((high_14_ms_bits_col165) - ((high_5_ms_bits_col166) * (M31_512))),
                     high_5_ms_bits_col166,
@@ -3233,14 +3329,22 @@ struct LookupData {
     range_check_7_2_5_14: Vec<[PackedM31; 3]>,
     range_check_7_2_5_15: Vec<[PackedM31; 3]>,
     range_check_7_2_5_16: Vec<[PackedM31; 3]>,
-    triple_xor_32_0: Vec<[PackedM31; 8]>,
-    triple_xor_32_1: Vec<[PackedM31; 8]>,
-    triple_xor_32_2: Vec<[PackedM31; 8]>,
-    triple_xor_32_3: Vec<[PackedM31; 8]>,
-    triple_xor_32_4: Vec<[PackedM31; 8]>,
-    triple_xor_32_5: Vec<[PackedM31; 8]>,
-    triple_xor_32_6: Vec<[PackedM31; 8]>,
-    triple_xor_32_7: Vec<[PackedM31; 8]>,
+    triple_xor_16_0: Vec<[PackedM31; 4]>,
+    triple_xor_16_1: Vec<[PackedM31; 4]>,
+    triple_xor_16_2: Vec<[PackedM31; 4]>,
+    triple_xor_16_3: Vec<[PackedM31; 4]>,
+    triple_xor_16_4: Vec<[PackedM31; 4]>,
+    triple_xor_16_5: Vec<[PackedM31; 4]>,
+    triple_xor_16_6: Vec<[PackedM31; 4]>,
+    triple_xor_16_7: Vec<[PackedM31; 4]>,
+    triple_xor_16_8: Vec<[PackedM31; 4]>,
+    triple_xor_16_9: Vec<[PackedM31; 4]>,
+    triple_xor_16_10: Vec<[PackedM31; 4]>,
+    triple_xor_16_11: Vec<[PackedM31; 4]>,
+    triple_xor_16_12: Vec<[PackedM31; 4]>,
+    triple_xor_16_13: Vec<[PackedM31; 4]>,
+    triple_xor_16_14: Vec<[PackedM31; 4]>,
+    triple_xor_16_15: Vec<[PackedM31; 4]>,
     verify_bitwise_xor_8_0: Vec<[PackedM31; 3]>,
     verify_bitwise_xor_8_1: Vec<[PackedM31; 3]>,
     verify_bitwise_xor_8_2: Vec<[PackedM31; 3]>,
@@ -3262,7 +3366,7 @@ impl InteractionClaimGenerator {
         memory_id_to_big: &relations::MemoryIdToBig,
         opcodes: &relations::Opcodes,
         range_check_7_2_5: &relations::RangeCheck_7_2_5,
-        triple_xor_32: &relations::TripleXor32,
+        triple_xor_16: &relations::TripleXor16,
         verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
@@ -3553,13 +3657,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.triple_xor_32_0,
-            &self.lookup_data.triple_xor_32_1,
+            &self.lookup_data.triple_xor_16_0,
+            &self.lookup_data.triple_xor_16_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = triple_xor_32.combine(values0);
-                let denom1: PackedQM31 = triple_xor_32.combine(values1);
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -3567,13 +3671,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.triple_xor_32_2,
-            &self.lookup_data.triple_xor_32_3,
+            &self.lookup_data.triple_xor_16_2,
+            &self.lookup_data.triple_xor_16_3,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = triple_xor_32.combine(values0);
-                let denom1: PackedQM31 = triple_xor_32.combine(values1);
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -3581,13 +3685,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.triple_xor_32_4,
-            &self.lookup_data.triple_xor_32_5,
+            &self.lookup_data.triple_xor_16_4,
+            &self.lookup_data.triple_xor_16_5,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = triple_xor_32.combine(values0);
-                let denom1: PackedQM31 = triple_xor_32.combine(values1);
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -3595,13 +3699,69 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.triple_xor_32_6,
-            &self.lookup_data.triple_xor_32_7,
+            &self.lookup_data.triple_xor_16_6,
+            &self.lookup_data.triple_xor_16_7,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = triple_xor_32.combine(values0);
-                let denom1: PackedQM31 = triple_xor_32.combine(values1);
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.triple_xor_16_8,
+            &self.lookup_data.triple_xor_16_9,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.triple_xor_16_10,
+            &self.lookup_data.triple_xor_16_11,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.triple_xor_16_12,
+            &self.lookup_data.triple_xor_16_13,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.triple_xor_16_14,
+            &self.lookup_data.triple_xor_16_15,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = triple_xor_16.combine(values0);
+                let denom1: PackedQM31 = triple_xor_16.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

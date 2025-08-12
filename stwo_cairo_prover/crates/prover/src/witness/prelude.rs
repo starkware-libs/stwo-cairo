@@ -25,7 +25,7 @@ pub use stwo_cairo_common::prover_types::simd::*;
 pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
 pub use crate::witness::fast_deduction::blake::{
-    BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor32,
+    BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor16,
 };
 pub use crate::witness::fast_deduction::pedersen::{PackedPartialEcMul, PackedPedersenPointsTable};
 pub use crate::witness::fast_deduction::poseidon::{

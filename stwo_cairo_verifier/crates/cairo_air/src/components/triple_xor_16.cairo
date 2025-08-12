@@ -15,10 +15,10 @@ use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::cairo_component::CairoComponent;
-use crate::PreprocessedColumnTrait;use crate::components::subroutines::decode_instruction_43e1c::decode_instruction_43e1c_evaluate;use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::PreprocessedColumnTrait;use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
 
-pub const N_TRACE_COLUMNS: usize = 13;pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
-    ('VerifyInstruction', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1), ('Opcodes', 1)
+pub const N_TRACE_COLUMNS: usize = 11;pub const RELATION_USES_PER_ROW: [(felt252, u32); 1] = [
+    ('VerifyBitwiseXor_8', 4)
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -58,10 +58,8 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
-pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-pub opcodes_lookup_elements: crate::OpcodesElements,
+    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
+pub triple_xor_16_lookup_elements: crate::TripleXor16Elements,
 }
 
 pub impl ComponentImpl of CairoComponent<Component> {
@@ -75,7 +73,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -99,63 +97,74 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut verify_instruction_sum_0: QM31 = Zero::zero();let mut memory_address_to_id_sum_1: QM31 = Zero::zero();let mut memory_id_to_big_sum_2: QM31 = Zero::zero();let mut opcodes_sum_3: QM31 = Zero::zero();let mut opcodes_sum_4: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_sum_0: QM31 = Zero::zero();let mut verify_bitwise_xor_8_sum_1: QM31 = Zero::zero();let mut verify_bitwise_xor_8_sum_2: QM31 = Zero::zero();let mut verify_bitwise_xor_8_sum_3: QM31 = Zero::zero();let mut triple_xor_16_sum_4: QM31 = Zero::zero();
 
-        let [input_pc_col0, input_ap_col1, input_fp_col2, offset2_col3, op1_base_fp_col4, op1_base_ap_col5, ap_update_add_1_col6, mem1_base_col7, next_pc_id_col8, next_pc_limb_0_col9, next_pc_limb_1_col10, next_pc_limb_2_col11, enabler]: [Span<QM31>; 13]
+        let [input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, ms_8_bits_col3, ms_8_bits_col4, ms_8_bits_col5, xor_col6, xor_col7, xor_col8, xor_col9, enabler]: [Span<QM31>; 11]
             = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
-        let [input_pc_col0]: [QM31; 1] = (*input_pc_col0.try_into().unwrap()).unbox();let [input_ap_col1]: [QM31; 1] = (*input_ap_col1.try_into().unwrap()).unbox();let [input_fp_col2]: [QM31; 1] = (*input_fp_col2.try_into().unwrap()).unbox();let [offset2_col3]: [QM31; 1] = (*offset2_col3.try_into().unwrap()).unbox();let [op1_base_fp_col4]: [QM31; 1] = (*op1_base_fp_col4.try_into().unwrap()).unbox();let [op1_base_ap_col5]: [QM31; 1] = (*op1_base_ap_col5.try_into().unwrap()).unbox();let [ap_update_add_1_col6]: [QM31; 1] = (*ap_update_add_1_col6.try_into().unwrap()).unbox();let [mem1_base_col7]: [QM31; 1] = (*mem1_base_col7.try_into().unwrap()).unbox();let [next_pc_id_col8]: [QM31; 1] = (*next_pc_id_col8.try_into().unwrap()).unbox();let [next_pc_limb_0_col9]: [QM31; 1] = (*next_pc_limb_0_col9.try_into().unwrap()).unbox();let [next_pc_limb_1_col10]: [QM31; 1] = (*next_pc_limb_1_col10.try_into().unwrap()).unbox();let [next_pc_limb_2_col11]: [QM31; 1] = (*next_pc_limb_2_col11.try_into().unwrap()).unbox();let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [input_limb_0_col0]: [QM31; 1] = (*input_limb_0_col0.try_into().unwrap()).unbox();let [input_limb_1_col1]: [QM31; 1] = (*input_limb_1_col1.try_into().unwrap()).unbox();let [input_limb_2_col2]: [QM31; 1] = (*input_limb_2_col2.try_into().unwrap()).unbox();let [ms_8_bits_col3]: [QM31; 1] = (*ms_8_bits_col3.try_into().unwrap()).unbox();let [ms_8_bits_col4]: [QM31; 1] = (*ms_8_bits_col4.try_into().unwrap()).unbox();let [ms_8_bits_col5]: [QM31; 1] = (*ms_8_bits_col5.try_into().unwrap()).unbox();let [xor_col6]: [QM31; 1] = (*xor_col6.try_into().unwrap()).unbox();let [xor_col7]: [QM31; 1] = (*xor_col7.try_into().unwrap()).unbox();let [xor_col8]: [QM31; 1] = (*xor_col8.try_into().unwrap()).unbox();let [xor_col9]: [QM31; 1] = (*xor_col9.try_into().unwrap()).unbox();let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
 
         core::internal::revoke_ap_tracking();
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
-        sum = sum * random_coeff + constraint_quotient;let decode_instruction_43e1c_output_tmp_39ce3_6_offset2: QM31 = decode_instruction_43e1c_evaluate(
-            input_pc_col0,
-offset2_col3,
-op1_base_fp_col4,
-op1_base_ap_col5,
-ap_update_add_1_col6,
-self.verify_instruction_lookup_elements,
-ref verify_instruction_sum_0,
+        sum = sum * random_coeff + constraint_quotient;let split_16_low_part_size_8_output_tmp_3c0e0_1_limb_0: QM31 = split_16_low_part_size_8_evaluate(
+            input_limb_0_col0,
+ms_8_bits_col3,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );let split_16_low_part_size_8_output_tmp_3c0e0_3_limb_0: QM31 = split_16_low_part_size_8_evaluate(
+            input_limb_1_col1,
+ms_8_bits_col4,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );let split_16_low_part_size_8_output_tmp_3c0e0_5_limb_0: QM31 = split_16_low_part_size_8_evaluate(
+            input_limb_2_col2,
+ms_8_bits_col5,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );bitwise_xor_num_bits_8_evaluate(
+            [split_16_low_part_size_8_output_tmp_3c0e0_1_limb_0, split_16_low_part_size_8_output_tmp_3c0e0_3_limb_0],
+xor_col6,
+self.verify_bitwise_xor_8_lookup_elements,
+ref verify_bitwise_xor_8_sum_0,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );bitwise_xor_num_bits_8_evaluate(
+            [xor_col6, split_16_low_part_size_8_output_tmp_3c0e0_5_limb_0],
+xor_col7,
+self.verify_bitwise_xor_8_lookup_elements,
+ref verify_bitwise_xor_8_sum_1,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );bitwise_xor_num_bits_8_evaluate(
+            [ms_8_bits_col3, ms_8_bits_col4],
+xor_col8,
+self.verify_bitwise_xor_8_lookup_elements,
+ref verify_bitwise_xor_8_sum_2,
+ref sum,
+domain_vanishing_eval_inv,
+random_coeff
+        );bitwise_xor_num_bits_8_evaluate(
+            [xor_col8, ms_8_bits_col5],
+xor_col9,
+self.verify_bitwise_xor_8_lookup_elements,
+ref verify_bitwise_xor_8_sum_3,
 ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );
 
-        // Constraint - Either flag op1_base_fp is on or flag op1_base_ap is on
-        let constraint_quotient = (((op1_base_fp_col4 + op1_base_ap_col5) - qm31_const::<1, 0, 0, 0>())) * domain_vanishing_eval_inv;
-        sum = sum * random_coeff + constraint_quotient;
-
-        // Constraint - mem1_base
-        let constraint_quotient = ((mem1_base_col7 - ((op1_base_fp_col4 * input_fp_col2) + (op1_base_ap_col5 * input_ap_col1)))) * domain_vanishing_eval_inv;
-        sum = sum * random_coeff + constraint_quotient;read_positive_num_bits_27_evaluate(
-            (mem1_base_col7 + decode_instruction_43e1c_output_tmp_39ce3_6_offset2),
-next_pc_id_col8,
-next_pc_limb_0_col9,
-next_pc_limb_1_col10,
-next_pc_limb_2_col11,
-self.memory_address_to_id_lookup_elements,
-self.memory_id_to_big_lookup_elements,
-ref memory_address_to_id_sum_1,
-ref memory_id_to_big_sum_2,
-ref sum,
-domain_vanishing_eval_inv,
-random_coeff
-        );
-
-        opcodes_sum_3 = self.opcodes_lookup_elements.combine_qm31(
+        triple_xor_16_sum_4 = self.triple_xor_16_lookup_elements.combine_qm31(
             [
-                input_pc_col0,
-input_ap_col1,
-input_fp_col2
-            ],
-        );
-
-        opcodes_sum_4 = self.opcodes_lookup_elements.combine_qm31(
-            [
-                ((next_pc_limb_0_col9 + (next_pc_limb_1_col10 * qm31_const::<512, 0, 0, 0>())) + (next_pc_limb_2_col11 * qm31_const::<262144, 0, 0, 0>())),
-(input_ap_col1 + ap_update_add_1_col6),
-input_fp_col2
+                input_limb_0_col0,
+input_limb_1_col1,
+input_limb_2_col2,
+(xor_col7 + (xor_col9 * qm31_const::<256, 0, 0, 0>()))
             ],
         );
 
@@ -167,11 +176,11 @@ input_fp_col2
             enabler,
             column_size,
             ref interaction_trace_mask_values,
-            verify_instruction_sum_0,
-memory_address_to_id_sum_1,
-memory_id_to_big_sum_2,
-opcodes_sum_3,
-opcodes_sum_4
+            verify_bitwise_xor_8_sum_0,
+verify_bitwise_xor_8_sum_1,
+verify_bitwise_xor_8_sum_2,
+verify_bitwise_xor_8_sum_3,
+triple_xor_16_sum_4
         );
     }
 }
@@ -187,11 +196,11 @@ fn lookup_constraints(
     enabler: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    verify_instruction_sum_0: QM31,
-memory_address_to_id_sum_1: QM31,
-memory_id_to_big_sum_2: QM31,
-opcodes_sum_3: QM31,
-opcodes_sum_4: QM31
+    verify_bitwise_xor_8_sum_0: QM31,
+verify_bitwise_xor_8_sum_1: QM31,
+verify_bitwise_xor_8_sum_2: QM31,
+verify_bitwise_xor_8_sum_3: QM31,
+triple_xor_16_sum_4: QM31
 ) {
     let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3, trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7, trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]: [Span<QM31>; 12]
         = (*interaction_trace_mask_values.multi_pop_front().unwrap()).unbox();
@@ -217,8 +226,8 @@ let constraint_quotient = (
         (
             (
                 QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3])
-            ) * verify_instruction_sum_0 * memory_address_to_id_sum_1
-        ) - verify_instruction_sum_0 - memory_address_to_id_sum_1
+            ) * verify_bitwise_xor_8_sum_0 * verify_bitwise_xor_8_sum_1
+        ) - verify_bitwise_xor_8_sum_0 - verify_bitwise_xor_8_sum_1
     ) * domain_vanishing_eval_inv;
 sum = sum * random_coeff + constraint_quotient;
 
@@ -227,8 +236,8 @@ let constraint_quotient = (
             (
                 QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]) 
                 - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3])
-            ) * memory_id_to_big_sum_2 * opcodes_sum_3
-        ) - (memory_id_to_big_sum_2 * enabler) - opcodes_sum_3
+            ) * verify_bitwise_xor_8_sum_2 * verify_bitwise_xor_8_sum_3
+        ) - verify_bitwise_xor_8_sum_2 - verify_bitwise_xor_8_sum_3
     ) * domain_vanishing_eval_inv;
 sum = sum * random_coeff + constraint_quotient;
 
@@ -239,7 +248,7 @@ let constraint_quotient = (
                 - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]) 
                 - QM31Impl::from_partial_evals([trace_2_col8_neg1, trace_2_col9_neg1, trace_2_col10_neg1, trace_2_col11_neg1])
                 + (claimed_sum * (column_size.inverse().into()))
-            ) * opcodes_sum_4
+            ) * triple_xor_16_sum_4
         ) + enabler
     ) * domain_vanishing_eval_inv;
 sum = sum * random_coeff + constraint_quotient;

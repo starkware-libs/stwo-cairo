@@ -1,7 +1,8 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadSmall {}
 
 impl ReadSmall {

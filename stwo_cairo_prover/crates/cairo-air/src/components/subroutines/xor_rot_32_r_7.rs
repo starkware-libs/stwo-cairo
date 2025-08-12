@@ -1,9 +1,10 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_7::BitwiseXorNumBits7;
 use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
 use crate::components::subroutines::split_16_low_part_size_7::Split16LowPartSize7;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct XorRot32R7 {}
 
 impl XorRot32R7 {

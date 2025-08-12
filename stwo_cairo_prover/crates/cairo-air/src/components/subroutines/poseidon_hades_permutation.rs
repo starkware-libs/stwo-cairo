@@ -1,10 +1,11 @@
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::linear_combination_n_2_coefs_1_1::LinearCombinationN2Coefs11;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
 use crate::components::subroutines::linear_combination_n_4_coefs_4_2_1_1::LinearCombinationN4Coefs4211;
 use crate::components::subroutines::linear_combination_n_4_coefs_4_2_m2_1::LinearCombinationN4Coefs42M21;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct PoseidonHadesPermutation {}
 
 impl PoseidonHadesPermutation {

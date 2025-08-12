@@ -471,7 +471,7 @@ impl OpcodeComponents {
                             .range_checks
                             .rc_7_2_5
                             .clone(),
-                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+                        triple_xor_16_lookup_elements: interaction_elements.triple_xor_16.clone(),
                         verify_bitwise_xor_8_lookup_elements: interaction_elements
                             .verify_bitwise_xor_8
                             .clone(),

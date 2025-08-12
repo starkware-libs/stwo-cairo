@@ -1,4 +1,4 @@
-// AIR version d4d3b5d6
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::Felt252UnpackFrom27RangeCheckOutput;
 use crate::components::subroutines::mul_252::Mul252;
@@ -81,6 +81,7 @@ pub struct Eval {
     pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
     pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
     pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub range_check_19_lookup_elements: relations::RangeCheck_19,
     pub range_check_19_b_lookup_elements: relations::RangeCheck_19_B,
     pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
@@ -88,7 +89,6 @@ pub struct Eval {
     pub range_check_19_e_lookup_elements: relations::RangeCheck_19_E,
     pub range_check_19_f_lookup_elements: relations::RangeCheck_19_F,
     pub range_check_19_g_lookup_elements: relations::RangeCheck_19_G,
-    pub range_check_19_h_lookup_elements: relations::RangeCheck_19_H,
     pub cube_252_lookup_elements: relations::Cube252,
 }
 

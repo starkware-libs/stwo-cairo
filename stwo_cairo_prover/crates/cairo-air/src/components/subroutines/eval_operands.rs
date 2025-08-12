@@ -1,11 +1,11 @@
-// AIR version d4d3b5d6
+// AIR version e1943601-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::add_252::Add252;
 use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 use crate::components::subroutines::mul_252::Mul252;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct EvalOperands {}
 
 impl EvalOperands {
