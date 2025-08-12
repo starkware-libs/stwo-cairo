@@ -11,8 +11,10 @@ use std::path::PathBuf;
 
 use cairo_lang_executable::executable::Executable;
 use clap::Parser;
-use dev_utils::utils::{read_cairo_arguments_from_file, run_cairo1_and_adapter, Error};
-use stwo_cairo_adapter::test_utils::{read_compiled_cairo_program, run_program_and_adapter};
+use dev_utils::utils::{
+    read_cairo_arguments_from_file, run_cairo1_and_adapter, run_program_and_adapter, Error,
+};
+use stwo_cairo_adapter::test_utils::read_compiled_cairo_program;
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
