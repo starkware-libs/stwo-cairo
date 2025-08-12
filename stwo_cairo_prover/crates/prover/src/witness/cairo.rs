@@ -145,7 +145,7 @@ impl CairoClaimGenerator {
             memory,
             inst_cache,
             public_memory_addresses,
-            builtins_segments,
+            builtin_segments,
             public_segment_context,
         }: ProverInput,
     ) -> Self {
@@ -154,7 +154,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(inst_cache);
-        let builtins = BuiltinsClaimGenerator::new(builtins_segments);
+        let builtins = BuiltinsClaimGenerator::new(builtin_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
