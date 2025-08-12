@@ -33,6 +33,7 @@ pub fn program_from_casm(
     (program, program_len)
 }
 
+// TODO(Stav): when delething this function, change this file to #[cfg(test)].
 pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInputInfo {
     let _span: span::EnteredSpan = span!(Level::INFO, "read_prover_input_info_file").entered();
 
@@ -49,25 +50,6 @@ pub fn read_prover_input_info_file(prover_input_info_path: &Path) -> ProverInput
     prover_input_info
 }
 
-pub fn get_test_program(test_name: &str) -> Vec<u8> {
-    let program_path = get_compiled_cairo_program_path(test_name);
-    read_compiled_cairo_program(&program_path)
-}
-
-pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Vec<u8> {
-    match std::fs::read(program_path) {
-        Ok(program) => program,
-        Err(e) => panic!("Failed to read program: {:?}", e),
-    }
-}
-
-fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("compiled.json")
-}
-
 pub fn get_prover_input_path(test_name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../test_data/")
@@ -80,13 +62,6 @@ pub fn get_prover_input_info_path(test_name: &str) -> PathBuf {
         .join("../../test_data/")
         .join(test_name)
         .join("prover_input_info")
-}
-
-pub fn get_proof_file_path(test_name: &str) -> PathBuf {
-    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-        .join("../../test_data/")
-        .join(test_name)
-        .join("proof.json")
 }
 
 pub fn read_json(file_path: &PathBuf) -> Value {
