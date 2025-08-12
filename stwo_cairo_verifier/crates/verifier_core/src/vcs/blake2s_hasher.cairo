@@ -3,8 +3,7 @@ use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::BaseField;
-use crate::fields::m31::M31Zero;
-use crate::utils::SpanExTrait;
+use crate::fields::m31::{M31, M31Zero};
 use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENTS_IN_MSG: usize = 16;
@@ -19,9 +18,10 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+        let num_values = column_values.len();
 
         // No column values.
-        if column_values.is_empty() {
+        if num_values == 0 {
             let (msg, byte_count) = match children_hashes {
                 Some((
                     x, y,
@@ -51,21 +51,36 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             state = blake2s_compress(:state, :byte_count, :msg);
         }
 
-        // This loop doesn't handle padding.
-        // TODO(andrew): Measure performance diff and consider inlining `poseidon_hash_span(..)`
-        // functionality here to do all packing and hashing in a single pass.
-        // TODO(andrew): Consider handling single column case (used lots due to FRI).
-        let rem = column_values.len() % M31_ELEMENTS_IN_MSG;
-        let last_block_length = match rem {
-            0 => M31_ELEMENTS_IN_MSG,
-            _ => rem,
+        // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
+        // decommitment phase.
+        if let Some(quadruplet_box) = column_values.try_into() {
+            let [v0, v1, v2, v3]: [M31; 4] = (*quadruplet_box).unbox();
+            let msg = BoxImpl::new(
+                [v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            );
+            byte_count += 16;
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        // Special case #2: Single M31 column, queried value decommitment phase, common for PP tree.
+        if num_values == 1 {
+            let v0 = *column_values.pop_front().unwrap();
+            let msg = BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            byte_count += 4;
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        // Otherwise we compress all the 16-element blocks except the last one.
+        let num_compressed_blocks = match num_values % M31_ELEMENTS_IN_MSG {
+            0 => num_values / M31_ELEMENTS_IN_MSG - 1,
+            _ => num_values / M31_ELEMENTS_IN_MSG,
         };
 
-        let (mut column_values, last_block) = column_values
-            .split_at(column_values.len() - last_block_length);
-
-        while let Some(values) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
-            let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] = (*values)
+        for _ in 0..num_compressed_blocks {
+            let [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15] =
+                column_values
+                .multi_pop_front::<M31_ELEMENTS_IN_MSG>()
+                .unwrap()
                 .unbox();
             let msg = BoxImpl::new(
                 [
@@ -78,11 +93,12 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             state = blake2s_compress(:state, :byte_count, :msg);
         }
 
-        // Padding last column_values with zeros.
-        let mut padded_column_values = array![];
-        for value in last_block {
-            padded_column_values.append((*value).into());
-        }
+        // Pad remaining column_values with zeros if needed.
+        let mut padded_column_values: Array<u32> = column_values
+            .into_iter()
+            .map(|v| (*v).into())
+            .collect();
+        let last_block_length = padded_column_values.len();
         for _ in last_block_length..M31_ELEMENTS_IN_MSG {
             padded_column_values.append(0);
         }
