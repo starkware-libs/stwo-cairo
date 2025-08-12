@@ -584,6 +584,20 @@ pub struct PublicMemory {
     pub safe_call_ids: [u32; 2],
 }
 
+
+/// Add `memory_section` to `public_memory_entries` at a given `address`.
+fn load_memory_section(
+    ref public_memory_entries: Array<PubMemoryEntry>,
+    memory_section: @MemorySection,
+    mut address: u32,
+) {
+    for (id, value) in memory_section {
+        public_memory_entries.append((address, *id, *value));
+        address += 1;
+    }
+}
+
+
 #[generate_trait]
 pub impl PublicMemoryImpl of PublicMemoryTrait {
     fn get_entries(
@@ -591,19 +605,10 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
     ) -> Array<PubMemoryEntry> {
         let mut entries = array![];
 
-        // Program.
-        let mut i: u32 = 0;
-        for (id, value) in self.program {
-            entries.append((initial_pc + i, *id, *value));
-            i += 1;
-        }
-
-        // Output.
-        i = 0;
-        for (id, value) in self.output {
-            entries.append((final_ap + i, *id, *value));
-            i += 1;
-        }
+        // The program is loaded to `initial_pc`.
+        load_memory_section(ref entries, self.program, initial_pc);
+        // Output was written to `final_ap`.
+        load_memory_section(ref entries, self.output, final_ap);
 
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
         // initial_ap.
@@ -613,7 +618,7 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
 
         let present_segments = self.public_segments.present_segments();
         let n_segments = present_segments.len();
-        i = 0;
+        let mut i = 0;
         for segment in present_segments {
             entries
                 .append(
