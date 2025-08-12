@@ -1,8 +1,8 @@
-// AIR version d4d3b5d6
+// AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::DoubleKaratsubaN7LimbMaxBound511;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct VerifyMul252 {}
 
 impl VerifyMul252 {

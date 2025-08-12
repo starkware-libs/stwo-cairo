@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
 
@@ -34,8 +35,7 @@ pub fn verify_blake_word_evaluate(
                 high_5_ms_bits_col2,
             ],
         );
-
-    mem_verify::mem_verify_evaluate(
+    mem_verify_evaluate(
         [
             verify_blake_word_input_limb_0,
             (verify_blake_word_input_limb_1 - (low_7_ms_bits_col0 * qm31_const::<512, 0, 0, 0>())),

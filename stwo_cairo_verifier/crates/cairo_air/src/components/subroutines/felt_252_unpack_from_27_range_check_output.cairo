@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
 use crate::prelude::*;
 
 
@@ -108,8 +109,7 @@ pub fn felt_252_unpack_from_27_range_check_output_evaluate(
         * qm31_const::<8192, 0, 0, 0>());
     let unpacked_tmp_4f7f8_1_limb_27: QM31 =
         felt_252_unpack_from_27_range_check_output_input_limb_9;
-
-    range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate(
+    range_check_mem_value_n_28_evaluate(
         [
             unpacked_limb_0_col0, unpacked_limb_1_col1, unpacked_tmp_4f7f8_1_limb_2,
             unpacked_limb_3_col2, unpacked_limb_4_col3, unpacked_tmp_4f7f8_1_limb_5,

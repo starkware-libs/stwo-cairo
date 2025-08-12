@@ -1,6 +1,7 @@
+// AIR version d1591e2a
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct DecodeInstructionD2A10 {}
 
 impl DecodeInstructionD2A10 {

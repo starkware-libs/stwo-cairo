@@ -1,9 +1,10 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
 use crate::prelude::*;
 
 
 pub fn read_blake_word_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     low_16_bits_col0: QM31,
     high_16_bits_col1: QM31,
     low_7_ms_bits_col2: QM31,
@@ -20,9 +21,8 @@ pub fn read_blake_word_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [read_blake_word_input] = input;
-
-    verify_blake_word::verify_blake_word_evaluate(
+    let read_blake_word_input = input;
+    verify_blake_word_evaluate(
         [read_blake_word_input, low_16_bits_col0, high_16_bits_col1],
         low_7_ms_bits_col2,
         high_14_ms_bits_col3,

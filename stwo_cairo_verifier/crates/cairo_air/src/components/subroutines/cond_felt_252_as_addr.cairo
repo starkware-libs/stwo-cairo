@@ -1,10 +1,10 @@
-// AIR version aca38612
+// AIR version d1591e2a
 use crate::prelude::*;
 
 
 pub fn cond_felt_252_as_addr_evaluate(
     input: [QM31; 29], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,
-) -> [QM31; 1] {
+) -> QM31 {
     let [
         cond_felt_252_as_addr_input_limb_0,
         cond_felt_252_as_addr_input_limb_1,
@@ -188,9 +188,7 @@ pub fn cond_felt_252_as_addr_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    [
-        ((cond_felt_252_as_addr_input_limb_0
-            + (cond_felt_252_as_addr_input_limb_1 * qm31_const::<512, 0, 0, 0>()))
-            + (cond_felt_252_as_addr_input_limb_2 * qm31_const::<262144, 0, 0, 0>()))
-    ]
+    ((cond_felt_252_as_addr_input_limb_0
+        + (cond_felt_252_as_addr_input_limb_1 * qm31_const::<512, 0, 0, 0>()))
+        + (cond_felt_252_as_addr_input_limb_2 * qm31_const::<262144, 0, 0, 0>()))
 }

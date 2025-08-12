@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate;
+use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 130;
@@ -635,9 +638,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 4] = decode_instruction_4b8cf::decode_instruction_4b8cf_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_4b8cf_output_tmp_42314_10_offset0,
+            decode_instruction_4b8cf_output_tmp_42314_10_offset1,
+            decode_instruction_4b8cf_output_tmp_42314_10_offset2,
+            decode_instruction_4b8cf_output_tmp_42314_10_op1_base_ap,
+        ] =
+            decode_instruction_4b8cf_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset1_col4,
             offset2_col5,
@@ -652,13 +660,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_4b8cf_output_tmp_42314_10_offset0,
-            decode_instruction_4b8cf_output_tmp_42314_10_offset1,
-            decode_instruction_4b8cf_output_tmp_42314_10_offset2,
-            decode_instruction_4b8cf_output_tmp_42314_10_op1_base_ap,
-        ] =
-            output;
 
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col8
@@ -686,9 +687,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_4b8cf_output_tmp_42314_10_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [(mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_42314_10_offset0)],
+        read_positive_num_bits_252_evaluate(
+            (mem_dst_base_col11 + decode_instruction_4b8cf_output_tmp_42314_10_offset0),
             dst_id_col14,
             dst_limb_0_col15,
             dst_limb_1_col16,
@@ -726,9 +726,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [(mem0_base_col12 + decode_instruction_4b8cf_output_tmp_42314_10_offset1)],
+        read_positive_num_bits_252_evaluate(
+            (mem0_base_col12 + decode_instruction_4b8cf_output_tmp_42314_10_offset1),
             op0_id_col43,
             op0_limb_0_col44,
             op0_limb_1_col45,
@@ -766,9 +765,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [(mem1_base_col13 + decode_instruction_4b8cf_output_tmp_42314_10_offset2)],
+        read_positive_num_bits_252_evaluate(
+            (mem1_base_col13 + decode_instruction_4b8cf_output_tmp_42314_10_offset2),
             op1_id_col72,
             op1_limb_0_col73,
             op1_limb_1_col74,
@@ -806,8 +804,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        verify_mul_252::verify_mul_252_evaluate(
+        verify_mul_252_evaluate(
             [
                 op0_limb_0_col44, op0_limb_1_col45, op0_limb_2_col46, op0_limb_3_col47,
                 op0_limb_4_col48, op0_limb_5_col49, op0_limb_6_col50, op0_limb_7_col51,

@@ -1,9 +1,10 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_6::range_check_last_limb_bits_in_ms_limb_6_evaluate;
 use crate::prelude::*;
 
 
 pub fn read_positive_num_bits_96_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -26,13 +27,12 @@ pub fn read_positive_num_bits_96_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [read_positive_num_bits_96_input] = input;
+    let read_positive_num_bits_96_input = input;
 
     memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
         .combine_qm31([read_positive_num_bits_96_input, id_col0]);
-
-    range_check_last_limb_bits_in_ms_limb_6::range_check_last_limb_bits_in_ms_limb_6_evaluate(
-        [value_limb_10_col11],
+    range_check_last_limb_bits_in_ms_limb_6_evaluate(
+        value_limb_10_col11,
         range_check_6_lookup_elements,
         ref range_check_6_sum_1,
         ref sum,

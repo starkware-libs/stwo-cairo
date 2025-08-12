@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate;
+use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate;
+use crate::components::subroutines::linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 126;
@@ -898,8 +901,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     poseidon_round_keys_output_limb_29_col91,
                 ],
             );
-
-        linear_combination_n_4_coefs_3_1_1_1::linear_combination_n_4_coefs_3_1_1_1_evaluate(
+        linear_combination_n_4_coefs_3_1_1_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
@@ -940,8 +942,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        linear_combination_n_4_coefs_1_m1_1_1::linear_combination_n_4_coefs_1_m1_1_1_evaluate(
+        linear_combination_n_4_coefs_1_m1_1_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
@@ -982,8 +983,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        linear_combination_n_4_coefs_1_1_m2_1::linear_combination_n_4_coefs_1_1_m2_1_evaluate(
+        linear_combination_n_4_coefs_1_1_m2_1_evaluate(
             [
                 cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
                 cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,

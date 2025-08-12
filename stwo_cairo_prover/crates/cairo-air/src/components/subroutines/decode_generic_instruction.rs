@@ -1,7 +1,8 @@
+// AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_df7a6::DecodeInstructionDf7A6;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct DecodeGenericInstruction {}
 
 impl DecodeGenericInstruction {

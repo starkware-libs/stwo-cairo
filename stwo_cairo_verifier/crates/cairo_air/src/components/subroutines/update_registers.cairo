@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
+use crate::components::subroutines::cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate;
+use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
 use crate::prelude::*;
 
 
@@ -124,8 +127,7 @@ pub fn update_registers_evaluate(
         update_registers_input_res_limb_27,
     ] =
         input;
-
-    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_783d5_0: QM31 = cond_felt_252_as_addr_evaluate(
         [
             update_registers_input_res_limb_0, update_registers_input_res_limb_1,
             update_registers_input_res_limb_2, update_registers_input_res_limb_3,
@@ -147,9 +149,7 @@ pub fn update_registers_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_addr_output_tmp_783d5_0] = output;
-
-    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_783d5_1: QM31 = cond_felt_252_as_addr_evaluate(
         [
             update_registers_input_dst_limb_0, update_registers_input_dst_limb_1,
             update_registers_input_dst_limb_2, update_registers_input_dst_limb_3,
@@ -171,9 +171,7 @@ pub fn update_registers_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_addr_output_tmp_783d5_1] = output;
-
-    let output: [QM31; 1] = cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate(
+    let cond_felt_252_as_rel_imm_output_tmp_783d5_5: QM31 = cond_felt_252_as_rel_imm_evaluate(
         [
             update_registers_input_res_limb_0, update_registers_input_res_limb_1,
             update_registers_input_res_limb_2, update_registers_input_res_limb_3,
@@ -197,7 +195,6 @@ pub fn update_registers_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_rel_imm_output_tmp_783d5_5] = output;
     let diff_from_p_tmp_783d5_6: QM31 = (update_registers_input_dst_limb_0
         - qm31_const::<1, 0, 0, 0>());
     let diff_from_p_tmp_783d5_7: QM31 = (update_registers_input_dst_limb_21
@@ -273,8 +270,7 @@ pub fn update_registers_evaluate(
         - (update_registers_input_pc_update_jnz * dst_sum_tmp_783d5_9)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
-    let output: [QM31; 1] = cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate(
+    let cond_felt_252_as_rel_imm_output_tmp_783d5_14: QM31 = cond_felt_252_as_rel_imm_evaluate(
         [
             update_registers_input_op1_limb_0, update_registers_input_op1_limb_1,
             update_registers_input_op1_limb_2, update_registers_input_op1_limb_3,
@@ -298,7 +294,6 @@ pub fn update_registers_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_rel_imm_output_tmp_783d5_14] = output;
 
     // Constraint - Constraint1 for conditional jump
     let constraint_quotient = (((next_pc_jnz_col7
@@ -333,9 +328,8 @@ pub fn update_registers_evaluate(
             + (update_registers_input_opcode_call * qm31_const::<2, 0, 0, 0>()))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
-    range_check_ap::range_check_ap_evaluate(
-        [next_ap_col9],
+    range_check_ap_evaluate(
+        next_ap_col9,
         range_check_ap_bot8bits_col10,
         range_check_19_lookup_elements,
         range_check_8_lookup_elements,

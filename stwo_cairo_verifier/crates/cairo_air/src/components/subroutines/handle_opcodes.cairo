@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
 use crate::prelude::*;
 
 
@@ -313,8 +314,7 @@ pub fn handle_opcodes_evaluate(
         * (handle_opcodes_input_op0_base_fp + handle_opcodes_input_dst_base_fp)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
-    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_aa5c5_0: QM31 = cond_felt_252_as_addr_evaluate(
         [
             handle_opcodes_input_dst_limb_0, handle_opcodes_input_dst_limb_1,
             handle_opcodes_input_dst_limb_2, handle_opcodes_input_dst_limb_3,
@@ -336,15 +336,13 @@ pub fn handle_opcodes_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_addr_output_tmp_aa5c5_0] = output;
 
     // Constraint -
     let constraint_quotient = ((handle_opcodes_input_opcode_call
         * (cond_felt_252_as_addr_output_tmp_aa5c5_0 - handle_opcodes_input_fp)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
-    let output: [QM31; 1] = cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate(
+    let cond_felt_252_as_addr_output_tmp_aa5c5_1: QM31 = cond_felt_252_as_addr_evaluate(
         [
             handle_opcodes_input_op0_limb_0, handle_opcodes_input_op0_limb_1,
             handle_opcodes_input_op0_limb_2, handle_opcodes_input_op0_limb_3,
@@ -366,7 +364,6 @@ pub fn handle_opcodes_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [cond_felt_252_as_addr_output_tmp_aa5c5_1] = output;
 
     // Constraint -
     let constraint_quotient = ((handle_opcodes_input_opcode_call

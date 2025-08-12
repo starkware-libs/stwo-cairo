@@ -1,4 +1,5 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::read_positive_num_bits_128::read_positive_num_bits_128_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 17;
@@ -172,8 +173,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        read_positive_num_bits_128::read_positive_num_bits_128_evaluate(
-            [(range_check_builtin_segment_start + seq)],
+        read_positive_num_bits_128_evaluate(
+            (range_check_builtin_segment_start + seq),
             value_id_col0,
             value_limb_0_col1,
             value_limb_1_col2,

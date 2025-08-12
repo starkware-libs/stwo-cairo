@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
+use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
+use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 15;
@@ -188,9 +191,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 2] = decode_instruction_d2a10::decode_instruction_d2a10_evaluate(
-            [input_pc_col0],
+        let [
+            decode_instruction_d2a10_output_tmp_c921e_5_offset2,
+            decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap,
+        ] =
+            decode_instruction_d2a10_evaluate(
+            input_pc_col0,
             offset2_col3,
             op1_imm_col4,
             op1_base_fp_col5,
@@ -200,11 +206,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_instruction_d2a10_output_tmp_c921e_5_offset2,
-            decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap,
-        ] =
-            output;
 
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col4
@@ -218,9 +219,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = read_small::read_small_evaluate(
-            [(mem1_base_col6 + decode_instruction_d2a10_output_tmp_c921e_5_offset2)],
+        let read_small_output_tmp_c921e_11_limb_0: QM31 = read_small_evaluate(
+            (mem1_base_col6 + decode_instruction_d2a10_output_tmp_c921e_5_offset2),
             op1_id_col7,
             msb_col8,
             mid_limbs_set_col9,
@@ -235,11 +235,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_c921e_11_limb_0] = output;
         let next_ap_tmp_c921e_12: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_11_limb_0);
-
-        range_check_ap::range_check_ap_evaluate(
-            [next_ap_tmp_c921e_12],
+        range_check_ap_evaluate(
+            next_ap_tmp_c921e_12,
             range_check_ap_bot8bits_col13,
             self.range_check_19_lookup_elements,
             self.range_check_8_lookup_elements,

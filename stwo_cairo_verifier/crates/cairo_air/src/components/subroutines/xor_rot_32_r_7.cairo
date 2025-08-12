@@ -1,4 +1,7 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::bitwise_xor_num_bits_7::bitwise_xor_num_bits_7_evaluate;
+use crate::components::subroutines::bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate;
+use crate::components::subroutines::split_16_low_part_size_7::split_16_low_part_size_7_evaluate;
 use crate::prelude::*;
 
 
@@ -29,44 +32,39 @@ pub fn xor_rot_32_r_7_evaluate(
         xor_rot_32_r_7_input_limb_3,
     ] =
         input;
-
-    let output: [QM31; 1] = split_16_low_part_size_7::split_16_low_part_size_7_evaluate(
-        [xor_rot_32_r_7_input_limb_0],
+    let split_16_low_part_size_7_output_tmp_e97b9_1_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        xor_rot_32_r_7_input_limb_0,
         ms_9_bits_col0,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_7_output_tmp_e97b9_1_limb_0] = output;
-
-    let output: [QM31; 1] = split_16_low_part_size_7::split_16_low_part_size_7_evaluate(
-        [xor_rot_32_r_7_input_limb_1],
+    let split_16_low_part_size_7_output_tmp_e97b9_3_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        xor_rot_32_r_7_input_limb_1,
         ms_9_bits_col1,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_7_output_tmp_e97b9_3_limb_0] = output;
-
-    let output: [QM31; 1] = split_16_low_part_size_7::split_16_low_part_size_7_evaluate(
-        [xor_rot_32_r_7_input_limb_2],
+    let split_16_low_part_size_7_output_tmp_e97b9_5_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        xor_rot_32_r_7_input_limb_2,
         ms_9_bits_col2,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_7_output_tmp_e97b9_5_limb_0] = output;
-
-    let output: [QM31; 1] = split_16_low_part_size_7::split_16_low_part_size_7_evaluate(
-        [xor_rot_32_r_7_input_limb_3],
+    let split_16_low_part_size_7_output_tmp_e97b9_7_limb_0: QM31 =
+        split_16_low_part_size_7_evaluate(
+        xor_rot_32_r_7_input_limb_3,
         ms_9_bits_col3,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_7_output_tmp_e97b9_7_limb_0] = output;
-
-    bitwise_xor_num_bits_7::bitwise_xor_num_bits_7_evaluate(
+    bitwise_xor_num_bits_7_evaluate(
         [
             split_16_low_part_size_7_output_tmp_e97b9_1_limb_0,
             split_16_low_part_size_7_output_tmp_e97b9_5_limb_0,
@@ -78,8 +76,7 @@ pub fn xor_rot_32_r_7_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate(
+    bitwise_xor_num_bits_9_evaluate(
         [ms_9_bits_col0, ms_9_bits_col2],
         xor_col5,
         verify_bitwise_xor_9_lookup_elements,
@@ -88,8 +85,7 @@ pub fn xor_rot_32_r_7_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    bitwise_xor_num_bits_7::bitwise_xor_num_bits_7_evaluate(
+    bitwise_xor_num_bits_7_evaluate(
         [
             split_16_low_part_size_7_output_tmp_e97b9_3_limb_0,
             split_16_low_part_size_7_output_tmp_e97b9_7_limb_0,
@@ -101,8 +97,7 @@ pub fn xor_rot_32_r_7_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate(
+    bitwise_xor_num_bits_9_evaluate(
         [ms_9_bits_col1, ms_9_bits_col3],
         xor_col7,
         verify_bitwise_xor_9_lookup_elements,

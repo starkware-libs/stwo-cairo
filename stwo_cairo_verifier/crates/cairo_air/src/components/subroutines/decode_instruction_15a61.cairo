@@ -1,16 +1,16 @@
-// AIR version aca38612
+// AIR version d1591e2a
 use crate::prelude::*;
 
 
 pub fn decode_instruction_15a61_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     verify_instruction_lookup_elements: @crate::VerifyInstructionElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [decode_instruction_15a61_input_pc] = input;
+    let decode_instruction_15a61_input_pc = input;
 
     verify_instruction_sum_0 = verify_instruction_lookup_elements
         .combine_qm31(

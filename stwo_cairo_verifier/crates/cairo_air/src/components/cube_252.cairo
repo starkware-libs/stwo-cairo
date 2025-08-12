@@ -1,4 +1,6 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate;
+use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
@@ -918,9 +920,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 10] =
-            felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate(
+        let [
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
+        ] =
+            felt_252_unpack_from_27_range_check_output_evaluate(
             [
                 input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
                 input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
@@ -970,21 +982,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-            _felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
-        ] =
-            output;
-
-        mul_252::mul_252_evaluate(
+        mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,
                 felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
@@ -1142,8 +1140,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        mul_252::mul_252_evaluate(
+        mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,
                 felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,

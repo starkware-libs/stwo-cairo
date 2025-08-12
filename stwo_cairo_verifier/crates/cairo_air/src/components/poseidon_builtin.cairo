@@ -1,4 +1,8 @@
-// AIR version aca38612
+// AIR version d1591e2a
+use crate::components::subroutines::felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate;
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::components::subroutines::poseidon_hades_permutation::poseidon_hades_permutation_evaluate;
+use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 341;
@@ -2225,8 +2229,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [(poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))],
+        read_positive_num_bits_252_evaluate(
+            (poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>())),
             input_state_0_id_col0,
             input_state_0_limb_0_col1,
             input_state_0_limb_1_col2,
@@ -2291,12 +2295,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let packed_input_state_0_tmp_51986_3_limb_8: QM31 = ((input_state_0_limb_24_col25
             + (input_state_0_limb_25_col26 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_0_limb_26_col27 * qm31_const::<262144, 0, 0, 0>()));
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [
-                ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
-                    + qm31_const::<1, 0, 0, 0>())
-            ],
+        read_positive_num_bits_252_evaluate(
+            ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
+                + qm31_const::<1, 0, 0, 0>()),
             input_state_1_id_col29,
             input_state_1_limb_0_col30,
             input_state_1_limb_1_col31,
@@ -2361,12 +2362,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let packed_input_state_1_tmp_51986_7_limb_8: QM31 = ((input_state_1_limb_24_col54
             + (input_state_1_limb_25_col55 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_1_limb_26_col56 * qm31_const::<262144, 0, 0, 0>()));
-
-        read_positive_num_bits_252::read_positive_num_bits_252_evaluate(
-            [
-                ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
-                    + qm31_const::<2, 0, 0, 0>())
-            ],
+        read_positive_num_bits_252_evaluate(
+            ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
+                + qm31_const::<2, 0, 0, 0>()),
             input_state_2_id_col58,
             input_state_2_limb_0_col59,
             input_state_2_limb_1_col60,
@@ -2431,8 +2429,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let packed_input_state_2_tmp_51986_11_limb_8: QM31 = ((input_state_2_limb_24_col83
             + (input_state_2_limb_25_col84 * qm31_const::<512, 0, 0, 0>()))
             + (input_state_2_limb_26_col85 * qm31_const::<262144, 0, 0, 0>()));
-
-        poseidon_hades_permutation::poseidon_hades_permutation_evaluate(
+        poseidon_hades_permutation_evaluate(
             [
                 packed_input_state_0_tmp_51986_3_limb_0, packed_input_state_0_tmp_51986_3_limb_1,
                 packed_input_state_0_tmp_51986_3_limb_2, packed_input_state_0_tmp_51986_3_limb_3,
@@ -2680,8 +2677,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
+        let [
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_2,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_5,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_8,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_11,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_14,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_17,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_20,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_23,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_26,
+            felt_252_unpack_from_27_output_tmp_51986_168_limb_27,
+        ] =
+            felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_0_col254,
                 poseidon_full_round_chain_output_limb_1_col255,
@@ -2716,21 +2724,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_2,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_5,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_8,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_11,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_14,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_17,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_20,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_23,
-            felt_252_unpack_from_27_output_tmp_51986_168_limb_26,
-            _felt_252_unpack_from_27_output_tmp_51986_168_limb_27,
-        ] =
-            output;
-
-        mem_verify::mem_verify_evaluate(
+        mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<3, 0, 0, 0>()),
@@ -2759,8 +2753,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
+        let [
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_2,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_5,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_8,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_11,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_14,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_17,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_20,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_23,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_26,
+            felt_252_unpack_from_27_output_tmp_51986_171_limb_27,
+        ] =
+            felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_10_col264,
                 poseidon_full_round_chain_output_limb_11_col265,
@@ -2795,21 +2800,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_2,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_5,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_8,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_11,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_14,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_17,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_20,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_23,
-            felt_252_unpack_from_27_output_tmp_51986_171_limb_26,
-            _felt_252_unpack_from_27_output_tmp_51986_171_limb_27,
-        ] =
-            output;
-
-        mem_verify::mem_verify_evaluate(
+        mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<4, 0, 0, 0>()),
@@ -2838,8 +2829,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 10] = felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate(
+        let [
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_2,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_5,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_8,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_11,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_14,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_17,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_20,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_23,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_26,
+            felt_252_unpack_from_27_output_tmp_51986_174_limb_27,
+        ] =
+            felt_252_unpack_from_27_evaluate(
             [
                 poseidon_full_round_chain_output_limb_20_col274,
                 poseidon_full_round_chain_output_limb_21_col275,
@@ -2874,21 +2876,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_2,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_5,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_8,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_11,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_14,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_17,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_20,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_23,
-            felt_252_unpack_from_27_output_tmp_51986_174_limb_26,
-            _felt_252_unpack_from_27_output_tmp_51986_174_limb_27,
-        ] =
-            output;
-
-        mem_verify::mem_verify_evaluate(
+        mem_verify_evaluate(
             [
                 ((poseidon_builtin_segment_start + (seq * qm31_const::<6, 0, 0, 0>()))
                     + qm31_const::<5, 0, 0, 0>()),

@@ -1,8 +1,9 @@
+// AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::linear_combination_n_1_coefs_2::LinearCombinationN1Coefs2;
 use crate::components::subroutines::linear_combination_n_6_coefs_4_2_3_1_m1_1::LinearCombinationN6Coefs4231M11;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct PoseidonPartialRound {}
 
 impl PoseidonPartialRound {
@@ -51,7 +52,7 @@ impl PoseidonPartialRound {
         range_check_4_4_lookup_elements: &relations::RangeCheck_4_4,
         range_check_felt_252_width_27_lookup_elements: &relations::RangeCheckFelt252Width27,
         eval: &mut E,
-    ) -> [E::F; 20] {
+    ) -> [E::F; 0] {
         eval.add_to_relation(RelationEntry::new(
             cube_252_lookup_elements,
             E::EF::one(),
@@ -200,27 +201,6 @@ impl PoseidonPartialRound {
             p_coef_col31.clone(),
             eval,
         );
-        [
-            poseidon_partial_round_input_z1_3_limb_0.clone(),
-            poseidon_partial_round_input_z1_3_limb_1.clone(),
-            poseidon_partial_round_input_z1_3_limb_2.clone(),
-            poseidon_partial_round_input_z1_3_limb_3.clone(),
-            poseidon_partial_round_input_z1_3_limb_4.clone(),
-            poseidon_partial_round_input_z1_3_limb_5.clone(),
-            poseidon_partial_round_input_z1_3_limb_6.clone(),
-            poseidon_partial_round_input_z1_3_limb_7.clone(),
-            poseidon_partial_round_input_z1_3_limb_8.clone(),
-            poseidon_partial_round_input_z1_3_limb_9.clone(),
-            poseidon_partial_round_input_z2_limb_0.clone(),
-            poseidon_partial_round_input_z2_limb_1.clone(),
-            poseidon_partial_round_input_z2_limb_2.clone(),
-            poseidon_partial_round_input_z2_limb_3.clone(),
-            poseidon_partial_round_input_z2_limb_4.clone(),
-            poseidon_partial_round_input_z2_limb_5.clone(),
-            poseidon_partial_round_input_z2_limb_6.clone(),
-            poseidon_partial_round_input_z2_limb_7.clone(),
-            poseidon_partial_round_input_z2_limb_8.clone(),
-            poseidon_partial_round_input_z2_limb_9.clone(),
-        ]
+        []
     }
 }

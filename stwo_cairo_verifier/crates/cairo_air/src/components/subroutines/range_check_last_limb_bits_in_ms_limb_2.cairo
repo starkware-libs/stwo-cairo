@@ -1,15 +1,11 @@
-// AIR version aca38612
+// AIR version d1591e2a
 use crate::prelude::*;
 
 
 pub fn range_check_last_limb_bits_in_ms_limb_2_evaluate(
-    input: [QM31; 1],
-    msb_col0: QM31,
-    ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
-    random_coeff: QM31,
+    input: QM31, msb_col0: QM31, ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [range_check_last_limb_bits_in_ms_limb_2_input] = input;
+    let range_check_last_limb_bits_in_ms_limb_2_input = input;
 
     // Constraint - msb is a bit
     let constraint_quotient = ((msb_col0 * (qm31_const::<1, 0, 0, 0>() - msb_col0)))
