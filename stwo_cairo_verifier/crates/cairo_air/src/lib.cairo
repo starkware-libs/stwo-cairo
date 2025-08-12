@@ -2,6 +2,7 @@ use components::memory_address_to_id::{
     InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+use stwo_verifier_utils::{PublicMemoryEntries, PublicMemoryEntriesTrait, PublicMemoryEntry};
 
 #[cfg(feature: "poseidon252_verifier")]
 mod poseidon252_verifier_uses {
@@ -42,7 +43,7 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{StarkProof, verify};
 use stwo_verifier_utils::{
-    MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, encode_and_hash_memory_section,
+    MemorySection, PubMemoryValue, construct_f252, encode_and_hash_memory_section,
 };
 pub mod cairo_air;
 use cairo_air::*;
@@ -602,53 +603,75 @@ pub struct PublicMemory {
 pub impl PublicMemoryImpl of PublicMemoryTrait {
     fn get_entries(
         self: @PublicMemory, initial_pc: u32, initial_ap: u32, final_ap: u32,
-    ) -> Array<PubMemoryEntry> {
-        let mut entries = array![];
+    ) -> PublicMemoryEntries {
+        let mut pub_memory_entries = PublicMemoryEntriesTrait::empty();
 
         // Program.
         let mut i: u32 = 0;
         for (id, value) in self.program {
-            entries.append((initial_pc + i, *id, *value));
+            pub_memory_entries
+                .add_memory_entry(
+                    PublicMemoryEntry { address: initial_pc + i, id: *id, value: *value },
+                );
             i += 1;
         }
 
         // Output.
         i = 0;
         for (id, value) in self.output {
-            entries.append((final_ap + i, *id, *value));
+            pub_memory_entries
+                .add_memory_entry(
+                    PublicMemoryEntry { address: final_ap + i, id: *id, value: *value },
+                );
             i += 1;
         }
 
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
         // initial_ap.
         let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
-        entries.append((initial_ap - 2, *safe_call_id0, [initial_ap, 0, 0, 0, 0, 0, 0, 0]));
-        entries.append((initial_ap - 1, *safe_call_id1, [0, 0, 0, 0, 0, 0, 0, 0]));
+        pub_memory_entries
+            .add_memory_entry(
+                PublicMemoryEntry {
+                    address: initial_ap - 2,
+                    id: *safe_call_id0,
+                    value: [initial_ap, 0, 0, 0, 0, 0, 0, 0],
+                },
+            );
+        pub_memory_entries
+            .add_memory_entry(
+                PublicMemoryEntry {
+                    address: initial_ap - 1, id: *safe_call_id1, value: [0, 0, 0, 0, 0, 0, 0, 0],
+                },
+            );
 
         let present_segments = self.public_segments.present_segments();
         let n_segments = present_segments.len();
-        i = 0;
+
+        let mut args_ptr = initial_ap;
+        let mut return_values_ptr = final_ap - n_segments;
         for segment in present_segments {
-            entries
-                .append(
-                    (
-                        initial_ap + i,
-                        *segment.start_ptr.id,
-                        [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
-                    ),
+            pub_memory_entries
+                .add_memory_entry(
+                    PublicMemoryEntry {
+                        address: args_ptr,
+                        id: *segment.start_ptr.id,
+                        value: [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                    },
                 );
-            entries
-                .append(
-                    (
-                        final_ap - n_segments + i,
-                        *segment.stop_ptr.id,
-                        [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
-                    ),
+            args_ptr += 1;
+
+            pub_memory_entries
+                .add_memory_entry(
+                    PublicMemoryEntry {
+                        address: return_values_ptr,
+                        id: *segment.stop_ptr.id,
+                        value: [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                    },
                 );
-            i += 1;
+            return_values_ptr += 1;
         }
 
-        entries
+        pub_memory_entries
     }
     fn mix_into(self: @PublicMemory, ref channel: Channel) {
         let PublicMemory { program, public_segments, output, safe_call_ids } = self;
@@ -692,7 +715,7 @@ impl PublicDataImpl of PublicDataTrait {
                 initial_ap: (*self.initial_state.ap).into(),
                 final_ap: (*self.final_state.ap).into(),
             );
-        sum += sum_public_memory_entries(@public_memory_entries, lookup_elements);
+        sum += sum_public_memory_entries(public_memory_entries, lookup_elements);
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
@@ -712,7 +735,7 @@ impl PublicDataImpl of PublicDataTrait {
 
 #[cfg(feature: "qm31_opcode")]
 fn sum_public_memory_entries(
-    entries: @Array<PubMemoryEntry>, lookup_elements: @CairoInteractionElements,
+    pub_memory_entries: PublicMemoryEntries, lookup_elements: @CairoInteractionElements,
 ) -> QM31 {
     let mut sum = Zero::zero();
     let id_to_value_alpha = *lookup_elements.memory_id_to_value.alpha;
@@ -720,9 +743,7 @@ fn sum_public_memory_entries(
     let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
     let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
 
-    for entry in entries.span() {
-        let (addr, id, val) = *entry;
-
+    for (addr, id, val) in pub_memory_entries {
         let addr_m31: M31 = addr.try_into().unwrap();
         let addr_qm31 = addr_m31.into();
         let id_m31: M31 = id.try_into().unwrap();
@@ -744,7 +765,7 @@ fn sum_public_memory_entries(
 // An alternative implementation that uses batch inverse, for the case that we don't have an opcode
 // for it.
 fn sum_public_memory_entries(
-    entries: @Array<PubMemoryEntry>, lookup_elements: @CairoInteractionElements,
+    pub_memory_entries: PublicMemoryEntries, lookup_elements: @CairoInteractionElements,
 ) -> QM31 {
     // Gather values to be inverted and summed.
     let mut values: Array<QM31> = array![];
@@ -767,17 +788,15 @@ fn sum_public_memory_entries(
     let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
     let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
 
-    for entry in entries.span() {
-        let (addr, id, val) = *entry;
-
-        let addr_m31: M31 = addr.try_into().unwrap();
+    for PublicMemoryEntry { address, id, value } in pub_memory_entries {
+        let addr_m31: M31 = address.try_into().unwrap();
         let addr_qm31: QM31 = addr_m31.into();
         let id_m31: M31 = id.try_into().unwrap();
         let addr_to_id = addr_qm31 + addr_to_id_alpha.mul_m31(id_m31) - addr_to_id_z;
         values.append(addr_to_id);
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
-        let combined_limbs = combine::combine_felt252(val, id_to_value_alpha_powers);
+        let combined_limbs = combine::combine_felt252(value, id_to_value_alpha_powers);
         let id_qm31: QM31 = id_m31.into();
         let id_to_value = combined_limbs + id_qm31.into() - id_to_value_z;
         values.append(id_to_value.reduce());
