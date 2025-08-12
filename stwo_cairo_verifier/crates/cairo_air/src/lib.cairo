@@ -165,7 +165,7 @@ pub fn verify_cairo(proof: CairoProof) {
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
 
-    verify_claim(@claim);
+    let public_memory_entries = process_claim(@claim);
 
     let mut channel: Channel = Default::default();
     pcs_config.mix_into(ref channel);
@@ -192,7 +192,14 @@ pub fn verify_cairo(proof: CairoProof) {
 
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
     assert!(
-        lookup_sum(@claim, @interaction_elements, @interaction_claim).is_zero(),
+        lookup_sum(
+            public_memory_entries,
+            claim.public_data.initial_state,
+            claim.public_data.final_state,
+            @interaction_elements,
+            @interaction_claim,
+        )
+            .is_zero(),
         "{}",
         CairoVerificationError::InvalidLogupSum,
     );
@@ -208,11 +215,18 @@ pub fn verify_cairo(proof: CairoProof) {
 }
 
 pub fn lookup_sum(
-    claim: @CairoClaim,
-    elements: @CairoInteractionElements,
+    public_memory_entries: Array<PubMemoryEntry>,
+    initial_state: CasmState,
+    final_state: CasmState,
+    lookup_elements: @CairoInteractionElements,
     interaction_claim: @CairoInteractionClaim,
 ) -> QM31 {
-    let mut sum = claim.public_data.logup_sum(elements);
+    let mut sum = sum_public_memory_entries(@public_memory_entries, lookup_elements);
+
+    let CasmState { pc, ap, fp } = final_state;
+    sum += lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
+    let CasmState { pc, ap, fp } = initial_state;
+    sum -= lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
@@ -234,24 +248,21 @@ pub fn lookup_sum(
     sum
 }
 
-/// Verifies the claim of the Cairo proof.
+/// Verifies the claim of the Cairo proof and returns the public memory entries based on the claim.
 ///
 /// # Panics
 ///
 /// Panics if the claim is invalid.
-fn verify_claim(claim: @CairoClaim) {
+fn process_claim(claim: @CairoClaim) -> Array<PubMemoryEntry> {
     let PublicData {
         public_memory: PublicMemory {
-            program, public_segments, output: _output, safe_call_ids: _safe_call_ids,
+            program, public_segments, output, safe_call_ids,
             }, initial_state: CasmState {
             pc: initial_pc, ap: initial_ap, fp: initial_fp,
             }, final_state: CasmState {
             pc: final_pc, ap: final_ap, fp: final_fp,
         },
     } = claim.public_data;
-
-    verify_builtins(claim.builtins, public_segments);
-    verify_program(*program, public_segments);
 
     let initial_pc: u32 = (*initial_pc).into();
     let initial_ap: u32 = (*initial_ap).into();
@@ -266,6 +277,57 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
     assert!(initial_ap <= final_ap);
+
+    let mut public_memory_entries = array![];
+    verify_program(*program, public_segments);
+    // Make sure the program is loaded at initial_pc.
+    let mut address: u32 = initial_pc;
+    for (id, value) in program {
+        public_memory_entries.append((address, *id, *value));
+        address += 1;
+    }
+
+    // Make sure the output is loaded at public_segments.output.start_ptr.
+    address = *public_segments.output.start_ptr.value;
+    assert!(output.len() == *public_segments.output.stop_ptr.value - address);
+    for (id, value) in output {
+        public_memory_entries.append((address, *id, *value));
+        address += 1;
+    }
+
+    verify_builtins(claim.builtins, public_segments);
+
+    // Make sure the builtins segments starts are passed to the program and the segment ends are
+    // returned by the program.
+    let present_segments = public_segments.present_segments();
+    let n_segments = present_segments.len();
+    let mut i = 0;
+    for segment in present_segments {
+        public_memory_entries
+            .append(
+                (
+                    initial_ap + i,
+                    *segment.start_ptr.id,
+                    [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                ),
+            );
+        public_memory_entries
+            .append(
+                (
+                    final_ap - n_segments + i,
+                    *segment.stop_ptr.id,
+                    [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
+                ),
+            );
+        i += 1;
+    }
+
+    // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
+    // initial_ap.
+    let [safe_call_id0, safe_call_id1] = safe_call_ids;
+    public_memory_entries
+        .append((initial_ap - 2, *safe_call_id0, [initial_ap, 0, 0, 0, 0, 0, 0, 0]));
+    public_memory_entries.append((initial_ap - 1, *safe_call_id1, [0, 0, 0, 0, 0, 0, 0, 0]));
 
     // When using address_to_id relation, it is assumed that address < 2^27.
     // To verify that, one needs to check that the size of the address_to_id component <=
@@ -286,12 +348,12 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(opcodes_uses <= pow2(29).into());
 
     // Check that no relation has more than P-1 uses.
-    let squashed_dict = relation_uses.squash();
-    let entries = squashed_dict.into_entries();
-    for entry in entries {
+    for entry in relation_uses.squash().into_entries() {
         let (_relation_id, _first_uses, last_uses) = entry;
         assert!(last_uses < P_U32.into(), "A relation has more than P-1 uses");
     }
+
+    public_memory_entries
 }
 
 /// Checks that the ranges given by `segment_ranges` are valid given the claim.
@@ -586,56 +648,6 @@ pub struct PublicMemory {
 
 #[generate_trait]
 pub impl PublicMemoryImpl of PublicMemoryTrait {
-    fn get_entries(
-        self: @PublicMemory, initial_pc: u32, initial_ap: u32, final_ap: u32,
-    ) -> Array<PubMemoryEntry> {
-        let mut entries = array![];
-
-        // Program.
-        let mut i: u32 = 0;
-        for (id, value) in self.program {
-            entries.append((initial_pc + i, *id, *value));
-            i += 1;
-        }
-
-        // Output.
-        i = 0;
-        for (id, value) in self.output {
-            entries.append((final_ap + i, *id, *value));
-            i += 1;
-        }
-
-        // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
-        // initial_ap.
-        let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
-        entries.append((initial_ap - 2, *safe_call_id0, [initial_ap, 0, 0, 0, 0, 0, 0, 0]));
-        entries.append((initial_ap - 1, *safe_call_id1, [0, 0, 0, 0, 0, 0, 0, 0]));
-
-        let present_segments = self.public_segments.present_segments();
-        let n_segments = present_segments.len();
-        i = 0;
-        for segment in present_segments {
-            entries
-                .append(
-                    (
-                        initial_ap + i,
-                        *segment.start_ptr.id,
-                        [*segment.start_ptr.value, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                );
-            entries
-                .append(
-                    (
-                        final_ap - n_segments + i,
-                        *segment.stop_ptr.id,
-                        [*segment.stop_ptr.value, 0, 0, 0, 0, 0, 0, 0],
-                    ),
-                );
-            i += 1;
-        }
-
-        entries
-    }
     fn mix_into(self: @PublicMemory, ref channel: Channel) {
         let PublicMemory { program, public_segments, output, safe_call_ids } = self;
 
@@ -668,27 +680,6 @@ pub struct PublicData {
 
 #[generate_trait]
 impl PublicDataImpl of PublicDataTrait {
-    fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
-        let mut sum = Zero::zero();
-
-        let public_memory_entries = self
-            .public_memory
-            .get_entries(
-                initial_pc: (*self.initial_state.pc).into(),
-                initial_ap: (*self.initial_state.ap).into(),
-                final_ap: (*self.final_state.ap).into(),
-            );
-        sum += sum_public_memory_entries(@public_memory_entries, lookup_elements);
-
-        // Yield initial state and use the final.
-        let CasmState { pc, ap, fp } = *self.final_state;
-        sum += lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
-        let CasmState { pc, ap, fp } = *self.initial_state;
-        sum -= lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
-
-        sum
-    }
-
     fn mix_into(self: @PublicData, ref channel: Channel) {
         self.public_memory.mix_into(ref channel);
         self.initial_state.mix_into(ref channel);

@@ -6,83 +6,12 @@ use stwo_cairo_air::components::memory_address_to_id::{
 };
 use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_cairo_air::{
-    CairoInteractionElements, CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory,
-    PublicSegmentRanges, RelationUsesDict, SegmentRange, accumulate_relation_uses,
+    CairoInteractionElements, PublicDataImpl, RelationUsesDict, accumulate_relation_uses,
 };
 use stwo_constraint_framework::LookupElements;
-use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
 use crate::pow2;
-
-#[test]
-fn test_public_data_logup_sum() {
-    let public_data = PublicData {
-        public_memory: PublicMemory {
-            program: [].span(),
-            public_segments: PublicSegmentRanges {
-                output: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                pedersen: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                range_check_128: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                ecdsa: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 5, value: 0 },
-                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
-                },
-                bitwise: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                ec_op: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 5, value: 0 },
-                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
-                },
-                keccak: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 5, value: 0 },
-                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
-                },
-                poseidon: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                range_check_96: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                add_mod: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-                mul_mod: SegmentRange {
-                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
-                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
-                },
-            },
-            output: [].span(),
-            safe_call_ids: [227, 5],
-        },
-        initial_state: CasmState {
-            pc: M31Trait::new(1), ap: M31Trait::new(1336), fp: M31Trait::new(1336),
-        },
-        final_state: CasmState {
-            pc: M31Trait::new(5), ap: M31Trait::new(2520), fp: M31Trait::new(1336),
-        },
-    };
-
-    let dummy_lookup_elements = dummy_interaction_lookup_elements();
-
-    let sum = public_data.logup_sum(@dummy_lookup_elements);
-
-    assert_eq!(sum, qm31_const::<971792689, 636659210, 1237675822, 245392094>());
-}
 
 fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
     CairoInteractionElements {
