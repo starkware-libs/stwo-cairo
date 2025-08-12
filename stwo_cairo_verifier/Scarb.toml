@@ -11,9 +11,11 @@ members = [
 
 [cairo]
 enable-gas = false
+allow-warnings = false
 
 # The profile that should be used when compiling the verifier for proving.
 # This profile enables unsafe-panic to reduce the code size.
 [profile.proving]
 enable-gas = false
 unsafe-panic = true
+allow-warnings = false
