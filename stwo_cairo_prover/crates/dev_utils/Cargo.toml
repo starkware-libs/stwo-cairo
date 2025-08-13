@@ -18,7 +18,6 @@ thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
 regex = "1.11.1"
-num-bigint = "0.4.6"
 
 serde_json.workspace = true
 cairo-vm.workspace = true
