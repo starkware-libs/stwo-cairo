@@ -97,6 +97,8 @@ pub use range_checks::range_check_elements::*;
 pub mod preprocessed_columns;
 use preprocessed_columns::preprocessed_root;
 
+pub mod claim;
+
 // A dict from relation_id, which is a string encoded as a felt252, to the number of uses of the
 // corresponding relation.
 type RelationUsesDict = Felt252Dict<u64>;

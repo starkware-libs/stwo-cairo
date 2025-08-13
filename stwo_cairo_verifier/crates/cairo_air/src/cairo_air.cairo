@@ -39,6 +39,7 @@ use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::opcodes::*;
+use stwo_cairo_air::claim::ClaimTrait;
 use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -145,8 +146,7 @@ pub struct CairoClaim {
     // ...
 }
 
-#[generate_trait]
-pub impl CairoClaimImpl of CairoClaimTrait {
+pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
