@@ -30,6 +30,7 @@ use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -52,8 +53,7 @@ pub struct BuiltinsClaim {
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Claim>,
 }
 
-#[generate_trait]
-pub impl BuiltinsClaimImpl of BuiltinsClaimTrait {
+pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
     fn mix_into(self: @BuiltinsClaim, ref channel: Channel) {
         let BuiltinsClaim {
             add_mod_builtin,
