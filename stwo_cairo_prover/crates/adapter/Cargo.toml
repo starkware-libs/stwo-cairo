@@ -6,7 +6,8 @@ edition = "2021"
 
 [features]
 slow-tests = []
-std = ["dep:sonic-rs"]
+# TODO(STAV): Delete this feature when the old adapter is removed.
+std = ["dep:sonic-rs", "cairo-vm/std"]
 
 [dependencies]
 bytemuck.workspace = true
