@@ -9,7 +9,7 @@ on:
       - checks_requested
 
 jobs:
-  scarb-test:
+  scarb-fmt:
     runs-on: stwo-cairo-avx-l
     defaults:
       run:
@@ -20,27 +20,51 @@ jobs:
         with:
           scarb-version: "2.12.0"
       - run: scarb fmt --check
+
+  scarb-lint:
+    runs-on: stwo-cairo-avx-l
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_verifier
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.0"
       - run: scarb lint --features=qm31_opcode --deny-warnings
-      - run: scarb test --features=poseidon252_verifier --package stwo_verifier_core
-      - run: scarb test --features=poseidon252_verifier --package stwo_cairo_air
-      - run: scarb test --features=poseidon252_verifier --package stwo_cairo_verifier
-      - run: scarb test --features=poseidon252_verifier --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features poseidon252_verifier --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
-      - run: scarb test --features=qm31_opcode --package stwo_verifier_core
-      - run: scarb test --features=qm31_opcode --package stwo_cairo_air
-      - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
-      - run: scarb test --features=qm31_opcode --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
-      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing  --package stwo_verifier_core
-      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_cairo_air
-      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_cairo_verifier
-      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features blake_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
-      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing  --package stwo_verifier_core
-      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_air
-      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_verifier
-      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features poseidon_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+
+  scarb-test:
+    runs-on: stwo-cairo-avx-l
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_verifier
+    strategy:
+      matrix:
+        feature: [poseidon252_verifier, qm31_opcode, "qm31_opcode,blake_outputs_packing", "qm31_opcode,poseidon_outputs_packing"]
+        package: 
+          - stwo_verifier_core
+          - stwo_cairo_air
+          - stwo_cairo_verifier
+          - stwo_verifier_utils
+        include:
+          - feature: poseidon252_verifier
+            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
+          - feature: qm31_opcode
+            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+          - feature: "qm31_opcode,blake_outputs_packing"
+            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+          - feature: "qm31_opcode,poseidon_outputs_packing"
+            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.0"
+      - run: scarb test --features=${{ matrix.feature }} --package ${{ matrix.package }}
+      - if: matrix.package == 'stwo_cairo_verifier'
+        run: scarb --profile proving execute --package stwo_cairo_verifier --features ${{ matrix.feature }} --print-resource-usage --output none --arguments-file ${{ matrix.proof_file }}
+
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:
