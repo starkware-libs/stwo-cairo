@@ -2,17 +2,8 @@ name: Cairo workflow
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
   pull_request:
-    types:
-      - opened
-      - reopened
-      - edited
-      - synchronize
-      - auto_merge_enabled
-
   merge_group:
     types:
       - checks_requested
