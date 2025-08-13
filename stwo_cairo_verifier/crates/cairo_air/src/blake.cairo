@@ -18,10 +18,10 @@ use components::verify_bitwise_xor_12::{
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
-use stwo_cairo_air::claim::ClaimTrait;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,

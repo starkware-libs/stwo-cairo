@@ -15,11 +15,11 @@ use core::num::traits::Zero;
 use stwo_cairo_air::CairoInteractionElements;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
-use stwo_cairo_air::claim::ClaimTrait;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
 #[cfg(not(feature: "poseidon252_verifier"))]

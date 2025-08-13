@@ -38,8 +38,8 @@ use core::num::traits::Zero;
 use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::opcodes::*;
 use stwo_cairo_air::claim::ClaimTrait;
+use stwo_cairo_air::opcodes::*;
 use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
