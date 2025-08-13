@@ -9,6 +9,9 @@ members = [
     "crates/verifier_utils",
 ]
 
+[tool]
+cairo-lint.double_parens = false
+
 [cairo]
 enable-gas = false
 allow-warnings = false
