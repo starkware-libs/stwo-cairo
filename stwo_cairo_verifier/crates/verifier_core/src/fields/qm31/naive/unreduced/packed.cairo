@@ -1,6 +1,6 @@
 use core::ops::AddAssign;
 use super::super::super::super::cm31::CM31;
-use super::super::super::super::m31::{M31Trait, MulByM31Trait};
+use super::super::super::super::m31::{AddM31Trait, M31Trait, MulByM31Trait};
 use super::super::super::{M31, PackedUnreducedQM31Trait, QM31};
 
 /// A packed representation of an unreduced [`CM31`] as a single `felt252`.
@@ -27,6 +27,13 @@ pub impl PackedCM31byM31Impl of MulByM31Trait<PackedUnreducedCM31> {
     #[inline]
     fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
         PackedUnreducedCM31 { inner: self.inner * rhs.inner.into() }
+    }
+}
+
+pub impl PackedCM31AddM31Impl of AddM31Trait<PackedUnreducedCM31> {
+    #[inline]
+    fn add_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: self.inner + rhs.into() }
     }
 }
 
@@ -95,6 +102,13 @@ pub impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
     #[inline]
     fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
+    }
+}
+
+pub impl PackedQM31AddM31Impl of AddM31Trait<PackedUnreducedQM31> {
+    #[inline]
+    fn add_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
+        PackedUnreducedQM31 { a: self.a.add_m31(rhs), b: self.b }
     }
 }
 

@@ -30,7 +30,7 @@ use stwo_constraint_framework::{
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
 #[cfg(not(feature: "qm31_opcode"))]
-use stwo_verifier_core::fields::m31::MulByM31Trait;
+use stwo_verifier_core::fields::m31::{AddM31Trait, MulByM31Trait};
 use stwo_verifier_core::fields::m31::{M31, P_U32};
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
@@ -778,8 +778,8 @@ fn sum_public_memory_entries(
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
         let combined_limbs = combine::combine_felt252(val, id_to_value_alpha_powers);
-        let id_qm31: QM31 = id_m31.into();
-        let id_to_value = combined_limbs + id_qm31.into() - id_to_value_z;
+
+        let id_to_value = combined_limbs.add_m31(id_m31) - id_to_value_z;
         values.append(id_to_value.reduce());
     }
 
