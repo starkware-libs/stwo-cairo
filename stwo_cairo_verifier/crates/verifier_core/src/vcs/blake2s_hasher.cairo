@@ -1,7 +1,6 @@
 use core::array::ArrayTrait;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
-use core::num::traits::CheckedSub;
 use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::BaseField;
 use crate::fields::m31::{M31, M31Zero};
@@ -97,11 +96,10 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             .into_iter()
             .map(|v| (*v).into())
             .collect();
-        let last_block_length = padded_values.len();
-        append_padding(ref padded_values, M31_ELEMENTS_IN_MSG - last_block_length, 0);
+        pad_partial_block(ref padded_values);
 
         let msg = *padded_values.span().try_into().unwrap();
-        byte_count += last_block_length * 4;
+        byte_count += column_values.len() * 4;
         Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }
 }
@@ -119,66 +117,91 @@ fn as_u32_block(full_block: @Box<[M31; 16]>) -> Box<[u32; 16]> {
     )
 }
 
+// Declare libfunc to generate consts.
+extern fn felt252_const<const N: felt252>() -> felt252 nopanic;
+extern fn u32_const<const N: u32>() -> u32 nopanic;
+
 /// Appends `count ∈ (0, 16)` padding values to the array.
-fn append_padding(ref arr: Array<u32>, count: u32, padding_value: u32) {
+fn pad_partial_block(ref arr: Array<u32>) {
     // Avoid AP alignment of this function (prevents memory holes).
     core::internal::revoke_ap_tracking();
+
+    let mut count: felt252 = M31_ELEMENTS_IN_MSG.into() - arr.len().into();
+
+    // Creates the constants wwith a libfnc to reduce the size of the code by avoiding using immediates
+    let padding_value = u32_const::<0>();
+    let one = felt252_const::<1>();
+
     arr.append(padding_value); // 1
-    let Some(count) = count.checked_sub(2) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 2
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 3
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 4
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 5
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 6
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 7
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 8
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 9
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 10
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 11
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 12
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 13
-    let Some(count) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 14
-    let Some(_) = count.checked_sub(1) else {
+    count -= one;
+    if count == 0 {
         return;
-    };
+    }
     arr.append(padding_value); // 15
 }
 
