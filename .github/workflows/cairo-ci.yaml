@@ -2,17 +2,8 @@ name: Cairo workflow
 on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-
+    branches: [ main ]
   pull_request:
-    types:
-      - opened
-      - reopened
-      - edited
-      - synchronize
-      - auto_merge_enabled
-
   merge_group:
     types:
       - checks_requested
@@ -96,7 +87,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: rustfmt
-          toolchain: nightly-2025-07-14
+          toolchain: nightly-2025-04-06
       - uses: Swatinem/rust-cache@v2
       - run: scripts/rust_fmt.sh --check
 
@@ -110,7 +101,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@master
         with:
           components: clippy
-          toolchain: nightly-2025-07-14
+          toolchain: nightly-2025-04-06
       - uses: Swatinem/rust-cache@v2
       - run: scripts/clippy.sh
 
