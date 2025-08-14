@@ -174,15 +174,13 @@ pub fn verify_cairo(proof: CairoProof) {
 
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
-    let preprocessed_root = stark_proof.commitment_scheme_proof.commitments[0].clone();
+    let preprocessed_root = *stark_proof.commitment_scheme_proof.commitments[0];
     assert!(preprocessed_root == expected_preprocessed_root);
     commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
     claim.mix_into(ref channel);
 
     commitment_scheme
-        .commit(
-            stark_proof.commitment_scheme_proof.commitments[1].clone(), *log_sizes[1], ref channel,
-        );
+        .commit(*stark_proof.commitment_scheme_proof.commitments[1], *log_sizes[1], ref channel);
     assert!(
         channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -198,9 +196,7 @@ pub fn verify_cairo(proof: CairoProof) {
 
     interaction_claim.mix_into(ref channel);
     commitment_scheme
-        .commit(
-            stark_proof.commitment_scheme_proof.commitments[2].clone(), *log_sizes[2], ref channel,
-        );
+        .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
 
     let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
     verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS);
