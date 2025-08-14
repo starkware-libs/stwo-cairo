@@ -1,5 +1,6 @@
 use components::add_ap_opcode::{
-    ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
+    ClaimImpl as AddApOpcodeClaimImpl, ClaimTrait as AddApOpcodeClaimTrait,
+    InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
 use components::add_opcode::{
     ClaimImpl as AddOpcodeClaimImpl, InteractionClaimImpl as AddOpcodeInteractionClaimImpl,
@@ -71,6 +72,7 @@ use components::ret_opcode::{
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
@@ -307,8 +309,7 @@ pub struct OpcodeClaim {
     pub ret: Array<components::ret_opcode::Claim>,
 }
 
-#[generate_trait]
-pub impl OpcodeClaimImpl of OpcodeClaimTrait {
+pub impl OpcodeClaimImpl of ClaimTrait<OpcodeClaim> {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
         channel.mix_u64(self.add.len().into());
         for claim in self.add.span() {

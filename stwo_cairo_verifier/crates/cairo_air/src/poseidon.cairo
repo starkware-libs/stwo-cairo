@@ -30,6 +30,7 @@ use core::num::traits::Zero;
 use stwo_cairo_air::CairoInteractionElements;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
@@ -55,8 +56,7 @@ pub struct PoseidonClaim {
     pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Claim,
 }
 
-#[generate_trait]
-pub impl PoseidonClaimImpl of PoseidonClaimTrait {
+pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
     fn mix_into(self: @PoseidonClaim, ref channel: Channel) {
         self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
         self.poseidon_full_round_chain.mix_into(ref channel);
@@ -146,8 +146,7 @@ pub struct PoseidonContextClaim {
     pub claim: Option<PoseidonClaim>,
 }
 
-#[generate_trait]
-pub impl PoseidonContextClaimImpl of PoseidonContextClaimTrait {
+pub impl PoseidonContextClaimImpl of ClaimTrait<PoseidonContextClaim> {
     fn mix_into(self: @PoseidonContextClaim, ref channel: Channel) {
         if let Option::Some(claim) = self.claim {
             claim.mix_into(ref channel);

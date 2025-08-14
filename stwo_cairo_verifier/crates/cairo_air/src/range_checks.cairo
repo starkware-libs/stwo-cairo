@@ -123,7 +123,8 @@ use components::range_check_felt_252_width_27::{
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::{CairoInteractionElements, components, utils};
+use stwo_cairo_air::claim::ClaimTrait;
+use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -216,8 +217,7 @@ pub struct RangeChecksClaim {
     pub rc_3_3_3_3_3: components::range_check_3_3_3_3_3::Claim,
 }
 
-#[generate_trait]
-pub impl RangeChecksClaimImpl of RangeChecksClaimTrait {
+pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
     fn mix_into(self: @RangeChecksClaim, ref channel: Channel) {
         self.rc_6.mix_into(ref channel);
         self.rc_8.mix_into(ref channel);
@@ -266,6 +266,8 @@ pub impl RangeChecksClaimImpl of RangeChecksClaimTrait {
             ],
         )
     }
+    // Range checks components do not contribute to relations "uses".
+    fn accumulate_relation_uses(self: @RangeChecksClaim, ref relation_uses: RelationUsesDict) {}
 }
 
 

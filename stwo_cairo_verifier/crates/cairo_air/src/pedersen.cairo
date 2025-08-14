@@ -15,6 +15,7 @@ use core::num::traits::Zero;
 use stwo_cairo_air::CairoInteractionElements;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
@@ -38,8 +39,7 @@ pub struct PedersenClaim {
     pub pedersen_points_table: components::pedersen_points_table::Claim,
 }
 
-#[generate_trait]
-pub impl PedersenClaimImpl of PedersenClaimTrait {
+pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
     fn mix_into(self: @PedersenClaim, ref channel: Channel) {
         self.partial_ec_mul.mix_into(ref channel);
         self.pedersen_points_table.mix_into(ref channel);

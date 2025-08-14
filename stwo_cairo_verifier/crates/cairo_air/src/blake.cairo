@@ -18,6 +18,7 @@ use components::verify_bitwise_xor_12::{
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
@@ -42,8 +43,7 @@ pub struct BlakeClaim {
     pub verify_bitwise_xor_12: components::verify_bitwise_xor_12::Claim,
 }
 
-#[generate_trait]
-pub impl BlakeClaimImpl of BlakeClaimTrait {
+pub impl BlakeClaimImpl of ClaimTrait<BlakeClaim> {
     fn mix_into(self: @BlakeClaim, ref channel: Channel) {
         self.blake_round.mix_into(ref channel);
         self.blake_g.mix_into(ref channel);
@@ -121,8 +121,7 @@ pub struct BlakeContextClaim {
     pub claim: Option<BlakeClaim>,
 }
 
-#[generate_trait]
-pub impl BlakeContextClaimImpl of BlakeContextClaimTrait {
+pub impl BlakeContextClaimImpl of ClaimTrait<BlakeContextClaim> {
     fn mix_into(self: @BlakeContextClaim, ref channel: Channel) {
         if let Some(claim) = self.claim {
             claim.mix_into(ref channel);
