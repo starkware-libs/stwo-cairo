@@ -85,6 +85,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn verify_values(
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
+        ood_point: @CirclePoint<QM31>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) {
@@ -154,6 +155,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let fri_answers = fri_answers(
             self.columns_by_log_sizes(),
             samples,
+            ood_point,
             random_coeff,
             query_positions_by_log_size,
             queried_values,

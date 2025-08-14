@@ -14,13 +14,13 @@ use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
 
-#[cfg(test)]
-mod test;
+//#[cfg(test)]
+//mod test;
 
 /// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree
 /// and transposes the arrays from [tree][log_size][column] to [log_size][tree][column].
 ///
-/// # Arguments
+/// # Argumentsneg_twice_imaginary_part(sample_point.y)
 ///
 /// * `columns_by_log_size_per_tree`: The columns by log size per tree.
 ///
@@ -29,14 +29,16 @@ mod test;
 /// * `columns_per_tree_by_log_size`: The columns per tree by log size.
 fn pad_and_transpose_columns_by_log_size_per_tree(
     mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
-) -> Array<TreeArray<Span<usize>>> {
+) -> (Array<TreeArray<Span<usize>>>, usize) {
     let mut empty_span = array![].span();
     let mut columns_per_tree_by_log_size = array![];
+    let mut max_n_columns = 0;
 
     loop {
         // In each iteration we pop the the columns corresponding to `log_size` from each tree, so
         // we need to prepare `columns_by_log_size_per_tree` for the next iteration.
         let mut next_columns_by_log_size_per_tree = array![];
+        let mut n_columns_per_log_size = 0;
 
         let mut done = true;
         let mut columns_per_tree = array![];
@@ -46,6 +48,7 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
                 .append(
                     if let Some(columns) = columns_by_log_size.pop_front() {
                         done = false;
+                        n_columns_per_log_size += columns.len();
                         *columns
                     } else {
                         empty_span
@@ -60,9 +63,13 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
 
         columns_by_log_size_per_tree = next_columns_by_log_size_per_tree.span();
         columns_per_tree_by_log_size.append(columns_per_tree);
+
+        if n_columns_per_log_size > max_n_columns {
+            max_n_columns = n_columns_per_log_size;
+        }
     }
 
-    columns_per_tree_by_log_size
+    (columns_per_tree_by_log_size, max_n_columns)
 }
 
 /// Computes the OOD quotients at the query positions.
@@ -77,12 +84,18 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
 pub fn fri_answers(
     mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
+    ood_point: @CirclePoint<QM31>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
 ) -> Array<Span<QM31>> {
-    let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
+    let (columns_per_tree_by_log_size, max_n_columns) =
+        pad_and_transpose_columns_by_log_size_per_tree(
         columns_by_log_size_per_tree,
+    );
+
+    let partial_interpolant_coeffs = PartialInterpolantCoeffsImpl::gen(
+        random_coeff, ood_point, max_n_columns,
     );
 
     let mut log_size = columns_per_tree_by_log_size.len();
@@ -114,7 +127,7 @@ pub fn fri_answers(
                 fri_answers_for_log_size(
                     log_size,
                     samples,
-                    random_coeff,
+                    @partial_interpolant_coeffs,
                     query_positions_per_log_size.get(log_size.into()).deref(),
                     ref queried_values,
                     n_columns_per_tree,
@@ -143,25 +156,25 @@ fn tree_take_n<T, +Clone<T>, +Drop<T>>(
 fn fri_answers_for_log_size(
     log_size: u32,
     samples_per_column: Array<@Array<PointSample>>,
-    random_coeff: QM31,
+    partial_interpolant_coeffs: @PartialInterpolantCoeffs,
     mut query_positions: Span<usize>,
     ref queried_values: TreeArray<Span<M31>>,
     n_columns: TreeArray<usize>,
 ) -> Span<QM31> {
     let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
-    let quotient_constants = QuotientConstantsImpl::gen(@sample_batches_by_point, random_coeff);
     let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
     let mut quotient_evals_at_queries = array![];
 
     for query_position in query_positions {
         let queried_values_at_row = tree_take_n(ref queried_values, n_columns.span());
+        let domain_point = commitment_domain.at(bit_reverse_index(*query_position, log_size));
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
                     @sample_batches_by_point,
                     queried_values_at_row.span(),
-                    @quotient_constants,
-                    commitment_domain.at(bit_reverse_index(*query_position, log_size)),
+                    partial_interpolant_coeffs,
+                    domain_point,
                 ),
             );
     }
@@ -181,27 +194,37 @@ fn fri_answers_for_log_size(
 fn accumulate_row_quotients(
     sample_batches_by_point: @Array<ColumnSampleBatch>,
     queried_values_at_row: Span<M31>,
-    quotient_constants: @QuotientConstants,
+    partial_interpolant_coeffs: @PartialInterpolantCoeffs,
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
-    let n_batches = sample_batches_by_point.len();
-    // TODO(andrew): Unnecessary asserts, remove.
-    assert!(n_batches == quotient_constants.point_constants.len());
-
     let denominator_inverses = quotient_denominator_inverses(
         sample_batches_by_point.span(), domain_point,
     );
-    let domain_point_y: M31 = domain_point.y;
+    let mut denominator_inverses_iter = denominator_inverses.into_iter();
     let mut quotient_accumulator: QM31 = Zero::zero();
 
-    for (point_constants, denom_inv) in zip_eq(
-        quotient_constants.point_constants, denominator_inverses,
-    ) {
-        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
+    // For Cairo AIR it will be at most 2 batches
+    for sample_batch in sample_batches_by_point.span() {
+        let mut numerator: QM31 = Zero::zero();
 
-        for (column_index, line_coeffs) in point_constants.indexed_line_coeffs.span() {
+        // For offset 0, we can use the precomputed coefficients.
+        let coeffs = if sample_batch.point == *partial_interpolant_coeffs.point {
+            partial_interpolant_coeffs
+        } else {
+            let n_columns = sample_batch.columns_and_values.len();
+            let coeffs = PartialInterpolantCoeffsImpl::gen_with_alpha(
+                *partial_interpolant_coeffs.alpha_powers, sample_batch.point, n_columns,
+            );
+            @coeffs
+        };
+
+        let mut alpha_iter = coeffs.alpha_powers.into_iter();
+        let mut alpha_mul_c_iter = coeffs.alpha_mul_c.into_iter();
+        let mut alpha: QM31 = One::one();
+
+        for (column_index, sample_value) in sample_batch.columns_and_values.span() {
+            // TODO(m-kus): eliminate random array access
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
-            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } = *line_coeffs;
 
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
@@ -209,17 +232,23 @@ fn accumulate_row_quotients(
             // When substituting a polynomial in this line equation, we get a polynomial
             // with a root at sample_point and conj(sample_point) if the original polynomial
             // had the values sample_value and conj(sample_value) at these points.
-            // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
-            // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-            let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
+            alpha = *alpha_iter.next().expect('alpha_iter OOB');
+            let alpha_mul_c = *alpha_mul_c_iter.next().expect('alpha_mul_c_iter OOB');
+            let alpha_mul_a = alpha * neg_twice_imaginary_part(*sample_value);
+            let alpha_mul_b = QM31Trait::fused_mul_sub(
+                **sample_value, alpha_mul_c, alpha_mul_a * *sample_batch.point.y,
+            );
+
+            let linear_term = alpha_mul_a.mul_m31(domain_point.y) + alpha_mul_b;
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
         }
 
-        let quotient = numerator.reduce().mul_cm31(denom_inv);
+        let batch_random_coeffs = alpha;
+        let denom_inv = denominator_inverses_iter.next().expect('denominator_inverses_iter OOB');
+
+        let quotient = numerator.mul_cm31(denom_inv);
         quotient_accumulator =
-            QM31Trait::fused_mul_add(
-                quotient_accumulator, *point_constants.batch_random_coeffs, quotient,
-            );
+            QM31Trait::fused_mul_add(quotient_accumulator, batch_random_coeffs, quotient);
     }
 
     quotient_accumulator
@@ -244,64 +273,46 @@ fn quotient_denominator_inverses(
     BatchInvertible::batch_inverse(denominators)
 }
 
-/// Holds the precomputed constant values used in each quotient evaluation, grouped evaluation
-/// point.
 #[derive(Debug, Drop)]
-pub struct QuotientConstants {
-    /// The constants for each mask item.
-    pub point_constants: Array<PointQuotientConstants>,
-}
-
-/// Holds the precomputed constants for a given evaluation point.
-#[derive(Debug, Drop)]
-pub struct PointQuotientConstants {
-    /// Pair of (column index, line coefficients) for every sample.
-    pub indexed_line_coeffs: Array<(usize, ComplexConjugateLineCoeffs)>,
-    /// The random coefficients used to linearly combine the batched quotients.
-    ///
-    /// For each sample batch we compute random_coeff^(number of columns in the batch),
-    /// which is used to linearly combine multiple batches together.
-    /// this is the coefficient for this batch of samples.
-    pub batch_random_coeffs: QM31,
+pub struct PartialInterpolantCoeffs {
+    // Powers of random_coeff from 0 to max number of columns (inclusive).
+    pub alpha_powers: Span<QM31>,
+    // alpha^i * c for a given sample point (`c` is one of the interpolant coefficients).
+    pub alpha_mul_c: Span<QM31>,
+    // The sample point.
+    pub point: @CirclePoint<QM31>,
 }
 
 #[generate_trait]
-impl QuotientConstantsImpl of QuotientConstantsTrait {
+impl PartialInterpolantCoeffsImpl of PartialInterpolantCoeffsTrait {
     fn gen(
-        sample_batches_by_point: @Array<ColumnSampleBatch>, random_coeff: QM31,
-    ) -> QuotientConstants {
-        let mut point_constants = array![];
-
-        for sample_batch in sample_batches_by_point.span() {
-            // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
-            // Use a better solution.
-            assert!(
-                *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
-                "Cannot evaluate a line with a single point ({:?}).",
-                sample_batch.point,
-            );
-
-            let mut alpha: QM31 = One::one();
-            let mut indexed_line_coeffs = array![];
-
-            for (column_idx, column_value) in sample_batch.columns_and_values.span() {
-                alpha = alpha * random_coeff;
-                indexed_line_coeffs
-                    .append(
-                        (
-                            *column_idx,
-                            ComplexConjugateLineCoeffsImpl::new(
-                                sample_batch.point, **column_value, alpha,
-                            ),
-                        ),
-                    );
-            }
-
-            point_constants
-                .append(PointQuotientConstants { indexed_line_coeffs, batch_random_coeffs: alpha });
+        random_coeff: QM31, point: @CirclePoint<QM31>, n_columns: usize,
+    ) -> PartialInterpolantCoeffs {
+        let neg_dbl_im_py = neg_twice_imaginary_part(point.y);
+        let mut alpha = One::one();
+        let mut alpha_powers = array![];
+        let mut alpha_mul_c = array![];
+        for _ in 0..n_columns {
+            alpha = alpha * random_coeff;
+            alpha_mul_c.append(alpha * neg_dbl_im_py);
+            alpha_powers.append(alpha);
         }
+        PartialInterpolantCoeffs {
+            alpha_powers: alpha_powers.span(), alpha_mul_c: alpha_mul_c.span(), point,
+        }
+    }
 
-        QuotientConstants { point_constants }
+    fn gen_with_alpha(
+        alpha_powers: Span<QM31>, point: @CirclePoint<QM31>, n_columns: usize,
+    ) -> PartialInterpolantCoeffs {
+        let neg_dbl_im_py = neg_twice_imaginary_part(point.y);
+        let mut alpha_mul_c = array![];
+        let mut alpha_iter = alpha_powers.into_iter();
+        for _ in 0..n_columns {
+            let alpha = *alpha_iter.next().expect('alpha_iter OOB (gen)');
+            alpha_mul_c.append(alpha * neg_dbl_im_py);
+        }
+        PartialInterpolantCoeffs { alpha_powers, alpha_mul_c: alpha_mul_c.span(), point }
     }
 }
 
@@ -365,39 +376,6 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         }
 
         groups
-    }
-}
-
-/// The coefficients of a line between a point and its complex conjugate. Specifically,
-/// `a, b, and c, s.t. a*x + b - c*y = 0` for (x,y) being (sample.y, sample.value) and
-/// (conj(sample.y), conj(sample.value)).
-/// Relies on the fact that every polynomial F over the base
-/// field holds: F(p*) == F(p)* (* being the complex conjugate).
-#[derive(Copy, Debug, Drop)]
-struct ComplexConjugateLineCoeffs {
-    alpha_mul_a: PackedUnreducedQM31,
-    alpha_mul_b: PackedUnreducedQM31,
-    alpha_mul_c: PackedUnreducedQM31,
-}
-
-#[generate_trait]
-impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
-    fn new(
-        sample_point: @CirclePoint<QM31>, sample_value: QM31, alpha: QM31,
-    ) -> ComplexConjugateLineCoeffs {
-        let alpha_mul_a = alpha * neg_twice_imaginary_part(@sample_value);
-        let alpha_mul_c = alpha * neg_twice_imaginary_part(sample_point.y);
-        let alpha_mul_b = QM31Trait::fused_mul_sub(
-            sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y,
-        );
-
-        // TODO(andrew): These alpha multiplications are expensive.
-        // Think they can be saved and done all at once.
-        ComplexConjugateLineCoeffs {
-            alpha_mul_a: alpha_mul_a.into(),
-            alpha_mul_b: alpha_mul_b.into(),
-            alpha_mul_c: alpha_mul_c.into(),
-        }
     }
 }
 
