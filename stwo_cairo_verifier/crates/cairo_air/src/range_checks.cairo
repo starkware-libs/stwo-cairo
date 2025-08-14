@@ -124,7 +124,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, components, utils};
+use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -266,6 +266,8 @@ pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
             ],
         )
     }
+    // Range checks components do not contribute to relations "uses".
+    fn accumulate_relation_uses(self: @RangeChecksClaim, ref relation_uses: RelationUsesDict) {}
 }
 
 
