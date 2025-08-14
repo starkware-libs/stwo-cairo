@@ -14,6 +14,9 @@ outputs_packing = ["stwo_verifier_utils/outputs_packing"]
 [tool.fmt]
 sort-module-level-items = true
 
+[tool]
+cairo-lint.workspace = true
+
 [dependencies]
 bounded_int = { path = "../bounded_int" }
 stwo_verifier_utils = { path = "../verifier_utils" }

@@ -8,6 +8,9 @@ edition = "2023_10"
 [tool.fmt]
 sort-module-level-items = true
 
+[tool]
+cairo-lint.workspace = true
+
 [dependencies]
 
 [dev-dependencies]

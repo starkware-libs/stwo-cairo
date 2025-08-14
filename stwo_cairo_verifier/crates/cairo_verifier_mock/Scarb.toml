@@ -8,6 +8,9 @@ edition = "2024_07"
 [tool.fmt]
 sort-module-level-items = true
 
+[tool]
+cairo-lint.workspace = true
+
 [features]
 poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
 qm31_opcode = ["stwo_cairo_air/qm31_opcode"]

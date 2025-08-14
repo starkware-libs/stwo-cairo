@@ -11,6 +11,9 @@ poseidon252_verifier = []
 qm31_opcode = []
 outputs_packing = []
 
+[tool]
+cairo-lint.workspace = true
+
 [tool.fmt]
 sort-module-level-items = true
 
