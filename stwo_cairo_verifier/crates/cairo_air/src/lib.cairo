@@ -38,8 +38,6 @@ use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
-#[cfg(feature: "outputs_packing")]
-use stwo_verifier_core::vcs::blake2s_hasher::Blake2sHash;
 use stwo_verifier_core::verifier::{StarkProof, verify};
 use stwo_verifier_utils::{
     MemorySection, PubMemoryEntry, PubMemoryValue, construct_f252, encode_and_hash_memory_section,
