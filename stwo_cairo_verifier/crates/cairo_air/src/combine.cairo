@@ -5,9 +5,9 @@ use bounded_int::{
 use stwo_verifier_core::fields::m31::M31Trait;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;
-use stwo_verifier_core::fields::qm31::QM31;
 #[cfg(not(feature: "qm31_opcode"))]
-use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
+use stwo_verifier_core::fields::qm31::PackedUnreducedQM31;
+use stwo_verifier_core::fields::qm31::QM31;
 
 
 // Use a short name in this file as it is used in many places.
@@ -182,9 +182,7 @@ pub fn combine_felt252(
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
     let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
-
-    let mut sum = PackedUnreducedQM31Trait::large_zero();
-    sum += a28.mul_m31(M31Trait::new(upcast(l27)));
+    let mut sum = a28.mul_m31(M31Trait::new(upcast(l27)));
     sum += a27.mul_m31(M31Trait::new(upcast(l26)));
     sum += a26.mul_m31(M31Trait::new(upcast(l25)));
 
