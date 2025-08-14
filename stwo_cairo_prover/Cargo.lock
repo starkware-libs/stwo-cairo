@@ -1441,7 +1441,6 @@ dependencies = [
  "cairo-vm",
  "clap",
  "log",
- "num-bigint",
  "regex",
  "serde",
  "serde_json",
@@ -3003,15 +3002,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "serde_arrays"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38636132857f68ec3d5f3eb121166d2af33cb55174c4d5ff645db6165cbef0fd"
-dependencies = [
- "serde",
-]
-
-[[package]]
 name = "serde_derive"
 version = "1.0.219"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3355,7 +3345,6 @@ dependencies = [
 name = "stwo-cairo-adapter"
 version = "0.1.0"
 dependencies = [
- "bincode",
  "bytemuck",
  "cairo-lang-casm 2.12.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "cairo-vm",
@@ -3387,7 +3376,6 @@ dependencies = [
  "rand 0.8.5",
  "ruint",
  "serde",
- "serde_arrays",
  "starknet-ff",
  "starknet-types-core",
  "stwo",
@@ -3440,7 +3428,6 @@ dependencies = [
  "rand 0.8.5",
  "rayon",
  "serde",
- "serde_json",
  "sonic-rs",
  "starknet-curve 0.5.1",
  "starknet-ff",
@@ -3466,7 +3453,6 @@ dependencies = [
  "clap",
  "env_logger",
  "log",
- "serde",
  "thiserror",
  "tracing",
  "tracing-subscriber",
