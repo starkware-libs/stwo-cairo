@@ -56,6 +56,9 @@ fn horner_step_with_split_input(
 
 /// An unrolled implementation for combining a felt252 value as part of the combine_id_to_value
 /// flow.
+///
+/// computes \sigma_i = values[i] * alpha^(i+1)
+///
 /// This function takes a [u32; 8] value representing a felt252 in little endian, converts it to a
 /// [u9; 28] array of coefficients, and uses Horner evaluation to compute the value of the
 /// corresponding polynomial at alpha.
@@ -127,9 +130,17 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     horner_step(ref sum, l1, alpha);
     horner_step(ref sum, l0, alpha);
 
-    sum
+    // Multiply by alpha to be consistent with the no-opcode version.
+    sum * alpha
 }
 
+/// The no-opcode version of `combine_felt252`.
+///
+/// This function splits the 252-bit value into chunks and combines them using the provided
+/// array of precomputed `PackedUnreducedQM31` alpha powers, efficiently evaluating the
+/// polynomial representation of the value.
+///
+/// The function works backwards in order to be similar to the implementation with qm31_opcode.
 #[cfg(not(feature: "qm31_opcode"))]
 pub fn combine_felt252(
     value: [u32; 8], alphas: Box<[PackedUnreducedQM31; 28]>,
