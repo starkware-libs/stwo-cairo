@@ -68,7 +68,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
 
-        channel.mix_root(first_layer_proof.commitment.clone());
+        channel.mix_root(first_layer_proof.commitment);
 
         let mut column_commitment_domains = array![];
 
@@ -98,7 +98,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         );
 
         while let Some(proof) = inner_layer_proofs.pop_front() {
-            channel.mix_root(proof.commitment.clone());
+            channel.mix_root(*proof.commitment);
 
             inner_layers
                 .append(
@@ -406,7 +406,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             decommitment_coordinate_column_log_sizes.span(),
         );
         let merkle_verifier = MerkleVerifier {
-            root: self.proof.commitment.clone(),
+            root: *self.proof.commitment,
             column_log_sizes: decommitment_coordinate_column_log_sizes,
             columns_by_log_size,
         };
@@ -473,7 +473,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         );
         let columns_by_log_size = group_columns_by_log_size(column_log_sizes.span());
         let merkle_verifier = MerkleVerifier {
-            root: (*self.proof.commitment).clone(), column_log_sizes, columns_by_log_size,
+            root: **self.proof.commitment, column_log_sizes, columns_by_log_size,
         };
 
         let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =
