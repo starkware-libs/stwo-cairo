@@ -1,4 +1,4 @@
-// AIR version 9f50a80b
+// AIR version c2e46f85
 #![allow(unused_parens)]
 use cairo_air::components::cube_252::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -51,36 +51,26 @@ impl ClaimGenerator {
         self.packed_inputs
             .resize(packed_size, *self.packed_inputs.first().unwrap());
 
-        // Decreasing this value may cause a stack-overflow during witness generation.
-        // NOTE: This is not autogened, when updating the code, re-add this.
-        // TODO(Ohad): remove.
-        const RAYON_THREAD_STACK_SIZE: usize = 1024 * 1024 * 8;
-        let pool = rayon::ThreadPoolBuilder::new()
-            .stack_size(RAYON_THREAD_STACK_SIZE)
-            .build()
-            .unwrap();
-        let (trace, lookup_data, sub_component_inputs) = pool.install(|| {
-            write_trace_simd(
-                self.packed_inputs,
-                n_rows,
-                range_check_19_state,
-                range_check_19_b_state,
-                range_check_19_c_state,
-                range_check_19_d_state,
-                range_check_19_e_state,
-                range_check_19_f_state,
-                range_check_19_g_state,
-                range_check_19_h_state,
-                range_check_9_9_state,
-                range_check_9_9_b_state,
-                range_check_9_9_c_state,
-                range_check_9_9_d_state,
-                range_check_9_9_e_state,
-                range_check_9_9_f_state,
-                range_check_9_9_g_state,
-                range_check_9_9_h_state,
-            )
-        });
+        let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
+            self.packed_inputs,
+            n_rows,
+            range_check_19_state,
+            range_check_19_b_state,
+            range_check_19_c_state,
+            range_check_19_d_state,
+            range_check_19_e_state,
+            range_check_19_f_state,
+            range_check_19_g_state,
+            range_check_19_h_state,
+            range_check_9_9_state,
+            range_check_9_9_b_state,
+            range_check_9_9_c_state,
+            range_check_9_9_d_state,
+            range_check_9_9_e_state,
+            range_check_9_9_f_state,
+            range_check_9_9_g_state,
+            range_check_9_9_h_state,
+        );
         sub_component_inputs
             .range_check_9_9
             .iter()

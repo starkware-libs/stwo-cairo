@@ -149,11 +149,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        encode_and_hash_memory_section(proof.claim.public_data.public_memory.program),
+        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.program),
     );
 
     let output_hash = construct_f252(
-        encode_and_hash_memory_section(proof.claim.public_data.public_memory.output),
+        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.output),
     );
 
     VerificationOutput { program_hash, output_hash }
