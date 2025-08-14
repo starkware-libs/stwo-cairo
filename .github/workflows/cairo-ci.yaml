@@ -29,6 +29,7 @@ jobs:
         with:
           scarb-version: "2.12.0"
       - run: scarb fmt --check
+      - run: scarb lint --d
       - run: scarb test --features=poseidon252_verifier --package stwo_verifier_core
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_air
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_verifier

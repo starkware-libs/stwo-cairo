@@ -10,7 +10,9 @@ members = [
 ]
 
 [workspace.tool.cairo-lint]
+manual_assert = false
 double_parens = false
+
 
 [cairo]
 enable-gas = false
