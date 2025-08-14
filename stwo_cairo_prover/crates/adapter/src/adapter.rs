@@ -4,7 +4,9 @@ use tracing::{info, span, Level};
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::ProverInput;
 use crate::builtins::BuiltinSegments;
+use crate::memory::MemoryEntry;
 use crate::relocator::Relocator;
+use crate::vm_import::RelocatedTraceEntry;
 use crate::{PublicSegmentContext, StateTransitions};
 
 pub fn adapter(runner: &CairoRunner) -> ProverInput {
@@ -51,6 +53,20 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
         builtin_segments,
         public_segment_context,
     }
+}
+
+pub fn extract_relocated_mem_trace(
+    runner: &CairoRunner,
+) -> (Vec<MemoryEntry>, Vec<RelocatedTraceEntry>) {
+    let relocatable_trace = runner
+        .get_relocatable_trace()
+        .expect("Trace was not enabled in the run");
+    let relocatable_memory = runner.get_relocatable_memory();
+    let relocator = Relocator::new(&relocatable_memory);
+    (
+        relocator.relocate_memory(&relocatable_memory),
+        relocator.relocate_trace(relocatable_trace),
+    )
 }
 
 #[cfg(test)]
