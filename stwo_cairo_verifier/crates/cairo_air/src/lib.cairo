@@ -731,7 +731,7 @@ fn sum_public_memory_entries(
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
         let mut combine_sum = combine::combine_felt252(val, id_to_value_alpha);
-        combine_sum = combine_sum * id_to_value_alpha + id_m31.into() - id_to_value_z;
+        combine_sum = combine_sum + id_m31.into() - id_to_value_z;
         let id_to_value = combine_sum.inverse();
 
         sum += addr_to_id + id_to_value;
