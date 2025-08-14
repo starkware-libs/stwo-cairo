@@ -2,9 +2,9 @@ use bounded_int::impls::*;
 use bounded_int::{
     AddHelper, BoundedInt, MulHelper, NZ_U9_SHIFT, add, bounded_int_mul, div_rem, upcast,
 };
+use stwo_verifier_core::fields::m31::M31Trait;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;
-use stwo_verifier_core::fields::m31::{M31InnerT, M31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
@@ -50,8 +50,8 @@ fn horner_step(ref sum: QM31, value: u9, alpha: QM31) {
 fn horner_step_with_split_input(
     ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9, alpha: QM31,
 ) {
-    sum = sum * alpha
-        + M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(msb, shift), lsb))).into();
+    let value = add(bounded_int_mul(msb, shift), lsb);
+    sum = sum * alpha + M31Trait::new(upcast(value)).into();
 }
 
 /// An unrolled implementation for combining a felt252 value as part of the combine_id_to_value
@@ -184,90 +184,63 @@ pub fn combine_felt252(
     let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
 
     let mut sum = PackedUnreducedQM31Trait::large_zero();
-    sum += a28.mul_m31(M31Trait::new(upcast(l27)).into());
-    sum += a27.mul_m31(M31Trait::new(upcast(l26)).into());
-    sum += a26.mul_m31(M31Trait::new(upcast(l25)).into());
+    sum += a28.mul_m31(M31Trait::new(upcast(l27)));
+    sum += a27.mul_m31(M31Trait::new(upcast(l26)));
+    sum += a26.mul_m31(M31Trait::new(upcast(l25)));
 
     // Take 8 + 18 + 6 bits from v6
     let (l24_low, l23, l22, l21_high) = split_u32_to_4_chunks(v6, 0x40);
-    sum += a25
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l24_high, 0x100), l24_low)))
-                .into(),
-        );
+    let l24 = add(bounded_int_mul(l24_high, 0x100), l24_low);
 
-    sum += a24.mul_m31(M31Trait::new(upcast(l23)).into());
-    sum += a23.mul_m31(M31Trait::new(upcast(l22)).into());
+    sum += a25.mul_m31(M31Trait::new(upcast(l24)));
+    sum += a24.mul_m31(M31Trait::new(upcast(l23)));
+    sum += a23.mul_m31(M31Trait::new(upcast(l22)));
 
     // Take 3 + 27 + 2 bits from v5
     let (l21_low, l20, l19, l18, l17_high) = split_u32_to_5_chunks(v5, 0x4);
-    sum += a22
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l21_high, 0x8), l21_low)))
-                .into(),
-        );
-
-    sum += a21.mul_m31(M31Trait::new(upcast(l20)).into());
-    sum += a20.mul_m31(M31Trait::new(upcast(l19)).into());
-    sum += a19.mul_m31(M31Trait::new(upcast(l18)).into());
+    let l21 = add(bounded_int_mul(l21_high, 0x8), l21_low);
+    sum += a22.mul_m31(M31Trait::new(upcast(l21)));
+    sum += a21.mul_m31(M31Trait::new(upcast(l20)));
+    sum += a20.mul_m31(M31Trait::new(upcast(l19)));
+    sum += a19.mul_m31(M31Trait::new(upcast(l18)));
 
     // Take 7 + 18 + 7 bits from v4
     let (l17_low, l16, l15, l14_high) = split_u32_to_4_chunks(v4, 0x80);
-    sum += a18
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l17_high, 0x80), l17_low)))
-                .into(),
-        );
-
-    sum += a17.mul_m31(M31Trait::new(upcast(l16)).into());
-    sum += a16.mul_m31(M31Trait::new(upcast(l15)).into());
+    let l17 = add(bounded_int_mul(l17_high, 0x80), l17_low);
+    sum += a18.mul_m31(M31Trait::new(upcast(l17)));
+    sum += a17.mul_m31(M31Trait::new(upcast(l16)));
+    sum += a16.mul_m31(M31Trait::new(upcast(l15)));
 
     // Take 2 + 27 + 3 bits from v3
     let (l14_low, l13, l12, l11, l10_high) = split_u32_to_5_chunks(v3, 0x8);
-    sum += a15
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l14_high, 0x4), l14_low)))
-                .into(),
-        );
-
-    sum += a14.mul_m31(M31Trait::new(upcast(l13)).into());
-    sum += a13.mul_m31(M31Trait::new(upcast(l12)).into());
-    sum += a12.mul_m31(M31Trait::new(upcast(l11)).into());
+    let l14 = add(bounded_int_mul(l14_high, 0x4), l14_low);
+    sum += a15.mul_m31(M31Trait::new(upcast(l14)));
+    sum += a14.mul_m31(M31Trait::new(upcast(l13)));
+    sum += a13.mul_m31(M31Trait::new(upcast(l12)));
+    sum += a12.mul_m31(M31Trait::new(upcast(l11)));
 
     // Take 6 + 18 + 8 bits from v2
-    let (l10_low, l9, l8, l17_high) = split_u32_to_4_chunks(v2, 0x100);
-    sum += a11
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l10_high, 0x40), l10_low)))
-                .into(),
-        );
-
-    sum += a10.mul_m31(M31Trait::new(upcast(l9)).into());
-    sum += a9.mul_m31(M31Trait::new(upcast(l8)).into());
+    let (l10_low, l9, l8, l7_high) = split_u32_to_4_chunks(v2, 0x100);
+    let l10 = add(bounded_int_mul(l10_high, 0x40), l10_low);
+    sum += a11.mul_m31(M31Trait::new(upcast(l10)));
+    sum += a10.mul_m31(M31Trait::new(upcast(l9)));
+    sum += a9.mul_m31(M31Trait::new(upcast(l8)));
 
     // Take 1 + 27 + 4 bits from v1
-    let (l17_low, l6, l5, l4, l3_high) = split_u32_to_5_chunks(v1, 0x10);
-    sum += a8
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l17_high, 0x2), l17_low)))
-                .into(),
-        );
-
-    sum += a7.mul_m31(M31Trait::new(upcast(l6)).into());
-    sum += a6.mul_m31(M31Trait::new(upcast(l5)).into());
-    sum += a5.mul_m31(M31Trait::new(upcast(l4)).into());
+    let (l7_low, l6, l5, l4, l3_high) = split_u32_to_5_chunks(v1, 0x10);
+    let l7 = add(bounded_int_mul(l7_high, 0x2), l7_low);
+    sum += a8.mul_m31(M31Trait::new(upcast(l7)));
+    sum += a7.mul_m31(M31Trait::new(upcast(l6)));
+    sum += a6.mul_m31(M31Trait::new(upcast(l5)));
+    sum += a5.mul_m31(M31Trait::new(upcast(l4)));
 
     // Take 5 + 27 + 0 bits from v0
     let (l3_low, l2, l1, l0, _) = split_u32_to_5_chunks(v0, 1);
-    sum += a4
-        .mul_m31(
-            M31Trait::new(upcast::<_, M31InnerT>(add(bounded_int_mul(l3_high, 0x20), l3_low)))
-                .into(),
-        );
-
-    sum += a3.mul_m31(M31Trait::new(upcast(l2)).into());
-    sum += a2.mul_m31(M31Trait::new(upcast(l1)).into());
-    sum += a1.mul_m31(M31Trait::new(upcast(l0)).into());
+    let l3 = add(bounded_int_mul(l3_high, 0x20), l3_low);
+    sum += a4.mul_m31(M31Trait::new(upcast(l3)));
+    sum += a3.mul_m31(M31Trait::new(upcast(l2)));
+    sum += a2.mul_m31(M31Trait::new(upcast(l1)));
+    sum += a1.mul_m31(M31Trait::new(upcast(l0)));
 
     sum
 }
