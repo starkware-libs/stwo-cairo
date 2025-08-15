@@ -184,10 +184,6 @@ fn accumulate_row_quotients(
     quotient_constants: @QuotientConstants,
     domain_point: CirclePoint<M31>,
 ) -> QM31 {
-    let n_batches = sample_batches_by_point.len();
-    // TODO(andrew): Unnecessary asserts, remove.
-    assert!(n_batches == quotient_constants.point_constants.len());
-
     let denominator_inverses = quotient_denominator_inverses(
         sample_batches_by_point.span(), domain_point,
     );
@@ -197,29 +193,29 @@ fn accumulate_row_quotients(
     for (point_constants, denom_inv) in zip_eq(
         quotient_constants.point_constants, denominator_inverses,
     ) {
+        let PointQuotientConstants {
+            alpha_mul_a_sum, alpha_mul_b_sum, alpha_mul_c_idx, batch_random_coeff,
+        } = point_constants;
+
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
-        for (column_index, line_coeffs) in point_constants.indexed_line_coeffs.span() {
+        for (column_index, alpha_mul_c) in alpha_mul_c_idx.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
-            let ComplexConjugateLineCoeffs { alpha_mul_a, alpha_mul_b, alpha_mul_c } = *line_coeffs;
 
             // The numerator is a line equation passing through
-            //   (sample_point.y, sample_value), (conj(sample_point), conj(sample_value))
+            //   (sample_point.y, sample_value), (conj(sample_point.y), conj(sample_value))
             // evaluated at (domain_point.y, value).
             // When substituting a polynomial in this line equation, we get a polynomial
             // with a root at sample_point and conj(sample_point) if the original polynomial
             // had the values sample_value and conj(sample_value) at these points.
-            // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
-            // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-            let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
-            numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
+            numerator += alpha_mul_c.mul_m31(query_eval_at_column);
         }
 
-        let quotient = numerator.reduce().mul_cm31(denom_inv);
+        // Subtract the accumulated linear term.
+        let linear_term = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
+        let quotient = (numerator - linear_term).reduce().mul_cm31(denom_inv);
         quotient_accumulator =
-            QM31Trait::fused_mul_add(
-                quotient_accumulator, *point_constants.batch_random_coeffs, quotient,
-            );
+            QM31Trait::fused_mul_add(quotient_accumulator, *batch_random_coeff, quotient);
     }
 
     quotient_accumulator
@@ -252,17 +248,42 @@ pub struct QuotientConstants {
     pub point_constants: Array<PointQuotientConstants>,
 }
 
-/// Holds the precomputed constants for a given evaluation point.
+/// Holds the precomputed constants for a given evaluation point (OODS point with offset):
+///  - The coefficients of the interpolant (randomized)
+///  - Batch coefficient for linear combination of the quotients (randomized)
+///
+/// Since the denominator of the quotient vanishes at two points (which are complex conjugates),
+/// we need to select one of two values (F(P) or F(\overline P)) in the quotient numerator.
+/// So the numerator would look like: F(R) - I(R), where R is the queried point and I is the
+/// interpolant, which outputs either F(P) or F(\overline P), where P is the evaluation point.
+///
+/// The simplest interpolant that would do the job is a line passing through сonjugate points
+/// (P.y, F(P)) and (\overline P.y, F(\overline P)).
+///
+/// Randomized line coefficients:
+/// a' = \alpha * (\overline {F(P)} - F(P))
+/// b' = \alpha * (P.y - \overline {P.y})
+/// c' = \alpha * -(a' * P.y + b' * F(P))
+/// where \alpha is random coefficient ^ (index of the column + 1).
+///
+/// We precompute the sums of a' and b' for each batch, to reduce the number of multiplications.
+/// Sums are reduced at the end (when qm31_opcode is disabled) to avoid overflows/underflows down
+/// the line.
+///
 #[derive(Debug, Drop)]
 pub struct PointQuotientConstants {
-    /// Pair of (column index, line coefficients) for every sample.
-    pub indexed_line_coeffs: Array<(usize, ComplexConjugateLineCoeffs)>,
-    /// The random coefficients used to linearly combine the batched quotients.
+    /// The sum of the alpha^i * a values for all samples in the batch.
+    pub alpha_mul_a_sum: PackedUnreducedQM31,
+    /// The sum of the alpha^i * b values for all samples in the batch.
+    pub alpha_mul_b_sum: PackedUnreducedQM31,
+    /// Pair of (column index, alpha^i * c) for every sample.
+    pub alpha_mul_c_idx: Array<(usize, PackedUnreducedQM31)>,
+    /// The random coefficient used to linearly combine the batched quotients.
     ///
     /// For each sample batch we compute random_coeff^(number of columns in the batch),
-    /// which is used to linearly combine multiple batches together.
-    /// this is the coefficient for this batch of samples.
-    pub batch_random_coeffs: QM31,
+    /// which is used to linearly combine multiple batches together. This is the coefficient for
+    /// this batch of samples.
+    pub batch_random_coeff: QM31,
 }
 
 #[generate_trait]
@@ -281,24 +302,34 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 sample_batch.point,
             );
 
+            let neg_dbl_im_py = neg_twice_imaginary_part(sample_batch.point.y);
+
             let mut alpha: QM31 = One::one();
-            let mut indexed_line_coeffs = array![];
+            let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
+            let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
+            let mut alpha_mul_c_idx: Array<(usize, PackedUnreducedQM31)> = array![];
 
             for (column_idx, column_value) in sample_batch.columns_and_values.span() {
                 alpha = alpha * random_coeff;
-                indexed_line_coeffs
-                    .append(
-                        (
-                            *column_idx,
-                            ComplexConjugateLineCoeffsImpl::new(
-                                sample_batch.point, **column_value, alpha,
-                            ),
-                        ),
-                    );
+                let alpha_mul_a = alpha * neg_twice_imaginary_part(*column_value);
+                let alpha_mul_c = alpha * neg_dbl_im_py;
+                let alpha_mul_b = QM31Trait::fused_mul_sub(
+                    **column_value, alpha_mul_c, alpha_mul_a * *sample_batch.point.y,
+                );
+                alpha_mul_a_sum += alpha_mul_a.into();
+                alpha_mul_b_sum += alpha_mul_b.into();
+                alpha_mul_c_idx.append((*column_idx, alpha_mul_c.into()));
             }
 
             point_constants
-                .append(PointQuotientConstants { indexed_line_coeffs, batch_random_coeffs: alpha });
+                .append(
+                    PointQuotientConstants {
+                        alpha_mul_a_sum: alpha_mul_a_sum.reduce().into(),
+                        alpha_mul_b_sum: alpha_mul_b_sum.reduce().into(),
+                        alpha_mul_c_idx,
+                        batch_random_coeff: alpha,
+                    },
+                );
         }
 
         QuotientConstants { point_constants }
@@ -365,39 +396,6 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         }
 
         groups
-    }
-}
-
-/// The coefficients of a line between a point and its complex conjugate. Specifically,
-/// `a, b, and c, s.t. a*x + b - c*y = 0` for (x,y) being (sample.y, sample.value) and
-/// (conj(sample.y), conj(sample.value)).
-/// Relies on the fact that every polynomial F over the base
-/// field holds: F(p*) == F(p)* (* being the complex conjugate).
-#[derive(Copy, Debug, Drop)]
-struct ComplexConjugateLineCoeffs {
-    alpha_mul_a: PackedUnreducedQM31,
-    alpha_mul_b: PackedUnreducedQM31,
-    alpha_mul_c: PackedUnreducedQM31,
-}
-
-#[generate_trait]
-impl ComplexConjugateLineCoeffsImpl of ComplexConjugateLineCoeffsTrait {
-    fn new(
-        sample_point: @CirclePoint<QM31>, sample_value: QM31, alpha: QM31,
-    ) -> ComplexConjugateLineCoeffs {
-        let alpha_mul_a = alpha * neg_twice_imaginary_part(@sample_value);
-        let alpha_mul_c = alpha * neg_twice_imaginary_part(sample_point.y);
-        let alpha_mul_b = QM31Trait::fused_mul_sub(
-            sample_value, alpha_mul_c, alpha_mul_a * *sample_point.y,
-        );
-
-        // TODO(andrew): These alpha multiplications are expensive.
-        // Think they can be saved and done all at once.
-        ComplexConjugateLineCoeffs {
-            alpha_mul_a: alpha_mul_a.into(),
-            alpha_mul_b: alpha_mul_b.into(),
-            alpha_mul_c: alpha_mul_c.into(),
-        }
     }
 }
 
