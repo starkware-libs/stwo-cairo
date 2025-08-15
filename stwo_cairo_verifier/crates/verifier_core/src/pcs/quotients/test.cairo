@@ -3,10 +3,10 @@ use core::dict::Felt252Dict;
 use core::nullable::NullableTrait;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl};
 use crate::fields::m31::m31;
-use crate::fields::qm31::{PackedUnreducedQM31Trait, QM31, qm31_const};
+use crate::fields::qm31::{QM31, qm31_const};
 use crate::pcs::quotients::{
-    ColumnSampleBatch, ColumnSampleBatchImpl, ComplexConjugateLineCoeffsImpl, PointSample,
-    QuotientConstantsImpl, accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
+    ColumnSampleBatch, ColumnSampleBatchImpl, PointSample, QuotientConstantsImpl,
+    accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
 };
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{DictImpl, group_columns_by_log_size};
@@ -99,21 +99,6 @@ fn test_fri_answers() {
             ]
                 .span(),
         ],
-    );
-}
-
-#[test]
-fn test_complex_conjugate_line_coeffs_impl() {
-    let point = qm31_circle_gen();
-    let value = qm31_const::<9, 8, 7, 6>();
-    let alpha = qm31_const::<2, 3, 4, 5>();
-
-    let res = ComplexConjugateLineCoeffsImpl::new(@point, value, alpha);
-
-    assert!(res.alpha_mul_a.reduce() == qm31_const::<126, 2147483415, 8, 2147483581>());
-    assert!(res.alpha_mul_b.reduce() == qm31_const::<20238140, 1378415613, 17263450, 142791233>());
-    assert!(
-        res.alpha_mul_c.reduce() == qm31_const::<865924731, 72415967, 2011255989, 1549931113>(),
     );
 }
 
