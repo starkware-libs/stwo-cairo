@@ -1,9 +1,9 @@
-// AIR version d1591e2a
+// AIR version 6ba93348
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_bc3cd::DecodeInstructionBc3Cd;
 use crate::components::subroutines::read_small::ReadSmall;
 
-pub const N_TRACE_COLUMNS: usize = 33;
+pub const N_TRACE_COLUMNS: usize = 39;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -93,18 +93,24 @@ impl FrameworkEval for Eval {
         let dst_limb_0_col17 = eval.next_trace_mask();
         let dst_limb_1_col18 = eval.next_trace_mask();
         let dst_limb_2_col19 = eval.next_trace_mask();
-        let op0_id_col20 = eval.next_trace_mask();
-        let msb_col21 = eval.next_trace_mask();
-        let mid_limbs_set_col22 = eval.next_trace_mask();
-        let op0_limb_0_col23 = eval.next_trace_mask();
-        let op0_limb_1_col24 = eval.next_trace_mask();
-        let op0_limb_2_col25 = eval.next_trace_mask();
-        let op1_id_col26 = eval.next_trace_mask();
-        let msb_col27 = eval.next_trace_mask();
-        let mid_limbs_set_col28 = eval.next_trace_mask();
-        let op1_limb_0_col29 = eval.next_trace_mask();
-        let op1_limb_1_col30 = eval.next_trace_mask();
-        let op1_limb_2_col31 = eval.next_trace_mask();
+        let remainder_bits_col20 = eval.next_trace_mask();
+        let partial_limb_msb_col21 = eval.next_trace_mask();
+        let op0_id_col22 = eval.next_trace_mask();
+        let msb_col23 = eval.next_trace_mask();
+        let mid_limbs_set_col24 = eval.next_trace_mask();
+        let op0_limb_0_col25 = eval.next_trace_mask();
+        let op0_limb_1_col26 = eval.next_trace_mask();
+        let op0_limb_2_col27 = eval.next_trace_mask();
+        let remainder_bits_col28 = eval.next_trace_mask();
+        let partial_limb_msb_col29 = eval.next_trace_mask();
+        let op1_id_col30 = eval.next_trace_mask();
+        let msb_col31 = eval.next_trace_mask();
+        let mid_limbs_set_col32 = eval.next_trace_mask();
+        let op1_limb_0_col33 = eval.next_trace_mask();
+        let op1_limb_1_col34 = eval.next_trace_mask();
+        let op1_limb_2_col35 = eval.next_trace_mask();
+        let remainder_bits_col36 = eval.next_trace_mask();
+        let partial_limb_msb_col37 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -152,7 +158,7 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_756b7_16_limb_0] = ReadSmall::evaluate(
+        let [read_small_output_tmp_756b7_19_limb_0] = ReadSmall::evaluate(
             [(mem_dst_base_col11.clone()
                 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0.clone())],
             dst_id_col14.clone(),
@@ -161,21 +167,8 @@ impl FrameworkEval for Eval {
             dst_limb_0_col17.clone(),
             dst_limb_1_col18.clone(),
             dst_limb_2_col19.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
-            &mut eval,
-        );
-        #[allow(clippy::unused_unit)]
-        #[allow(unused_variables)]
-        let [read_small_output_tmp_756b7_22_limb_0] = ReadSmall::evaluate(
-            [(mem0_base_col12.clone()
-                + decode_instruction_bc3cd_output_tmp_756b7_10_offset1.clone())],
-            op0_id_col20.clone(),
-            msb_col21.clone(),
-            mid_limbs_set_col22.clone(),
-            op0_limb_0_col23.clone(),
-            op0_limb_1_col24.clone(),
-            op0_limb_2_col25.clone(),
+            remainder_bits_col20.clone(),
+            partial_limb_msb_col21.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
@@ -183,23 +176,42 @@ impl FrameworkEval for Eval {
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
         let [read_small_output_tmp_756b7_28_limb_0] = ReadSmall::evaluate(
+            [(mem0_base_col12.clone()
+                + decode_instruction_bc3cd_output_tmp_756b7_10_offset1.clone())],
+            op0_id_col22.clone(),
+            msb_col23.clone(),
+            mid_limbs_set_col24.clone(),
+            op0_limb_0_col25.clone(),
+            op0_limb_1_col26.clone(),
+            op0_limb_2_col27.clone(),
+            remainder_bits_col28.clone(),
+            partial_limb_msb_col29.clone(),
+            &self.memory_address_to_id_lookup_elements,
+            &self.memory_id_to_big_lookup_elements,
+            &mut eval,
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [read_small_output_tmp_756b7_37_limb_0] = ReadSmall::evaluate(
             [(mem1_base_col13.clone()
                 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2.clone())],
-            op1_id_col26.clone(),
-            msb_col27.clone(),
-            mid_limbs_set_col28.clone(),
-            op1_limb_0_col29.clone(),
-            op1_limb_1_col30.clone(),
-            op1_limb_2_col31.clone(),
+            op1_id_col30.clone(),
+            msb_col31.clone(),
+            mid_limbs_set_col32.clone(),
+            op1_limb_0_col33.clone(),
+            op1_limb_1_col34.clone(),
+            op1_limb_2_col35.clone(),
+            remainder_bits_col36.clone(),
+            partial_limb_msb_col37.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
         // dst equals op0 + op1.
         eval.add_constraint(
-            (read_small_output_tmp_756b7_16_limb_0.clone()
-                - (read_small_output_tmp_756b7_22_limb_0.clone()
-                    + read_small_output_tmp_756b7_28_limb_0.clone())),
+            (read_small_output_tmp_756b7_19_limb_0.clone()
+                - (read_small_output_tmp_756b7_28_limb_0.clone()
+                    + read_small_output_tmp_756b7_37_limb_0.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,

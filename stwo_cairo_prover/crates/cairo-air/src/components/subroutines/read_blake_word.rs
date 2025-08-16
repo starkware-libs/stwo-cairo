@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 6ba93348
 use crate::components::prelude::*;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
 

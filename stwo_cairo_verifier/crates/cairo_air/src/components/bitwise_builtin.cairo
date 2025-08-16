@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 6ba93348
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate;
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
