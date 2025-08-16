@@ -1,10 +1,10 @@
-// AIR version d1591e2a
+// AIR version d9e7e480
 use crate::components::subroutines::decode_instruction_cb32b::decode_instruction_cb32b_evaluate;
 use crate::components::subroutines::mem_verify_equal::mem_verify_equal_evaluate;
-use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 17;
+pub const N_TRACE_COLUMNS: usize = 19;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 1), ('Opcodes', 1),
 ];
@@ -100,6 +100,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -160,9 +162,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             mem1_base_limb_0_col12,
             mem1_base_limb_1_col13,
             mem1_base_limb_2_col14,
-            dst_id_col15,
+            mem1_base_limb_3_col15,
+            partial_limb_msb_col16,
+            dst_id_col17,
             enabler,
-        ]: [Span<QM31>; 17] =
+        ]: [Span<QM31>; 19] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -185,7 +189,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unbox();
         let [mem1_base_limb_2_col14]: [QM31; 1] = (*mem1_base_limb_2_col14.try_into().unwrap())
             .unbox();
-        let [dst_id_col15]: [QM31; 1] = (*dst_id_col15.try_into().unwrap()).unbox();
+        let [mem1_base_limb_3_col15]: [QM31; 1] = (*mem1_base_limb_3_col15.try_into().unwrap())
+            .unbox();
+        let [partial_limb_msb_col16]: [QM31; 1] = (*partial_limb_msb_col16.try_into().unwrap())
+            .unbox();
+        let [dst_id_col17]: [QM31; 1] = (*dst_id_col17.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -225,12 +233,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col7) * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_29_evaluate(
             (mem0_base_col10 + decode_instruction_cb32b_output_tmp_b1151_8_offset1),
             mem1_base_id_col11,
             mem1_base_limb_0_col12,
             mem1_base_limb_1_col13,
             mem1_base_limb_2_col14,
+            mem1_base_limb_3_col15,
+            partial_limb_msb_col16,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -242,11 +252,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         mem_verify_equal_evaluate(
             [
                 (mem_dst_base_col9 + decode_instruction_cb32b_output_tmp_b1151_8_offset0),
-                (((mem1_base_limb_0_col12 + (mem1_base_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))
+                ((((mem1_base_limb_0_col12
+                    + (mem1_base_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))
                     + (mem1_base_limb_2_col14 * qm31_const::<262144, 0, 0, 0>()))
+                    + (mem1_base_limb_3_col15 * qm31_const::<134217728, 0, 0, 0>()))
                     + decode_instruction_cb32b_output_tmp_b1151_8_offset2),
             ],
-            dst_id_col15,
+            dst_id_col17,
             self.memory_address_to_id_lookup_elements,
             ref memory_address_to_id_sum_3,
             ref memory_address_to_id_sum_4,

@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 86c76f30
 use crate::components::subroutines::read_positive_num_bits_128::read_positive_num_bits_128_evaluate;
 use crate::prelude::*;
 
@@ -147,7 +147,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_12_col13,
             value_limb_13_col14,
             value_limb_14_col15,
-            msb_col16,
+            partial_limb_msb_col16,
         ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
@@ -169,7 +169,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [value_limb_12_col13]: [QM31; 1] = (*value_limb_12_col13.try_into().unwrap()).unbox();
         let [value_limb_13_col14]: [QM31; 1] = (*value_limb_13_col14.try_into().unwrap()).unbox();
         let [value_limb_14_col15]: [QM31; 1] = (*value_limb_14_col15.try_into().unwrap()).unbox();
-        let [msb_col16]: [QM31; 1] = (*msb_col16.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col16]: [QM31; 1] = (*partial_limb_msb_col16.try_into().unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -191,7 +192,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_12_col13,
             value_limb_13_col14,
             value_limb_14_col15,
-            msb_col16,
+            partial_limb_msb_col16,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_0,

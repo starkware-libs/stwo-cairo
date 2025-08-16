@@ -1,9 +1,9 @@
-// AIR version d1591e2a
+// AIR version d9e7e480
 use crate::components::subroutines::decode_instruction_15a61::decode_instruction_15a61_evaluate;
-use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 12;
+pub const N_TRACE_COLUMNS: usize = 16;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 2), ('MemoryIdToBig', 2), ('Opcodes', 1),
 ];
@@ -94,6 +94,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -146,12 +150,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_limb_0_col4,
             next_pc_limb_1_col5,
             next_pc_limb_2_col6,
-            next_fp_id_col7,
-            next_fp_limb_0_col8,
-            next_fp_limb_1_col9,
-            next_fp_limb_2_col10,
+            next_pc_limb_3_col7,
+            partial_limb_msb_col8,
+            next_fp_id_col9,
+            next_fp_limb_0_col10,
+            next_fp_limb_1_col11,
+            next_fp_limb_2_col12,
+            next_fp_limb_3_col13,
+            partial_limb_msb_col14,
             enabler,
-        ]: [Span<QM31>; 12] =
+        ]: [Span<QM31>; 16] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -163,10 +171,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [next_pc_limb_0_col4]: [QM31; 1] = (*next_pc_limb_0_col4.try_into().unwrap()).unbox();
         let [next_pc_limb_1_col5]: [QM31; 1] = (*next_pc_limb_1_col5.try_into().unwrap()).unbox();
         let [next_pc_limb_2_col6]: [QM31; 1] = (*next_pc_limb_2_col6.try_into().unwrap()).unbox();
-        let [next_fp_id_col7]: [QM31; 1] = (*next_fp_id_col7.try_into().unwrap()).unbox();
-        let [next_fp_limb_0_col8]: [QM31; 1] = (*next_fp_limb_0_col8.try_into().unwrap()).unbox();
-        let [next_fp_limb_1_col9]: [QM31; 1] = (*next_fp_limb_1_col9.try_into().unwrap()).unbox();
-        let [next_fp_limb_2_col10]: [QM31; 1] = (*next_fp_limb_2_col10.try_into().unwrap()).unbox();
+        let [next_pc_limb_3_col7]: [QM31; 1] = (*next_pc_limb_3_col7.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col8]: [QM31; 1] = (*partial_limb_msb_col8.try_into().unwrap())
+            .unbox();
+        let [next_fp_id_col9]: [QM31; 1] = (*next_fp_id_col9.try_into().unwrap()).unbox();
+        let [next_fp_limb_0_col10]: [QM31; 1] = (*next_fp_limb_0_col10.try_into().unwrap()).unbox();
+        let [next_fp_limb_1_col11]: [QM31; 1] = (*next_fp_limb_1_col11.try_into().unwrap()).unbox();
+        let [next_fp_limb_2_col12]: [QM31; 1] = (*next_fp_limb_2_col12.try_into().unwrap()).unbox();
+        let [next_fp_limb_3_col13]: [QM31; 1] = (*next_fp_limb_3_col13.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col14]: [QM31; 1] = (*partial_limb_msb_col14.try_into().unwrap())
+            .unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -181,12 +195,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_29_evaluate(
             (input_fp_col2 - qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col3,
             next_pc_limb_0_col4,
             next_pc_limb_1_col5,
             next_pc_limb_2_col6,
+            next_pc_limb_3_col7,
+            partial_limb_msb_col8,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -195,12 +211,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        read_positive_num_bits_27_evaluate(
+        read_positive_num_bits_29_evaluate(
             (input_fp_col2 - qm31_const::<2, 0, 0, 0>()),
-            next_fp_id_col7,
-            next_fp_limb_0_col8,
-            next_fp_limb_1_col9,
-            next_fp_limb_2_col10,
+            next_fp_id_col9,
+            next_fp_limb_0_col10,
+            next_fp_limb_1_col11,
+            next_fp_limb_2_col12,
+            next_fp_limb_3_col13,
+            partial_limb_msb_col14,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_3,
@@ -218,11 +236,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    ((next_pc_limb_0_col4 + (next_pc_limb_1_col5 * qm31_const::<512, 0, 0, 0>()))
-                        + (next_pc_limb_2_col6 * qm31_const::<262144, 0, 0, 0>())),
+                    (((next_pc_limb_0_col4 + (next_pc_limb_1_col5 * qm31_const::<512, 0, 0, 0>()))
+                        + (next_pc_limb_2_col6 * qm31_const::<262144, 0, 0, 0>()))
+                        + (next_pc_limb_3_col7 * qm31_const::<134217728, 0, 0, 0>())),
                     input_ap_col1,
-                    ((next_fp_limb_0_col8 + (next_fp_limb_1_col9 * qm31_const::<512, 0, 0, 0>()))
-                        + (next_fp_limb_2_col10 * qm31_const::<262144, 0, 0, 0>())),
+                    (((next_fp_limb_0_col10 + (next_fp_limb_1_col11 * qm31_const::<512, 0, 0, 0>()))
+                        + (next_fp_limb_2_col12 * qm31_const::<262144, 0, 0, 0>()))
+                        + (next_fp_limb_3_col13 * qm31_const::<134217728, 0, 0, 0>())),
                 ],
             );
 

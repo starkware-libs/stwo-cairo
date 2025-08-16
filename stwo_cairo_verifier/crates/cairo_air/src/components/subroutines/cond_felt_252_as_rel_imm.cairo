@@ -1,5 +1,6 @@
-// AIR version d1591e2a
+// AIR version d9e7e480
 use crate::components::subroutines::cond_decode_small_sign::cond_decode_small_sign_evaluate;
+use crate::components::subroutines::cond_range_check_2::cond_range_check_2_evaluate;
 use crate::prelude::*;
 
 
@@ -7,6 +8,7 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
     input: [QM31; 29],
     msb_col0: QM31,
     mid_limbs_set_col1: QM31,
+    partial_limb_msb_col2: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -51,13 +53,15 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    // Constraint - rel_imm limb 3 is fixed
-    let constraint_quotient = ((cond_felt_252_as_rel_imm_input_limb_28
-        * (cond_felt_252_as_rel_imm_input_limb_3
-            - (mid_limbs_set_col1 * qm31_const::<511, 0, 0, 0>()))))
-        * domain_vanishing_eval_inv;
-    sum = sum * random_coeff + constraint_quotient;
+    let remainder_bits_tmp_1e9bf_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
+        - (mid_limbs_set_col1 * qm31_const::<508, 0, 0, 0>()));
+    cond_range_check_2_evaluate(
+        [remainder_bits_tmp_1e9bf_3, cond_felt_252_as_rel_imm_input_limb_28],
+        partial_limb_msb_col2,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
 
     // Constraint - rel_imm limb 4 is fixed
     let constraint_quotient = ((cond_felt_252_as_rel_imm_input_limb_28
@@ -221,9 +225,10 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    ((((cond_felt_252_as_rel_imm_input_limb_0
+    (((((cond_felt_252_as_rel_imm_input_limb_0
         + (cond_felt_252_as_rel_imm_input_limb_1 * qm31_const::<512, 0, 0, 0>()))
         + (cond_felt_252_as_rel_imm_input_limb_2 * qm31_const::<262144, 0, 0, 0>()))
+        + (remainder_bits_tmp_1e9bf_3 * qm31_const::<134217728, 0, 0, 0>()))
         - msb_col0)
-        - (qm31_const::<134217728, 0, 0, 0>() * mid_limbs_set_col1))
+        - (qm31_const::<536870912, 0, 0, 0>() * mid_limbs_set_col1))
 }
