@@ -1,9 +1,9 @@
-// AIR version d3fb930e
+// AIR version d9e7e480
 #![allow(unused_parens)]
 use cairo_air::components::add_ap_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{
-    memory_address_to_id, memory_id_to_big, range_check_19, range_check_8, verify_instruction,
+    memory_address_to_id, memory_id_to_big, range_check_11, range_check_18, verify_instruction,
 };
 use crate::witness::prelude::*;
 
@@ -24,8 +24,8 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_19_state: &range_check_19::ClaimGenerator,
-        range_check_8_state: &range_check_8::ClaimGenerator,
+        range_check_11_state: &range_check_11::ClaimGenerator,
+        range_check_18_state: &range_check_18::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
@@ -40,8 +40,8 @@ impl ClaimGenerator {
             n_rows,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            range_check_19_state,
-            range_check_8_state,
+            range_check_11_state,
+            range_check_18_state,
             verify_instruction_state,
         );
         sub_component_inputs
@@ -63,16 +63,16 @@ impl ClaimGenerator {
                 memory_id_to_big_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
-            .range_check_19
+            .range_check_18
             .iter()
             .for_each(|inputs| {
-                range_check_19_state.add_packed_inputs(inputs);
+                range_check_18_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
-            .range_check_8
+            .range_check_11
             .iter()
             .for_each(|inputs| {
-                range_check_8_state.add_packed_inputs(inputs);
+                range_check_11_state.add_packed_inputs(inputs);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -92,8 +92,8 @@ struct SubComponentInputs {
     verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],
     memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 1],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 1],
-    range_check_19: [Vec<range_check_19::PackedInputType>; 1],
-    range_check_8: [Vec<range_check_8::PackedInputType>; 1],
+    range_check_18: [Vec<range_check_18::PackedInputType>; 1],
+    range_check_11: [Vec<range_check_11::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -105,8 +105,8 @@ fn write_trace_simd(
     n_rows: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    range_check_19_state: &range_check_19::ClaimGenerator,
-    range_check_8_state: &range_check_8::ClaimGenerator,
+    range_check_11_state: &range_check_11::ClaimGenerator,
+    range_check_18_state: &range_check_18::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
@@ -125,6 +125,7 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_1048576 = PackedM31::broadcast(M31::from(1048576));
     let M31_128 = PackedM31::broadcast(M31::from(128));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
@@ -136,10 +137,11 @@ fn write_trace_simd(
     let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
+    let M31_508 = PackedM31::broadcast(M31::from(508));
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_536870912 = PackedM31::broadcast(M31::from(536870912));
     let M31_64 = PackedM31::broadcast(M31::from(64));
-    let M31_8388608 = PackedM31::broadcast(M31::from(8388608));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_13 = PackedUInt16::broadcast(UInt16::from(13));
     let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
@@ -148,7 +150,7 @@ fn write_trace_simd(
     let UInt16_5 = PackedUInt16::broadcast(UInt16::from(5));
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
-    let UInt32_255 = PackedUInt32::broadcast(UInt32::from(255));
+    let UInt32_2047 = PackedUInt32::broadcast(UInt32::from(2047));
     let enabler_col = Enabler::new(n_rows);
 
     (
@@ -292,13 +294,26 @@ fn write_trace_simd(
                 *row[11] = op1_limb_1_col11;
                 let op1_limb_2_col12 = memory_id_to_big_value_tmp_c921e_7.get_m31(2);
                 *row[12] = op1_limb_2_col12;
+                let remainder_bits_tmp_c921e_11 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_c921e_7.get_m31(3)))
+                        & (UInt16_3));
+                let remainder_bits_col13 = remainder_bits_tmp_c921e_11.as_m31();
+                *row[13] = remainder_bits_col13;
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_c921e_12 =
+                    (((PackedUInt16::from_m31(remainder_bits_col13)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col14 = partial_limb_msb_tmp_c921e_12.as_m31();
+                *row[14] = partial_limb_msb_col14;
+
                 *sub_component_inputs.memory_id_to_big[0] = op1_id_col7;
                 *lookup_data.memory_id_to_big_0 = [
                     op1_id_col7,
                     op1_limb_0_col10,
                     op1_limb_1_col11,
                     op1_limb_2_col12,
-                    ((mid_limbs_set_col9) * (M31_511)),
+                    ((remainder_bits_col13) + ((mid_limbs_set_col9) * (M31_508))),
                     ((mid_limbs_set_col9) * (M31_511)),
                     ((mid_limbs_set_col9) * (M31_511)),
                     ((mid_limbs_set_col9) * (M31_511)),
@@ -324,39 +339,40 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col8) * (M31_256)),
                 ];
-                let read_small_output_tmp_c921e_11 = (
-                    (((((op1_limb_0_col10) + ((op1_limb_1_col11) * (M31_512)))
+                let read_small_output_tmp_c921e_14 = (
+                    ((((((op1_limb_0_col10) + ((op1_limb_1_col11) * (M31_512)))
                         + ((op1_limb_2_col12) * (M31_262144)))
+                        + ((remainder_bits_col13) * (M31_134217728)))
                         - (msb_col8))
-                        - ((M31_134217728) * (mid_limbs_set_col9))),
+                        - ((M31_536870912) * (mid_limbs_set_col9))),
                     op1_id_col7,
                 );
 
-                let next_ap_tmp_c921e_12 = ((input_ap_col1) + (read_small_output_tmp_c921e_11.0));
+                let next_ap_tmp_c921e_15 = ((input_ap_col1) + (read_small_output_tmp_c921e_14.0));
 
                 // Range Check Ap.
 
-                let range_check_ap_bot8bits_u32_tmp_c921e_13 =
-                    ((PackedUInt32::from_m31(next_ap_tmp_c921e_12)) & (UInt32_255));
-                let range_check_ap_bot8bits_col13 =
-                    range_check_ap_bot8bits_u32_tmp_c921e_13.low().as_m31();
-                *row[13] = range_check_ap_bot8bits_col13;
-                *sub_component_inputs.range_check_19[0] = [(((next_ap_tmp_c921e_12)
-                    - (range_check_ap_bot8bits_col13))
-                    * (M31_8388608))];
-                *lookup_data.range_check_19_0 = [(((next_ap_tmp_c921e_12)
-                    - (range_check_ap_bot8bits_col13))
-                    * (M31_8388608))];
-                *sub_component_inputs.range_check_8[0] = [range_check_ap_bot8bits_col13];
-                *lookup_data.range_check_8_0 = [range_check_ap_bot8bits_col13];
+                let range_check_ap_bot11bits_u32_tmp_c921e_16 =
+                    ((PackedUInt32::from_m31(next_ap_tmp_c921e_15)) & (UInt32_2047));
+                let range_check_ap_bot11bits_col15 =
+                    range_check_ap_bot11bits_u32_tmp_c921e_16.low().as_m31();
+                *row[15] = range_check_ap_bot11bits_col15;
+                *sub_component_inputs.range_check_18[0] = [(((next_ap_tmp_c921e_15)
+                    - (range_check_ap_bot11bits_col15))
+                    * (M31_1048576))];
+                *lookup_data.range_check_18_0 = [(((next_ap_tmp_c921e_15)
+                    - (range_check_ap_bot11bits_col15))
+                    * (M31_1048576))];
+                *sub_component_inputs.range_check_11[0] = [range_check_ap_bot11bits_col15];
+                *lookup_data.range_check_11_0 = [range_check_ap_bot11bits_col15];
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + ((M31_1) + (op1_imm_col4))),
-                    next_ap_tmp_c921e_12,
+                    next_ap_tmp_c921e_15,
                     input_fp_col2,
                 ];
-                *row[14] = enabler_col.packed_at(row_index);
+                *row[16] = enabler_col.packed_at(row_index);
             },
         );
 
@@ -369,8 +385,8 @@ struct LookupData {
     memory_id_to_big_0: Vec<[PackedM31; 29]>,
     opcodes_0: Vec<[PackedM31; 3]>,
     opcodes_1: Vec<[PackedM31; 3]>,
-    range_check_19_0: Vec<[PackedM31; 1]>,
-    range_check_8_0: Vec<[PackedM31; 1]>,
+    range_check_11_0: Vec<[PackedM31; 1]>,
+    range_check_18_0: Vec<[PackedM31; 1]>,
     verify_instruction_0: Vec<[PackedM31; 7]>,
 }
 
@@ -385,8 +401,8 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
-        range_check_19: &relations::RangeCheck_19,
-        range_check_8: &relations::RangeCheck_8,
+        range_check_11: &relations::RangeCheck_11,
+        range_check_18: &relations::RangeCheck_18,
         opcodes: &relations::Opcodes,
         verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
@@ -412,12 +428,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
-            &self.lookup_data.range_check_19_0,
+            &self.lookup_data.range_check_18_0,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = range_check_19.combine(values1);
+                let denom1: PackedQM31 = range_check_18.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -425,13 +441,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_8_0,
+            &self.lookup_data.range_check_11_0,
             &self.lookup_data.opcodes_0,
         )
             .into_par_iter()
             .enumerate()
             .for_each(|(i, (writer, values0, values1))| {
-                let denom0: PackedQM31 = range_check_8.combine(values0);
+                let denom0: PackedQM31 = range_check_11.combine(values0);
                 let denom1: PackedQM31 = opcodes.combine(values1);
                 writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
             });

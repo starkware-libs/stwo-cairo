@@ -1,10 +1,10 @@
-// AIR version d1591e2a
+// AIR version 6ba93348
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_de75a::DecodeInstructionDe75A;
 use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
 use crate::components::subroutines::read_small::ReadSmall;
 
-pub const N_TRACE_COLUMNS: usize = 45;
+pub const N_TRACE_COLUMNS: usize = 47;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -120,6 +120,8 @@ impl FrameworkEval for Eval {
         let next_pc_limb_0_col41 = eval.next_trace_mask();
         let next_pc_limb_1_col42 = eval.next_trace_mask();
         let next_pc_limb_2_col43 = eval.next_trace_mask();
+        let remainder_bits_col44 = eval.next_trace_mask();
+        let partial_limb_msb_col45 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -253,7 +255,7 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [read_small_output_tmp_f51a9_17_limb_0] = ReadSmall::evaluate(
+        let [read_small_output_tmp_f51a9_20_limb_0] = ReadSmall::evaluate(
             [(input_pc_col0.clone() + M31_1.clone())],
             next_pc_id_col38.clone(),
             msb_col39.clone(),
@@ -261,6 +263,8 @@ impl FrameworkEval for Eval {
             next_pc_limb_0_col41.clone(),
             next_pc_limb_1_col42.clone(),
             next_pc_limb_2_col43.clone(),
+            remainder_bits_col44.clone(),
+            partial_limb_msb_col45.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
@@ -279,7 +283,7 @@ impl FrameworkEval for Eval {
             &self.opcodes_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
-                (input_pc_col0.clone() + read_small_output_tmp_f51a9_17_limb_0.clone()),
+                (input_pc_col0.clone() + read_small_output_tmp_f51a9_20_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col5.clone()),
                 input_fp_col2.clone(),
             ],
