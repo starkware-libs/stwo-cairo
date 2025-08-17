@@ -35,7 +35,7 @@ impl MerkleDecommitmentClone<
     fn clone(self: @MerkleDecommitment<H>) -> MerkleDecommitment<H> {
         MerkleDecommitment::<
             H,
-        > { hash_witness: self.hash_witness.clone(), column_witness: self.column_witness.clone() }
+        > { hash_witness: *self.hash_witness, column_witness: *self.column_witness }
     }
 }
 
@@ -103,7 +103,7 @@ impl MerkleVerifierImpl<
     ) {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let mut columns_by_log_size = self.columns_by_log_size.clone();
+        let mut columns_by_log_size = *self.columns_by_log_size;
         let mut layer_log_size: felt252 = columns_by_log_size.len().into() - 1;
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
