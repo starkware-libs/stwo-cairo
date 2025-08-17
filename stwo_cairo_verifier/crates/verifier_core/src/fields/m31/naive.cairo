@@ -25,12 +25,10 @@ pub impl M31Add of core::traits::Add<M31> {
     #[inline]
     fn add(lhs: M31, rhs: M31) -> M31 {
         let sum = bounded_int::add(lhs.inner, rhs.inner);
-        let res = match bounded_int::constrain::<BoundedInt<0, { 2 * (P - 1) }>, P>(sum) {
-            Ok(lt) => lt,
-            Err(gte) => upcast(bounded_int::sub(gte, M31_P)),
-        };
-
-        M31Trait::new(res)
+        match bounded_int::constrain::<BoundedInt<0, { 2 * (P - 1) }>, P>(sum) {
+            Ok(lt) => M31Trait::new(lt),
+            Err(gte) => M31Trait::new(upcast(bounded_int::sub(gte, M31_P))),
+        }
     }
 }
 

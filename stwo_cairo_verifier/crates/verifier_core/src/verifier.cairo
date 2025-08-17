@@ -54,7 +54,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            commitment_scheme_proof.commitments.last().unwrap().clone(),
+            *commitment_scheme_proof.commitments.last().unwrap(),
             [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
             ref channel,
         );
