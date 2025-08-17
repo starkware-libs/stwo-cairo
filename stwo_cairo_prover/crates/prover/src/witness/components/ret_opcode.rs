@@ -1,3 +1,4 @@
+// AIR version 8b7e955f
 #![allow(unused_parens)]
 use cairo_air::components::ret_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -151,7 +152,7 @@ fn write_trace_simd(
                     M31_130,
                     M31_0,
                 ];
-                let decode_instruction_e46923e076e93350_output_tmp_e23a5_2 = (
+                let decode_instruction_15a61_output_tmp_e23a5_2 = (
                     [M31_2147483645, M31_2147483646, M31_2147483646],
                     [
                         M31_1, M31_1, M31_0, M31_1, M31_0, M31_0, M31_0, M31_1, M31_0, M31_0,
@@ -361,10 +362,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_instruction: &relations::VerifyInstruction,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         opcodes: &relations::Opcodes,
-        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

@@ -1,4 +1,4 @@
-// AIR version 9f50a80b
+// AIR version 8b7e955f
 #![allow(unused_parens)]
 use cairo_air::components::range_check_felt_252_width_27::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -307,14 +307,14 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
-        range_check_18: &relations::RangeCheck_18,
-        range_check_18_b: &relations::RangeCheck_18_B,
         range_check_9_9: &relations::RangeCheck_9_9,
+        range_check_18: &relations::RangeCheck_18,
         range_check_9_9_b: &relations::RangeCheck_9_9_B,
+        range_check_18_b: &relations::RangeCheck_18_B,
         range_check_9_9_c: &relations::RangeCheck_9_9_C,
         range_check_9_9_d: &relations::RangeCheck_9_9_D,
         range_check_9_9_e: &relations::RangeCheck_9_9_E,
+        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

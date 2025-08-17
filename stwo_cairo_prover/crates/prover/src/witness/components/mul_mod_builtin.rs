@@ -1,3 +1,4 @@
+// AIR version 8b7e955f
 #![allow(unused_parens)]
 use cairo_air::components::mul_mod_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -7152,8 +7153,8 @@ impl InteractionClaimGenerator {
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         range_check_12: &relations::RangeCheck_12,
-        range_check_18: &relations::RangeCheck_18,
         range_check_3_6_6_3: &relations::RangeCheck_3_6_6_3,
+        range_check_18: &relations::RangeCheck_18,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 

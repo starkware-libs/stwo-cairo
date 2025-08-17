@@ -1,3 +1,4 @@
+// AIR version 8b7e955f
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_rel_imm::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -142,19 +143,19 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_ff4f6_0 =
+                let memory_address_to_id_value_tmp_81a39_0 =
                     memory_address_to_id_state.deduce_output(input_pc_col0);
-                let memory_id_to_big_value_tmp_ff4f6_1 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_ff4f6_0);
-                let ap_update_add_1_tmp_ff4f6_2 =
-                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_ff4f6_1.get_m31(5)))
+                let memory_id_to_big_value_tmp_81a39_1 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_81a39_0);
+                let ap_update_add_1_tmp_81a39_2 =
+                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_81a39_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_ff4f6_1.get_m31(6),
+                            memory_id_to_big_value_tmp_81a39_1.get_m31(6),
                         )) << (UInt16_6)))
                         >> (UInt16_11))
                         & (UInt16_1));
-                let ap_update_add_1_col3 = ap_update_add_1_tmp_ff4f6_2.as_m31();
+                let ap_update_add_1_col3 = ap_update_add_1_tmp_81a39_2.as_m31();
                 *row[3] = ap_update_add_1_col3;
                 *sub_component_inputs.verify_instruction[0] = (
                     input_pc_col0,
@@ -171,7 +172,7 @@ fn write_trace_simd(
                     ((M31_4) + ((ap_update_add_1_col3) * (M31_32))),
                     M31_0,
                 ];
-                let decode_instruction_f8415e85910400c0_output_tmp_ff4f6_3 = (
+                let decode_instruction_7ebc4_output_tmp_81a39_3 = (
                     [M31_2147483646, M31_2147483646, M31_1],
                     [
                         M31_1,
@@ -195,11 +196,11 @@ fn write_trace_simd(
 
                 // Read Small.
 
-                let memory_address_to_id_value_tmp_ff4f6_4 =
+                let memory_address_to_id_value_tmp_81a39_4 =
                     memory_address_to_id_state.deduce_output(((input_pc_col0) + (M31_1)));
-                let memory_id_to_big_value_tmp_ff4f6_5 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_ff4f6_4);
-                let next_pc_id_col4 = memory_address_to_id_value_tmp_ff4f6_4;
+                let memory_id_to_big_value_tmp_81a39_5 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_81a39_4);
+                let next_pc_id_col4 = memory_address_to_id_value_tmp_81a39_4;
                 *row[4] = next_pc_id_col4;
                 *sub_component_inputs.memory_address_to_id[0] = ((input_pc_col0) + (M31_1));
                 *lookup_data.memory_address_to_id_0 =
@@ -207,20 +208,20 @@ fn write_trace_simd(
 
                 // Cond Decode Small Sign.
 
-                let msb_tmp_ff4f6_6 = memory_id_to_big_value_tmp_ff4f6_5.get_m31(27).eq(M31_256);
-                let msb_col5 = msb_tmp_ff4f6_6.as_m31();
+                let msb_tmp_81a39_6 = memory_id_to_big_value_tmp_81a39_5.get_m31(27).eq(M31_256);
+                let msb_col5 = msb_tmp_81a39_6.as_m31();
                 *row[5] = msb_col5;
-                let mid_limbs_set_tmp_ff4f6_7 =
-                    memory_id_to_big_value_tmp_ff4f6_5.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col6 = mid_limbs_set_tmp_ff4f6_7.as_m31();
+                let mid_limbs_set_tmp_81a39_7 =
+                    memory_id_to_big_value_tmp_81a39_5.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col6 = mid_limbs_set_tmp_81a39_7.as_m31();
                 *row[6] = mid_limbs_set_col6;
-                let cond_decode_small_sign_output_tmp_ff4f6_8 = [msb_col5, mid_limbs_set_col6];
+                let cond_decode_small_sign_output_tmp_81a39_8 = [msb_col5, mid_limbs_set_col6];
 
-                let next_pc_limb_0_col7 = memory_id_to_big_value_tmp_ff4f6_5.get_m31(0);
+                let next_pc_limb_0_col7 = memory_id_to_big_value_tmp_81a39_5.get_m31(0);
                 *row[7] = next_pc_limb_0_col7;
-                let next_pc_limb_1_col8 = memory_id_to_big_value_tmp_ff4f6_5.get_m31(1);
+                let next_pc_limb_1_col8 = memory_id_to_big_value_tmp_81a39_5.get_m31(1);
                 *row[8] = next_pc_limb_1_col8;
-                let next_pc_limb_2_col9 = memory_id_to_big_value_tmp_ff4f6_5.get_m31(2);
+                let next_pc_limb_2_col9 = memory_id_to_big_value_tmp_81a39_5.get_m31(2);
                 *row[9] = next_pc_limb_2_col9;
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col4;
                 *lookup_data.memory_id_to_big_0 = [
@@ -254,7 +255,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col5) * (M31_256)),
                 ];
-                let read_small_output_tmp_ff4f6_9 = (
+                let read_small_output_tmp_81a39_9 = (
                     (((((next_pc_limb_0_col7) + ((next_pc_limb_1_col8) * (M31_512)))
                         + ((next_pc_limb_2_col9) * (M31_262144)))
                         - (msb_col5))
@@ -264,7 +265,7 @@ fn write_trace_simd(
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_ff4f6_9.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_81a39_9.0)),
                     ((input_ap_col1) + (ap_update_add_1_col3)),
                     input_fp_col2,
                 ];
@@ -293,10 +294,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_instruction: &relations::VerifyInstruction,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         opcodes: &relations::Opcodes,
-        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
