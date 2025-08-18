@@ -159,17 +159,16 @@ pub fn pack4(cur: felt252, values: [M31; 4]) -> felt252 {
         + x3.into()
 }
 
-pub fn bit_reverse_index(mut index: usize, mut bits: u32) -> usize {
-    assert!(bits <= BitSize::<usize>::bits());
-
-    let NZ2: NonZero<usize> = 2;
+/// Takes the first `n_bits` bits of the given index, reverses them, and returns the result.
+pub fn bit_reverse_index(mut index: usize, mut n_bits: u32) -> usize {
+    assert!(n_bits <= BitSize::<usize>::bits());
 
     let mut result = 0;
-    while bits > 0 {
-        let (next_index, bit) = DivRem::div_rem(index, NZ2);
-        result = (result * 2) | bit;
+    while n_bits != 0 {
+        let (next_index, bit) = DivRem::div_rem(index, 2);
+        result = result * 2 + bit;
         index = next_index;
-        bits -= 1;
+        n_bits -= 1;
     }
     result
 }
