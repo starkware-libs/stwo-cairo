@@ -118,13 +118,13 @@ pub struct CairoProof {
 }
 
 /// The output of a verification.
-#[cfg(not(feature: "outputs_packing"))]
+#[cfg(not(feature: "blake_outputs_packing"))]
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
     pub output: Array<felt252>,
 }
-#[cfg(feature: "outputs_packing")]
+#[cfg(feature: "blake_outputs_packing")]
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
@@ -132,7 +132,7 @@ pub struct VerificationOutput {
 }
 
 /// Given a proof, returns the output of the verifier.
-#[cfg(not(feature: "outputs_packing"))]
+#[cfg(not(feature: "blake_outputs_packing"))]
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
@@ -149,7 +149,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     VerificationOutput { program_hash, output }
 }
 
-#[cfg(feature: "outputs_packing")]
+#[cfg(feature: "blake_outputs_packing")]
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
