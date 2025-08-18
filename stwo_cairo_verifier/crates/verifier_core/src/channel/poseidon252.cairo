@@ -7,7 +7,7 @@ use stwo_verifier_utils::MemorySection;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::{gen_bit_mask, pack4};
+use crate::utils::{pack4, pow2};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 #[cfg(test)]
@@ -219,9 +219,23 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 }
 
+/// Checks that the last `n_bits` bits of the digest are zero.
+/// `n_bits` is in range [0, 64].
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
-    low & gen_bit_mask(n_bits).into() == 0
+    // Check that n trailing bits are zero.
+    let divisor = if n_bits == 64 {
+        0x10000000000000000 // 2^64
+    } else {
+        let u128_2_pow_n_bits: u128 = if n_bits < 32 {
+            pow2(n_bits).into()
+        } else {
+            pow2(n_bits - 32).into() * 0x100000000
+        };
+        u128_2_pow_n_bits.try_into().unwrap()
+    };
+    let (_, r) = DivRem::div_rem(low, divisor);
+    r == 0
 }
 
 // TODO(spapini): Check that this is sound.

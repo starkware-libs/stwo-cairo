@@ -8,7 +8,7 @@ use stwo_verifier_utils::{
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::gen_bit_mask;
+use crate::utils::pow2;
 use crate::vcs::blake2s_hasher::Blake2sHash;
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
@@ -172,11 +172,24 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 }
 
+/// Checks that the last `n_bits` bits of the digest are zero.
+/// `n_bits` is in range [0, 64].
 fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
     const U64_2_POW_32: u64 = 0x100000000;
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
-    v & gen_bit_mask(n_bits) == 0
+    // Check that n trailing bits are zero.
+    if n_bits == 64 {
+        return v == 0;
+    }
+    let u64_2_pow_n_bits = if n_bits < 32 {
+        pow2(n_bits).into()
+    } else {
+        pow2(n_bits - 32).into() * U64_2_POW_32
+    };
+    let divisor = u64_2_pow_n_bits.try_into().unwrap();
+    let (_, r) = DivRem::div_rem(v, divisor);
+    r == 0
 }
 
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {

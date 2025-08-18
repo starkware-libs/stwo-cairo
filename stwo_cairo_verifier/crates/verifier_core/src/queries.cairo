@@ -22,16 +22,16 @@ pub impl QueriesImpl of QueriesImplTrait {
         const BYTE_SHIFT: u32 = 0x100;
         let mut positions_dict: Felt252Dict<felt252> = Default::default();
         let mut n_dict_entries = 0;
-        let max_query_mask = pow2(log_domain_size) - 1;
+        let domain_size: NonZero<u32> = pow2(log_domain_size).try_into().unwrap();
         while n_dict_entries < n_queries {
             // In each iteration, random_bytes is truncated to multiples of 4 bytes.
             let mut random_bytes = channel.draw_random_bytes().span();
             while let Some(bytes_chunk) = random_bytes.multi_pop_front() {
                 let [b0, b1, b2, b3] = (*bytes_chunk).unbox();
-                let position = (((b3.into() * BYTE_SHIFT + b2.into()) * BYTE_SHIFT + b1.into())
+                let position = ((b3.into() * BYTE_SHIFT + b2.into()) * BYTE_SHIFT + b1.into())
                     * BYTE_SHIFT
-                    + b0.into())
-                    & max_query_mask;
+                    + b0.into();
+                let (_, position) = DivRem::div_rem(position, domain_size);
                 positions_dict.insert(position.into(), 0);
                 n_dict_entries += 1;
                 if n_dict_entries == n_queries {
