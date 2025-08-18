@@ -45,6 +45,11 @@ jobs:
       - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_cairo_verifier
       - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_verifier_utils
       - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features blake_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing  --package stwo_verifier_core
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_air
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_verifier
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_verifier_utils
+      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features poseidon_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:

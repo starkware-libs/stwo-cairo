@@ -10,6 +10,8 @@ casm = true
 poseidon252_verifier = ["stwo_verifier_core/poseidon252_verifier"]
 qm31_opcode = ["stwo_verifier_core/qm31_opcode"]
 blake_outputs_packing = ["stwo_verifier_core/blake_outputs_packing"]
+poseidon_outputs_packing = ["stwo_verifier_core/poseidon_outputs_packing"]
+
 
 [tool.fmt]
 sort-module-level-items = true
