@@ -1,4 +1,4 @@
-// AIR version d3fb930e
+// AIR version 38bef2b6
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
 use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
@@ -12,33 +12,34 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 impl ClaimGenerator {
-    pub fn new(inputs: Vec<InputType>,) -> Self {
-        Self { inputs, }
+    pub fn new(inputs: Vec<InputType>) -> Self {
+        Self { inputs }
     }
 
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
-        memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_19_state: &range_check_19::ClaimGenerator,
-        range_check_19_b_state: &range_check_19_b::ClaimGenerator,
-        range_check_19_c_state: &range_check_19_c::ClaimGenerator,
-        range_check_19_d_state: &range_check_19_d::ClaimGenerator,
-        range_check_19_e_state: &range_check_19_e::ClaimGenerator,
-        range_check_19_f_state: &range_check_19_f::ClaimGenerator,
-        range_check_19_g_state: &range_check_19_g::ClaimGenerator,
-        range_check_19_h_state: &range_check_19_h::ClaimGenerator,
-        range_check_9_9_state: &range_check_9_9::ClaimGenerator,
-        range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-        range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-        range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-        range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
-        range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
-        range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
-        range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
-        range_check_8_state: &range_check_8::ClaimGenerator,
-        verify_instruction_state: &verify_instruction::ClaimGenerator,
+memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+range_check_19_state: &range_check_19::ClaimGenerator,
+range_check_19_b_state: &range_check_19_b::ClaimGenerator,
+range_check_19_c_state: &range_check_19_c::ClaimGenerator,
+range_check_19_d_state: &range_check_19_d::ClaimGenerator,
+range_check_19_e_state: &range_check_19_e::ClaimGenerator,
+range_check_19_f_state: &range_check_19_f::ClaimGenerator,
+range_check_19_g_state: &range_check_19_g::ClaimGenerator,
+range_check_19_h_state: &range_check_19_h::ClaimGenerator,
+range_check_8_state: &range_check_8::ClaimGenerator,
+range_check_9_9_state: &range_check_9_9::ClaimGenerator,
+range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
+range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
+range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
+range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
+range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
+range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
+range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
+verify_instruction_state: &verify_instruction::ClaimGenerator,
+
     ) -> (Claim, InteractionClaimGenerator)
     {
         let n_rows = self.inputs.len();
@@ -75,7 +76,27 @@ struct SubComponentInputs {
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
-    inputs: Vec<PackedInputType>,n_rows: usize,memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,range_check_19_state: &range_check_19::ClaimGenerator,range_check_19_b_state: &range_check_19_b::ClaimGenerator,range_check_19_c_state: &range_check_19_c::ClaimGenerator,range_check_19_d_state: &range_check_19_d::ClaimGenerator,range_check_19_e_state: &range_check_19_e::ClaimGenerator,range_check_19_f_state: &range_check_19_f::ClaimGenerator,range_check_19_g_state: &range_check_19_g::ClaimGenerator,range_check_19_h_state: &range_check_19_h::ClaimGenerator,range_check_8_state: &range_check_8::ClaimGenerator,range_check_9_9_state: &range_check_9_9::ClaimGenerator,range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,verify_instruction_state: &verify_instruction::ClaimGenerator,
+    inputs: Vec<PackedInputType>,n_rows: usize,memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
+memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+range_check_19_state: &range_check_19::ClaimGenerator,
+range_check_19_b_state: &range_check_19_b::ClaimGenerator,
+range_check_19_c_state: &range_check_19_c::ClaimGenerator,
+range_check_19_d_state: &range_check_19_d::ClaimGenerator,
+range_check_19_e_state: &range_check_19_e::ClaimGenerator,
+range_check_19_f_state: &range_check_19_f::ClaimGenerator,
+range_check_19_g_state: &range_check_19_g::ClaimGenerator,
+range_check_19_h_state: &range_check_19_h::ClaimGenerator,
+range_check_8_state: &range_check_8::ClaimGenerator,
+range_check_9_9_state: &range_check_9_9::ClaimGenerator,
+range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
+range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
+range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
+range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
+range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
+range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
+range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
+verify_instruction_state: &verify_instruction::ClaimGenerator,
+
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData,SubComponentInputs,) {
     let log_n_packed_rows = inputs.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
@@ -692,27 +713,28 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id: &relations::MemoryAddressToId,
-        memory_id_to_big: &relations::MemoryIdToBig,
-        opcodes: &relations::Opcodes,
-        range_check_19: &relations::RangeCheck_19,
-        range_check_19_b: &relations::RangeCheck_19_B,
-        range_check_19_c: &relations::RangeCheck_19_C,
-        range_check_19_d: &relations::RangeCheck_19_D,
-        range_check_19_e: &relations::RangeCheck_19_E,
-        range_check_19_f: &relations::RangeCheck_19_F,
-        range_check_19_g: &relations::RangeCheck_19_G,
-        range_check_19_h: &relations::RangeCheck_19_H,
-        range_check_9_9: &relations::RangeCheck_9_9,
-        range_check_9_9_b: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h: &relations::RangeCheck_9_9_H,
-        range_check_8: &relations::RangeCheck_8,
         verify_instruction: &relations::VerifyInstruction,
+memory_address_to_id: &relations::MemoryAddressToId,
+memory_id_to_big: &relations::MemoryIdToBig,
+range_check_9_9: &relations::RangeCheck_9_9,
+range_check_9_9_b: &relations::RangeCheck_9_9_B,
+range_check_9_9_c: &relations::RangeCheck_9_9_C,
+range_check_9_9_d: &relations::RangeCheck_9_9_D,
+range_check_9_9_e: &relations::RangeCheck_9_9_E,
+range_check_9_9_f: &relations::RangeCheck_9_9_F,
+range_check_9_9_g: &relations::RangeCheck_9_9_G,
+range_check_9_9_h: &relations::RangeCheck_9_9_H,
+range_check_19_h: &relations::RangeCheck_19_H,
+range_check_19: &relations::RangeCheck_19,
+range_check_19_b: &relations::RangeCheck_19_B,
+range_check_19_c: &relations::RangeCheck_19_C,
+range_check_19_d: &relations::RangeCheck_19_D,
+range_check_19_e: &relations::RangeCheck_19_E,
+range_check_19_f: &relations::RangeCheck_19_F,
+range_check_19_g: &relations::RangeCheck_19_G,
+range_check_8: &relations::RangeCheck_8,
+opcodes: &relations::Opcodes,
+
     ) -> InteractionClaim
     {
         let enabler_col = Enabler::new(self.n_rows);

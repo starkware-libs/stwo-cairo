@@ -1,3 +1,4 @@
+// AIR version 38bef2b6
 #![allow(unused_parens)]
 use cairo_air::components::range_check_builtin_bits_96::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -116,14 +117,14 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 96.
 
-                let memory_address_to_id_value_tmp_fd7ee_0 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_6e07e_0 = memory_address_to_id_state
                     .deduce_output(
                         ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
                             + (seq)),
                     );
-                let memory_id_to_big_value_tmp_fd7ee_1 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_fd7ee_0);
-                let value_id_col0 = memory_address_to_id_value_tmp_fd7ee_0;
+                let memory_id_to_big_value_tmp_6e07e_1 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_6e07e_0);
+                let value_id_col0 = memory_address_to_id_value_tmp_6e07e_0;
                 *row[0] = value_id_col0;
                 *sub_component_inputs.memory_address_to_id[0] =
                     ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
@@ -133,27 +134,27 @@ fn write_trace_simd(
                         + (seq)),
                     value_id_col0,
                 ];
-                let value_limb_0_col1 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(0);
+                let value_limb_0_col1 = memory_id_to_big_value_tmp_6e07e_1.get_m31(0);
                 *row[1] = value_limb_0_col1;
-                let value_limb_1_col2 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(1);
+                let value_limb_1_col2 = memory_id_to_big_value_tmp_6e07e_1.get_m31(1);
                 *row[2] = value_limb_1_col2;
-                let value_limb_2_col3 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(2);
+                let value_limb_2_col3 = memory_id_to_big_value_tmp_6e07e_1.get_m31(2);
                 *row[3] = value_limb_2_col3;
-                let value_limb_3_col4 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(3);
+                let value_limb_3_col4 = memory_id_to_big_value_tmp_6e07e_1.get_m31(3);
                 *row[4] = value_limb_3_col4;
-                let value_limb_4_col5 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(4);
+                let value_limb_4_col5 = memory_id_to_big_value_tmp_6e07e_1.get_m31(4);
                 *row[5] = value_limb_4_col5;
-                let value_limb_5_col6 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(5);
+                let value_limb_5_col6 = memory_id_to_big_value_tmp_6e07e_1.get_m31(5);
                 *row[6] = value_limb_5_col6;
-                let value_limb_6_col7 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(6);
+                let value_limb_6_col7 = memory_id_to_big_value_tmp_6e07e_1.get_m31(6);
                 *row[7] = value_limb_6_col7;
-                let value_limb_7_col8 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(7);
+                let value_limb_7_col8 = memory_id_to_big_value_tmp_6e07e_1.get_m31(7);
                 *row[8] = value_limb_7_col8;
-                let value_limb_8_col9 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(8);
+                let value_limb_8_col9 = memory_id_to_big_value_tmp_6e07e_1.get_m31(8);
                 *row[9] = value_limb_8_col9;
-                let value_limb_9_col10 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(9);
+                let value_limb_9_col10 = memory_id_to_big_value_tmp_6e07e_1.get_m31(9);
                 *row[10] = value_limb_9_col10;
-                let value_limb_10_col11 = memory_id_to_big_value_tmp_fd7ee_1.get_m31(10);
+                let value_limb_10_col11 = memory_id_to_big_value_tmp_6e07e_1.get_m31(10);
                 *row[11] = value_limb_10_col11;
 
                 // Range Check Last Limb Bits In Ms Limb 6.
@@ -193,7 +194,7 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_96_output_tmp_fd7ee_2 = (
+                let read_positive_num_bits_96_output_tmp_6e07e_2 = (
                     PackedFelt252::from_limbs([
                         value_limb_0_col1,
                         value_limb_1_col2,
@@ -248,8 +249,8 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
-        memory_id_to_big: &relations::MemoryIdToBig,
         range_check_6: &relations::RangeCheck_6,
+        memory_id_to_big: &relations::MemoryIdToBig,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 

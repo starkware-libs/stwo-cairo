@@ -308,8 +308,8 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
                         &interaction_elements.range_checks.rc_12,
-                        &interaction_elements.range_checks.rc_18,
                         &interaction_elements.range_checks.rc_3_6_6_3,
+                        &interaction_elements.range_checks.rc_18,
                     )
                 });
         let pedersen_builtin_interaction_claim =
@@ -346,8 +346,8 @@ impl BuiltinsInteractionClaimGenerator {
                 range_check_96_builtin_interaction_gen.write_interaction_trace(
                     tree_builder,
                     &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
                     &interaction_elements.range_checks.rc_6,
+                    &interaction_elements.memory_id_to_value,
                 )
             });
         let range_check_128_builtin_interaction_claim = self

@@ -144,12 +144,12 @@ impl InteractionClaimGenerator {
             );
         let blake_g_interaction_claim = self.blake_g_interaction_gen.write_interaction_trace(
             tree_builder,
-            &interaction_elements.blake_g,
+            &interaction_elements.verify_bitwise_xor_8,
             &interaction_elements.verify_bitwise_xor_12,
             &interaction_elements.verify_bitwise_xor_4,
             &interaction_elements.verify_bitwise_xor_7,
-            &interaction_elements.verify_bitwise_xor_8,
             &interaction_elements.verify_bitwise_xor_9,
+            &interaction_elements.blake_g,
         );
         let blake_sigma_interaction_claim = self
             .blake_sigma_interaction_gen
@@ -157,8 +157,8 @@ impl InteractionClaimGenerator {
         let triple_xor_32_interaction_claim =
             self.triple_xor_32_interaction_gen.write_interaction_trace(
                 tree_builder,
-                &interaction_elements.triple_xor_32,
                 &interaction_elements.verify_bitwise_xor_8,
+                &interaction_elements.triple_xor_32,
             );
         let verify_bitwise_xor_12_interaction_claim = self
             .verify_bitwise_xor_12_interaction_gen
