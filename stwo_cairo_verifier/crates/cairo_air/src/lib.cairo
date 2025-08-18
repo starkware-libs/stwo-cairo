@@ -595,6 +595,7 @@ pub struct PublicMemory {
     pub safe_call_ids: [u32; 2],
 }
 
+
 #[generate_trait]
 pub impl PublicMemoryImpl of PublicMemoryTrait {
     fn get_entries(
@@ -602,25 +603,10 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
     ) -> PublicMemoryEntries {
         let mut pub_memory_entries = PublicMemoryEntriesTrait::empty();
 
-        // Program.
-        let mut i: u32 = 0;
-        for (id, value) in self.program {
-            pub_memory_entries
-                .add_memory_entry(
-                    PublicMemoryEntry { address: initial_pc + i, id: *id, value: *value },
-                );
-            i += 1;
-        }
-
-        // Output.
-        i = 0;
-        for (id, value) in self.output {
-            pub_memory_entries
-                .add_memory_entry(
-                    PublicMemoryEntry { address: final_ap + i, id: *id, value: *value },
-                );
-            i += 1;
-        }
+        // The program is loaded to `initial_pc`.
+        pub_memory_entries.add_memory_section(self.program, initial_pc);
+        // Output was written to `final_ap`.
+        pub_memory_entries.add_memory_section(self.output, final_ap);
 
         // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
         // initial_ap.
