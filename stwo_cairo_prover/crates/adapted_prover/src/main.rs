@@ -78,8 +78,6 @@ struct Args {
     /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
     #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
     proof_format: ProofFormat,
-    #[structopt(long = "track_relations")]
-    track_relations: bool,
     #[structopt(long = "verify", help = "Verify the generated proof.")]
     verify: bool,
 }
