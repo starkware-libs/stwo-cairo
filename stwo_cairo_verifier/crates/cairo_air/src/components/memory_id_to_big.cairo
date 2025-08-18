@@ -8,8 +8,9 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::CairoInteractionElements;
 use crate::cairo_component::CairoComponent;
+use crate::claim::ClaimTrait;
+use crate::{CairoInteractionElements, RelationUsesDict, accumulate_relation_uses};
 use super::super::Invertible;
 use super::super::utils::UsizeImpl;
 
@@ -50,8 +51,7 @@ pub struct Claim {
     pub small_log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let Claim { big_log_sizes, small_log_size } = self;
 
@@ -91,6 +91,17 @@ pub impl ClaimImpl of ClaimTrait {
             channel.mix_u64((*big_log_size).into());
         }
         channel.mix_u64((*self.small_log_size).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        for log_size in self.big_log_sizes.span() {
+            accumulate_relation_uses(
+                ref relation_uses, RELATION_USES_PER_ROW_BIG.span(), *log_size,
+            );
+        }
+        accumulate_relation_uses(
+            ref relation_uses, RELATION_USES_PER_ROW_SMALL.span(), *self.small_log_size,
+        );
     }
 }
 
