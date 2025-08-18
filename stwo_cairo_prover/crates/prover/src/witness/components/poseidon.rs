@@ -221,14 +221,14 @@ impl InteractionClaimGenerator {
             .range_check_felt_252_width_27_interaction_gen
             .write_interaction_trace(
                 tree_builder,
-                &interaction_elements.range_check_felt_252_width_27,
-                &interaction_elements.range_checks.rc_18,
-                &interaction_elements.range_checks.rc_18_b,
                 &interaction_elements.range_checks.rc_9_9,
+                &interaction_elements.range_checks.rc_18,
                 &interaction_elements.range_checks.rc_9_9_b,
+                &interaction_elements.range_checks.rc_18_b,
                 &interaction_elements.range_checks.rc_9_9_c,
                 &interaction_elements.range_checks.rc_9_9_d,
                 &interaction_elements.range_checks.rc_9_9_e,
+                &interaction_elements.range_check_felt_252_width_27,
             );
 
         InteractionClaim {

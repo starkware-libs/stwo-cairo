@@ -1,3 +1,4 @@
+// AIR version 38bef2b6
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_rel::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -145,51 +146,51 @@ fn write_trace_simd(
 
                 // Decode Instruction.
 
-                let memory_address_to_id_value_tmp_c32b8_0 =
+                let memory_address_to_id_value_tmp_62dfc_0 =
                     memory_address_to_id_state.deduce_output(input_pc_col0);
-                let memory_id_to_big_value_tmp_c32b8_1 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_c32b8_0);
-                let offset2_tmp_c32b8_2 =
-                    ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_c32b8_1.get_m31(3)))
+                let memory_id_to_big_value_tmp_62dfc_1 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_62dfc_0);
+                let offset2_tmp_62dfc_2 =
+                    ((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_62dfc_1.get_m31(3)))
                         >> (UInt16_5))
                         + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_c32b8_1.get_m31(4),
+                            memory_id_to_big_value_tmp_62dfc_1.get_m31(4),
                         )) << (UInt16_4)))
                         + (((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_c32b8_1.get_m31(5),
+                            memory_id_to_big_value_tmp_62dfc_1.get_m31(5),
                         )) & (UInt16_7))
                             << (UInt16_13)));
-                let offset2_col3 = offset2_tmp_c32b8_2.as_m31();
+                let offset2_col3 = offset2_tmp_62dfc_2.as_m31();
                 *row[3] = offset2_col3;
-                let op1_base_fp_tmp_c32b8_3 =
-                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_c32b8_1.get_m31(5)))
+                let op1_base_fp_tmp_62dfc_3 =
+                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_62dfc_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_c32b8_1.get_m31(6),
+                            memory_id_to_big_value_tmp_62dfc_1.get_m31(6),
                         )) << (UInt16_6)))
                         >> (UInt16_3))
                         & (UInt16_1));
-                let op1_base_fp_col4 = op1_base_fp_tmp_c32b8_3.as_m31();
+                let op1_base_fp_col4 = op1_base_fp_tmp_62dfc_3.as_m31();
                 *row[4] = op1_base_fp_col4;
-                let op1_base_ap_tmp_c32b8_4 =
-                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_c32b8_1.get_m31(5)))
+                let op1_base_ap_tmp_62dfc_4 =
+                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_62dfc_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_c32b8_1.get_m31(6),
+                            memory_id_to_big_value_tmp_62dfc_1.get_m31(6),
                         )) << (UInt16_6)))
                         >> (UInt16_4))
                         & (UInt16_1));
-                let op1_base_ap_col5 = op1_base_ap_tmp_c32b8_4.as_m31();
+                let op1_base_ap_col5 = op1_base_ap_tmp_62dfc_4.as_m31();
                 *row[5] = op1_base_ap_col5;
-                let ap_update_add_1_tmp_c32b8_5 =
-                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_c32b8_1.get_m31(5)))
+                let ap_update_add_1_tmp_62dfc_5 =
+                    (((((PackedUInt16::from_m31(memory_id_to_big_value_tmp_62dfc_1.get_m31(5)))
                         >> (UInt16_3))
                         + ((PackedUInt16::from_m31(
-                            memory_id_to_big_value_tmp_c32b8_1.get_m31(6),
+                            memory_id_to_big_value_tmp_62dfc_1.get_m31(6),
                         )) << (UInt16_6)))
                         >> (UInt16_11))
                         & (UInt16_1));
-                let ap_update_add_1_col6 = ap_update_add_1_tmp_c32b8_5.as_m31();
+                let ap_update_add_1_col6 = ap_update_add_1_tmp_62dfc_5.as_m31();
                 *row[6] = ap_update_add_1_col6;
                 *sub_component_inputs.verify_instruction[0] = (
                     input_pc_col0,
@@ -211,7 +212,7 @@ fn write_trace_simd(
                     ((M31_4) + ((ap_update_add_1_col6) * (M31_32))),
                     M31_0,
                 ];
-                let decode_instruction_633e16e9eb708235_output_tmp_c32b8_6 = (
+                let decode_instruction_3b105_output_tmp_62dfc_6 = (
                     [
                         M31_2147483646,
                         M31_2147483646,
@@ -243,39 +244,37 @@ fn write_trace_simd(
 
                 // Read Small.
 
-                let memory_address_to_id_value_tmp_c32b8_7 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_62dfc_7 = memory_address_to_id_state
                     .deduce_output(
-                        ((mem1_base_col7)
-                            + (decode_instruction_633e16e9eb708235_output_tmp_c32b8_6.0[2])),
+                        ((mem1_base_col7) + (decode_instruction_3b105_output_tmp_62dfc_6.0[2])),
                     );
-                let memory_id_to_big_value_tmp_c32b8_8 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_c32b8_7);
-                let next_pc_id_col8 = memory_address_to_id_value_tmp_c32b8_7;
+                let memory_id_to_big_value_tmp_62dfc_8 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_62dfc_7);
+                let next_pc_id_col8 = memory_address_to_id_value_tmp_62dfc_7;
                 *row[8] = next_pc_id_col8;
-                *sub_component_inputs.memory_address_to_id[0] = ((mem1_base_col7)
-                    + (decode_instruction_633e16e9eb708235_output_tmp_c32b8_6.0[2]));
+                *sub_component_inputs.memory_address_to_id[0] =
+                    ((mem1_base_col7) + (decode_instruction_3b105_output_tmp_62dfc_6.0[2]));
                 *lookup_data.memory_address_to_id_0 = [
-                    ((mem1_base_col7)
-                        + (decode_instruction_633e16e9eb708235_output_tmp_c32b8_6.0[2])),
+                    ((mem1_base_col7) + (decode_instruction_3b105_output_tmp_62dfc_6.0[2])),
                     next_pc_id_col8,
                 ];
 
                 // Cond Decode Small Sign.
 
-                let msb_tmp_c32b8_9 = memory_id_to_big_value_tmp_c32b8_8.get_m31(27).eq(M31_256);
-                let msb_col9 = msb_tmp_c32b8_9.as_m31();
+                let msb_tmp_62dfc_9 = memory_id_to_big_value_tmp_62dfc_8.get_m31(27).eq(M31_256);
+                let msb_col9 = msb_tmp_62dfc_9.as_m31();
                 *row[9] = msb_col9;
-                let mid_limbs_set_tmp_c32b8_10 =
-                    memory_id_to_big_value_tmp_c32b8_8.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col10 = mid_limbs_set_tmp_c32b8_10.as_m31();
+                let mid_limbs_set_tmp_62dfc_10 =
+                    memory_id_to_big_value_tmp_62dfc_8.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col10 = mid_limbs_set_tmp_62dfc_10.as_m31();
                 *row[10] = mid_limbs_set_col10;
-                let cond_decode_small_sign_output_tmp_c32b8_11 = [msb_col9, mid_limbs_set_col10];
+                let cond_decode_small_sign_output_tmp_62dfc_11 = [msb_col9, mid_limbs_set_col10];
 
-                let next_pc_limb_0_col11 = memory_id_to_big_value_tmp_c32b8_8.get_m31(0);
+                let next_pc_limb_0_col11 = memory_id_to_big_value_tmp_62dfc_8.get_m31(0);
                 *row[11] = next_pc_limb_0_col11;
-                let next_pc_limb_1_col12 = memory_id_to_big_value_tmp_c32b8_8.get_m31(1);
+                let next_pc_limb_1_col12 = memory_id_to_big_value_tmp_62dfc_8.get_m31(1);
                 *row[12] = next_pc_limb_1_col12;
-                let next_pc_limb_2_col13 = memory_id_to_big_value_tmp_c32b8_8.get_m31(2);
+                let next_pc_limb_2_col13 = memory_id_to_big_value_tmp_62dfc_8.get_m31(2);
                 *row[13] = next_pc_limb_2_col13;
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col8;
                 *lookup_data.memory_id_to_big_0 = [
@@ -309,7 +308,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col9) * (M31_256)),
                 ];
-                let read_small_output_tmp_c32b8_12 = (
+                let read_small_output_tmp_62dfc_12 = (
                     (((((next_pc_limb_0_col11) + ((next_pc_limb_1_col12) * (M31_512)))
                         + ((next_pc_limb_2_col13) * (M31_262144)))
                         - (msb_col9))
@@ -319,7 +318,7 @@ fn write_trace_simd(
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_c32b8_12.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_62dfc_12.0)),
                     ((input_ap_col1) + (ap_update_add_1_col6)),
                     input_fp_col2,
                 ];
@@ -348,10 +347,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_instruction: &relations::VerifyInstruction,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         opcodes: &relations::Opcodes,
-        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
