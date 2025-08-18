@@ -1,14 +1,6 @@
-use components::partial_ec_mul::{
-    ClaimImpl as PartialEcMulClaimImpl, InteractionClaimImpl as PartialEcMulInteractionClaimImpl,
-};
-use components::pedersen_builtin::{
-    ClaimImpl as PedersenBuiltinClaimImpl,
-    InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl,
-};
-use components::pedersen_points_table::{
-    ClaimImpl as PedersenPointsTableClaimImpl,
-    InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl,
-};
+use components::partial_ec_mul::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
+use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
+use components::pedersen_points_table::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -91,8 +83,7 @@ pub struct PedersenContextClaim {
     pub claim: Option<PedersenClaim>,
 }
 
-#[generate_trait]
-pub impl PedersenContextClaimImpl of PedersenContextClaimTrait {
+pub impl PedersenContextClaimImpl of ClaimTrait<PedersenContextClaim> {
     fn mix_into(self: @PedersenContextClaim, ref channel: Channel) {
         if let Option::Some(claim) = self.claim {
             claim.mix_into(ref channel);

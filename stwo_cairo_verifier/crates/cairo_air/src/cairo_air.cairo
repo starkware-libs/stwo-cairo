@@ -1,38 +1,14 @@
-use components::memory_address_to_id::{
-    ClaimImpl as MemoryAddressToIdClaimImpl,
-    InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl,
-};
+use components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl;
 use components::memory_id_to_big::{
-    ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
-    LARGE_MEMORY_VALUE_ID_BASE,
+    InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl, LARGE_MEMORY_VALUE_ID_BASE,
 };
-use components::triple_xor_32::{
-    ClaimImpl as TripleXor32ClaimImpl, InteractionClaimImpl as TripleXor32InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_12::{
-    ClaimImpl as VerifyBitwiseXor12ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_4::{
-    ClaimImpl as VerifyBitwiseXor4ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_7::{
-    ClaimImpl as VerifyBitwiseXor7ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_8::{
-    ClaimImpl as VerifyBitwiseXor8ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_9::{
-    ClaimImpl as VerifyBitwiseXor9ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl,
-};
-use components::verify_instruction::{
-    ClaimImpl as VerifyInstructionClaimImpl,
-    InteractionClaimImpl as VerifyInstructionInteractionClaimImpl,
-};
+use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
+use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
+use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
+use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
+use components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
+use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
+use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::blake::*;
@@ -50,24 +26,22 @@ pub mod poseidon252_verifier_imports {
 #[cfg(not(feature: "poseidon252_verifier"))]
 use poseidon252_verifier_imports::*;
 use stwo_cairo_air::blake::{
-    BlakeClaimImpl, BlakeContextClaim, BlakeContextClaimImpl, BlakeContextComponents,
-    BlakeContextComponentsImpl, BlakeContextInteractionClaim, BlakeContextInteractionClaimImpl,
+    BlakeContextClaim, BlakeContextComponents, BlakeContextComponentsImpl,
+    BlakeContextInteractionClaim, BlakeContextInteractionClaimImpl,
 };
 use stwo_cairo_air::builtins::{
-    BuiltinsClaim, BuiltinsClaimImpl, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
+    BuiltinsClaim, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
 };
 use stwo_cairo_air::pedersen::{
-    PedersenClaimImpl, PedersenContextClaim, PedersenContextClaimImpl,
-    PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
+    PedersenContextClaim, PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
 };
 use stwo_cairo_air::poseidon::{
-    PoseidonClaimImpl, PoseidonContextClaim, PoseidonContextClaimImpl,
-    PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
+    PoseidonContextClaim, PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
 };
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMNS;
 use stwo_cairo_air::range_checks::{
-    RangeChecksClaim, RangeChecksClaimImpl, RangeChecksComponents, RangeChecksComponentsImpl,
-    RangeChecksInteractionClaim, RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
+    RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
+    RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
     RangeChecksInteractionElementsImpl,
 };
 use stwo_cairo_air::{

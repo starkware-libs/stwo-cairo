@@ -31,8 +31,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
@@ -47,6 +46,8 @@ pub impl ClaimImpl of ClaimTrait {
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*self.log_size).into());
     }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
 }
 
 #[derive(Drop, Serde, Copy)]

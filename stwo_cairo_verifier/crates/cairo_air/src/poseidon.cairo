@@ -1,29 +1,10 @@
-use components::cube_252::{
-    ClaimImpl as Cube252ClaimImpl, InteractionClaimImpl as Cube252InteractionClaimImpl,
-};
-use components::partial_ec_mul::{
-    ClaimImpl as PartialEcMulClaimImpl, InteractionClaimImpl as PartialEcMulInteractionClaimImpl,
-};
-use components::poseidon_3_partial_rounds_chain::{
-    ClaimImpl as Poseidon3PartialRoundsChainClaimImpl,
-    InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl,
-};
-use components::poseidon_builtin::{
-    ClaimImpl as PoseidonBuiltinClaimImpl,
-    InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl,
-};
-use components::poseidon_full_round_chain::{
-    ClaimImpl as PoseidonFullRoundChainClaimImpl,
-    InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl,
-};
-use components::poseidon_round_keys::{
-    ClaimImpl as PoseidonRoundKeysClaimImpl,
-    InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl,
-};
-use components::range_check_felt_252_width_27::{
-    ClaimImpl as RangeCheckFelt252Width27ClaimImpl,
-    InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl,
-};
+use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
+use components::partial_ec_mul::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
+use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
+use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
+use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
+use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
+use components::range_check_felt_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 #[cfg(not(feature: "poseidon252_verifier"))]
