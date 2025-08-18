@@ -60,8 +60,8 @@ impl PublicMemoryEntriesIntoIterator of core::iter::IntoIterator<PublicMemoryEnt
 pub type MemorySection = Span<PubMemoryValue>;
 
 
-mod blake2s;
-mod poseidon252;
+pub mod blake2s;
+pub mod poseidon252;
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub use stwo_verifier_utils::blake2s::*;
 #[cfg(feature: "poseidon252_verifier")]

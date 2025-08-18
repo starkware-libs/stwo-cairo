@@ -10,6 +10,7 @@ casm = true
 poseidon252_verifier = []
 qm31_opcode = []
 blake_outputs_packing = []
+poseidon_outputs_packing = []
 
 [tool]
 cairo-lint.workspace = true

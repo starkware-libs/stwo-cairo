@@ -40,9 +40,16 @@ use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{StarkProof, verify};
-use stwo_verifier_utils::{
-    MemorySection, PubMemoryValue, construct_f252, encode_and_hash_memory_section,
-};
+#[cfg(feature: "blake_outputs_packing")]
+use stwo_verifier_utils::blake2s::encode_and_hash_memory_section as encode_and_hash_outputs_memory_section;
+
+// The program is always hashed using the BLAKE2s hash function, regardless of the feature flags.
+pub use stwo_verifier_utils::blake2s::encode_and_hash_memory_section as encode_and_hash_program_memory_section;
+#[cfg(feature: "poseidon_outputs_packing")]
+use stwo_verifier_utils::poseidon252::encode_and_hash_memory_section as encode_and_hash_outputs_memory_section;
+use stwo_verifier_utils::{MemorySection, PubMemoryValue, construct_f252};
+
+
 pub mod cairo_air;
 use cairo_air::*;
 
@@ -118,13 +125,13 @@ pub struct CairoProof {
 }
 
 /// The output of a verification.
-#[cfg(not(feature: "blake_outputs_packing"))]
+#[cfg(not(or(feature: "blake_outputs_packing", feature: "poseidon_outputs_packing")))]
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
     pub output: Array<felt252>,
 }
-#[cfg(feature: "blake_outputs_packing")]
+#[cfg(or(feature: "blake_outputs_packing", feature: "poseidon_outputs_packing"))]
 #[derive(Drop, Serde)]
 pub struct VerificationOutput {
     pub program_hash: felt252,
@@ -132,12 +139,12 @@ pub struct VerificationOutput {
 }
 
 /// Given a proof, returns the output of the verifier.
-#[cfg(not(feature: "blake_outputs_packing"))]
+#[cfg(not(or(feature: "blake_outputs_packing", feature: "poseidon_outputs_packing")))]
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.program),
+        encode_and_hash_program_memory_section(*proof.claim.public_data.public_memory.program),
     );
 
     let mut output = array![];
@@ -149,16 +156,16 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     VerificationOutput { program_hash, output }
 }
 
-#[cfg(feature: "blake_outputs_packing")]
+#[cfg(or(feature: "blake_outputs_packing", feature: "poseidon_outputs_packing"))]
 pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.program),
+        encode_and_hash_program_memory_section(*proof.claim.public_data.public_memory.program),
     );
 
     let output_hash = construct_f252(
-        encode_and_hash_memory_section(*proof.claim.public_data.public_memory.output),
+        encode_and_hash_outputs_memory_section(*proof.claim.public_data.public_memory.output),
     );
 
     VerificationOutput { program_hash, output_hash }
