@@ -14,7 +14,7 @@ cairo-lint.workspace = true
 [features]
 poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
 qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
-outputs_packing = ["stwo_cairo_air/outputs_packing"]
+blake_outputs_packing = ["stwo_cairo_air/blake_outputs_packing"]
 
 [dependencies]
 stwo_cairo_air = { path = "../cairo_air" }
