@@ -17,6 +17,9 @@ on:
     types:
       - checks_requested
 
+permissions:
+  pull-requests: write
+
 jobs:
   scarb-test:
     runs-on: stwo-cairo-avx-l
@@ -34,17 +37,38 @@ jobs:
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_air
       - run: scarb test --features=poseidon252_verifier --package stwo_cairo_verifier
       - run: scarb test --features=poseidon252_verifier --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features poseidon252_verifier --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
       - run: scarb test --features=qm31_opcode --package stwo_verifier_core
       - run: scarb test --features=qm31_opcode --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
       - run: scarb test --features=qm31_opcode --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
-      - run: scarb test --features=qm31_opcode --features=outputs_packing  --package stwo_verifier_core
+      - run: scarb test --features=qm31_opcode --features=outputs_packing --package stwo_verifier_core
       - run: scarb test --features=qm31_opcode --features=outputs_packing --package stwo_cairo_air
       - run: scarb test --features=qm31_opcode --features=outputs_packing --package stwo_cairo_verifier
       - run: scarb test --features=qm31_opcode --features=outputs_packing --package stwo_verifier_utils
-      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+      - name: Run benchmark
+        run: ./scripts/bench_ci.sh target/bench_output.json
+      - name: Download previous benchmark data
+        uses: actions/cache/restore@v4
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
+      - name: Process benchmark result
+        uses: benchmark-action/github-action-benchmark@v1
+        with:
+          name: Verifier benchmark
+          tool: 'customSmallerIsBetter'
+          output-file-path: stwo_cairo_verifier/target/bench_output.json
+          external-data-json-path: ./cache/benchmark-data.json
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          comment-always: true
+          summary-always: true
+          save-data-file: true
+      - name: Store updated benchmark data
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        uses: actions/cache/save@v4
+        with:
+          path: ./cache
+          key: ${{ runner.os }}-benchmark
   run-tests:
     runs-on: stwo-cairo-avx-l
     defaults:
