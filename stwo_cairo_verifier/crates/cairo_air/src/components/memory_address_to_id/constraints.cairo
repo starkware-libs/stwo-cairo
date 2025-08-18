@@ -46,9 +46,7 @@ pub fn mask_points(
 
 #[derive(Drop)]
 pub struct ConstraintParams {
-    pub MemoryAddressToId_alpha0: QM31,
-    pub MemoryAddressToId_alpha1: QM31,
-    pub MemoryAddressToId_z: QM31,
+    pub lookup_elements: @crate::MemoryAddressToIdElements,
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
@@ -62,14 +60,7 @@ pub fn evaluate_constraints_at_point(
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
 ) {
-    let ConstraintParams {
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        claimed_sum,
-        seq,
-        column_size,
-    } = params;
+    let ConstraintParams { lookup_elements, claimed_sum, seq, column_size } = params;
     let [
         trace_1_column_0,
         trace_1_column_1,
@@ -199,9 +190,7 @@ pub fn evaluate_constraints_at_point(
     core::internal::revoke_ap_tracking();
 
     let mut intermediates = intermediates(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
+        lookup_elements,
         seq,
         trace_1_column_0_offset_0,
         trace_1_column_10_offset_0,
@@ -303,9 +292,7 @@ pub fn evaluate_constraints_at_point(
 
 
 fn intermediates(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
+    lookup_elements: @crate::MemoryAddressToIdElements,
     seq: QM31,
     trace_1_column_0_offset_0: QM31,
     trace_1_column_10_offset_0: QM31,
@@ -318,83 +305,35 @@ fn intermediates(
     column_size: M31,
 ) -> Array<QM31> {
     let intermediate7 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_14_offset_0,
-        column_size,
-        7,
+        lookup_elements, seq, trace_1_column_14_offset_0, column_size, 7,
     );
 
     let intermediate4 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_8_offset_0,
-        column_size,
-        4,
+        lookup_elements, seq, trace_1_column_8_offset_0, column_size, 4,
     );
 
     let intermediate2 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_4_offset_0,
-        column_size,
-        2,
+        lookup_elements, seq, trace_1_column_4_offset_0, column_size, 2,
     );
 
     let intermediate6 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_12_offset_0,
-        column_size,
-        6,
+        lookup_elements, seq, trace_1_column_12_offset_0, column_size, 6,
     );
 
     let intermediate3 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_6_offset_0,
-        column_size,
-        3,
+        lookup_elements, seq, trace_1_column_6_offset_0, column_size, 3,
     );
 
     let intermediate0 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_0_offset_0,
-        column_size,
-        0,
+        lookup_elements, seq, trace_1_column_0_offset_0, column_size, 0,
     );
 
     let intermediate1 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_2_offset_0,
-        column_size,
-        1,
+        lookup_elements, seq, trace_1_column_2_offset_0, column_size, 1,
     );
 
     let intermediate5 = intermediate(
-        MemoryAddressToId_alpha0,
-        MemoryAddressToId_alpha1,
-        MemoryAddressToId_z,
-        seq,
-        trace_1_column_10_offset_0,
-        column_size,
-        5,
+        lookup_elements, seq, trace_1_column_10_offset_0, column_size, 5,
     );
     array![
         intermediate0, intermediate1, intermediate2, intermediate3, intermediate4, intermediate5,
@@ -404,15 +343,17 @@ fn intermediates(
 
 
 pub fn intermediate(
-    MemoryAddressToId_alpha0: QM31,
-    MemoryAddressToId_alpha1: QM31,
-    MemoryAddressToId_z: QM31,
+    lookup_elements: @crate::MemoryAddressToIdElements,
     seq: QM31,
     trace_1_column_10_offset_0: QM31,
     column_size: M31,
     column_index: u32,
 ) -> QM31 {
-    (MemoryAddressToId_alpha0) * (seq + m31(1).into() + (column_size * m31(column_index)).into())
-        + (MemoryAddressToId_alpha1) * (trace_1_column_10_offset_0)
-        - (MemoryAddressToId_z)
+    lookup_elements
+        .combine_qm31(
+            [
+                seq + m31(1).into() + (column_size * m31(column_index)).into(),
+                trace_1_column_10_offset_0,
+            ],
+        )
 }

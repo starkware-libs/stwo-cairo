@@ -57,7 +57,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: super::super::MemoryAddressToIdElements,
+    pub lookup_elements: crate::MemoryAddressToIdElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -119,9 +119,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let params = constraints::ConstraintParams {
             column_size: pow2(log_size).try_into().unwrap(),
-            MemoryAddressToId_alpha0: addr_to_id_alpha_0,
-            MemoryAddressToId_alpha1: addr_to_id_alpha_1,
-            MemoryAddressToId_z: addr_to_id_z,
+            lookup_elements: self.lookup_elements,
             seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(log_size)),
             claimed_sum: *self.interaction_claim.claimed_sum,
         };
