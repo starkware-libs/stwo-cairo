@@ -57,7 +57,7 @@ version = "0.1.0"
 cfg_set = [
     ["target", "lib"],
     ["feature", "qm31_opcode"],
-    ["feature", "outputs_packing"],
+    ["feature", "blake_outputs_packing"],
 ]
 
 [config.override."stwo_cairo_air".dependencies.stwo_cairo_air]
@@ -89,7 +89,7 @@ version = "0.1.0"
 cfg_set = [
     ["target", "lib"],
     ["feature", "qm31_opcode"],
-    ["feature", "outputs_packing"],
+    ["feature", "blake_outputs_packing"],
 ]
 
 
@@ -113,7 +113,7 @@ version = "0.1.0"
 cfg_set = [
     ["target", "lib"],
     ["feature", "qm31_opcode"],
-    ["feature", "outputs_packing"],
+    ["feature", "blake_outputs_packing"],
 ]
 
 [config.override."stwo_verifier_core".dependencies.bounded_int]
@@ -138,7 +138,7 @@ version = "0.1.0"
 cfg_set = [
     ["target", "lib"],
     ["feature", "qm31_opcode"],
-    ["feature", "outputs_packing"],
+    ["feature", "blake_outputs_packing"],
 ]
 
 [config.override."stwo_verifier_utils".dependencies.stwo_verifier_utils]
@@ -157,7 +157,7 @@ version = "0.1.0"
 cfg_set = [
     ["target", "lib"],
     ["feature", "qm31_opcode"],
-    ["feature", "outputs_packing"],
+    ["feature", "blake_outputs_packing"],
 ]
 
 [config.override."stwo_cairo_verifier".dependencies.stwo_cairo_air]
