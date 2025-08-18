@@ -48,6 +48,10 @@ use cairo_air::*;
 
 pub mod cairo_component;
 pub mod components;
+
+// This module checks the validity of feature combinations. It's placed in this crate since it's the
+// first to compile, allowing early detection of invalid feature configurations.
+mod features_check;
 mod prelude;
 
 
