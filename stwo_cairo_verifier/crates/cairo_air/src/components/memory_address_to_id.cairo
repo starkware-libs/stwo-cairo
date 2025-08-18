@@ -110,11 +110,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut addr_to_id_alpha_powers = self.lookup_elements.alpha_powers.span();
-        let addr_to_id_alpha_0 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_alpha_1 = *addr_to_id_alpha_powers.pop_front().unwrap();
-        let addr_to_id_z = *self.lookup_elements.z;
-
         let log_size = *self.claim.log_size;
 
         let params = constraints::ConstraintParams {
