@@ -292,8 +292,8 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
 /// Returns PreProcessedTrace::canonical root for the given blowup factor.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
-    match log_blowup_factor - 1 {
-        0 => Hash {
+    match log_blowup_factor {
+        1 => Hash {
             hash: BoxImpl::new(
                 [
                     0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
@@ -301,7 +301,7 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
                 ],
             ),
         },
-        1 => Hash {
+        2 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
@@ -309,7 +309,7 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
                 ],
             ),
         },
-        2 => Hash {
+        3 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
@@ -317,7 +317,7 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
                 ],
             ),
         },
-        3 => Hash {
+        4 => Hash {
             hash: BoxImpl::new(
                 [
                     0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
@@ -325,7 +325,7 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
                 ],
             ),
         },
-        4 => Hash {
+        5 => Hash {
             hash: BoxImpl::new(
                 [
                     0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
@@ -333,19 +333,19 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
                 ],
             ),
         },
-        _ => panic!("invalid blowup factor"),
+        0 | _ => panic!("invalid blowup factor"),
     }
 }
 
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
-    match log_blowup_factor - 1 {
-        0 => 0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e,
-        1 => 0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394,
-        2 => 0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543,
-        3 => 0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d,
-        4 => 0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9,
-        _ => panic!("invalid blowup factor"),
+    match log_blowup_factor {
+        1 => 0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e,
+        2 => 0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394,
+        3 => 0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543,
+        4 => 0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d,
+        5 => 0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9,
+        0 | _ => panic!("invalid blowup factor"),
     }
 }

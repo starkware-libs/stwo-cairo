@@ -176,6 +176,7 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
+        // TODO(audit): Make sure this option is the same as the claim option for the builtin.
         if let Option::Some(components) = self.components {
             components
                 .mask_points(

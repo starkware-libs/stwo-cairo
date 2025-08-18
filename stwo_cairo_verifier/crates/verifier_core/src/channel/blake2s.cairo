@@ -168,6 +168,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
     fn mix_and_check_pow_nonce(ref self: Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
         self.mix_u64(nonce);
+        // TODO(audit): Don't use the digest twice. Currently used both for pow and as next digest.
         check_proof_of_work(self.digest, n_bits)
     }
 }

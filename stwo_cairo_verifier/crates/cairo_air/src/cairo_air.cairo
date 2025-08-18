@@ -148,23 +148,33 @@ pub struct CairoClaim {
 #[generate_trait]
 pub impl CairoClaimImpl of CairoClaimTrait {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
+        // TODO(audit): Deconstruct claim.
+        // TODO(audit): Instead of concatenating the arrays, pass the result by ref to log_sizes and append.
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
-                self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
-                self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
+                self.opcodes.log_sizes(), 
+                self.verify_instruction.log_sizes(),
+                self.blake_context.log_sizes(), 
+                self.builtins.log_sizes(),
+                self.pedersen_context.log_sizes(), 
+                self.poseidon_context.log_sizes(),
+                self.memory_address_to_id.log_sizes(), 
+                self.memory_id_to_value.log_sizes(),
+                self.range_checks.log_sizes(), 
+                self.verify_bitwise_xor_4.log_sizes(),
+                self.verify_bitwise_xor_7.log_sizes(), 
+                self.verify_bitwise_xor_8.log_sizes(),
                 self.verify_bitwise_xor_9.log_sizes(),
             ],
         );
 
         // Overwrite the preprocessed trace log sizes.
+        // TODO(audit): Remove this from log_sizes.
         let _invalid_preprocessed_trace_log_sizes = aggregated_log_sizes.pop_front();
 
         let mut preprocessed_trace_log_sizes = array![];
 
+        // TODO(audit): Make the preprocessed columns sizes constant.
         for preprocessed_column in PREPROCESSED_COLUMNS.span() {
             preprocessed_trace_log_sizes.append(preprocessed_column.log_size());
         }
@@ -194,6 +204,7 @@ pub impl CairoClaimImpl of CairoClaimTrait {
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
+        // TODO(audit): public_data has uses. At least document.
         let CairoClaim {
             public_data: _,
             opcodes,
@@ -226,6 +237,7 @@ pub impl CairoClaimImpl of CairoClaimTrait {
             components::verify_instruction::RELATION_USES_PER_ROW.span(),
             *verify_instruction.log_size,
         );
+        // TODO(audit): Add struct deconstruction of memory_id_to_value.
         for log_size in memory_id_to_value.big_log_sizes.span() {
             accumulate_relation_uses(
                 ref relation_uses,
@@ -262,6 +274,7 @@ pub struct CairoInteractionClaim {
 #[generate_trait]
 pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
     fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
+        // TODO(audit): Deconstruct self.
         self.opcodes.mix_into(ref channel);
         self.verify_instruction.mix_into(ref channel);
         self.blake_context.mix_into(ref channel);
@@ -410,6 +423,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         let mut memory_id_to_value_components = array![];
         let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
         for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
+            // TODO(audit): Compare arrays lengths.
             let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
             memory_id_to_value_components
@@ -453,7 +467,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             offset = offset + pow2(log_size);
         }
         // Check that IDs in (ID -> Value) do not overflow P.
-        assert!(offset <= P_U32);
+        assert!(offset < P_U32);
 
         let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
             log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
@@ -513,7 +527,9 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
+    // TODO(audit): Remove this function. Use max log_size + 1 from sorted log_sizes.
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
+        // TODO(audit): Deconstruct self.
         let mut max_degree = self.opcodes.max_constraint_log_degree_bound();
         max_degree =
             core::cmp::max(max_degree, self.verify_instruction.max_constraint_log_degree_bound());
@@ -845,6 +861,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
 }
 
 #[derive(Drop)]
+// TODO(audit): Create EmptyComponent and avoid duplicating all this code.
 #[cfg(feature: "poseidon252_verifier")]
 pub struct CairoAir {
     opcodes: OpcodeComponents,
@@ -1312,6 +1329,7 @@ fn preprocessed_trace_mask_points(
     let PreprocessedColumnSet { values: original_values, mut contains } = preprocessed_column_set;
 
     for preprocessed_column in PREPROCESSED_COLUMNS.span() {
+        // TODO(audit): No need for key.
         let preprocessed_column_key = PreprocessedColumnKey::encode(preprocessed_column);
 
         if contains.get(preprocessed_column_key) {

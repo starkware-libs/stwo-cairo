@@ -114,6 +114,8 @@ pub struct OpcodeInteractionClaim {
 #[generate_trait]
 pub impl OpcodeInteractionClaimImpl of OpcodeInteractionClaimTrait {
     fn mix_into(self: @OpcodeInteractionClaim, ref channel: Channel) {
+        // TODO(audit): Deconstruct claim.
+        // TODO(audit): Assert number of interaction claims is the same as the number of claims. Consider unifying the claims to make it simpler.
         for interaction_claim in self.add.span() {
             interaction_claim.mix_into(ref channel);
         }
@@ -309,6 +311,7 @@ pub struct OpcodeClaim {
 #[generate_trait]
 pub impl OpcodeClaimImpl of OpcodeClaimTrait {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
+        // TODO(audit): Desctruct claim.
         channel.mix_u64(self.add.len().into());
         for claim in self.add.span() {
             claim.mix_into(ref channel);
@@ -741,8 +744,10 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     ) -> OpcodeComponents {
         // Add components
         let mut add_components = array![];
+        // TODO(audit): Deconstruct claim.
         let mut add_claims = claim.add.span();
         let mut add_interaction_claims = interaction_claim.add.span();
+        // TODO(audit): The length check is wrong, soundness error. Use zip_eq.
         while let (Option::Some(claim), Option::Some(interaction_claim)) =
             (add_claims.pop_front(), add_interaction_claims.pop_front()) {
             add_components
@@ -750,6 +755,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     components::add_opcode::Component {
                         claim: *claim,
                         interaction_claim: *interaction_claim,
+                        // TODO(audit): Not need to clone. Replace Array with span in LookupElements.
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
                             .clone(),
@@ -2010,7 +2016,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             blake: blake_interaction_claims,
             call: call_interaction_claims,
             call_rel_imm: call_rel_imm_interaction_claims,
-            generic: _, // generic opcode is not supported.
+            generic, 
             jnz: jnz_interaction_claims,
             jnz_taken: jnz_taken_interaction_claims,
             jump: jump_interaction_claims,
@@ -2022,6 +2028,8 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             qm31: qm31_interaction_claims,
             ret: ret_interaction_claims,
         } = interaction_claim;
+        // generic opcode is not supported.
+        assert!(generic.is_empty(), "The generic opcode is not supported.");
 
         // Add components
         let mut add_components = array![];

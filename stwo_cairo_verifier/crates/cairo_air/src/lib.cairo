@@ -261,11 +261,13 @@ fn verify_claim(claim: @CairoClaim) {
     let final_fp: u32 = (*final_fp).into();
 
     assert!(initial_pc.is_one());
-    assert!(initial_pc + 2 < initial_ap);
     assert!(initial_fp == final_fp);
     assert!(initial_fp == initial_ap);
     assert!(final_pc == 5);
-    assert!(initial_ap <= final_ap);
+    // Sanity checks.
+    assert!(initial_pc + 2 < initial_ap);
+    assert!(initial_ap < final_ap);
+    assert!(final_ap < pow2(29));
 
     // When using address_to_id relation, it is assumed that address < 2^27.
     // To verify that, one needs to check that the size of the address_to_id component <=
@@ -283,6 +285,7 @@ fn verify_claim(claim: @CairoClaim) {
     // and every other step can increase ap by at most 2. Therefore the most ap can increase to with
     // n_steps steps is 2^27-1 + 2 * (n_steps-1). This is less than P if n_steps <= 2^29.
     let opcodes_uses = relation_uses.get('Opcodes');
+    // TODO(audit): Take offset into account. Look at the lean proof.
     assert!(opcodes_uses <= pow2(29).into());
 
     // Check that no relation has more than P-1 uses.
@@ -290,7 +293,8 @@ fn verify_claim(claim: @CairoClaim) {
     let entries = squashed_dict.into_entries();
     for entry in entries {
         let (_relation_id, _first_uses, last_uses) = entry;
-        assert!(last_uses < P_U32.into(), "A relation has more than P-1 uses");
+        // TODO(audit): Add a constant USES_BOUND P_U32 - 16.
+        assert!(last_uses < P_U32.into() - 16, "A relation has more than P-1 uses");
     }
 }
 
@@ -811,10 +815,9 @@ pub fn accumulate_relation_uses(
     ref relation_uses: RelationUsesDict, relation_uses_per_row: Span<RelationUse>, log_size: u32,
 ) {
     let component_size = pow2(log_size);
-    for relation_use in relation_uses_per_row {
-        let (relation_id, uses) = *relation_use;
-        let (entry, prev_uses) = relation_uses.entry(relation_id);
-        relation_uses = entry.finalize(prev_uses + uses.into() * component_size.into());
+    for (relation_id, uses) in relation_uses_per_row {
+        let (entry, prev_uses) = relation_uses.entry(*relation_id);
+        relation_uses = entry.finalize(prev_uses + (*uses).into() * component_size.into());
     }
 }
 

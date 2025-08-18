@@ -55,19 +55,22 @@ pub impl BlakeClaimImpl of BlakeClaimTrait {
     fn log_sizes(self: @BlakeClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.blake_round.log_sizes(), self.blake_g.log_sizes(),
-                self.blake_round_sigma.log_sizes(), self.triple_xor_32.log_sizes(),
+                self.blake_round.log_sizes(), 
+                self.blake_g.log_sizes(),
+                self.blake_round_sigma.log_sizes(), 
+                self.triple_xor_32.log_sizes(),
                 self.verify_bitwise_xor_12.log_sizes(),
             ],
         )
     }
 
     fn accumulate_relation_uses(self: @BlakeClaim, ref relation_uses: RelationUsesDict) {
+        // TODO(audit): Move verify_bitwise_xor_12 outside BlakeClaim.
         let BlakeClaim {
             blake_round, blake_g, blake_round_sigma: _, triple_xor_32, verify_bitwise_xor_12: _,
         } = self;
         // NOTE: The following components do not USE relations:
-        // - blake_sigma
+        // - blake_round_sigma
         // - verify_bitwise_xor_12
 
         accumulate_relation_uses(
@@ -117,6 +120,7 @@ pub impl BlakeInteractionClaimImpl of BlakeInteractionClaimTrait {
 }
 
 #[derive(Drop, Serde)]
+// TODO(audit): Remove this struct and use BlakeClaim directly.
 pub struct BlakeContextClaim {
     pub claim: Option<BlakeClaim>,
 }
@@ -124,6 +128,7 @@ pub struct BlakeContextClaim {
 #[generate_trait]
 pub impl BlakeContextClaimImpl of BlakeContextClaimTrait {
     fn mix_into(self: @BlakeContextClaim, ref channel: Channel) {
+        // TODO(audit): Mix exists or not exists flag.
         if let Some(claim) = self.claim {
             claim.mix_into(ref channel);
         }

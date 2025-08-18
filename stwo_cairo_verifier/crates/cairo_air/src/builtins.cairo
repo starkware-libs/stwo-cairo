@@ -65,6 +65,7 @@ pub impl BuiltinsClaimImpl of BuiltinsClaimTrait {
             range_check_96_builtin,
             range_check_128_builtin,
         } = self;
+        // TODO(audit): Mix also exists or not exists flag.
         if let Some(claim) = add_mod_builtin {
             claim.mix_into(ref channel);
         }
@@ -324,9 +325,11 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         } = claim;
 
         let mut add_mod_builtin_component = Option::None;
+        // TODO(audit): Sync interaction claim and claim.
         if let Option::Some(claim) = add_mod_builtin {
             add_mod_builtin_component =
                 Option::Some(
+                    // TODO(audit): Consider passing box of all interaction elements to the component. If using one lookup element for all relations, get the component from the proof.
                     components::add_mod_builtin::Component {
                         claim: *claim,
                         interaction_claim: (*interaction_claim.add_mod_builtin).unwrap(),
@@ -657,7 +660,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             range_check_128_builtin,
         } = self;
 
-        if let Option::Some(component) = add_mod_builtin.as_snap() {
+        if let Option::Some(component) = add_mod_builtin {
             component
                 .evaluate_constraints_at_point(
                     ref sum,

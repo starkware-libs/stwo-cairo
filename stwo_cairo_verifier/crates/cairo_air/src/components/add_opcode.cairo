@@ -15,6 +15,7 @@ pub struct Claim {
 pub impl ClaimImpl of ClaimTrait {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
+        // TODO(audit): preprocessed log size should be empty.
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 20].span();
@@ -60,6 +61,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
+        // TODO(audit): Refactor (remove redundancy).
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -456,6 +458,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
         ] =
             output;
 
+        // TODO(audit): Multiply by domain_vanishing_eval_inv once at the end.
         // Constraint - if imm then offset2 is 1
         let constraint_quotient = ((op1_imm_col8
             * (qm31_const::<1, 0, 0, 0>() - decode_instruction_bc3cd_output_tmp_3fa46_10_offset2)))

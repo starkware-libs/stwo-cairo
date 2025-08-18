@@ -41,6 +41,7 @@ pub type ColumnArray<T> = Array<T>;
 pub type ColumnSpan<T> = Span<T>;
 
 /// An array in which each element relates (by index) to a commitment tree.
+// TODO(audit): Change to fixed size array. Use two types if needed.
 pub type TreeArray<T> = Array<T>;
 
 /// A span in which each element relates (by index) to a commitment tree.
