@@ -1,4 +1,4 @@
-use crate::utils::{ArrayImpl, bit_reverse_index, gen_bit_mask};
+use crate::utils::{ArrayImpl, bit_reverse_index};
 
 #[test]
 fn test_bit_reverse() {
@@ -28,19 +28,4 @@ fn test_bit_reverse() {
 #[test]
 fn test_array_new_repeated() {
     assert_eq!(ArrayImpl::new_repeated(n: 5, v: 3_usize), array![3, 3, 3, 3, 3]);
-}
-
-#[test]
-fn test_gen_bit_mask_with_0_bits() {
-    assert_eq!(gen_bit_mask(0), 0);
-}
-
-#[test]
-fn test_gen_bit_mask_with_8_bits() {
-    assert_eq!(gen_bit_mask(8), 0b11111111);
-}
-
-#[test]
-fn test_gen_bit_mask_with_64_bits() {
-    assert_eq!(gen_bit_mask(64), 0xFFFFFFFFFFFFFFFF);
 }
