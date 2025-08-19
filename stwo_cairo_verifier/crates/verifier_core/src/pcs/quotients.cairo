@@ -8,7 +8,9 @@ use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
-use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
+use crate::fields::qm31::{
+    PackedQM31, PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait,
+};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::{ColumnSpan, TreeArray, TreeSpan};
@@ -211,7 +213,8 @@ fn accumulate_row_quotients(
             // had the values sample_value and conj(sample_value) at these points.
             // TODO(andrew): `alpha_mul_b` can be moved out of the loop.
             // TODO(andrew): The whole `linear_term` can be moved out of the loop.
-            let linear_term = alpha_mul_a.mul_m31(domain_point_y) + alpha_mul_b;
+            let linear_term: PackedUnreducedQM31 = alpha_mul_a.mul_m31(domain_point_y)
+                + alpha_mul_b;
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
         }
 
@@ -375,9 +378,9 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
 /// field holds: F(p*) == F(p)* (* being the complex conjugate).
 #[derive(Copy, Debug, Drop)]
 struct ComplexConjugateLineCoeffs {
-    alpha_mul_a: PackedUnreducedQM31,
+    alpha_mul_a: PackedQM31,
     alpha_mul_b: PackedUnreducedQM31,
-    alpha_mul_c: PackedUnreducedQM31,
+    alpha_mul_c: PackedQM31,
 }
 
 #[generate_trait]
