@@ -332,7 +332,6 @@ impl SegmentRange {
     }
 }
 
-
 #[derive(Clone, Debug, Serialize, Deserialize, Copy, CompactBinary)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
