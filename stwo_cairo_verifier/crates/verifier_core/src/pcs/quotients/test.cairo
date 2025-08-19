@@ -10,6 +10,7 @@ use crate::pcs::quotients::{
 };
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{DictImpl, group_columns_by_log_size};
+use super::{PackedQM31, PackedUnreducedQM31};
 
 #[test]
 fn test_fri_answers_for_log_size() {
@@ -110,10 +111,15 @@ fn test_complex_conjugate_line_coeffs_impl() {
 
     let res = ComplexConjugateLineCoeffsImpl::new(@point, value, alpha);
 
-    assert!(res.alpha_mul_a.reduce() == qm31_const::<126, 2147483415, 8, 2147483581>());
-    assert!(res.alpha_mul_b.reduce() == qm31_const::<20238140, 1378415613, 17263450, 142791233>());
+    let as_qm31 = |v: PackedQM31| -> QM31 {
+        let unreduced: PackedUnreducedQM31 = v.into();
+        unreduced.reduce()
+    };
+
+    assert!(as_qm31(res.alpha_mul_a) == qm31_const::<126, 2147483415, 8, 2147483581>());
+    assert!(as_qm31(res.alpha_mul_b) == qm31_const::<20238140, 1378415613, 17263450, 142791233>());
     assert!(
-        res.alpha_mul_c.reduce() == qm31_const::<865924731, 72415967, 2011255989, 1549931113>(),
+        as_qm31(res.alpha_mul_c) == qm31_const::<865924731, 72415967, 2011255989, 1549931113>(),
     );
 }
 

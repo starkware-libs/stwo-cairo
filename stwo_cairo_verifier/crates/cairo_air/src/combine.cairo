@@ -5,9 +5,9 @@ use bounded_int::{
 use stwo_verifier_core::fields::m31::M31Trait;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::MulByM31Trait;
-#[cfg(not(feature: "qm31_opcode"))]
-use stwo_verifier_core::fields::qm31::PackedUnreducedQM31;
 use stwo_verifier_core::fields::qm31::QM31;
+#[cfg(not(feature: "qm31_opcode"))]
+use stwo_verifier_core::fields::qm31::{PackedQM31, PackedUnreducedQM31};
 
 
 // Use a short name in this file as it is used in many places.
@@ -142,9 +142,7 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
 ///
 /// The function works backwards in order to be similar to the implementation with qm31_opcode.
 #[cfg(not(feature: "qm31_opcode"))]
-pub fn combine_felt252(
-    value: [u32; 8], alphas: Box<[PackedUnreducedQM31; 28]>,
-) -> PackedUnreducedQM31 {
+pub fn combine_felt252(value: [u32; 8], alphas: Box<[PackedQM31; 28]>) -> PackedUnreducedQM31 {
     let [
         a1,
         a2,
@@ -174,7 +172,7 @@ pub fn combine_felt252(
         a26,
         a27,
         a28,
-    ]: [PackedUnreducedQM31; 28] =
+    ]: [PackedQM31; 28] =
         alphas
         .unbox();
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
