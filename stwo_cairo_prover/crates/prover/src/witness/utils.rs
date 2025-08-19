@@ -193,6 +193,11 @@ mod tests {
     use crate::witness::utils::tree_trace_cells;
 
     #[test]
+    fn export_preprocessed_roots() {
+        super::export_preprocessed_roots();
+    }
+
+    #[test]
     fn test_atomic_multiplicities_column() {
         let size = N_LANES;
         let n_loops = 10;
