@@ -21,6 +21,8 @@ pub impl CM31InvertibleImpl of Invertible<CM31> {
 }
 
 impl CM31MulByM31Impl of MulByM31Trait<CM31> {
+    type ResultT = CM31;
+
     #[inline]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
         CM31 { a: self.a * rhs, b: self.b * rhs }
