@@ -8,12 +8,16 @@ use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use crate::CairoInteractionElements;
 use crate::cairo_component::CairoComponent;
 use super::super::Invertible;
 use super::super::utils::UsizeImpl;
 
 mod constraints_big;
 mod constraints_small;
+
+/// The smallest ID yielded by the id_to_big component.
+pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x40000000; // 2^30.
 
 pub const N_BITS_PER_FELT: usize = 9;
 
@@ -130,7 +134,32 @@ pub struct BigComponent {
     pub range_9_9_h_lookup_elements: super::super::RangeCheck_9_9_HElements,
 }
 
-pub impl BigComponentImpl of CairoComponent<BigComponent> {
+#[generate_trait]
+pub impl NewBigComponentImpl of NewBigComponent {
+    fn new(
+        log_n_rows: u32,
+        offset: u32,
+        claimed_sum: QM31,
+        interaction_elements: @CairoInteractionElements,
+    ) -> BigComponent {
+        BigComponent {
+            log_n_rows: log_n_rows,
+            offset: offset,
+            claimed_sum: claimed_sum,
+            lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            range_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
+            range_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
+            range_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
+            range_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+        }
+    }
+}
+
+pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
     fn mask_points(
         self: @BigComponent,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -333,7 +362,24 @@ pub struct SmallComponent {
     pub range_9_9_d_lookup_elements: super::super::RangeCheck_9_9_DElements,
 }
 
-pub impl SmallComponentImpl of CairoComponent<SmallComponent> {
+#[generate_trait]
+pub impl NewSmallComponentImpl of NewSmallComponent {
+    fn new(
+        log_n_rows: u32, claimed_sum: QM31, interaction_elements: @CairoInteractionElements,
+    ) -> SmallComponent {
+        SmallComponent {
+            log_n_rows: log_n_rows,
+            claimed_sum: claimed_sum,
+            lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+        }
+    }
+}
+
+pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
     fn mask_points(
         self: @SmallComponent,
         ref preprocessed_column_set: PreprocessedColumnSet,

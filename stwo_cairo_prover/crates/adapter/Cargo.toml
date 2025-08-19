@@ -5,8 +5,10 @@ edition = "2021"
 
 
 [features]
+default = ["std"]
 slow-tests = []
-std = ["dep:sonic-rs"]
+# TODO(STAV): Delete this feature when the old adapter is removed.
+std = ["dep:sonic-rs", "cairo-vm/std"]
 
 [dependencies]
 bytemuck.workspace = true
@@ -32,3 +34,4 @@ crypto-bigint = "0.5.1"
 cairo-lang-casm.workspace = true
 rand.workspace = true
 test-case.workspace = true
+dev-utils.workspace = true

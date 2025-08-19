@@ -1,26 +1,10 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::triple_sum_32::triple_sum_32_evaluate;
 use crate::components::subroutines::xor_rot_32_r_12::xor_rot_32_r_12_evaluate;
 use crate::components::subroutines::xor_rot_32_r_16::xor_rot_32_r_16_evaluate;
 use crate::components::subroutines::xor_rot_32_r_7::xor_rot_32_r_7_evaluate;
 use crate::components::subroutines::xor_rot_32_r_8::xor_rot_32_r_8_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 53;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -73,7 +57,31 @@ pub struct Component {
     pub blake_g_lookup_elements: crate::BlakeGElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            verify_bitwise_xor_12_lookup_elements: interaction_elements
+                .verify_bitwise_xor_12
+                .clone(),
+            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
+            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
+            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
+            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -352,7 +360,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
         triple_sum_32_evaluate(
             [
                 input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
@@ -364,8 +371,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 2] = xor_rot_32_r_16_evaluate(
+        let [
+            xor_rot_32_r_16_output_tmp_f72c8_21_limb_0, xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
+        ] =
+            xor_rot_32_r_16_evaluate(
             [
                 triple_sum32_res_limb_0_col12, triple_sum32_res_limb_1_col13, input_limb_6_col6,
                 input_limb_7_col7,
@@ -387,11 +396,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            xor_rot_32_r_16_output_tmp_f72c8_21_limb_0, xor_rot_32_r_16_output_tmp_f72c8_21_limb_1,
-        ] =
-            output;
-
         triple_sum_32_evaluate(
             [
                 input_limb_4_col4, input_limb_5_col5, xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
@@ -404,8 +408,10 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 2] = xor_rot_32_r_12_evaluate(
+        let [
+            xor_rot_32_r_12_output_tmp_f72c8_43_limb_0, xor_rot_32_r_12_output_tmp_f72c8_43_limb_1,
+        ] =
+            xor_rot_32_r_12_evaluate(
             [
                 input_limb_2_col2, input_limb_3_col3, triple_sum32_res_limb_0_col22,
                 triple_sum32_res_limb_1_col23,
@@ -428,11 +434,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            xor_rot_32_r_12_output_tmp_f72c8_43_limb_0, xor_rot_32_r_12_output_tmp_f72c8_43_limb_1,
-        ] =
-            output;
-
         triple_sum_32_evaluate(
             [
                 triple_sum32_res_limb_0_col12, triple_sum32_res_limb_1_col13,
@@ -446,8 +447,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 2] = xor_rot_32_r_8_evaluate(
+        let [xor_rot_32_r_8_output_tmp_f72c8_65_limb_0, xor_rot_32_r_8_output_tmp_f72c8_65_limb_1] =
+            xor_rot_32_r_8_evaluate(
             [
                 triple_sum32_res_limb_0_col32, triple_sum32_res_limb_1_col33,
                 xor_rot_32_r_16_output_tmp_f72c8_21_limb_0,
@@ -470,9 +471,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [xor_rot_32_r_8_output_tmp_f72c8_65_limb_0, xor_rot_32_r_8_output_tmp_f72c8_65_limb_1] =
-            output;
-
         triple_sum_32_evaluate(
             [
                 triple_sum32_res_limb_0_col22, triple_sum32_res_limb_1_col23,
@@ -486,8 +484,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        let output: [QM31; 2] = xor_rot_32_r_7_evaluate(
+        let [xor_rot_32_r_7_output_tmp_f72c8_87_limb_0, xor_rot_32_r_7_output_tmp_f72c8_87_limb_1] =
+            xor_rot_32_r_7_evaluate(
             [
                 xor_rot_32_r_12_output_tmp_f72c8_43_limb_0,
                 xor_rot_32_r_12_output_tmp_f72c8_43_limb_1, triple_sum32_res_limb_0_col42,
@@ -511,8 +509,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [xor_rot_32_r_7_output_tmp_f72c8_87_limb_0, xor_rot_32_r_7_output_tmp_f72c8_87_limb_1] =
-            output;
 
         blake_g_sum_16 = self
             .blake_g_lookup_elements

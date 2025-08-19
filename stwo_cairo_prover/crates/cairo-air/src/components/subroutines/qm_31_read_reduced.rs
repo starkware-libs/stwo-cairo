@@ -1,7 +1,8 @@
+// AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::read_positive_num_bits_144::ReadPositiveNumBits144;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct Qm31ReadReduced {}
 
 impl Qm31ReadReduced {

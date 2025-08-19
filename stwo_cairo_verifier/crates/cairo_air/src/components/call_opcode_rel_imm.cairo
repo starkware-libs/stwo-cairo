@@ -1,24 +1,8 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::decode_instruction_2a7a2::decode_instruction_2a7a2_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 18;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -68,7 +52,27 @@ pub struct Component {
     pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -219,18 +223,16 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
         decode_instruction_2a7a2_evaluate(
-            [input_pc_col0],
+            input_pc_col0,
             self.verify_instruction_lookup_elements,
             ref verify_instruction_sum_0,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_positive_num_bits_27_evaluate(
-            [input_ap_col1],
+            input_ap_col1,
             stored_fp_id_col3,
             stored_fp_limb_0_col4,
             stored_fp_limb_1_col5,
@@ -251,9 +253,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             - input_fp_col2))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
         read_positive_num_bits_27_evaluate(
-            [(input_ap_col1 + qm31_const::<1, 0, 0, 0>())],
+            (input_ap_col1 + qm31_const::<1, 0, 0, 0>()),
             stored_ret_pc_id_col7,
             stored_ret_pc_limb_0_col8,
             stored_ret_pc_limb_1_col9,
@@ -274,9 +275,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             - (input_pc_col0 + qm31_const::<2, 0, 0, 0>())))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = read_small_evaluate(
-            [(input_pc_col0 + qm31_const::<1, 0, 0, 0>())],
+        let read_small_output_tmp_9db06_14_limb_0: QM31 = read_small_evaluate(
+            (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             distance_to_next_pc_id_col11,
             msb_col12,
             mid_limbs_set_col13,
@@ -291,7 +291,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_small_output_tmp_9db06_14_limb_0] = output;
 
         opcodes_sum_7 = self
             .opcodes_lookup_elements

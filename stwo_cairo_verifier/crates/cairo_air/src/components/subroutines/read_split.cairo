@@ -1,26 +1,10 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
+use crate::prelude::*;
 
 
 pub fn read_split_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     value_limb_0_col0: QM31,
     value_limb_1_col1: QM31,
     value_limb_2_col2: QM31,
@@ -60,12 +44,11 @@ pub fn read_split_evaluate(
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
-) -> [QM31; 1] {
-    let [read_split_input_address] = input;
+) -> QM31 {
+    let read_split_input_address = input;
 
     range_check_5_4_sum_0 = range_check_5_4_lookup_elements
         .combine_qm31([ms_limb_low_col27, ms_limb_high_col28]);
-
     mem_verify_evaluate(
         [
             read_split_input_address, value_limb_0_col0, value_limb_1_col1, value_limb_2_col2,
@@ -87,5 +70,5 @@ pub fn read_split_evaluate(
         random_coeff,
     );
 
-    [((ms_limb_high_col28 * qm31_const::<32, 0, 0, 0>()) + ms_limb_low_col27)]
+    ((ms_limb_high_col28 * qm31_const::<32, 0, 0, 0>()) + ms_limb_low_col27)
 }

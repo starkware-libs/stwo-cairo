@@ -1,22 +1,6 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::ec_add::ec_add_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 472;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 18] = [
@@ -85,7 +69,43 @@ pub struct Component {
     pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            pedersen_points_table_lookup_elements: interaction_elements
+                .pedersen_points_table
+                .clone(),
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
+            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
+            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
+            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
+            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
+            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
+            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
+            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
+            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -2726,7 +2746,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
                     pedersen_points_table_output_limb_55_col128,
                 ],
             );
-
         ec_add_evaluate(
             [
                 input_limb_17_col17, input_limb_18_col18, input_limb_19_col19, input_limb_20_col20,

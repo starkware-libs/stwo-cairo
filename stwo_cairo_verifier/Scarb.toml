@@ -6,7 +6,20 @@ members = [
     "crates/cairo_verifier_mock",
     "crates/constraint_framework",
     "crates/verifier_core",
+    "crates/verifier_utils",
 ]
+
+[workspace.tool.cairo-lint]
+manual_assert = false
+double_parens = false
 
 [cairo]
 enable-gas = false
+allow-warnings = false
+
+# The profile that should be used when compiling the verifier for proving.
+# This profile enables unsafe-panic to reduce the code size.
+[profile.proving]
+enable-gas = false
+unsafe-panic = true
+allow-warnings = false

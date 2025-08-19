@@ -1,3 +1,4 @@
+// AIR version 38bef2b6
 #![allow(unused_parens)]
 use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -455,7 +456,7 @@ fn write_trace_simd(
                 let ms_8_bits_col36 = ms_8_bits_tmp_f72c8_52.as_m31();
                 *row[36] = ms_8_bits_col36;
                 let split_16_low_part_size_8_output_tmp_f72c8_53 = [
-                    ((xor_rot_32_r_16_output_tmp_f72c8_21.low().as_m31())
+                    ((xor_rot_16_output_tmp_f72c8_20.low().as_m31())
                         - ((ms_8_bits_col36) * (M31_256))),
                     ms_8_bits_col36,
                 ];
@@ -467,7 +468,7 @@ fn write_trace_simd(
                 let ms_8_bits_col37 = ms_8_bits_tmp_f72c8_54.as_m31();
                 *row[37] = ms_8_bits_col37;
                 let split_16_low_part_size_8_output_tmp_f72c8_55 = [
-                    ((xor_rot_32_r_16_output_tmp_f72c8_21.high().as_m31())
+                    ((xor_rot_16_output_tmp_f72c8_20.high().as_m31())
                         - ((ms_8_bits_col37) * (M31_256))),
                     ms_8_bits_col37,
                 ];
@@ -558,7 +559,7 @@ fn write_trace_simd(
                 let ms_9_bits_col44 = ms_9_bits_tmp_f72c8_70.as_m31();
                 *row[44] = ms_9_bits_col44;
                 let split_16_low_part_size_7_output_tmp_f72c8_71 = [
-                    ((xor_rot_32_r_12_output_tmp_f72c8_43.low().as_m31())
+                    ((xor_rot_12_output_tmp_f72c8_42.low().as_m31())
                         - ((ms_9_bits_col44) * (M31_128))),
                     ms_9_bits_col44,
                 ];
@@ -570,7 +571,7 @@ fn write_trace_simd(
                 let ms_9_bits_col45 = ms_9_bits_tmp_f72c8_72.as_m31();
                 *row[45] = ms_9_bits_col45;
                 let split_16_low_part_size_7_output_tmp_f72c8_73 = [
-                    ((xor_rot_32_r_12_output_tmp_f72c8_43.high().as_m31())
+                    ((xor_rot_12_output_tmp_f72c8_42.high().as_m31())
                         - ((ms_9_bits_col45) * (M31_128))),
                     ms_9_bits_col45,
                 ];
@@ -678,12 +679,12 @@ fn write_trace_simd(
                     input_limb_11_col11,
                     triple_sum32_res_limb_0_col32,
                     triple_sum32_res_limb_1_col33,
-                    xor_rot_32_r_7_output_tmp_f72c8_87.low().as_m31(),
-                    xor_rot_32_r_7_output_tmp_f72c8_87.high().as_m31(),
+                    xor_rot_7_output_tmp_f72c8_86.low().as_m31(),
+                    xor_rot_7_output_tmp_f72c8_86.high().as_m31(),
                     triple_sum32_res_limb_0_col42,
                     triple_sum32_res_limb_1_col43,
-                    xor_rot_32_r_8_output_tmp_f72c8_65.low().as_m31(),
-                    xor_rot_32_r_8_output_tmp_f72c8_65.high().as_m31(),
+                    xor_rot_8_output_tmp_f72c8_64.low().as_m31(),
+                    xor_rot_8_output_tmp_f72c8_64.high().as_m31(),
                 ];
                 *row[52] = enabler_col.packed_at(row_index);
             },
@@ -722,12 +723,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        blake_g: &relations::BlakeG,
+        verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
         verify_bitwise_xor_12: &relations::VerifyBitwiseXor_12,
         verify_bitwise_xor_4: &relations::VerifyBitwiseXor_4,
         verify_bitwise_xor_7: &relations::VerifyBitwiseXor_7,
-        verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
         verify_bitwise_xor_9: &relations::VerifyBitwiseXor_9,
+        blake_g: &relations::BlakeG,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

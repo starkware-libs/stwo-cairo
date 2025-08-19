@@ -11,20 +11,26 @@ use components::pedersen_points_table::{
 };
 use core::box::BoxImpl;
 use core::num::traits::Zero;
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_cairo_air::CairoInteractionElements;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::claim::ClaimTrait;
+use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::ColumnSpan;
+use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
-use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 
 #[derive(Drop, Serde)]
@@ -33,8 +39,7 @@ pub struct PedersenClaim {
     pub pedersen_points_table: components::pedersen_points_table::Claim,
 }
 
-#[generate_trait]
-pub impl PedersenClaimImpl of PedersenClaimTrait {
+pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
     fn mix_into(self: @PedersenClaim, ref channel: Channel) {
         self.partial_ec_mul.mix_into(ref channel);
         self.pedersen_points_table.mix_into(ref channel);
@@ -225,38 +230,16 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @PedersenInteractionClaim,
     ) -> PedersenComponents {
-        let partial_ec_mul_component = components::partial_ec_mul::Component {
-            claim: *claim.partial_ec_mul,
-            interaction_claim: *interaction_claim.partial_ec_mul,
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
-            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
-        };
+        let partial_ec_mul_component = components::partial_ec_mul::NewComponentImpl::new(
+            claim.partial_ec_mul, interaction_claim.partial_ec_mul, interaction_elements,
+        );
 
-        let pedersen_points_table_component = components::pedersen_points_table::Component {
-            claim: *claim.pedersen_points_table,
-            interaction_claim: *interaction_claim.pedersen_points_table,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-        };
+        let pedersen_points_table_component =
+            components::pedersen_points_table::NewComponentImpl::new(
+            claim.pedersen_points_table,
+            interaction_claim.pedersen_points_table,
+            interaction_elements,
+        );
 
         PedersenComponents {
             partial_ec_mul: partial_ec_mul_component,

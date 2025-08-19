@@ -1,14 +1,12 @@
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
-use crate::fri::FriVerificationError;
 use crate::pcs::PcsConfigTrait;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::MerkleVerificationError;
 use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
 
 /// Arithmetic Intermediate Representation (AIR).
@@ -56,7 +54,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            commitment_scheme_proof.commitments.last().unwrap().clone(),
+            *commitment_scheme_proof.commitments.last().unwrap(),
             [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
             ref channel,
         );

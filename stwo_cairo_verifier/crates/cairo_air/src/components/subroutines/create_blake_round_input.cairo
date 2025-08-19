@@ -1,24 +1,8 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::prelude::*;
 
 
 pub fn create_blake_round_input_evaluate(
@@ -120,9 +104,8 @@ pub fn create_blake_round_input_evaluate(
         create_blake_round_input_input_limb_3,
     ] =
         input;
-
     read_blake_word_evaluate(
-        [create_blake_round_input_input_limb_0],
+        create_blake_round_input_input_limb_0,
         low_16_bits_col0,
         high_16_bits_col1,
         low_7_ms_bits_col2,
@@ -139,9 +122,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<1, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<1, 0, 0, 0>()),
         low_16_bits_col6,
         high_16_bits_col7,
         low_7_ms_bits_col8,
@@ -158,9 +140,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<2, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<2, 0, 0, 0>()),
         low_16_bits_col12,
         high_16_bits_col13,
         low_7_ms_bits_col14,
@@ -177,9 +158,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<3, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<3, 0, 0, 0>()),
         low_16_bits_col18,
         high_16_bits_col19,
         low_7_ms_bits_col20,
@@ -196,9 +176,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<4, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<4, 0, 0, 0>()),
         low_16_bits_col24,
         high_16_bits_col25,
         low_7_ms_bits_col26,
@@ -215,9 +194,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<5, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<5, 0, 0, 0>()),
         low_16_bits_col30,
         high_16_bits_col31,
         low_7_ms_bits_col32,
@@ -234,9 +212,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<6, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<6, 0, 0, 0>()),
         low_16_bits_col36,
         high_16_bits_col37,
         low_7_ms_bits_col38,
@@ -253,9 +230,8 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_blake_word_evaluate(
-        [(create_blake_round_input_input_limb_0 + qm31_const::<7, 0, 0, 0>())],
+        (create_blake_round_input_input_limb_0 + qm31_const::<7, 0, 0, 0>()),
         low_16_bits_col42,
         high_16_bits_col43,
         low_7_ms_bits_col44,
@@ -272,25 +248,22 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-        [create_blake_round_input_input_limb_1],
+    let split_16_low_part_size_8_output_tmp_f95c3_73_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        create_blake_round_input_input_limb_1,
         ms_8_bits_col48,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_8_output_tmp_f95c3_73_limb_0] = output;
-
-    let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-        [create_blake_round_input_input_limb_2],
+    let split_16_low_part_size_8_output_tmp_f95c3_75_limb_0: QM31 =
+        split_16_low_part_size_8_evaluate(
+        create_blake_round_input_input_limb_2,
         ms_8_bits_col49,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [split_16_low_part_size_8_output_tmp_f95c3_75_limb_0] = output;
-
     bitwise_xor_num_bits_8_evaluate(
         [split_16_low_part_size_8_output_tmp_f95c3_73_limb_0, qm31_const::<127, 0, 0, 0>()],
         xor_col50,
@@ -300,7 +273,6 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col48, qm31_const::<82, 0, 0, 0>()],
         xor_col51,
@@ -310,7 +282,6 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     bitwise_xor_num_bits_8_evaluate(
         [split_16_low_part_size_8_output_tmp_f95c3_75_limb_0, qm31_const::<14, 0, 0, 0>()],
         xor_col52,
@@ -320,7 +291,6 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col49, qm31_const::<81, 0, 0, 0>()],
         xor_col53,

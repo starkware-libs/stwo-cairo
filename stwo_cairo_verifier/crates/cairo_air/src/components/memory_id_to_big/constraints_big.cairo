@@ -1,13 +1,4 @@
-use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndex, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Impl,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
-use stwo_verifier_core::{ColumnArray, ColumnSpan};
+use crate::prelude::*;
 
 pub fn mask_points(
     ref preprocessed_column_set: PreprocessedColumnSet,
@@ -1043,7 +1034,7 @@ pub fn intermediate14(
     trace_1_column_8_offset_0: QM31,
     trace_1_column_9_offset_0: QM31,
 ) -> QM31 {
-    (MemoryIdToBig_alpha0) * (seq + m31(1073741824).into() + offset)
+    (MemoryIdToBig_alpha0) * (seq + offset)
         + (MemoryIdToBig_alpha1) * (trace_1_column_0_offset_0)
         + (MemoryIdToBig_alpha2) * (trace_1_column_1_offset_0)
         + (MemoryIdToBig_alpha3) * (trace_1_column_2_offset_0)

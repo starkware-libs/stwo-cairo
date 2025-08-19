@@ -1,26 +1,10 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::read_positive_num_bits_144::read_positive_num_bits_144_evaluate;
+use crate::prelude::*;
 
 
 pub fn qm_31_read_reduced_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -50,10 +34,9 @@ pub fn qm_31_read_reduced_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
-    let [qm_31_read_reduced_input] = input;
-
+    let qm_31_read_reduced_input = input;
     read_positive_num_bits_144_evaluate(
-        [qm_31_read_reduced_input],
+        qm_31_read_reduced_input,
         id_col0,
         value_limb_0_col1,
         value_limb_1_col2,

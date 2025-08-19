@@ -332,9 +332,8 @@ impl SegmentRange {
     }
 }
 
-#[derive(
-    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
-)]
+
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CompactBinary)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -347,6 +346,91 @@ pub struct PublicSegmentRanges {
     pub range_check_96: Option<SegmentRange>,
     pub add_mod: Option<SegmentRange>,
     pub mul_mod: Option<SegmentRange>,
+}
+
+/// Same as PublicSegmentRanges, but with all segments present, this serialization of the struct is
+/// used by the Cairo1 verifier.
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+pub struct FullSegmentRanges {
+    pub output: SegmentRange,
+    pub pedersen: SegmentRange,
+    pub range_check_128: SegmentRange,
+    pub ecdsa: SegmentRange,
+    pub bitwise: SegmentRange,
+    pub ec_op: SegmentRange,
+    pub keccak: SegmentRange,
+    pub poseidon: SegmentRange,
+    pub range_check_96: SegmentRange,
+    pub add_mod: SegmentRange,
+    pub mul_mod: SegmentRange,
+}
+
+// The Cairo1 verifier currently requires all the segments to be present.
+impl CairoSerialize for PublicSegmentRanges {
+    fn serialize(&self, serialized: &mut Vec<starknet_ff::FieldElement>) {
+        let Self {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = self;
+
+        CairoSerialize::serialize(
+            &FullSegmentRanges {
+                output: *output,
+                pedersen: pedersen.unwrap(),
+                range_check_128: range_check_128.unwrap(),
+                ecdsa: ecdsa.unwrap(),
+                bitwise: bitwise.unwrap(),
+                ec_op: ec_op.unwrap(),
+                keccak: keccak.unwrap(),
+                poseidon: poseidon.unwrap(),
+                range_check_96: range_check_96.unwrap(),
+                add_mod: add_mod.unwrap(),
+                mul_mod: mul_mod.unwrap(),
+            },
+            serialized,
+        );
+    }
+}
+
+impl CairoDeserialize for PublicSegmentRanges {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+        let FullSegmentRanges {
+            output,
+            pedersen,
+            range_check_128,
+            ecdsa,
+            bitwise,
+            ec_op,
+            keccak,
+            poseidon,
+            range_check_96,
+            add_mod,
+            mul_mod,
+        } = CairoDeserialize::deserialize(data);
+
+        Self {
+            output,
+            pedersen: Some(pedersen),
+            range_check_128: Some(range_check_128),
+            ecdsa: Some(ecdsa),
+            bitwise: Some(bitwise),
+            ec_op: Some(ec_op),
+            keccak: Some(keccak),
+            poseidon: Some(poseidon),
+            range_check_96: Some(range_check_96),
+            add_mod: Some(add_mod),
+            mul_mod: Some(mul_mod),
+        }
+    }
 }
 
 impl PublicSegmentRanges {
@@ -427,7 +511,7 @@ pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
     pub output: MemorySection,
-    pub safe_call: MemorySection,
+    pub safe_call_ids: [u32; 2],
 }
 
 impl PublicMemory {
@@ -438,12 +522,22 @@ impl PublicMemory {
         initial_ap: u32,
         final_ap: u32,
     ) -> impl Iterator<Item = PubMemoryEntry> {
-        let [program, safe_call, output] = [&self.program, &self.safe_call, &self.output]
-            .map(|section| section.clone().into_iter().enumerate());
+        let [program, output] =
+            [&self.program, &self.output].map(|section| section.clone().into_iter().enumerate());
         let program_iter = program.map(move |(i, (id, value))| (initial_pc + i as u32, id, value));
         let output_iter = output.map(move |(i, (id, value))| (final_ap + i as u32, id, value));
-        let safe_call_iter =
-            safe_call.map(move |(i, (id, value))| (initial_ap - 2 + i as u32, id, value));
+
+        let [safe_call_id0, safe_call_id1] = self.safe_call_ids;
+        // The safe call area should be [initial_fp, 0] and initial_fp should be the same as
+        // initial_ap.
+        let safe_call_iter = [
+            (
+                initial_ap - 2,
+                safe_call_id0,
+                [initial_ap, 0, 0, 0, 0, 0, 0, 0],
+            ),
+            (initial_ap - 1, safe_call_id1, [0, 0, 0, 0, 0, 0, 0, 0]),
+        ];
         let segment_ranges_iter = self.public_segments.memory_entries(initial_ap, final_ap);
 
         program_iter
@@ -457,7 +551,7 @@ impl PublicMemory {
             program,
             public_segments,
             output,
-            safe_call,
+            safe_call_ids,
         } = self;
 
         // Program is the bootloader and doesn't need to be mixed into the channel.
@@ -469,13 +563,9 @@ impl PublicMemory {
         // Mix output memory section.
         channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
 
-        // Mix safe_call memory section.
-        channel.mix_u64(safe_call.len() as u64);
-        for (id, value) in safe_call {
+        // Mix safe_ids memory section.
+        for id in safe_call_ids {
             channel.mix_u64(*id as u64);
-            for limb in value.iter() {
-                channel.mix_u64(*limb as u64);
-            }
         }
     }
 }

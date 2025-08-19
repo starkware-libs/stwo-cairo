@@ -1,23 +1,7 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 21;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 1] = [('VerifyBitwiseXor_8', 8)];
@@ -63,7 +47,25 @@ pub struct Component {
     pub triple_xor_32_lookup_elements: crate::TripleXor32Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -198,37 +200,30 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_0_col0], ms_8_bits_col6, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_1_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_0_col0, ms_8_bits_col6, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_1_limb_0] = output;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_1_col1], ms_8_bits_col7, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_3_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_1_col1, ms_8_bits_col7, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_3_limb_0] = output;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_2_col2], ms_8_bits_col8, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_5_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_2_col2, ms_8_bits_col8, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_5_limb_0] = output;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_3_col3], ms_8_bits_col9, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_7_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_3_col3, ms_8_bits_col9, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_7_limb_0] = output;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_4_col4], ms_8_bits_col10, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_9_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_4_col4, ms_8_bits_col10, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_9_limb_0] = output;
-
-        let output: [QM31; 1] = split_16_low_part_size_8_evaluate(
-            [input_limb_5_col5], ms_8_bits_col11, ref sum, domain_vanishing_eval_inv, random_coeff,
+        let split_16_low_part_size_8_output_tmp_298db_11_limb_0: QM31 =
+            split_16_low_part_size_8_evaluate(
+            input_limb_5_col5, ms_8_bits_col11, ref sum, domain_vanishing_eval_inv, random_coeff,
         );
-        let [split_16_low_part_size_8_output_tmp_298db_11_limb_0] = output;
-
         bitwise_xor_num_bits_8_evaluate(
             [
                 split_16_low_part_size_8_output_tmp_298db_1_limb_0,
@@ -241,7 +236,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [xor_col12, split_16_low_part_size_8_output_tmp_298db_9_limb_0],
             xor_col13,
@@ -251,7 +245,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [ms_8_bits_col6, ms_8_bits_col8],
             xor_col14,
@@ -261,7 +254,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [xor_col14, ms_8_bits_col10],
             xor_col15,
@@ -271,7 +263,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [
                 split_16_low_part_size_8_output_tmp_298db_3_limb_0,
@@ -284,7 +275,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [xor_col16, split_16_low_part_size_8_output_tmp_298db_11_limb_0],
             xor_col17,
@@ -294,7 +284,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [ms_8_bits_col7, ms_8_bits_col9],
             xor_col18,
@@ -304,7 +293,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         bitwise_xor_num_bits_8_evaluate(
             [xor_col18, ms_8_bits_col11],
             xor_col19,

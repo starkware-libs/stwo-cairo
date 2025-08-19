@@ -4,6 +4,7 @@ use components::memory_address_to_id::{
 };
 use components::memory_id_to_big::{
     ClaimImpl as MemoryIdToBigClaimImpl, InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl,
+    LARGE_MEMORY_VALUE_ID_BASE,
 };
 use components::triple_xor_32::{
     ClaimImpl as TripleXor32ClaimImpl, InteractionClaimImpl as TripleXor32InteractionClaimImpl,
@@ -37,7 +38,9 @@ use core::num::traits::Zero;
 use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::opcodes::*;
+use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod poseidon252_verifier_imports {
@@ -143,8 +146,7 @@ pub struct CairoClaim {
     // ...
 }
 
-#[generate_trait]
-pub impl CairoClaimImpl of CairoClaimTrait {
+pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
         let mut aggregated_log_sizes = utils::tree_array_concat_cols(
             array![
@@ -175,20 +177,37 @@ pub impl CairoClaimImpl of CairoClaimTrait {
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
-        self.public_data.mix_into(ref channel);
-        self.opcodes.mix_into(ref channel);
-        self.verify_instruction.mix_into(ref channel);
-        self.blake_context.mix_into(ref channel);
-        self.builtins.mix_into(ref channel);
-        self.pedersen_context.mix_into(ref channel);
-        self.poseidon_context.mix_into(ref channel);
-        self.memory_address_to_id.mix_into(ref channel);
-        self.memory_id_to_value.mix_into(ref channel);
-        self.range_checks.mix_into(ref channel);
-        self.verify_bitwise_xor_4.mix_into(ref channel);
-        self.verify_bitwise_xor_7.mix_into(ref channel);
-        self.verify_bitwise_xor_8.mix_into(ref channel);
-        self.verify_bitwise_xor_9.mix_into(ref channel);
+        let CairoClaim {
+            public_data,
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        public_data.mix_into(ref channel);
+        opcodes.mix_into(ref channel);
+        verify_instruction.mix_into(ref channel);
+        blake_context.mix_into(ref channel);
+        builtins.mix_into(ref channel);
+        pedersen_context.mix_into(ref channel);
+        poseidon_context.mix_into(ref channel);
+        memory_address_to_id.mix_into(ref channel);
+        memory_id_to_value.mix_into(ref channel);
+        range_checks.mix_into(ref channel);
+        verify_bitwise_xor_4.mix_into(ref channel);
+        verify_bitwise_xor_7.mix_into(ref channel);
+        verify_bitwise_xor_8.mix_into(ref channel);
+        verify_bitwise_xor_9.mix_into(ref channel);
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
@@ -260,19 +279,35 @@ pub struct CairoInteractionClaim {
 #[generate_trait]
 pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
     fn mix_into(self: @CairoInteractionClaim, ref channel: Channel) {
-        self.opcodes.mix_into(ref channel);
-        self.verify_instruction.mix_into(ref channel);
-        self.blake_context.mix_into(ref channel);
-        self.builtins.mix_into(ref channel);
-        self.pedersen_context.mix_into(ref channel);
-        self.poseidon_context.mix_into(ref channel);
-        self.memory_address_to_id.mix_into(ref channel);
-        self.memory_id_to_value.mix_into(ref channel);
-        self.range_checks.mix_into(ref channel);
-        self.verify_bitwise_xor_4.mix_into(ref channel);
-        self.verify_bitwise_xor_7.mix_into(ref channel);
-        self.verify_bitwise_xor_8.mix_into(ref channel);
-        self.verify_bitwise_xor_9.mix_into(ref channel);
+        let CairoInteractionClaim {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        opcodes.mix_into(ref channel);
+        verify_instruction.mix_into(ref channel);
+        blake_context.mix_into(ref channel);
+        builtins.mix_into(ref channel);
+        pedersen_context.mix_into(ref channel);
+        poseidon_context.mix_into(ref channel);
+        memory_address_to_id.mix_into(ref channel);
+        memory_id_to_value.mix_into(ref channel);
+        range_checks.mix_into(ref channel);
+        verify_bitwise_xor_4.mix_into(ref channel);
+        verify_bitwise_xor_7.mix_into(ref channel);
+        verify_bitwise_xor_8.mix_into(ref channel);
+        verify_bitwise_xor_9.mix_into(ref channel);
     }
 }
 
@@ -380,21 +415,18 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
         );
 
-        let verifyinstruction_component = components::verify_instruction::Component {
-            claim: *cairo_claim.verify_instruction,
-            interaction_claim: *interaction_claim.verify_instruction,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-        };
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
+            cairo_claim.verify_instruction,
+            interaction_claim.verify_instruction,
+            interaction_elements,
+        );
 
-        let memory_address_to_id_component = components::memory_address_to_id::Component {
-            claim: *cairo_claim.memory_address_to_id,
-            interaction_claim: *interaction_claim.memory_address_to_id,
-            lookup_elements: interaction_elements.memory_address_to_id.clone(),
-        };
+        let memory_address_to_id_component =
+            components::memory_address_to_id::NewComponentImpl::new(
+            cairo_claim.memory_address_to_id,
+            interaction_claim.memory_address_to_id,
+            interaction_elements,
+        );
 
         assert!(
             cairo_claim
@@ -406,88 +438,59 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 .len(),
         );
         let mut memory_id_to_value_components = array![];
-        let mut offset = 0;
+        let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
         for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
             let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
             memory_id_to_value_components
                 .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
+                    components::memory_id_to_big::NewBigComponentImpl::new(
+                        log_size, offset, claimed_sum, interaction_elements,
+                    ),
                 );
             offset = offset + pow2(log_size);
         }
+        // Check that IDs in (ID -> Value) do not overflow P.
+        assert!(offset <= P_U32);
 
-        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
-            log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
-            claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-        };
+        let small_memory_id_to_value_component =
+            components::memory_id_to_big::NewSmallComponentImpl::new(
+            *cairo_claim.memory_id_to_value.small_log_size,
+            *interaction_claim.memory_id_to_value.small_claimed_sum,
+            interaction_elements,
+        );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
             cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
         );
 
-        let verify_bitwise_xor_4_component = components::verify_bitwise_xor_4::Component {
-            claim: *cairo_claim.verify_bitwise_xor_4,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_4,
-            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
-        };
+        let verify_bitwise_xor_4_component =
+            components::verify_bitwise_xor_4::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_4,
+            interaction_claim.verify_bitwise_xor_4,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_7_component = components::verify_bitwise_xor_7::Component {
-            claim: *cairo_claim.verify_bitwise_xor_7,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_7,
-            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
-        };
+        let verify_bitwise_xor_7_component =
+            components::verify_bitwise_xor_7::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_7,
+            interaction_claim.verify_bitwise_xor_7,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_8_component = components::verify_bitwise_xor_8::Component {
-            claim: *cairo_claim.verify_bitwise_xor_8,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_8,
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-        };
+        let verify_bitwise_xor_8_component =
+            components::verify_bitwise_xor_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_8,
+            interaction_claim.verify_bitwise_xor_8,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_9_component = components::verify_bitwise_xor_9::Component {
-            claim: *cairo_claim.verify_bitwise_xor_9,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_9,
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-        };
+        let verify_bitwise_xor_9_component =
+            components::verify_bitwise_xor_9::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_9,
+            interaction_claim.verify_bitwise_xor_9,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,
@@ -510,19 +513,32 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        let mut max_degree = self.opcodes.max_constraint_log_degree_bound();
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        let mut max_degree = opcodes.max_constraint_log_degree_bound();
         max_degree =
-            core::cmp::max(max_degree, self.verify_instruction.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, pedersen_context.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, poseidon_context.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.pedersen_context.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.poseidon_context.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             max_degree =
                 core::cmp::max(
@@ -531,16 +547,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
         }
         max_degree =
             core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.range_checks.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_4.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_7.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_9.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
         max_degree
     }
 
@@ -550,56 +565,65 @@ pub impl CairoAirImpl of Air<CairoAir> {
         let mut preprocessed_column_set: PreprocessedColumnSet = Default::default();
         let mut trace_mask_points = array![];
         let mut interaction_trace_mask_points = array![];
-        self
-            .opcodes
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        opcodes
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_instruction
+        verify_instruction
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .blake_context
+        blake_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .builtins
+        builtins
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .pedersen_context
+        pedersen_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .poseidon_context
+        poseidon_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .memory_address_to_id
+        memory_address_to_id
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -607,7 +631,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             memory_id_to_value_big_component
                 .mask_points(
@@ -624,40 +648,35 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .range_checks
+        range_checks
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_4
+        verify_bitwise_xor_4
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_7
+        verify_bitwise_xor_7
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_8
+        verify_bitwise_xor_8
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_9
+        verify_bitwise_xor_9
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -694,9 +713,23 @@ pub impl CairoAirImpl of Air<CairoAir> {
         let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
             preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
         );
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            pedersen_context,
+            poseidon_context,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
 
-        self
-            .opcodes
+        opcodes
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -705,8 +738,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_instruction
+        verify_instruction
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -715,8 +747,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .blake_context
+        blake_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -725,8 +756,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .builtins
+        builtins
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -735,8 +765,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .pedersen_context
+        pedersen_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -745,8 +774,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .poseidon_context
+        poseidon_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -755,8 +783,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .memory_address_to_id
+        memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -765,7 +792,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             memory_id_to_value_big_component
                 .evaluate_constraints_at_point(
@@ -786,8 +813,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .range_checks
+
+        range_checks
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -796,8 +823,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_4
+        verify_bitwise_xor_4
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -806,8 +832,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_7
+        verify_bitwise_xor_7
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -816,8 +841,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_8
+        verify_bitwise_xor_8
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -826,8 +850,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_9
+        verify_bitwise_xor_9
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -879,21 +902,18 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
         );
 
-        let verifyinstruction_component = components::verify_instruction::Component {
-            claim: *cairo_claim.verify_instruction,
-            interaction_claim: *interaction_claim.verify_instruction,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-        };
+        let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
+            cairo_claim.verify_instruction,
+            interaction_claim.verify_instruction,
+            interaction_elements,
+        );
 
-        let memory_address_to_id_component = components::memory_address_to_id::Component {
-            claim: *cairo_claim.memory_address_to_id,
-            interaction_claim: *interaction_claim.memory_address_to_id,
-            lookup_elements: interaction_elements.memory_address_to_id.clone(),
-        };
+        let memory_address_to_id_component =
+            components::memory_address_to_id::NewComponentImpl::new(
+            cairo_claim.memory_address_to_id,
+            interaction_claim.memory_address_to_id,
+            interaction_elements,
+        );
 
         assert!(
             cairo_claim
@@ -905,88 +925,59 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 .len(),
         );
         let mut memory_id_to_value_components = array![];
-        let mut offset = 0;
+        let mut offset: u32 = LARGE_MEMORY_VALUE_ID_BASE;
         for i in 0..cairo_claim.memory_id_to_value.big_log_sizes.len() {
             let log_size = *cairo_claim.memory_id_to_value.big_log_sizes[i];
             let claimed_sum = *interaction_claim.memory_id_to_value.big_claimed_sums[i];
             memory_id_to_value_components
                 .append(
-                    components::memory_id_to_big::BigComponent {
-                        log_n_rows: log_size,
-                        offset: offset,
-                        claimed_sum: claimed_sum,
-                        lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                        range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-                        range_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                    },
+                    components::memory_id_to_big::NewBigComponentImpl::new(
+                        log_size, offset, claimed_sum, interaction_elements,
+                    ),
                 );
             offset = offset + pow2(log_size);
         }
+        // Check that IDs in (ID -> Value) do not overflow P.
+        assert!(offset <= P_U32);
 
-        let small_memory_id_to_value_component = components::memory_id_to_big::SmallComponent {
-            log_n_rows: *cairo_claim.memory_id_to_value.small_log_size,
-            claimed_sum: *interaction_claim.memory_id_to_value.small_claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-        };
+        let small_memory_id_to_value_component =
+            components::memory_id_to_big::NewSmallComponentImpl::new(
+            *cairo_claim.memory_id_to_value.small_log_size,
+            *interaction_claim.memory_id_to_value.small_claimed_sum,
+            interaction_elements,
+        );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
             cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
         );
 
-        let verify_bitwise_xor_4_component = components::verify_bitwise_xor_4::Component {
-            claim: *cairo_claim.verify_bitwise_xor_4,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_4,
-            verify_bitwise_xor_4_lookup_elements: interaction_elements.verify_bitwise_xor_4.clone(),
-        };
+        let verify_bitwise_xor_4_component =
+            components::verify_bitwise_xor_4::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_4,
+            interaction_claim.verify_bitwise_xor_4,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_7_component = components::verify_bitwise_xor_7::Component {
-            claim: *cairo_claim.verify_bitwise_xor_7,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_7,
-            verify_bitwise_xor_7_lookup_elements: interaction_elements.verify_bitwise_xor_7.clone(),
-        };
+        let verify_bitwise_xor_7_component =
+            components::verify_bitwise_xor_7::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_7,
+            interaction_claim.verify_bitwise_xor_7,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_8_component = components::verify_bitwise_xor_8::Component {
-            claim: *cairo_claim.verify_bitwise_xor_8,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_8,
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
-        };
+        let verify_bitwise_xor_8_component =
+            components::verify_bitwise_xor_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_8,
+            interaction_claim.verify_bitwise_xor_8,
+            interaction_elements,
+        );
 
-        let verify_bitwise_xor_9_component = components::verify_bitwise_xor_9::Component {
-            claim: *cairo_claim.verify_bitwise_xor_9,
-            interaction_claim: *interaction_claim.verify_bitwise_xor_9,
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-        };
+        let verify_bitwise_xor_9_component =
+            components::verify_bitwise_xor_9::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_xor_9,
+            interaction_claim.verify_bitwise_xor_9,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,
@@ -1007,15 +998,28 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(feature: "poseidon252_verifier")]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        let mut max_degree = self.opcodes.max_constraint_log_degree_bound();
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        let mut max_degree = opcodes.max_constraint_log_degree_bound();
         max_degree =
-            core::cmp::max(max_degree, self.verify_instruction.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             max_degree =
                 core::cmp::max(
@@ -1024,16 +1028,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
         }
         max_degree =
             core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.range_checks.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_4.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_7.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
         max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.verify_bitwise_xor_9.max_constraint_log_degree_bound());
+            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
         max_degree
     }
 
@@ -1043,40 +1046,49 @@ pub impl CairoAirImpl of Air<CairoAir> {
         let mut preprocessed_column_set: PreprocessedColumnSet = Default::default();
         let mut trace_mask_points = array![];
         let mut interaction_trace_mask_points = array![];
-        self
-            .opcodes
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        opcodes
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_instruction
+        verify_instruction
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .blake_context
+        blake_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .builtins
+        builtins
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .memory_address_to_id
+        memory_address_to_id
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -1084,7 +1096,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             memory_id_to_value_big_component
                 .mask_points(
@@ -1101,40 +1113,35 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .range_checks
+        range_checks
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_4
+        verify_bitwise_xor_4
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_7
+        verify_bitwise_xor_7
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_8
+        verify_bitwise_xor_8
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
                 ref interaction_trace_mask_points,
                 point,
             );
-        self
-            .verify_bitwise_xor_9
+        verify_bitwise_xor_9
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -1172,8 +1179,21 @@ pub impl CairoAirImpl of Air<CairoAir> {
             preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
         );
 
-        self
-            .opcodes
+        let CairoAir {
+            opcodes,
+            verify_instruction,
+            blake_context,
+            builtins,
+            memory_address_to_id,
+            memory_id_to_value,
+            range_checks,
+            verify_bitwise_xor_4,
+            verify_bitwise_xor_7,
+            verify_bitwise_xor_8,
+            verify_bitwise_xor_9,
+        } = self;
+
+        opcodes
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1182,8 +1202,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_instruction
+        verify_instruction
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1192,8 +1211,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .blake_context
+        blake_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1202,8 +1220,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .builtins
+        builtins
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1212,8 +1229,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .memory_address_to_id
+        memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1222,7 +1238,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        let (memory_id_to_value_big, memory_id_to_value_small) = self.memory_id_to_value;
+        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
             memory_id_to_value_big_component
                 .evaluate_constraints_at_point(
@@ -1243,8 +1259,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .range_checks
+        range_checks
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1253,8 +1268,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_4
+        verify_bitwise_xor_4
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1263,8 +1277,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_7
+        verify_bitwise_xor_7
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1273,8 +1286,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_8
+        verify_bitwise_xor_8
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -1283,8 +1295,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        self
-            .verify_bitwise_xor_9
+        verify_bitwise_xor_9
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,

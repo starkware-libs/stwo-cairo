@@ -1,5 +1,6 @@
 use components::add_ap_opcode::{
-    ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
+    ClaimImpl as AddApOpcodeClaimImpl, ClaimTrait as AddApOpcodeClaimTrait,
+    InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
 use components::add_opcode::{
     ClaimImpl as AddOpcodeClaimImpl, InteractionClaimImpl as AddOpcodeInteractionClaimImpl,
@@ -71,6 +72,7 @@ use components::ret_opcode::{
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{
     CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
@@ -84,6 +86,8 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
+#[cfg(feature: "poseidon252_verifier")]
+use stwo_verifier_utils::zip_eq::zip_eq;
 
 
 #[derive(Drop, Serde)]
@@ -305,8 +309,7 @@ pub struct OpcodeClaim {
     pub ret: Array<components::ret_opcode::Claim>,
 }
 
-#[generate_trait]
-pub impl OpcodeClaimImpl of OpcodeClaimTrait {
+pub impl OpcodeClaimImpl of ClaimTrait<OpcodeClaim> {
     fn mix_into(self: @OpcodeClaim, ref channel: Channel) {
         channel.mix_u64(self.add.len().into());
         for claim in self.add.span() {
@@ -746,20 +749,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (add_claims.pop_front(), add_interaction_claims.pop_front()) {
             add_components
                 .append(
-                    components::add_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::add_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(add_claims.is_empty());
@@ -773,20 +765,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (add_small_claims.pop_front(), add_small_interaction_claims.pop_front()) {
             add_small_components
                 .append(
-                    components::add_opcode_small::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::add_opcode_small::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(add_small_claims.is_empty());
@@ -800,28 +781,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (add_ap_claims.pop_front(), add_ap_interaction_claims.pop_front()) {
             add_ap_components
                 .append(
-                    components::add_ap_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                    },
+                    components::add_ap_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(add_ap_claims.is_empty());
@@ -835,17 +797,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (assert_eq_claims.pop_front(), assert_eq_interaction_claims.pop_front()) {
             assert_eq_components
                 .append(
-                    components::assert_eq_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(assert_eq_claims.is_empty());
@@ -859,17 +813,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (assert_eq_imm_claims.pop_front(), assert_eq_imm_interaction_claims.pop_front()) {
             assert_eq_imm_components
                 .append(
-                    components::assert_eq_opcode_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(assert_eq_imm_claims.is_empty());
@@ -888,20 +834,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             ) {
             assert_eq_double_deref_components
                 .append(
-                    components::assert_eq_opcode_double_deref::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode_double_deref::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(assert_eq_double_deref_claims.is_empty());
@@ -914,29 +849,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (blake_claims.pop_front(), blake_interaction_claims.pop_front()) {
             blake_components
                 .append(
-                    components::blake_compress_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_7_2_5_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_7_2_5
-                            .clone(),
-                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
-                        verify_bitwise_xor_8_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_8
-                            .clone(),
-                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
-                    },
+                    components::blake_compress_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(blake_claims.is_empty());
@@ -950,20 +865,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (call_claims.pop_front(), call_interaction_claims.pop_front()) {
             call_components
                 .append(
-                    components::call_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::call_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(call_claims.is_empty());
@@ -977,20 +881,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (call_rel_imm_claims.pop_front(), call_rel_imm_interaction_claims.pop_front()) {
             call_rel_imm_components
                 .append(
-                    components::call_opcode_rel_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::call_opcode_rel_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(call_rel_imm_claims.is_empty());
@@ -1004,88 +897,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (generic_claims.pop_front(), generic_interaction_claims.pop_front()) {
             generic_components
                 .append(
-                    components::generic_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_19_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_b
-                            .clone(),
-                        range_check_19_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_c
-                            .clone(),
-                        range_check_19_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_d
-                            .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_e
-                            .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_f
-                            .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_g
-                            .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_h
-                            .clone(),
-                        range_check_9_9_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9
-                            .clone(),
-                        range_check_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_check_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_check_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_check_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_check_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_check_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_check_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                    },
+                    components::generic_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(generic_claims.is_empty());
@@ -1099,20 +913,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (jnz_claims.pop_front(), jnz_interaction_claims.pop_front()) {
             jnz_components
                 .append(
-                    components::jnz_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jnz_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jnz_claims.is_empty());
@@ -1126,20 +929,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (jnz_taken_claims.pop_front(), jnz_taken_interaction_claims.pop_front()) {
             jnz_taken_components
                 .append(
-                    components::jnz_opcode_taken::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jnz_opcode_taken::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jnz_taken_claims.is_empty());
@@ -1153,20 +945,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (jump_claims.pop_front(), jump_interaction_claims.pop_front()) {
             jump_components
                 .append(
-                    components::jump_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jump_claims.is_empty());
@@ -1183,20 +964,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             ) {
             jump_double_deref_components
                 .append(
-                    components::jump_opcode_double_deref::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_double_deref::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jump_double_deref_claims.is_empty());
@@ -1210,20 +980,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (jump_rel_claims.pop_front(), jump_rel_interaction_claims.pop_front()) {
             jump_rel_components
                 .append(
-                    components::jump_opcode_rel::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_rel::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jump_rel_claims.is_empty());
@@ -1237,20 +996,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (jump_rel_imm_claims.pop_front(), jump_rel_imm_interaction_claims.pop_front()) {
             jump_rel_imm_components
                 .append(
-                    components::jump_opcode_rel_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_rel_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(jump_rel_imm_claims.is_empty());
@@ -1264,52 +1012,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (mul_claims.pop_front(), mul_interaction_claims.pop_front()) {
             mul_components
                 .append(
-                    components::mul_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_19_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_b
-                            .clone(),
-                        range_check_19_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_c
-                            .clone(),
-                        range_check_19_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_d
-                            .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_e
-                            .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_f
-                            .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_g
-                            .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_h
-                            .clone(),
-                    },
+                    components::mul_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(mul_claims.is_empty());
@@ -1323,24 +1028,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (mul_small_claims.pop_front(), mul_small_interaction_claims.pop_front()) {
             mul_small_components
                 .append(
-                    components::mul_opcode_small::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_11_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_11
-                            .clone(),
-                    },
+                    components::mul_opcode_small::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(mul_small_claims.is_empty());
@@ -1354,24 +1044,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (qm31_claims.pop_front(), qm31_interaction_claims.pop_front()) {
             qm31_components
                 .append(
-                    components::qm_31_add_mul_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_4_4_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4_4_4
-                            .clone(),
-                    },
+                    components::qm_31_add_mul_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(qm31_claims.is_empty());
@@ -1385,20 +1060,9 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             (ret_claims.pop_front(), ret_interaction_claims.pop_front()) {
             ret_components
                 .append(
-                    components::ret_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::ret_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
         assert!(ret_claims.is_empty());
@@ -1975,576 +1639,290 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @OpcodeInteractionClaim,
     ) -> OpcodeComponents {
+        let OpcodeClaim {
+            add: add_claims,
+            add_small: add_small_claims,
+            add_ap: add_ap_claims,
+            assert_eq: assert_eq_claims,
+            assert_eq_imm: assert_eq_imm_claims,
+            assert_eq_double_deref: assert_eq_double_deref_claims,
+            blake: blake_claims,
+            call: call_claims,
+            call_rel_imm: call_rel_imm_claims,
+            generic: generic_claims,
+            jnz: jnz_claims,
+            jnz_taken: jnz_taken_claims,
+            jump: jump_claims,
+            jump_double_deref: jump_double_deref_claims,
+            jump_rel: jump_rel_claims,
+            jump_rel_imm: jump_rel_imm_claims,
+            mul: mul_claims,
+            mul_small: mul_small_claims,
+            qm31: qm31_claims,
+            ret: ret_claims,
+        } = claim;
+        assert!(generic_claims.is_empty(), "The generic opcode is not supported.");
+
+        let OpcodeInteractionClaim {
+            add: add_interaction_claims,
+            add_small: add_small_interaction_claims,
+            add_ap: add_ap_interaction_claims,
+            assert_eq: assert_eq_interaction_claims,
+            assert_eq_imm: assert_eq_imm_interaction_claims,
+            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
+            blake: blake_interaction_claims,
+            call: call_interaction_claims,
+            call_rel_imm: call_rel_imm_interaction_claims,
+            generic: _, // generic opcode is not supported.
+            jnz: jnz_interaction_claims,
+            jnz_taken: jnz_taken_interaction_claims,
+            jump: jump_interaction_claims,
+            jump_double_deref: jump_double_deref_interaction_claims,
+            jump_rel: jump_rel_interaction_claims,
+            jump_rel_imm: jump_rel_imm_interaction_claims,
+            mul: mul_interaction_claims,
+            mul_small: mul_small_interaction_claims,
+            qm31: qm31_interaction_claims,
+            ret: ret_interaction_claims,
+        } = interaction_claim;
+
         // Add components
         let mut add_components = array![];
-        let mut add_claims = claim.add.span();
-        let mut add_interaction_claims = interaction_claim.add.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_claims.pop_front(), add_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(add_claims.span(), add_interaction_claims.span()) {
             add_components
                 .append(
-                    components::add_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::add_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(add_claims.is_empty());
-        assert!(add_interaction_claims.is_empty());
 
         // Add Small components
         let mut add_small_components = array![];
-        let mut add_small_claims = claim.add_small.span();
-        let mut add_small_interaction_claims = interaction_claim.add_small.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_small_claims.pop_front(), add_small_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            add_small_claims.span(), add_small_interaction_claims.span(),
+        ) {
             add_small_components
                 .append(
-                    components::add_opcode_small::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::add_opcode_small::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(add_small_claims.is_empty());
-        assert!(add_small_interaction_claims.is_empty());
 
         // Add AP components
         let mut add_ap_components = array![];
-        let mut add_ap_claims = claim.add_ap.span();
-        let mut add_ap_interaction_claims = interaction_claim.add_ap.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (add_ap_claims.pop_front(), add_ap_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            add_ap_claims.span(), add_ap_interaction_claims.span(),
+        ) {
             add_ap_components
                 .append(
-                    components::add_ap_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_8_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_8
-                            .clone(),
-                    },
+                    components::add_ap_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(add_ap_claims.is_empty());
-        assert!(add_ap_interaction_claims.is_empty());
 
         // Assert Eq components
         let mut assert_eq_components = array![];
-        let mut assert_eq_claims = claim.assert_eq.span();
-        let mut assert_eq_interaction_claims = interaction_claim.assert_eq.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (assert_eq_claims.pop_front(), assert_eq_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_claims.span(), assert_eq_interaction_claims.span(),
+        ) {
             assert_eq_components
                 .append(
-                    components::assert_eq_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(assert_eq_claims.is_empty());
-        assert!(assert_eq_interaction_claims.is_empty());
 
         // Assert Eq Imm components
         let mut assert_eq_imm_components = array![];
-        let mut assert_eq_imm_claims = claim.assert_eq_imm.span();
-        let mut assert_eq_imm_interaction_claims = interaction_claim.assert_eq_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (assert_eq_imm_claims.pop_front(), assert_eq_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_imm_claims.span(), assert_eq_imm_interaction_claims.span(),
+        ) {
             assert_eq_imm_components
                 .append(
-                    components::assert_eq_opcode_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(assert_eq_imm_claims.is_empty());
-        assert!(assert_eq_imm_interaction_claims.is_empty());
 
         // Assert Eq Double Deref components
         let mut assert_eq_double_deref_components = array![];
-        let mut assert_eq_double_deref_claims = claim.assert_eq_double_deref.span();
-        let mut assert_eq_double_deref_interaction_claims = interaction_claim
-            .assert_eq_double_deref
-            .span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (
-                assert_eq_double_deref_claims.pop_front(),
-                assert_eq_double_deref_interaction_claims.pop_front(),
-            ) {
+        for (claim, interaction_claim) in zip_eq(
+            assert_eq_double_deref_claims.span(), assert_eq_double_deref_interaction_claims.span(),
+        ) {
             assert_eq_double_deref_components
                 .append(
-                    components::assert_eq_opcode_double_deref::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::assert_eq_opcode_double_deref::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(assert_eq_double_deref_claims.is_empty());
-        assert!(assert_eq_double_deref_interaction_claims.is_empty());
 
         let mut blake_components = array![];
-        let mut blake_claims = claim.blake.span();
-        let mut blake_interaction_claims = interaction_claim.blake.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (blake_claims.pop_front(), blake_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            blake_claims.span(), blake_interaction_claims.span(),
+        ) {
             blake_components
                 .append(
-                    components::blake_compress_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_7_2_5_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_7_2_5
-                            .clone(),
-                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
-                        verify_bitwise_xor_8_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_8
-                            .clone(),
-                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
-                    },
+                    components::blake_compress_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(blake_claims.is_empty());
-        assert!(blake_interaction_claims.is_empty());
 
         // Call components
         let mut call_components = array![];
-        let mut call_claims = claim.call.span();
-        let mut call_interaction_claims = interaction_claim.call.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (call_claims.pop_front(), call_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            call_claims.span(), call_interaction_claims.span(),
+        ) {
             call_components
                 .append(
-                    components::call_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::call_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(call_claims.is_empty());
-        assert!(call_interaction_claims.is_empty());
 
         // Call Rel_imm components
         let mut call_rel_imm_components = array![];
-        let mut call_rel_imm_claims = claim.call_rel_imm.span();
-        let mut call_rel_imm_interaction_claims = interaction_claim.call_rel_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (call_rel_imm_claims.pop_front(), call_rel_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            call_rel_imm_claims.span(), call_rel_imm_interaction_claims.span(),
+        ) {
             call_rel_imm_components
                 .append(
-                    components::call_opcode_rel_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::call_opcode_rel_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(call_rel_imm_claims.is_empty());
-        assert!(call_rel_imm_interaction_claims.is_empty());
 
         // Jnz components
         let mut jnz_components = array![];
-        let mut jnz_claims = claim.jnz.span();
-        let mut jnz_interaction_claims = interaction_claim.jnz.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jnz_claims.pop_front(), jnz_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
             jnz_components
                 .append(
-                    components::jnz_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jnz_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jnz_claims.is_empty());
-        assert!(jnz_interaction_claims.is_empty());
 
         // Jnz Taken components
         let mut jnz_taken_components = array![];
-        let mut jnz_taken_claims = claim.jnz_taken.span();
-        let mut jnz_taken_interaction_claims = interaction_claim.jnz_taken.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jnz_taken_claims.pop_front(), jnz_taken_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jnz_taken_claims.span(), jnz_taken_interaction_claims.span(),
+        ) {
             jnz_taken_components
                 .append(
-                    components::jnz_opcode_taken::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jnz_opcode_taken::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jnz_taken_claims.is_empty());
-        assert!(jnz_taken_interaction_claims.is_empty());
 
         // Jump components
         let mut jump_components = array![];
-        let mut jump_claims = claim.jump.span();
-        let mut jump_interaction_claims = interaction_claim.jump.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_claims.pop_front(), jump_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_claims.span(), jump_interaction_claims.span(),
+        ) {
             jump_components
                 .append(
-                    components::jump_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jump_claims.is_empty());
-        assert!(jump_interaction_claims.is_empty());
 
         // Jump Double Deref components
         let mut jump_double_deref_components = array![];
-        let mut jump_double_deref_claims = claim.jump_double_deref.span();
-        let mut jump_double_deref_interaction_claims = interaction_claim.jump_double_deref.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (
-                jump_double_deref_claims.pop_front(),
-                jump_double_deref_interaction_claims.pop_front(),
-            ) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_double_deref_claims.span(), jump_double_deref_interaction_claims.span(),
+        ) {
             jump_double_deref_components
                 .append(
-                    components::jump_opcode_double_deref::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_double_deref::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jump_double_deref_claims.is_empty());
-        assert!(jump_double_deref_interaction_claims.is_empty());
 
         // Jump Rel components
         let mut jump_rel_components = array![];
-        let mut jump_rel_claims = claim.jump_rel.span();
-        let mut jump_rel_interaction_claims = interaction_claim.jump_rel.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_rel_claims.pop_front(), jump_rel_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_rel_claims.span(), jump_rel_interaction_claims.span(),
+        ) {
             jump_rel_components
                 .append(
-                    components::jump_opcode_rel::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_rel::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jump_rel_claims.is_empty());
-        assert!(jump_rel_interaction_claims.is_empty());
 
         // Jump Rel Imm components
         let mut jump_rel_imm_components = array![];
-        let mut jump_rel_imm_claims = claim.jump_rel_imm.span();
-        let mut jump_rel_imm_interaction_claims = interaction_claim.jump_rel_imm.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (jump_rel_imm_claims.pop_front(), jump_rel_imm_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            jump_rel_imm_claims.span(), jump_rel_imm_interaction_claims.span(),
+        ) {
             jump_rel_imm_components
                 .append(
-                    components::jump_opcode_rel_imm::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::jump_opcode_rel_imm::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(jump_rel_imm_claims.is_empty());
-        assert!(jump_rel_imm_interaction_claims.is_empty());
 
         // Mul components
         let mut mul_components = array![];
-        let mut mul_claims = claim.mul.span();
-        let mut mul_interaction_claims = interaction_claim.mul.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (mul_claims.pop_front(), mul_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(mul_claims.span(), mul_interaction_claims.span()) {
             mul_components
                 .append(
-                    components::mul_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_19_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19
-                            .clone(),
-                        range_check_19_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_b
-                            .clone(),
-                        range_check_19_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_c
-                            .clone(),
-                        range_check_19_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_d
-                            .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_e
-                            .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_f
-                            .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_g
-                            .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_19_h
-                            .clone(),
-                    },
+                    components::mul_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(mul_claims.is_empty());
-        assert!(mul_interaction_claims.is_empty());
 
         // Mul Small components
         let mut mul_small_components = array![];
-        let mut mul_small_claims = claim.mul_small.span();
-        let mut mul_small_interaction_claims = interaction_claim.mul_small.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (mul_small_claims.pop_front(), mul_small_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            mul_small_claims.span(), mul_small_interaction_claims.span(),
+        ) {
             mul_small_components
                 .append(
-                    components::mul_opcode_small::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_11_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_11
-                            .clone(),
-                    },
+                    components::mul_opcode_small::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(mul_small_claims.is_empty());
-        assert!(mul_small_interaction_claims.is_empty());
 
         // QM31 components
         let mut qm31_components = array![];
-        let mut qm31_claims = claim.qm31.span();
-        let mut qm31_interaction_claims = interaction_claim.qm31.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (qm31_claims.pop_front(), qm31_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(
+            qm31_claims.span(), qm31_interaction_claims.span(),
+        ) {
             qm31_components
                 .append(
-                    components::qm_31_add_mul_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_4_4_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4_4_4
-                            .clone(),
-                    },
+                    components::qm_31_add_mul_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(qm31_claims.is_empty());
-        assert!(qm31_interaction_claims.is_empty());
 
         // Ret components
         let mut ret_components = array![];
-        let mut ret_claims = claim.ret.span();
-        let mut ret_interaction_claims = interaction_claim.ret.span();
-        while let (Option::Some(claim), Option::Some(interaction_claim)) =
-            (ret_claims.pop_front(), ret_interaction_claims.pop_front()) {
+        for (claim, interaction_claim) in zip_eq(ret_claims.span(), ret_interaction_claims.span()) {
             ret_components
                 .append(
-                    components::ret_opcode::Component {
-                        claim: *claim,
-                        interaction_claim: *interaction_claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                    },
+                    components::ret_opcode::NewComponentImpl::new(
+                        claim, interaction_claim, interaction_elements,
+                    ),
                 );
         }
-        assert!(ret_claims.is_empty());
-        assert!(ret_interaction_claims.is_empty());
 
         OpcodeComponents {
             add: add_components,

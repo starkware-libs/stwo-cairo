@@ -1,22 +1,6 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
+use crate::prelude::*;
 
 
 pub fn felt_252_unpack_from_27_range_check_output_evaluate(
@@ -125,7 +109,6 @@ pub fn felt_252_unpack_from_27_range_check_output_evaluate(
         * qm31_const::<8192, 0, 0, 0>());
     let unpacked_tmp_4f7f8_1_limb_27: QM31 =
         felt_252_unpack_from_27_range_check_output_input_limb_9;
-
     range_check_mem_value_n_28_evaluate(
         [
             unpacked_limb_0_col0, unpacked_limb_1_col1, unpacked_tmp_4f7f8_1_limb_2,

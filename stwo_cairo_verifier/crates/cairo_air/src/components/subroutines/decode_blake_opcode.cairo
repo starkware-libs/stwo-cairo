@@ -1,24 +1,8 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::decode_instruction_64420::decode_instruction_64420_evaluate;
 use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::components::subroutines::read_positive_num_bits_27::read_positive_num_bits_27_evaluate;
+use crate::prelude::*;
 
 
 pub fn decode_blake_opcode_evaluate(
@@ -73,9 +57,13 @@ pub fn decode_blake_opcode_evaluate(
 ) -> [QM31; 4] {
     let [decode_blake_opcode_input_pc, decode_blake_opcode_input_ap, decode_blake_opcode_input_fp] =
         input;
-
-    let output: [QM31; 3] = decode_instruction_64420_evaluate(
-        [decode_blake_opcode_input_pc],
+    let [
+        decode_instruction_64420_output_tmp_47e62_10_offset0,
+        decode_instruction_64420_output_tmp_47e62_10_offset1,
+        decode_instruction_64420_output_tmp_47e62_10_offset2,
+    ] =
+        decode_instruction_64420_evaluate(
+        decode_blake_opcode_input_pc,
         offset0_col0,
         offset1_col1,
         offset2_col2,
@@ -91,12 +79,6 @@ pub fn decode_blake_opcode_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [
-        decode_instruction_64420_output_tmp_47e62_10_offset0,
-        decode_instruction_64420_output_tmp_47e62_10_offset1,
-        decode_instruction_64420_output_tmp_47e62_10_offset2,
-    ] =
-        output;
 
     // Constraint - Exactly one of op1_base_fp and op1_base_ap is 1
     let constraint_quotient = (((op1_base_fp_col5 + op1_base_ap_col6) - qm31_const::<1, 0, 0, 0>()))
@@ -115,9 +97,8 @@ pub fn decode_blake_opcode_evaluate(
             + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4) * decode_blake_opcode_input_ap))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
     read_positive_num_bits_27_evaluate(
-        [(mem0_base_col9 + decode_instruction_64420_output_tmp_47e62_10_offset1)],
+        (mem0_base_col9 + decode_instruction_64420_output_tmp_47e62_10_offset1),
         op0_id_col10,
         op0_limb_0_col11,
         op0_limb_1_col12,
@@ -137,9 +118,8 @@ pub fn decode_blake_opcode_evaluate(
             + (op1_base_ap_col6 * decode_blake_opcode_input_ap))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
     read_positive_num_bits_27_evaluate(
-        [(mem1_base_col14 + decode_instruction_64420_output_tmp_47e62_10_offset2)],
+        (mem1_base_col14 + decode_instruction_64420_output_tmp_47e62_10_offset2),
         op1_id_col15,
         op1_limb_0_col16,
         op1_limb_1_col17,
@@ -152,9 +132,8 @@ pub fn decode_blake_opcode_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     read_positive_num_bits_27_evaluate(
-        [decode_blake_opcode_input_ap],
+        decode_blake_opcode_input_ap,
         ap_id_col19,
         ap_limb_0_col20,
         ap_limb_1_col21,
@@ -174,9 +153,8 @@ pub fn decode_blake_opcode_evaluate(
             + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3) * decode_blake_opcode_input_ap))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-
     read_blake_word_evaluate(
-        [(mem_dst_base_col23 + decode_instruction_64420_output_tmp_47e62_10_offset0)],
+        (mem_dst_base_col23 + decode_instruction_64420_output_tmp_47e62_10_offset0),
         low_16_bits_col24,
         high_16_bits_col25,
         low_7_ms_bits_col26,

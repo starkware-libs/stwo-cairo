@@ -1,24 +1,8 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::read_split::read_split_evaluate;
 use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 351;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -72,7 +56,28 @@ pub struct Component {
     pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -2316,9 +2321,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let instance_addr_tmp_d00c6_0: QM31 = ((seq * qm31_const::<3, 0, 0, 0>())
             + pedersen_builtin_segment_start);
-
-        let output: [QM31; 1] = read_split_evaluate(
-            [instance_addr_tmp_d00c6_0],
+        let read_split_output_tmp_d00c6_6_original_limb_27: QM31 = read_split_evaluate(
+            instance_addr_tmp_d00c6_0,
             value_limb_0_col0,
             value_limb_1_col1,
             value_limb_2_col2,
@@ -2359,10 +2363,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_split_output_tmp_d00c6_6_original_limb_27] = output;
-
-        let output: [QM31; 1] = read_split_evaluate(
-            [(instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>())],
+        let read_split_output_tmp_d00c6_12_original_limb_27: QM31 = read_split_evaluate(
+            (instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>()),
             value_limb_0_col30,
             value_limb_1_col31,
             value_limb_2_col32,
@@ -2403,8 +2405,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [read_split_output_tmp_d00c6_12_original_limb_27] = output;
-
         verify_reduced_252_evaluate(
             [
                 value_limb_0_col0, value_limb_1_col1, value_limb_2_col2, value_limb_3_col3,
@@ -2426,7 +2426,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         verify_reduced_252_evaluate(
             [
                 value_limb_0_col30, value_limb_1_col31, value_limb_2_col32, value_limb_3_col33,
@@ -2821,7 +2820,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_70_col349,
                 ],
             );
-
         mem_verify_evaluate(
             [
                 (instance_addr_tmp_d00c6_0 + qm31_const::<2, 0, 0, 0>()),

@@ -1,3 +1,4 @@
+// AIR version 38bef2b6
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -212,7 +213,7 @@ fn write_trace_simd(
                     (((ap_update_add_1_col7) * (M31_32)) + (M31_256)),
                     M31_0,
                 ];
-                let decode_instruction_8779984a10576d8_output_tmp_d6f03_7 = (
+                let decode_instruction_fe864_output_tmp_d6f03_7 = (
                     [
                         ((offset0_col3) - (M31_32768)),
                         M31_2147483646,
@@ -242,31 +243,27 @@ fn write_trace_simd(
                     + (((M31_1) - (dst_base_fp_col5)) * (input_ap_col1)));
                 *row[8] = mem_dst_base_col8;
                 let mem1_base_col9 = (((op1_base_fp_col6) * (input_fp_col2))
-                    + ((decode_instruction_8779984a10576d8_output_tmp_d6f03_7.1[4])
-                        * (input_ap_col1)));
+                    + ((decode_instruction_fe864_output_tmp_d6f03_7.1[4]) * (input_ap_col1)));
                 *row[9] = mem1_base_col9;
 
                 // Mem Verify Equal.
 
                 let memory_address_to_id_value_tmp_d6f03_8 = memory_address_to_id_state
                     .deduce_output(
-                        ((mem_dst_base_col8)
-                            + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[0])),
+                        ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7.0[0])),
                     );
                 let dst_id_col10 = memory_address_to_id_value_tmp_d6f03_8;
                 *row[10] = dst_id_col10;
-                *sub_component_inputs.memory_address_to_id[0] = ((mem_dst_base_col8)
-                    + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[0]));
+                *sub_component_inputs.memory_address_to_id[0] =
+                    ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7.0[0]));
                 *lookup_data.memory_address_to_id_0 = [
-                    ((mem_dst_base_col8)
-                        + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[0])),
+                    ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7.0[0])),
                     dst_id_col10,
                 ];
-                *sub_component_inputs.memory_address_to_id[1] = ((mem1_base_col9)
-                    + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[2]));
+                *sub_component_inputs.memory_address_to_id[1] =
+                    ((mem1_base_col9) + (decode_instruction_fe864_output_tmp_d6f03_7.0[2]));
                 *lookup_data.memory_address_to_id_1 = [
-                    ((mem1_base_col9)
-                        + (decode_instruction_8779984a10576d8_output_tmp_d6f03_7.0[2])),
+                    ((mem1_base_col9) + (decode_instruction_fe864_output_tmp_d6f03_7.0[2])),
                     dst_id_col10,
                 ];
 
@@ -301,9 +298,9 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_instruction: &relations::VerifyInstruction,
         memory_address_to_id: &relations::MemoryAddressToId,
         opcodes: &relations::Opcodes,
-        verify_instruction: &relations::VerifyInstruction,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

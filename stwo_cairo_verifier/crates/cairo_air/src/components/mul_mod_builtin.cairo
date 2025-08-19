@@ -1,24 +1,8 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 410;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 5] = [
@@ -72,7 +56,31 @@ pub struct Component {
     pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
+            range_check_3_6_6_3_lookup_elements: interaction_elements
+                .range_checks
+                .rc_3_6_6_3
+                .clone(),
+            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -2462,8 +2470,25 @@ pub impl ComponentImpl of CairoComponent<Component> {
         range_check_12_sum_84 = self
             .range_check_12_lookup_elements
             .combine_qm31([ab_minus_c_div_p_limb_31_col267]);
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+        let [
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_15,
+        ] =
+            mod_words_to_12_bit_array_evaluate(
             [
                 p0_limb_0_col2, p0_limb_1_col3, p0_limb_2_col4, p0_limb_3_col5, p0_limb_4_col6,
                 p0_limb_5_col7, p0_limb_6_col8, p0_limb_7_col9, p0_limb_8_col10, p0_limb_9_col11,
@@ -2492,26 +2517,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 p2_limb_0_col26, p2_limb_1_col27, p2_limb_2_col28, p2_limb_3_col29, p2_limb_4_col30,
                 p2_limb_5_col31, p2_limb_6_col32, p2_limb_7_col33, p2_limb_8_col34, p2_limb_9_col35,
@@ -2540,26 +2563,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 a0_limb_0_col93, a0_limb_1_col94, a0_limb_2_col95, a0_limb_3_col96, a0_limb_4_col97,
                 a0_limb_5_col98, a0_limb_6_col99, a0_limb_7_col100, a0_limb_8_col101,
@@ -2589,26 +2610,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 a2_limb_0_col117, a2_limb_1_col118, a2_limb_2_col119, a2_limb_3_col120,
                 a2_limb_4_col121, a2_limb_5_col122, a2_limb_6_col123, a2_limb_7_col124,
@@ -2638,26 +2657,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_176_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 b0_limb_0_col141, b0_limb_1_col142, b0_limb_2_col143, b0_limb_3_col144,
                 b0_limb_4_col145, b0_limb_5_col146, b0_limb_6_col147, b0_limb_7_col148,
@@ -2687,26 +2704,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_197_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 b2_limb_0_col165, b2_limb_1_col166, b2_limb_2_col167, b2_limb_3_col168,
                 b2_limb_4_col169, b2_limb_5_col170, b2_limb_6_col171, b2_limb_7_col172,
@@ -2736,26 +2751,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_218_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 c0_limb_0_col189, c0_limb_1_col190, c0_limb_2_col191, c0_limb_3_col192,
                 c0_limb_4_col193, c0_limb_5_col194, c0_limb_6_col195, c0_limb_7_col196,
@@ -2785,26 +2798,24 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_239_limb_15,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_0,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_1,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_2,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_3,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_4,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_5,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_6,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_7,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_8,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_9,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_10,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_11,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_12,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_13,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_14,
+            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_15,
         ] =
-            output;
-
-        let output: [QM31; 16] = mod_words_to_12_bit_array_evaluate(
+            mod_words_to_12_bit_array_evaluate(
             [
                 c2_limb_0_col213, c2_limb_1_col214, c2_limb_2_col215, c2_limb_3_col216,
                 c2_limb_4_col217, c2_limb_5_col218, c2_limb_6_col219, c2_limb_7_col220,
@@ -2834,26 +2845,71 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_0,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_1,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_2,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_3,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_4,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_5,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_6,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_7,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_8,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_9,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_10,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_11,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_12,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_13,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_14,
-            mod_words_to_12_bit_array_output_tmp_cf8b4_260_limb_15,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_0,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_1,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_2,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_3,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_4,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_5,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_6,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_7,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_8,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_9,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_10,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_11,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_12,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_13,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_14,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_15,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_16,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_17,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_18,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_19,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_20,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_21,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_22,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_23,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_24,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_25,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_26,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_27,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_28,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_29,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_30,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_31,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_32,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_33,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_34,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_35,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_36,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_37,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_38,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_39,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_40,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_41,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_42,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_43,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_44,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_45,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_46,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_47,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_48,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_49,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_50,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_51,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_52,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_53,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_54,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_55,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_56,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_57,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_58,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_59,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_60,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_61,
+            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_62,
         ] =
-            output;
-
-        let output: [QM31; 63] = double_karatsuba_n_8_limb_max_bound_4095_evaluate(
+            double_karatsuba_n_8_limb_max_bound_4095_evaluate(
             [
                 mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_0,
                 mod_words_to_12_bit_array_output_tmp_cf8b4_155_limb_1,
@@ -2925,128 +2981,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_0,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_1,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_2,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_3,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_4,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_5,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_6,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_7,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_8,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_9,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_10,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_11,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_12,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_13,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_14,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_15,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_16,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_17,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_18,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_19,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_20,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_21,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_22,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_23,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_24,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_25,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_26,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_27,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_28,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_29,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_30,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_31,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_32,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_33,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_34,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_35,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_36,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_37,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_38,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_39,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_40,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_41,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_42,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_43,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_44,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_45,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_46,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_47,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_48,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_49,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_50,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_51,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_52,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_53,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_54,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_55,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_56,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_57,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_58,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_59,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_60,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_61,
-            double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_278_limb_62,
-        ] =
-            output;
-
-        let output: [QM31; 63] = double_karatsuba_n_8_limb_max_bound_4095_evaluate(
-            [
-                ab_minus_c_div_p_limb_0_col236, ab_minus_c_div_p_limb_1_col237,
-                ab_minus_c_div_p_limb_2_col238, ab_minus_c_div_p_limb_3_col239,
-                ab_minus_c_div_p_limb_4_col240, ab_minus_c_div_p_limb_5_col241,
-                ab_minus_c_div_p_limb_6_col242, ab_minus_c_div_p_limb_7_col243,
-                ab_minus_c_div_p_limb_8_col244, ab_minus_c_div_p_limb_9_col245,
-                ab_minus_c_div_p_limb_10_col246, ab_minus_c_div_p_limb_11_col247,
-                ab_minus_c_div_p_limb_12_col248, ab_minus_c_div_p_limb_13_col249,
-                ab_minus_c_div_p_limb_14_col250, ab_minus_c_div_p_limb_15_col251,
-                ab_minus_c_div_p_limb_16_col252, ab_minus_c_div_p_limb_17_col253,
-                ab_minus_c_div_p_limb_18_col254, ab_minus_c_div_p_limb_19_col255,
-                ab_minus_c_div_p_limb_20_col256, ab_minus_c_div_p_limb_21_col257,
-                ab_minus_c_div_p_limb_22_col258, ab_minus_c_div_p_limb_23_col259,
-                ab_minus_c_div_p_limb_24_col260, ab_minus_c_div_p_limb_25_col261,
-                ab_minus_c_div_p_limb_26_col262, ab_minus_c_div_p_limb_27_col263,
-                ab_minus_c_div_p_limb_28_col264, ab_minus_c_div_p_limb_29_col265,
-                ab_minus_c_div_p_limb_30_col266, ab_minus_c_div_p_limb_31_col267,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_15,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_0,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_1,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_2,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_3,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_4,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_5,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_6,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_7,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_8,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_9,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_10,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_11,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_12,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_13,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_14,
-                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_15,
-            ],
-            ref sum,
-            domain_vanishing_eval_inv,
-            random_coeff,
-        );
-        let [
             double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_296_limb_0,
             double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_296_limb_1,
             double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_296_limb_2,
@@ -3111,7 +3045,61 @@ pub impl ComponentImpl of CairoComponent<Component> {
             double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_296_limb_61,
             double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_296_limb_62,
         ] =
-            output;
+            double_karatsuba_n_8_limb_max_bound_4095_evaluate(
+            [
+                ab_minus_c_div_p_limb_0_col236, ab_minus_c_div_p_limb_1_col237,
+                ab_minus_c_div_p_limb_2_col238, ab_minus_c_div_p_limb_3_col239,
+                ab_minus_c_div_p_limb_4_col240, ab_minus_c_div_p_limb_5_col241,
+                ab_minus_c_div_p_limb_6_col242, ab_minus_c_div_p_limb_7_col243,
+                ab_minus_c_div_p_limb_8_col244, ab_minus_c_div_p_limb_9_col245,
+                ab_minus_c_div_p_limb_10_col246, ab_minus_c_div_p_limb_11_col247,
+                ab_minus_c_div_p_limb_12_col248, ab_minus_c_div_p_limb_13_col249,
+                ab_minus_c_div_p_limb_14_col250, ab_minus_c_div_p_limb_15_col251,
+                ab_minus_c_div_p_limb_16_col252, ab_minus_c_div_p_limb_17_col253,
+                ab_minus_c_div_p_limb_18_col254, ab_minus_c_div_p_limb_19_col255,
+                ab_minus_c_div_p_limb_20_col256, ab_minus_c_div_p_limb_21_col257,
+                ab_minus_c_div_p_limb_22_col258, ab_minus_c_div_p_limb_23_col259,
+                ab_minus_c_div_p_limb_24_col260, ab_minus_c_div_p_limb_25_col261,
+                ab_minus_c_div_p_limb_26_col262, ab_minus_c_div_p_limb_27_col263,
+                ab_minus_c_div_p_limb_28_col264, ab_minus_c_div_p_limb_29_col265,
+                ab_minus_c_div_p_limb_30_col266, ab_minus_c_div_p_limb_31_col267,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_0,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_1,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_2,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_3,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_4,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_5,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_6,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_7,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_8,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_9,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_10,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_11,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_12,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_13,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_14,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_113_limb_15,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_0,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_1,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_2,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_3,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_4,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_5,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_6,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_7,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_8,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_9,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_10,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_11,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_12,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_13,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_14,
+                mod_words_to_12_bit_array_output_tmp_cf8b4_134_limb_15,
+            ],
+            ref sum,
+            domain_vanishing_eval_inv,
+            random_coeff,
+        );
 
         // Constraint - carry_0
         let constraint_quotient = ((carry_0_col348

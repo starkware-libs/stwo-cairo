@@ -1,27 +1,82 @@
 use core::num::traits::one::One;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_cairo_air::Invertible;
+use stwo_cairo_air::components::memory_address_to_id::{
+    LOG_MEMORY_ADDRESS_TO_ID_SPLIT, MEMORY_ADDRESS_TO_ID_SPLIT,
+};
 use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_cairo_air::{
-    CairoInteractionElements, PublicData, PublicDataImpl, RelationUsesDict,
-    accumulate_relation_uses,
+    CairoInteractionElements, CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory,
+    PublicSegmentRanges, RelationUsesDict, SegmentRange, accumulate_relation_uses,
 };
 use stwo_constraint_framework::LookupElements;
+use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::fields::qm31::qm31_const;
 use stwo_verifier_core::utils::ArrayImpl;
-use stwo_verifier_utils::{construct_f252, deconstruct_f252, hash_memory_section};
+use crate::pow2;
+
 #[test]
-#[cairofmt::skip]
 fn test_public_data_logup_sum() {
-    let mut public_data_felts = array![
-        0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520, 0, 228, 
-        2520, 228, 2520, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 
-        2520, 0, 5, 0, 5, 0, 0, 5, 0, 5, 0, 0, 228, 2520, 228, 2520, 
-        0, 228, 2520, 228, 2520, 0, 228, 2520, 228, 2520,
-        0, 228, 2520, 228, 2520, 0, 2, 227, 1336, 0, 0, 0, 0, 0, 
-        0, 0, 5, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1336, 1336, 5, 2520, 1336]
-    .span();
-    let public_data: PublicData = Serde::deserialize(ref public_data_felts).unwrap();
+    let public_data = PublicData {
+        public_memory: PublicMemory {
+            program: [].span(),
+            public_segments: PublicSegmentRanges {
+                output: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                pedersen: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                range_check_128: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                ecdsa: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 5, value: 0 },
+                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                },
+                bitwise: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                ec_op: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 5, value: 0 },
+                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                },
+                keccak: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 5, value: 0 },
+                    stop_ptr: MemorySmallValue { id: 5, value: 0 },
+                },
+                poseidon: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                range_check_96: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                add_mod: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+                mul_mod: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
+            },
+            output: [].span(),
+            safe_call_ids: [227, 5],
+        },
+        initial_state: CasmState {
+            pc: M31Trait::new(1), ap: M31Trait::new(1336), fp: M31Trait::new(1336),
+        },
+        final_state: CasmState {
+            pc: M31Trait::new(5), ap: M31Trait::new(2520), fp: M31Trait::new(1336),
+        },
+    };
+
     let dummy_lookup_elements = dummy_interaction_lookup_elements();
 
     let sum = public_data.logup_sum(@dummy_lookup_elements);
@@ -85,40 +140,6 @@ fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
     }
 }
 
-#[cfg(not(feature: "poseidon252_verifier"))]
-#[test]
-fn test_hash_memory_section() {
-    let section = array![
-        (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
-        (0, [3, 4, 5, 6, 7, 8, 9, 10]),
-    ];
-
-    assert_eq!(
-        hash_memory_section(@section).unbox(),
-        [
-            3098114871, 843612567, 2372208999, 1823639248, 1136624132, 2551058277, 1389013608,
-            1207876589,
-        ],
-    );
-}
-
-#[cfg(feature: "poseidon252_verifier")]
-#[test]
-fn test_hash_memory_section() {
-    let section = array![
-        (0, [1, 2, 3, 4, 5, 6, 7, 8]), (0, [2, 3, 4, 5, 6, 7, 8, 9]),
-        (0, [3, 4, 5, 6, 7, 8, 9, 10]),
-    ];
-
-    assert_eq!(
-        hash_memory_section(@section).unbox(),
-        [
-            2433336977, 2153250057, 881002283, 2835163344, 2300811583, 376217666, 1436681392,
-            91789842,
-        ],
-    );
-}
-
 #[generate_trait]
 impl LookupElementsDummyImpl<const N: usize> of LookupElementsDummyTrait<N> {
     fn dummy() -> LookupElements<N> {
@@ -146,22 +167,6 @@ fn test_accumulate_relation_uses() {
     assert_eq!(relation_uses.get('relation_2'), 26);
 }
 
-#[test]
-fn test_construct_felt() {
-    assert_eq!(
-        construct_f252(BoxTrait::new([1_u32, 2, 3, 4, 5, 6, 7, 8])),
-        0x800000007000000060000000500000004000000030000000200000001,
-    );
-}
-
-#[test]
-fn test_deconstruct_felt() {
-    assert_eq!(
-        deconstruct_f252(0x800000007000000060000000500000004000000030000000200000001).unbox(),
-        [1_u32, 2, 3, 4, 5, 6, 7, 8],
-    );
-}
-
 #[cfg(not(feature: "qm31_opcode"))]
 #[test]
 fn test_sum_inverses_qm31() {
@@ -176,4 +181,7 @@ fn test_sum_inverses_qm31() {
 
     assert_eq!(sum, expected);
 }
-
+#[test]
+fn test_split_memory_address_to_id_constants_compatibility() {
+    assert!(pow2(LOG_MEMORY_ADDRESS_TO_ID_SPLIT) == MEMORY_ADDRESS_TO_ID_SPLIT);
+}

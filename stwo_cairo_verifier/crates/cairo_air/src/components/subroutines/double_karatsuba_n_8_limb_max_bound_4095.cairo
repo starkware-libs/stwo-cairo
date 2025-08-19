@@ -1,22 +1,6 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::single_karatsuba_n_8::single_karatsuba_n_8_evaluate;
+use crate::prelude::*;
 
 
 pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
@@ -92,7 +76,40 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
 
     core::internal::revoke_ap_tracking();
 
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
+    let [
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_0,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_1,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_2,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_3,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_4,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_5,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_6,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_7,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_8,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_9,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_10,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_11,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_12,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_13,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_14,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_15,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_16,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_17,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_18,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_19,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_20,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_21,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_22,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_23,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_24,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_25,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_26,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_27,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_28,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_29,
+        single_karatsuba_n_8_output_tmp_17aac_4_limb_30,
+    ] =
+        single_karatsuba_n_8_evaluate(
         [
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_0,
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_1,
@@ -132,41 +149,39 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
         random_coeff,
     );
     let [
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_0,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_1,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_2,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_3,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_4,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_5,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_6,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_7,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_8,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_9,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_10,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_11,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_12,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_13,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_14,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_15,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_16,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_17,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_18,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_19,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_20,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_21,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_22,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_23,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_24,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_25,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_26,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_27,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_28,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_29,
-        single_karatsuba_n_8_output_tmp_17aac_4_limb_30,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_0,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_1,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_2,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_3,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_4,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_5,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_6,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_7,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_8,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_9,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_10,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_11,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_12,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_13,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_14,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_15,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_16,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_17,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_18,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_19,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_20,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_21,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_22,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_23,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_24,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_25,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_26,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_27,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_28,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_29,
+        single_karatsuba_n_8_output_tmp_17aac_9_limb_30,
     ] =
-        output;
-
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
+        single_karatsuba_n_8_evaluate(
         [
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_16,
             double_karatsuba_n_8_limb_max_bound_4095_input_limb_17,
@@ -205,40 +220,6 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let [
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_0,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_1,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_2,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_3,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_4,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_5,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_6,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_7,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_8,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_9,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_10,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_11,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_12,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_13,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_14,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_15,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_16,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_17,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_18,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_19,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_20,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_21,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_22,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_23,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_24,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_25,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_26,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_27,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_28,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_29,
-        single_karatsuba_n_8_output_tmp_17aac_9_limb_30,
-    ] =
-        output;
     let x_sum_tmp_17aac_10_limb_0: QM31 = (double_karatsuba_n_8_limb_max_bound_4095_input_limb_0
         + double_karatsuba_n_8_limb_max_bound_4095_input_limb_16);
     let x_sum_tmp_17aac_10_limb_1: QM31 = (double_karatsuba_n_8_limb_max_bound_4095_input_limb_1
@@ -303,25 +284,6 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
         + double_karatsuba_n_8_limb_max_bound_4095_input_limb_62);
     let y_sum_tmp_17aac_11_limb_15: QM31 = (double_karatsuba_n_8_limb_max_bound_4095_input_limb_47
         + double_karatsuba_n_8_limb_max_bound_4095_input_limb_63);
-
-    let output: [QM31; 31] = single_karatsuba_n_8_evaluate(
-        [
-            x_sum_tmp_17aac_10_limb_0, x_sum_tmp_17aac_10_limb_1, x_sum_tmp_17aac_10_limb_2,
-            x_sum_tmp_17aac_10_limb_3, x_sum_tmp_17aac_10_limb_4, x_sum_tmp_17aac_10_limb_5,
-            x_sum_tmp_17aac_10_limb_6, x_sum_tmp_17aac_10_limb_7, x_sum_tmp_17aac_10_limb_8,
-            x_sum_tmp_17aac_10_limb_9, x_sum_tmp_17aac_10_limb_10, x_sum_tmp_17aac_10_limb_11,
-            x_sum_tmp_17aac_10_limb_12, x_sum_tmp_17aac_10_limb_13, x_sum_tmp_17aac_10_limb_14,
-            x_sum_tmp_17aac_10_limb_15, y_sum_tmp_17aac_11_limb_0, y_sum_tmp_17aac_11_limb_1,
-            y_sum_tmp_17aac_11_limb_2, y_sum_tmp_17aac_11_limb_3, y_sum_tmp_17aac_11_limb_4,
-            y_sum_tmp_17aac_11_limb_5, y_sum_tmp_17aac_11_limb_6, y_sum_tmp_17aac_11_limb_7,
-            y_sum_tmp_17aac_11_limb_8, y_sum_tmp_17aac_11_limb_9, y_sum_tmp_17aac_11_limb_10,
-            y_sum_tmp_17aac_11_limb_11, y_sum_tmp_17aac_11_limb_12, y_sum_tmp_17aac_11_limb_13,
-            y_sum_tmp_17aac_11_limb_14, y_sum_tmp_17aac_11_limb_15,
-        ],
-        ref sum,
-        domain_vanishing_eval_inv,
-        random_coeff,
-    );
     let [
         single_karatsuba_n_8_output_tmp_17aac_16_limb_0,
         single_karatsuba_n_8_output_tmp_17aac_16_limb_1,
@@ -355,7 +317,24 @@ pub fn double_karatsuba_n_8_limb_max_bound_4095_evaluate(
         single_karatsuba_n_8_output_tmp_17aac_16_limb_29,
         single_karatsuba_n_8_output_tmp_17aac_16_limb_30,
     ] =
-        output;
+        single_karatsuba_n_8_evaluate(
+        [
+            x_sum_tmp_17aac_10_limb_0, x_sum_tmp_17aac_10_limb_1, x_sum_tmp_17aac_10_limb_2,
+            x_sum_tmp_17aac_10_limb_3, x_sum_tmp_17aac_10_limb_4, x_sum_tmp_17aac_10_limb_5,
+            x_sum_tmp_17aac_10_limb_6, x_sum_tmp_17aac_10_limb_7, x_sum_tmp_17aac_10_limb_8,
+            x_sum_tmp_17aac_10_limb_9, x_sum_tmp_17aac_10_limb_10, x_sum_tmp_17aac_10_limb_11,
+            x_sum_tmp_17aac_10_limb_12, x_sum_tmp_17aac_10_limb_13, x_sum_tmp_17aac_10_limb_14,
+            x_sum_tmp_17aac_10_limb_15, y_sum_tmp_17aac_11_limb_0, y_sum_tmp_17aac_11_limb_1,
+            y_sum_tmp_17aac_11_limb_2, y_sum_tmp_17aac_11_limb_3, y_sum_tmp_17aac_11_limb_4,
+            y_sum_tmp_17aac_11_limb_5, y_sum_tmp_17aac_11_limb_6, y_sum_tmp_17aac_11_limb_7,
+            y_sum_tmp_17aac_11_limb_8, y_sum_tmp_17aac_11_limb_9, y_sum_tmp_17aac_11_limb_10,
+            y_sum_tmp_17aac_11_limb_11, y_sum_tmp_17aac_11_limb_12, y_sum_tmp_17aac_11_limb_13,
+            y_sum_tmp_17aac_11_limb_14, y_sum_tmp_17aac_11_limb_15,
+        ],
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
 
     core::internal::revoke_ap_tracking();
 

@@ -26,26 +26,29 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
     for i in 0..output_len {
         output.append((i, [i; 8]));
     }
+
+    let empty_segment = SegmentRange {
+        start_ptr: MemorySmallValue { id: 0, value: 0 },
+        stop_ptr: MemorySmallValue { id: 0, value: 0 },
+    };
+
     PublicMemory {
-        program: array![],
+        program: [].span(),
         public_segments: PublicSegmentRanges {
-            output: SegmentRange {
-                start_ptr: MemorySmallValue { id: 0, value: 0 },
-                stop_ptr: MemorySmallValue { id: 0, value: output_len * 8 },
-            },
-            pedersen: None,
-            range_check_128: None,
-            ecdsa: None,
-            bitwise: None,
-            ec_op: None,
-            keccak: None,
-            poseidon: None,
-            range_check_96: None,
-            add_mod: None,
-            mul_mod: None,
+            output: empty_segment,
+            pedersen: empty_segment,
+            range_check_128: empty_segment,
+            ecdsa: empty_segment,
+            bitwise: empty_segment,
+            ec_op: empty_segment,
+            keccak: empty_segment,
+            poseidon: empty_segment,
+            range_check_96: empty_segment,
+            add_mod: empty_segment,
+            mul_mod: empty_segment,
         },
-        output,
-        safe_call: array![(1, [1; 8]), (2, [2; 8])],
+        output: output.span(),
+        safe_call_ids: [1, 2],
     }
 }
 

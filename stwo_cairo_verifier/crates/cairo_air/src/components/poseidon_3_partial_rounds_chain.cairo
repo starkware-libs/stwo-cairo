@@ -1,22 +1,6 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::poseidon_partial_round::poseidon_partial_round_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
@@ -69,7 +53,36 @@ pub struct Component {
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+            range_check_4_4_4_4_lookup_elements: interaction_elements
+                .range_checks
+                .rc_4_4_4_4
+                .clone(),
+            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
+            range_check_felt_252_width_27_lookup_elements: interaction_elements
+                .range_check_felt_252_width_27
+                .clone(),
+            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
+                .poseidon_3_partial_rounds_chain
+                .clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -1066,8 +1079,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
                     poseidon_round_keys_output_limb_29_col71,
                 ],
             );
-
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
                 input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
@@ -1130,31 +1142,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            poseidon_partial_round_output_tmp_44f04_36_limb_0,
-            poseidon_partial_round_output_tmp_44f04_36_limb_1,
-            poseidon_partial_round_output_tmp_44f04_36_limb_2,
-            poseidon_partial_round_output_tmp_44f04_36_limb_3,
-            poseidon_partial_round_output_tmp_44f04_36_limb_4,
-            poseidon_partial_round_output_tmp_44f04_36_limb_5,
-            poseidon_partial_round_output_tmp_44f04_36_limb_6,
-            poseidon_partial_round_output_tmp_44f04_36_limb_7,
-            poseidon_partial_round_output_tmp_44f04_36_limb_8,
-            poseidon_partial_round_output_tmp_44f04_36_limb_9,
-            poseidon_partial_round_output_tmp_44f04_36_limb_10,
-            poseidon_partial_round_output_tmp_44f04_36_limb_11,
-            poseidon_partial_round_output_tmp_44f04_36_limb_12,
-            poseidon_partial_round_output_tmp_44f04_36_limb_13,
-            poseidon_partial_round_output_tmp_44f04_36_limb_14,
-            poseidon_partial_round_output_tmp_44f04_36_limb_15,
-            poseidon_partial_round_output_tmp_44f04_36_limb_16,
-            poseidon_partial_round_output_tmp_44f04_36_limb_17,
-            poseidon_partial_round_output_tmp_44f04_36_limb_18,
-            poseidon_partial_round_output_tmp_44f04_36_limb_19,
-        ] =
-            output;
-
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 input_limb_22_col22, input_limb_23_col23, input_limb_24_col24, input_limb_25_col25,
                 input_limb_26_col26, input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
@@ -1221,31 +1209,7 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            poseidon_partial_round_output_tmp_44f04_72_limb_0,
-            poseidon_partial_round_output_tmp_44f04_72_limb_1,
-            poseidon_partial_round_output_tmp_44f04_72_limb_2,
-            poseidon_partial_round_output_tmp_44f04_72_limb_3,
-            poseidon_partial_round_output_tmp_44f04_72_limb_4,
-            poseidon_partial_round_output_tmp_44f04_72_limb_5,
-            poseidon_partial_round_output_tmp_44f04_72_limb_6,
-            poseidon_partial_round_output_tmp_44f04_72_limb_7,
-            poseidon_partial_round_output_tmp_44f04_72_limb_8,
-            poseidon_partial_round_output_tmp_44f04_72_limb_9,
-            poseidon_partial_round_output_tmp_44f04_72_limb_10,
-            poseidon_partial_round_output_tmp_44f04_72_limb_11,
-            poseidon_partial_round_output_tmp_44f04_72_limb_12,
-            poseidon_partial_round_output_tmp_44f04_72_limb_13,
-            poseidon_partial_round_output_tmp_44f04_72_limb_14,
-            poseidon_partial_round_output_tmp_44f04_72_limb_15,
-            poseidon_partial_round_output_tmp_44f04_72_limb_16,
-            poseidon_partial_round_output_tmp_44f04_72_limb_17,
-            poseidon_partial_round_output_tmp_44f04_72_limb_18,
-            poseidon_partial_round_output_tmp_44f04_72_limb_19,
-        ] =
-            output;
-
-        let output: [QM31; 20] = poseidon_partial_round_evaluate(
+        poseidon_partial_round_evaluate(
             [
                 cube_252_output_limb_0_col72, cube_252_output_limb_1_col73,
                 cube_252_output_limb_2_col74, cube_252_output_limb_3_col75,
@@ -1315,29 +1279,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            poseidon_partial_round_output_tmp_44f04_108_limb_0,
-            poseidon_partial_round_output_tmp_44f04_108_limb_1,
-            poseidon_partial_round_output_tmp_44f04_108_limb_2,
-            poseidon_partial_round_output_tmp_44f04_108_limb_3,
-            poseidon_partial_round_output_tmp_44f04_108_limb_4,
-            poseidon_partial_round_output_tmp_44f04_108_limb_5,
-            poseidon_partial_round_output_tmp_44f04_108_limb_6,
-            poseidon_partial_round_output_tmp_44f04_108_limb_7,
-            poseidon_partial_round_output_tmp_44f04_108_limb_8,
-            poseidon_partial_round_output_tmp_44f04_108_limb_9,
-            poseidon_partial_round_output_tmp_44f04_108_limb_10,
-            poseidon_partial_round_output_tmp_44f04_108_limb_11,
-            poseidon_partial_round_output_tmp_44f04_108_limb_12,
-            poseidon_partial_round_output_tmp_44f04_108_limb_13,
-            poseidon_partial_round_output_tmp_44f04_108_limb_14,
-            poseidon_partial_round_output_tmp_44f04_108_limb_15,
-            poseidon_partial_round_output_tmp_44f04_108_limb_16,
-            poseidon_partial_round_output_tmp_44f04_108_limb_17,
-            poseidon_partial_round_output_tmp_44f04_108_limb_18,
-            poseidon_partial_round_output_tmp_44f04_108_limb_19,
-        ] =
-            output;
 
         poseidon_3_partial_rounds_chain_sum_16 = self
             .poseidon_3_partial_rounds_chain_lookup_elements

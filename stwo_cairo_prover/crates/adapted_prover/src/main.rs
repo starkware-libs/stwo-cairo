@@ -43,11 +43,17 @@ use tracing::{span, Level};
 ///     ```
 #[derive(Parser, Debug)]
 struct Args {
-    #[structopt(long = "pub_json")]
+    #[structopt(
+        long = "pub_json",
+        help = "Absolute path to the JSON file containing the program public input."
+    )]
     pub_json: PathBuf,
-    #[structopt(long = "priv_json")]
+    #[structopt(
+        long = "priv_json",
+        help = "Absolute path to the JSON file containing the program private input."
+    )]
     priv_json: PathBuf,
-    /// The path to the JSON file containing the prover parameters (optional).
+    /// Optional absolute path to the JSON file containing the prover parameters.
     /// The expected file format is:
     ///     {
     ///         "channel_hash":"blake2s",
@@ -65,18 +71,14 @@ struct Args {
     /// Default parameters are chosen to ensure 96 bits of security.
     #[structopt(long = "params_json")]
     params_json: Option<PathBuf>,
-    /// The output file path for the proof.
-    #[structopt(long = "proof_path")]
+    #[structopt(long = "proof_path", help = "Absolute path to the output proof file.")]
     proof_path: PathBuf,
     /// The format of the proof output.
     /// - json: Standard JSON format (default)
     /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
     #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
     proof_format: ProofFormat,
-    #[structopt(long = "track_relations")]
-    track_relations: bool,
-    /// Verify the generated proof.
-    #[structopt(long = "verify")]
+    #[structopt(long = "verify", help = "Verify the generated proof.")]
     verify: bool,
 }
 

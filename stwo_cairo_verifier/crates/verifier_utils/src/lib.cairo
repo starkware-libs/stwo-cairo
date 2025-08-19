@@ -4,16 +4,66 @@ use core::box::BoxImpl;
 #[cfg(feature: "poseidon252_verifier")]
 use core::poseidon::poseidon_hash_span;
 
+#[cfg(test)]
+mod test;
+pub mod zip_eq;
+#[cfg(test)]
+mod zip_eq_test;
+
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
 // (id, value)
 pub type PubMemoryValue = (u32, [u32; 8]);
 
-// TODO(alonf): Change this into a struct. Remove Pub prefix.
-// (address, id, value)
-pub type PubMemoryEntry = (u32, u32, [u32; 8]);
+#[derive(Drop)]
+pub struct PublicMemoryEntry {
+    pub address: u32,
+    pub id: u32,
+    pub value: [u32; 8],
+}
+
+#[derive(PanicDestruct)]
+pub struct PublicMemoryEntries {
+    entries: Array<PublicMemoryEntry>,
+}
+
+#[generate_trait]
+pub impl PublicMemoryEntriesImpl of PublicMemoryEntriesTrait {
+    /// Create `PublicMemoryEntries` with no entries.
+    #[inline(always)]
+    fn empty() -> PublicMemoryEntries {
+        PublicMemoryEntries { entries: array![] }
+    }
+
+    /// Add an entry to the public memory entries.
+    #[inline(always)]
+    fn add_memory_entry(ref self: PublicMemoryEntries, entry: PublicMemoryEntry) {
+        self.entries.append(entry);
+    }
+
+
+    /// Adds all entries from a memory section to the public memory entries, starting at the given
+    /// address.
+    #[inline(always)]
+    fn add_memory_section(
+        ref self: PublicMemoryEntries, memory_section: @MemorySection, mut address: u32,
+    ) {
+        for (id, value) in *memory_section {
+            self.add_memory_entry(PublicMemoryEntry { address, id: *id, value: *value });
+            address += 1;
+        }
+    }
+}
+
+
+impl PublicMemoryEntriesIntoIterator of core::iter::IntoIterator<PublicMemoryEntries> {
+    type IntoIter = core::array::ArrayIter<PublicMemoryEntry>;
+    fn into_iter(self: PublicMemoryEntries) -> Self::IntoIter {
+        self.entries.into_iter()
+    }
+}
 
 /// A contiguous memory section.
-pub type MemorySection = Array<PubMemoryValue>;
+pub type MemorySection = Span<PubMemoryValue>;
 
 /// 2^31, used for encoding small felt252 values.
 const MSB_U32: u32 = 0x80000000;
@@ -25,17 +75,16 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
 
 /// Returns the hash of the memory section for packing purposes.
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
-    hash_memory_section_ex(section.span(), BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0)
+pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
+    hash_memory_section_ex(section, BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0)
 }
 
 /// Returns the hash of the memory section with the channel's digest hash for mixing purposes.
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub fn hash_memory_section_with_digest(
-    section: @MemorySection, digest_hash: Box<[u32; 8]>,
+    mut section: MemorySection, digest_hash: Box<[u32; 8]>,
 ) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut section = section.span();
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest_hash.unbox();
 
     let (buffer, byte_count) = if let Some(head) = section.pop_front() {
@@ -58,10 +107,9 @@ pub fn hash_memory_section_with_digest(
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(not(feature: "poseidon252_verifier"))]
 fn hash_memory_section_ex(
-    section: Span<PubMemoryValue>, state: Box<[u32; 8]>, mut byte_count: u32,
+    mut section: MemorySection, state: Box<[u32; 8]>, mut byte_count: u32,
 ) -> Box<[u32; 8]> {
     let mut state = state;
-    let mut section = section;
     let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
@@ -107,7 +155,7 @@ fn hash_memory_section_ex(
 /// Returns the hash of the memory section after encoding it, for packing purposes.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub fn encode_and_hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     let mut encoded_values = array![];
     for entry in section {
         let (_, val) = *entry;
@@ -189,16 +237,17 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
 /// Returns the hash of the memory section, for packing purposes.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 /// Note: no encoding is done at the moment.
-// TODO(Gali): There is no encoding done at the moment with poseidon, so this function is equivalent to `hash_memory_section`.
+// TODO(Gali): There is no encoding done at the moment with poseidon, so this function is equivalent
+// to `hash_memory_section`.
 #[cfg(feature: "poseidon252_verifier")]
-pub fn encode_and_hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     hash_memory_section(section)
 }
 
 /// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 #[cfg(feature: "poseidon252_verifier")]
-pub fn hash_memory_section(section: @MemorySection) -> Box<[u32; 8]> {
+pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     let mut felts = array![];
     for entry in section {
         let (_, val) = *entry;
@@ -241,4 +290,57 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
             l6.try_into().unwrap(), l7.try_into().unwrap(),
         ],
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    #[cfg(not(feature: "poseidon252_verifier"))]
+    fn test_encode_felt_in_limbs() {
+        let felt0 = [0x12345678, 0x70000000, 0, 0, 0, 0, 0, 0];
+        let felt1 = [
+            0x12345678, 0x90abcdef, 0xabcdef12, 0x34567890, 0x01234567, 0x89abcdef, 0x01234567, 0,
+        ];
+        let mut array = array![];
+        crate::encode_felt_in_limbs_to_array(felt0, ref array);
+        crate::encode_felt_in_limbs_to_array(felt1, ref array);
+        assert_eq!(
+            array,
+            array![
+                1879048192, 305419896, 2147483648, 19088743, 2309737967, 19088743, 878082192,
+                2882400018, 2427178479, 305419896,
+            ],
+        );
+    }
+
+    #[test]
+    #[cfg(not(feature: "poseidon252_verifier"))]
+    fn test_encode_and_hash_memory_section() {
+        let memory_section = array![
+            (0, [0x12345678, 0x90abcdef, 0, 0, 0, 0, 0, 0]),
+            (1, [0xabcdef12, 0x34567890, 0, 0, 0, 0, 0, 0]),
+        ];
+        let hash = encode_and_hash_memory_section(memory_section.span());
+        assert_eq!(
+            hash.unbox(),
+            [
+                2421522214, 635981307, 2862863578, 1664236125, 1878536921, 1607560013, 4274188691,
+                2957079540,
+            ],
+        );
+    }
+
+    #[test]
+    fn test_construct_f252() {
+        let x = [
+            2421522214, 635981307, 2862863578, 1664236125, 1878536921, 1607560013, 4274188691,
+            2957079540,
+        ];
+        let f252 = construct_f252(BoxTrait::new(x));
+        assert_eq!(
+            f252, 115645365096977585374207223166120623839439046970571781411593222716768222992,
+        );
+    }
 }

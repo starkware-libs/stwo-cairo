@@ -1,7 +1,8 @@
+// AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::single_karatsuba_n_7::SingleKaratsubaN7;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct DoubleKaratsubaN7LimbMaxBound511 {}
 
 impl DoubleKaratsubaN7LimbMaxBound511 {

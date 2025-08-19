@@ -26,22 +26,26 @@ use components::range_check_felt_252_width_27::{
 };
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-#[cfg(feature: "poseidon252_verifier")]
-use core::poseidon::poseidon_hash_span;
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_cairo_air::CairoInteractionElements;
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::claim::ClaimTrait;
+use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
+#[cfg(not(feature: "poseidon252_verifier"))]
+use stwo_verifier_core::ColumnSpan;
+use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
+#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
-use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 #[derive(Drop, Serde)]
 pub struct PoseidonClaim {
@@ -52,8 +56,7 @@ pub struct PoseidonClaim {
     pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Claim,
 }
 
-#[generate_trait]
-pub impl PoseidonClaimImpl of PoseidonClaimTrait {
+pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
     fn mix_into(self: @PoseidonClaim, ref channel: Channel) {
         self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
         self.poseidon_full_round_chain.mix_into(ref channel);
@@ -143,8 +146,7 @@ pub struct PoseidonContextClaim {
     pub claim: Option<PoseidonClaim>,
 }
 
-#[generate_trait]
-pub impl PoseidonContextClaimImpl of PoseidonContextClaimTrait {
+pub impl PoseidonContextClaimImpl of ClaimTrait<PoseidonContextClaim> {
     fn mix_into(self: @PoseidonContextClaim, ref channel: Channel) {
         if let Option::Some(claim) = self.claim {
             claim.mix_into(ref channel);
@@ -286,81 +288,33 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         interaction_claim: @PoseidonInteractionClaim,
     ) -> PoseidonComponents {
         let poseidon_3_partial_rounds_chain_component =
-            components::poseidon_3_partial_rounds_chain::Component {
-            claim: *claim.poseidon_3_partial_rounds_chain,
-            interaction_claim: *interaction_claim.poseidon_3_partial_rounds_chain,
-            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
-            range_check_4_4_4_4_lookup_elements: interaction_elements
-                .range_checks
-                .rc_4_4_4_4
-                .clone(),
-            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
-                .poseidon_3_partial_rounds_chain
-                .clone(),
-            range_check_felt_252_width_27_lookup_elements: interaction_elements
-                .range_check_felt_252_width_27
-                .clone(),
-            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
-        };
+            components::poseidon_3_partial_rounds_chain::NewComponentImpl::new(
+            claim.poseidon_3_partial_rounds_chain,
+            interaction_claim.poseidon_3_partial_rounds_chain,
+            interaction_elements,
+        );
 
-        let poseidon_full_round_chain_component = components::poseidon_full_round_chain::Component {
-            claim: *claim.poseidon_full_round_chain,
-            interaction_claim: *interaction_claim.poseidon_full_round_chain,
-            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                .range_checks
-                .rc_3_3_3_3_3
-                .clone(),
-            poseidon_full_round_chain_lookup_elements: interaction_elements
-                .poseidon_full_round_chain
-                .clone(),
-            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
-        };
+        let poseidon_full_round_chain_component =
+            components::poseidon_full_round_chain::NewComponentImpl::new(
+            claim.poseidon_full_round_chain,
+            interaction_claim.poseidon_full_round_chain,
+            interaction_elements,
+        );
 
-        let cube_252_component = components::cube_252::Component {
-            claim: *claim.cube_252,
-            interaction_claim: *interaction_claim.cube_252,
-            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
-            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
-        };
+        let cube_252_component = components::cube_252::NewComponentImpl::new(
+            claim.cube_252, interaction_claim.cube_252, interaction_elements,
+        );
 
-        let poseidon_round_keys_component = components::poseidon_round_keys::Component {
-            claim: *claim.poseidon_round_keys,
-            interaction_claim: *interaction_claim.poseidon_round_keys,
-            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
-        };
+        let poseidon_round_keys_component = components::poseidon_round_keys::NewComponentImpl::new(
+            claim.poseidon_round_keys, interaction_claim.poseidon_round_keys, interaction_elements,
+        );
 
         let range_check_felt_252_width_27_component =
-            components::range_check_felt_252_width_27::Component {
-            claim: *claim.range_check_felt_252_width_27,
-            interaction_claim: *interaction_claim.range_check_felt_252_width_27,
-            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
-            range_check_18_b_lookup_elements: interaction_elements.range_checks.rc_18_b.clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_felt_252_width_27_lookup_elements: interaction_elements
-                .range_check_felt_252_width_27
-                .clone(),
-        };
+            components::range_check_felt_252_width_27::NewComponentImpl::new(
+            claim.range_check_felt_252_width_27,
+            interaction_claim.range_check_felt_252_width_27,
+            interaction_elements,
+        );
 
         PoseidonComponents {
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,

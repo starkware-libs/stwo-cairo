@@ -1,22 +1,6 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 212;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
@@ -69,7 +53,29 @@ pub struct Component {
     pub blake_round_lookup_elements: crate::BlakeRoundElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
+            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+            blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -1251,9 +1257,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
                     blake_round_sigma_output_limb_15_col50,
                 ],
             );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_0_col35)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_0_col35),
             low_16_bits_col51,
             high_16_bits_col52,
             low_7_ms_bits_col53,
@@ -1270,9 +1275,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_1_col36)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_1_col36),
             low_16_bits_col57,
             high_16_bits_col58,
             low_7_ms_bits_col59,
@@ -1289,9 +1293,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_2_col37)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_2_col37),
             low_16_bits_col63,
             high_16_bits_col64,
             low_7_ms_bits_col65,
@@ -1308,9 +1311,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_3_col38)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_3_col38),
             low_16_bits_col69,
             high_16_bits_col70,
             low_7_ms_bits_col71,
@@ -1327,9 +1329,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_4_col39)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_4_col39),
             low_16_bits_col75,
             high_16_bits_col76,
             low_7_ms_bits_col77,
@@ -1346,9 +1347,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_5_col40)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_5_col40),
             low_16_bits_col81,
             high_16_bits_col82,
             low_7_ms_bits_col83,
@@ -1365,9 +1365,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_6_col41)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_6_col41),
             low_16_bits_col87,
             high_16_bits_col88,
             low_7_ms_bits_col89,
@@ -1384,9 +1383,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_7_col42)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_7_col42),
             low_16_bits_col93,
             high_16_bits_col94,
             low_7_ms_bits_col95,
@@ -1403,9 +1401,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_8_col43)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_8_col43),
             low_16_bits_col99,
             high_16_bits_col100,
             low_7_ms_bits_col101,
@@ -1422,9 +1419,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_9_col44)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_9_col44),
             low_16_bits_col105,
             high_16_bits_col106,
             low_7_ms_bits_col107,
@@ -1441,9 +1437,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_10_col45)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_10_col45),
             low_16_bits_col111,
             high_16_bits_col112,
             low_7_ms_bits_col113,
@@ -1460,9 +1455,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_11_col46)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_11_col46),
             low_16_bits_col117,
             high_16_bits_col118,
             low_7_ms_bits_col119,
@@ -1479,9 +1473,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_12_col47)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_12_col47),
             low_16_bits_col123,
             high_16_bits_col124,
             low_7_ms_bits_col125,
@@ -1498,9 +1491,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_13_col48)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_13_col48),
             low_16_bits_col129,
             high_16_bits_col130,
             low_7_ms_bits_col131,
@@ -1517,9 +1509,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_14_col49)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_14_col49),
             low_16_bits_col135,
             high_16_bits_col136,
             low_7_ms_bits_col137,
@@ -1536,9 +1527,8 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         read_blake_word_evaluate(
-            [(input_limb_34_col34 + blake_round_sigma_output_limb_15_col50)],
+            (input_limb_34_col34 + blake_round_sigma_output_limb_15_col50),
             low_16_bits_col141,
             high_16_bits_col142,
             low_7_ms_bits_col143,

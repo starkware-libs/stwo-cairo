@@ -1,23 +1,7 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
 use crate::components::subroutines::verify_mul_252::verify_mul_252_evaluate;
+use crate::prelude::*;
 
 
 pub fn mul_252_evaluate(
@@ -199,7 +183,6 @@ pub fn mul_252_evaluate(
         mul_252_input_b_limb_27,
     ] =
         input;
-
     range_check_mem_value_n_28_evaluate(
         [
             mul_res_limb_0_col0, mul_res_limb_1_col1, mul_res_limb_2_col2, mul_res_limb_3_col3,
@@ -238,7 +221,6 @@ pub fn mul_252_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     verify_mul_252_evaluate(
         [
             mul_252_input_a_limb_0, mul_252_input_a_limb_1, mul_252_input_a_limb_2,

@@ -111,8 +111,8 @@ mod tests {
         // Interaction trace.
         interaction_gen.write_interaction_trace(
             &mut mock_tree_builder,
-            &triple_xor_relation,
             &verify_bitwise_xor_8_relation,
+            &triple_xor_relation,
         );
         mock_tree_builder.finalize_interaction();
         let trace = mock_commitment_scheme.trace_domain_evaluations();

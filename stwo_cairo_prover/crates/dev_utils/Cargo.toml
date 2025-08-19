@@ -9,7 +9,7 @@ clap.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 sonic-rs.workspace = true
-stwo-cairo-adapter = { path = "../adapter", features = ["std"] }
+stwo-cairo-adapter.workspace = true
 stwo-cairo-serialize.workspace = true
 stwo.workspace = true
 stwo_cairo_prover.workspace = true
@@ -18,8 +18,10 @@ thiserror.workspace = true
 tracing.workspace = true
 log.workspace = true
 regex = "1.11.1"
+num-bigint = "0.4.6"
+
 serde_json.workspace = true
-cairo-prove = {path= "../../../cairo-prove"}
 cairo-vm.workspace = true
-cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }

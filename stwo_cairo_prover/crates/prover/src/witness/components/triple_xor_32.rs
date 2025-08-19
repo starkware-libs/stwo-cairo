@@ -1,3 +1,4 @@
+// AIR version 38bef2b6
 #![allow(unused_parens)]
 use cairo_air::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -323,8 +324,8 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        triple_xor_32: &relations::TripleXor32,
         verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
+        triple_xor_32: &relations::TripleXor32,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

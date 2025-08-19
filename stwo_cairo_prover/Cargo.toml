@@ -21,7 +21,7 @@ bytemuck = { version = "1.20.0", features = ["derive"] }
 cairo-lang-casm = "2.7.1"
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
@@ -33,7 +33,7 @@ num-traits = "0.2.17"
 paste = "1.0"
 rand = "0.8.5"
 ruint = "1.12.3"
-serde = "1.0.207"
+serde = "1.0.219"
 serde_json = "1.0.1"
 sonic-rs = "0.3.17"
 starknet-ff = "0.3.7"
@@ -41,6 +41,7 @@ starknet-types-core = "0.1.7"
 stwo_cairo_prover = { path = "crates/prover", version = "~0.1.0" }
 stwo_cairo_utils = { path = "crates/utils", version = "~0.1.0" }
 stwo-cairo-adapter = { path = "crates/adapter" }
+dev-utils = { path = "crates/dev_utils" }
 stwo-cairo-common = { path = "crates/common" }
 cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }

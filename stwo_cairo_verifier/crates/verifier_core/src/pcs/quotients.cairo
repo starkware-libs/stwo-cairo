@@ -1,9 +1,9 @@
-use bounded_int::BoundedInt;
 use core::array::ArrayImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait, SquashedFelt252DictTrait};
+use core::dict::{Felt252Dict, Felt252DictEntryTrait};
 use core::iter::{IntoIterator, Iterator};
 use core::nullable::{FromNullableResult, Nullable, NullableTrait, match_nullable, null};
 use core::num::traits::{One, Zero};
+use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Trait};
@@ -12,6 +12,7 @@ use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, Q
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::{ColumnSpan, TreeArray, TreeSpan};
+
 
 #[cfg(test)]
 mod test;
@@ -192,9 +193,10 @@ fn accumulate_row_quotients(
     );
     let domain_point_y: M31 = domain_point.y;
     let mut quotient_accumulator: QM31 = Zero::zero();
-    let mut denominator_inverses_iter = denominator_inverses.span().into_iter();
 
-    for point_constants in quotient_constants.point_constants.span() {
+    for (point_constants, denom_inv) in zip_eq(
+        quotient_constants.point_constants, denominator_inverses,
+    ) {
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
 
         for (column_index, line_coeffs) in point_constants.indexed_line_coeffs.span() {
@@ -213,7 +215,6 @@ fn accumulate_row_quotients(
             numerator += alpha_mul_c.mul_m31(query_eval_at_column.into()) - linear_term;
         }
 
-        let denom_inv = *denominator_inverses_iter.next().unwrap();
         let quotient = numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
             QM31Trait::fused_mul_add(

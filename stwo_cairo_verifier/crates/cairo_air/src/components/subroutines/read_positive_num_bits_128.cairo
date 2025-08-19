@@ -1,26 +1,10 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_2::range_check_last_limb_bits_in_ms_limb_2_evaluate;
+use crate::prelude::*;
 
 
 pub fn read_positive_num_bits_128_evaluate(
-    input: [QM31; 1],
+    input: QM31,
     id_col0: QM31,
     value_limb_0_col1: QM31,
     value_limb_1_col2: QM31,
@@ -46,13 +30,12 @@ pub fn read_positive_num_bits_128_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [read_positive_num_bits_128_input] = input;
+    let read_positive_num_bits_128_input = input;
 
     memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
         .combine_qm31([read_positive_num_bits_128_input, id_col0]);
-
     range_check_last_limb_bits_in_ms_limb_2_evaluate(
-        [value_limb_14_col15], msb_col16, ref sum, domain_vanishing_eval_inv, random_coeff,
+        value_limb_14_col15, msb_col16, ref sum, domain_vanishing_eval_inv, random_coeff,
     );
 
     memory_id_to_big_sum_1 = memory_id_to_big_lookup_elements

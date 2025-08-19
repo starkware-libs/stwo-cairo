@@ -1,25 +1,9 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::decode_generic_instruction::decode_generic_instruction_evaluate;
 use crate::components::subroutines::eval_operands::eval_operands_evaluate;
 use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
 use crate::components::subroutines::update_registers::update_registers_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 237;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 21] = [
@@ -91,7 +75,44 @@ pub struct Component {
     pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
+            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
+            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
+            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
+            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
+            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
+            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
+            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
+            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+            opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -1116,9 +1137,18 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 8] = decode_generic_instruction_evaluate(
-            [input_pc_col0],
+        let [
+            decode_generic_instruction_output_tmp_57455_26_op1_base_op0,
+            decode_generic_instruction_output_tmp_57455_26_res_op1,
+            decode_generic_instruction_output_tmp_57455_26_pc_update_regular,
+            decode_generic_instruction_output_tmp_57455_26_fp_update_regular,
+            decode_generic_instruction_output_tmp_57455_26_instruction_size,
+            decode_generic_instruction_output_tmp_57455_26_offset0,
+            decode_generic_instruction_output_tmp_57455_26_offset1,
+            decode_generic_instruction_output_tmp_57455_26_offset2,
+        ] =
+            decode_generic_instruction_evaluate(
+            input_pc_col0,
             offset0_col3,
             offset1_col4,
             offset2_col5,
@@ -1143,18 +1173,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            decode_generic_instruction_output_tmp_57455_26_op1_base_op0,
-            decode_generic_instruction_output_tmp_57455_26_res_op1,
-            decode_generic_instruction_output_tmp_57455_26_pc_update_regular,
-            decode_generic_instruction_output_tmp_57455_26_fp_update_regular,
-            decode_generic_instruction_output_tmp_57455_26_instruction_size,
-            decode_generic_instruction_output_tmp_57455_26_offset0,
-            decode_generic_instruction_output_tmp_57455_26_offset1,
-            decode_generic_instruction_output_tmp_57455_26_offset2,
-        ] =
-            output;
-
         eval_operands_evaluate(
             [
                 input_pc_col0, input_ap_col1, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7,
@@ -1452,7 +1470,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         handle_opcodes_evaluate(
             [
                 input_pc_col0, input_fp_col2, dst_base_fp_col6, op0_base_fp_col7, op1_base_fp_col9,
@@ -1488,7 +1505,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         update_registers_evaluate(
             [
                 input_pc_col0, input_ap_col1, input_fp_col2, pc_update_jump_col13,

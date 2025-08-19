@@ -1,3 +1,5 @@
+use std::array;
+
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
     PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -100,9 +102,14 @@ fn extract_sections_from_memory(
             .collect_vec()
     });
 
+    assert!(safe_call.len() == 2);
+
+    assert_eq!(safe_call[0].1, [initial_ap, 0, 0, 0, 0, 0, 0, 0]);
+    assert_eq!(safe_call[1].1, [0, 0, 0, 0, 0, 0, 0, 0]);
+
     PublicMemory {
         program,
-        safe_call,
+        safe_call_ids: array::from_fn(|i| safe_call[i].0),
         public_segments,
         output,
     }
@@ -138,7 +145,7 @@ impl CairoClaimGenerator {
             memory,
             inst_cache,
             public_memory_addresses,
-            builtins_segments,
+            builtin_segments,
             public_segment_context,
         }: ProverInput,
     ) -> Self {
@@ -147,7 +154,7 @@ impl CairoClaimGenerator {
         let opcodes = OpcodesClaimGenerator::new(state_transitions);
         let verify_instruction_trace_generator =
             verify_instruction::ClaimGenerator::new(inst_cache);
-        let builtins = BuiltinsClaimGenerator::new(builtins_segments);
+        let builtins = BuiltinsClaimGenerator::new(builtin_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =

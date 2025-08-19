@@ -3,21 +3,12 @@
 //! performance analysis during development.
 
 use bounded_int::{ConstValue, upcast};
-use core::num::traits::Zero;
-use core::num::traits::one::One;
-use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
-use stwo_constraint_framework::LookupElements;
-use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
-use stwo_verifier_core::fields::m31::{M31, M31Trait};
-use stwo_verifier_core::fields::qm31::qm31_const;
+use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_utils::encode_and_hash_memory_section;
 use super::test_utils::{dummy_interaction_lookup_elements, mock_public_memory_with_outputs};
-use super::{
-    CairoInteractionElements, CasmState, MemorySmallValue, PublicData, PublicDataImpl, PublicMemory,
-    PublicMemoryTrait, PublicSegmentRanges, RelationUsesDict, SegmentRange,
-    accumulate_relation_uses,
-};
+use super::{CasmState, PublicData, PublicDataImpl, PublicMemoryTrait};
 
 const REGISTERS_START: ConstValue<1000> = 1000;
 const REGISTERS_END: ConstValue<2000> = 2000;
@@ -25,7 +16,7 @@ const REGISTERS_END: ConstValue<2000> = 2000;
 #[test]
 fn test_output_encoding() {
     let public_memory = mock_public_memory_with_outputs(1000);
-    encode_and_hash_memory_section(@public_memory.output);
+    encode_and_hash_memory_section(public_memory.output);
 }
 #[test]
 fn test_output_mixing() {
@@ -48,5 +39,5 @@ fn test_output_logup_sum() {
     };
     let public_data = PublicData { public_memory, initial_state, final_state };
     let mut lookup_elements = dummy_interaction_lookup_elements();
-    let sum = public_data.logup_sum(@lookup_elements);
+    public_data.logup_sum(@lookup_elements);
 }

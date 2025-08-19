@@ -1,23 +1,7 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate;
 use crate::components::subroutines::mul_252::mul_252_evaluate;
+use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 141;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 16] = [
@@ -84,7 +68,40 @@ pub struct Component {
     pub cube_252_lookup_elements: crate::Cube252Elements,
 }
 
-pub impl ComponentImpl of CairoComponent<Component> {
+pub impl NewComponentImpl of NewComponent<Component> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn new(
+        claim: @Claim,
+        interaction_claim: @InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Component {
+        Component {
+            claim: *claim,
+            interaction_claim: *interaction_claim,
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
+            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
+            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
+            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
+            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
+            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
+            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
+            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
+            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
+            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
+            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
+            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
+            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
+            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
+            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
+        }
+    }
+}
+
+pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -903,8 +920,19 @@ pub impl ComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-
-        let output: [QM31; 10] = felt_252_unpack_from_27_range_check_output_evaluate(
+        let [
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
+            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
+            _felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
+        ] =
+            felt_252_unpack_from_27_range_check_output_evaluate(
             [
                 input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
                 input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
@@ -954,20 +982,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let [
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_2,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_5,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_8,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_11,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_14,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_17,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_20,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_23,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_26,
-            felt_252_unpack_from_27_range_check_output_output_tmp_fec87_2_limb_27,
-        ] =
-            output;
-
         mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,
@@ -1126,7 +1140,6 @@ pub impl ComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
         mul_252_evaluate(
             [
                 unpacked_limb_0_col10, unpacked_limb_1_col11,

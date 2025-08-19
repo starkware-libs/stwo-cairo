@@ -1,25 +1,9 @@
-// AIR version aca38612
-use core::num::traits::Zero;
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumn, PreprocessedColumnSet, PreprocessedColumnSetImpl,
-    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
-};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::{
-    CirclePoint, CirclePointIndexTrait, CirclePointQM31AddCirclePointM31Trait,
-};
-use stwo_verifier_core::fields::Invertible;
-use stwo_verifier_core::fields::m31::{M31, m31};
-use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Serde, QM31Zero, qm31_const};
-use stwo_verifier_core::poly::circle::CanonicCosetImpl;
-use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
-use crate::PreprocessedColumnTrait;
-use crate::cairo_component::CairoComponent;
+// AIR version d1591e2a
 use crate::components::subroutines::add_252::add_252_evaluate;
 use crate::components::subroutines::div_252::div_252_evaluate;
 use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::components::subroutines::sub_252::sub_252_evaluate;
+use crate::prelude::*;
 
 
 pub fn ec_add_evaluate(
@@ -711,7 +695,6 @@ pub fn ec_add_evaluate(
         ec_add_input_y2_limb_27,
     ] =
         input;
-
     sub_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
@@ -789,7 +772,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     add_252_evaluate(
         [
             ec_add_input_x2_limb_0, ec_add_input_x2_limb_1, ec_add_input_x2_limb_2,
@@ -867,7 +849,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     sub_252_evaluate(
         [
             ec_add_input_y2_limb_0, ec_add_input_y2_limb_1, ec_add_input_y2_limb_2,
@@ -945,7 +926,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     div_252_evaluate(
         [
             sub_res_limb_0_col58, sub_res_limb_1_col59, sub_res_limb_2_col60, sub_res_limb_3_col61,
@@ -1084,7 +1064,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
@@ -1224,7 +1203,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     sub_252_evaluate(
         [
             mul_res_limb_0_col143, mul_res_limb_1_col144, mul_res_limb_2_col145,
@@ -1301,7 +1279,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     sub_252_evaluate(
         [
             ec_add_input_x1_limb_0, ec_add_input_x1_limb_1, ec_add_input_x1_limb_2,
@@ -1379,7 +1356,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     mul_252_evaluate(
         [
             div_res_limb_0_col87, div_res_limb_1_col88, div_res_limb_2_col89, div_res_limb_3_col90,
@@ -1519,7 +1495,6 @@ pub fn ec_add_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
     sub_252_evaluate(
         [
             mul_res_limb_0_col257, mul_res_limb_1_col258, mul_res_limb_2_col259,
