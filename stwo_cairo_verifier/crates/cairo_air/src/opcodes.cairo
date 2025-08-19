@@ -1,6 +1,5 @@
 use components::add_ap_opcode::{
-    ClaimImpl as AddApOpcodeClaimImpl, ClaimTrait as AddApOpcodeClaimTrait,
-    InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
+    ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
 };
 use components::add_opcode::{
     ClaimImpl as AddOpcodeClaimImpl, InteractionClaimImpl as AddOpcodeInteractionClaimImpl,
