@@ -14,6 +14,8 @@ pub struct QM31 {
 }
 
 impl QM31MulByM31Impl of MulByM31Trait<QM31> {
+    type ResultT = QM31;
+
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         self * rhs.into()
