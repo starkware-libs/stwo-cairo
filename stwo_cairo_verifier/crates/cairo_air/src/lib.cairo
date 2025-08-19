@@ -35,7 +35,7 @@ use stwo_verifier_core::fields::Invertible;
 use stwo_verifier_core::fields::m31::{AddM31Trait, MulByM31Trait};
 use stwo_verifier_core::fields::m31::{M31, P_U32};
 #[cfg(not(feature: "qm31_opcode"))]
-use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
+use stwo_verifier_core::fields::qm31::{PackedQM31, PackedUnreducedQM31, PackedUnreducedQM31Trait};
 use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -804,22 +804,21 @@ fn sum_public_memory_entries(
     let mut alpha_powers = lookup_elements.memory_id_to_value.alpha_powers.span();
     // Remove the first element, which is 1.
     let _ = alpha_powers.pop_front();
-    let packed_alpha_powers: Array<PackedUnreducedQM31> = alpha_powers
+    let packed_alpha_powers: Array<_> = alpha_powers
         .into_iter()
-        .map(|alpha| -> PackedUnreducedQM31 {
+        .map(|alpha| -> PackedQM31 {
             (*alpha).into()
         })
         .collect();
-    let id_to_value_alpha_powers: Box<[PackedUnreducedQM31; 28]> = *(packed_alpha_powers
+    let id_to_value_alpha_powers: Box<[PackedQM31; 28]> = *(packed_alpha_powers
         .span()
         .try_into()
         .unwrap());
 
-    let addr_to_id_alpha: PackedUnreducedQM31 = (*lookup_elements.memory_address_to_id.alpha)
-        .into();
-    let minus_id_to_value_z: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero()
+    let addr_to_id_alpha: PackedQM31 = (*lookup_elements.memory_address_to_id.alpha).into();
+    let minus_id_to_value_z = PackedUnreducedQM31Trait::large_zero()
         - (*lookup_elements.memory_id_to_value.z).into();
-    let minus_addr_to_id_z: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero()
+    let minus_addr_to_id_z = PackedUnreducedQM31Trait::large_zero()
         - (*lookup_elements.memory_address_to_id.z).into();
 
     for PublicMemoryEntry { address, id, value } in pub_memory_entries {

@@ -11,7 +11,7 @@ use super::{QM31Trait, QM31_EXTENSION_DEGREE};
 
 mod unreduced;
 
-pub use unreduced::{PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl};
+pub use unreduced::{PackedQM31, PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl};
 
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -31,6 +31,7 @@ impl QM31InvertibleImpl of Invertible<QM31> {
 }
 
 pub impl QM31MulByM31Impl of MulByM31Trait<QM31> {
+    type ResultT = QM31;
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         QM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }

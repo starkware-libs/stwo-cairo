@@ -20,6 +20,8 @@ pub struct PackedUnreducedCM31 {
 }
 
 pub impl PackedCM31byM31Impl of MulByM31Trait<PackedUnreducedCM31> {
+    type ResultT = PackedUnreducedCM31;
+
     /// Multiplies a [`PackedUnreducedCM31`] by an [`M31`], returning a new [`PackedUnreducedCM31`].
     ///
     /// Typically, both operands are reduced 31-bit elements, yielding a 62-bit result.
@@ -98,13 +100,6 @@ pub struct PackedUnreducedQM31 {
     pub b: PackedUnreducedCM31,
 }
 
-pub impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
-    #[inline]
-    fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
-    }
-}
-
 pub impl PackedQM31AddM31Impl of AddM31Trait<PackedUnreducedQM31> {
     #[inline]
     fn add_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
@@ -159,5 +154,36 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
     #[inline]
     fn into(self: QM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.into(), b: self.b.into() }
+    }
+}
+
+
+// A wrapper around a PackedUnreducedQM31 that keeps track of the fact that the QM31 is reduced.
+#[derive(Copy, Drop, Debug)]
+pub struct PackedQM31 {
+    pub v: PackedUnreducedQM31,
+}
+
+pub impl QM31IntoPackedQM31 of Into<QM31, PackedQM31> {
+    #[inline]
+    fn into(self: QM31) -> PackedQM31 {
+        PackedQM31 { v: self.into() }
+    }
+}
+
+pub impl PackedQM31IntoPackedUnreducedQM31 of Into<PackedQM31, PackedUnreducedQM31> {
+    #[inline]
+    fn into(self: PackedQM31) -> PackedUnreducedQM31 {
+        self.v
+    }
+}
+
+pub impl PackedQM31byM31Impl of MulByM31Trait<PackedQM31> {
+    type ResultT = PackedUnreducedQM31;
+
+    #[inline]
+    fn mul_m31(self: PackedQM31, rhs: M31) -> PackedUnreducedQM31 {
+        let PackedQM31 { v } = self;
+        PackedUnreducedQM31 { a: v.a.mul_m31(rhs), b: v.b.mul_m31(rhs) }
     }
 }
