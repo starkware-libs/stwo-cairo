@@ -1,5 +1,4 @@
 use core::array::{ArrayTrait, SpanTrait, ToSpanTrait};
-use core::cmp::min;
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
@@ -139,12 +138,13 @@ impl MerkleVerifierImpl<
                 let witness_too_short_error = || panic!(
                     "{}", MerkleVerificationError::WitnessTooShort,
                 );
+                let prev_query_left = current_query * 2;
                 let left_hash = fetch_prev_node_hash(
-                    ref prev_layer_hashes, ref hash_witness, current_query * 2,
+                    ref prev_layer_hashes, ref hash_witness, prev_query_left,
                 )
                     .unwrap_or_else(witness_too_short_error);
                 let right_hash = fetch_prev_node_hash(
-                    ref prev_layer_hashes, ref hash_witness, current_query * 2 + 1,
+                    ref prev_layer_hashes, ref hash_witness, prev_query_left + 1,
                 )
                     .unwrap_or_else(witness_too_short_error);
                 let node_hashes = Some((left_hash.clone(), right_hash.clone()));
@@ -178,19 +178,21 @@ impl MerkleVerifierImpl<
 fn next_decommitment_node<H>(
     layer_queries: Span<u32>, prev_queries: Span<(u32, H)>,
 ) -> Option<usize> {
-    // Fetch the next query.
-    let layer_query_head = layer_queries.first();
-    let prev_query_head = if let Some((prev_query, _)) = prev_queries.first() {
-        Some(*prev_query / 2)
+    if let Some((prev_query, _)) = prev_queries.first() {
+        let next_query = *prev_query / 2;
+        if let Some(layer_query_head) = layer_queries.first() {
+            if *layer_query_head < next_query {
+                Some(*layer_query_head)
+            } else {
+                Some(next_query)
+            }
+        } else {
+            Some(next_query)
+        }
+    } else if let Some(layer_query_head) = layer_queries.first() {
+        Some(*layer_query_head)
     } else {
         None
-    };
-
-    match (layer_query_head, prev_query_head) {
-        (None, None) => { None },
-        (Some(column_query), None) => { Some(*column_query) },
-        (None, Some(prev_query)) => { Some(prev_query) },
-        (Some(column_query), Some(prev_query)) => { Some(min(*column_query, prev_query)) },
     }
 }
 
