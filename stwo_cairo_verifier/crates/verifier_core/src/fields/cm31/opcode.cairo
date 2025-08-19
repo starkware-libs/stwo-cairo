@@ -22,6 +22,8 @@ pub impl CM31InvertibleImpl of Invertible<CM31> {
 pub impl CM31BatchInvertibleImpl of BatchInvertible<CM31> {}
 
 pub impl CM31MulByM31Impl of MulByM31Trait<CM31> {
+    type ResultT = CM31;
+
     #[inline(always)]
     fn mul_m31(self: CM31, rhs: M31) -> CM31 {
         CM31 { inner: self.inner * rhs.into() }
