@@ -20,9 +20,6 @@ pub const M31_CIRCLE_LOG_ORDER: u32 = 31;
 /// Equals `2^31`.
 pub const M31_CIRCLE_ORDER: u32 = 0x80000000;
 
-/// Equals `2^31 - 1`.
-pub const M31_CIRCLE_ORDER_BIT_MASK: u32 = 0x7fffffff;
-
 /// A point on the complex circle. Treated as an additive group.
 #[derive(Drop, Copy, Debug, PartialEq)]
 pub struct CirclePoint<F> {
@@ -185,7 +182,9 @@ pub impl CirclePointIndexImpl of CirclePointIndexTrait {
     }
 
     fn reduce(self: @CirclePointIndex) -> CirclePointIndex {
-        CirclePointIndex { index: *self.index & M31_CIRCLE_ORDER_BIT_MASK }
+        // Clear the highest bit
+        let (index, _) = DivRem::div_rem(self.index.wrapping_mul(2), 2);
+        CirclePointIndex { index }
     }
 
     fn subgroup_gen(log_size: u32) -> CirclePointIndex {
