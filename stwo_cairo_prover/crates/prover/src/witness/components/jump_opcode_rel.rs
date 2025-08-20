@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 97774321-dirty
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_rel::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -244,12 +244,12 @@ fn write_trace_simd(
 
                 // Read Small.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_62dfc_7 = memory_address_to_id_state
                     .deduce_output(
                         ((mem1_base_col7) + (decode_instruction_3b105_output_tmp_62dfc_6.0[2])),
                     );
-                let memory_id_to_big_value_tmp_62dfc_8 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_62dfc_7);
                 let next_pc_id_col8 = memory_address_to_id_value_tmp_62dfc_7;
                 *row[8] = next_pc_id_col8;
                 *sub_component_inputs.memory_address_to_id[0] =
@@ -259,22 +259,25 @@ fn write_trace_simd(
                     next_pc_id_col8,
                 ];
 
+                let memory_id_to_big_value_tmp_62dfc_9 =
+                    memory_id_to_big_state.deduce_output(next_pc_id_col8);
+
                 // Cond Decode Small Sign.
 
-                let msb_tmp_62dfc_9 = memory_id_to_big_value_tmp_62dfc_8.get_m31(27).eq(M31_256);
-                let msb_col9 = msb_tmp_62dfc_9.as_m31();
+                let msb_tmp_62dfc_10 = memory_id_to_big_value_tmp_62dfc_9.get_m31(27).eq(M31_256);
+                let msb_col9 = msb_tmp_62dfc_10.as_m31();
                 *row[9] = msb_col9;
-                let mid_limbs_set_tmp_62dfc_10 =
-                    memory_id_to_big_value_tmp_62dfc_8.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col10 = mid_limbs_set_tmp_62dfc_10.as_m31();
+                let mid_limbs_set_tmp_62dfc_11 =
+                    memory_id_to_big_value_tmp_62dfc_9.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col10 = mid_limbs_set_tmp_62dfc_11.as_m31();
                 *row[10] = mid_limbs_set_col10;
-                let cond_decode_small_sign_output_tmp_62dfc_11 = [msb_col9, mid_limbs_set_col10];
+                let cond_decode_small_sign_output_tmp_62dfc_12 = [msb_col9, mid_limbs_set_col10];
 
-                let next_pc_limb_0_col11 = memory_id_to_big_value_tmp_62dfc_8.get_m31(0);
+                let next_pc_limb_0_col11 = memory_id_to_big_value_tmp_62dfc_9.get_m31(0);
                 *row[11] = next_pc_limb_0_col11;
-                let next_pc_limb_1_col12 = memory_id_to_big_value_tmp_62dfc_8.get_m31(1);
+                let next_pc_limb_1_col12 = memory_id_to_big_value_tmp_62dfc_9.get_m31(1);
                 *row[12] = next_pc_limb_1_col12;
-                let next_pc_limb_2_col13 = memory_id_to_big_value_tmp_62dfc_8.get_m31(2);
+                let next_pc_limb_2_col13 = memory_id_to_big_value_tmp_62dfc_9.get_m31(2);
                 *row[13] = next_pc_limb_2_col13;
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col8;
                 *lookup_data.memory_id_to_big_0 = [
@@ -308,7 +311,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col9) * (M31_256)),
                 ];
-                let read_small_output_tmp_62dfc_12 = (
+                let read_small_output_tmp_62dfc_13 = (
                     (((((next_pc_limb_0_col11) + ((next_pc_limb_1_col12) * (M31_512)))
                         + ((next_pc_limb_2_col13) * (M31_262144)))
                         - (msb_col9))
@@ -318,7 +321,7 @@ fn write_trace_simd(
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_62dfc_12.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_62dfc_13.0)),
                     ((input_ap_col1) + (ap_update_add_1_col6)),
                     input_fp_col2,
                 ];

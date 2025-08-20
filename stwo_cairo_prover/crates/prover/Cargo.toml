@@ -33,6 +33,7 @@ cairo-air.workspace = true
 stwo.workspace = true
 stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
+dashmap = "5.5"
 
 [dev-dependencies]
 dev-utils.workspace = true

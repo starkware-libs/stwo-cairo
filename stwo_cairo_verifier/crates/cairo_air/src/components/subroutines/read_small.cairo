@@ -1,5 +1,6 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
 use crate::components::subroutines::cond_decode_small_sign::cond_decode_small_sign_evaluate;
+use crate::components::subroutines::read_id::read_id_evaluate;
 use crate::prelude::*;
 
 
@@ -20,9 +21,15 @@ pub fn read_small_evaluate(
     random_coeff: QM31,
 ) -> QM31 {
     let read_small_input = input;
-
-    memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
-        .combine_qm31([read_small_input, id_col0]);
+    read_id_evaluate(
+        read_small_input,
+        id_col0,
+        memory_address_to_id_lookup_elements,
+        ref memory_address_to_id_sum_0,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
     cond_decode_small_sign_evaluate(
         qm31_const::<1, 0, 0, 0>(),
         msb_col1,

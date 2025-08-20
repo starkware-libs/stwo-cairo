@@ -1,4 +1,5 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
+use crate::components::subroutines::read_id::read_id_evaluate;
 use crate::prelude::*;
 
 
@@ -45,9 +46,15 @@ pub fn mem_verify_evaluate(
         mem_verify_input_value_limb_27,
     ] =
         input;
-
-    memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
-        .combine_qm31([mem_verify_input_address, id_col0]);
+    read_id_evaluate(
+        mem_verify_input_address,
+        id_col0,
+        memory_address_to_id_lookup_elements,
+        ref memory_address_to_id_sum_0,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
 
     memory_id_to_big_sum_1 = memory_id_to_big_lookup_elements
         .combine_qm31(

@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::read_split::read_split_evaluate;
 use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evaluate;
@@ -2321,7 +2321,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let instance_addr_tmp_d00c6_0: QM31 = ((seq * qm31_const::<3, 0, 0, 0>())
             + pedersen_builtin_segment_start);
-        let read_split_output_tmp_d00c6_6_original_limb_27: QM31 = read_split_evaluate(
+        let read_split_output_tmp_d00c6_7_original_limb_27: QM31 = read_split_evaluate(
             instance_addr_tmp_d00c6_0,
             value_limb_0_col0,
             value_limb_1_col1,
@@ -2363,7 +2363,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_split_output_tmp_d00c6_12_original_limb_27: QM31 = read_split_evaluate(
+        let read_split_output_tmp_d00c6_14_original_limb_27: QM31 = read_split_evaluate(
             (instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>()),
             value_limb_0_col30,
             value_limb_1_col31,
@@ -2414,7 +2414,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 value_limb_16_col16, value_limb_17_col17, value_limb_18_col18, value_limb_19_col19,
                 value_limb_20_col20, value_limb_21_col21, value_limb_22_col22, value_limb_23_col23,
                 value_limb_24_col24, value_limb_25_col25, value_limb_26_col26,
-                read_split_output_tmp_d00c6_6_original_limb_27,
+                read_split_output_tmp_d00c6_7_original_limb_27,
             ],
             ms_limb_is_max_col60,
             ms_and_mid_limbs_are_max_col61,
@@ -2435,7 +2435,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 value_limb_16_col46, value_limb_17_col47, value_limb_18_col48, value_limb_19_col49,
                 value_limb_20_col50, value_limb_21_col51, value_limb_22_col52, value_limb_23_col53,
                 value_limb_24_col54, value_limb_25_col55, value_limb_26_col56,
-                read_split_output_tmp_d00c6_12_original_limb_27,
+                read_split_output_tmp_d00c6_14_original_limb_27,
             ],
             ms_limb_is_max_col63,
             ms_and_mid_limbs_are_max_col64,
@@ -2447,13 +2447,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let partial_ec_mul_chain_tmp_tmp_d00c6_17: QM31 = (seq * qm31_const::<4, 0, 0, 0>());
+        let partial_ec_mul_chain_tmp_tmp_d00c6_19: QM31 = (seq * qm31_const::<4, 0, 0, 0>());
 
         partial_ec_mul_sum_10 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_d00c6_17, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_chain_tmp_tmp_d00c6_19, qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<0, 0, 0, 0>(),
                     (value_limb_0_col0 + (value_limb_1_col1 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col2 + (value_limb_3_col3 * qm31_const::<512, 0, 0, 0>())),
@@ -2504,7 +2504,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_d00c6_17, qm31_const::<14, 0, 0, 0>(),
+                    partial_ec_mul_chain_tmp_tmp_d00c6_19, qm31_const::<14, 0, 0, 0>(),
                     partial_ec_mul_output_limb_0_col66, partial_ec_mul_output_limb_1_col67,
                     partial_ec_mul_output_limb_2_col68, partial_ec_mul_output_limb_3_col69,
                     partial_ec_mul_output_limb_4_col70, partial_ec_mul_output_limb_5_col71,
@@ -2543,14 +2543,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_70_col136,
                 ],
             );
-        let partial_ec_mul_chain_id_tmp_d00c6_32: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_17
+        let partial_ec_mul_chain_id_tmp_d00c6_34: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_19
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_sum_12 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_32, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_34, qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<3670016, 0, 0, 0>(), ms_limb_high_col28,
                     qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
@@ -2594,7 +2594,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_32, qm31_const::<1, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_34, qm31_const::<1, 0, 0, 0>(),
                     partial_ec_mul_output_limb_0_col137, partial_ec_mul_output_limb_1_col138,
                     partial_ec_mul_output_limb_2_col139, partial_ec_mul_output_limb_3_col140,
                     partial_ec_mul_output_limb_4_col141, partial_ec_mul_output_limb_5_col142,
@@ -2633,14 +2633,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_70_col207,
                 ],
             );
-        let partial_ec_mul_chain_id_tmp_d00c6_34: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_17
+        let partial_ec_mul_chain_id_tmp_d00c6_36: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_19
             + qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_sum_14 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_34, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_36, qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<3670032, 0, 0, 0>(),
                     (value_limb_0_col30 + (value_limb_1_col31 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col32 + (value_limb_3_col33 * qm31_const::<512, 0, 0, 0>())),
@@ -2691,7 +2691,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_34, qm31_const::<14, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_36, qm31_const::<14, 0, 0, 0>(),
                     partial_ec_mul_output_limb_0_col208, partial_ec_mul_output_limb_1_col209,
                     partial_ec_mul_output_limb_2_col210, partial_ec_mul_output_limb_3_col211,
                     partial_ec_mul_output_limb_4_col212, partial_ec_mul_output_limb_5_col213,
@@ -2730,14 +2730,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_70_col278,
                 ],
             );
-        let partial_ec_mul_chain_id_tmp_d00c6_49: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_17
+        let partial_ec_mul_chain_id_tmp_d00c6_51: QM31 = (partial_ec_mul_chain_tmp_tmp_d00c6_19
             + qm31_const::<3, 0, 0, 0>());
 
         partial_ec_mul_sum_16 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_49, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_51, qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<7340048, 0, 0, 0>(), ms_limb_high_col58,
                     qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                     qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
@@ -2781,7 +2781,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_d00c6_49, qm31_const::<1, 0, 0, 0>(),
+                    partial_ec_mul_chain_id_tmp_d00c6_51, qm31_const::<1, 0, 0, 0>(),
                     partial_ec_mul_output_limb_0_col279, partial_ec_mul_output_limb_1_col280,
                     partial_ec_mul_output_limb_2_col281, partial_ec_mul_output_limb_3_col282,
                     partial_ec_mul_output_limb_4_col283, partial_ec_mul_output_limb_5_col284,

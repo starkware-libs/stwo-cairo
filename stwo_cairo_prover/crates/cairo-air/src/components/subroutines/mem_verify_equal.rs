@@ -1,5 +1,6 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
 use crate::components::prelude::*;
+use crate::components::subroutines::read_id::ReadId;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct MemVerifyEqual {}
@@ -17,12 +18,12 @@ impl MemVerifyEqual {
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         eval: &mut E,
     ) -> [E::F; 0] {
-        eval.add_to_relation(RelationEntry::new(
+        ReadId::evaluate(
+            [mem_verify_equal_input_address1.clone()],
+            id_col0.clone(),
             memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[mem_verify_equal_input_address1.clone(), id_col0.clone()],
-        ));
-
+            eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
             E::EF::one(),

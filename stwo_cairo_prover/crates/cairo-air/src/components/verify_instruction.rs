@@ -1,3 +1,4 @@
+// AIR version 97774321-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::encode_offsets::EncodeOffsets;
 use crate::components::subroutines::mem_verify::MemVerify;

@@ -88,3 +88,4 @@ pub trait NewComponent<T> {
         interaction_elements: @CairoInteractionElements,
     ) -> T;
 }
+pub mod poseidon_aggregator;
