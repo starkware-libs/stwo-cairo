@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait};
+use super::super::m31::{AddM31Trait, M31, M31InnerT, M31Trait, MulByM31Trait};
 // TODO(Gali): Remove.
 #[allow(unused_imports)]
 use super::{PackedUnreducedQM31Trait, QM31Display, QM31Trait, QM31_EXTENSION_DEGREE};
@@ -17,6 +17,13 @@ impl QM31MulByM31Impl of MulByM31Trait<QM31> {
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         self * rhs.into()
+    }
+}
+
+pub impl QM31AddM31Impl of AddM31Trait<QM31> {
+    #[inline]
+    fn add_m31(self: QM31, rhs: M31) -> QM31 {
+        self + rhs.into()
     }
 }
 
