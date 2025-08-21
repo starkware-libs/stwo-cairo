@@ -25,6 +25,7 @@ pub mod impls {
 
     type U8_BOUNDED_INT = BoundedInt<0, { U8_SHIFT - 1 }>;
     type U9_BOUNDED_INT = BoundedInt<0, { U9_SHIFT - 1 }>;
+    type U9_PLUS_1_BOUNDED_INT = BoundedInt<0, { U9_SHIFT }>;
     type U16_BOUNDED_INT = BoundedInt<0, { 0x10000 - 1 }>; // 2**16 - 1
     type U23_BOUNDED_INT = BoundedInt<0, { 0x800000 - 1 }>; // 2**23 - 1
     type U24_BOUNDED_INT = BoundedInt<0, { 0x1000000 - 1 }>; // 2**24 - 1
@@ -137,8 +138,8 @@ pub mod impls {
         type RemT = BoundedInt<0, { U9_SHIFT - 1 }>;
     }
 
-    pub impl DivRemU32ByU9 of DivRemHelper<u32, U9_BOUNDED_INT> {
+    pub impl DivRemU32ByU9Plus1 of DivRemHelper<u32, U9_PLUS_1_BOUNDED_INT> {
         type DivT = U32_BOUNDED_INT;
-        type RemT = BoundedInt<0, { U9_SHIFT - 2 }>;
+        type RemT = U9_BOUNDED_INT;
     }
 }
