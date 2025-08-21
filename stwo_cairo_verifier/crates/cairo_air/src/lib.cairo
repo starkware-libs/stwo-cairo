@@ -442,11 +442,11 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
 }
 
 fn check_builtin(builtin_claim: Option<BuiltinClaim>, segment_range: SegmentRange, n_cells: usize) {
-    if segment_range.is_empty() {
+    let Some(BuiltinClaim { segment_start, log_size }) = builtin_claim else {
+        // If the builtin is disabled it can't be used by the program.
+        assert!(segment_range.is_empty());
         return;
-    }
-
-    let BuiltinClaim { segment_start, log_size } = builtin_claim.unwrap();
+    };
 
     let segment_end = segment_start + pow2(log_size) * n_cells;
     let start_ptr = segment_range.start_ptr.value;
