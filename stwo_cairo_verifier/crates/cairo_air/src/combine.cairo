@@ -25,20 +25,24 @@ pub impl ADD_U9_BB_U9_BOUNDED_TO_U23 of AddHelper<U9_BB_U9_BOUNDED, U23_BOUNDED_
 }
 
 /// Splits input into (msb, 2*u9, lsb) where lsb has log_2(shift) bits.
-fn split_u32_to_4_chunks(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9) {
+fn split_u32_to_4_chunks(
+    input: u32, shift: NonZero<U9_PLUS_1_BOUNDED_INT>,
+) -> (U23_BOUNDED_INT, u9, u9, u9) {
     let (q, lsb) = div_rem::<u32, _, _>(input, shift);
     let (q, r0) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
     let (q, r1) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
-    (upcast(q), r1, r0, upcast(lsb))
+    (upcast(q), r1, r0, lsb)
 }
 
 /// Splits input into (msb, 3*u9, lsb) where lsb has log_2(shift) bits.
-fn split_u32_to_5_chunks(input: u32, shift: NonZero<u9>) -> (U23_BOUNDED_INT, u9, u9, u9, u9) {
+fn split_u32_to_5_chunks(
+    input: u32, shift: NonZero<U9_PLUS_1_BOUNDED_INT>,
+) -> (U23_BOUNDED_INT, u9, u9, u9, u9) {
     let (q, lsb) = div_rem::<u32, _, _>(input, shift);
     let (q, r0) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
     let (q, r1) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
     let (q, r2) = div_rem::<u32, _, _>(upcast(q), NZ_U9_SHIFT);
-    (upcast(q), r2, r1, r0, upcast(lsb))
+    (upcast(q), r2, r1, r0, lsb)
 }
 
 /// Update sum to sum * alpha + value.
@@ -46,25 +50,29 @@ fn horner_step(ref sum: QM31, value: u9, alpha: QM31) {
     sum = sum * alpha + M31Trait::new(upcast(value)).into();
 }
 
-/// Same as `horner_step`, but the `value` is given as `msb * shift + lsb`.
+/// Same as `horner_step`, but the `value` is given as `msb * lsb_bound + lsb`.
 fn horner_step_with_split_input(
-    ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, shift: u9, alpha: QM31,
+    ref sum: QM31, msb: u9, lsb: U23_BOUNDED_INT, lsb_bound: u9, alpha: QM31,
 ) {
-    let value = add(bounded_int_mul(msb, shift), lsb);
+    let value = add(bounded_int_mul(msb, lsb_bound), lsb);
     sum = sum * alpha + M31Trait::new(upcast(value)).into();
 }
 
-/// An unrolled implementation for combining a felt252 value as part of the combine_id_to_value
-/// flow.
+/// An unrolled implementation for combining a `felt252` value within the
+/// `combine_id_to_value` flow.
 ///
-/// computes \sigma_i = values[i] * alpha^(i+1)
+/// Computes:
+///     ∑ values[i] * α^(i+1)
 ///
-/// This function takes a [u32; 8] value representing a felt252 in little endian, converts it to a
-/// [u9; 28] array of coefficients, and uses Horner evaluation to compute the value of the
-/// corresponding polynomial at alpha.
+/// The function:
+/// - Interprets the input `[u32; 8]` as a `felt252` in little-endian form.
+/// - transforms it into a `[u9; 28]` array of polynomial coefficients.
+/// - Applies Horner’s method to evaluate the polynomial at `α`.
+/// - Multiplying the final Horner evaluation result by `α`.
 ///
-/// Note that Horner evaluation expects the coefficients in reverse order, which makes the [u32; 8]
-/// -> [u9; 28] transformation somewhat unnatural.
+/// Note:
+/// Horner’s method requires coefficients in reverse order, which makes the
+/// `[u32; 8]` → `[u9; 28]` transformation somewhat unintuitive.
 #[cfg(feature: "qm31_opcode")]
 pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
@@ -123,7 +131,7 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
     horner_step(ref sum, l4, alpha);
 
     // Take 5 + 27 + 0 bits from v0
-    let (l3_low, l2, l1, l0, _) = split_u32_to_5_chunks(v0, 1);
+    let (l3_low, l2, l1, l0) = split_u32_to_4_chunks(v0, 0x200);
     horner_step_with_split_input(ref sum, l3_high, l3_low, 0x20, alpha);
 
     horner_step(ref sum, l2, alpha);
@@ -232,8 +240,8 @@ pub fn combine_felt252(
     sum += a6.mul_m31(M31Trait::new(upcast(l5)));
     sum += a5.mul_m31(M31Trait::new(upcast(l4)));
 
-    // Take 5 + 27 + 0 bits from v0
-    let (l3_low, l2, l1, l0, _) = split_u32_to_5_chunks(v0, 1);
+    // Take 5 + 18 + 9 bits from v0
+    let (l3_low, l2, l1, l0) = split_u32_to_4_chunks(v0, 0x200);
     let l3 = add(bounded_int_mul(l3_high, 0x20), l3_low);
     sum += a4.mul_m31(M31Trait::new(upcast(l3)));
     sum += a3.mul_m31(M31Trait::new(upcast(l2)));
