@@ -22,18 +22,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         // No column values (most common case).
         if column_values.is_empty() {
             let (msg, byte_count) = match children_hashes {
-                Some((
-                    x, y,
-                )) => {
-                    let [x0, x1, x2, x3, x4, x5, x6, x7] = x.hash.unbox();
-                    let [y0, y1, y2, y3, y4, y5, y6, y7] = y.hash.unbox();
-                    (
-                        BoxImpl::new(
-                            [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
-                        ),
-                        64,
-                    )
-                },
+                Some((x, y)) => (combine_u32_block(x.hash, y.hash), 64),
                 None => panic!("Empty nodes are not supported"),
             };
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
@@ -41,11 +30,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
 
         let mut byte_count = 0_u32;
         if let Some((x, y)) = children_hashes {
-            let [x0, x1, x2, x3, x4, x5, x6, x7] = x.hash.unbox();
-            let [y0, y1, y2, y3, y4, y5, y6, y7] = y.hash.unbox();
-            let msg = BoxImpl::new(
-                [x0, x1, x2, x3, x4, x5, x6, x7, y0, y1, y2, y3, y4, y5, y6, y7],
-            );
+            let msg = combine_u32_block(x.hash, y.hash);
             byte_count = 64;
             state = blake2s_compress(:state, :byte_count, :msg);
         }
@@ -104,6 +89,14 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         byte_count += last_block_length * 4;
         Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }
+}
+
+/// Combines two 8-element M31 blocks into a 16-element u32 block.
+#[inline]
+fn combine_u32_block(left: Box<[u32; 8]>, right: Box<[u32; 8]>) -> Box<[u32; 16]> {
+    let [l0, l1, l2, l3, l4, l5, l6, l7] = left.unbox();
+    let [r0, r1, r2, r3, r4, r5, r6, r7] = right.unbox();
+    BoxImpl::new([l0, l1, l2, l3, l4, l5, l6, l7, r0, r1, r2, r3, r4, r5, r6, r7])
 }
 
 /// Converts a full 16-element block of M31 values to a 16-element block of u32 values.
