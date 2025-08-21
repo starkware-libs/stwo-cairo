@@ -128,7 +128,8 @@ pub fn evaluate_constraints_at_point(
         // (current - prev) * (intermediate0 * intermediate1) =
         // -multiplicity0 * intermediate1 - multiplicity1 * intermediate0
         let constraint_quotient = ((curr_cum_sum - prev_cum_sum) * combination_0 * combination_1
-            - (combination_1 * (-(multiplicity_0)) + combination_0 * (-(multiplicity_1))))
+            + multiplicity_0 * combination_1
+            + multiplicity_1 * combination_0)
             * domain_vanish_at_point_inv;
         sum = sum * random_coeff + constraint_quotient;
         prev_cum_sum = curr_cum_sum;
@@ -161,7 +162,8 @@ pub fn evaluate_constraints_at_point(
         + claimed_sum * column_size.inverse().into())
         * combination_0
         * combination_1
-        - (combination_1 * (-(multiplicity_0)) + combination_0 * (-(multiplicity_1))))
+        + multiplicity_0 * combination_1
+        + multiplicity_1 * combination_0)
         * domain_vanish_at_point_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
