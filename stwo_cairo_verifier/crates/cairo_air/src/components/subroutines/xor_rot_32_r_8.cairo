@@ -1,5 +1,6 @@
-// AIR version 54d95c0d
+// AIR version e654733
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
+use crate::components::subroutines::bitwise_xor_num_bits_8_b::bitwise_xor_num_bits_8_b_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
 use crate::prelude::*;
 
@@ -15,10 +16,11 @@ pub fn xor_rot_32_r_8_evaluate(
     xor_col6: QM31,
     xor_col7: QM31,
     verify_bitwise_xor_8_lookup_elements: @crate::VerifyBitwiseXor_8Elements,
+    verify_bitwise_xor_8_b_lookup_elements: @crate::VerifyBitwiseXor_8_BElements,
     ref verify_bitwise_xor_8_sum_0: QM31,
     ref verify_bitwise_xor_8_sum_1: QM31,
-    ref verify_bitwise_xor_8_sum_2: QM31,
-    ref verify_bitwise_xor_8_sum_3: QM31,
+    ref verify_bitwise_xor_8_b_sum_2: QM31,
+    ref verify_bitwise_xor_8_b_sum_3: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -83,23 +85,23 @@ pub fn xor_rot_32_r_8_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8_b_evaluate(
         [
             split_16_low_part_size_8_output_tmp_aa6bd_3_limb_0,
             split_16_low_part_size_8_output_tmp_aa6bd_7_limb_0,
         ],
         xor_col6,
-        verify_bitwise_xor_8_lookup_elements,
-        ref verify_bitwise_xor_8_sum_2,
+        verify_bitwise_xor_8_b_lookup_elements,
+        ref verify_bitwise_xor_8_b_sum_2,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    bitwise_xor_num_bits_8_evaluate(
+    bitwise_xor_num_bits_8_b_evaluate(
         [ms_8_bits_col1, ms_8_bits_col3],
         xor_col7,
-        verify_bitwise_xor_8_lookup_elements,
-        ref verify_bitwise_xor_8_sum_3,
+        verify_bitwise_xor_8_b_lookup_elements,
+        ref verify_bitwise_xor_8_b_sum_3,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,

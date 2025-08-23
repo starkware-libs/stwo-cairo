@@ -63,6 +63,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_4,
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
     } = cairo_components;
     let OpcodeComponents {
@@ -172,6 +173,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_bitwise_xor_4, &trace);
     assert_component(verify_bitwise_xor_7, &trace);
     assert_component(verify_bitwise_xor_8, &trace);
+    assert_component(verify_bitwise_xor_8_b, &trace);
     assert_component(verify_bitwise_xor_9, &trace);
     assert_component(memory_address_to_id, &trace);
     for component in &memory_id_to_value.0 {
