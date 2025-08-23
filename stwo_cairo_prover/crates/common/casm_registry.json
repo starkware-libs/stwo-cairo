@@ -1,5 +1,5 @@
 {
-  "air_version": "549682be",
+  "air_version": "26cb208f",
   "air_fns": {
     "range_check_9_9": {
       "trace_type": "Component",
@@ -1791,6 +1791,22 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
+    "verify_bitwise_xor_8_b": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "VerifyBitwiseXor_8_B": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
     "verify_bitwise_xor_4": {
       "trace_type": "Component",
       "num_state_cols": 0,
@@ -1827,7 +1843,8 @@
       "trace_type": "Component",
       "num_state_cols": 52,
       "use_lookup_cols": {
-        "VerifyBitwiseXor_8": 8,
+        "VerifyBitwiseXor_8": 4,
+        "VerifyBitwiseXor_8_B": 4,
         "VerifyBitwiseXor_12": 2,
         "VerifyBitwiseXor_4": 2,
         "VerifyBitwiseXor_7": 2,
@@ -1837,7 +1854,8 @@
         "BlakeG": 1
       },
       "lookup_rows": {
-        "verify_bitwise_xor_8": 8,
+        "verify_bitwise_xor_8": 4,
+        "verify_bitwise_xor_8_b": 4,
         "verify_bitwise_xor_12": 2,
         "verify_bitwise_xor_4": 2,
         "verify_bitwise_xor_7": 2,
@@ -1847,14 +1865,15 @@
       "total_num_trace_cols": 89,
       "trace_cells_upper_bound": 89,
       "uses_upper_bound": {
-        "verify_bitwise_xor_8": 8,
+        "verify_bitwise_xor_8": 4,
+        "verify_bitwise_xor_8_b": 4,
         "verify_bitwise_xor_12": 2,
         "verify_bitwise_xor_4": 2,
         "verify_bitwise_xor_7": 2,
         "verify_bitwise_xor_9": 2
       },
       "rows_upper_bound": {},
-      "max_instances_uses_limit": 268435455,
+      "max_instances_uses_limit": 536870911,
       "max_instances_rows_limit": 268435456
     },
     "blake_round": {
@@ -1893,7 +1912,8 @@
         "range_check_9_9_f": 32,
         "range_check_9_9_g": 16,
         "range_check_9_9_h": 16,
-        "verify_bitwise_xor_8": 64,
+        "verify_bitwise_xor_8": 32,
+        "verify_bitwise_xor_8_b": 32,
         "verify_bitwise_xor_12": 16,
         "verify_bitwise_xor_4": 16,
         "verify_bitwise_xor_7": 16,
@@ -1902,29 +1922,32 @@
       "rows_upper_bound": {
         "blake_g": 8
       },
-      "max_instances_uses_limit": 33554431,
+      "max_instances_uses_limit": 67108863,
       "max_instances_rows_limit": 33554432
     },
     "triple_xor_32": {
       "trace_type": "Component",
       "num_state_cols": 20,
       "use_lookup_cols": {
-        "VerifyBitwiseXor_8": 8
+        "VerifyBitwiseXor_8": 4,
+        "VerifyBitwiseXor_8_B": 4
       },
       "yield_lookup_cols": {
         "TripleXor32": 1
       },
       "lookup_rows": {
-        "verify_bitwise_xor_8": 8
+        "verify_bitwise_xor_8": 4,
+        "verify_bitwise_xor_8_b": 4
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 41,
       "trace_cells_upper_bound": 41,
       "uses_upper_bound": {
-        "verify_bitwise_xor_8": 8
+        "verify_bitwise_xor_8": 4,
+        "verify_bitwise_xor_8_b": 4
       },
       "rows_upper_bound": {},
-      "max_instances_uses_limit": 268435455,
+      "max_instances_uses_limit": 536870911,
       "max_instances_rows_limit": 268435456
     },
     "blake_compress_opcode": {
@@ -1968,8 +1991,9 @@
         "range_check_9_9_f": 578,
         "range_check_9_9_g": 289,
         "range_check_9_9_h": 289,
-        "verify_bitwise_xor_8": 1092,
+        "verify_bitwise_xor_8": 548,
         "blake_round_sigma": 16,
+        "verify_bitwise_xor_8_b": 544,
         "verify_bitwise_xor_12": 256,
         "verify_bitwise_xor_4": 256,
         "verify_bitwise_xor_7": 256,
@@ -1980,7 +2004,7 @@
         "blake_g": 128,
         "triple_xor_32": 8
       },
-      "max_instances_uses_limit": 1966560,
+      "max_instances_uses_limit": 3715369,
       "max_instances_rows_limit": 2097152
     }
   }
