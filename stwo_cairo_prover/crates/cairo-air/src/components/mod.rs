@@ -43,9 +43,11 @@ pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
 pub mod verify_bitwise_xor_7;
 pub mod verify_bitwise_xor_8;
+pub mod verify_bitwise_xor_8_b;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
+// TODO: Please move somewhere else
 pub(crate) mod prelude;
 pub(crate) mod subroutines;
 

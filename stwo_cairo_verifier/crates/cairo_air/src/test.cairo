@@ -135,6 +135,7 @@ fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         verify_bitwise_xor_4: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_7: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_8: LookupElementsDummyImpl::dummy(),
+        verify_bitwise_xor_8_b: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
     }
