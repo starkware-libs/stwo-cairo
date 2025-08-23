@@ -228,6 +228,9 @@ impl Components {
                 verify_bitwise_xor_8_lookup_elements: interaction_elements
                     .verify_bitwise_xor_8
                     .clone(),
+                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                    .verify_bitwise_xor_8_b
+                    .clone(),
                 verify_bitwise_xor_9_lookup_elements: interaction_elements
                     .verify_bitwise_xor_9
                     .clone(),
@@ -251,6 +254,9 @@ impl Components {
                 triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
                 verify_bitwise_xor_8_lookup_elements: interaction_elements
                     .verify_bitwise_xor_8
+                    .clone(),
+                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                    .verify_bitwise_xor_8_b
                     .clone(),
             },
             interaction_claim.triple_xor_32.claimed_sum,
