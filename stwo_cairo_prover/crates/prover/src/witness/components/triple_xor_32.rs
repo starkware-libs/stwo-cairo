@@ -1,8 +1,8 @@
-// AIR version 38bef2b6
+// AIR version 05919d4b
 #![allow(unused_parens)]
 use cairo_air::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::verify_bitwise_xor_8;
+use crate::witness::components::{verify_bitwise_xor_8, verify_bitwise_xor_8_b};
 use crate::witness::prelude::*;
 
 pub type PackedInputType = [PackedUInt32; 3];
@@ -22,6 +22,7 @@ impl ClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+        verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -31,13 +32,23 @@ impl ClaimGenerator {
         self.packed_inputs
             .resize(packed_size, *self.packed_inputs.first().unwrap());
 
-        let (trace, lookup_data, sub_component_inputs) =
-            write_trace_simd(self.packed_inputs, n_rows, verify_bitwise_xor_8_state);
+        let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
+            self.packed_inputs,
+            n_rows,
+            verify_bitwise_xor_8_state,
+            verify_bitwise_xor_8_b_state,
+        );
         sub_component_inputs
             .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
                 verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .verify_bitwise_xor_8_b
+            .iter()
+            .for_each(|inputs| {
+                verify_bitwise_xor_8_b_state.add_packed_inputs(inputs);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -58,7 +69,8 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
-    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 8],
+    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
+    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8_b::PackedInputType>; 4],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -69,6 +81,7 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+    verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -226,60 +239,60 @@ fn write_trace_simd(
                     [xor_col14, ms_8_bits_col10, xor_col15];
                 *lookup_data.verify_bitwise_xor_8_3 = [xor_col14, ms_8_bits_col10, xor_col15];
 
-                // Bitwise Xor Num Bits 8.
+                // Bitwise Xor Num Bits 8 B.
 
                 let xor_tmp_298db_20 =
                     ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_3[0]))
                         ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_7[0])));
                 let xor_col16 = xor_tmp_298db_20.as_m31();
                 *row[16] = xor_col16;
-                *sub_component_inputs.verify_bitwise_xor_8[4] = [
+                *sub_component_inputs.verify_bitwise_xor_8_b[0] = [
                     split_16_low_part_size_8_output_tmp_298db_3[0],
                     split_16_low_part_size_8_output_tmp_298db_7[0],
                     xor_col16,
                 ];
-                *lookup_data.verify_bitwise_xor_8_4 = [
+                *lookup_data.verify_bitwise_xor_8_b_0 = [
                     split_16_low_part_size_8_output_tmp_298db_3[0],
                     split_16_low_part_size_8_output_tmp_298db_7[0],
                     xor_col16,
                 ];
 
-                // Bitwise Xor Num Bits 8.
+                // Bitwise Xor Num Bits 8 B.
 
                 let xor_tmp_298db_22 = ((PackedUInt16::from_m31(xor_col16))
                     ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_11[0])));
                 let xor_col17 = xor_tmp_298db_22.as_m31();
                 *row[17] = xor_col17;
-                *sub_component_inputs.verify_bitwise_xor_8[5] = [
+                *sub_component_inputs.verify_bitwise_xor_8_b[1] = [
                     xor_col16,
                     split_16_low_part_size_8_output_tmp_298db_11[0],
                     xor_col17,
                 ];
-                *lookup_data.verify_bitwise_xor_8_5 = [
+                *lookup_data.verify_bitwise_xor_8_b_1 = [
                     xor_col16,
                     split_16_low_part_size_8_output_tmp_298db_11[0],
                     xor_col17,
                 ];
 
-                // Bitwise Xor Num Bits 8.
+                // Bitwise Xor Num Bits 8 B.
 
                 let xor_tmp_298db_24 = ((PackedUInt16::from_m31(ms_8_bits_col7))
                     ^ (PackedUInt16::from_m31(ms_8_bits_col9)));
                 let xor_col18 = xor_tmp_298db_24.as_m31();
                 *row[18] = xor_col18;
-                *sub_component_inputs.verify_bitwise_xor_8[6] =
+                *sub_component_inputs.verify_bitwise_xor_8_b[2] =
                     [ms_8_bits_col7, ms_8_bits_col9, xor_col18];
-                *lookup_data.verify_bitwise_xor_8_6 = [ms_8_bits_col7, ms_8_bits_col9, xor_col18];
+                *lookup_data.verify_bitwise_xor_8_b_2 = [ms_8_bits_col7, ms_8_bits_col9, xor_col18];
 
-                // Bitwise Xor Num Bits 8.
+                // Bitwise Xor Num Bits 8 B.
 
                 let xor_tmp_298db_26 = ((PackedUInt16::from_m31(xor_col18))
                     ^ (PackedUInt16::from_m31(ms_8_bits_col11)));
                 let xor_col19 = xor_tmp_298db_26.as_m31();
                 *row[19] = xor_col19;
-                *sub_component_inputs.verify_bitwise_xor_8[7] =
+                *sub_component_inputs.verify_bitwise_xor_8_b[3] =
                     [xor_col18, ms_8_bits_col11, xor_col19];
-                *lookup_data.verify_bitwise_xor_8_7 = [xor_col18, ms_8_bits_col11, xor_col19];
+                *lookup_data.verify_bitwise_xor_8_b_3 = [xor_col18, ms_8_bits_col11, xor_col19];
 
                 let triple_xor32_output_tmp_298db_28 = PackedUInt32::from_limbs([
                     ((xor_col13) + ((xor_col15) * (M31_256))),
@@ -309,10 +322,10 @@ struct LookupData {
     verify_bitwise_xor_8_1: Vec<[PackedM31; 3]>,
     verify_bitwise_xor_8_2: Vec<[PackedM31; 3]>,
     verify_bitwise_xor_8_3: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_4: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_5: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_6: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_7: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_b_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_b_1: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_b_2: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_b_3: Vec<[PackedM31; 3]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -325,6 +338,7 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
+        verify_bitwise_xor_8_b: &relations::VerifyBitwiseXor_8_B,
         triple_xor_32: &relations::TripleXor32,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
@@ -362,13 +376,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_8_4,
-            &self.lookup_data.verify_bitwise_xor_8_5,
+            &self.lookup_data.verify_bitwise_xor_8_b_0,
+            &self.lookup_data.verify_bitwise_xor_8_b_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_8.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_8.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_xor_8_b.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_xor_8_b.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -376,13 +390,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_8_6,
-            &self.lookup_data.verify_bitwise_xor_8_7,
+            &self.lookup_data.verify_bitwise_xor_8_b_2,
+            &self.lookup_data.verify_bitwise_xor_8_b_3,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_8.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_8.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_xor_8_b.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_xor_8_b.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
