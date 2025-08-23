@@ -1,3 +1,5 @@
+use crate::CairoInteractionElements;
+
 use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::circle::CirclePoint;
@@ -29,4 +31,16 @@ pub trait CairoComponent<T> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     );
+}
+
+/// A trait for creating a new component.
+pub trait NewComponent<T> {
+    type Claim;
+    type InteractionClaim;
+
+    fn new(
+        claim: @Self::Claim,
+        interaction_claim: @Self::InteractionClaim,
+        interaction_elements: @CairoInteractionElements,
+    ) -> T;
 }

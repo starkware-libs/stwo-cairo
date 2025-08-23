@@ -82,7 +82,7 @@ mod tests {
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
 
     use super::MockCommitmentScheme;
-    use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8};
+    use crate::witness::components::{triple_xor_32, verify_bitwise_xor_8, verify_bitwise_xor_8_b};
 
     #[test]
     fn test_mock_commitment_scheme() {
@@ -91,10 +91,12 @@ mod tests {
             .map(u32x16::from_array)
             .map(PackedUInt32::from_simd);
         let veirfy_bitwise_xor_8_trace_gen = &verify_bitwise_xor_8::ClaimGenerator::new();
+        let veirfy_bitwise_xor_8_b_trace_gen = &verify_bitwise_xor_8_b::ClaimGenerator::new();
         let mut triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
         triple_xor_32_trace_gen.add_packed_inputs(&[input]);
         let triple_xor_relation = relations::TripleXor32::dummy();
         let verify_bitwise_xor_8_relation = relations::VerifyBitwiseXor_8::dummy();
+        let verify_bitwise_xor_8_b_relation = relations::VerifyBitwiseXor_8_B::dummy();
 
         let mut mock_commitment_scheme = MockCommitmentScheme::default();
 
@@ -104,7 +106,7 @@ mod tests {
 
         // Base trace.
         let (_, interaction_gen) = triple_xor_32_trace_gen
-            .write_trace(&mut mock_tree_builder, veirfy_bitwise_xor_8_trace_gen);
+            .write_trace(&mut mock_tree_builder, veirfy_bitwise_xor_8_trace_gen, veirfy_bitwise_xor_8_b_trace_gen);
         mock_tree_builder.finalize_interaction();
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
@@ -112,6 +114,7 @@ mod tests {
         interaction_gen.write_interaction_trace(
             &mut mock_tree_builder,
             &verify_bitwise_xor_8_relation,
+            &verify_bitwise_xor_8_b_relation,
             &triple_xor_relation,
         );
         mock_tree_builder.finalize_interaction();
