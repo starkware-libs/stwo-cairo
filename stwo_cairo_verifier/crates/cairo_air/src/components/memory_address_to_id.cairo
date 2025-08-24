@@ -15,10 +15,15 @@ mod constraints;
 /// ID1 = [id3, id4, id5, 0]
 /// ID2 = [id6, id7, id8, 0]
 /// ID3 = [id9, id10, 0, 0]
-pub const LOG_MEMORY_ADDRESS_TO_ID_SPLIT: u32 = 3;
-pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 8;
+pub const LOG_MEMORY_ADDRESS_TO_ID_SPLIT: u32 = 4;
+pub const MEMORY_ADDRESS_TO_ID_SPLIT: usize = 16;
 pub const N_ID_AND_MULT_COLUMNS_PER_CHUNK: usize = 2;
 pub const N_TRACE_COLUMNS: usize = MEMORY_ADDRESS_TO_ID_SPLIT * N_ID_AND_MULT_COLUMNS_PER_CHUNK;
+
+// Number of QM31 columns in the interaction trace.
+// Each QM31 column is implemented as 4 M31 columns.
+pub const N_INTERACTION_TRACE_QM31_COLUMNS: usize = (MEMORY_ADDRESS_TO_ID_SPLIT / 2);
+
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 0] = [];
 
 #[derive(Drop, Serde, Copy)]
@@ -32,7 +37,10 @@ pub impl ClaimImpl of ClaimTrait {
         let log_size = *self.log_size;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 16].span();
+        let interaction_log_sizes = [
+            log_size
+        ; N_INTERACTION_TRACE_QM31_COLUMNS * QM31_EXTENSION_DEGREE]
+            .span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 

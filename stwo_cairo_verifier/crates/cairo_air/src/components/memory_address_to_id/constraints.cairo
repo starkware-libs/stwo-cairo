@@ -1,5 +1,5 @@
 use crate::prelude::*;
-use super::MEMORY_ADDRESS_TO_ID_SPLIT;
+use super::{MEMORY_ADDRESS_TO_ID_SPLIT, N_INTERACTION_TRACE_QM31_COLUMNS};
 
 pub fn mask_points(
     ref preprocessed_column_set: PreprocessedColumnSet,
@@ -11,34 +11,21 @@ pub fn mask_points(
 ) {
     preprocessed_column_set.insert(PreprocessedColumn::Seq(log_size));
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
+
+    for _ in 0..MEMORY_ADDRESS_TO_ID_SPLIT {
+        trace_mask_points.append(array![point]); // ID.
+        trace_mask_points.append(array![point]); // Multiplicity.
+    }
+
+    for _ in 0..N_INTERACTION_TRACE_QM31_COLUMNS - 1 {
+        // Each QM31 column is implemented as 4 M31 columns.
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point]);
+    }
+
+    // The final cumulative logup sum.
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
     interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -96,11 +83,10 @@ pub fn evaluate_constraints_at_point(
     let mut prev_cum_sum: QM31 = Zero::zero();
     let mut address: QM31 = seq + m31(1).into();
 
-    // This loop executes `n_column_wise_constraints` iterations, each enforcing a column-wise
-    // pairwise sum constraint. After this loop, a final constraint will handle both a row-wise sum
-    // and a column-wise pairwise sum.
-    let n_column_wise_constraints = (MEMORY_ADDRESS_TO_ID_SPLIT / 2) - 1;
-    for _ in 0..n_column_wise_constraints {
+    // This loop executes `N_INTERACTION_TRACE_QM31_COLUMNS - 1` iterations, each enforcing a
+    // column-wise pairwise sum constraint. After this loop, a final constraint will handle both a
+    // row-wise sum and a column-wise pairwise sum.
+    for _ in 0..N_INTERACTION_TRACE_QM31_COLUMNS - 1 {
         // Get two (id, multiplicity) from the trace.
         let [id_0, multiplicity_0, id_1, multiplicity_1]: [Span<QM31>; 4] = (*trace_mask_values
             .multi_pop_front()
