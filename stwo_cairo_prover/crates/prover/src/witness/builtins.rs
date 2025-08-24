@@ -10,10 +10,9 @@ use super::components::pedersen::PedersenContextClaimGenerator;
 use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3,
-    range_check_3_6_6_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
-    range_check_8, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_8,
-    verify_bitwise_xor_9,
+    pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_6_6_3,
+    range_check_5_4, range_check_6, range_check_8, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
 pub struct BuiltinsClaimGenerator {
@@ -143,10 +142,7 @@ impl BuiltinsClaimGenerator {
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
         range_check_12_trace_generator: &range_check_12::ClaimGenerator,
         range_check_18_trace_generator: &range_check_18::ClaimGenerator,
-        range_check_4_4_trace_generator: &range_check_4_4::ClaimGenerator,
         range_check_3_6_6_3_trace_generator: &range_check_3_6_6_3::ClaimGenerator,
-        range_check_4_4_4_4_trace_generator: &range_check_4_4_4_4::ClaimGenerator,
-        range_check_3_3_3_3_3_trace_generator: &range_check_3_3_3_3_3::ClaimGenerator,
         verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
@@ -203,17 +199,8 @@ impl BuiltinsClaimGenerator {
             .map(|poseidon_builtin_trace_generator| {
                 poseidon_builtin_trace_generator.write_trace(
                     tree_builder,
-                    &mut poseidon_context_trace_generator.cube_252_trace_generator,
                     memory_address_to_id_trace_generator,
-                    memory_id_to_value_trace_generator,
-                    &mut poseidon_context_trace_generator
-                        .poseidon_3_partial_rounds_chain_trace_generator,
-                    &mut poseidon_context_trace_generator.poseidon_full_round_chain_trace_generator,
-                    range_check_3_3_3_3_3_trace_generator,
-                    range_check_4_4_trace_generator,
-                    range_check_4_4_4_4_trace_generator,
-                    &mut poseidon_context_trace_generator
-                        .range_check_felt_252_width_27_trace_generator,
+                    &mut poseidon_context_trace_generator.poseidon_aggregator_trace_generator,
                 )
             })
             .unzip();
@@ -317,11 +304,11 @@ impl BuiltinsInteractionClaimGenerator {
                 .map(|pedersen_builtin_interaction_gen| {
                     pedersen_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
+                        &interaction_elements.range_checks.rc_5_4,
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
-                        &interaction_elements.partial_ec_mul,
-                        &interaction_elements.range_checks.rc_5_4,
                         &interaction_elements.range_checks.rc_8,
+                        &interaction_elements.partial_ec_mul,
                     )
                 });
         let poseidon_builtin_interaction_claim =
@@ -329,15 +316,8 @@ impl BuiltinsInteractionClaimGenerator {
                 .map(|poseidon_builtin_interaction_gen| {
                     poseidon_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
-                        &interaction_elements.cube_252,
                         &interaction_elements.memory_address_to_id,
-                        &interaction_elements.memory_id_to_value,
-                        &interaction_elements.poseidon_3_partial_rounds_chain,
-                        &interaction_elements.poseidon_full_round_chain,
-                        &interaction_elements.range_check_felt_252_width_27,
-                        &interaction_elements.range_checks.rc_3_3_3_3_3,
-                        &interaction_elements.range_checks.rc_4_4,
-                        &interaction_elements.range_checks.rc_4_4_4_4,
+                        &interaction_elements.poseidon_aggregator,
                     )
                 });
         let range_check_96_builtin_interaction_claim = self

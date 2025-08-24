@@ -636,14 +636,14 @@ impl OpcodesInteractionClaimGenerator {
             .map(|gen| {
                 gen.write_interaction_trace(
                     tree_builder,
-                    &interaction_elements.blake_round,
+                    &interaction_elements.verify_instruction,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
                     &interaction_elements.range_checks.rc_7_2_5,
-                    &interaction_elements.triple_xor_32,
                     &interaction_elements.verify_bitwise_xor_8,
-                    &interaction_elements.verify_instruction,
+                    &interaction_elements.blake_round,
+                    &interaction_elements.triple_xor_32,
+                    &interaction_elements.opcodes,
                 )
             })
             .collect();

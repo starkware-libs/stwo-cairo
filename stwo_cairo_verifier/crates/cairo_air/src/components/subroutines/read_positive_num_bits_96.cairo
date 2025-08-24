@@ -1,5 +1,6 @@
-// AIR version d1591e2a
-use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_6::range_check_last_limb_bits_in_ms_limb_6_evaluate;
+// AIR version 97774321-dirty
+use crate::components::subroutines::read_id::read_id_evaluate;
+use crate::components::subroutines::read_positive_known_id_num_bits_96::read_positive_known_id_num_bits_96_evaluate;
 use crate::prelude::*;
 
 
@@ -28,32 +29,36 @@ pub fn read_positive_num_bits_96_evaluate(
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let read_positive_num_bits_96_input = input;
-
-    memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
-        .combine_qm31([read_positive_num_bits_96_input, id_col0]);
-    range_check_last_limb_bits_in_ms_limb_6_evaluate(
-        value_limb_10_col11,
-        range_check_6_lookup_elements,
-        ref range_check_6_sum_1,
+    read_id_evaluate(
+        read_positive_num_bits_96_input,
+        id_col0,
+        memory_address_to_id_lookup_elements,
+        ref memory_address_to_id_sum_0,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
-
-    memory_id_to_big_sum_2 = memory_id_to_big_lookup_elements
-        .combine_qm31(
-            [
-                id_col0, value_limb_0_col1, value_limb_1_col2, value_limb_2_col3, value_limb_3_col4,
-                value_limb_4_col5, value_limb_5_col6, value_limb_6_col7, value_limb_7_col8,
-                value_limb_8_col9, value_limb_9_col10, value_limb_10_col11,
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-            ],
-        );
+    read_positive_known_id_num_bits_96_evaluate(
+        id_col0,
+        value_limb_0_col1,
+        value_limb_1_col2,
+        value_limb_2_col3,
+        value_limb_3_col4,
+        value_limb_4_col5,
+        value_limb_5_col6,
+        value_limb_6_col7,
+        value_limb_7_col8,
+        value_limb_8_col9,
+        value_limb_9_col10,
+        value_limb_10_col11,
+        range_check_6_lookup_elements,
+        memory_id_to_big_lookup_elements,
+        ref range_check_6_sum_1,
+        ref memory_id_to_big_sum_2,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
+    );
 
     []
 }

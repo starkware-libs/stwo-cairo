@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
 use crate::components::subroutines::decode_instruction_de75a::decode_instruction_de75a_evaluate;
 use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
@@ -364,13 +364,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             - qm31_const::<1, 0, 0, 0>()))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let diff_from_p_tmp_f51a9_9: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
-        let diff_from_p_tmp_f51a9_10: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
-        let diff_from_p_tmp_f51a9_11: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_11: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_12: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_13: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
 
         // Constraint - dst doesn't equal P
-        let constraint_quotient = (((((((((((((((((((((((((((((((diff_from_p_tmp_f51a9_9
-            * diff_from_p_tmp_f51a9_9)
+        let constraint_quotient = (((((((((((((((((((((((((((((((diff_from_p_tmp_f51a9_11
+            * diff_from_p_tmp_f51a9_11)
             + dst_limb_1_col9)
             + dst_limb_2_col10)
             + dst_limb_3_col11)
@@ -391,18 +391,18 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             + dst_limb_18_col26)
             + dst_limb_19_col27)
             + dst_limb_20_col28)
-            + (diff_from_p_tmp_f51a9_10 * diff_from_p_tmp_f51a9_10))
+            + (diff_from_p_tmp_f51a9_12 * diff_from_p_tmp_f51a9_12))
             + dst_limb_22_col30)
             + dst_limb_23_col31)
             + dst_limb_24_col32)
             + dst_limb_25_col33)
             + dst_limb_26_col34)
-            + (diff_from_p_tmp_f51a9_11 * diff_from_p_tmp_f51a9_11))
+            + (diff_from_p_tmp_f51a9_13 * diff_from_p_tmp_f51a9_13))
             * res_squares_col37)
             - qm31_const::<1, 0, 0, 0>()))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_f51a9_17_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_f51a9_20_limb_0: QM31 = read_small_evaluate(
             (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col38,
             msb_col39,
@@ -427,7 +427,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    (input_pc_col0 + read_small_output_tmp_f51a9_17_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_f51a9_20_limb_0),
                     (input_ap_col1 + ap_update_add_1_col5), input_fp_col2,
                 ],
             );

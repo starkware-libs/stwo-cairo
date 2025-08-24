@@ -233,6 +233,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         assert_component(pedersen_points_table, &trace);
     }
     if let Some(cairo_air::poseidon::air::Components {
+        poseidon_aggregator,
         poseidon_3_partial_rounds_chain,
         poseidon_full_round_chain,
         cube_252,
@@ -240,6 +241,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         range_check_felt_252_width_27,
     }) = &poseidon_context.components
     {
+        assert_component(poseidon_aggregator, &trace);
         assert_component(poseidon_3_partial_rounds_chain, &trace);
         assert_component(poseidon_full_round_chain, &trace);
         assert_component(cube_252, &trace);

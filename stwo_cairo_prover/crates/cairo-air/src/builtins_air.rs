@@ -269,33 +269,11 @@ impl BuiltinComponents {
                 tree_span_provider,
                 poseidon_builtin::Eval {
                     claim: poseidon_builtin,
-                    cube_252_lookup_elements: interaction_elements.cube_252.clone(),
                     memory_address_to_id_lookup_elements: interaction_elements
                         .memory_address_to_id
                         .clone(),
-                    memory_id_to_big_lookup_elements: interaction_elements
-                        .memory_id_to_value
-                        .clone(),
-                    poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
-                        .poseidon_3_partial_rounds_chain
-                        .clone(),
-                    poseidon_full_round_chain_lookup_elements: interaction_elements
-                        .poseidon_full_round_chain
-                        .clone(),
-                    range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                        .range_checks
-                        .rc_3_3_3_3_3
-                        .clone(),
-                    range_check_4_4_lookup_elements: interaction_elements
-                        .range_checks
-                        .rc_4_4
-                        .clone(),
-                    range_check_4_4_4_4_lookup_elements: interaction_elements
-                        .range_checks
-                        .rc_4_4_4_4
-                        .clone(),
-                    range_check_felt_252_width_27_lookup_elements: interaction_elements
-                        .range_check_felt_252_width_27
+                    poseidon_aggregator_lookup_elements: interaction_elements
+                        .poseidon_aggregator
                         .clone(),
                 },
                 interaction_claim.poseidon_builtin.unwrap().claimed_sum,

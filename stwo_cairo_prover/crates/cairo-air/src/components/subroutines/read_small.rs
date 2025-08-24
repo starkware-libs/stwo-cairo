@@ -1,6 +1,7 @@
-// AIR version d1591e2a
+// AIR version 97774321-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
+use crate::components::subroutines::read_id::ReadId;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadSmall {}
@@ -33,12 +34,12 @@ impl ReadSmall {
         let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
 
-        eval.add_to_relation(RelationEntry::new(
+        ReadId::evaluate(
+            [read_small_input.clone()],
+            id_col0.clone(),
             memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[read_small_input.clone(), id_col0.clone()],
-        ));
-
+            eval,
+        );
         CondDecodeSmallSign::evaluate(
             [M31_1.clone()],
             msb_col1.clone(),

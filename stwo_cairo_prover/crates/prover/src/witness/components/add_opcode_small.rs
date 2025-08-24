@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 97774321-dirty
 #![allow(unused_parens)]
 use cairo_air::components::add_opcode_small::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -300,13 +300,13 @@ fn write_trace_simd(
 
                 // Read Small.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_756b7_11 = memory_address_to_id_state
                     .deduce_output(
                         ((mem_dst_base_col11)
                             + (decode_instruction_bc3cd_output_tmp_756b7_10.0[0])),
                     );
-                let memory_id_to_big_value_tmp_756b7_12 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_756b7_11);
                 let dst_id_col14 = memory_address_to_id_value_tmp_756b7_11;
                 *row[14] = dst_id_col14;
                 *sub_component_inputs.memory_address_to_id[0] =
@@ -316,22 +316,25 @@ fn write_trace_simd(
                     dst_id_col14,
                 ];
 
+                let memory_id_to_big_value_tmp_756b7_13 =
+                    memory_id_to_big_state.deduce_output(dst_id_col14);
+
                 // Cond Decode Small Sign.
 
-                let msb_tmp_756b7_13 = memory_id_to_big_value_tmp_756b7_12.get_m31(27).eq(M31_256);
-                let msb_col15 = msb_tmp_756b7_13.as_m31();
+                let msb_tmp_756b7_14 = memory_id_to_big_value_tmp_756b7_13.get_m31(27).eq(M31_256);
+                let msb_col15 = msb_tmp_756b7_14.as_m31();
                 *row[15] = msb_col15;
-                let mid_limbs_set_tmp_756b7_14 =
-                    memory_id_to_big_value_tmp_756b7_12.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col16 = mid_limbs_set_tmp_756b7_14.as_m31();
+                let mid_limbs_set_tmp_756b7_15 =
+                    memory_id_to_big_value_tmp_756b7_13.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col16 = mid_limbs_set_tmp_756b7_15.as_m31();
                 *row[16] = mid_limbs_set_col16;
-                let cond_decode_small_sign_output_tmp_756b7_15 = [msb_col15, mid_limbs_set_col16];
+                let cond_decode_small_sign_output_tmp_756b7_16 = [msb_col15, mid_limbs_set_col16];
 
-                let dst_limb_0_col17 = memory_id_to_big_value_tmp_756b7_12.get_m31(0);
+                let dst_limb_0_col17 = memory_id_to_big_value_tmp_756b7_13.get_m31(0);
                 *row[17] = dst_limb_0_col17;
-                let dst_limb_1_col18 = memory_id_to_big_value_tmp_756b7_12.get_m31(1);
+                let dst_limb_1_col18 = memory_id_to_big_value_tmp_756b7_13.get_m31(1);
                 *row[18] = dst_limb_1_col18;
-                let dst_limb_2_col19 = memory_id_to_big_value_tmp_756b7_12.get_m31(2);
+                let dst_limb_2_col19 = memory_id_to_big_value_tmp_756b7_13.get_m31(2);
                 *row[19] = dst_limb_2_col19;
                 *sub_component_inputs.memory_id_to_big[0] = dst_id_col14;
                 *lookup_data.memory_id_to_big_0 = [
@@ -365,7 +368,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col15) * (M31_256)),
                 ];
-                let read_small_output_tmp_756b7_16 = (
+                let read_small_output_tmp_756b7_17 = (
                     (((((dst_limb_0_col17) + ((dst_limb_1_col18) * (M31_512)))
                         + ((dst_limb_2_col19) * (M31_262144)))
                         - (msb_col15))
@@ -375,13 +378,13 @@ fn write_trace_simd(
 
                 // Read Small.
 
-                let memory_address_to_id_value_tmp_756b7_17 = memory_address_to_id_state
+                // Read Id.
+
+                let memory_address_to_id_value_tmp_756b7_18 = memory_address_to_id_state
                     .deduce_output(
                         ((mem0_base_col12) + (decode_instruction_bc3cd_output_tmp_756b7_10.0[1])),
                     );
-                let memory_id_to_big_value_tmp_756b7_18 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_756b7_17);
-                let op0_id_col20 = memory_address_to_id_value_tmp_756b7_17;
+                let op0_id_col20 = memory_address_to_id_value_tmp_756b7_18;
                 *row[20] = op0_id_col20;
                 *sub_component_inputs.memory_address_to_id[1] =
                     ((mem0_base_col12) + (decode_instruction_bc3cd_output_tmp_756b7_10.0[1]));
@@ -390,22 +393,25 @@ fn write_trace_simd(
                     op0_id_col20,
                 ];
 
+                let memory_id_to_big_value_tmp_756b7_20 =
+                    memory_id_to_big_state.deduce_output(op0_id_col20);
+
                 // Cond Decode Small Sign.
 
-                let msb_tmp_756b7_19 = memory_id_to_big_value_tmp_756b7_18.get_m31(27).eq(M31_256);
-                let msb_col21 = msb_tmp_756b7_19.as_m31();
+                let msb_tmp_756b7_21 = memory_id_to_big_value_tmp_756b7_20.get_m31(27).eq(M31_256);
+                let msb_col21 = msb_tmp_756b7_21.as_m31();
                 *row[21] = msb_col21;
-                let mid_limbs_set_tmp_756b7_20 =
-                    memory_id_to_big_value_tmp_756b7_18.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col22 = mid_limbs_set_tmp_756b7_20.as_m31();
+                let mid_limbs_set_tmp_756b7_22 =
+                    memory_id_to_big_value_tmp_756b7_20.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col22 = mid_limbs_set_tmp_756b7_22.as_m31();
                 *row[22] = mid_limbs_set_col22;
-                let cond_decode_small_sign_output_tmp_756b7_21 = [msb_col21, mid_limbs_set_col22];
+                let cond_decode_small_sign_output_tmp_756b7_23 = [msb_col21, mid_limbs_set_col22];
 
-                let op0_limb_0_col23 = memory_id_to_big_value_tmp_756b7_18.get_m31(0);
+                let op0_limb_0_col23 = memory_id_to_big_value_tmp_756b7_20.get_m31(0);
                 *row[23] = op0_limb_0_col23;
-                let op0_limb_1_col24 = memory_id_to_big_value_tmp_756b7_18.get_m31(1);
+                let op0_limb_1_col24 = memory_id_to_big_value_tmp_756b7_20.get_m31(1);
                 *row[24] = op0_limb_1_col24;
-                let op0_limb_2_col25 = memory_id_to_big_value_tmp_756b7_18.get_m31(2);
+                let op0_limb_2_col25 = memory_id_to_big_value_tmp_756b7_20.get_m31(2);
                 *row[25] = op0_limb_2_col25;
                 *sub_component_inputs.memory_id_to_big[1] = op0_id_col20;
                 *lookup_data.memory_id_to_big_1 = [
@@ -439,7 +445,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col21) * (M31_256)),
                 ];
-                let read_small_output_tmp_756b7_22 = (
+                let read_small_output_tmp_756b7_24 = (
                     (((((op0_limb_0_col23) + ((op0_limb_1_col24) * (M31_512)))
                         + ((op0_limb_2_col25) * (M31_262144)))
                         - (msb_col21))
@@ -449,13 +455,13 @@ fn write_trace_simd(
 
                 // Read Small.
 
-                let memory_address_to_id_value_tmp_756b7_23 = memory_address_to_id_state
+                // Read Id.
+
+                let memory_address_to_id_value_tmp_756b7_25 = memory_address_to_id_state
                     .deduce_output(
                         ((mem1_base_col13) + (decode_instruction_bc3cd_output_tmp_756b7_10.0[2])),
                     );
-                let memory_id_to_big_value_tmp_756b7_24 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_756b7_23);
-                let op1_id_col26 = memory_address_to_id_value_tmp_756b7_23;
+                let op1_id_col26 = memory_address_to_id_value_tmp_756b7_25;
                 *row[26] = op1_id_col26;
                 *sub_component_inputs.memory_address_to_id[2] =
                     ((mem1_base_col13) + (decode_instruction_bc3cd_output_tmp_756b7_10.0[2]));
@@ -464,22 +470,25 @@ fn write_trace_simd(
                     op1_id_col26,
                 ];
 
+                let memory_id_to_big_value_tmp_756b7_27 =
+                    memory_id_to_big_state.deduce_output(op1_id_col26);
+
                 // Cond Decode Small Sign.
 
-                let msb_tmp_756b7_25 = memory_id_to_big_value_tmp_756b7_24.get_m31(27).eq(M31_256);
-                let msb_col27 = msb_tmp_756b7_25.as_m31();
+                let msb_tmp_756b7_28 = memory_id_to_big_value_tmp_756b7_27.get_m31(27).eq(M31_256);
+                let msb_col27 = msb_tmp_756b7_28.as_m31();
                 *row[27] = msb_col27;
-                let mid_limbs_set_tmp_756b7_26 =
-                    memory_id_to_big_value_tmp_756b7_24.get_m31(20).eq(M31_511);
-                let mid_limbs_set_col28 = mid_limbs_set_tmp_756b7_26.as_m31();
+                let mid_limbs_set_tmp_756b7_29 =
+                    memory_id_to_big_value_tmp_756b7_27.get_m31(20).eq(M31_511);
+                let mid_limbs_set_col28 = mid_limbs_set_tmp_756b7_29.as_m31();
                 *row[28] = mid_limbs_set_col28;
-                let cond_decode_small_sign_output_tmp_756b7_27 = [msb_col27, mid_limbs_set_col28];
+                let cond_decode_small_sign_output_tmp_756b7_30 = [msb_col27, mid_limbs_set_col28];
 
-                let op1_limb_0_col29 = memory_id_to_big_value_tmp_756b7_24.get_m31(0);
+                let op1_limb_0_col29 = memory_id_to_big_value_tmp_756b7_27.get_m31(0);
                 *row[29] = op1_limb_0_col29;
-                let op1_limb_1_col30 = memory_id_to_big_value_tmp_756b7_24.get_m31(1);
+                let op1_limb_1_col30 = memory_id_to_big_value_tmp_756b7_27.get_m31(1);
                 *row[30] = op1_limb_1_col30;
-                let op1_limb_2_col31 = memory_id_to_big_value_tmp_756b7_24.get_m31(2);
+                let op1_limb_2_col31 = memory_id_to_big_value_tmp_756b7_27.get_m31(2);
                 *row[31] = op1_limb_2_col31;
                 *sub_component_inputs.memory_id_to_big[2] = op1_id_col26;
                 *lookup_data.memory_id_to_big_2 = [
@@ -513,7 +522,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col27) * (M31_256)),
                 ];
-                let read_small_output_tmp_756b7_28 = (
+                let read_small_output_tmp_756b7_31 = (
                     (((((op1_limb_0_col29) + ((op1_limb_1_col30) * (M31_512)))
                         + ((op1_limb_2_col31) * (M31_262144)))
                         - (msb_col27))

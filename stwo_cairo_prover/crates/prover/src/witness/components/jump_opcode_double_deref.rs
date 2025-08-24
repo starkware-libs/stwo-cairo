@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 97774321-dirty
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_double_deref::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -244,12 +244,12 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 27.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_22134_7 = memory_address_to_id_state
                     .deduce_output(
                         ((mem0_base_col7) + (decode_instruction_9bd86_output_tmp_22134_6.0[1])),
                     );
-                let memory_id_to_big_value_tmp_22134_8 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_22134_7);
                 let mem1_base_id_col8 = memory_address_to_id_value_tmp_22134_7;
                 *row[8] = mem1_base_id_col8;
                 *sub_component_inputs.memory_address_to_id[0] =
@@ -258,11 +258,16 @@ fn write_trace_simd(
                     ((mem0_base_col7) + (decode_instruction_9bd86_output_tmp_22134_6.0[1])),
                     mem1_base_id_col8,
                 ];
-                let mem1_base_limb_0_col9 = memory_id_to_big_value_tmp_22134_8.get_m31(0);
+
+                // Read Positive known Id Num Bits 27.
+
+                let memory_id_to_big_value_tmp_22134_9 =
+                    memory_id_to_big_state.deduce_output(mem1_base_id_col8);
+                let mem1_base_limb_0_col9 = memory_id_to_big_value_tmp_22134_9.get_m31(0);
                 *row[9] = mem1_base_limb_0_col9;
-                let mem1_base_limb_1_col10 = memory_id_to_big_value_tmp_22134_8.get_m31(1);
+                let mem1_base_limb_1_col10 = memory_id_to_big_value_tmp_22134_9.get_m31(1);
                 *row[10] = mem1_base_limb_1_col10;
-                let mem1_base_limb_2_col11 = memory_id_to_big_value_tmp_22134_8.get_m31(2);
+                let mem1_base_limb_2_col11 = memory_id_to_big_value_tmp_22134_9.get_m31(2);
                 *row[11] = mem1_base_limb_2_col11;
                 *sub_component_inputs.memory_id_to_big[0] = mem1_base_id_col8;
                 *lookup_data.memory_id_to_big_0 = [
@@ -296,7 +301,7 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_22134_9 = (
+                let read_positive_known_id_num_bits_27_output_tmp_22134_10 =
                     PackedFelt252::from_limbs([
                         mem1_base_limb_0_col9,
                         mem1_base_limb_1_col10,
@@ -326,21 +331,24 @@ fn write_trace_simd(
                         M31_0,
                         M31_0,
                         M31_0,
-                    ]),
+                    ]);
+
+                let read_positive_num_bits_27_output_tmp_22134_11 = (
+                    read_positive_known_id_num_bits_27_output_tmp_22134_10,
                     mem1_base_id_col8,
                 );
 
                 // Read Positive Num Bits 27.
 
-                let memory_address_to_id_value_tmp_22134_10 = memory_address_to_id_state
+                // Read Id.
+
+                let memory_address_to_id_value_tmp_22134_12 = memory_address_to_id_state
                     .deduce_output(
                         ((((mem1_base_limb_0_col9) + ((mem1_base_limb_1_col10) * (M31_512)))
                             + ((mem1_base_limb_2_col11) * (M31_262144)))
                             + (decode_instruction_9bd86_output_tmp_22134_6.0[2])),
                     );
-                let memory_id_to_big_value_tmp_22134_11 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_22134_10);
-                let next_pc_id_col12 = memory_address_to_id_value_tmp_22134_10;
+                let next_pc_id_col12 = memory_address_to_id_value_tmp_22134_12;
                 *row[12] = next_pc_id_col12;
                 *sub_component_inputs.memory_address_to_id[1] = ((((mem1_base_limb_0_col9)
                     + ((mem1_base_limb_1_col10) * (M31_512)))
@@ -352,11 +360,16 @@ fn write_trace_simd(
                         + (decode_instruction_9bd86_output_tmp_22134_6.0[2])),
                     next_pc_id_col12,
                 ];
-                let next_pc_limb_0_col13 = memory_id_to_big_value_tmp_22134_11.get_m31(0);
+
+                // Read Positive known Id Num Bits 27.
+
+                let memory_id_to_big_value_tmp_22134_14 =
+                    memory_id_to_big_state.deduce_output(next_pc_id_col12);
+                let next_pc_limb_0_col13 = memory_id_to_big_value_tmp_22134_14.get_m31(0);
                 *row[13] = next_pc_limb_0_col13;
-                let next_pc_limb_1_col14 = memory_id_to_big_value_tmp_22134_11.get_m31(1);
+                let next_pc_limb_1_col14 = memory_id_to_big_value_tmp_22134_14.get_m31(1);
                 *row[14] = next_pc_limb_1_col14;
-                let next_pc_limb_2_col15 = memory_id_to_big_value_tmp_22134_11.get_m31(2);
+                let next_pc_limb_2_col15 = memory_id_to_big_value_tmp_22134_14.get_m31(2);
                 *row[15] = next_pc_limb_2_col15;
                 *sub_component_inputs.memory_id_to_big[1] = next_pc_id_col12;
                 *lookup_data.memory_id_to_big_1 = [
@@ -390,7 +403,7 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_22134_12 = (
+                let read_positive_known_id_num_bits_27_output_tmp_22134_15 =
                     PackedFelt252::from_limbs([
                         next_pc_limb_0_col13,
                         next_pc_limb_1_col14,
@@ -420,7 +433,10 @@ fn write_trace_simd(
                         M31_0,
                         M31_0,
                         M31_0,
-                    ]),
+                    ]);
+
+                let read_positive_num_bits_27_output_tmp_22134_16 = (
+                    read_positive_known_id_num_bits_27_output_tmp_22134_15,
                     next_pc_id_col12,
                 );
 
