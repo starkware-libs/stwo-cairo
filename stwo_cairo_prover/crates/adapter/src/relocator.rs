@@ -35,9 +35,7 @@ impl Relocator {
             let addr = relocation_table.last().unwrap() + segment_size as u32;
             assert!(
                 addr <= MEMORY_ADDRESS_BOUND as u32,
-                "Relocated address: {} for segment: {} exceeded the maximum address value.",
-                addr,
-                segment_index
+                "Relocated address: {addr} for segment: {segment_index} exceeded the maximum address value."
             );
             relocation_table.push(addr);
         }
@@ -153,9 +151,7 @@ impl Relocator {
                 let addr = base_addr + *offset as u32;
                 assert!(
                     addr < self.relocation_table[segment_index + 1],
-                    "Offset {} is out of segment {}",
-                    offset,
-                    segment_index
+                    "Offset {offset} is out of segment {segment_index}"
                 );
                 res.push(addr);
             }

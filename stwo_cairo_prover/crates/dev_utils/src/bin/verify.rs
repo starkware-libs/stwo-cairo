@@ -38,10 +38,7 @@ fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash, Error> {
         "poseidon252" => Ok(ChannelHash::Poseidon252),
         _ => Err(Error::Cli(clap::Error::raw(
             clap::error::ErrorKind::InvalidValue,
-            format!(
-                "Invalid channel hash: {}. Must be 'blake2s' or 'poseidon252'",
-                hash_str
-            ),
+            format!("Invalid channel hash: {hash_str}. Must be 'blake2s' or 'poseidon252'"),
         ))),
     }
 }
@@ -51,8 +48,7 @@ fn parse_preprocessed_trace(preprocessed_trace: &str) -> PreProcessedTraceVarian
         "canonical" => PreProcessedTraceVariant::Canonical,
         "no_pedersen" => PreProcessedTraceVariant::CanonicalWithoutPedersen,
         _ => panic!(
-            "Invalid preprocessed trace: {}, must be 'canonical' or 'no_pedersen'",
-            preprocessed_trace
+            "Invalid preprocessed trace: {preprocessed_trace}, must be 'canonical' or 'no_pedersen'"
         ),
     }
 }
@@ -96,7 +92,7 @@ fn main() -> Result<(), Error> {
     };
     match result {
         Ok(_) => log::info!("✅ Proof verified successfully!"),
-        Err(e) => log::error!("❌ Proof verification failed: {:?}", e),
+        Err(e) => log::error!("❌ Proof verification failed: {e:?}"),
     }
 
     Ok(())

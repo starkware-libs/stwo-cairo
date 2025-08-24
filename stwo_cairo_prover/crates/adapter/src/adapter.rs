@@ -82,8 +82,7 @@ mod tests {
         assert_eq!(
             prover_input_value,
             expected_prover_input,
-            "Prover input from compiled cairo program: {} doesn't match the expected prover input. To update prover input file, run the test with FIX=1.",
-            test_name
+            "Prover input from compiled cairo program: {test_name} doesn't match the expected prover input. To update prover input file, run the test with FIX=1."
         );
     }
 
