@@ -8,6 +8,11 @@ use memory::Memory;
 use opcodes::StateTransitions;
 use serde::{Deserialize, Serialize};
 
+#[cfg(feature = "extract-mem-trace")]
+use crate::memory::MemoryEntry;
+#[cfg(feature = "extract-mem-trace")]
+use crate::vm_import::RelocatedTraceEntry;
+
 pub mod adapter;
 pub mod builtins;
 pub mod decode;
@@ -29,6 +34,10 @@ pub struct ProverInput {
     pub public_memory_addresses: Vec<u32>,
     pub builtin_segments: BuiltinSegments,
     pub public_segment_context: PublicSegmentContext,
+    #[cfg(feature = "extract-mem-trace")]
+    pub relocated_mem: Vec<MemoryEntry>,
+    #[cfg(feature = "extract-mem-trace")]
+    pub relocated_trace: Vec<RelocatedTraceEntry>,
 }
 
 const N_PUBLIC_SEGMENTS: usize = 11;
@@ -154,6 +163,10 @@ pub fn log_prover_input(
         public_memory_addresses: _,
         builtin_segments: _,
         public_segment_context: _,
+        #[cfg(feature = "extract-mem-trace")]
+            relocated_mem: _,
+        #[cfg(feature = "extract-mem-trace")]
+            relocated_trace: _,
     }: &ProverInput,
 ) {
     log_memory(memory);
