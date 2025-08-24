@@ -219,7 +219,15 @@ pub fn verify_cairo(proof: CairoProof) {
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
 
-    let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
+    let log_max_trace_size = commitment_scheme.trees[1].columns_by_log_size.len() - 1;
+    assert!(log_max_trace_size == commitment_scheme.trees[2].columns_by_log_size.len() - 1)
+    // `log_max_trace_size` include the blowup factor, so we need to subtract it and add 1 as the maxmimal
+    // constraint degree is 2.
+    let log_degree_bound = log_max_trace_size - pcs_config.fri_config.log_blowup_factor + 1;
+
+    let cairo_air = CairoAirNewImpl::new(
+        @claim, @interaction_elements, @interaction_claim, log_degree_bound,
+    );
     verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS);
 }
 
