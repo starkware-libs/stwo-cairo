@@ -219,7 +219,14 @@ pub fn verify_cairo(proof: CairoProof) {
     commitment_scheme
         .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
 
-    let cairo_air = CairoAirNewImpl::new(@claim, @interaction_elements, @interaction_claim);
+    // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
+    // of the trace plus 1.
+    let log_degree_bound = commitment_scheme.trees[1].column_indices_by_deg_bound.len();
+    assert!(log_degree_bound == commitment_scheme.trees[2].column_indices_by_deg_bound.len())
+
+    let cairo_air = CairoAirNewImpl::new(
+        @claim, @interaction_elements, @interaction_claim, log_degree_bound,
+    );
     verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS);
 }
 
