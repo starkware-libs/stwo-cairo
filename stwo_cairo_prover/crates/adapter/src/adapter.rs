@@ -26,6 +26,10 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
     // Relocation part.
     let relocator = Relocator::new(&relocatable_memory);
     let relocated_memory = relocator.relocate_memory(&relocatable_memory);
+
+    #[cfg(feature = "extract-mem-trace")]
+    let relocated_memory_clone = relocated_memory.clone();
+
     let relocated_trace = relocator.relocate_trace(relocatable_trace);
     let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
     info!("Builtin segments: {:?}", builtin_segments);
@@ -50,6 +54,10 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_mem: relocated_memory_clone,
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_trace: relocated_trace.clone(),
     }
 }
 
@@ -82,7 +90,7 @@ mod tests {
         assert_eq!(
             prover_input_value,
             expected_prover_input,
-            "Prover input from compiled cairo program: {test_name} doesn't match the expected prover input. To update prover input file, run the test with FIX=1."
+            "Prover input from compiled cairo program: {test_name} doesn't match the expected prover input. To update prover input file, run 'FIX=1 cargo test --features=slow-tests,extract-mem-trace <test_name>."
         );
     }
 

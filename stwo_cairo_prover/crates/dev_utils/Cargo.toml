@@ -3,6 +3,13 @@ name = "dev-utils"
 version.workspace = true
 edition.workspace = true
 
+[features]
+extract-mem-trace = ["stwo-cairo-adapter/extract-mem-trace"]
+
+[[bin]]
+name = "extract_mem_trace"
+required-features = ["extract-mem-trace"]
+
 [dependencies]
 cairo-air.workspace = true
 clap.workspace = true
@@ -19,9 +26,13 @@ tracing.workspace = true
 log.workspace = true
 regex = "1.11.1"
 num-bigint = "0.4.6"
+bincode = "1.3.3"
 
 serde_json.workspace = true
 cairo-vm.workspace = true
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+
+[dev-dependencies]
+tempfile = "3.8.0"
