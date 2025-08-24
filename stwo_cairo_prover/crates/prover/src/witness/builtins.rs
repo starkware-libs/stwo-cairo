@@ -30,7 +30,7 @@ impl BuiltinsClaimGenerator {
         let add_mod_builtin_trace_generator = builtin_segments.add_mod.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % ADD_MOD_MEMORY_CELLS) == 0,
+                segment_length.is_multiple_of(ADD_MOD_MEMORY_CELLS),
                 "add mod segment length is not a multiple of it's cells_per_instance"
             );
             let n_instances = segment_length / ADD_MOD_MEMORY_CELLS;
@@ -43,7 +43,7 @@ impl BuiltinsClaimGenerator {
         let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % BITWISE_MEMORY_CELLS) == 0,
+                segment_length.is_multiple_of(BITWISE_MEMORY_CELLS),
                 "bitwise segment length is not a multiple of it's cells_per_instance"
             );
             let n_instances = segment_length / BITWISE_MEMORY_CELLS;
@@ -56,7 +56,7 @@ impl BuiltinsClaimGenerator {
         let mul_mod_builtin_trace_generator = builtin_segments.mul_mod.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % MUL_MOD_MEMORY_CELLS) == 0,
+                segment_length.is_multiple_of(MUL_MOD_MEMORY_CELLS),
                 "mul mod segment length is not a multiple of it's cells_per_instance"
             );
             let n_instances = segment_length / MUL_MOD_MEMORY_CELLS;
@@ -69,7 +69,7 @@ impl BuiltinsClaimGenerator {
         let pedersen_builtin_trace_generator = builtin_segments.pedersen.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % PEDERSEN_MEMORY_CELLS) == 0,
+                segment_length.is_multiple_of(PEDERSEN_MEMORY_CELLS),
                 "pedersen segment length is not a multiple of it's cells_per_instance"
             );
             let n_instances = segment_length / PEDERSEN_MEMORY_CELLS;
@@ -83,7 +83,7 @@ impl BuiltinsClaimGenerator {
         let poseidon_builtin_trace_generator = builtin_segments.poseidon.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
-                (segment_length % POSEIDON_MEMORY_CELLS) == 0,
+                segment_length.is_multiple_of(POSEIDON_MEMORY_CELLS),
                 "poseidon segment length is not a multiple of it's cells_per_instance"
             );
             let n_instances = segment_length / POSEIDON_MEMORY_CELLS;

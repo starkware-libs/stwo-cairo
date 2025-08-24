@@ -176,7 +176,7 @@ impl PoseidonContextComponents {
 impl std::fmt::Display for PoseidonContextComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.components {
-            Some(components) => write!(f, "{}", components),
+            Some(components) => write!(f, "{components}"),
             None => write!(f, "No Poseidon Context Components"),
         }
     }

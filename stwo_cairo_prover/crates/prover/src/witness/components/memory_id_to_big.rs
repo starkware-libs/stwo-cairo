@@ -782,7 +782,7 @@ mod tests {
         // The expected values will alternate between small felts and big felts.
         let mut expected = (0..memory_addresses.len() as u32)
             .map(|i| {
-                let arr: [u32; 8] = if i % 2 == 0 {
+                let arr: [u32; 8] = if i.is_multiple_of(2) {
                     [i, 0, 0, 0, 0, 0, 0, 0]
                 } else {
                     [i; 8]

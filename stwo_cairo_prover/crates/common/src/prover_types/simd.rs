@@ -795,7 +795,7 @@ mod tests {
         let packed_big_uint = PackedBigUInt384::from_packed_felt252_array(&packed_felts);
 
         for i in 0..32 {
-            assert_eq!(packed_big_uint.to_array(), [big_uint; N_LANES], "i = {}", i);
+            assert_eq!(packed_big_uint.to_array(), [big_uint; N_LANES], "i = {i}");
         }
     }
 
@@ -858,8 +858,7 @@ mod tests {
             assert_eq!(
                 packed_big_uint.get_m31(i).to_array(),
                 [big_uint.get_m31(i); N_LANES],
-                "i = {}",
-                i
+                "i = {i}"
             );
         }
     }

@@ -55,9 +55,7 @@ fn verify_claim(claim: &CairoClaim) {
     assert_eq!(*initial_pc, BaseField::one());
     assert!(
         *initial_pc + BaseField::from(2) < *initial_ap,
-        "Initial pc + 2 must be less than initial ap, but got initial_pc: {}, initial_ap: {}",
-        initial_pc,
-        initial_ap
+        "Initial pc + 2 must be less than initial ap, but got initial_pc: {initial_pc}, initial_ap: {initial_ap}"
     );
     assert_eq!(initial_fp, final_fp);
     assert_eq!(initial_fp, initial_ap);
@@ -84,7 +82,7 @@ fn verify_claim(claim: &CairoClaim) {
 
 fn check_relation_uses(relation_uses: &HashMap<&'static str, u64>) {
     let all_relation_uses_pretty = to_string_pretty(&relation_uses).unwrap();
-    log::info!("All relation uses:\n{}", all_relation_uses_pretty);
+    log::info!("All relation uses:\n{all_relation_uses_pretty}");
 
     let outstanding_relations = relation_uses
         .iter()
@@ -234,21 +232,15 @@ fn check_builtin(
         segment_start,
         log_size,
     } = builtin_claim.unwrap_or_else(|| {
-        panic!(
-            "Missing {} builtin claim despite non-empty segment range {:?}",
-            name, segment_range
-        )
+        panic!("Missing {name} builtin claim despite non-empty segment range {segment_range:?}")
     });
 
     let segment_end = segment_start + (1 << log_size) * n_cells as u32;
     let start_ptr = segment_range.start_ptr.value;
     let stop_ptr = segment_range.stop_ptr.value;
     assert!(
-        (stop_ptr - start_ptr) % n_cells as u32 == 0,
-        "Builtin segment range must divisible by {} cells, but got start_ptr: {}, stop_ptr: {}",
-        n_cells,
-        start_ptr,
-        stop_ptr
+        (stop_ptr - start_ptr).is_multiple_of(n_cells as u32),
+        "Builtin segment range must divisible by {n_cells} cells, but got start_ptr: {start_ptr}, stop_ptr: {stop_ptr}"
     );
 
     // Check that segment_start == start_ptr <= stop_ptr <= segment_end < 2**31.
@@ -266,8 +258,7 @@ fn check_builtin(
     );
     assert!(
         segment_end < 1 << 31,
-        "segment_end must be less than 2^31, but got {}",
-        segment_end
+        "segment_end must be less than 2^31, but got {segment_end}"
     );
 }
 

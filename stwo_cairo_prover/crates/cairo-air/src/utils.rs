@@ -52,7 +52,7 @@ where
 
             let hex_strings: Vec<String> = serialized
                 .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
+                .map(|felt| format!("0x{felt:x}"))
                 .collect();
 
             proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
