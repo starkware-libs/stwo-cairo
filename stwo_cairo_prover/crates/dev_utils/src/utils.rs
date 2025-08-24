@@ -12,6 +12,7 @@ use cairo_vm::hint_processor::hint_processor_definition::HintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
+use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use cairo_vm::Felt252;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
@@ -119,6 +120,14 @@ pub fn run_cairo1_and_adapter(
     executable: Executable,
     args: Vec<cairo_lang_runner::Arg>,
 ) -> ProverInput {
+    let runner = run_cairo1_program(executable, args);
+    adapter(&runner)
+}
+
+pub fn run_cairo1_program(
+    executable: Executable,
+    args: Vec<cairo_lang_runner::Arg>,
+) -> CairoRunner {
     let data: Vec<MaybeRelocatable> = executable
         .program
         .bytecode
@@ -157,7 +166,7 @@ pub fn run_cairo1_and_adapter(
         panic_traceback: Default::default(),
     };
 
-    run_program_and_adapter(&program, Some(&mut hint_processor))
+    run_program(&program, Some(&mut hint_processor))
 }
 
 pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
@@ -173,6 +182,14 @@ pub fn run_program_and_adapter(
     program: &Program,
     hint_processor: Option<&mut dyn HintProcessor>,
 ) -> ProverInput {
+    let runner = run_program(program, hint_processor);
+    adapter(&runner)
+}
+
+pub fn run_program(
+    program: &Program,
+    hint_processor: Option<&mut dyn HintProcessor>,
+) -> CairoRunner {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
         relocate_trace: false,
@@ -185,9 +202,8 @@ pub fn run_program_and_adapter(
     let mut default_hint_processor = BuiltinHintProcessor::new_empty();
     let hint_processor = hint_processor.unwrap_or(&mut default_hint_processor);
 
-    let runner = cairo_run_program(program, &cairo_run_config, hint_processor)
-        .expect("Failed to run cairo program");
-    adapter(&runner)
+    cairo_run_program(program, &cairo_run_config, hint_processor)
+        .expect("Failed to run cairo program")
 }
 
 pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {

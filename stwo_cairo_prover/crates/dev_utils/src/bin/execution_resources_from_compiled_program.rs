@@ -7,13 +7,14 @@
 //! ```
 //! cargo run --bin execution_resources_from_compiled_program -- --help
 //! ```
+use std::fs::File;
 use std::path::PathBuf;
 
 use cairo_lang_executable::executable::Executable;
 use clap::Parser;
 use dev_utils::utils::{
     read_cairo_arguments_from_file, read_compiled_cairo_program, run_cairo1_and_adapter,
-    run_program_and_adapter, Error,
+    run_program_and_adapter,
 };
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
@@ -33,7 +34,7 @@ struct Args {
     program_arguments_file: Option<PathBuf>,
 }
 
-fn main() -> Result<(), Error> {
+fn main() {
     let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
@@ -42,9 +43,10 @@ fn main() -> Result<(), Error> {
     let _span = span!(Level::INFO, "run").entered();
 
     let prover_input = if args.cairo1 {
-        let executable: Executable =
-            serde_json::from_reader(std::fs::File::open(&args.compiled_program).unwrap())
-                .expect("Failed to read executable");
+        let executable: Executable = serde_json::from_reader(
+            File::open(&args.compiled_program).expect("Unable to open executable"),
+        )
+        .expect("Failed to read executable");
         let args = args
             .program_arguments_file
             .map(|path| read_cairo_arguments_from_file(&path))
@@ -61,6 +63,4 @@ fn main() -> Result<(), Error> {
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
     log::info!("Execution resources: {execution_resources:#?}");
-
-    Ok(())
 }
