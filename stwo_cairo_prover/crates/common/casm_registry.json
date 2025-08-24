@@ -1,50 +1,108 @@
 {
-  "air_version": "8b7e955f",
+  "air_version": "549682be",
   "air_fns": {
-    "verify_instruction": {
-      "trace_type": "Component",
-      "num_state_cols": 16,
-      "use_lookup_cols": {
-        "RangeCheck_7_2_5": 1,
-        "RangeCheck_4_3": 1,
-        "MemoryAddressToId": 1,
-        "MemoryIdToBig": 1
-      },
-      "yield_lookup_cols": {
-        "VerifyInstruction": 1
-      },
-      "lookup_rows": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 1,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 29,
-      "trace_cells_upper_bound": 29,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 1,
-        "range_check_9_9": 2,
-        "range_check_9_9_b": 2,
-        "range_check_9_9_c": 2,
-        "range_check_9_9_d": 2,
-        "range_check_9_9_e": 2,
-        "range_check_9_9_f": 2,
-        "range_check_9_9_g": 1,
-        "range_check_9_9_h": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 1073741823,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_3_3_3_3_3": {
+    "range_check_9_9": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "RangeCheck_3_3_3_3_3": 1
+        "RangeCheck_9_9": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_b": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_B": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_c": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_C": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_d": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_D": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_e": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_E": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_f": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_F": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_9_9_g": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_9_9_G": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -71,71 +129,316 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "cube_252": {
+    "verify_bitwise_xor_9": {
       "trace_type": "Component",
-      "num_state_cols": 140,
-      "use_lookup_cols": {
-        "RangeCheck_9_9": 6,
-        "RangeCheck_9_9_B": 6,
-        "RangeCheck_9_9_C": 6,
-        "RangeCheck_9_9_D": 6,
-        "RangeCheck_9_9_E": 6,
-        "RangeCheck_9_9_F": 6,
-        "RangeCheck_9_9_G": 3,
-        "RangeCheck_9_9_H": 3,
-        "RangeCheck_19_H": 8,
-        "RangeCheck_19": 8,
-        "RangeCheck_19_B": 8,
-        "RangeCheck_19_C": 8,
-        "RangeCheck_19_D": 6,
-        "RangeCheck_19_E": 6,
-        "RangeCheck_19_F": 6,
-        "RangeCheck_19_G": 6
-      },
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "Cube252": 1
+        "VerifyBitwiseXor_9": 1
       },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "verify_bitwise_xor_8": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "VerifyBitwiseXor_8": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "bitwise_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 89,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 5,
+        "MemoryIdToBig": 5,
+        "VerifyBitwiseXor_9": 27,
+        "VerifyBitwiseXor_8": 1
+      },
+      "yield_lookup_cols": {},
       "lookup_rows": {
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3,
-        "range_check_19_h": 8,
-        "range_check_19": 8,
-        "range_check_19_b": 8,
-        "range_check_19_c": 8,
-        "range_check_19_d": 6,
-        "range_check_19_e": 6,
-        "range_check_19_f": 6,
-        "range_check_19_g": 6
+        "memory_address_to_id": 5,
+        "memory_id_to_big": 5,
+        "verify_bitwise_xor_9": 27,
+        "verify_bitwise_xor_8": 1
       },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 341,
-      "trace_cells_upper_bound": 341,
+      "padding_type": "None",
+      "total_num_trace_cols": 165,
+      "trace_cells_upper_bound": 165,
       "uses_upper_bound": {
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3,
-        "range_check_19_h": 8,
-        "range_check_19": 8,
-        "range_check_19_b": 8,
-        "range_check_19_c": 8,
-        "range_check_19_d": 6,
-        "range_check_19_e": 6,
-        "range_check_19_f": 6,
-        "range_check_19_g": 6
+        "memory_address_to_id": 5,
+        "range_check_9_9": 16,
+        "range_check_9_9_b": 16,
+        "range_check_9_9_c": 16,
+        "range_check_9_9_d": 16,
+        "range_check_9_9_e": 16,
+        "range_check_9_9_f": 16,
+        "range_check_9_9_g": 8,
+        "range_check_9_9_h": 8,
+        "verify_bitwise_xor_9": 27,
+        "verify_bitwise_xor_8": 1
       },
       "rows_upper_bound": {},
-      "max_instances_uses_limit": 268435455,
+      "max_instances_uses_limit": 79536431,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_builtin_bits_128": {
+      "trace_type": "Builtin",
+      "num_state_cols": 17,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 1,
+        "MemoryIdToBig": 1
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 1,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 21,
+      "trace_cells_upper_bound": 21,
+      "uses_upper_bound": {
+        "memory_address_to_id": 1,
+        "range_check_9_9": 2,
+        "range_check_9_9_b": 2,
+        "range_check_9_9_c": 2,
+        "range_check_9_9_d": 2,
+        "range_check_9_9_e": 2,
+        "range_check_9_9_f": 2,
+        "range_check_9_9_g": 1,
+        "range_check_9_9_h": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 1073741823,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_6": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_6": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_builtin_bits_96": {
+      "trace_type": "Builtin",
+      "num_state_cols": 12,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 1,
+        "RangeCheck_6": 1,
+        "MemoryIdToBig": 1
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 1,
+        "range_check_6": 1,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 20,
+      "trace_cells_upper_bound": 20,
+      "uses_upper_bound": {
+        "memory_address_to_id": 1,
+        "range_check_6": 1,
+        "range_check_9_9": 2,
+        "range_check_9_9_b": 2,
+        "range_check_9_9_c": 2,
+        "range_check_9_9_d": 2,
+        "range_check_9_9_e": 2,
+        "range_check_9_9_f": 2,
+        "range_check_9_9_g": 1,
+        "range_check_9_9_h": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 1073741823,
+      "max_instances_rows_limit": 268435456
+    },
+    "add_mod_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 251,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 29,
+        "MemoryIdToBig": 24
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 29,
+        "memory_id_to_big": 24
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 359,
+      "trace_cells_upper_bound": 359,
+      "uses_upper_bound": {
+        "memory_address_to_id": 29,
+        "range_check_9_9": 64,
+        "range_check_9_9_b": 64,
+        "range_check_9_9_c": 64,
+        "range_check_9_9_d": 64,
+        "range_check_9_9_e": 64,
+        "range_check_9_9_f": 64,
+        "range_check_9_9_g": 32,
+        "range_check_9_9_h": 32
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 33554431,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_12": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_12": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_3_6_6_3": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_3_6_6_3": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_18": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_18": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "mul_mod_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 410,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 29,
+        "MemoryIdToBig": 24,
+        "RangeCheck_12": 32,
+        "RangeCheck_3_6_6_3": 40,
+        "RangeCheck_18": 62
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 29,
+        "memory_id_to_big": 24,
+        "range_check_12": 32,
+        "range_check_3_6_6_3": 40,
+        "range_check_18": 62
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 786,
+      "trace_cells_upper_bound": 786,
+      "uses_upper_bound": {
+        "memory_address_to_id": 29,
+        "range_check_9_9": 64,
+        "range_check_9_9_b": 64,
+        "range_check_9_9_c": 64,
+        "range_check_9_9_d": 64,
+        "range_check_9_9_e": 64,
+        "range_check_9_9_f": 64,
+        "range_check_9_9_g": 32,
+        "range_check_9_9_h": 32,
+        "range_check_12": 32,
+        "range_check_3_6_6_3": 40,
+        "range_check_18": 62
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 33554431,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_19_h": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_19_H": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_19": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_19": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_19_b": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_19_B": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
     "range_check_19_c": {
@@ -154,12 +457,12 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "verify_bitwise_xor_4": {
+    "range_check_19_d": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "VerifyBitwiseXor_4": 1
+        "RangeCheck_19_D": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -170,12 +473,138 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_6": {
+    "range_check_19_e": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "RangeCheck_6": 1
+        "RangeCheck_19_E": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_19_f": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_19_F": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_19_g": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_19_G": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "poseidon_round_keys": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "PoseidonRoundKeys": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_3_3_3_3_3": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_3_3_3_3_3": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "poseidon_full_round_chain": {
+      "trace_type": "ChainRound",
+      "num_state_cols": 125,
+      "use_lookup_cols": {
+        "Cube252": 3,
+        "PoseidonRoundKeys": 1,
+        "RangeCheck_3_3_3_3_3": 6,
+        "PoseidonFullRoundChain": 1
+      },
+      "yield_lookup_cols": {
+        "PoseidonFullRoundChain": 1
+      },
+      "lookup_rows": {
+        "cube_252": 3,
+        "poseidon_round_keys": 1,
+        "range_check_3_3_3_3_3": 6
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 150,
+      "trace_cells_upper_bound": 1514,
+      "uses_upper_bound": {
+        "range_check_9_9": 24,
+        "range_check_9_9_b": 24,
+        "range_check_9_9_c": 24,
+        "range_check_9_9_d": 24,
+        "range_check_9_9_e": 24,
+        "range_check_9_9_f": 24,
+        "range_check_9_9_g": 12,
+        "range_check_9_9_h": 12,
+        "range_check_19_h": 32,
+        "range_check_19": 32,
+        "range_check_19_b": 32,
+        "range_check_19_c": 32,
+        "range_check_19_d": 24,
+        "range_check_19_e": 24,
+        "range_check_19_f": 24,
+        "range_check_19_g": 24,
+        "poseidon_round_keys": 1,
+        "range_check_3_3_3_3_3": 6
+      },
+      "rows_upper_bound": {
+        "cube_252": 3
+      },
+      "max_instances_uses_limit": 67108863,
+      "max_instances_rows_limit": 67108864
+    },
+    "range_check_18_b": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_18_B": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -226,46 +655,12 @@
       "max_instances_uses_limit": 306783378,
       "max_instances_rows_limit": 268435456
     },
-    "blake_g": {
-      "trace_type": "Component",
-      "num_state_cols": 52,
-      "use_lookup_cols": {
-        "VerifyBitwiseXor_8": 8,
-        "VerifyBitwiseXor_12": 2,
-        "VerifyBitwiseXor_4": 2,
-        "VerifyBitwiseXor_7": 2,
-        "VerifyBitwiseXor_9": 2
-      },
-      "yield_lookup_cols": {
-        "BlakeG": 1
-      },
-      "lookup_rows": {
-        "verify_bitwise_xor_8": 8,
-        "verify_bitwise_xor_12": 2,
-        "verify_bitwise_xor_4": 2,
-        "verify_bitwise_xor_7": 2,
-        "verify_bitwise_xor_9": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 89,
-      "trace_cells_upper_bound": 89,
-      "uses_upper_bound": {
-        "verify_bitwise_xor_8": 8,
-        "verify_bitwise_xor_12": 2,
-        "verify_bitwise_xor_4": 2,
-        "verify_bitwise_xor_7": 2,
-        "verify_bitwise_xor_9": 2
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 268435455,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_12": {
+    "range_check_4_4_4_4": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "RangeCheck_12": 1
+        "RangeCheck_4_4_4_4": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -276,60 +671,114 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "blake_round": {
-      "trace_type": "ChainRound",
-      "num_state_cols": 211,
-      "use_lookup_cols": {
-        "BlakeRoundSigma": 1,
-        "RangeCheck_7_2_5": 16,
-        "MemoryAddressToId": 16,
-        "MemoryIdToBig": 16,
-        "BlakeG": 8,
-        "BlakeRound": 1
-      },
-      "yield_lookup_cols": {
-        "BlakeRound": 1
-      },
-      "lookup_rows": {
-        "blake_round_sigma": 1,
-        "range_check_7_2_5": 16,
-        "memory_address_to_id": 16,
-        "memory_id_to_big": 16,
-        "blake_g": 8
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 332,
-      "trace_cells_upper_bound": 1044,
-      "uses_upper_bound": {
-        "blake_round_sigma": 1,
-        "range_check_7_2_5": 16,
-        "memory_address_to_id": 16,
-        "range_check_9_9": 32,
-        "range_check_9_9_b": 32,
-        "range_check_9_9_c": 32,
-        "range_check_9_9_d": 32,
-        "range_check_9_9_e": 32,
-        "range_check_9_9_f": 32,
-        "range_check_9_9_g": 16,
-        "range_check_9_9_h": 16,
-        "verify_bitwise_xor_8": 64,
-        "verify_bitwise_xor_12": 16,
-        "verify_bitwise_xor_4": 16,
-        "verify_bitwise_xor_7": 16,
-        "verify_bitwise_xor_9": 16
-      },
-      "rows_upper_bound": {
-        "blake_g": 8
-      },
-      "max_instances_uses_limit": 33554431,
-      "max_instances_rows_limit": 33554432
-    },
-    "range_check_4_3": {
+    "range_check_4_4": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "RangeCheck_4_3": 1
+        "RangeCheck_4_4": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "poseidon_3_partial_rounds_chain": {
+      "trace_type": "ChainRound",
+      "num_state_cols": 168,
+      "use_lookup_cols": {
+        "PoseidonRoundKeys": 1,
+        "Cube252": 3,
+        "RangeCheck_4_4_4_4": 6,
+        "RangeCheck_4_4": 3,
+        "RangeCheckFelt252Width27": 3,
+        "Poseidon3PartialRoundsChain": 1
+      },
+      "yield_lookup_cols": {
+        "Poseidon3PartialRoundsChain": 1
+      },
+      "lookup_rows": {
+        "poseidon_round_keys": 1,
+        "cube_252": 3,
+        "range_check_4_4_4_4": 6,
+        "range_check_4_4": 3,
+        "range_check_felt_252_width_27": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 205,
+      "trace_cells_upper_bound": 1777,
+      "uses_upper_bound": {
+        "poseidon_round_keys": 1,
+        "range_check_9_9": 28,
+        "range_check_9_9_b": 28,
+        "range_check_9_9_c": 28,
+        "range_check_9_9_d": 28,
+        "range_check_9_9_e": 28,
+        "range_check_9_9_f": 24,
+        "range_check_9_9_g": 12,
+        "range_check_9_9_h": 12,
+        "range_check_19_h": 32,
+        "range_check_19": 32,
+        "range_check_19_b": 32,
+        "range_check_19_c": 32,
+        "range_check_19_d": 24,
+        "range_check_19_e": 24,
+        "range_check_19_f": 24,
+        "range_check_19_g": 24,
+        "range_check_4_4_4_4": 6,
+        "range_check_4_4": 3,
+        "range_check_18": 28,
+        "range_check_18_b": 8
+      },
+      "rows_upper_bound": {
+        "cube_252": 3,
+        "range_check_felt_252_width_27": 3
+      },
+      "max_instances_uses_limit": 67108863,
+      "max_instances_rows_limit": 67108864
+    },
+    "range_check_5_4": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_5_4": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_8": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_8": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "pedersen_points_table": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "PedersenPointsTable": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -411,251 +860,56 @@
       "max_instances_uses_limit": 119304647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_9_9_d": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9_D": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "triple_xor_32": {
-      "trace_type": "Component",
-      "num_state_cols": 20,
+    "pedersen_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 351,
       "use_lookup_cols": {
-        "VerifyBitwiseXor_8": 8
+        "RangeCheck_5_4": 2,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "RangeCheck_8": 4,
+        "PartialEcMul": 4
       },
       "yield_lookup_cols": {
-        "TripleXor32": 1
+        "PartialEcMul": 4
       },
       "lookup_rows": {
-        "verify_bitwise_xor_8": 8
+        "range_check_5_4": 2,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3,
+        "range_check_8": 4,
+        "partial_ec_mul": 30
       },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 41,
-      "trace_cells_upper_bound": 41,
+      "padding_type": "None",
+      "total_num_trace_cols": 391,
+      "trace_cells_upper_bound": 29191,
       "uses_upper_bound": {
-        "verify_bitwise_xor_8": 8
+        "range_check_5_4": 2,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 584,
+        "range_check_9_9_b": 584,
+        "range_check_9_9_c": 584,
+        "range_check_9_9_d": 584,
+        "range_check_9_9_e": 584,
+        "range_check_9_9_f": 584,
+        "range_check_9_9_g": 292,
+        "range_check_9_9_h": 292,
+        "range_check_8": 4,
+        "pedersen_points_table": 32,
+        "range_check_19_h": 384,
+        "range_check_19": 384,
+        "range_check_19_b": 384,
+        "range_check_19_c": 384,
+        "range_check_19_d": 288,
+        "range_check_19_e": 288,
+        "range_check_19_f": 288,
+        "range_check_19_g": 288
       },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 268435455,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_8": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_8": 1
+      "rows_upper_bound": {
+        "partial_ec_mul": 30
       },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "verify_bitwise_xor_7": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "VerifyBitwiseXor_7": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_11": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_11": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_d": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_D": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_9_9_c": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9_C": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "verify_bitwise_xor_9": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "VerifyBitwiseXor_9": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_b": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_B": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_3_6_6_3": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_3_6_6_3": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_5_4": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_5_4": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_9_9_e": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9_E": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "blake_round_sigma": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "BlakeRoundSigma": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_g": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_G": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_e": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_E": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
+      "max_instances_uses_limit": 3677198,
+      "max_instances_rows_limit": 8388608
     },
     "range_check_7_2_5": {
       "trace_type": "Component",
@@ -673,12 +927,12 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_9_9_b": {
+    "range_check_4_3": {
       "trace_type": "Component",
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
-        "RangeCheck_9_9_B": 1
+        "RangeCheck_4_3": 1
       },
       "lookup_rows": {},
       "padding_type": "Multiplicity",
@@ -689,595 +943,31 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_19": {
+    "verify_instruction": {
       "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_4_4_4_4": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_4_4_4_4": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_9_9": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_4_4": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_4_4": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_18_b": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_18_B": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_f": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_F": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "poseidon_3_partial_rounds_chain": {
-      "trace_type": "ChainRound",
-      "num_state_cols": 168,
-      "use_lookup_cols": {
-        "PoseidonRoundKeys": 1,
-        "Cube252": 3,
-        "RangeCheck_4_4_4_4": 6,
-        "RangeCheck_4_4": 3,
-        "RangeCheckFelt252Width27": 3,
-        "Poseidon3PartialRoundsChain": 1
-      },
-      "yield_lookup_cols": {
-        "Poseidon3PartialRoundsChain": 1
-      },
-      "lookup_rows": {
-        "poseidon_round_keys": 1,
-        "cube_252": 3,
-        "range_check_4_4_4_4": 6,
-        "range_check_4_4": 3,
-        "range_check_felt_252_width_27": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 205,
-      "trace_cells_upper_bound": 1777,
-      "uses_upper_bound": {
-        "poseidon_round_keys": 1,
-        "range_check_9_9": 28,
-        "range_check_9_9_b": 28,
-        "range_check_9_9_c": 28,
-        "range_check_9_9_d": 28,
-        "range_check_9_9_e": 28,
-        "range_check_9_9_f": 24,
-        "range_check_9_9_g": 12,
-        "range_check_9_9_h": 12,
-        "range_check_19_h": 32,
-        "range_check_19": 32,
-        "range_check_19_b": 32,
-        "range_check_19_c": 32,
-        "range_check_19_d": 24,
-        "range_check_19_e": 24,
-        "range_check_19_f": 24,
-        "range_check_19_g": 24,
-        "range_check_4_4_4_4": 6,
-        "range_check_4_4": 3,
-        "range_check_18": 28,
-        "range_check_18_b": 8
-      },
-      "rows_upper_bound": {
-        "cube_252": 3,
-        "range_check_felt_252_width_27": 3
-      },
-      "max_instances_uses_limit": 67108863,
-      "max_instances_rows_limit": 67108864
-    },
-    "pedersen_points_table": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "PedersenPointsTable": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_19_h": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_19_H": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "poseidon_round_keys": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "PoseidonRoundKeys": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "verify_bitwise_xor_8": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "VerifyBitwiseXor_8": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_9_9_f": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9_F": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "poseidon_full_round_chain": {
-      "trace_type": "ChainRound",
-      "num_state_cols": 125,
-      "use_lookup_cols": {
-        "Cube252": 3,
-        "PoseidonRoundKeys": 1,
-        "RangeCheck_3_3_3_3_3": 6,
-        "PoseidonFullRoundChain": 1
-      },
-      "yield_lookup_cols": {
-        "PoseidonFullRoundChain": 1
-      },
-      "lookup_rows": {
-        "cube_252": 3,
-        "poseidon_round_keys": 1,
-        "range_check_3_3_3_3_3": 6
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 150,
-      "trace_cells_upper_bound": 1514,
-      "uses_upper_bound": {
-        "range_check_9_9": 24,
-        "range_check_9_9_b": 24,
-        "range_check_9_9_c": 24,
-        "range_check_9_9_d": 24,
-        "range_check_9_9_e": 24,
-        "range_check_9_9_f": 24,
-        "range_check_9_9_g": 12,
-        "range_check_9_9_h": 12,
-        "range_check_19_h": 32,
-        "range_check_19": 32,
-        "range_check_19_b": 32,
-        "range_check_19_c": 32,
-        "range_check_19_d": 24,
-        "range_check_19_e": 24,
-        "range_check_19_f": 24,
-        "range_check_19_g": 24,
-        "poseidon_round_keys": 1,
-        "range_check_3_3_3_3_3": 6
-      },
-      "rows_upper_bound": {
-        "cube_252": 3
-      },
-      "max_instances_uses_limit": 67108863,
-      "max_instances_rows_limit": 67108864
-    },
-    "range_check_9_9_g": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_9_9_G": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_18": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_18": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "jump_opcode_double_deref": {
-      "trace_type": "Opcode",
       "num_state_cols": 16,
       "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 2,
-        "MemoryIdToBig": 2,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 2,
-        "memory_id_to_big": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 33,
-      "trace_cells_upper_bound": 33,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 3,
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 357913941,
-      "max_instances_rows_limit": 268435456
-    },
-    "call_opcode_rel_imm": {
-      "trace_type": "Opcode",
-      "num_state_cols": 17,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 38,
-      "trace_cells_upper_bound": 38,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 10,
-        "range_check_9_9_b": 10,
-        "range_check_9_9_c": 10,
-        "range_check_9_9_d": 10,
-        "range_check_9_9_e": 10,
-        "range_check_9_9_f": 10,
-        "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 214748364,
-      "max_instances_rows_limit": 268435456
-    },
-    "jnz_opcode_taken": {
-      "trace_type": "Opcode",
-      "num_state_cols": 44,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 2,
-        "MemoryIdToBig": 2,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 2,
-        "memory_id_to_big": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 61,
-      "trace_cells_upper_bound": 61,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 3,
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 357913941,
-      "max_instances_rows_limit": 268435456
-    },
-    "call_opcode": {
-      "trace_type": "Opcode",
-      "num_state_cols": 18,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 39,
-      "trace_cells_upper_bound": 39,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 10,
-        "range_check_9_9_b": 10,
-        "range_check_9_9_c": 10,
-        "range_check_9_9_d": 10,
-        "range_check_9_9_e": 10,
-        "range_check_9_9_f": 10,
-        "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 214748364,
-      "max_instances_rows_limit": 268435456
-    },
-    "jump_opcode_rel_imm": {
-      "trace_type": "Opcode",
-      "num_state_cols": 10,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
+        "RangeCheck_7_2_5": 1,
+        "RangeCheck_4_3": 1,
         "MemoryAddressToId": 1,
-        "MemoryIdToBig": 1,
-        "Opcodes": 1
+        "MemoryIdToBig": 1
       },
       "yield_lookup_cols": {
-        "Opcodes": 1
+        "VerifyInstruction": 1
       },
       "lookup_rows": {
-        "verify_instruction": 1,
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
         "memory_address_to_id": 1,
         "memory_id_to_big": 1
       },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 23,
-      "trace_cells_upper_bound": 23,
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 29,
+      "trace_cells_upper_bound": 29,
       "uses_upper_bound": {
         "range_check_7_2_5": 1,
         "range_check_4_3": 1,
-        "memory_address_to_id": 2,
-        "range_check_9_9": 4,
-        "range_check_9_9_b": 4,
-        "range_check_9_9_c": 4,
-        "range_check_9_9_d": 4,
-        "range_check_9_9_e": 4,
-        "range_check_9_9_f": 4,
-        "range_check_9_9_g": 2,
-        "range_check_9_9_h": 2
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 536870911,
-      "max_instances_rows_limit": 268435456
-    },
-    "ret_opcode": {
-      "trace_type": "Opcode",
-      "num_state_cols": 11,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 2,
-        "MemoryIdToBig": 2,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 2,
-        "memory_id_to_big": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 28,
-      "trace_cells_upper_bound": 28,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 3,
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 357913941,
-      "max_instances_rows_limit": 268435456
-    },
-    "jump_opcode_rel": {
-      "trace_type": "Opcode",
-      "num_state_cols": 14,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 1,
-        "MemoryIdToBig": 1,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
         "memory_address_to_id": 1,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 27,
-      "trace_cells_upper_bound": 27,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 2,
-        "range_check_9_9": 4,
-        "range_check_9_9_b": 4,
-        "range_check_9_9_c": 4,
-        "range_check_9_9_d": 4,
-        "range_check_9_9_e": 4,
-        "range_check_9_9_f": 4,
-        "range_check_9_9_g": 2,
-        "range_check_9_9_h": 2
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 536870911,
-      "max_instances_rows_limit": 268435456
-    },
-    "assert_eq_opcode_imm": {
-      "trace_type": "Opcode",
-      "num_state_cols": 8,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 2,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 21,
-      "trace_cells_upper_bound": 21,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 3,
         "range_check_9_9": 2,
         "range_check_9_9_b": 2,
         "range_check_9_9_c": 2,
@@ -1288,42 +978,7 @@
         "range_check_9_9_h": 1
       },
       "rows_upper_bound": {},
-      "max_instances_uses_limit": 715827882,
-      "max_instances_rows_limit": 268435456
-    },
-    "assert_eq_opcode": {
-      "trace_type": "Opcode",
-      "num_state_cols": 11,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 2,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 2
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 24,
-      "trace_cells_upper_bound": 24,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 3,
-        "range_check_9_9": 2,
-        "range_check_9_9_b": 2,
-        "range_check_9_9_c": 2,
-        "range_check_9_9_d": 2,
-        "range_check_9_9_e": 2,
-        "range_check_9_9_f": 2,
-        "range_check_9_9_g": 1,
-        "range_check_9_9_h": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 715827882,
+      "max_instances_uses_limit": 1073741823,
       "max_instances_rows_limit": 268435456
     },
     "generic_opcode": {
@@ -1406,157 +1061,6 @@
       "max_instances_uses_limit": 153391689,
       "max_instances_rows_limit": 268435456
     },
-    "mul_opcode_small": {
-      "trace_type": "Opcode",
-      "num_state_cols": 36,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "RangeCheck_11": 3,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3,
-        "range_check_11": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 61,
-      "trace_cells_upper_bound": 61,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 10,
-        "range_check_9_9_b": 10,
-        "range_check_9_9_c": 10,
-        "range_check_9_9_d": 10,
-        "range_check_9_9_e": 10,
-        "range_check_9_9_f": 10,
-        "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5,
-        "range_check_11": 3
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 214748364,
-      "max_instances_rows_limit": 268435456
-    },
-    "jump_opcode": {
-      "trace_type": "Opcode",
-      "num_state_cols": 12,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 1,
-        "MemoryIdToBig": 1,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 1,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 25,
-      "trace_cells_upper_bound": 25,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 2,
-        "range_check_9_9": 4,
-        "range_check_9_9_b": 4,
-        "range_check_9_9_c": 4,
-        "range_check_9_9_d": 4,
-        "range_check_9_9_e": 4,
-        "range_check_9_9_f": 4,
-        "range_check_9_9_g": 2,
-        "range_check_9_9_h": 2
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 536870911,
-      "max_instances_rows_limit": 268435456
-    },
-    "add_opcode": {
-      "trace_type": "Opcode",
-      "num_state_cols": 102,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 123,
-      "trace_cells_upper_bound": 123,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 10,
-        "range_check_9_9_b": 10,
-        "range_check_9_9_c": 10,
-        "range_check_9_9_d": 10,
-        "range_check_9_9_e": 10,
-        "range_check_9_9_f": 10,
-        "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 214748364,
-      "max_instances_rows_limit": 268435456
-    },
-    "add_opcode_small": {
-      "trace_type": "Opcode",
-      "num_state_cols": 32,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 53,
-      "trace_cells_upper_bound": 53,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 10,
-        "range_check_9_9_b": 10,
-        "range_check_9_9_c": 10,
-        "range_check_9_9_d": 10,
-        "range_check_9_9_e": 10,
-        "range_check_9_9_f": 10,
-        "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 214748364,
-      "max_instances_rows_limit": 268435456
-    },
     "add_ap_opcode": {
       "trace_type": "Opcode",
       "num_state_cols": 14,
@@ -1600,14 +1104,13 @@
       "max_instances_uses_limit": 536870911,
       "max_instances_rows_limit": 268435456
     },
-    "qm_31_add_mul_opcode": {
+    "add_opcode_small": {
       "trace_type": "Opcode",
-      "num_state_cols": 72,
+      "num_state_cols": 32,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3,
-        "RangeCheck_4_4_4_4": 3,
         "Opcodes": 1
       },
       "yield_lookup_cols": {
@@ -1616,12 +1119,11 @@
       "lookup_rows": {
         "verify_instruction": 1,
         "memory_address_to_id": 3,
-        "memory_id_to_big": 3,
-        "range_check_4_4_4_4": 3
+        "memory_id_to_big": 3
       },
       "padding_type": "Enabler",
-      "total_num_trace_cols": 97,
-      "trace_cells_upper_bound": 97,
+      "total_num_trace_cols": 53,
+      "trace_cells_upper_bound": 53,
       "uses_upper_bound": {
         "range_check_7_2_5": 1,
         "range_check_4_3": 1,
@@ -1633,11 +1135,265 @@
         "range_check_9_9_e": 10,
         "range_check_9_9_f": 10,
         "range_check_9_9_g": 5,
-        "range_check_9_9_h": 5,
-        "range_check_4_4_4_4": 3
+        "range_check_9_9_h": 5
       },
       "rows_upper_bound": {},
       "max_instances_uses_limit": 214748364,
+      "max_instances_rows_limit": 268435456
+    },
+    "add_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 102,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 123,
+      "trace_cells_upper_bound": 123,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 10,
+        "range_check_9_9_b": 10,
+        "range_check_9_9_c": 10,
+        "range_check_9_9_d": 10,
+        "range_check_9_9_e": 10,
+        "range_check_9_9_f": 10,
+        "range_check_9_9_g": 5,
+        "range_check_9_9_h": 5
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 214748364,
+      "max_instances_rows_limit": 268435456
+    },
+    "assert_eq_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 11,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 2,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 24,
+      "trace_cells_upper_bound": 24,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 2,
+        "range_check_9_9_b": 2,
+        "range_check_9_9_c": 2,
+        "range_check_9_9_d": 2,
+        "range_check_9_9_e": 2,
+        "range_check_9_9_f": 2,
+        "range_check_9_9_g": 1,
+        "range_check_9_9_h": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 715827882,
+      "max_instances_rows_limit": 268435456
+    },
+    "assert_eq_opcode_double_deref": {
+      "trace_type": "Opcode",
+      "num_state_cols": 16,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 1,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 33,
+      "trace_cells_upper_bound": 33,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 4,
+        "range_check_9_9_b": 4,
+        "range_check_9_9_c": 4,
+        "range_check_9_9_d": 4,
+        "range_check_9_9_e": 4,
+        "range_check_9_9_f": 4,
+        "range_check_9_9_g": 2,
+        "range_check_9_9_h": 2
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 536870911,
+      "max_instances_rows_limit": 268435456
+    },
+    "assert_eq_opcode_imm": {
+      "trace_type": "Opcode",
+      "num_state_cols": 8,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 2,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 21,
+      "trace_cells_upper_bound": 21,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 2,
+        "range_check_9_9_b": 2,
+        "range_check_9_9_c": 2,
+        "range_check_9_9_d": 2,
+        "range_check_9_9_e": 2,
+        "range_check_9_9_f": 2,
+        "range_check_9_9_g": 1,
+        "range_check_9_9_h": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 715827882,
+      "max_instances_rows_limit": 268435456
+    },
+    "call_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 18,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 39,
+      "trace_cells_upper_bound": 39,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 10,
+        "range_check_9_9_b": 10,
+        "range_check_9_9_c": 10,
+        "range_check_9_9_d": 10,
+        "range_check_9_9_e": 10,
+        "range_check_9_9_f": 10,
+        "range_check_9_9_g": 5,
+        "range_check_9_9_h": 5
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 214748364,
+      "max_instances_rows_limit": 268435456
+    },
+    "call_opcode_rel_imm": {
+      "trace_type": "Opcode",
+      "num_state_cols": 17,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 38,
+      "trace_cells_upper_bound": 38,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 10,
+        "range_check_9_9_b": 10,
+        "range_check_9_9_c": 10,
+        "range_check_9_9_d": 10,
+        "range_check_9_9_e": 10,
+        "range_check_9_9_f": 10,
+        "range_check_9_9_g": 5,
+        "range_check_9_9_h": 5
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 214748364,
+      "max_instances_rows_limit": 268435456
+    },
+    "jnz_opcode_taken": {
+      "trace_type": "Opcode",
+      "num_state_cols": 44,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 2,
+        "MemoryIdToBig": 2,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 2,
+        "memory_id_to_big": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 61,
+      "trace_cells_upper_bound": 61,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 6,
+        "range_check_9_9_b": 6,
+        "range_check_9_9_c": 6,
+        "range_check_9_9_d": 6,
+        "range_check_9_9_e": 6,
+        "range_check_9_9_f": 6,
+        "range_check_9_9_g": 3,
+        "range_check_9_9_h": 3
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 357913941,
       "max_instances_rows_limit": 268435456
     },
     "jnz_opcode": {
@@ -1675,6 +1431,210 @@
       },
       "rows_upper_bound": {},
       "max_instances_uses_limit": 536870911,
+      "max_instances_rows_limit": 268435456
+    },
+    "jump_opcode_rel_imm": {
+      "trace_type": "Opcode",
+      "num_state_cols": 10,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 1,
+        "MemoryIdToBig": 1,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 1,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 23,
+      "trace_cells_upper_bound": 23,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 2,
+        "range_check_9_9": 4,
+        "range_check_9_9_b": 4,
+        "range_check_9_9_c": 4,
+        "range_check_9_9_d": 4,
+        "range_check_9_9_e": 4,
+        "range_check_9_9_f": 4,
+        "range_check_9_9_g": 2,
+        "range_check_9_9_h": 2
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 536870911,
+      "max_instances_rows_limit": 268435456
+    },
+    "jump_opcode_rel": {
+      "trace_type": "Opcode",
+      "num_state_cols": 14,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 1,
+        "MemoryIdToBig": 1,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 1,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 27,
+      "trace_cells_upper_bound": 27,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 2,
+        "range_check_9_9": 4,
+        "range_check_9_9_b": 4,
+        "range_check_9_9_c": 4,
+        "range_check_9_9_d": 4,
+        "range_check_9_9_e": 4,
+        "range_check_9_9_f": 4,
+        "range_check_9_9_g": 2,
+        "range_check_9_9_h": 2
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 536870911,
+      "max_instances_rows_limit": 268435456
+    },
+    "jump_opcode_double_deref": {
+      "trace_type": "Opcode",
+      "num_state_cols": 16,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 2,
+        "MemoryIdToBig": 2,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 2,
+        "memory_id_to_big": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 33,
+      "trace_cells_upper_bound": 33,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 6,
+        "range_check_9_9_b": 6,
+        "range_check_9_9_c": 6,
+        "range_check_9_9_d": 6,
+        "range_check_9_9_e": 6,
+        "range_check_9_9_f": 6,
+        "range_check_9_9_g": 3,
+        "range_check_9_9_h": 3
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 357913941,
+      "max_instances_rows_limit": 268435456
+    },
+    "jump_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 12,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 1,
+        "MemoryIdToBig": 1,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 1,
+        "memory_id_to_big": 1
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 25,
+      "trace_cells_upper_bound": 25,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 2,
+        "range_check_9_9": 4,
+        "range_check_9_9_b": 4,
+        "range_check_9_9_c": 4,
+        "range_check_9_9_d": 4,
+        "range_check_9_9_e": 4,
+        "range_check_9_9_f": 4,
+        "range_check_9_9_g": 2,
+        "range_check_9_9_h": 2
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 536870911,
+      "max_instances_rows_limit": 268435456
+    },
+    "range_check_11": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "RangeCheck_11": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "mul_opcode_small": {
+      "trace_type": "Opcode",
+      "num_state_cols": 36,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "RangeCheck_11": 3,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3,
+        "range_check_11": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 61,
+      "trace_cells_upper_bound": 61,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 10,
+        "range_check_9_9_b": 10,
+        "range_check_9_9_c": 10,
+        "range_check_9_9_d": 10,
+        "range_check_9_9_e": 10,
+        "range_check_9_9_f": 10,
+        "range_check_9_9_g": 5,
+        "range_check_9_9_h": 5,
+        "range_check_11": 3
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 214748364,
       "max_instances_rows_limit": 268435456
     },
     "mul_opcode": {
@@ -1738,6 +1698,235 @@
       "max_instances_uses_limit": 214748364,
       "max_instances_rows_limit": 268435456
     },
+    "ret_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 11,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 2,
+        "MemoryIdToBig": 2,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 2,
+        "memory_id_to_big": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 28,
+      "trace_cells_upper_bound": 28,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 3,
+        "range_check_9_9": 6,
+        "range_check_9_9_b": 6,
+        "range_check_9_9_c": 6,
+        "range_check_9_9_d": 6,
+        "range_check_9_9_e": 6,
+        "range_check_9_9_f": 6,
+        "range_check_9_9_g": 3,
+        "range_check_9_9_h": 3
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 357913941,
+      "max_instances_rows_limit": 268435456
+    },
+    "qm_31_add_mul_opcode": {
+      "trace_type": "Opcode",
+      "num_state_cols": 72,
+      "use_lookup_cols": {
+        "VerifyInstruction": 1,
+        "MemoryAddressToId": 3,
+        "MemoryIdToBig": 3,
+        "RangeCheck_4_4_4_4": 3,
+        "Opcodes": 1
+      },
+      "yield_lookup_cols": {
+        "Opcodes": 1
+      },
+      "lookup_rows": {
+        "verify_instruction": 1,
+        "memory_address_to_id": 3,
+        "memory_id_to_big": 3,
+        "range_check_4_4_4_4": 3
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 97,
+      "trace_cells_upper_bound": 97,
+      "uses_upper_bound": {
+        "range_check_7_2_5": 1,
+        "range_check_4_3": 1,
+        "memory_address_to_id": 4,
+        "range_check_9_9": 10,
+        "range_check_9_9_b": 10,
+        "range_check_9_9_c": 10,
+        "range_check_9_9_d": 10,
+        "range_check_9_9_e": 10,
+        "range_check_9_9_f": 10,
+        "range_check_9_9_g": 5,
+        "range_check_9_9_h": 5,
+        "range_check_4_4_4_4": 3
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 214748364,
+      "max_instances_rows_limit": 268435456
+    },
+    "blake_round_sigma": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "BlakeRoundSigma": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "verify_bitwise_xor_4": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "VerifyBitwiseXor_4": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "verify_bitwise_xor_7": {
+      "trace_type": "Component",
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "VerifyBitwiseXor_7": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "blake_g": {
+      "trace_type": "Component",
+      "num_state_cols": 52,
+      "use_lookup_cols": {
+        "VerifyBitwiseXor_8": 8,
+        "VerifyBitwiseXor_12": 2,
+        "VerifyBitwiseXor_4": 2,
+        "VerifyBitwiseXor_7": 2,
+        "VerifyBitwiseXor_9": 2
+      },
+      "yield_lookup_cols": {
+        "BlakeG": 1
+      },
+      "lookup_rows": {
+        "verify_bitwise_xor_8": 8,
+        "verify_bitwise_xor_12": 2,
+        "verify_bitwise_xor_4": 2,
+        "verify_bitwise_xor_7": 2,
+        "verify_bitwise_xor_9": 2
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 89,
+      "trace_cells_upper_bound": 89,
+      "uses_upper_bound": {
+        "verify_bitwise_xor_8": 8,
+        "verify_bitwise_xor_12": 2,
+        "verify_bitwise_xor_4": 2,
+        "verify_bitwise_xor_7": 2,
+        "verify_bitwise_xor_9": 2
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 268435455,
+      "max_instances_rows_limit": 268435456
+    },
+    "blake_round": {
+      "trace_type": "ChainRound",
+      "num_state_cols": 211,
+      "use_lookup_cols": {
+        "BlakeRoundSigma": 1,
+        "RangeCheck_7_2_5": 16,
+        "MemoryAddressToId": 16,
+        "MemoryIdToBig": 16,
+        "BlakeG": 8,
+        "BlakeRound": 1
+      },
+      "yield_lookup_cols": {
+        "BlakeRound": 1
+      },
+      "lookup_rows": {
+        "blake_round_sigma": 1,
+        "range_check_7_2_5": 16,
+        "memory_address_to_id": 16,
+        "memory_id_to_big": 16,
+        "blake_g": 8
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 332,
+      "trace_cells_upper_bound": 1044,
+      "uses_upper_bound": {
+        "blake_round_sigma": 1,
+        "range_check_7_2_5": 16,
+        "memory_address_to_id": 16,
+        "range_check_9_9": 32,
+        "range_check_9_9_b": 32,
+        "range_check_9_9_c": 32,
+        "range_check_9_9_d": 32,
+        "range_check_9_9_e": 32,
+        "range_check_9_9_f": 32,
+        "range_check_9_9_g": 16,
+        "range_check_9_9_h": 16,
+        "verify_bitwise_xor_8": 64,
+        "verify_bitwise_xor_12": 16,
+        "verify_bitwise_xor_4": 16,
+        "verify_bitwise_xor_7": 16,
+        "verify_bitwise_xor_9": 16
+      },
+      "rows_upper_bound": {
+        "blake_g": 8
+      },
+      "max_instances_uses_limit": 33554431,
+      "max_instances_rows_limit": 33554432
+    },
+    "triple_xor_32": {
+      "trace_type": "Component",
+      "num_state_cols": 20,
+      "use_lookup_cols": {
+        "VerifyBitwiseXor_8": 8
+      },
+      "yield_lookup_cols": {
+        "TripleXor32": 1
+      },
+      "lookup_rows": {
+        "verify_bitwise_xor_8": 8
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 41,
+      "trace_cells_upper_bound": 41,
+      "uses_upper_bound": {
+        "verify_bitwise_xor_8": 8
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 268435455,
+      "max_instances_rows_limit": 268435456
+    },
     "blake_compress_opcode": {
       "trace_type": "Opcode",
       "num_state_cols": 168,
@@ -1793,328 +1982,6 @@
       },
       "max_instances_uses_limit": 1966560,
       "max_instances_rows_limit": 2097152
-    },
-    "assert_eq_opcode_double_deref": {
-      "trace_type": "Opcode",
-      "num_state_cols": 16,
-      "use_lookup_cols": {
-        "VerifyInstruction": 1,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 1,
-        "Opcodes": 1
-      },
-      "yield_lookup_cols": {
-        "Opcodes": 1
-      },
-      "lookup_rows": {
-        "verify_instruction": 1,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 33,
-      "trace_cells_upper_bound": 33,
-      "uses_upper_bound": {
-        "range_check_7_2_5": 1,
-        "range_check_4_3": 1,
-        "memory_address_to_id": 4,
-        "range_check_9_9": 4,
-        "range_check_9_9_b": 4,
-        "range_check_9_9_c": 4,
-        "range_check_9_9_d": 4,
-        "range_check_9_9_e": 4,
-        "range_check_9_9_f": 4,
-        "range_check_9_9_g": 2,
-        "range_check_9_9_h": 2
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 536870911,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_builtin_bits_128": {
-      "trace_type": "Builtin",
-      "num_state_cols": 17,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 1,
-        "MemoryIdToBig": 1
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "memory_address_to_id": 1,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 21,
-      "trace_cells_upper_bound": 21,
-      "uses_upper_bound": {
-        "memory_address_to_id": 1,
-        "range_check_9_9": 2,
-        "range_check_9_9_b": 2,
-        "range_check_9_9_c": 2,
-        "range_check_9_9_d": 2,
-        "range_check_9_9_e": 2,
-        "range_check_9_9_f": 2,
-        "range_check_9_9_g": 1,
-        "range_check_9_9_h": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 1073741823,
-      "max_instances_rows_limit": 268435456
-    },
-    "add_mod_builtin": {
-      "trace_type": "Builtin",
-      "num_state_cols": 251,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 29,
-        "MemoryIdToBig": 24
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "memory_address_to_id": 29,
-        "memory_id_to_big": 24
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 359,
-      "trace_cells_upper_bound": 359,
-      "uses_upper_bound": {
-        "memory_address_to_id": 29,
-        "range_check_9_9": 64,
-        "range_check_9_9_b": 64,
-        "range_check_9_9_c": 64,
-        "range_check_9_9_d": 64,
-        "range_check_9_9_e": 64,
-        "range_check_9_9_f": 64,
-        "range_check_9_9_g": 32,
-        "range_check_9_9_h": 32
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 33554431,
-      "max_instances_rows_limit": 268435456
-    },
-    "range_check_builtin_bits_96": {
-      "trace_type": "Builtin",
-      "num_state_cols": 12,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 1,
-        "RangeCheck_6": 1,
-        "MemoryIdToBig": 1
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "memory_address_to_id": 1,
-        "range_check_6": 1,
-        "memory_id_to_big": 1
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 20,
-      "trace_cells_upper_bound": 20,
-      "uses_upper_bound": {
-        "memory_address_to_id": 1,
-        "range_check_6": 1,
-        "range_check_9_9": 2,
-        "range_check_9_9_b": 2,
-        "range_check_9_9_c": 2,
-        "range_check_9_9_d": 2,
-        "range_check_9_9_e": 2,
-        "range_check_9_9_f": 2,
-        "range_check_9_9_g": 1,
-        "range_check_9_9_h": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 1073741823,
-      "max_instances_rows_limit": 268435456
-    },
-    "pedersen_builtin": {
-      "trace_type": "Builtin",
-      "num_state_cols": 351,
-      "use_lookup_cols": {
-        "RangeCheck_5_4": 2,
-        "MemoryAddressToId": 3,
-        "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
-        "PartialEcMul": 4
-      },
-      "yield_lookup_cols": {
-        "PartialEcMul": 4
-      },
-      "lookup_rows": {
-        "range_check_5_4": 2,
-        "memory_address_to_id": 3,
-        "memory_id_to_big": 3,
-        "range_check_8": 4,
-        "partial_ec_mul": 30
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 391,
-      "trace_cells_upper_bound": 29191,
-      "uses_upper_bound": {
-        "range_check_5_4": 2,
-        "memory_address_to_id": 3,
-        "range_check_9_9": 584,
-        "range_check_9_9_b": 584,
-        "range_check_9_9_c": 584,
-        "range_check_9_9_d": 584,
-        "range_check_9_9_e": 584,
-        "range_check_9_9_f": 584,
-        "range_check_9_9_g": 292,
-        "range_check_9_9_h": 292,
-        "range_check_8": 4,
-        "pedersen_points_table": 32,
-        "range_check_19_h": 384,
-        "range_check_19": 384,
-        "range_check_19_b": 384,
-        "range_check_19_c": 384,
-        "range_check_19_d": 288,
-        "range_check_19_e": 288,
-        "range_check_19_f": 288,
-        "range_check_19_g": 288
-      },
-      "rows_upper_bound": {
-        "partial_ec_mul": 30
-      },
-      "max_instances_uses_limit": 3677198,
-      "max_instances_rows_limit": 8388608
-    },
-    "poseidon_builtin": {
-      "trace_type": "Builtin",
-      "num_state_cols": 341,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 6,
-        "MemoryIdToBig": 6,
-        "PoseidonFullRoundChain": 2,
-        "RangeCheckFelt252Width27": 2,
-        "Cube252": 2,
-        "RangeCheck_3_3_3_3_3": 2,
-        "RangeCheck_4_4_4_4": 6,
-        "RangeCheck_4_4": 3,
-        "Poseidon3PartialRoundsChain": 1
-      },
-      "yield_lookup_cols": {
-        "PoseidonFullRoundChain": 2,
-        "Poseidon3PartialRoundsChain": 1
-      },
-      "lookup_rows": {
-        "memory_address_to_id": 6,
-        "memory_id_to_big": 6,
-        "poseidon_full_round_chain": 8,
-        "range_check_felt_252_width_27": 2,
-        "cube_252": 2,
-        "range_check_3_3_3_3_3": 2,
-        "range_check_4_4_4_4": 6,
-        "range_check_4_4": 3,
-        "poseidon_3_partial_rounds_chain": 27
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 409,
-      "trace_cells_upper_bound": 70171,
-      "uses_upper_bound": {
-        "memory_address_to_id": 6,
-        "range_check_9_9": 1118,
-        "range_check_9_9_b": 1118,
-        "range_check_9_9_c": 1118,
-        "range_check_9_9_d": 1118,
-        "range_check_9_9_e": 1118,
-        "range_check_9_9_f": 988,
-        "range_check_9_9_g": 494,
-        "range_check_9_9_h": 494,
-        "range_check_19_h": 1296,
-        "range_check_19": 1296,
-        "range_check_19_b": 1296,
-        "range_check_19_c": 1296,
-        "range_check_19_d": 972,
-        "range_check_19_e": 972,
-        "range_check_19_f": 972,
-        "range_check_19_g": 972,
-        "poseidon_round_keys": 40,
-        "range_check_3_3_3_3_3": 50,
-        "range_check_18": 910,
-        "range_check_18_b": 260,
-        "range_check_4_4_4_4": 198,
-        "range_check_4_4": 99
-      },
-      "rows_upper_bound": {
-        "poseidon_full_round_chain": 8,
-        "cube_252": 122,
-        "range_check_felt_252_width_27": 98,
-        "poseidon_3_partial_rounds_chain": 27
-      },
-      "max_instances_uses_limit": 1657008,
-      "max_instances_rows_limit": 2097152
-    },
-    "mul_mod_builtin": {
-      "trace_type": "Builtin",
-      "num_state_cols": 410,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 29,
-        "MemoryIdToBig": 24,
-        "RangeCheck_12": 32,
-        "RangeCheck_3_6_6_3": 40,
-        "RangeCheck_18": 62
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "memory_address_to_id": 29,
-        "memory_id_to_big": 24,
-        "range_check_12": 32,
-        "range_check_3_6_6_3": 40,
-        "range_check_18": 62
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 786,
-      "trace_cells_upper_bound": 786,
-      "uses_upper_bound": {
-        "memory_address_to_id": 29,
-        "range_check_9_9": 64,
-        "range_check_9_9_b": 64,
-        "range_check_9_9_c": 64,
-        "range_check_9_9_d": 64,
-        "range_check_9_9_e": 64,
-        "range_check_9_9_f": 64,
-        "range_check_9_9_g": 32,
-        "range_check_9_9_h": 32,
-        "range_check_12": 32,
-        "range_check_3_6_6_3": 40,
-        "range_check_18": 62
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 33554431,
-      "max_instances_rows_limit": 268435456
-    },
-    "bitwise_builtin": {
-      "trace_type": "Builtin",
-      "num_state_cols": 89,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 5,
-        "MemoryIdToBig": 5,
-        "VerifyBitwiseXor_9": 27,
-        "VerifyBitwiseXor_8": 1
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "memory_address_to_id": 5,
-        "memory_id_to_big": 5,
-        "verify_bitwise_xor_9": 27,
-        "verify_bitwise_xor_8": 1
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 165,
-      "trace_cells_upper_bound": 165,
-      "uses_upper_bound": {
-        "memory_address_to_id": 5,
-        "range_check_9_9": 16,
-        "range_check_9_9_b": 16,
-        "range_check_9_9_c": 16,
-        "range_check_9_9_d": 16,
-        "range_check_9_9_e": 16,
-        "range_check_9_9_f": 16,
-        "range_check_9_9_g": 8,
-        "range_check_9_9_h": 8,
-        "verify_bitwise_xor_9": 27,
-        "verify_bitwise_xor_8": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 79536431,
-      "max_instances_rows_limit": 268435456
     }
   }
 }
