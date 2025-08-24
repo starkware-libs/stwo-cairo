@@ -173,7 +173,7 @@ impl BlakeContextComponents {
 impl std::fmt::Display for BlakeContextComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.components {
-            Some(components) => write!(f, "{}", components),
+            Some(components) => write!(f, "{components}"),
             None => write!(f, "No Blake Context Components"),
         }
     }

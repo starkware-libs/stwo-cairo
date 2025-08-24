@@ -18,7 +18,7 @@ impl OpcodeExtension {
             1 => OpcodeExtension::Blake,
             2 => OpcodeExtension::BlakeFinalize,
             3 => OpcodeExtension::QM31Operation,
-            _ => panic!("Invalid opcode extension number: {}", value),
+            _ => panic!("Invalid opcode extension number: {value}"),
         }
     }
 }

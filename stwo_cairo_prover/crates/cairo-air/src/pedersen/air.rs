@@ -137,7 +137,7 @@ impl PedersenContextComponents {
 impl std::fmt::Display for PedersenContextComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match &self.components {
-            Some(components) => write!(f, "{}", components),
+            Some(components) => write!(f, "{components}"),
             None => write!(f, "No Pedersen Context Components"),
         }
     }

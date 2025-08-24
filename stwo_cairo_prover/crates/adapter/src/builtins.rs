@@ -83,7 +83,7 @@ impl BuiltinSegments {
                     BuiltinName::mul_mod => res.mul_mod = segment,
                     BuiltinName::output => res.output = segment,
                     BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
-                        assert!(segment.is_none(), "{} builtin is not supported", name);
+                        assert!(segment.is_none(), "{name} builtin is not supported");
                     }
                     // Not builtins.
                     BuiltinName::segment_arena => {}
@@ -225,17 +225,13 @@ impl BuiltinSegments {
                 _ => panic!("Invalid builtin name"),
             };
             assert!(
-                original_segment_len % cells_per_instance == 0,
-                "builtin segment: {} size is {}, which is not divisble by {}",
-                builtin_name,
-                original_segment_len,
-                cells_per_instance
+                original_segment_len.is_multiple_of(cells_per_instance),
+                "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisble by {cells_per_instance}"
             );
 
             if !current_builtin_segment.iter().all(|x| x.is_some()) {
                 panic!(
-                    "Builtins segments '{}' at segment index: {}, contains a hole.",
-                    builtin_name, segment_index
+                    "Builtins segments '{builtin_name}' at segment index: {segment_index}, contains a hole."
                 );
             }
 
@@ -323,7 +319,7 @@ fn pad_segment(
     let (begin_addr, stop_ptr) = (*begin_addr as u32, *stop_ptr as u32);
     let initial_length = stop_ptr - begin_addr;
     assert!(initial_length > 0);
-    assert!(initial_length % n_cells_per_instance == 0);
+    assert!(initial_length.is_multiple_of(n_cells_per_instance));
     let num_instances = initial_length / n_cells_per_instance;
     let padded_size = std::cmp::max(
         MIN_N_INSTANCES_IN_BUILTIN_SEGMENT,
@@ -370,7 +366,7 @@ mod builtin_padding {
 
     pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
         let range = segment.begin_addr as u32..segment.stop_ptr as u32;
-        assert!(range.len() % BITWISE_MEMORY_CELLS == 0);
+        assert!(range.len().is_multiple_of(BITWISE_MEMORY_CELLS));
         for (op0_addr, op1_addr, and_addr, xor_addr, or_addr) in range.tuples() {
             let op0 = memory.get(op0_addr).as_u256();
             let op1 = memory.get(op1_addr).as_u256();

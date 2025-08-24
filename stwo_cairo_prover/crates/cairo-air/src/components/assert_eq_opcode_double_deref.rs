@@ -1,10 +1,10 @@
-// AIR version d1591e2a
+// AIR version 9acd5104
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_cb32b::DecodeInstructionCb32B;
 use crate::components::subroutines::mem_verify_equal::MemVerifyEqual;
-use crate::components::subroutines::read_positive_num_bits_27::ReadPositiveNumBits27;
+use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
 
-pub const N_TRACE_COLUMNS: usize = 17;
+pub const N_TRACE_COLUMNS: usize = 19;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -74,6 +74,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
         let input_pc_col0 = eval.next_trace_mask();
@@ -91,7 +92,9 @@ impl FrameworkEval for Eval {
         let mem1_base_limb_0_col12 = eval.next_trace_mask();
         let mem1_base_limb_1_col13 = eval.next_trace_mask();
         let mem1_base_limb_2_col14 = eval.next_trace_mask();
-        let dst_id_col15 = eval.next_trace_mask();
+        let mem1_base_limb_3_col15 = eval.next_trace_mask();
+        let partial_limb_msb_col16 = eval.next_trace_mask();
+        let dst_id_col17 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -122,13 +125,15 @@ impl FrameworkEval for Eval {
                 - ((op0_base_fp_col7.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - op0_base_fp_col7.clone()) * input_ap_col1.clone()))),
         );
-        ReadPositiveNumBits27::evaluate(
+        ReadPositiveNumBits29::evaluate(
             [(mem0_base_col10.clone()
                 + decode_instruction_cb32b_output_tmp_b1151_8_offset1.clone())],
             mem1_base_id_col11.clone(),
             mem1_base_limb_0_col12.clone(),
             mem1_base_limb_1_col13.clone(),
             mem1_base_limb_2_col14.clone(),
+            mem1_base_limb_3_col15.clone(),
+            partial_limb_msb_col16.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
@@ -137,12 +142,13 @@ impl FrameworkEval for Eval {
             [
                 (mem_dst_base_col9.clone()
                     + decode_instruction_cb32b_output_tmp_b1151_8_offset0.clone()),
-                (((mem1_base_limb_0_col12.clone()
+                ((((mem1_base_limb_0_col12.clone()
                     + (mem1_base_limb_1_col13.clone() * M31_512.clone()))
                     + (mem1_base_limb_2_col14.clone() * M31_262144.clone()))
+                    + (mem1_base_limb_3_col15.clone() * M31_134217728.clone()))
                     + decode_instruction_cb32b_output_tmp_b1151_8_offset2.clone()),
             ],
-            dst_id_col15.clone(),
+            dst_id_col17.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );

@@ -1,4 +1,3 @@
-// AIR version 9f50a80b
 #![allow(unused_parens)]
 use cairo_air::components::cube_252::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

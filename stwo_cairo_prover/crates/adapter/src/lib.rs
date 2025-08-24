@@ -188,5 +188,5 @@ fn log_memory(memory: &Memory) {
         n_id_to_value,
         log_n_id_to_value,
     };
-    log::info!("{}", log);
+    log::info!("{log}");
 }

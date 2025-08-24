@@ -193,7 +193,7 @@ pub fn run_program_and_adapter(
 
 pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
     let bytes =
-        std::fs::read(program_path).unwrap_or_else(|e| panic!("Failed to read program: {:?}", e));
+        std::fs::read(program_path).unwrap_or_else(|e| panic!("Failed to read program: {e:?}"));
     Program::from_bytes(&bytes, Some("main")).expect("Failed to create program from bytes")
 }
 

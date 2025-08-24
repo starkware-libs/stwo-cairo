@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 9acd5104
 #![allow(unused_parens)]
 use cairo_air::components::jnz_opcode_taken::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -113,13 +113,16 @@ fn write_trace_simd(
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
     let M31_32769 = PackedM31::broadcast(M31::from(32769));
+    let M31_508 = PackedM31::broadcast(M31::from(508));
     let M31_511 = PackedM31::broadcast(M31::from(511));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_536870912 = PackedM31::broadcast(M31::from(536870912));
     let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
     let UInt16_127 = PackedUInt16::broadcast(UInt16::from(127));
+    let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
@@ -452,13 +455,26 @@ fn write_trace_simd(
                 *row[42] = next_pc_limb_1_col42;
                 let next_pc_limb_2_col43 = memory_id_to_big_value_tmp_f51a9_13.get_m31(2);
                 *row[43] = next_pc_limb_2_col43;
+                let remainder_bits_tmp_f51a9_17 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_f51a9_13.get_m31(3)))
+                        & (UInt16_3));
+                let remainder_bits_col44 = remainder_bits_tmp_f51a9_17.as_m31();
+                *row[44] = remainder_bits_col44;
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_f51a9_18 =
+                    (((PackedUInt16::from_m31(remainder_bits_col44)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col45 = partial_limb_msb_tmp_f51a9_18.as_m31();
+                *row[45] = partial_limb_msb_col45;
+
                 *sub_component_inputs.memory_id_to_big[1] = next_pc_id_col38;
                 *lookup_data.memory_id_to_big_1 = [
                     next_pc_id_col38,
                     next_pc_limb_0_col41,
                     next_pc_limb_1_col42,
                     next_pc_limb_2_col43,
-                    ((mid_limbs_set_col40) * (M31_511)),
+                    ((remainder_bits_col44) + ((mid_limbs_set_col40) * (M31_508))),
                     ((mid_limbs_set_col40) * (M31_511)),
                     ((mid_limbs_set_col40) * (M31_511)),
                     ((mid_limbs_set_col40) * (M31_511)),
@@ -484,21 +500,22 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col39) * (M31_256)),
                 ];
-                let read_small_output_tmp_f51a9_17 = (
-                    (((((next_pc_limb_0_col41) + ((next_pc_limb_1_col42) * (M31_512)))
+                let read_small_output_tmp_f51a9_20 = (
+                    ((((((next_pc_limb_0_col41) + ((next_pc_limb_1_col42) * (M31_512)))
                         + ((next_pc_limb_2_col43) * (M31_262144)))
+                        + ((remainder_bits_col44) * (M31_134217728)))
                         - (msb_col39))
-                        - ((M31_134217728) * (mid_limbs_set_col40))),
+                        - ((M31_536870912) * (mid_limbs_set_col40))),
                     next_pc_id_col38,
                 );
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_f51a9_17.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_f51a9_20.0)),
                     ((input_ap_col1) + (ap_update_add_1_col5)),
                     input_fp_col2,
                 ];
-                *row[44] = enabler_col.packed_at(row_index);
+                *row[46] = enabler_col.packed_at(row_index);
             },
         );
 

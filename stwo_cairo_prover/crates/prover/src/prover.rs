@@ -228,7 +228,7 @@ pub mod tests {
             CairoSerialize::serialize(&cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
+                .map(|felt| format!("0x{felt:x}"))
                 .collect();
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
@@ -305,8 +305,7 @@ pub mod tests {
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 assert!(
                     *n_instances > 0,
-                    "{} isn't used in E2E full-Cairo opcode test",
-                    opcode
+                    "{opcode} isn't used in E2E full-Cairo opcode test"
                 );
             }
             let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
@@ -339,7 +338,7 @@ pub mod tests {
             CairoSerialize::serialize(&cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
+                .map(|felt| format!("0x{felt:x}"))
                 .collect();
             proof_file
                 .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
@@ -429,7 +428,7 @@ pub mod tests {
                     .collect();
 
                 if !empty_builtins.is_empty() {
-                    panic!("Builtins missing in the input: {:?}", empty_builtins);
+                    panic!("Builtins missing in the input: {empty_builtins:?}");
                 }
             }
 

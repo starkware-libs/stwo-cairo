@@ -54,7 +54,7 @@ where
             CairoSerialize::serialize(proof, &mut serialized);
             let hex_strings: Vec<String> = serialized
                 .into_iter()
-                .map(|felt| format!("0x{:x}", felt))
+                .map(|felt| format!("0x{felt:x}"))
                 .collect();
             fs::write(&proof_path, serde_json::to_string(&hex_strings)?)?;
         }
