@@ -79,7 +79,8 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
 
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
-    let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    let (l28, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    assert!(l28 == 0);
 
     let mut sum: QM31 = M31Trait::new(upcast(l27)).into();
     horner_step(ref sum, l26, alpha);
@@ -189,7 +190,8 @@ pub fn combine_felt252(
 
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
-    let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    let (l28, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    assert!(l28 == 0);
     let mut sum = a28.mul_m31(M31Trait::new(upcast(l27)));
     sum += a27.mul_m31(M31Trait::new(upcast(l26)));
     sum += a26.mul_m31(M31Trait::new(upcast(l25)));
