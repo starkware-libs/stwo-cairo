@@ -55,7 +55,8 @@ impl MerkleDecommitmentSerde<
         )
     }
 }
-
+// Doc fields.
+// Does it need to be array or span?
 pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
     pub column_log_sizes: Array<u32>,

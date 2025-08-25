@@ -54,6 +54,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
         let mut byte_count = 32;
 
+        // multipop 4 felts? (each felt qm31)
         for felt in felts {
             // Compress whenever the buffer reaches capacity.
             let msg_opt: Option<@Box<[u32; 16]>> = buffer.span().try_into();
@@ -93,7 +94,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let mut byte_count = 32;
 
         let mut data = data;
-
+        // Change multipop to 16?
         while let Some(head) = data.multi_pop_front::<8>() {
             // Compress whenever the buffer reaches capacity.
             if let Some(msg) = buffer.span().try_into() {
@@ -149,6 +150,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         res
     }
 
+    // Change to fixed size array. Probably not worth, at least not before mvp.
     fn draw_random_bytes(ref self: Blake2sChannel) -> Array<u8> {
         let words = draw_random_words(ref self).hash.unbox();
         let mut bytes = array![];
@@ -166,6 +168,8 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         bytes
     }
 
+    // Consider only checking the nonce works, do it like in stone. After checking, mix the nonce.
+    // What's different is the way we check the pow (hash(state, nonce, ?)).
     fn mix_and_check_pow_nonce(ref self: Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
         self.mix_u64(nonce);
         check_proof_of_work(self.digest, n_bits)
@@ -174,15 +178,16 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
 /// Checks that the last `n_bits` bits of the digest are zero.
 /// `n_bits` is in range [0, 64].
+/// Panics if `n_bits` is greater than 64, with index out of bounds.
 fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
     const U64_2_POW_32: u64 = 0x100000000;
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
+
     // Handle the special case of 64 bits.
     if n_bits == 64 {
         return v == 0;
     }
-    // If n_bits > 64 pow2_u64 will panic with index out of bounds.
     let divisor = pow2_u64(n_bits).try_into().unwrap();
     let (_, r) = DivRem::div_rem(v, divisor);
     r == 0
@@ -193,7 +198,9 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
     channel.channel_time.next_challenges();
 }
 
+// remove random from name.
 // TODO: Consider just returning secure felts.
+#[inline(always)]
 fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
     loop {
         let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();

@@ -1,6 +1,7 @@
 use crate::fri::FriConfig;
 use crate::pcs::*;
 
+// Move to pcs dir.
 #[test]
 fn test_security_bits() {
     let config = PcsConfig {
