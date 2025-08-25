@@ -7,6 +7,7 @@ edition = "2024_07"
 casm = true
 
 [features]
+default = ["poseidon252_verifier"]
 poseidon252_verifier = ["stwo_verifier_utils/poseidon252_verifier"]
 qm31_opcode = ["stwo_verifier_utils/qm31_opcode"]
 blake_outputs_packing = ["stwo_verifier_utils/blake_outputs_packing"]

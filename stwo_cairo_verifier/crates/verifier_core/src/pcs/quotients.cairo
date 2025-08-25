@@ -17,8 +17,10 @@ use crate::{ColumnSpan, TreeArray, TreeSpan};
 #[cfg(test)]
 mod test;
 
+// make more clear.
+
 /// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree
-/// and transposes the arrays from [tree][log_size][column] to [log_size][tree][column].
+/// and transposes the arrays from [tree][log_size][column index] to [log_size][tree][column index].
 ///
 /// # Arguments
 ///
@@ -27,6 +29,8 @@ mod test;
 /// # Returns
 ///
 /// * `columns_per_tree_by_log_size`: The columns per tree by log size.
+
+// change array to span?
 fn pad_and_transpose_columns_by_log_size_per_tree(
     mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
 ) -> Array<TreeArray<Span<usize>>> {
@@ -65,6 +69,8 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
     columns_per_tree_by_log_size
 }
 
+// rename?
+
 /// Computes the OOD quotients at the query positions.
 ///
 /// # Arguments
@@ -85,7 +91,9 @@ pub fn fri_answers(
         columns_by_log_size_per_tree,
     );
 
+
     let mut log_size = columns_per_tree_by_log_size.len();
+    // explain why equal is ok.
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
     let mut columns_per_tree_by_log_size = columns_per_tree_by_log_size.span();
@@ -96,6 +104,7 @@ pub fn fri_answers(
         // Collect the column samples and the number of columns in each tree.
         let mut samples = array![];
         let mut n_columns_per_tree = array![];
+        // use zip_eq.
         for (columns, samples_per_column) in columns_per_tree
             .into_iter()
             .zip(samples_per_column_per_tree) {
@@ -105,6 +114,7 @@ pub fn fri_answers(
             n_columns_per_tree.append(columns.len());
         }
 
+        // is this every empty? print in a proof and check.
         if samples.is_empty() {
             continue;
         }
@@ -127,26 +137,27 @@ pub fn fri_answers(
 
 /// Takes `n[i]` elements from the i'th `tree` and returns them as a single array.
 fn tree_take_n<T, +Clone<T>, +Drop<T>>(
-    ref tree: TreeArray<Span<T>>, mut n: TreeSpan<usize>,
+    ref trees: TreeArray<Span<T>>, mut n_span: TreeSpan<usize>,
 ) -> Array<T> {
     let mut res: Array<T> = array![];
-    let mut new_tree = array![];
-    for mut values in tree {
-        res.append_span(values.pop_front_n(*n.pop_front().unwrap()));
-        new_tree.append(values);
+    let mut new_trees_array = array![];
+    for (mut tree, n) in zip_eq(trees, n_span) {
+        res.append_span(tree.pop_front_n(*n));
+        new_trees_array.append(tree);
     }
 
-    tree = new_tree;
+    trees = new_trees_array;
     res
 }
 
+// Move up (above tree_take_n).
 fn fri_answers_for_log_size(
     log_size: u32,
     samples_per_column: Array<@Array<PointSample>>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
     ref queried_values: TreeArray<Span<M31>>,
-    n_columns: TreeArray<usize>,
+    n_columns_per_tree: TreeArray<usize>,
 ) -> Span<QM31> {
     let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches_by_point, random_coeff);
@@ -154,7 +165,7 @@ fn fri_answers_for_log_size(
     let mut quotient_evals_at_queries = array![];
 
     for query_position in query_positions {
-        let queried_values_at_row = tree_take_n(ref queried_values, n_columns.span());
+        let queried_values_at_row = tree_take_n(ref queried_values, n_columns_per_tree.span());
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
@@ -198,13 +209,13 @@ fn accumulate_row_quotients(
         } = point_constants;
 
         let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
-
+        // improve name of alpha_mul_c_idx.
         for (column_index, alpha_mul_c) in alpha_mul_c_idx.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
             // The numerator is a line equation passing through
             //   (sample_point.y, sample_value), (conj(sample_point.y), conj(sample_value))
-            // evaluated at (domain_point.y, value).
+            // evaluated at (domain_point.y, query_eval_at_column).
             // When substituting a polynomial in this line equation, we get a polynomial
             // with a root at sample_point and conj(sample_point) if the original polynomial
             // had the values sample_value and conj(sample_value) at these points.
@@ -221,6 +232,7 @@ fn accumulate_row_quotients(
     quotient_accumulator
 }
 
+// doc
 fn quotient_denominator_inverses(
     sample_batches: Span<ColumnSampleBatch>, domain_point: CirclePoint<M31>,
 ) -> Array<CM31> {
@@ -228,6 +240,7 @@ fn quotient_denominator_inverses(
 
     for sample_batch in sample_batches {
         // Extract Pr, Pi.
+        // explain an doc
         let [a, b, c, d] = sample_batch.point.x.to_fixed_array();
         let prx = CM31Trait::pack(a.into(), b.into());
         let pix = CM31Trait::pack(c.into(), d.into());
@@ -293,6 +306,7 @@ pub struct PointQuotientConstants {
     pub batch_random_coeff: QM31,
 }
 
+//doc
 #[generate_trait]
 impl QuotientConstantsImpl of QuotientConstantsTrait {
     fn gen(
@@ -348,6 +362,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
 pub struct ColumnSampleBatch {
     /// The point at which the columns are sampled.
     pub point: CirclePoint<QM31>,
+    // remove snapshot
     /// The sampled column indices and their values at the point.
     pub columns_and_values: Array<(usize, @QM31)>,
 }
@@ -372,6 +387,8 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         for samples in samples_per_column {
             // TODO(andrew): Almost all columns have a single sample at the OODS point.
             // Handling this case specifically is more optimal than using the dictionary.
+
+            // check if smaples.len() == 1 or 2 and act accoridngly. 
             for sample in samples.span() {
                 let point_key = CirclePointQM31Key::encode(sample.point);
                 let (entry, value) = grouped_samples.entry(point_key);
@@ -414,12 +431,13 @@ pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
     -(v + v)
 }
 
+// Move struct up and doc.
 #[derive(Copy, Debug, Drop)]
 pub struct PointSample {
     pub point: CirclePoint<QM31>,
     pub value: QM31,
 }
-
+// rewrite doc.
 /// A circle point encoding to index into [`Felt252Dict`].
 #[generate_trait]
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {

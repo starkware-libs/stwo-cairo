@@ -17,7 +17,7 @@ mod test;
 pub const FELTS_PER_HASH: usize = 8;
 
 pub const BYTES_PER_HASH: usize = 31;
-
+// consider move to utils.
 /// Constructs a `felt252` from 7 u32 big-endian limbs.
 pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
     let [l0, l1, l2, l3, l4, l5, l6] = x.unbox();
@@ -43,6 +43,7 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
     #[inline(always)]
     fn mix_felt252(ref self: Poseidon252Channel, x: felt252) {
         let (s0, _, _) = hades_permutation(self.digest, x, 2);
+        // Add update_digest in this file. (maybe in a trait, and use the trait also in blake2s).
         self.digest = s0;
         self.channel_time.next_challenges();
     }
@@ -58,8 +59,11 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             match felts.multi_pop_front::<2>() {
                 Option::Some(pair) => {
                     let [x, y] = (*pair).unbox();
-                    let cur = pack4(1, x.to_fixed_array());
-                    res.append(pack4(cur, y.to_fixed_array()));
+                    // Need to doc why the cur starts with 1. It seperates the cases of 1 qm31 and 2 qm31. How do you differentiate between two qm31s that are 0 and one qm31 that is 0?  so if you add 1, you get 100000000 vs 000010000.
+
+                    // Gil: pack4 can be in the interface of qm31 without using to_fix_array.
+                    let cur = pack4(cur: 1, values: x.to_fixed_array());
+                    res.append(pack4(:cur, values: y.to_fixed_array()));
                 },
                 Option::None => {
                     if !felts.is_empty() {
@@ -73,6 +77,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
         self.digest = poseidon_hash_span(res.span());
 
+        // That cur = 1 is probably enough, but confirm and remove TODO.
         // TODO(spapini): do we need length padding?
         self.channel_time.next_challenges();
     }
@@ -83,15 +88,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
         let mut res = array![self.digest];
-
+        
         let mut data = data;
-
+        
         while let Some(chunk) = data.multi_pop_front::<7>() {
             res.append(construct_f252_be(*chunk));
         }
 
         if !data.is_empty() {
             let mut chunk: Array<u32> = array![];
+            // Pad number of limbs, might not be sound.
             chunk.append_span(data);
             for _ in data.len()..7 {
                 chunk.append(0);
@@ -101,12 +107,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
         self.digest = poseidon_hash_span(res.span());
 
-        // TODO(spapini): do we need length padding?
         self.channel_time.next_challenges();
     }
-
+    // rename to section instead of data. GALI
     fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
+        // TODO(Gali): Do the TODO.
+
+        // TODO(Gil): Make sure Gali does her TODO.
+
         // TODO(Gali): Make this more efficient, use hash_memory_section.
+        // Mix the id here, and EVERYWHERE.
         let mut flat_data = array![];
         for entry in data {
             let (_, val) = entry;
@@ -136,6 +146,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         res
     }
 
+
+    // Consider removing and implementing draw_queries(queries_num, log_domain_size). ILYA.
     /// Returns 31 random bytes computed as the first 31 bytes of the representative of
     /// `self.draw_secure_felt252()` in little endian.
     /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
@@ -143,7 +155,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         let u256 { low, high } = draw_secure_felt252(ref self).into();
 
         let mut bytes = array![];
-
+        // Doc it's manual implementation for efficiency.
         // Extract the 16 bytes from the low 128 bits of the felt 252.
         let (q, r) = div_rem(low, NZ_U8_SHIFT);
         bytes.append(upcast(r));
@@ -219,6 +231,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     }
 }
 
+// Remove support for 64 bit pow (also in blake).
+
 /// Checks that the last `n_bits` bits of the digest are zero.
 /// `n_bits` is in range [0, 64].
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
@@ -244,12 +258,17 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
     ]
 }
 
+// Rename to draw_f252.
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
     channel.channel_time.inc_sent();
     res
 }
 
+// Maybe split the extract u31 and reduce, so you can check all u31s are < P before reduce.
+// Also remove spapini todo.
+
+// Consider using bounded int div_rem.
 #[inline]
 fn extract_m31(ref num: u256) -> M31 {
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
