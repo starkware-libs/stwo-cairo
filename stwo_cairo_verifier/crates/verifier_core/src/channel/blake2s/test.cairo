@@ -165,7 +165,7 @@ fn test_blake_bytes() {
 
     let result = channel.draw_random_bytes();
 
-    // Tested against velue produced from Rust code.
+    // Tested against value produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
     assert_eq!(
         result,
