@@ -3,6 +3,7 @@ pub mod bitwise_xor_num_bits_12;
 pub mod bitwise_xor_num_bits_4;
 pub mod bitwise_xor_num_bits_7;
 pub mod bitwise_xor_num_bits_8;
+pub mod bitwise_xor_num_bits_8_b;
 pub mod bitwise_xor_num_bits_9;
 pub mod cond_decode_small_sign;
 pub mod cond_felt_252_as_addr;

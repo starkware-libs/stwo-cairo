@@ -1,17 +1,25 @@
 // AIR version d1591e2a
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
+use crate::components::subroutines::bitwise_xor_num_bits_8_b::BitwiseXorNumBits8B;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 
 pub const N_TRACE_COLUMNS: usize = 21;
-pub const RELATION_USES_PER_ROW: [RelationUse; 1] = [RelationUse {
-    relation_id: "VerifyBitwiseXor_8",
-    uses: 8,
-}];
+pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_8",
+        uses: 4,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_8_B",
+        uses: 4,
+    },
+];
 
 pub struct Eval {
     pub claim: Claim,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B,
     pub triple_xor_32_lookup_elements: relations::TripleXor32,
 }
 
@@ -153,34 +161,34 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_8_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits8::evaluate(
+        BitwiseXorNumBits8B::evaluate(
             [
                 split_16_low_part_size_8_output_tmp_298db_3_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_298db_7_limb_0.clone(),
             ],
             xor_col16.clone(),
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.verify_bitwise_xor_8_b_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits8::evaluate(
+        BitwiseXorNumBits8B::evaluate(
             [
                 xor_col16.clone(),
                 split_16_low_part_size_8_output_tmp_298db_11_limb_0.clone(),
             ],
             xor_col17.clone(),
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.verify_bitwise_xor_8_b_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits8::evaluate(
+        BitwiseXorNumBits8B::evaluate(
             [ms_8_bits_col7.clone(), ms_8_bits_col9.clone()],
             xor_col18.clone(),
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.verify_bitwise_xor_8_b_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits8::evaluate(
+        BitwiseXorNumBits8B::evaluate(
             [xor_col18.clone(), ms_8_bits_col11.clone()],
             xor_col19.clone(),
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.verify_bitwise_xor_8_b_lookup_elements,
             &mut eval,
         );
         let triple_xor32_output_tmp_298db_28_limb_0 =
@@ -224,6 +232,7 @@ mod tests {
         let eval = Eval {
             claim: Claim { log_size: 4 },
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B::dummy(),
             triple_xor_32_lookup_elements: relations::TripleXor32::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

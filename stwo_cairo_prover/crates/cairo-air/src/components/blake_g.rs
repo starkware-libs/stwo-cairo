@@ -7,7 +7,7 @@ use crate::components::subroutines::xor_rot_32_r_7::XorRot32R7;
 use crate::components::subroutines::xor_rot_32_r_8::XorRot32R8;
 
 pub const N_TRACE_COLUMNS: usize = 53;
-pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "VerifyBitwiseXor_12",
         uses: 2,
@@ -22,7 +22,11 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     },
     RelationUse {
         relation_id: "VerifyBitwiseXor_8",
-        uses: 8,
+        uses: 4,
+    },
+    RelationUse {
+        relation_id: "VerifyBitwiseXor_8_B",
+        uses: 4,
     },
     RelationUse {
         relation_id: "VerifyBitwiseXor_9",
@@ -33,6 +37,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
 pub struct Eval {
     pub claim: Claim,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B,
     pub verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12,
     pub verify_bitwise_xor_4_lookup_elements: relations::VerifyBitwiseXor_4,
     pub verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7,
@@ -170,6 +175,7 @@ impl FrameworkEval for Eval {
                 xor_col20.clone(),
                 xor_col21.clone(),
                 &self.verify_bitwise_xor_8_lookup_elements,
+                &self.verify_bitwise_xor_8_b_lookup_elements,
                 &mut eval,
             );
         TripleSum32::evaluate(
@@ -239,6 +245,7 @@ impl FrameworkEval for Eval {
                 xor_col40.clone(),
                 xor_col41.clone(),
                 &self.verify_bitwise_xor_8_lookup_elements,
+                &self.verify_bitwise_xor_8_b_lookup_elements,
                 &mut eval,
             );
         TripleSum32::evaluate(
@@ -325,6 +332,7 @@ mod tests {
         let eval = Eval {
             claim: Claim { log_size: 4 },
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B::dummy(),
             verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12::dummy(),
             verify_bitwise_xor_4_lookup_elements: relations::VerifyBitwiseXor_4::dummy(),
             verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7::dummy(),
