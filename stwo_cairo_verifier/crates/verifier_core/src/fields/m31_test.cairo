@@ -6,13 +6,17 @@ const POW2_16: u32 = 0b10000000000000000;
 
 #[test]
 fn test_m31() {
-    assert_eq!(m31(P), m31(0));
-    assert_eq!(m31(P + 1), m31(1));
     assert_eq!(m31(1) + m31(2), m31(3));
     assert_eq!(m31(3) - m31(2), m31(1));
     assert_eq!(m31(P - 1) + m31(1), m31(0));
     assert_eq!(m31(0) - m31(1), m31(P - 1));
     assert_eq!(m31(0) - m31(P - 1), m31(1));
+}
+
+#[test]
+#[should_panic]
+fn test_m31_fail() {
+    m31(P);
 }
 
 #[test]

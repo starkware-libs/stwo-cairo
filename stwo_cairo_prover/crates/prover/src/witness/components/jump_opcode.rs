@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 9acd5104
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -104,6 +104,7 @@ fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_128 = PackedM31::broadcast(M31::from(128));
+    let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
     let M31_24 = PackedM31::broadcast(M31::from(24));
@@ -116,6 +117,7 @@ fn write_trace_simd(
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
     let UInt16_13 = PackedUInt16::broadcast(UInt16::from(13));
+    let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
     let UInt16_4 = PackedUInt16::broadcast(UInt16::from(4));
     let UInt16_5 = PackedUInt16::broadcast(UInt16::from(5));
@@ -238,7 +240,7 @@ fn write_trace_simd(
                     + ((op1_base_ap_col5) * (input_ap_col1)));
                 *row[7] = mem1_base_col7;
 
-                // Read Positive Num Bits 27.
+                // Read Positive Num Bits 29.
 
                 let memory_address_to_id_value_tmp_39ce3_7 = memory_address_to_id_state
                     .deduce_output(
@@ -260,13 +262,25 @@ fn write_trace_simd(
                 *row[10] = next_pc_limb_1_col10;
                 let next_pc_limb_2_col11 = memory_id_to_big_value_tmp_39ce3_8.get_m31(2);
                 *row[11] = next_pc_limb_2_col11;
+                let next_pc_limb_3_col12 = memory_id_to_big_value_tmp_39ce3_8.get_m31(3);
+                *row[12] = next_pc_limb_3_col12;
+
+                // Range Check Last Limb Bits In Ms Limb 2.
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_39ce3_9 =
+                    (((PackedUInt16::from_m31(next_pc_limb_3_col12)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col13 = partial_limb_msb_tmp_39ce3_9.as_m31();
+                *row[13] = partial_limb_msb_col13;
+
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col8;
                 *lookup_data.memory_id_to_big_0 = [
                     next_pc_id_col8,
                     next_pc_limb_0_col9,
                     next_pc_limb_1_col10,
                     next_pc_limb_2_col11,
-                    M31_0,
+                    next_pc_limb_3_col12,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -292,12 +306,12 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_39ce3_9 = (
+                let read_positive_num_bits_29_output_tmp_39ce3_11 = (
                     PackedFelt252::from_limbs([
                         next_pc_limb_0_col9,
                         next_pc_limb_1_col10,
                         next_pc_limb_2_col11,
-                        M31_0,
+                        next_pc_limb_3_col12,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -328,12 +342,13 @@ fn write_trace_simd(
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    (((next_pc_limb_0_col9) + ((next_pc_limb_1_col10) * (M31_512)))
-                        + ((next_pc_limb_2_col11) * (M31_262144))),
+                    ((((next_pc_limb_0_col9) + ((next_pc_limb_1_col10) * (M31_512)))
+                        + ((next_pc_limb_2_col11) * (M31_262144)))
+                        + ((next_pc_limb_3_col12) * (M31_134217728))),
                     ((input_ap_col1) + (ap_update_add_1_col6)),
                     input_fp_col2,
                 ];
-                *row[12] = enabler_col.packed_at(row_index);
+                *row[14] = enabler_col.packed_at(row_index);
             },
         );
 

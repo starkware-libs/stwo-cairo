@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 9acd5104
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode_double_deref::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -105,6 +105,7 @@ fn write_trace_simd(
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
@@ -266,7 +267,7 @@ fn write_trace_simd(
                     + (((M31_1) - (op0_base_fp_col7)) * (input_ap_col1)));
                 *row[10] = mem0_base_col10;
 
-                // Read Positive Num Bits 27.
+                // Read Positive Num Bits 29.
 
                 let memory_address_to_id_value_tmp_b1151_9 = memory_address_to_id_state
                     .deduce_output(
@@ -288,13 +289,25 @@ fn write_trace_simd(
                 *row[13] = mem1_base_limb_1_col13;
                 let mem1_base_limb_2_col14 = memory_id_to_big_value_tmp_b1151_10.get_m31(2);
                 *row[14] = mem1_base_limb_2_col14;
+                let mem1_base_limb_3_col15 = memory_id_to_big_value_tmp_b1151_10.get_m31(3);
+                *row[15] = mem1_base_limb_3_col15;
+
+                // Range Check Last Limb Bits In Ms Limb 2.
+
+                // Cond Range Check 2.
+
+                let partial_limb_msb_tmp_b1151_11 =
+                    (((PackedUInt16::from_m31(mem1_base_limb_3_col15)) & (UInt16_2)) >> (UInt16_1));
+                let partial_limb_msb_col16 = partial_limb_msb_tmp_b1151_11.as_m31();
+                *row[16] = partial_limb_msb_col16;
+
                 *sub_component_inputs.memory_id_to_big[0] = mem1_base_id_col11;
                 *lookup_data.memory_id_to_big_0 = [
                     mem1_base_id_col11,
                     mem1_base_limb_0_col12,
                     mem1_base_limb_1_col13,
                     mem1_base_limb_2_col14,
-                    M31_0,
+                    mem1_base_limb_3_col15,
                     M31_0,
                     M31_0,
                     M31_0,
@@ -320,12 +333,12 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_27_output_tmp_b1151_11 = (
+                let read_positive_num_bits_29_output_tmp_b1151_13 = (
                     PackedFelt252::from_limbs([
                         mem1_base_limb_0_col12,
                         mem1_base_limb_1_col13,
                         mem1_base_limb_2_col14,
-                        M31_0,
+                        mem1_base_limb_3_col15,
                         M31_0,
                         M31_0,
                         M31_0,
@@ -356,27 +369,29 @@ fn write_trace_simd(
 
                 // Mem Verify Equal.
 
-                let memory_address_to_id_value_tmp_b1151_12 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_b1151_14 = memory_address_to_id_state
                     .deduce_output(
                         ((mem_dst_base_col9) + (decode_instruction_cb32b_output_tmp_b1151_8.0[0])),
                     );
-                let dst_id_col15 = memory_address_to_id_value_tmp_b1151_12;
-                *row[15] = dst_id_col15;
+                let dst_id_col17 = memory_address_to_id_value_tmp_b1151_14;
+                *row[17] = dst_id_col17;
                 *sub_component_inputs.memory_address_to_id[1] =
                     ((mem_dst_base_col9) + (decode_instruction_cb32b_output_tmp_b1151_8.0[0]));
                 *lookup_data.memory_address_to_id_1 = [
                     ((mem_dst_base_col9) + (decode_instruction_cb32b_output_tmp_b1151_8.0[0])),
-                    dst_id_col15,
+                    dst_id_col17,
                 ];
-                *sub_component_inputs.memory_address_to_id[2] = ((((mem1_base_limb_0_col12)
+                *sub_component_inputs.memory_address_to_id[2] = (((((mem1_base_limb_0_col12)
                     + ((mem1_base_limb_1_col13) * (M31_512)))
                     + ((mem1_base_limb_2_col14) * (M31_262144)))
+                    + ((mem1_base_limb_3_col15) * (M31_134217728)))
                     + (decode_instruction_cb32b_output_tmp_b1151_8.0[2]));
                 *lookup_data.memory_address_to_id_2 = [
-                    ((((mem1_base_limb_0_col12) + ((mem1_base_limb_1_col13) * (M31_512)))
+                    (((((mem1_base_limb_0_col12) + ((mem1_base_limb_1_col13) * (M31_512)))
                         + ((mem1_base_limb_2_col14) * (M31_262144)))
+                        + ((mem1_base_limb_3_col15) * (M31_134217728)))
                         + (decode_instruction_cb32b_output_tmp_b1151_8.0[2])),
-                    dst_id_col15,
+                    dst_id_col17,
                 ];
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
@@ -385,7 +400,7 @@ fn write_trace_simd(
                     ((input_ap_col1) + (ap_update_add_1_col8)),
                     input_fp_col2,
                 ];
-                *row[16] = enabler_col.packed_at(row_index);
+                *row[18] = enabler_col.packed_at(row_index);
             },
         );
 

@@ -152,5 +152,5 @@ impl DisplayM31 of core::fmt::Display<M31> {
 
 #[inline]
 pub fn m31(val: u32) -> M31 {
-    M31Trait::reduce_u32(val).into()
+    val.try_into().unwrap()
 }

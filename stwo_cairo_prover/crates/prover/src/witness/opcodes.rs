@@ -234,8 +234,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_19_trace_generator,
-                    &range_checks_trace_generator.rc_8_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
+                    &range_checks_trace_generator.rc_18_trace_generator,
                     verify_instruction_trace_generator,
                 )
             })
@@ -324,6 +324,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
+                    &range_checks_trace_generator.rc_18_trace_generator,
                     &range_checks_trace_generator.rc_19_trace_generator,
                     &range_checks_trace_generator.rc_19_b_trace_generator,
                     &range_checks_trace_generator.rc_19_c_trace_generator,
@@ -332,7 +334,6 @@ impl OpcodesClaimGenerator {
                     &range_checks_trace_generator.rc_19_f_trace_generator,
                     &range_checks_trace_generator.rc_19_g_trace_generator,
                     &range_checks_trace_generator.rc_19_h_trace_generator,
-                    &range_checks_trace_generator.rc_8_trace_generator,
                     &range_checks_trace_generator.rc_9_9_trace_generator,
                     &range_checks_trace_generator.rc_9_9_b_trace_generator,
                     &range_checks_trace_generator.rc_9_9_c_trace_generator,
@@ -587,8 +588,8 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.verify_instruction,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_19,
-                    &interaction_elements.range_checks.rc_8,
+                    &interaction_elements.range_checks.rc_18,
+                    &interaction_elements.range_checks.rc_11,
                     &interaction_elements.opcodes,
                 )
             })
@@ -636,14 +637,14 @@ impl OpcodesInteractionClaimGenerator {
             .map(|gen| {
                 gen.write_interaction_trace(
                     tree_builder,
-                    &interaction_elements.blake_round,
+                    &interaction_elements.verify_instruction,
                     &interaction_elements.memory_address_to_id,
                     &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
                     &interaction_elements.range_checks.rc_7_2_5,
-                    &interaction_elements.triple_xor_32,
                     &interaction_elements.verify_bitwise_xor_8,
-                    &interaction_elements.verify_instruction,
+                    &interaction_elements.blake_round,
+                    &interaction_elements.triple_xor_32,
+                    &interaction_elements.opcodes,
                 )
             })
             .collect();
@@ -698,7 +699,8 @@ impl OpcodesInteractionClaimGenerator {
                     &interaction_elements.range_checks.rc_19_e,
                     &interaction_elements.range_checks.rc_19_f,
                     &interaction_elements.range_checks.rc_19_g,
-                    &interaction_elements.range_checks.rc_8,
+                    &interaction_elements.range_checks.rc_18,
+                    &interaction_elements.range_checks.rc_11,
                     &interaction_elements.opcodes,
                 )
             })

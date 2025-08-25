@@ -1,13 +1,13 @@
-// AIR version d1591e2a
+// AIR version 9acd5104
 use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
 use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 15;
+pub const N_TRACE_COLUMNS: usize = 17;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
-    ('VerifyInstruction', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1), ('RangeCheck_19', 1),
-    ('RangeCheck_8', 1), ('Opcodes', 1),
+    ('VerifyInstruction', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1), ('RangeCheck_18', 1),
+    ('RangeCheck_11', 1), ('Opcodes', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -50,8 +50,8 @@ pub struct Component {
     pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_19_lookup_elements: crate::RangeCheck_19Elements,
-    pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
+    pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
+    pub range_check_11_lookup_elements: crate::RangeCheck_11Elements,
     pub opcodes_lookup_elements: crate::OpcodesElements,
 }
 
@@ -70,8 +70,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
             verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
             memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
             memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+            range_check_11_lookup_elements: interaction_elements.range_checks.rc_11.clone(),
             opcodes_lookup_elements: interaction_elements.opcodes.clone(),
         }
     }
@@ -88,6 +88,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
+        trace_mask_points.append(array![point]);
+        trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -142,8 +144,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_2: QM31 = Zero::zero();
-        let mut range_check_19_sum_3: QM31 = Zero::zero();
-        let mut range_check_8_sum_4: QM31 = Zero::zero();
+        let mut range_check_18_sum_3: QM31 = Zero::zero();
+        let mut range_check_11_sum_4: QM31 = Zero::zero();
         let mut opcodes_sum_5: QM31 = Zero::zero();
         let mut opcodes_sum_6: QM31 = Zero::zero();
 
@@ -161,9 +163,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op1_limb_0_col10,
             op1_limb_1_col11,
             op1_limb_2_col12,
-            range_check_ap_bot8bits_col13,
+            remainder_bits_col13,
+            partial_limb_msb_col14,
+            range_check_ap_bot11bits_col15,
             enabler,
-        ]: [Span<QM31>; 15] =
+        ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -181,7 +185,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [op1_limb_0_col10]: [QM31; 1] = (*op1_limb_0_col10.try_into().unwrap()).unbox();
         let [op1_limb_1_col11]: [QM31; 1] = (*op1_limb_1_col11.try_into().unwrap()).unbox();
         let [op1_limb_2_col12]: [QM31; 1] = (*op1_limb_2_col12.try_into().unwrap()).unbox();
-        let [range_check_ap_bot8bits_col13]: [QM31; 1] = (*range_check_ap_bot8bits_col13
+        let [remainder_bits_col13]: [QM31; 1] = (*remainder_bits_col13.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col14]: [QM31; 1] = (*partial_limb_msb_col14.try_into().unwrap())
+            .unbox();
+        let [range_check_ap_bot11bits_col15]: [QM31; 1] = (*range_check_ap_bot11bits_col15
             .try_into()
             .unwrap())
             .unbox();
@@ -219,7 +226,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_c921e_11_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_c921e_14_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col6 + decode_instruction_d2a10_output_tmp_c921e_5_offset2),
             op1_id_col7,
             msb_col8,
@@ -227,6 +234,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op1_limb_0_col10,
             op1_limb_1_col11,
             op1_limb_2_col12,
+            remainder_bits_col13,
+            partial_limb_msb_col14,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -235,14 +244,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let next_ap_tmp_c921e_12: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_11_limb_0);
+        let next_ap_tmp_c921e_15: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_14_limb_0);
         range_check_ap_evaluate(
-            next_ap_tmp_c921e_12,
-            range_check_ap_bot8bits_col13,
-            self.range_check_19_lookup_elements,
-            self.range_check_8_lookup_elements,
-            ref range_check_19_sum_3,
-            ref range_check_8_sum_4,
+            next_ap_tmp_c921e_15,
+            range_check_ap_bot11bits_col15,
+            self.range_check_18_lookup_elements,
+            self.range_check_11_lookup_elements,
+            ref range_check_18_sum_3,
+            ref range_check_11_sum_4,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -257,7 +266,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .combine_qm31(
                 [
                     (input_pc_col0 + (qm31_const::<1, 0, 0, 0>() + op1_imm_col4)),
-                    next_ap_tmp_c921e_12, input_fp_col2,
+                    next_ap_tmp_c921e_15, input_fp_col2,
                 ],
             );
 
@@ -272,8 +281,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             verify_instruction_sum_0,
             memory_address_to_id_sum_1,
             memory_id_to_big_sum_2,
-            range_check_19_sum_3,
-            range_check_8_sum_4,
+            range_check_18_sum_3,
+            range_check_11_sum_4,
             opcodes_sum_5,
             opcodes_sum_6,
         );
@@ -292,8 +301,8 @@ fn lookup_constraints(
     verify_instruction_sum_0: QM31,
     memory_address_to_id_sum_1: QM31,
     memory_id_to_big_sum_2: QM31,
-    range_check_19_sum_3: QM31,
-    range_check_8_sum_4: QM31,
+    range_check_18_sum_3: QM31,
+    range_check_11_sum_4: QM31,
     opcodes_sum_5: QM31,
     opcodes_sum_6: QM31,
 ) {
@@ -358,9 +367,9 @@ fn lookup_constraints(
     )
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_id_to_big_sum_2
-        * range_check_19_sum_3)
+        * range_check_18_sum_3)
         - memory_id_to_big_sum_2
-        - range_check_19_sum_3)
+        - range_check_18_sum_3)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -368,9 +377,9 @@ fn lookup_constraints(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * range_check_8_sum_4
+        * range_check_11_sum_4
         * opcodes_sum_5)
-        - (range_check_8_sum_4 * enabler)
+        - (range_check_11_sum_4 * enabler)
         - opcodes_sum_5)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
