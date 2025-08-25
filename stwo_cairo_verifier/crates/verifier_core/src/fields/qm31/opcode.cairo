@@ -14,6 +14,8 @@ pub struct QM31 {
 }
 
 impl QM31MulByM31Impl of MulByM31Trait<QM31> {
+    type ResultT = QM31;
+
     #[inline]
     fn mul_m31(self: QM31, rhs: M31) -> QM31 {
         self * rhs.into()
@@ -173,9 +175,10 @@ pub impl QM31Neg of Neg<QM31> {
 }
 
 
-// Alias PackedUnreducedQM31 to QM31, since QM31 provides the most efficient implementation
+// Alias Packed{/Unreduced}QM31 to QM31, since QM31 provides the most efficient implementation
 // when QM31 opcodes are available.
 pub type PackedUnreducedQM31 = QM31;
+pub type PackedQM31 = QM31;
 
 pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     #[inline]

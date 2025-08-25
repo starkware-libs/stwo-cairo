@@ -8,7 +8,9 @@ use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
-use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
+use crate::fields::qm31::{
+    PackedQM31, PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait,
+};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
 use crate::{ColumnSpan, TreeArray, TreeSpan};
@@ -212,7 +214,7 @@ fn accumulate_row_quotients(
         }
 
         // Subtract the accumulated linear term.
-        let linear_term = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
+        let linear_term = alpha_mul_a_sum.mul_m31(domain_point_y) + (*alpha_mul_b_sum).into();
         let quotient = (numerator - linear_term).reduce().mul_cm31(denom_inv);
         quotient_accumulator =
             QM31Trait::fused_mul_add(quotient_accumulator, *batch_random_coeff, quotient);
@@ -284,11 +286,11 @@ pub struct QuotientConstants {
 #[derive(Debug, Drop)]
 pub struct PointQuotientConstants {
     /// Σ (α^(i+1) * a_i) across all samples in the batch.
-    pub alpha_mul_a_sum: PackedUnreducedQM31,
+    pub alpha_mul_a_sum: PackedQM31,
     /// Σ (α^(i+1) * b_i) across all samples in the batch.
-    pub alpha_mul_b_sum: PackedUnreducedQM31,
+    pub alpha_mul_b_sum: PackedQM31,
     /// Pairs of `(column index, α^i * c_i)` for every sample.
-    pub alpha_mul_c_idx: Array<(usize, PackedUnreducedQM31)>,
+    pub alpha_mul_c_idx: Array<(usize, PackedQM31)>,
     /// The random coefficient `α^(#columns)` used in the linear combination above.
     pub batch_random_coeff: QM31,
 }
@@ -314,7 +316,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
             let mut alpha: QM31 = One::one();
             let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
             let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
-            let mut alpha_mul_c_idx: Array<(usize, PackedUnreducedQM31)> = array![];
+            let mut alpha_mul_c_idx: Array<(usize, PackedQM31)> = array![];
 
             for (column_idx, column_value) in sample_batch.columns_and_values.span() {
                 alpha = alpha * random_coeff;

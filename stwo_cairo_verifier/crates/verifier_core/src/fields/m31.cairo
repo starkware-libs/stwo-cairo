@@ -57,7 +57,10 @@ pub impl M31Impl of M31Trait {
 
 /// A trait for multiplying a value by an `M31`.
 pub trait MulByM31Trait<T> {
-    fn mul_m31(self: T, rhs: M31) -> T;
+    /// The result might be unreduced.
+    type ResultT;
+
+    fn mul_m31(self: T, rhs: M31) -> Self::ResultT;
 }
 
 /// A trait for adding an `M31` element to a value.
