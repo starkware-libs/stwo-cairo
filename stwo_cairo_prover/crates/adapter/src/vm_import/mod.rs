@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
 use memmap2::Mmap;
+use serde::Serialize;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -179,7 +180,7 @@ impl<T: Pod> MmappedFile<T> {
 
 /// A single entry from the trace file.
 #[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq, Serialize)]
 pub struct RelocatedTraceEntry {
     pub ap: usize,
     pub fp: usize,
