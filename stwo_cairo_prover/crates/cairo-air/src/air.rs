@@ -3,6 +3,7 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
@@ -39,11 +40,14 @@ use crate::components::{
 use crate::relations;
 use crate::verifier::RelationUse;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, CompactBinary)]
 pub struct CairoProof<H: MerkleHasher> {
+    #[zipped]
     pub claim: CairoClaim,
     pub interaction_pow: u64,
+    #[zipped]
     pub interaction_claim: CairoInteractionClaim,
+    #[zipped]
     pub stark_proof: StarkProof<H>,
 }
 
@@ -100,7 +104,7 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -225,7 +229,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -287,7 +291,9 @@ impl PublicData {
 
 // TODO(alonf) Change all the obscure types and structs to a meaningful struct system for the
 // memory.
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
+)]
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
@@ -307,7 +313,9 @@ pub type PubMemoryValue = (u32, [u32; 8]);
 // (address, id, value)
 pub type PubMemoryEntry = (u32, u32, [u32; 8]);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(
+    Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, CompactBinary,
+)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
     pub stop_ptr: MemorySmallValue,
@@ -324,7 +332,7 @@ impl SegmentRange {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CompactBinary)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -497,7 +505,7 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
@@ -612,7 +620,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,

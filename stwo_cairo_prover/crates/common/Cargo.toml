@@ -11,6 +11,7 @@ serde.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive" }
 stwo.workspace = true
 serde_arrays.workspace = true
 

@@ -1,7 +1,7 @@
 // AIR version d1591e2a
 use crate::components::prelude::*;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct LinearCombinationN4Coefs42M21 {}
 
 impl LinearCombinationN4Coefs42M21 {
