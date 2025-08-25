@@ -1,5 +1,5 @@
 //! Utility crate that exports internal corelib function.
-//! This crate is compiled with an older edition that does not enforce visibity rules.
+//! This crate is compiled with an older edition that does not enforce visibility rules.
 
 use core::integer::upcast;
 #[feature("bounded-int-utils")]
