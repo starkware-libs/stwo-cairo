@@ -6,8 +6,8 @@ use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{
-    ArrayImpl, ColumnsIndicesPerTreeByDegreeBound, DictImpl,
-    column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree, group_columns_by_log_size,
+    ArrayImpl, ColumnsIndicesPerTreeByDegreeBound, DictImpl, group_columns_by_degree_bound,
+    pad_and_transpose_columns_by_deg_bound_per_tree,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
@@ -47,35 +47,43 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn column_indices_per_tree_by_degree_bound(
         self: @CommitmentSchemeVerifier,
     ) -> ColumnsIndicesPerTreeByDegreeBound {
-        let mut columns_by_log_size_per_tree = array![];
+        let mut columns_by_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
-            columns_by_log_size_per_tree.append(*tree.columns_by_log_size);
+            columns_by_deg_bound_per_tree.append(*tree.column_indices_by_deg_bound);
         }
 
-        column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree(
-            columns_by_log_size_per_tree.span(), *self.config.fri_config.log_blowup_factor,
-        )
+        pad_and_transpose_columns_by_deg_bound_per_tree(columns_by_deg_bound_per_tree.span())
     }
 
-    /// Reads a commitment from the prover.
+    /// Reads a Merkle root commitment for a set of columns from the prover and registers it with
+    /// the verifier.
+    ///
+    /// This function mixes the commitment root into the Fiat-Shamir channel and appends a new
+    /// MerkleVerifier for this commitment to the verifier's state.
+    ///
+    /// # Arguments
+    /// * `commitment` - The Merkle root of the committed columns.
+    /// * `degree_bound_by_column` - The log degree bounds for each column in the commitment.
+    /// * `channel` - The Fiat-Shamir channel used for mixing and randomness.
     fn commit(
         ref self: CommitmentSchemeVerifier,
         commitment: Hash,
-        log_sizes: Span<u32>,
+        degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
     ) {
+        // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_root(commitment);
-        let mut extended_log_sizes = array![];
-        for log_size in log_sizes {
-            extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
-        }
 
-        let columns_by_log_size = group_columns_by_log_size(extended_log_sizes.span());
+        let column_indices_by_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
         self
             .trees
             .append(
                 MerkleVerifier {
-                    root: commitment, column_log_sizes: extended_log_sizes, columns_by_log_size,
+                    root: commitment,
+                    tree_height: self.config.fri_config.log_blowup_factor
+                        + column_indices_by_deg_bound.len()
+                        - 1,
+                    column_indices_by_deg_bound,
                 },
             );
     }
