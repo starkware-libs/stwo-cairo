@@ -156,7 +156,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             samples,
             random_coeff,
             query_positions_by_log_size,
-            queried_values,
+            queried_values.span(),
         );
 
         fri_verifier.decommit(fri_answers);

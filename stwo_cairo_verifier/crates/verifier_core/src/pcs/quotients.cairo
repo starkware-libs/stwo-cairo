@@ -79,7 +79,7 @@ pub fn fri_answers(
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-    mut queried_values: TreeArray<Span<M31>>,
+    mut queried_values: TreeSpan<Span<M31>>,
 ) -> Array<Span<QM31>> {
     let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
         columns_by_log_size_per_tree,
@@ -127,16 +127,17 @@ pub fn fri_answers(
 
 /// Takes `n[i]` elements from the i'th `tree` and returns them as a single array.
 fn tree_take_n<T, +Clone<T>, +Drop<T>>(
-    ref tree: TreeArray<Span<T>>, mut n: TreeSpan<usize>,
+    ref trees: TreeSpan<Span<T>>, mut ns: TreeSpan<usize>,
 ) -> Array<T> {
     let mut res: Array<T> = array![];
     let mut new_tree = array![];
-    for mut values in tree {
-        res.append_span(values.pop_front_n(*n.pop_front().unwrap()));
+    for (values, n) in zip_eq(trees, ns) {
+        let mut values = *values;
+        res.append_span(values.pop_front_n(*n));
         new_tree.append(values);
     }
 
-    tree = new_tree;
+    trees = new_tree.span();
     res
 }
 
@@ -145,7 +146,7 @@ fn fri_answers_for_log_size(
     samples_per_column: Array<@Array<PointSample>>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
-    ref queried_values: TreeArray<Span<M31>>,
+    ref queried_values: TreeSpan<Span<M31>>,
     n_columns: TreeArray<usize>,
 ) -> Span<QM31> {
     let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
