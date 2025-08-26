@@ -10,60 +10,15 @@ use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
+use crate::utils::{
+    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByDegreeBound, SpanImpl, bit_reverse_index,
+    pack4,
+};
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
 
 #[cfg(test)]
 mod test;
-
-/// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree
-/// and transposes the arrays from [tree][log_size][column] to [log_size][tree][column].
-///
-/// # Arguments
-///
-/// * `columns_by_log_size_per_tree`: The columns by log size per tree.
-///
-/// # Returns
-///
-/// * `columns_per_tree_by_log_size`: The columns per tree by log size.
-fn pad_and_transpose_columns_by_log_size_per_tree(
-    mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
-) -> Array<TreeArray<Span<usize>>> {
-    let mut empty_span = array![].span();
-    let mut columns_per_tree_by_log_size = array![];
-
-    loop {
-        // In each iteration we pop the the columns corresponding to `log_size` from each tree, so
-        // we need to prepare `columns_by_log_size_per_tree` for the next iteration.
-        let mut next_columns_by_log_size_per_tree = array![];
-
-        let mut done = true;
-        let mut columns_per_tree = array![];
-        for columns_by_log_size in columns_by_log_size_per_tree {
-            let mut columns_by_log_size = *columns_by_log_size;
-            columns_per_tree
-                .append(
-                    if let Some(columns) = columns_by_log_size.pop_front() {
-                        done = false;
-                        *columns
-                    } else {
-                        empty_span
-                    },
-                );
-            next_columns_by_log_size_per_tree.append(columns_by_log_size);
-        }
-
-        if done {
-            break;
-        }
-
-        columns_by_log_size_per_tree = next_columns_by_log_size_per_tree.span();
-        columns_per_tree_by_log_size.append(columns_per_tree);
-    }
-
-    columns_per_tree_by_log_size
-}
 
 /// Computes the OOD quotients at the query positions.
 ///
@@ -75,22 +30,18 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
 /// * `queried_values`: Evals of each column at the columns corresponding query positions.
 pub fn fri_answers(
-    mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
+    log_blowup_factor: u32,
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeSpan<Span<M31>>,
 ) -> Array<Span<QM31>> {
-    let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
-        columns_by_log_size_per_tree,
-    );
-
-    let mut log_size = columns_per_tree_by_log_size.len();
+    let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
-    let mut columns_per_tree_by_log_size = columns_per_tree_by_log_size.span();
     let mut answers = array![];
-    while let Some(columns_per_tree) = columns_per_tree_by_log_size.pop_back() {
+    while let Some(columns_per_tree) = column_indices_per_tree_by_degree_bound.pop_back() {
         log_size = log_size - 1;
 
         // Collect the column samples and the number of columns in each tree.

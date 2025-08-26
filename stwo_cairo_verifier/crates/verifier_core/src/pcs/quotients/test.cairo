@@ -9,7 +9,10 @@ use crate::pcs::quotients::{
     accumulate_row_quotients, fri_answers, fri_answers_for_log_size,
 };
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::utils::{DictImpl, group_columns_by_log_size};
+use crate::utils::{
+    DictImpl, column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree,
+    group_columns_by_log_size,
+};
 
 #[test]
 fn test_fri_answers_for_log_size() {
@@ -49,11 +52,12 @@ fn test_fri_answers_for_log_size() {
 
 #[test]
 fn test_fri_answers() {
+    let log_blowup_factor = 2;
     let col0_log_size = 5;
     let col1_log_size = 7;
     let tree2_log_sizes = array![col0_log_size, col1_log_size];
     let empty_span = array![].span();
-    let columns_by_log_sizes_per_tree = array![
+    let columns_by_log_size_per_tree = array![
         empty_span, empty_span, group_columns_by_log_size(tree2_log_sizes.span()),
     ]
         .span();
@@ -79,8 +83,14 @@ fn test_fri_answers() {
     let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()]
         .span();
 
+    let column_indices_per_tree_by_degree_bound =
+        column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree(
+        columns_by_log_size_per_tree, log_blowup_factor,
+    );
+
     let res = fri_answers(
-        columns_by_log_sizes_per_tree,
+        column_indices_per_tree_by_degree_bound,
+        log_blowup_factor,
         samples_per_column_per_tree,
         random_coeff,
         query_domain_per_log_size,
