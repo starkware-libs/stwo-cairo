@@ -16,26 +16,6 @@ pub use blake2s::Blake2sChannelImpl as ChannelImpl;
 #[cfg(feature: "poseidon252_verifier")]
 pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
 
-#[derive(Default, Drop)]
-pub struct ChannelTime {
-    // Number of digest updates.
-    n_challenges: usize,
-    // Number of hashes in the current challenge.
-    n_sent: usize,
-}
-
-#[generate_trait]
-impl ChannelTimeImpl of ChannelTimeTrait {
-    fn inc_sent(ref self: ChannelTime) {
-        self.n_sent += 1;
-    }
-
-    fn next_challenges(ref self: ChannelTime) {
-        self.n_challenges += 1;
-        self.n_sent = 0;
-    }
-}
-
 pub trait ChannelTrait {
     fn mix_felts(ref self: Channel, felts: Span<SecureField>);
 
