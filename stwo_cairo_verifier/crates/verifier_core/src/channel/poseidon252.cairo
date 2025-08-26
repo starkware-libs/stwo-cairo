@@ -50,6 +50,10 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
         update_digest(ref self, s0);
     }
 }
+
+/// Every mix should call `update_digest` as final step, and every draw should
+/// increment the `n_draws` counter. In the current implementation, every draw method
+/// invokes `draw_secure_felt252` internally, which increments the `n_draws` by one.
 pub impl Poseidon252ChannelImpl of ChannelTrait {
     fn mix_root(ref self: Poseidon252Channel, root: felt252) {
         self.mix_felt252(root);

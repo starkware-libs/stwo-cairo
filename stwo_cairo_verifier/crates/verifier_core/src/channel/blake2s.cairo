@@ -42,6 +42,9 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
     }
 }
 
+/// Every mix should call `update_digest` as final step, and every draw should
+/// increment the `n_draws` counter. In the current implementation, every draw method
+/// invokes `draw_random_words` internally, which increments the `n_draws` by one.
 pub impl Blake2sChannelImpl of ChannelTrait {
     fn mix_root(ref self: Blake2sChannel, root: Blake2sHash) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
