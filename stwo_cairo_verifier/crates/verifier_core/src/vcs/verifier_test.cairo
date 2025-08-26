@@ -1,14 +1,15 @@
 #[cfg(feature: "poseidon252_verifier")]
 mod PoseidonTest {
     use crate::fields::m31::m31;
-    use crate::utils::group_columns_by_log_size;
+    use crate::utils::group_columns_by_degree_bound;
     use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
     use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
     #[test]
     fn test_verifier() {
         let root = 0x487d4619a3b49e2d33f289d6a47f4cdf3f71a03f48ac7012d36c2da9ed91d80;
-        let column_log_sizes = array![4, 3, 4, 3, 3, 3, 4, 4, 3, 3];
+        let log_blowup_factor = 1;
+        let degree_bound_by_column = array![3, 2, 3, 2, 2, 2, 3, 3, 2, 2];
         let decommitment = MerkleDecommitment::<
             PoseidonMerkleHasher,
         > {
@@ -41,8 +42,16 @@ mod PoseidonTest {
             m31(992269493), m31(967997322), m31(287489501), m31(310081088), m31(409791388),
         ]
             .span();
-        let columns_by_log_size = group_columns_by_log_size(column_log_sizes.span());
-        MerkleVerifier { root, column_log_sizes, columns_by_log_size }
+
+        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+            degree_bound_by_column.span(),
+        );
+        assert_eq!(log_blowup_factor + column_indices_by_deg_bound.len() - 1, 4);
+        MerkleVerifier {
+            root,
+            column_indices_by_deg_bound,
+            max_column_log_size: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
+        }
             .verify(queries_per_log_size, queried_values, decommitment);
     }
 }

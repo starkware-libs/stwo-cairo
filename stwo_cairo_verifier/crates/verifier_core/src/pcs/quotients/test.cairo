@@ -10,8 +10,7 @@ use crate::pcs::quotients::{
 };
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
-    DictImpl, column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree,
-    group_columns_by_log_size,
+    DictImpl, group_columns_by_degree_bound, pad_and_transpose_columns_by_deg_bound_per_tree,
 };
 
 #[test]
@@ -53,12 +52,12 @@ fn test_fri_answers_for_log_size() {
 #[test]
 fn test_fri_answers() {
     let log_blowup_factor = 2;
-    let col0_log_size = 5;
-    let col1_log_size = 7;
-    let tree2_log_sizes = array![col0_log_size, col1_log_size];
+    let col0_degree_bound = 3;
+    let col1_degree_bound = 5;
+    let tree2_deg_bounds_by_column = array![col0_degree_bound, col1_degree_bound];
     let empty_span = array![].span();
-    let columns_by_log_size_per_tree = array![
-        empty_span, empty_span, group_columns_by_log_size(tree2_log_sizes.span()),
+    let columns_by_degree_bound_per_tree = array![
+        empty_span, empty_span, group_columns_by_degree_bound(tree2_deg_bounds_by_column.span()),
     ]
         .span();
     let p0 = qm31_circle_gen();
@@ -82,9 +81,8 @@ fn test_fri_answers() {
     let empty_span = array![].span();
     let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()];
 
-    let column_indices_per_tree_by_degree_bound =
-        column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree(
-        columns_by_log_size_per_tree, log_blowup_factor,
+    let column_indices_per_tree_by_degree_bound = pad_and_transpose_columns_by_deg_bound_per_tree(
+        columns_by_degree_bound_per_tree,
     );
 
     let res = fri_answers(
