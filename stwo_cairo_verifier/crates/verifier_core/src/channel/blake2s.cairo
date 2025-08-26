@@ -22,7 +22,7 @@ const BYTES_PER_HASH: usize = 32;
 
 /// A channel with Blake2s hash as the non-interactive random oracle.
 /// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
-/// to zero. Every `draw` increments `n_draws` by one.
+/// to zero. Every draw of 8 words increments `n_draws` by one. 
 #[derive(Drop)]
 pub struct Blake2sChannel {
     digest: Blake2sHash,

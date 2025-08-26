@@ -33,7 +33,7 @@ pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
 
 /// A channel with Poseidon252 hash as the non-interactive random oracle.
 /// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
-/// to zero. Every `draw` increments `n_draws` by one.
+/// to zero. Every `draw` of one `felt252` increments `n_draws` by one.
 #[derive(Drop, Default)]
 pub struct Poseidon252Channel {
     digest: felt252,
