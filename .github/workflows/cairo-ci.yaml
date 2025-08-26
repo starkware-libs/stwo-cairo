@@ -40,7 +40,7 @@ jobs:
         working-directory: ./stwo_cairo_verifier
     strategy:
       matrix:
-        feature: [poseidon252_verifier, qm31_opcode, "qm31_opcode,blake_outputs_packing", "qm31_opcode,poseidon_outputs_packing"]
+        feature: [poseidon252_verifier, "poseidon252_verifier,poseidon_outputs_packing", qm31_opcode, "qm31_opcode,blake_outputs_packing", "qm31_opcode,poseidon_outputs_packing"]
         package: 
           - stwo_verifier_core
           - stwo_cairo_air
@@ -48,6 +48,8 @@ jobs:
           - stwo_verifier_utils
         include:
           - feature: poseidon252_verifier
+            proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
+          - feature: "poseidon252_verifier,poseidon_outputs_packing"
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
           - feature: qm31_opcode
             proof_file: ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
