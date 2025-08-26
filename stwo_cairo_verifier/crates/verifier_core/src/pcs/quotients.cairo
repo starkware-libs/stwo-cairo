@@ -10,7 +10,10 @@ use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
-use crate::utils::{ArrayImpl as ArrayUtilImpl, SpanImpl, bit_reverse_index, pack4};
+use crate::utils::{
+    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByDegreeBound, SpanImpl, bit_reverse_index,
+    pack4,
+};
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
 
@@ -75,22 +78,18 @@ fn pad_and_transpose_columns_by_log_size_per_tree(
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
 /// * `queried_values`: Evals of each column at the columns corresponding query positions.
 pub fn fri_answers(
-    mut columns_by_log_size_per_tree: TreeSpan<Span<Span<usize>>>,
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
+    log_blowup_factor: u32,
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeArray<Span<M31>>,
 ) -> Array<Span<QM31>> {
-    let columns_per_tree_by_log_size = pad_and_transpose_columns_by_log_size_per_tree(
-        columns_by_log_size_per_tree,
-    );
-
-    let mut log_size = columns_per_tree_by_log_size.len();
+    let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
-    let mut columns_per_tree_by_log_size = columns_per_tree_by_log_size.span();
     let mut answers = array![];
-    while let Some(columns_per_tree) = columns_per_tree_by_log_size.pop_back() {
+    while let Some(columns_per_tree) = column_indices_per_tree_by_degree_bound.pop_back() {
         log_size = log_size - 1;
 
         // Collect the column samples and the number of columns in each tree.
