@@ -66,7 +66,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         log_sizes: Span<u32>,
         ref channel: Channel,
     ) {
-        channel.mix_root(commitment);
+        channel.mix_commitment(commitment);
         let mut extended_log_sizes = array![];
         for log_size in log_sizes {
             extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
