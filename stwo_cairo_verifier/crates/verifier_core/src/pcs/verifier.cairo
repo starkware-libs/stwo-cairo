@@ -1,4 +1,3 @@
-use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
@@ -42,15 +41,6 @@ pub struct CommitmentSchemeVerifier {
 pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn new(config: PcsConfig) -> CommitmentSchemeVerifier {
         CommitmentSchemeVerifier { trees: array![], config }
-    }
-
-    /// Returns the log sizes of each column in each commitment tree.
-    fn column_log_sizes(self: @CommitmentSchemeVerifier) -> TreeArray<@Array<u32>> {
-        let mut res = array![];
-        for tree in self.trees.span() {
-            res.append(tree.column_log_sizes);
-        }
-        res
     }
 
     /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
@@ -119,10 +109,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         channel.mix_felts(flattened_sampled_values.span());
 
         let random_coeff = channel.draw_secure_felt();
-        let column_log_sizes = self.column_log_sizes();
         let fri_config = self.config.fri_config;
-        let log_blowup_factor = fri_config.log_blowup_factor;
-        let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor).span();
+
+        let column_indices_per_tree_by_degree_bound = self
+            .column_indices_per_tree_by_degree_bound();
+
+        let column_log_bounds = get_column_log_bounds(column_indices_per_tree_by_degree_bound)
+            .span();
 
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierImpl::commit(
@@ -160,8 +153,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
-            self.column_indices_per_tree_by_degree_bound(),
-            log_blowup_factor,
+            column_indices_per_tree_by_degree_bound,
+            fri_config.log_blowup_factor,
             samples,
             random_coeff,
             query_positions_by_log_size,
@@ -172,35 +165,25 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 }
 
-/// Returns all column log bounds deduped and sorted in ascending order.
+/// Returns all column log bounds sorted in descending order.
 #[inline]
 fn get_column_log_bounds(
-    column_log_sizes: @TreeArray<@ColumnArray<u32>>, log_blowup_factor: u32,
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
 ) -> Array<u32> {
-    // The max column degree bound.
-    const MAX_LOG_BOUND: u32 = 29;
-
-    let mut bounds_set: Felt252Dict<bool> = Default::default();
-
-    for tree_column_log_sizes in column_log_sizes.span() {
-        for column_log_size in (*tree_column_log_sizes).span() {
-            let column_log_bound = *column_log_size - log_blowup_factor;
-            assert!(column_log_bound <= MAX_LOG_BOUND);
-            bounds_set.insert(column_log_bound.into(), true);
-        };
-    }
-
-    let mut bounds = array![];
-
-    let mut i = MAX_LOG_BOUND;
-    while i != 0 {
-        if bounds_set.get(i.into()) {
-            bounds.append(i);
+    let mut degree_bounds = array![];
+    let mut degree_bound = column_indices_per_tree_by_degree_bound.len();
+    while let Some(columns_of_degree_bound_per_tree) = column_indices_per_tree_by_degree_bound
+        .pop_back() {
+        degree_bound -= 1;
+        for columns_of_degree_bound_in_tree in columns_of_degree_bound_per_tree {
+            if !(*columns_of_degree_bound_in_tree).is_empty() {
+                degree_bounds.append(degree_bound);
+                break;
+            }
         }
-        i -= 1;
     }
 
-    bounds
+    degree_bounds
 }
 
 #[inline]
