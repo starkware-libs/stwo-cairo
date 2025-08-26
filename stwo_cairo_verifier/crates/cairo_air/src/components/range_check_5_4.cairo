@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
@@ -7,8 +7,7 @@ const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck2(([5, 4],
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = SOME_COLUMN.log_size();
         let preprocessed_log_sizes = array![log_size].span();
@@ -18,6 +17,8 @@ pub impl ClaimImpl of ClaimTrait {
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {}
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
 }
 
 #[derive(Drop, Serde, Copy)]

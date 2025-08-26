@@ -1,5 +1,6 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::prelude::*;
+use crate::components::subroutines::read_id::ReadId;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct MemVerify {}
@@ -18,12 +19,12 @@ impl MemVerify {
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 0] {
-        eval.add_to_relation(RelationEntry::new(
+        ReadId::evaluate(
+            [mem_verify_input_address.clone()],
+            id_col0.clone(),
             memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[mem_verify_input_address.clone(), id_col0.clone()],
-        ));
-
+            eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             memory_id_to_big_lookup_elements,
             E::EF::one(),

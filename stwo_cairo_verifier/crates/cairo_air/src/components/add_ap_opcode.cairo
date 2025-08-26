@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version a91e5ba8
 use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
 use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
@@ -15,8 +15,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -27,6 +26,10 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
@@ -226,7 +229,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_d2a10_output_tmp_c921e_5_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_c921e_14_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_c921e_15_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col6 + decode_instruction_d2a10_output_tmp_c921e_5_offset2),
             op1_id_col7,
             msb_col8,
@@ -244,9 +247,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let next_ap_tmp_c921e_15: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_14_limb_0);
+        let next_ap_tmp_c921e_16: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_15_limb_0);
         range_check_ap_evaluate(
-            next_ap_tmp_c921e_15,
+            next_ap_tmp_c921e_16,
             range_check_ap_bot11bits_col15,
             self.range_check_18_lookup_elements,
             self.range_check_11_lookup_elements,
@@ -266,7 +269,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .combine_qm31(
                 [
                     (input_pc_col0 + (qm31_const::<1, 0, 0, 0>() + op1_imm_col4)),
-                    next_ap_tmp_c921e_15, input_fp_col2,
+                    next_ap_tmp_c921e_16, input_fp_col2,
                 ],
             );
 

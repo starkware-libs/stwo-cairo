@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_9::bitwise_xor_num_bits_9_evaluate;
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
@@ -17,8 +17,7 @@ pub struct Claim {
     pub bitwise_builtin_segment_start: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -30,6 +29,10 @@ pub impl ClaimImpl of ClaimTrait {
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
         channel.mix_u64((*self.bitwise_builtin_segment_start).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
@@ -593,7 +596,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_8: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_12: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_0_col1 + op1_limb_0_col30) - xor_col58));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_1_col2, op1_limb_1_col31],
@@ -604,7 +607,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_11: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_15: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_1_col2 + op1_limb_1_col31) - xor_col59));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_2_col3, op1_limb_2_col32],
@@ -615,7 +618,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_14: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_18: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_2_col3 + op1_limb_2_col32) - xor_col60));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_3_col4, op1_limb_3_col33],
@@ -626,7 +629,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_17: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_21: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_3_col4 + op1_limb_3_col33) - xor_col61));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_4_col5, op1_limb_4_col34],
@@ -637,7 +640,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_20: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_24: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_4_col5 + op1_limb_4_col34) - xor_col62));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_5_col6, op1_limb_5_col35],
@@ -648,7 +651,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_23: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_27: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_5_col6 + op1_limb_5_col35) - xor_col63));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_6_col7, op1_limb_6_col36],
@@ -659,7 +662,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_26: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_30: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_6_col7 + op1_limb_6_col36) - xor_col64));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_7_col8, op1_limb_7_col37],
@@ -670,7 +673,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_29: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_33: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_7_col8 + op1_limb_7_col37) - xor_col65));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_8_col9, op1_limb_8_col38],
@@ -681,7 +684,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_32: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_36: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_8_col9 + op1_limb_8_col38) - xor_col66));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_9_col10, op1_limb_9_col39],
@@ -692,7 +695,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_35: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_39: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_9_col10 + op1_limb_9_col39) - xor_col67));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_10_col11, op1_limb_10_col40],
@@ -703,7 +706,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_38: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_42: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_10_col11 + op1_limb_10_col40) - xor_col68));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_11_col12, op1_limb_11_col41],
@@ -714,7 +717,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_41: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_45: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_11_col12 + op1_limb_11_col41) - xor_col69));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_12_col13, op1_limb_12_col42],
@@ -725,7 +728,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_44: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_48: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_12_col13 + op1_limb_12_col42) - xor_col70));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_13_col14, op1_limb_13_col43],
@@ -736,7 +739,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_47: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_51: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_13_col14 + op1_limb_13_col43) - xor_col71));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_14_col15, op1_limb_14_col44],
@@ -747,7 +750,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_50: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_54: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_14_col15 + op1_limb_14_col44) - xor_col72));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_15_col16, op1_limb_15_col45],
@@ -758,7 +761,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_53: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_57: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_15_col16 + op1_limb_15_col45) - xor_col73));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_16_col17, op1_limb_16_col46],
@@ -769,7 +772,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_56: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_60: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_16_col17 + op1_limb_16_col46) - xor_col74));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_17_col18, op1_limb_17_col47],
@@ -780,7 +783,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_59: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_63: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_17_col18 + op1_limb_17_col47) - xor_col75));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_18_col19, op1_limb_18_col48],
@@ -791,7 +794,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_62: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_66: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_18_col19 + op1_limb_18_col48) - xor_col76));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_19_col20, op1_limb_19_col49],
@@ -802,7 +805,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_65: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_69: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_19_col20 + op1_limb_19_col49) - xor_col77));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_20_col21, op1_limb_20_col50],
@@ -813,7 +816,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_68: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_72: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_20_col21 + op1_limb_20_col50) - xor_col78));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_21_col22, op1_limb_21_col51],
@@ -824,7 +827,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_71: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_75: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_21_col22 + op1_limb_21_col51) - xor_col79));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_22_col23, op1_limb_22_col52],
@@ -835,7 +838,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_74: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_78: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_22_col23 + op1_limb_22_col52) - xor_col80));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_23_col24, op1_limb_23_col53],
@@ -846,7 +849,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_77: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_81: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_23_col24 + op1_limb_23_col53) - xor_col81));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_24_col25, op1_limb_24_col54],
@@ -857,7 +860,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_80: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_84: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_24_col25 + op1_limb_24_col54) - xor_col82));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_25_col26, op1_limb_25_col55],
@@ -868,7 +871,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_83: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_87: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_25_col26 + op1_limb_25_col55) - xor_col83));
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_26_col27, op1_limb_26_col56],
@@ -879,7 +882,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_86: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_90: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_26_col27 + op1_limb_26_col56) - xor_col84));
         bitwise_xor_num_bits_8_evaluate(
             [op0_limb_27_col28, op1_limb_27_col57],
@@ -890,19 +893,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let and_tmp_efb2a_89: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
+        let and_tmp_efb2a_93: QM31 = (qm31_const::<1073741824, 0, 0, 0>()
             * ((op0_limb_27_col28 + op1_limb_27_col57) - xor_col85));
         mem_verify_evaluate(
             [
                 ((bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>()))
                     + qm31_const::<2, 0, 0, 0>()),
-                and_tmp_efb2a_8, and_tmp_efb2a_11, and_tmp_efb2a_14, and_tmp_efb2a_17,
-                and_tmp_efb2a_20, and_tmp_efb2a_23, and_tmp_efb2a_26, and_tmp_efb2a_29,
-                and_tmp_efb2a_32, and_tmp_efb2a_35, and_tmp_efb2a_38, and_tmp_efb2a_41,
-                and_tmp_efb2a_44, and_tmp_efb2a_47, and_tmp_efb2a_50, and_tmp_efb2a_53,
-                and_tmp_efb2a_56, and_tmp_efb2a_59, and_tmp_efb2a_62, and_tmp_efb2a_65,
-                and_tmp_efb2a_68, and_tmp_efb2a_71, and_tmp_efb2a_74, and_tmp_efb2a_77,
-                and_tmp_efb2a_80, and_tmp_efb2a_83, and_tmp_efb2a_86, and_tmp_efb2a_89,
+                and_tmp_efb2a_12, and_tmp_efb2a_15, and_tmp_efb2a_18, and_tmp_efb2a_21,
+                and_tmp_efb2a_24, and_tmp_efb2a_27, and_tmp_efb2a_30, and_tmp_efb2a_33,
+                and_tmp_efb2a_36, and_tmp_efb2a_39, and_tmp_efb2a_42, and_tmp_efb2a_45,
+                and_tmp_efb2a_48, and_tmp_efb2a_51, and_tmp_efb2a_54, and_tmp_efb2a_57,
+                and_tmp_efb2a_60, and_tmp_efb2a_63, and_tmp_efb2a_66, and_tmp_efb2a_69,
+                and_tmp_efb2a_72, and_tmp_efb2a_75, and_tmp_efb2a_78, and_tmp_efb2a_81,
+                and_tmp_efb2a_84, and_tmp_efb2a_87, and_tmp_efb2a_90, and_tmp_efb2a_93,
             ],
             and_id_col86,
             self.memory_address_to_id_lookup_elements,
@@ -935,20 +938,20 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             [
                 ((bitwise_builtin_segment_start + (seq * qm31_const::<5, 0, 0, 0>()))
                     + qm31_const::<4, 0, 0, 0>()),
-                (and_tmp_efb2a_8 + xor_col58), (and_tmp_efb2a_11 + xor_col59),
-                (and_tmp_efb2a_14 + xor_col60), (and_tmp_efb2a_17 + xor_col61),
-                (and_tmp_efb2a_20 + xor_col62), (and_tmp_efb2a_23 + xor_col63),
-                (and_tmp_efb2a_26 + xor_col64), (and_tmp_efb2a_29 + xor_col65),
-                (and_tmp_efb2a_32 + xor_col66), (and_tmp_efb2a_35 + xor_col67),
-                (and_tmp_efb2a_38 + xor_col68), (and_tmp_efb2a_41 + xor_col69),
-                (and_tmp_efb2a_44 + xor_col70), (and_tmp_efb2a_47 + xor_col71),
-                (and_tmp_efb2a_50 + xor_col72), (and_tmp_efb2a_53 + xor_col73),
-                (and_tmp_efb2a_56 + xor_col74), (and_tmp_efb2a_59 + xor_col75),
-                (and_tmp_efb2a_62 + xor_col76), (and_tmp_efb2a_65 + xor_col77),
-                (and_tmp_efb2a_68 + xor_col78), (and_tmp_efb2a_71 + xor_col79),
-                (and_tmp_efb2a_74 + xor_col80), (and_tmp_efb2a_77 + xor_col81),
-                (and_tmp_efb2a_80 + xor_col82), (and_tmp_efb2a_83 + xor_col83),
-                (and_tmp_efb2a_86 + xor_col84), (and_tmp_efb2a_89 + xor_col85),
+                (and_tmp_efb2a_12 + xor_col58), (and_tmp_efb2a_15 + xor_col59),
+                (and_tmp_efb2a_18 + xor_col60), (and_tmp_efb2a_21 + xor_col61),
+                (and_tmp_efb2a_24 + xor_col62), (and_tmp_efb2a_27 + xor_col63),
+                (and_tmp_efb2a_30 + xor_col64), (and_tmp_efb2a_33 + xor_col65),
+                (and_tmp_efb2a_36 + xor_col66), (and_tmp_efb2a_39 + xor_col67),
+                (and_tmp_efb2a_42 + xor_col68), (and_tmp_efb2a_45 + xor_col69),
+                (and_tmp_efb2a_48 + xor_col70), (and_tmp_efb2a_51 + xor_col71),
+                (and_tmp_efb2a_54 + xor_col72), (and_tmp_efb2a_57 + xor_col73),
+                (and_tmp_efb2a_60 + xor_col74), (and_tmp_efb2a_63 + xor_col75),
+                (and_tmp_efb2a_66 + xor_col76), (and_tmp_efb2a_69 + xor_col77),
+                (and_tmp_efb2a_72 + xor_col78), (and_tmp_efb2a_75 + xor_col79),
+                (and_tmp_efb2a_78 + xor_col80), (and_tmp_efb2a_81 + xor_col81),
+                (and_tmp_efb2a_84 + xor_col82), (and_tmp_efb2a_87 + xor_col83),
+                (and_tmp_efb2a_90 + xor_col84), (and_tmp_efb2a_93 + xor_col85),
             ],
             or_id_col88,
             self.memory_address_to_id_lookup_elements,

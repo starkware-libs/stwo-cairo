@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version a91e5ba8
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode_imm::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -214,6 +214,8 @@ fn write_trace_simd(
 
                 // Mem Verify Equal.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_bb09e_6 = memory_address_to_id_state
                     .deduce_output(
                         ((mem_dst_base_col6) + (decode_instruction_161c9_output_tmp_bb09e_5.0[0])),
@@ -226,6 +228,7 @@ fn write_trace_simd(
                     ((mem_dst_base_col6) + (decode_instruction_161c9_output_tmp_bb09e_5.0[0])),
                     dst_id_col7,
                 ];
+
                 *sub_component_inputs.memory_address_to_id[1] = ((input_pc_col0) + (M31_1));
                 *lookup_data.memory_address_to_id_1 = [((input_pc_col0) + (M31_1)), dst_id_col7];
 

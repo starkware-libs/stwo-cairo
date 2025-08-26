@@ -1,5 +1,6 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::prelude::*;
+use crate::components::subroutines::read_id::ReadId;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct MemCondVerifyEqualKnownId {}
@@ -17,15 +18,12 @@ impl MemCondVerifyEqualKnownId {
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         eval: &mut E,
     ) -> [E::F; 0] {
-        eval.add_to_relation(RelationEntry::new(
+        ReadId::evaluate(
+            [mem_cond_verify_equal_known_id_input_limb_0.clone()],
+            id_col0.clone(),
             memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[
-                mem_cond_verify_equal_known_id_input_limb_0.clone(),
-                id_col0.clone(),
-            ],
-        ));
-
+            eval,
+        );
         // The two ids are equal if the condition is met.
         eval.add_constraint(
             ((id_col0.clone() - mem_cond_verify_equal_known_id_input_limb_1.clone())

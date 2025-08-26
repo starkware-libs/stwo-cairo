@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::subroutines::decode_instruction_3802d::decode_instruction_3802d_evaluate;
 use crate::components::subroutines::qm_31_read_reduced::qm_31_read_reduced_evaluate;
 use crate::prelude::*;
@@ -14,8 +14,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -26,6 +25,10 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
@@ -435,10 +438,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_15_limb_3,
+            qm_31_read_reduced_output_tmp_fa85a_17_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_17_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_17_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_17_limb_3,
         ] =
             qm_31_read_reduced_evaluate(
             (mem_dst_base_col12 + decode_instruction_3802d_output_tmp_fa85a_11_offset0),
@@ -472,10 +475,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_19_limb_3,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_23_limb_3,
         ] =
             qm_31_read_reduced_evaluate(
             (mem0_base_col13 + decode_instruction_3802d_output_tmp_fa85a_11_offset1),
@@ -509,10 +512,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_0,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_1,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_2,
-            qm_31_read_reduced_output_tmp_fa85a_23_limb_3,
+            qm_31_read_reduced_output_tmp_fa85a_29_limb_0,
+            qm_31_read_reduced_output_tmp_fa85a_29_limb_1,
+            qm_31_read_reduced_output_tmp_fa85a_29_limb_2,
+            qm_31_read_reduced_output_tmp_fa85a_29_limb_3,
         ] =
             qm_31_read_reduced_evaluate(
             (mem1_base_col14 + decode_instruction_3802d_output_tmp_fa85a_11_offset2),
@@ -547,79 +550,79 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         // Constraint - dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul)
-        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_15_limb_0
-            - ((((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0
-                * qm_31_read_reduced_output_tmp_fa85a_23_limb_0)
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_1
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_1))
+        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_17_limb_0
+            - ((((((qm_31_read_reduced_output_tmp_fa85a_23_limb_0
+                * qm_31_read_reduced_output_tmp_fa85a_29_limb_0)
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_1
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_1))
                 + (qm31_const::<2, 0, 0, 0>()
-                    * ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_2)
-                        - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                            * qm_31_read_reduced_output_tmp_fa85a_23_limb_3))))
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_3))
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_2))
+                    * ((qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                        * qm_31_read_reduced_output_tmp_fa85a_29_limb_2)
+                        - (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                            * qm_31_read_reduced_output_tmp_fa85a_29_limb_3))))
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_3))
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_2))
                 * decode_instruction_3802d_output_tmp_fa85a_11_res_mul))
-            - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_0
-                + qm_31_read_reduced_output_tmp_fa85a_23_limb_0)
+            - ((qm_31_read_reduced_output_tmp_fa85a_23_limb_0
+                + qm_31_read_reduced_output_tmp_fa85a_29_limb_0)
                 * res_add_col10)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul)
-        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_15_limb_1
-            - ((((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0
-                * qm_31_read_reduced_output_tmp_fa85a_23_limb_1)
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_1
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_0))
+        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_17_limb_1
+            - ((((((qm_31_read_reduced_output_tmp_fa85a_23_limb_0
+                * qm_31_read_reduced_output_tmp_fa85a_29_limb_1)
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_1
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_0))
                 + (qm31_const::<2, 0, 0, 0>()
-                    * ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                        * qm_31_read_reduced_output_tmp_fa85a_23_limb_3)
-                        + (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                            * qm_31_read_reduced_output_tmp_fa85a_23_limb_2))))
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_2))
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_3))
+                    * ((qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                        * qm_31_read_reduced_output_tmp_fa85a_29_limb_3)
+                        + (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                            * qm_31_read_reduced_output_tmp_fa85a_29_limb_2))))
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_2))
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_3))
                 * decode_instruction_3802d_output_tmp_fa85a_11_res_mul))
-            - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_1
-                + qm_31_read_reduced_output_tmp_fa85a_23_limb_1)
+            - ((qm_31_read_reduced_output_tmp_fa85a_23_limb_1
+                + qm_31_read_reduced_output_tmp_fa85a_29_limb_1)
                 * res_add_col10)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul)
-        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_15_limb_2
-            - (((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0
-                * qm_31_read_reduced_output_tmp_fa85a_23_limb_2)
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_1
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_3))
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_0))
-                - (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_1))
+        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_17_limb_2
+            - (((((qm_31_read_reduced_output_tmp_fa85a_23_limb_0
+                * qm_31_read_reduced_output_tmp_fa85a_29_limb_2)
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_1
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_3))
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_0))
+                - (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_1))
                 * decode_instruction_3802d_output_tmp_fa85a_11_res_mul))
-            - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                + qm_31_read_reduced_output_tmp_fa85a_23_limb_2)
+            - ((qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                + qm_31_read_reduced_output_tmp_fa85a_29_limb_2)
                 * res_add_col10)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - dst equals (op0 * op1)*flag_res_mul + (op0 + op1)*(1-flag_res_mul)
-        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_15_limb_3
-            - (((((qm_31_read_reduced_output_tmp_fa85a_19_limb_0
-                * qm_31_read_reduced_output_tmp_fa85a_23_limb_3)
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_1
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_2))
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_2
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_1))
-                + (qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                    * qm_31_read_reduced_output_tmp_fa85a_23_limb_0))
+        let constraint_quotient = (((qm_31_read_reduced_output_tmp_fa85a_17_limb_3
+            - (((((qm_31_read_reduced_output_tmp_fa85a_23_limb_0
+                * qm_31_read_reduced_output_tmp_fa85a_29_limb_3)
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_1
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_2))
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_2
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_1))
+                + (qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                    * qm_31_read_reduced_output_tmp_fa85a_29_limb_0))
                 * decode_instruction_3802d_output_tmp_fa85a_11_res_mul))
-            - ((qm_31_read_reduced_output_tmp_fa85a_19_limb_3
-                + qm_31_read_reduced_output_tmp_fa85a_23_limb_3)
+            - ((qm_31_read_reduced_output_tmp_fa85a_23_limb_3
+                + qm_31_read_reduced_output_tmp_fa85a_29_limb_3)
                 * res_add_col10)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
