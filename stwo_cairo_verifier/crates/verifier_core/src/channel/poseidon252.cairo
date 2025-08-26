@@ -220,18 +220,16 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 }
 
 /// Checks that the last `n_bits` bits of the digest are zero.
-/// `n_bits` is in range [0, 64].
+/// `n_bits` is in range [0, 63].
+///
+/// # Panics
+///
+/// Panics if `n_bits` >= 64.
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
-    let divisor = if n_bits == 64 {
-        // Handle the special case of 64 bits.
-        0x10000000000000000 // 2^64
-    } else {
-        // If n_bits > 64 pow2_u64 will panic with index out of bounds.
-        let u128_2_pow_n_bits: u128 = pow2_u64(n_bits).into();
-        u128_2_pow_n_bits.try_into().unwrap()
-    };
-    let (_, r) = DivRem::div_rem(low, divisor);
+    let two_pow_n_bits: u128 = pow2_u64(n_bits).into();
+    let nonzero_divisor = two_pow_n_bits.try_into().unwrap();
+    let (_, r) = DivRem::div_rem(low, nonzero_divisor);
     r == 0
 }
 
