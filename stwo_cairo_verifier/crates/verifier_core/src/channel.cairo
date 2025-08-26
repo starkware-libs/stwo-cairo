@@ -36,6 +36,10 @@ impl ChannelTimeImpl of ChannelTimeTrait {
     }
 }
 
+/// An interface for performing the Fiat-Shamir transformation on an interactive protocol.
+/// The methods `mix_*` take a part of the protocol transcript and mix it into the state
+/// of the pseudo-random oracle, so that subsequent queries are dependent on the transcript.
+/// The methods `draw_*` simulate the random queries of the verifier.
 pub trait ChannelTrait {
     fn mix_felts(ref self: Channel, felts: Span<SecureField>);
 
@@ -46,6 +50,8 @@ pub trait ChannelTrait {
     /// Mixes the values of a memory section (id-value pairs) into the channel.
     fn mix_memory_section(ref self: Channel, data: MemorySection);
 
+    fn mix_commitment(ref self: Channel, commitment: Hash);
+
     fn draw_secure_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
@@ -53,8 +59,6 @@ pub trait ChannelTrait {
 
     /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
     fn draw_random_bytes(ref self: Channel) -> Array<u8>;
-
-    fn mix_root(ref self: Channel, root: Hash);
 
     /// Mixes a nonce into the channel and checks a proof-of-work (PoW) on it.
     /// Returns false if the nonce fails to meet the PoW requirement.

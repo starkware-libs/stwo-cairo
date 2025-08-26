@@ -68,7 +68,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             first_layer: first_layer_proof, inner_layers: mut inner_layer_proofs, last_layer_poly,
         } = proof;
 
-        channel.mix_root(first_layer_proof.commitment);
+        channel.mix_commitment(first_layer_proof.commitment);
 
         let mut column_commitment_domains = array![];
 
@@ -99,7 +99,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         );
 
         while let Some(proof) = inner_layer_proofs.pop_front() {
-            channel.mix_root(*proof.commitment);
+            channel.mix_commitment(*proof.commitment);
 
             inner_layers
                 .append(

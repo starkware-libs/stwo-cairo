@@ -72,7 +72,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
-        channel.mix_root(commitment);
+        channel.mix_commitment(commitment);
 
         let column_indices_by_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
         self
