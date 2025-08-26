@@ -11,7 +11,7 @@ use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{
-    ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_log_size, pow2,
+    ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
@@ -80,6 +80,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         }
 
         let first_layer = FriFirstLayerVerifier {
+            log_blowup_factor: config.log_blowup_factor,
             column_log_bounds,
             column_commitment_domains: column_commitment_domains.span(),
             proof: first_layer_proof,
@@ -310,6 +311,8 @@ pub struct FriProof {
 
 #[derive(Drop)]
 struct FriFirstLayerVerifier {
+    // The log blowup factor for all the columns in the first layer.
+    log_blowup_factor: u32,
     /// The list of degree bounds of all circle polynomials committed in the first layer.
     column_log_bounds: Span<u32>,
     /// The commitment domains of all the circle polynomials in the first layer, sorted in
@@ -345,7 +348,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let mut fri_witness = (*self.proof.fri_witness).into_iter();
         let mut decommitment_positions_by_log_size: Felt252Dict = Default::default();
         // For decommitment, each QM31 col must be split into its constituent M31 coordinate cols.
-        let mut decommitment_coordinate_column_log_sizes = array![];
+        let mut degree_bound_by_column = array![];
         let mut sparse_evals_by_column = array![];
         let mut decommitted_values = array![];
 
@@ -390,10 +393,11 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                 };
             }
 
-            decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
-            decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
-            decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
-            decommitment_coordinate_column_log_sizes.append(column_domain_log_size);
+            let column_degree_bound = column_domain_log_size - *self.log_blowup_factor;
+            degree_bound_by_column.append(column_degree_bound);
+            degree_bound_by_column.append(column_degree_bound);
+            degree_bound_by_column.append(column_degree_bound);
+            degree_bound_by_column.append(column_degree_bound);
 
             sparse_evals_by_column.append(sparse_evaluation);
         }
@@ -402,13 +406,13 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             fri_witness.next().is_none(), "{}", FriVerificationError::FirstLayerEvaluationsInvalid,
         );
 
-        let columns_by_log_size = group_columns_by_log_size(
-            decommitment_coordinate_column_log_sizes.span(),
+        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+            degree_bound_by_column.span(),
         );
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
-            column_log_sizes: decommitment_coordinate_column_log_sizes,
-            columns_by_log_size,
+            column_indices_by_deg_bound,
+            max_column_log_size: max_column_log_size,
         };
 
         merkle_verifier
@@ -468,18 +472,22 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         }
 
         let column_log_size = self.domain.log_size();
-        let column_log_sizes = ArrayImpl::new_repeated(
-            n: QM31_EXTENSION_DEGREE, v: column_log_size,
+        let degree_bound_by_column = ArrayImpl::new_repeated(
+            n: QM31_EXTENSION_DEGREE, v: *self.log_degree_bound,
         );
-        let columns_by_log_size = group_columns_by_log_size(column_log_sizes.span());
+        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+            degree_bound_by_column.span(),
+        );
         let merkle_verifier = MerkleVerifier {
-            root: **self.proof.commitment, column_log_sizes, columns_by_log_size,
+            root: **self.proof.commitment,
+            column_indices_by_deg_bound,
+            max_column_log_size: column_log_size,
         };
 
         let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =
             Default::default();
         decommitment_positions_dict
-            .insert(self.domain.log_size().into(), NullableTrait::new(decommitment_positions));
+            .insert(column_log_size.into(), NullableTrait::new(decommitment_positions));
 
         merkle_verifier
             .verify(
