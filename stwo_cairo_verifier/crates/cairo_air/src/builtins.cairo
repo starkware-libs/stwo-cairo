@@ -301,6 +301,7 @@ pub struct BuiltinComponents {
 #[cfg(feature: "poseidon252_verifier")]
 pub struct BuiltinComponents {
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
+    pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
 }
 
@@ -665,7 +666,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         assert!(add_mod_builtin.is_none());
         assert!(mul_mod_builtin.is_none());
         assert!(pedersen_builtin.is_none());
-        assert!(poseidon_builtin.is_none());
 
         let mut bitwise_builtin_component = Option::None;
         if let Option::Some(claim) = bitwise_builtin {
@@ -673,6 +673,16 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 Option::Some(
                     components::bitwise_builtin::NewComponentImpl::new(
                         claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                    ),
+                );
+        }
+
+        let mut poseidon_builtin_component = Option::None;
+        if let Option::Some(claim) = poseidon_builtin {
+            poseidon_builtin_component =
+                Option::Some(
+                    components::poseidon_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.poseidon_builtin.unwrap(), interaction_elements,
                     ),
                 );
         }
@@ -691,6 +701,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 
         BuiltinComponents {
             bitwise_builtin: bitwise_builtin_component,
+            poseidon_builtin: poseidon_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
         }
     }
@@ -702,9 +713,19 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
+        let BuiltinComponents { bitwise_builtin, poseidon_builtin, range_check_128_builtin } = self;
 
         if let Option::Some(component) = bitwise_builtin.as_snap() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
+        }
+
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             component
                 .mask_points(
                     ref preprocessed_column_set,
@@ -726,10 +747,14 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     }
 
     fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
-        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
+        let BuiltinComponents { bitwise_builtin, poseidon_builtin, range_check_128_builtin } = self;
         let mut max_degree = 0;
 
         if let Option::Some(component) = bitwise_builtin.as_snap() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -750,9 +775,21 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
+        let BuiltinComponents { bitwise_builtin, poseidon_builtin, range_check_128_builtin } = self;
 
         if let Option::Some(component) = bitwise_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        if let Option::Some(component) = poseidon_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,

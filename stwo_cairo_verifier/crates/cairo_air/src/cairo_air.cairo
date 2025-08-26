@@ -45,7 +45,6 @@ use crate::P_U32;
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod poseidon252_verifier_imports {
     pub use stwo_cairo_air::pedersen::{PedersenContextComponents, PedersenContextComponentsImpl};
-    pub use stwo_cairo_air::poseidon::{PoseidonContextComponents, PoseidonContextComponentsImpl};
 }
 #[cfg(not(feature: "poseidon252_verifier"))]
 use poseidon252_verifier_imports::*;
@@ -61,8 +60,9 @@ use stwo_cairo_air::pedersen::{
     PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
 };
 use stwo_cairo_air::poseidon::{
-    PoseidonClaimImpl, PoseidonContextClaim, PoseidonContextClaimImpl,
-    PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
+    PoseidonClaimImpl, PoseidonContextClaim, PoseidonContextClaimImpl, PoseidonContextComponents,
+    PoseidonContextComponentsImpl, PoseidonContextInteractionClaim,
+    PoseidonContextInteractionClaimImpl,
 };
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMNS;
 use stwo_cairo_air::range_checks::{
@@ -870,6 +870,7 @@ pub struct CairoAir {
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
+    poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
         Array<components::memory_id_to_big::BigComponent>,
@@ -900,6 +901,10 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
+        );
+
+        let poseidon_context_components = PoseidonContextComponentsImpl::new(
+            cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
         );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
@@ -984,6 +989,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_instruction: verifyinstruction_component,
             blake_context: blake_context_component,
             builtins: builtins_components,
+            poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
@@ -1003,6 +1009,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_instruction,
             blake_context,
             builtins,
+            poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -1017,6 +1024,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, poseidon_context.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
         let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
@@ -1051,6 +1059,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_instruction,
             blake_context,
             builtins,
+            poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -1082,6 +1091,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         builtins
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        poseidon_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -1184,6 +1200,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_instruction,
             blake_context,
             builtins,
+            poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -1221,6 +1238,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         builtins
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        poseidon_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,

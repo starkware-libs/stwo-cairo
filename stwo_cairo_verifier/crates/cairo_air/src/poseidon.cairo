@@ -26,26 +26,21 @@ use components::range_check_felt_252_width_27::{
 };
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_cairo_air::CairoInteractionElements;
-#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
+use stwo_cairo_air::{
+    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
 };
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::TreeArray;
+use stwo_constraint_framework::{
+    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
+    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+};
 use stwo_verifier_core::channel::{Channel, ChannelImpl};
-#[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
+use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 #[derive(Drop, Serde)]
 pub struct PoseidonClaim {
@@ -191,14 +186,12 @@ pub impl PoseidonContextInteractionClaimImpl of PoseidonContextInteractionClaimT
 }
 
 
-#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PoseidonContextComponents {
     components: Option<PoseidonComponents>,
 }
 
 #[generate_trait]
-#[cfg(not(feature: "poseidon252_verifier"))]
 pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
         claim: @PoseidonContextClaim,
@@ -269,7 +262,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     }
 }
 
-#[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PoseidonComponents {
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Component,
@@ -279,7 +271,6 @@ pub struct PoseidonComponents {
     pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Component,
 }
 
-#[cfg(not(feature: "poseidon252_verifier"))]
 #[generate_trait]
 pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
