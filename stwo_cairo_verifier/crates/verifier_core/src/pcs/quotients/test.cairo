@@ -29,7 +29,7 @@ fn test_fri_answers_for_log_size() {
     let col0_query_values = array![m31(1), m31(2), m31(3), m31(4)].span();
     let col1_query_values = array![m31(1), m31(1), m31(2), m31(3)].span();
     let col2_query_values = array![m31(1), m31(1), m31(1), m31(2)].span();
-    let mut query_evals = array![col0_query_values, col1_query_values, col2_query_values];
+    let mut query_evals = array![col0_query_values, col1_query_values, col2_query_values].span();
     let n_columns = array![1, 1, 1];
 
     let res = fri_answers_for_log_size(
@@ -76,7 +76,8 @@ fn test_fri_answers() {
     query_domain_per_log_size.insert(5, NullableTrait::new(col0_query_positions));
     query_domain_per_log_size.replace(7, NullableTrait::new(col1_query_positions));
     let empty_span = array![].span();
-    let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()];
+    let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()]
+        .span();
 
     let res = fri_answers(
         columns_by_log_sizes_per_tree,
@@ -195,7 +196,7 @@ fn test_fri_answers_with_1000_columns() {
     }
 
     let n_columns = array![0, n_columns, 0];
-    let mut query_evals = array![array![].span(), query_values.span(), array![].span()];
+    let mut query_evals = array![array![].span(), query_values.span(), array![].span()].span();
 
     let _res = fri_answers_for_log_size(
         log_size,
