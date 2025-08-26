@@ -20,26 +20,6 @@ mod feature_dependent_uses {
 
 pub use feature_dependent_uses::*;
 
-#[derive(Default, Drop)]
-pub struct ChannelTime {
-    // Number of digest updates.
-    n_challenges: usize,
-    // Number of hashes in the current challenge.
-    n_sent: usize,
-}
-
-#[generate_trait]
-impl ChannelTimeImpl of ChannelTimeTrait {
-    fn inc_sent(ref self: ChannelTime) {
-        self.n_sent += 1;
-    }
-
-    fn next_challenges(ref self: ChannelTime) {
-        self.n_challenges += 1;
-        self.n_sent = 0;
-    }
-}
-
 /// An interface for performing the Fiat-Shamir transformation on an interactive protocol.
 /// The methods `mix_*` take a part of the protocol transcript and mix it into the state
 /// of the pseudo-random oracle, so that subsequent queries are dependent on the transcript.

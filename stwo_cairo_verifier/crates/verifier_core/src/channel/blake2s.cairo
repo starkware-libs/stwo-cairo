@@ -10,7 +10,7 @@ use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::pow2_u64;
 use crate::vcs::blake2s_hasher::Blake2sHash;
-use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
+use super::ChannelTrait;
 
 #[cfg(test)]
 mod test;
@@ -20,25 +20,31 @@ pub const FELTS_PER_HASH: usize = 8;
 
 const BYTES_PER_HASH: usize = 32;
 
+/// A channel with Blake2s hash as the non-interactive random oracle.
+/// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
+/// to zero. Every draw of 8 words increments `n_draws` by one.
 #[derive(Drop)]
 pub struct Blake2sChannel {
     digest: Blake2sHash,
-    channel_time: ChannelTime,
+    /// Number of consecutive draws since the last value was mixed into the channel.
+    n_draws: usize,
 }
 
 pub fn new_channel(digest: Blake2sHash) -> Blake2sChannel {
-    Blake2sChannel { digest, channel_time: Default::default() }
+    Blake2sChannel { digest, n_draws: Default::default() }
 }
 
 impl Blake2sChannelDefault of Default<Blake2sChannel> {
     fn default() -> Blake2sChannel {
         Blake2sChannel {
-            digest: Blake2sHash { hash: BoxImpl::new([0_u32; 8]) },
-            channel_time: Default::default(),
+            digest: Blake2sHash { hash: BoxImpl::new([0_u32; 8]) }, n_draws: Default::default(),
         }
     }
 }
 
+/// Every mix should call `update_digest` as final step, and every draw should
+/// increment the `n_draws` counter. In the current implementation, every draw method
+/// invokes `draw_random_words` internally, which increments the `n_draws` by one.
 pub impl Blake2sChannelImpl of ChannelTrait {
     fn mix_commitment(ref self: Blake2sChannel, commitment: Blake2sHash) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
@@ -165,7 +171,7 @@ fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
 
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
     channel.digest = new_digest;
-    channel.channel_time.next_challenges();
+    channel.n_draws = 0;
 }
 
 // TODO: Consider just returning secure felts.
@@ -189,8 +195,8 @@ fn draw_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
 
 fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
     let [d0, d1, d2, d3, d4, d5, d6, d7] = channel.digest.hash.unbox();
-    let counter = channel.channel_time.n_sent.into();
+    let counter = channel.n_draws;
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
-    channel.channel_time.inc_sent();
+    channel.n_draws += 1;
     Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 36, msg) }
 }
