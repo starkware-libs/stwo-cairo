@@ -26,6 +26,7 @@ const BYTES_PER_HASH: usize = 32;
 #[derive(Drop)]
 pub struct Blake2sChannel {
     digest: Blake2sHash,
+    /// Number of consecutive draws since the last value was mixed into the channel.
     n_draws: usize,
 }
 
