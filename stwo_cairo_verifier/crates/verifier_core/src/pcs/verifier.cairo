@@ -6,12 +6,16 @@ use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierImpl};
 use crate::pcs::quotients::{PointSample, fri_answers};
-use crate::utils::{ArrayImpl, DictImpl, group_columns_by_log_size};
+use crate::utils::{
+    ArrayImpl, ColumnsIndicesPerTreeByDegreeBound, DictImpl,
+    column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree, group_columns_by_log_size,
+};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::VerificationError;
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
+
 
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
@@ -49,14 +53,18 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         res
     }
 
-
-    /// Returns the log sizes of each column in each commitment tree.
-    fn columns_by_log_sizes(self: @CommitmentSchemeVerifier) -> TreeSpan<Span<Span<usize>>> {
-        let mut res = array![];
+    /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
+    fn column_indices_per_tree_by_degree_bound(
+        self: @CommitmentSchemeVerifier,
+    ) -> ColumnsIndicesPerTreeByDegreeBound {
+        let mut columns_by_log_size_per_tree = array![];
         for tree in self.trees.span() {
-            res.append(*tree.columns_by_log_size);
+            columns_by_log_size_per_tree.append(*tree.columns_by_log_size);
         }
-        res.span()
+
+        column_indices_per_tree_by_degree_bound_from_log_sizes_by_tree(
+            columns_by_log_size_per_tree.span(), *self.config.fri_config.log_blowup_factor,
+        )
     }
 
     /// Reads a commitment from the prover.
@@ -152,7 +160,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let samples = get_flattened_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
-            self.columns_by_log_sizes(),
+            self.column_indices_per_tree_by_degree_bound(),
+            log_blowup_factor,
             samples,
             random_coeff,
             query_positions_by_log_size,
