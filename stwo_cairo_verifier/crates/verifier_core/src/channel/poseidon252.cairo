@@ -8,7 +8,7 @@ use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{pack4, pow2_u64};
-use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
+use super::ChannelTrait;
 
 #[cfg(test)]
 mod test;
@@ -31,10 +31,13 @@ pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
     result * offset + l6.into()
 }
 
+/// A channel with Poseidon252 hash as the non-interactive random oracle.
+/// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
+/// to zero. Every `draw` increments `n_draws` by one.
 #[derive(Drop, Default)]
 pub struct Poseidon252Channel {
     digest: felt252,
-    channel_time: ChannelTime,
+    n_draws: usize,
 }
 
 #[generate_trait]
@@ -43,8 +46,7 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
     #[inline(always)]
     fn mix_felt252(ref self: Poseidon252Channel, x: felt252) {
         let (s0, _, _) = hades_permutation(self.digest, x, 2);
-        self.digest = s0;
-        self.channel_time.next_challenges();
+        update_digest(ref self, s0);
     }
 }
 pub impl Poseidon252ChannelImpl of ChannelTrait {
@@ -71,10 +73,10 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             };
         }
 
-        self.digest = poseidon_hash_span(res.span());
+        let next_digest = poseidon_hash_span(res.span());
 
         // TODO(spapini): do we need length padding?
-        self.channel_time.next_challenges();
+        update_digest(ref self, next_digest);
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
@@ -99,10 +101,10 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
         }
 
-        self.digest = poseidon_hash_span(res.span());
+        let next_digest = poseidon_hash_span(res.span());
 
         // TODO(spapini): do we need length padding?
-        self.channel_time.next_challenges();
+        update_digest(ref self, next_digest);
     }
 
     fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
@@ -245,8 +247,9 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
 }
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
-    let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
-    channel.channel_time.inc_sent();
+    let counter: felt252 = channel.n_draws.into();
+    let (res, _, _) = hades_permutation(channel.digest, counter, 2);
+    channel.n_draws += 1;
     res
 }
 
@@ -255,4 +258,9 @@ fn extract_m31(ref num: u256) -> M31 {
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)
+}
+
+fn update_digest(ref channel: Poseidon252Channel, new_digest: felt252) {
+    channel.digest = new_digest;
+    channel.n_draws = 0;
 }
