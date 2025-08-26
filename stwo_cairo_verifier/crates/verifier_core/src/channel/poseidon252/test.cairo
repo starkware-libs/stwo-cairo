@@ -28,7 +28,7 @@ fn test_channel_time() {
     assert_eq!(channel.channel_time.n_challenges, 0);
     assert_eq!(channel.channel_time.n_sent, 6);
 
-    channel.mix_root(0);
+    channel.mix_commitment(0);
     assert_eq!(channel.channel_time.n_challenges, 1);
     assert_eq!(channel.channel_time.n_sent, 0);
 
@@ -63,7 +63,7 @@ pub fn test_draw_secure_felts() {
 }
 
 #[test]
-pub fn test_mix_root() {
+pub fn test_mix_commitment() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
 
@@ -72,7 +72,7 @@ pub fn test_mix_root() {
     }
 
     let prev_digest = channel.digest;
-    channel.mix_root(0);
+    channel.mix_commitment(0);
     assert_ne!(prev_digest, channel.digest);
 }
 

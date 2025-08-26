@@ -48,8 +48,8 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
     }
 }
 pub impl Poseidon252ChannelImpl of ChannelTrait {
-    fn mix_root(ref self: Poseidon252Channel, root: felt252) {
-        self.mix_felt252(root);
+    fn mix_commitment(ref self: Poseidon252Channel, commitment: felt252) {
+        self.mix_felt252(commitment);
     }
 
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
