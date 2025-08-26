@@ -2,6 +2,7 @@
 use crate::channel::Channel;
 use crate::queries::{Queries, QueriesImpl};
 
+// Move to queries dir.
 #[test]
 fn test_fold_1() {
     let queries = Queries { positions: array![5].span(), log_domain_size: 6 };

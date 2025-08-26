@@ -196,6 +196,9 @@ pub fn bit_reverse_index(mut index: usize, mut n_bits: u32) -> usize {
 ///
 /// * `columns_by_log_size`: A span where the i'th element is a span of the column indices of size
 /// 2**i.
+/// 
+/// 
+/// Make the return type into a type.
 pub fn group_columns_by_log_size(column_log_sizes: Span<u32>) -> Span<Span<usize>> {
     let mut columns_by_log_size = Default::default();
     let mut col_index = 0_usize;
