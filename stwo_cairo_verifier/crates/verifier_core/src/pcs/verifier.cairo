@@ -1,3 +1,4 @@
+use stwo_verifier_utils::zip_eq::zip_eq;
 use core::iter::{IntoIterator, Iterator};
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
@@ -142,20 +143,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             .sample_query_positions(ref channel);
 
         // Verify Merkle decommitments.
-        let mut decommitments = decommitments.into_iter();
-
-        for (tree, queried_values) in self.trees.span().into_iter().zip(queried_values.span()) {
-            let decommitment = decommitments.next().unwrap();
-
+        for (tree, (queried_values, decommitment)) in zip_eq(self.trees.span(), zip_eq(queried_values.span(), decommitments)) {
             // The Merkle implementation pops values from the query position dict so it has to
             // be duplicated.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
 
             tree.verify(query_positions, *queried_values, decommitment);
         }
-
-        // Check iterators have been fully consumed.
-        assert!(decommitments.next().is_none());
 
         // Answer FRI queries.
         let samples = get_flattened_samples(sampled_points, sampled_values);
