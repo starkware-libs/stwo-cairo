@@ -17,7 +17,7 @@ impl ModUtils {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [mod_utils_input_limb_0, mod_utils_input_limb_1]: [E::F; 2],
+        [mod_utils_input_first_addr, mod_utils_input_instance_num]: [E::F; 2],
         is_instance_0_col0: E::F,
         p0_id_col1: E::F,
         p0_limb_0_col2: E::F,
@@ -290,15 +290,16 @@ impl ModUtils {
             (is_instance_0_col0.clone() * (is_instance_0_col0.clone() - M31_1.clone())),
         );
         // is_instance_0 is 0 when instance_num is not 0..
-        eval.add_constraint((is_instance_0_col0.clone() * mod_utils_input_limb_1.clone()));
-        let prev_instance_addr_tmp_7b599_1 = eval.add_intermediate(
-            (mod_utils_input_limb_0.clone()
-                + (M31_7.clone()
-                    * ((mod_utils_input_limb_1.clone() - M31_1.clone())
-                        + is_instance_0_col0.clone()))),
-        );
+        eval.add_constraint((is_instance_0_col0.clone() * mod_utils_input_instance_num.clone()));
+        let is_instance_0_minus_1_tmp_7b599_1 =
+            eval.add_intermediate((is_instance_0_col0.clone() - M31_1.clone()));
         let instance_addr_tmp_7b599_2 = eval.add_intermediate(
-            (mod_utils_input_limb_0.clone() + (M31_7.clone() * mod_utils_input_limb_1.clone())),
+            (mod_utils_input_first_addr.clone()
+                + (M31_7.clone() * mod_utils_input_instance_num.clone())),
+        );
+        let prev_instance_addr_tmp_7b599_3 = eval.add_intermediate(
+            (instance_addr_tmp_7b599_2.clone()
+                + (M31_7.clone() * is_instance_0_minus_1_tmp_7b599_1.clone())),
         );
         ReadPositiveNumBits99::evaluate(
             [instance_addr_tmp_7b599_2.clone()],
@@ -397,7 +398,7 @@ impl ModUtils {
             eval,
         );
         ReadPositiveNumBits29::evaluate(
-            [(prev_instance_addr_tmp_7b599_1.clone() + M31_5.clone())],
+            [(prev_instance_addr_tmp_7b599_3.clone() + M31_5.clone())],
             offsets_ptr_prev_id_col61.clone(),
             offsets_ptr_prev_limb_0_col62.clone(),
             offsets_ptr_prev_limb_1_col63.clone(),
@@ -421,7 +422,7 @@ impl ModUtils {
             eval,
         );
         ReadPositiveNumBits29::evaluate(
-            [(prev_instance_addr_tmp_7b599_1.clone() + M31_6.clone())],
+            [(prev_instance_addr_tmp_7b599_3.clone() + M31_6.clone())],
             n_prev_id_col73.clone(),
             n_prev_limb_0_col74.clone(),
             n_prev_limb_1_col75.clone(),
@@ -432,33 +433,33 @@ impl ModUtils {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        let block_reset_condition_tmp_7b599_58 = eval.add_intermediate(
-            (((((n_prev_limb_0_col74.clone() + (n_prev_limb_1_col75.clone() * M31_512.clone()))
+        let n_prev_minus_1_tmp_7b599_59 = eval.add_intermediate(
+            ((((n_prev_limb_0_col74.clone() + (n_prev_limb_1_col75.clone() * M31_512.clone()))
                 + (n_prev_limb_2_col76.clone() * M31_262144.clone()))
                 + (n_prev_limb_3_col77.clone() * M31_134217728.clone()))
-                - M31_1.clone())
-                * (is_instance_0_col0.clone() - M31_1.clone())),
+                - M31_1.clone()),
+        );
+        let offsets_ptr_tmp_7b599_60 = eval.add_intermediate(
+            (((offsets_ptr_limb_0_col56.clone()
+                + (offsets_ptr_limb_1_col57.clone() * M31_512.clone()))
+                + (offsets_ptr_limb_2_col58.clone() * M31_262144.clone()))
+                + (offsets_ptr_limb_3_col59.clone() * M31_134217728.clone())),
+        );
+        let block_reset_condition_tmp_7b599_61 = eval.add_intermediate(
+            (n_prev_minus_1_tmp_7b599_59.clone() * is_instance_0_minus_1_tmp_7b599_1.clone()),
         );
         // Progression of n between instances..
         eval.add_constraint(
-            (block_reset_condition_tmp_7b599_58.clone()
-                * (((((n_prev_limb_0_col74.clone()
-                    + (n_prev_limb_1_col75.clone() * M31_512.clone()))
-                    + (n_prev_limb_2_col76.clone() * M31_262144.clone()))
-                    + (n_prev_limb_3_col77.clone() * M31_134217728.clone()))
-                    - M31_1.clone())
+            (block_reset_condition_tmp_7b599_61.clone()
+                * (n_prev_minus_1_tmp_7b599_59.clone()
                     - (((n_limb_0_col68.clone() + (n_limb_1_col69.clone() * M31_512.clone()))
                         + (n_limb_2_col70.clone() * M31_262144.clone()))
                         + (n_limb_3_col71.clone() * M31_134217728.clone())))),
         );
         // Progression of offsets_ptr between instances..
         eval.add_constraint(
-            (block_reset_condition_tmp_7b599_58.clone()
-                * (((((offsets_ptr_limb_0_col56.clone()
-                    + (offsets_ptr_limb_1_col57.clone() * M31_512.clone()))
-                    + (offsets_ptr_limb_2_col58.clone() * M31_262144.clone()))
-                    + (offsets_ptr_limb_3_col59.clone() * M31_134217728.clone()))
-                    - M31_3.clone())
+            (block_reset_condition_tmp_7b599_61.clone()
+                * ((offsets_ptr_tmp_7b599_60.clone() - M31_3.clone())
                     - (((offsets_ptr_prev_limb_0_col62.clone()
                         + (offsets_ptr_prev_limb_1_col63.clone() * M31_512.clone()))
                         + (offsets_ptr_prev_limb_2_col64.clone() * M31_262144.clone()))
@@ -466,9 +467,9 @@ impl ModUtils {
         );
         MemCondVerifyEqualKnownId::evaluate(
             [
-                (prev_instance_addr_tmp_7b599_1.clone() + M31_4.clone()),
+                (prev_instance_addr_tmp_7b599_3.clone() + M31_4.clone()),
                 values_ptr_id_col49.clone(),
-                block_reset_condition_tmp_7b599_58.clone(),
+                block_reset_condition_tmp_7b599_61.clone(),
             ],
             values_ptr_prev_id_col79.clone(),
             memory_address_to_id_lookup_elements,
@@ -476,9 +477,9 @@ impl ModUtils {
         );
         MemCondVerifyEqualKnownId::evaluate(
             [
-                prev_instance_addr_tmp_7b599_1.clone(),
+                prev_instance_addr_tmp_7b599_3.clone(),
                 p0_id_col1.clone(),
-                block_reset_condition_tmp_7b599_58.clone(),
+                block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev0_id_col80.clone(),
             memory_address_to_id_lookup_elements,
@@ -486,9 +487,9 @@ impl ModUtils {
         );
         MemCondVerifyEqualKnownId::evaluate(
             [
-                (prev_instance_addr_tmp_7b599_1.clone() + M31_1.clone()),
+                (prev_instance_addr_tmp_7b599_3.clone() + M31_1.clone()),
                 p1_id_col13.clone(),
-                block_reset_condition_tmp_7b599_58.clone(),
+                block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev1_id_col81.clone(),
             memory_address_to_id_lookup_elements,
@@ -496,9 +497,9 @@ impl ModUtils {
         );
         MemCondVerifyEqualKnownId::evaluate(
             [
-                (prev_instance_addr_tmp_7b599_1.clone() + M31_2.clone()),
+                (prev_instance_addr_tmp_7b599_3.clone() + M31_2.clone()),
                 p2_id_col25.clone(),
-                block_reset_condition_tmp_7b599_58.clone(),
+                block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev2_id_col82.clone(),
             memory_address_to_id_lookup_elements,
@@ -506,19 +507,16 @@ impl ModUtils {
         );
         MemCondVerifyEqualKnownId::evaluate(
             [
-                (prev_instance_addr_tmp_7b599_1.clone() + M31_3.clone()),
+                (prev_instance_addr_tmp_7b599_3.clone() + M31_3.clone()),
                 p3_id_col37.clone(),
-                block_reset_condition_tmp_7b599_58.clone(),
+                block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev3_id_col83.clone(),
             memory_address_to_id_lookup_elements,
             eval,
         );
-        let [read_small_output_tmp_7b599_78_limb_0] = ReadSmall::evaluate(
-            [(((offsets_ptr_limb_0_col56.clone()
-                + (offsets_ptr_limb_1_col57.clone() * M31_512.clone()))
-                + (offsets_ptr_limb_2_col58.clone() * M31_262144.clone()))
-                + (offsets_ptr_limb_3_col59.clone() * M31_134217728.clone()))],
+        let [read_small_output_tmp_7b599_81_limb_0] = ReadSmall::evaluate(
+            [offsets_ptr_tmp_7b599_60.clone()],
             offsets_a_id_col84.clone(),
             msb_col85.clone(),
             mid_limbs_set_col86.clone(),
@@ -531,12 +529,8 @@ impl ModUtils {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        let [read_small_output_tmp_7b599_88_limb_0] = ReadSmall::evaluate(
-            [((((offsets_ptr_limb_0_col56.clone()
-                + (offsets_ptr_limb_1_col57.clone() * M31_512.clone()))
-                + (offsets_ptr_limb_2_col58.clone() * M31_262144.clone()))
-                + (offsets_ptr_limb_3_col59.clone() * M31_134217728.clone()))
-                + M31_1.clone())],
+        let [read_small_output_tmp_7b599_91_limb_0] = ReadSmall::evaluate(
+            [(offsets_ptr_tmp_7b599_60.clone() + M31_1.clone())],
             offsets_b_id_col92.clone(),
             msb_col93.clone(),
             mid_limbs_set_col94.clone(),
@@ -549,12 +543,8 @@ impl ModUtils {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        let [read_small_output_tmp_7b599_98_limb_0] = ReadSmall::evaluate(
-            [((((offsets_ptr_limb_0_col56.clone()
-                + (offsets_ptr_limb_1_col57.clone() * M31_512.clone()))
-                + (offsets_ptr_limb_2_col58.clone() * M31_262144.clone()))
-                + (offsets_ptr_limb_3_col59.clone() * M31_134217728.clone()))
-                + M31_2.clone())],
+        let [read_small_output_tmp_7b599_101_limb_0] = ReadSmall::evaluate(
+            [(offsets_ptr_tmp_7b599_60.clone() + M31_2.clone())],
             offsets_c_id_col100.clone(),
             msb_col101.clone(),
             mid_limbs_set_col102.clone(),
@@ -567,14 +557,14 @@ impl ModUtils {
             memory_id_to_big_lookup_elements,
             eval,
         );
-        let values_ptr_tmp_7b599_99 = eval.add_intermediate(
+        let values_ptr_tmp_7b599_102 = eval.add_intermediate(
             (((values_ptr_limb_0_col50.clone()
                 + (values_ptr_limb_1_col51.clone() * M31_512.clone()))
                 + (values_ptr_limb_2_col52.clone() * M31_262144.clone()))
                 + (values_ptr_limb_3_col53.clone() * M31_134217728.clone())),
         );
         ReadPositiveNumBits99::evaluate(
-            [(values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_78_limb_0.clone())],
+            [(values_ptr_tmp_7b599_102.clone() + read_small_output_tmp_7b599_81_limb_0.clone())],
             a0_id_col108.clone(),
             a0_limb_0_col109.clone(),
             a0_limb_1_col110.clone(),
@@ -593,7 +583,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_78_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_81_limb_0.clone())
                     + M31_1.clone()),
             ],
             a1_id_col120.clone(),
@@ -614,7 +605,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_78_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_81_limb_0.clone())
                     + M31_2.clone()),
             ],
             a2_id_col132.clone(),
@@ -635,7 +627,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_78_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_81_limb_0.clone())
                     + M31_3.clone()),
             ],
             a3_id_col144.clone(),
@@ -655,7 +648,7 @@ impl ModUtils {
             eval,
         );
         ReadPositiveNumBits99::evaluate(
-            [(values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_88_limb_0.clone())],
+            [(values_ptr_tmp_7b599_102.clone() + read_small_output_tmp_7b599_91_limb_0.clone())],
             b0_id_col156.clone(),
             b0_limb_0_col157.clone(),
             b0_limb_1_col158.clone(),
@@ -674,7 +667,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_88_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_91_limb_0.clone())
                     + M31_1.clone()),
             ],
             b1_id_col168.clone(),
@@ -695,7 +689,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_88_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_91_limb_0.clone())
                     + M31_2.clone()),
             ],
             b2_id_col180.clone(),
@@ -716,7 +711,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_88_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_91_limb_0.clone())
                     + M31_3.clone()),
             ],
             b3_id_col192.clone(),
@@ -736,7 +732,7 @@ impl ModUtils {
             eval,
         );
         ReadPositiveNumBits99::evaluate(
-            [(values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_98_limb_0.clone())],
+            [(values_ptr_tmp_7b599_102.clone() + read_small_output_tmp_7b599_101_limb_0.clone())],
             c0_id_col204.clone(),
             c0_limb_0_col205.clone(),
             c0_limb_1_col206.clone(),
@@ -755,7 +751,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_98_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_101_limb_0.clone())
                     + M31_1.clone()),
             ],
             c1_id_col216.clone(),
@@ -776,7 +773,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_98_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_101_limb_0.clone())
                     + M31_2.clone()),
             ],
             c2_id_col228.clone(),
@@ -797,7 +795,8 @@ impl ModUtils {
         );
         ReadPositiveNumBits99::evaluate(
             [
-                ((values_ptr_tmp_7b599_99.clone() + read_small_output_tmp_7b599_98_limb_0.clone())
+                ((values_ptr_tmp_7b599_102.clone()
+                    + read_small_output_tmp_7b599_101_limb_0.clone())
                     + M31_3.clone()),
             ],
             c3_id_col240.clone(),

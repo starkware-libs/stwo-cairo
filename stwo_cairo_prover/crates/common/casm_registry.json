@@ -1,5 +1,5 @@
 {
-  "air_version": "21efd2f",
+  "air_version": "33d404cd",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -983,7 +983,7 @@
     },
     "partial_ec_mul": {
       "trace_type": "ChainRound",
-      "num_state_cols": 471,
+      "num_state_cols": 470,
       "use_lookup_cols": {
         "PedersenPointsTable": 1,
         "RangeCheck_9_9": 18,
@@ -1027,8 +1027,8 @@
         "range_check_20_h": 9
       },
       "padding_type": "Enabler",
-      "total_num_trace_cols": 900,
-      "trace_cells_upper_bound": 900,
+      "total_num_trace_cols": 899,
+      "trace_cells_upper_bound": 899,
       "uses_upper_bound": {
         "pedersen_points_table": 1,
         "range_check_9_9": 18,
@@ -1054,27 +1054,29 @@
     },
     "pedersen_builtin": {
       "trace_type": "Builtin",
-      "num_state_cols": 351,
+      "num_state_cols": 263,
       "use_lookup_cols": {
         "RangeCheck_5_4": 2,
         "MemoryAddressToId": 3,
         "MemoryIdToBig": 3,
         "RangeCheck_8": 4,
-        "PartialEcMul": 4
+        "PedersenPointsTable": 1,
+        "PartialEcMul": 2
       },
       "yield_lookup_cols": {
-        "PartialEcMul": 4
+        "PartialEcMul": 2
       },
       "lookup_rows": {
         "range_check_5_4": 2,
         "memory_address_to_id": 3,
         "memory_id_to_big": 3,
         "range_check_8": 4,
-        "partial_ec_mul": 30
+        "pedersen_points_table": 1,
+        "partial_ec_mul": 28
       },
       "padding_type": "None",
-      "total_num_trace_cols": 391,
-      "trace_cells_upper_bound": 29191,
+      "total_num_trace_cols": 299,
+      "trace_cells_upper_bound": 29067,
       "uses_upper_bound": {
         "range_check_5_4": 2,
         "memory_address_to_id": 3,
@@ -1087,7 +1089,7 @@
         "range_check_9_9_g": 292,
         "range_check_9_9_h": 292,
         "range_check_8": 4,
-        "pedersen_points_table": 32,
+        "pedersen_points_table": 33,
         "range_check_20": 384,
         "range_check_20_b": 384,
         "range_check_20_c": 384,
@@ -1098,7 +1100,7 @@
         "range_check_20_h": 288
       },
       "rows_upper_bound": {
-        "partial_ec_mul": 30
+        "partial_ec_mul": 28
       },
       "max_instances_uses_limit": 3677198,
       "max_instances_rows_limit": 8388608
