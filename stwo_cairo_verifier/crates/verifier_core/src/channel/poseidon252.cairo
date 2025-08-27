@@ -3,6 +3,7 @@ use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
+use core::num::traits::Pow;
 use stwo_verifier_utils::MemorySection;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
@@ -96,7 +97,12 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             for _ in data.len()..7 {
                 chunk.append(0);
             }
-            res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
+            // In order to mix the length of the last data chunk (whose length is in [1,6])
+            // we construct the last felt252 as: 
+            //  data.len() || data[0] || data[1] || ... || 0_u32.
+            let two_pow_224 = U32_SHIFT.pow(7_usize);
+            let length_pad = data.len().into() * two_pow_224;
+            res.append(construct_f252_be(*chunk.span().try_into().unwrap()) + length_pad);
         }
 
         self.digest = poseidon_hash_span(res.span());
