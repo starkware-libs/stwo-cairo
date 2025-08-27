@@ -9,32 +9,26 @@ fn test_initialize_channel() {
 
     // Assert that the channel is initialized correctly.
     assert_eq!(channel.digest, 0);
-    assert_eq!(channel.channel_time.n_challenges, 0);
-    assert_eq!(channel.channel_time.n_sent, 0);
+    assert_eq!(channel.n_draws, 0);
 }
 
 #[test]
-fn test_channel_time() {
+fn test_channel_draws() {
     let mut channel: Poseidon252Channel = Default::default();
 
-    assert_eq!(channel.channel_time.n_challenges, 0);
-    assert_eq!(channel.channel_time.n_sent, 0);
+    assert_eq!(channel.n_draws, 0);
 
     channel.draw_secure_felt();
-    assert_eq!(channel.channel_time.n_challenges, 0);
-    assert_eq!(channel.channel_time.n_sent, 1);
+    assert_eq!(channel.n_draws, 1);
 
     channel.draw_secure_felts(9);
-    assert_eq!(channel.channel_time.n_challenges, 0);
-    assert_eq!(channel.channel_time.n_sent, 6);
+    assert_eq!(channel.n_draws, 6);
 
     channel.mix_root(0);
-    assert_eq!(channel.channel_time.n_challenges, 1);
-    assert_eq!(channel.channel_time.n_sent, 0);
+    assert_eq!(channel.n_draws, 0);
 
     channel.draw_secure_felt();
-    assert_eq!(channel.channel_time.n_challenges, 1);
-    assert_eq!(channel.channel_time.n_sent, 1);
+    assert_eq!(channel.n_draws, 1);
     assert_ne!(channel.digest, 0);
 }
 
@@ -165,5 +159,5 @@ fn test_check_proof_of_work_with_invalid_n_bits() {
 }
 
 fn new_channel(digest: felt252) -> Poseidon252Channel {
-    Poseidon252Channel { digest, channel_time: Default::default() }
+    Poseidon252Channel { digest, n_draws: Default::default() }
 }

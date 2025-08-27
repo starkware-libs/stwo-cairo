@@ -9,7 +9,8 @@ use stwo_verifier_core::Hash;
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
 #[cairofmt::skip]
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
+pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
+    PreprocessedColumn::Seq(25),
     PreprocessedColumn::Seq(24),
     PreprocessedColumn::Seq(23),
     PreprocessedColumn::PedersenPoints(0),
@@ -178,7 +179,8 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 162] = [
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
 #[cairofmt::skip]
 #[cfg(feature: "poseidon252_verifier")]
-pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 106] = [
+pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 107] = [
+    PreprocessedColumn::Seq(25),
     PreprocessedColumn::Seq(24),
     PreprocessedColumn::Seq(23),
     PreprocessedColumn::Seq(22),
@@ -295,40 +297,40 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
-                    0x1e720385, 0x70f00ad4,
+                    0x2dfd14ec, 0x7c48b36c, 0x4f5dae20, 0x17a6a4f0, 0x4e22f1d4, 0x78b9e538,
+                    0x9663ec6e, 0x44897b38,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
-                    0x5553d795, 0x3fc5a18a,
+                    0x9863e682, 0x05b66874, 0xf593e42b, 0x4664128b, 0x1862908a, 0x3591e696,
+                    0x72e6f558, 0x57666308,
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
-                    0xc80ca41a, 0xc757f720,
+                    0xffdf2d46, 0xf44eb263, 0x9fc5d93f, 0xb09a4636, 0x2625c85a, 0x99829bae,
+                    0x95a17f33, 0x3ef3a82a,
                 ],
             ),
         },
         3 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
-                    0x19d8fff5, 0x9e792495,
+                    0x353a220f, 0xc20b3627, 0xbb2d9cf6, 0xc9d11911, 0x4ad93a63, 0x57e6f3d0,
+                    0x31fc9cc0, 0x7de243e1,
                 ],
             ),
         },
         4 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
-                    0xe13c2956, 0x66aeb325,
+                    0x8786d5c9, 0x8b3d39c5, 0x9edd39ec, 0x0bf4e5c4, 0x6f12e698, 0x9066713e,
+                    0x3437d8fc, 0x3acb8ebe,
                 ],
             ),
         },
@@ -340,11 +342,11 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
 #[cfg(feature: "poseidon252_verifier")]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e,
-        1 => 0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394,
-        2 => 0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543,
-        3 => 0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d,
-        4 => 0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9,
+        0 => 0x29c5f6e13459cfe5f189b6ff5b9d9da1de7c781dec033772673cb41a647c719,
+        1 => 0x68a80becb400ab6d6b49e2e65bf88f1819eab888f3b664203c7de6be2db1d35,
+        2 => 0xee62e9ae477f02e3c90017f4cafb07f072218bffcff4a8d7ab3e2805778ea8,
+        3 => 0x1658485ba36b85580fe2f79c5b2a755503fcf55e19e81567fc7d5405616423f,
+        4 => 0x40012feeab5b2d2eb7588681987838792e44f34b4ed2db755ec4fbe47795a1c,
         _ => panic!("invalid blowup factor"),
     }
 }
