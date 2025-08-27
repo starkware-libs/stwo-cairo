@@ -40,7 +40,7 @@ use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::Channel;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;

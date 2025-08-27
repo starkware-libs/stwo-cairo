@@ -1,5 +1,5 @@
 #[cfg(feature: "poseidon252_verifier")]
-use crate::channel::Channel;
+use crate::channel::{Channel, ChannelTrait};
 use crate::queries::{Queries, QueriesImpl};
 
 #[test]
