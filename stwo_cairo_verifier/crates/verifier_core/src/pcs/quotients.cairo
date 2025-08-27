@@ -149,7 +149,7 @@ fn accumulate_row_quotients(
             alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c, batch_random_coeff,
         } = point_constants;
 
-        let mut numerator: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero();
+        let mut minus_numerator = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
         for (column_index, alpha_mul_c) in indexed_alpha_mul_c.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
@@ -159,14 +159,14 @@ fn accumulate_row_quotients(
             // When substituting a polynomial in this line equation, we get a polynomial
             // with a root at sample_point and conj(sample_point) if the original polynomial
             // had the values sample_value and conj(sample_value) at these points.
-            numerator += alpha_mul_c.mul_m31(query_eval_at_column);
+            minus_numerator -= alpha_mul_c.mul_m31(query_eval_at_column);
         }
 
         // Subtract the accumulated linear term.
-        let linear_term = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
-        let quotient = (numerator - linear_term).reduce().mul_cm31(denom_inv);
+
+        let minus_quotient = minus_numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
-            QM31Trait::fused_mul_add(quotient_accumulator, *batch_random_coeff, quotient);
+            QM31Trait::fused_mul_sub(quotient_accumulator, *batch_random_coeff, minus_quotient);
     }
 
     quotient_accumulator
@@ -283,7 +283,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 .append(
                     PointQuotientConstants {
                         alpha_mul_a_sum: alpha_mul_a_sum.reduce().into(),
-                        alpha_mul_b_sum: alpha_mul_b_sum.reduce().into(),
+                        alpha_mul_b_sum: alpha_mul_b_sum,
                         indexed_alpha_mul_c,
                         batch_random_coeff: alpha,
                     },
