@@ -76,22 +76,6 @@ pub fn fri_answers(
     answers
 }
 
-/// Pops `ns[i]` elements from the `trees[i]` and returns them as a flat array.
-fn tree_take_n<T, +Clone<T>, +Drop<T>>(
-    ref trees: TreeSpan<Span<T>>, mut ns: TreeSpan<usize>,
-) -> Array<T> {
-    let mut res: Array<T> = array![];
-    let mut new_trees = array![];
-    for (values, n) in zip_eq(trees, ns) {
-        let mut values = *values;
-        res.append_span(values.pop_front_n(*n));
-        new_trees.append(values);
-    }
-
-    trees = new_trees.span();
-    res
-}
-
 fn fri_answers_for_log_size(
     log_size: u32,
     samples_per_column: Array<@Array<PointSample>>,
@@ -379,4 +363,20 @@ pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
         let [y_identifier, _, _, _] = key.y.to_fixed_array();
         pack4(y_identifier.into(), (*key.x).to_fixed_array())
     }
+}
+
+/// Pops `ns[i]` elements from the `trees[i]` and returns them as a flat array.
+fn tree_take_n<T, +Clone<T>, +Drop<T>>(
+    ref trees: TreeSpan<Span<T>>, mut ns: TreeSpan<usize>,
+) -> Array<T> {
+    let mut res: Array<T> = array![];
+    let mut new_trees = array![];
+    for (values, n) in zip_eq(trees, ns) {
+        let mut values = *values;
+        res.append_span(values.pop_front_n(*n));
+        new_trees.append(values);
+    }
+
+    trees = new_trees.span();
+    res
 }
