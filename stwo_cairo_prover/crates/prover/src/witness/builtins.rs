@@ -194,6 +194,7 @@ impl BuiltinsClaimGenerator {
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
                     &mut pedersen_context_trace_generator.partial_ec_mul_trace_generator,
+                    &pedersen_context_trace_generator.pedersen_points_table_trace_generator,
                     range_check_5_4_trace_generator,
                     range_check_8_trace_generator,
                 )
@@ -321,6 +322,7 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
                         &interaction_elements.range_checks.rc_8,
+                        &interaction_elements.pedersen_points_table,
                         &interaction_elements.partial_ec_mul,
                     )
                 });
