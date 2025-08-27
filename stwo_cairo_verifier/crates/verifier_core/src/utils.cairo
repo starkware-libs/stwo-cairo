@@ -302,7 +302,7 @@ pub fn pad_and_transpose_columns_by_deg_bound_per_tree(
 /// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
 /// `n_packed_elements` into the bits at indices [248:251] of `word`.
 ///
-/// Tipically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
+/// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
 /// of packed elements, and the resulting felt252 is fed into a hash.
 /// The purpose of this function in this case is to avoid hash collisions between different-length
 /// lists of u32s or M31s that would lead to the same packing.
