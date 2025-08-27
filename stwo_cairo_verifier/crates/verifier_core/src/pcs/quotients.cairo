@@ -76,19 +76,19 @@ pub fn fri_answers(
     answers
 }
 
-/// Takes `n[i]` elements from the i'th `tree` and returns them as a single array.
+/// Pops `ns[i]` elements from the `trees[i]` and returns them as a flat array.
 fn tree_take_n<T, +Clone<T>, +Drop<T>>(
     ref trees: TreeSpan<Span<T>>, mut ns: TreeSpan<usize>,
 ) -> Array<T> {
     let mut res: Array<T> = array![];
-    let mut new_tree = array![];
+    let mut new_trees = array![];
     for (values, n) in zip_eq(trees, ns) {
         let mut values = *values;
         res.append_span(values.pop_front_n(*n));
-        new_tree.append(values);
+        new_trees.append(values);
     }
 
-    trees = new_tree.span();
+    trees = new_trees.span();
     res
 }
 
