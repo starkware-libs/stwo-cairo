@@ -3,18 +3,22 @@ use crate::{Hash, SecureField};
 
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub mod blake2s;
+#[cfg(not(feature: "poseidon252_verifier"))]
+mod feature_dependent_uses {
+    pub type Channel = super::blake2s::Blake2sChannel;
+    pub use super::blake2s::Blake2sChannelImpl as ChannelImpl;
+}
+
 
 #[cfg(feature: "poseidon252_verifier")]
 pub mod poseidon252;
+#[cfg(feature: "poseidon252_verifier")]
+mod feature_dependent_uses {
+    pub type Channel = super::poseidon252::Poseidon252Channel;
+    pub use super::poseidon252::Poseidon252ChannelImpl as ChannelImpl;
+}
 
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub type Channel = blake2s::Blake2sChannel;
-#[cfg(feature: "poseidon252_verifier")]
-pub type Channel = poseidon252::Poseidon252Channel;
-#[cfg(not(feature: "poseidon252_verifier"))]
-pub use blake2s::Blake2sChannelImpl as ChannelImpl;
-#[cfg(feature: "poseidon252_verifier")]
-pub use poseidon252::Poseidon252ChannelImpl as ChannelImpl;
+pub use feature_dependent_uses::*;
 
 #[derive(Default, Drop)]
 pub struct ChannelTime {

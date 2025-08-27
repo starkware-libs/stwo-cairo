@@ -3,7 +3,7 @@
 //! performance analysis during development.
 
 use bounded_int::{ConstValue, upcast};
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_utils::encode_and_hash_memory_section;
