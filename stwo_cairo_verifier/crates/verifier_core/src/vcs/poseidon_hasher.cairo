@@ -2,10 +2,10 @@ use core::array::ArrayTrait;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::num::traits::Zero;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
+use stwo_verifier_utils::add_length_padding;
 use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
 use crate::fields::qm31::QM31_EXTENSION_DEGREE;
-use crate::utils::add_length_padding;
 use super::hasher::MerkleHasher;
 /// 8 M31 elements are packed into a hash, since 252 // 31 = 8.
 const M31_ELEMENTS_IN_HASH: usize = 8;
