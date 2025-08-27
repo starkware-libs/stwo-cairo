@@ -1,5 +1,6 @@
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxTrait;
+use core::iter::Extend;
 use super::MemorySection;
 
 /// 2^31, used for encoding small felt252 values.
@@ -10,48 +11,84 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
 ];
 
 /// Returns the hash of the memory section for packing purposes.
+/// Note: this function ignores the ids and therefore assumes that the section is sorted.
 pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
-    hash_memory_section_ex(section, BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0)
+    hash_memory_section_ex(section, BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0, None)
 }
 
 /// Returns the hash of the memory section with the channel's digest hash for mixing purposes.
+/// The hashing order is digest hash -> all data entries -> all entries' ids.
 pub fn hash_memory_section_with_digest(
     mut section: MemorySection, digest_hash: Box<[u32; 8]>,
 ) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest_hash.unbox();
 
-    let (buffer, byte_count) = if let Some(head) = section.pop_front() {
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
-        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7]), 64)
+    let (buffer, byte_count, id) = if let Some(head) = section.pop_front() {
+        let (id, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7]), 64, id)
     } else {
-        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]), 32)
+        // Mix only the digest hash since the section is empty.
+        // TODO(Gali): Do we need to compress the "no data" here?
+        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
+        return hash_u32s(buffer.span(), state, 0);
     };
     if section.is_empty() {
-        state = blake2s_finalize(state, byte_count, buffer);
-    } else {
+        // Only one data entry in the section.
+        // Mix the digest hash with the first data, then the first id.
         state = blake2s_compress(state, byte_count, buffer);
-        state = hash_memory_section_ex(section, state, byte_count)
+        state =
+            blake2s_finalize(
+                state,
+                byte_count + 1,
+                BoxTrait::new([id, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+            );
+    } else {
+        // More than one data entry in the section.
+        state = blake2s_compress(state, byte_count, buffer);
+        state = hash_memory_section_ex(section, state, byte_count, Some(array![id]))
     }
 
     state
 }
 
 /// Returns the hash of the memory section with the given initial state.
-/// Note: this function ignores the ids and therefore assumes that the section is sorted.
+/// If ids is Some, the given ids array, along with section's ids in the order they appear in the
+/// section, are mixed after all the data entries were mixed.
+/// If ids is None, all ids are ignored.
 fn hash_memory_section_ex(
-    mut section: MemorySection, state: Box<[u32; 8]>, mut byte_count: u32,
+    mut section: MemorySection, state: Box<[u32; 8]>, mut byte_count: u32, ids: Option<Array<u32>>,
 ) -> Box<[u32; 8]> {
+    let (hash_ids, mut ids_buffer) = if let Some(id_array) = ids {
+        (true, id_array)
+    } else {
+        (false, array![])
+    };
     let mut state = state;
-    let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
+
+    // Handle case of less than 2 entries in the section.
+    let (first_half_id, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section
+        .pop_front() {
         *head
     } else {
+        if hash_ids {
+            // TODO(Gali): Do we need to compress the "no data" here?
+            return hash_u32s(ids_buffer.span(), state, byte_count);
+        }
         return blake2s_finalize(state, byte_count, BoxTrait::new([0; 16]));
     };
+    ids_buffer.append(first_half_id);
 
-    let (_, [v8, v9, v10, v11, v12, v13, v14, v15]) = if let Some(head) = section.pop_front() {
+    let (second_half_id, [v8, v9, v10, v11, v12, v13, v14, v15]) = if let Some(head) = section
+        .pop_front() {
         *head
     } else {
+        if hash_ids {
+            // TODO(Gali): Do we need to compress the "no data" here?
+            let mut buffer = array![v0, v1, v2, v3, v4, v5, v6, v7];
+            buffer.extend(ids_buffer);
+            return hash_u32s(buffer.span(), state, byte_count);
+        }
         byte_count += 32;
         return blake2s_finalize(
             state,
@@ -59,6 +96,7 @@ fn hash_memory_section_ex(
             BoxTrait::new([v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0]),
         );
     };
+    ids_buffer.append(second_half_id);
 
     let mut buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
     byte_count += 64;
@@ -66,23 +104,36 @@ fn hash_memory_section_ex(
     while let Some(head) = section.multi_pop_front::<2>() {
         // Append current value to the buffer without its id and compress.
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let [(_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15])] =
+        let [
+            (first_half_id, [v0, v1, v2, v3, v4, v5, v6, v7]),
+            (second_half_id, [v8, v9, v10, v11, v12, v13, v14, v15]),
+        ] =
             head
             .unbox();
         buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
         byte_count += 64;
+        ids_buffer.append(first_half_id);
+        ids_buffer.append(second_half_id);
     }
 
     // Pad buffer to blake hash message size.
-    if let Some(head) = section.pop_front() {
+    let mut u32_buffer = if let Some(head) = section.pop_front() {
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
-        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
-        byte_count += 32;
-    }
+        let (id, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        ids_buffer.append(id);
+        // TODO(Gali): Do we need to compress the "no data" here?
+        array![v0, v1, v2, v3, v4, v5, v6, v7]
+    } else {
+        buffer.span().try_into().unwrap()
+    };
 
     // Finalize hash.
-    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+    if hash_ids {
+        u32_buffer.extend(ids_buffer);
+        hash_u32s(u32_buffer.span(), state, byte_count)
+    } else {
+        blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+    }
 }
 
 /// Returns the hash of the memory section after encoding it, for packing purposes.
@@ -94,7 +145,7 @@ pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
         encode_felt_in_limbs_to_array(val, ref encoded_values);
     }
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    hash_u32s(encoded_values.span(), state)
+    hash_u32s(encoded_values.span(), state, byte_count: 0)
 }
 
 /// Encodes a felt, represented by 8 u32 limbs in little-endian order, and appends the encoded
@@ -121,7 +172,7 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
+fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>, mut byte_count: u32) -> Box<[u32; 8]> {
     let mut state = state;
     let mut section = section;
 
@@ -138,9 +189,9 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
         for _ in i..16 {
             buffer.append(0);
         }
-        return blake2s_finalize(state, i * 4, *buffer.span().try_into().unwrap());
+        return blake2s_finalize(state, byte_count + i * 4, *buffer.span().try_into().unwrap());
     };
-    let mut byte_count = 64;
+    byte_count += 64;
     while let Some(head) = section.multi_pop_front::<16>() {
         // Compress and re-fill the buffer.
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));

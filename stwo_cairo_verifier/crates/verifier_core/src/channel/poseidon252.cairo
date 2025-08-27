@@ -109,7 +109,8 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         // TODO(Gali): Make this more efficient, use hash_memory_section.
         let mut flat_data = array![];
         for entry in data {
-            let (_, val) = entry;
+            let (id, val) = entry;
+            flat_data.append(id);
             flat_data.append_span((*val).span());
         }
         self.mix_u32s(flat_data.span());
