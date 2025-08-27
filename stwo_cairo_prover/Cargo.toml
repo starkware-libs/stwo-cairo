@@ -47,16 +47,16 @@ cairo-air = { path = "crates/cairo-air" }
 stwo-cairo-serialize = { path = "crates/cairo-serialize", version = "~0.1.0" }
 # TODO(Ohad): re export stwo from constraint-framework.
 # TODO(Ohad): separate cairo-air from prover code and use prover features only in the prover crate.
-stwo = { git = "https://github.com/massalabs/stwo", rev = "ba8dd1c5", features = [
+stwo = { git = "https://github.com/massalabs/stwo", rev = "07122e04b17a511a4f036bfa1c8971e1e556b89b", features = [
     "parallel",
     "prover",
 ], default-features = false }
-stwo-constraint-framework = { git = "https://github.com/massalabs/stwo", rev = "ba8dd1c5", features = [
+stwo-constraint-framework = { git = "https://github.com/massalabs/stwo", rev = "07122e04b17a511a4f036bfa1c8971e1e556b89b", features = [
     "parallel",
     "prover",
 ] }
-stwo-air-utils-derive = { git = "https://github.com/massalabs/stwo", rev = "ba8dd1c5" }
-stwo-air-utils = { git = "https://github.com/massalabs/stwo", rev = "ba8dd1c5" }
+stwo-air-utils-derive = { git = "https://github.com/massalabs/stwo", rev = "07122e04b17a511a4f036bfa1c8971e1e556b89b" }
+stwo-air-utils = { git = "https://github.com/massalabs/stwo", rev = "07122e04b17a511a4f036bfa1c8971e1e556b89b" }
 test-case = "3.3.1"
 thiserror = { version = "2.0.12", default-features = false }
 tracing = "0.1.40"
