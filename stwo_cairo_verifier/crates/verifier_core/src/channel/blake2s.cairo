@@ -123,8 +123,8 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn mix_memory_section(ref self: Blake2sChannel, data: MemorySection) {
-        let res = hash_memory_section_with_digest(data, self.digest.hash);
+    fn mix_memory_section(ref self: Blake2sChannel, section: MemorySection) {
+        let res = hash_memory_section_with_digest(section, self.digest.hash);
         update_digest(ref self, Blake2sHash { hash: res });
     }
 

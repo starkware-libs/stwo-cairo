@@ -44,7 +44,7 @@ pub trait ChannelTrait {
     fn mix_u32s(ref self: Channel, data: Span<u32>);
 
     /// Mixes the values of a memory section (id-value pairs) into the channel.
-    fn mix_memory_section(ref self: Channel, data: MemorySection);
+    fn mix_memory_section(ref self: Channel, section: MemorySection);
 
     fn draw_secure_felt(ref self: Channel) -> SecureField;
 
