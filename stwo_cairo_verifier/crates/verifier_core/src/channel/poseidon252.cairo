@@ -58,6 +58,12 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             match felts.multi_pop_front::<2>() {
                 Option::Some(pair) => {
                     let [x, y] = (*pair).unbox();
+                    // The first argument of `pack4` is 1 so that the felt252 that
+                    // we will append to `res` can separate the case of a pair (x, y) of QM31
+                    // with x = 0 from a singleton y (which would enter the other match arm).
+                    // For any pair, the msb of the resulting felt252 is 2^248, while for
+                    // any singleton, the msb of the resulting felt252 is 2^124.
+                    // This also implies that we never overflow the 252-bit prime.
                     let cur = pack4(1, x.to_fixed_array());
                     res.append(pack4(cur, y.to_fixed_array()));
                 },
@@ -73,7 +79,6 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
         self.digest = poseidon_hash_span(res.span());
 
-        // TODO(spapini): do we need length padding?
         self.channel_time.next_challenges();
     }
 
