@@ -8,6 +8,9 @@ pub mod qm31;
 #[cfg(test)]
 mod qm31_test;
 
+#[cfg(test)]
+mod test;
+
 pub type BaseField = m31::M31;
 pub type SecureField = qm31::QM31;
 

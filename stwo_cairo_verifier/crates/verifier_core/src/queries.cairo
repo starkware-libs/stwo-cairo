@@ -3,6 +3,9 @@ use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use super::utils::{ArrayImpl, pow2};
 
+#[cfg(test)]
+mod test;
+
 /// An ordered set of query positions.
 #[derive(Drop, Copy, Debug, PartialEq)]
 pub struct Queries {
