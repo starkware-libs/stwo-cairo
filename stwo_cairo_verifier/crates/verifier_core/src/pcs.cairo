@@ -13,6 +13,9 @@ mod quotients;
 pub mod verifier;
 use crate::fri::FriConfigTrait;
 
+#[cfg(test)]
+mod test;
+
 #[derive(Drop, Serde, Copy)]
 pub struct PcsConfig {
     pub pow_bits: u32,

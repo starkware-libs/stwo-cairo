@@ -8,16 +8,12 @@ mod circle_mul_table_test;
 mod circle_test;
 
 pub mod fields;
-#[cfg(test)]
-mod fields_test;
 
 pub mod fri;
 #[cfg(test)]
 mod fri_test;
 
 pub mod pcs;
-#[cfg(test)]
-mod pcs_test;
 
 pub mod poly;
 
