@@ -4,19 +4,19 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-stwo-cairo-adapter = { git = "https://github.com/massalabs/stwo-cairo", rev = "ea9f36d7", features = [
+stwo-cairo-adapter = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a", features = [
     "std",
 ] }
-stwo_cairo_prover = { git = "https://github.com/massalabs/stwo-cairo", rev = "ea9f36d7" }
-stwo-cairo-serialize = { git = "https://github.com/massalabs/stwo-cairo", rev = "ea9f36d7" }
-cairo-air = { git = "https://github.com/massalabs/stwo-cairo", rev = "ea9f36d7" }
-cairo-lang-compiler = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
-cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
+stwo_cairo_prover = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
+stwo-cairo-serialize = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
+cairo-air = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
+cairo-lang-compiler = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 serde_json = "1.0.138"
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
+cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
     "mod_builtin",
 ] }
 clap = { version = "4.5.38", features = ["derive"] }
