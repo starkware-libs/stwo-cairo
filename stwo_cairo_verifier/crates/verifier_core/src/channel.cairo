@@ -50,6 +50,7 @@ pub trait ChannelTrait {
     /// Mixes the values of a memory section (id-value pairs) into the channel.
     fn mix_memory_section(ref self: Channel, section: MemorySection);
 
+    /// Mixes a commitment (tipically the root of a Merkle tree) into the channel.
     fn mix_commitment(ref self: Channel, commitment: Hash);
 
     fn draw_secure_felt(ref self: Channel) -> SecureField;
