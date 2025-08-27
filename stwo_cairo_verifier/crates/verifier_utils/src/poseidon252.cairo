@@ -1,6 +1,6 @@
 use core::box::BoxTrait;
 use core::poseidon::poseidon_hash_span;
-use super::{MemorySection, construct_f252, deconstruct_f252};
+use super::{M31_SHIFT_POW_8, MemorySection, construct_f252, deconstruct_f252};
 
 /// Constructs a `felt252` from 7 u32 big-endian limbs.
 pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
@@ -13,6 +13,19 @@ pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
     let result = result * offset + l4.into();
     let result = result * offset + l5.into();
     result * offset + l6.into()
+}
+
+/// A utility function used to modify the most significant bits of a felt252.
+/// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
+/// `n_packed_elements` into the bits at indices [248:251] of `word`.
+///
+/// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
+/// of packed elements, and the resulting felt252 is fed into a hash.
+/// The purpose of this function in this case is to avoid hash collisions between different-length
+/// lists of u32s or M31s that would lead to the same packing.
+#[inline(always)]
+pub fn add_length_padding(word: felt252, n_packed_elements: usize) -> felt252 {
+    word + n_packed_elements.into() * M31_SHIFT_POW_8
 }
 
 /// Returns the hash of the memory section, for packing purposes.
@@ -51,8 +64,12 @@ pub fn hash_u32s_with_state(state: felt252, data: Span<u32>) -> felt252 {
         for _ in data.len()..7 {
             chunk.append(0);
         }
-        // TODO(Gali): Add length padding.
-        res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
+
+        let chunk_as_f252 = construct_f252_be(*chunk.span().try_into().unwrap());
+        // Add the length padding to the chunk. Note that `chunk_as_f252` < 2^{7 * 32}
+        // and `data.len()` < 7, so the invocation of `add_length_padding` is sound.
+        // See also the docstring of [`crate::utils::add_length_padding`].
+        res.append(add_length_padding(chunk_as_f252, data.len()));
     }
 
     poseidon_hash_span(res.span())

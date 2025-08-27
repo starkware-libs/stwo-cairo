@@ -4,6 +4,15 @@ pub mod zip_eq;
 #[cfg(test)]
 mod zip_eq_test;
 
+/// Equals `2^31`.
+pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+
+/// Equals `(2^31)^4`.
+pub const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
+
+// Equals `(2^31)^8`
+pub const M31_SHIFT_POW_8: felt252 = M31_SHIFT_POW_4 * M31_SHIFT_POW_4;
+
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
 // (id, value)
 pub type PubMemoryValue = (u32, [u32; 8]);
