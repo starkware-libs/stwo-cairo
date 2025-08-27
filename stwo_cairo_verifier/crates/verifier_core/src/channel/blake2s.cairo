@@ -49,32 +49,92 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn mix_felts(ref self: Blake2sChannel, felts: Span<SecureField>) {
+        let mut felts = felts;
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
-        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
-        let mut byte_count = 32;
 
-        for felt in felts {
+        let [v0, v1, v2, v3]: [u32; 4] = if let Some(head) = felts.pop_front() {
+            let [r0, r1, r2, r3] = head.to_fixed_array();
+            [r0.into(), r1.into(), r2.into(), r3.into()]
+        } else {
+            let res = blake2s_finalize(
+                state, 32, BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
+            );
+            update_digest(ref self, Blake2sHash { hash: res });
+            return;
+        };
+        let [v4, v5, v6, v7]: [u32; 4] = if let Some(head) = felts.pop_front() {
+            let [r0, r1, r2, r3] = head.to_fixed_array();
+            [r0.into(), r1.into(), r2.into(), r3.into()]
+        } else {
+            let res = blake2s_finalize(
+                state,
+                48,
+                BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, 0, 0, 0, 0]),
+            );
+            update_digest(ref self, Blake2sHash { hash: res });
+            return;
+        };
+
+        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
+        let mut byte_count = 64;
+
+        while let Some(head) = felts.multi_pop_front::<4>() {
             // Compress whenever the buffer reaches capacity.
-            let msg_opt: Option<@Box<[u32; 16]>> = buffer.span().try_into();
-            if let Some(msg) = msg_opt {
-                state = blake2s_compress(state, byte_count, *msg);
-                buffer = array![];
-            }
-
-            let [r0, r1, r2, r3] = felt.to_fixed_array();
-            buffer.append(r0.into());
-            buffer.append(r1.into());
-            buffer.append(r2.into());
-            buffer.append(r3.into());
-            byte_count += 16;
+            state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
+            let [s0, s1, s2, s3] = head.unbox();
+            let [v0, v1, v2, v3] = s0.to_fixed_array();
+            let [v4, v5, v6, v7] = s1.to_fixed_array();
+            let [v8, v9, v10, v11] = s2.to_fixed_array();
+            let [v12, v13, v14, v15] = s3.to_fixed_array();
+            buffer =
+                [
+                    v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(),
+                    v7.into(), v8.into(), v9.into(), v10.into(), v11.into(), v12.into(), v13.into(),
+                    v14.into(), v15.into(),
+                ];
+            byte_count += 64;
         }
 
-        for _ in buffer.len()..16 {
-            buffer.append(0);
+        match felts.len() {
+            0 => {},
+            1 => {
+                state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
+                let [v0, v1, v2, v3] = felts.pop_front().unwrap().to_fixed_array();
+                buffer =
+                    [
+                        v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                        0,
+                    ];
+                byte_count += 16;
+            },
+            2 => {
+                state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
+                let [v0, v1, v2, v3] = felts.pop_front().unwrap().to_fixed_array();
+                let [v4, v5, v6, v7] = felts.pop_front().unwrap().to_fixed_array();
+                buffer =
+                    [
+                        v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(),
+                        v7.into(), 0, 0, 0, 0, 0, 0, 0, 0,
+                    ];
+                byte_count += 32;
+            },
+            3 => {
+                state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
+                let [v0, v1, v2, v3] = felts.pop_front().unwrap().to_fixed_array();
+                let [v4, v5, v6, v7] = felts.pop_front().unwrap().to_fixed_array();
+                let [v8, v9, v10, v11] = felts.pop_front().unwrap().to_fixed_array();
+                buffer =
+                    [
+                        v0.into(), v1.into(), v2.into(), v3.into(), v4.into(), v5.into(), v6.into(),
+                        v7.into(), v8.into(), v9.into(), v10.into(), v11.into(), 0, 0, 0, 0,
+                    ];
+                byte_count += 48;
+            },
+            _ => panic!("Unreachable"),
         }
 
-        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        let res = blake2s_finalize(state, byte_count, BoxTrait::new(buffer));
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
