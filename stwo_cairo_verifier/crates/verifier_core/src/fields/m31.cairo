@@ -1,4 +1,5 @@
 use bounded_int::{BoundedInt, DivRemHelper, div_rem, upcast};
+pub use stwo_verifier_utils::M31_SHIFT;
 
 #[cfg(not(feature: "qm31_opcode"))]
 mod naive;
@@ -18,9 +19,6 @@ const NZ_M31_P: NonZero<ConstValue<P>> = 0x7fffffff;
 type ConstValue<const VALUE: felt252> = BoundedInt<VALUE, VALUE>;
 
 const M31_P: ConstValue<P> = 0x7fffffff;
-
-/// Equals `2^31`.
-pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
 
 pub type M31InnerT = BoundedInt<0, 0x7ffffffe>;
 
