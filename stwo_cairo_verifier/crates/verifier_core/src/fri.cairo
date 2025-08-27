@@ -2,6 +2,7 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::{CheckedSub, Zero};
+use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::channel::{Channel, ChannelImpl};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
@@ -214,9 +215,10 @@ fn decommit_inner_layers(
     let mut inner_layers = verifier.inner_layers.span();
     let mut layer_queries = queries;
     let mut layer_query_evals = ArrayImpl::new_repeated(n: layer_queries.len(), v: Zero::zero());
-    let mut first_layer_sparse_evals = first_layer_sparse_evals.span();
+    let mut first_layer_iter = zip_eq(
+        first_layer_sparse_evals, *verifier.first_layer.column_commitment_domains,
+    );
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
-    let mut first_layer_column_domains = *verifier.first_layer.column_commitment_domains;
     let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
 
     while let Some(layer) = inner_layers.pop_front() {
@@ -224,20 +226,20 @@ fn decommit_inner_layers(
 
         // Check for evals committed in the first layer that need to be folded into this layer.
         while let Some(_) = first_layer_column_bounds.next_if_eq(@circle_poly_degree_bound) {
-            let column_domain = *first_layer_column_domains.pop_front().unwrap();
-            let first_layer_sparse_eval = first_layer_sparse_evals.pop_front().unwrap();
-            let mut folded_column_evals = first_layer_sparse_eval
-                .fold_circle(prev_fold_alpha, column_domain);
-            let mut updated_layer_query_evals = array![];
+            let (sparse_eval, column_domain) = first_layer_iter.next().unwrap();
+            let mut folded_column_evals = sparse_eval.fold_circle(prev_fold_alpha, *column_domain);
             let prev_fold_alpha_pow_fold_factor = prev_fold_alpha * prev_fold_alpha;
 
-            while let (Some(curr_layer_eval), Some(folded_column_eval)) =
-                (layer_query_evals.pop_front(), folded_column_evals.pop_front()) {
-                updated_layer_query_evals
-                    .append(curr_layer_eval * prev_fold_alpha_pow_fold_factor + folded_column_eval);
-            }
-
-            layer_query_evals = updated_layer_query_evals;
+            layer_query_evals = zip_eq(layer_query_evals, folded_column_evals)
+                .map(
+                    |tuple| {
+                        let (curr_layer_eval, folded_column_eval) = tuple;
+                        QM31Trait::fused_mul_add(
+                            curr_layer_eval, prev_fold_alpha_pow_fold_factor, folded_column_eval,
+                        )
+                    },
+                )
+                .collect();
         }
 
         let (next_layer_queries, next_layer_query_evals) = layer
@@ -249,8 +251,7 @@ fn decommit_inner_layers(
 
     // Check all values have been consumed.
     assert!(first_layer_column_bounds.is_empty());
-    assert!(first_layer_column_domains.is_empty());
-    assert!(first_layer_sparse_evals.is_empty());
+    assert!(first_layer_iter.next().is_none());
 
     (layer_queries, layer_query_evals)
 }
