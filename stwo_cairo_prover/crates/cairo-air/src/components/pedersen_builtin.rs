@@ -1,11 +1,11 @@
-// AIR version d1591e2a
+// AIR version 2f6e7d38
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_split::ReadSplit;
 use crate::components::subroutines::verify_reduced_252::VerifyReduced252;
 
-pub const N_TRACE_COLUMNS: usize = 351;
-pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
+pub const N_TRACE_COLUMNS: usize = 263;
+pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
         uses: 3,
@@ -16,7 +16,11 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 5] = [
     },
     RelationUse {
         relation_id: "PartialEcMul",
-        uses: 4,
+        uses: 2,
+    },
+    RelationUse {
+        relation_id: "PedersenPointsTable",
+        uses: 1,
     },
     RelationUse {
         relation_id: "RangeCheck_5_4",
@@ -34,6 +38,7 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub range_check_8_lookup_elements: relations::RangeCheck_8,
+    pub pedersen_points_table_lookup_elements: relations::PedersenPointsTable,
     pub partial_ec_mul_lookup_elements: relations::PartialEcMul,
 }
 
@@ -45,7 +50,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 10];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 9];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -82,65 +87,13 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
-        let M31_102 = E::F::from(M31::from(102));
-        let M31_118 = E::F::from(M31::from(118));
-        let M31_125 = E::F::from(M31::from(125));
-        let M31_130 = E::F::from(M31::from(130));
         let M31_14 = E::F::from(M31::from(14));
-        let M31_145 = E::F::from(M31::from(145));
-        let M31_15 = E::F::from(M31::from(15));
-        let M31_191 = E::F::from(M31::from(191));
+        let M31_16 = E::F::from(M31::from(16));
         let M31_2 = E::F::from(M31::from(2));
-        let M31_202 = E::F::from(M31::from(202));
-        let M31_212 = E::F::from(M31::from(212));
-        let M31_213 = E::F::from(M31::from(213));
-        let M31_221 = E::F::from(M31::from(221));
-        let M31_222 = E::F::from(M31::from(222));
-        let M31_226 = E::F::from(M31::from(226));
-        let M31_227 = E::F::from(M31::from(227));
-        let M31_228 = E::F::from(M31::from(228));
-        let M31_24 = E::F::from(M31::from(24));
-        let M31_251 = E::F::from(M31::from(251));
-        let M31_252 = E::F::from(M31::from(252));
-        let M31_253 = E::F::from(M31::from(253));
-        let M31_259 = E::F::from(M31::from(259));
-        let M31_264 = E::F::from(M31::from(264));
-        let M31_269 = E::F::from(M31::from(269));
-        let M31_27 = E::F::from(M31::from(27));
-        let M31_276 = E::F::from(M31::from(276));
-        let M31_281 = E::F::from(M31::from(281));
+        let M31_28 = E::F::from(M31::from(28));
         let M31_3 = E::F::from(M31::from(3));
-        let M31_301 = E::F::from(M31::from(301));
-        let M31_308 = E::F::from(M31::from(308));
-        let M31_31 = E::F::from(M31::from(31));
-        let M31_319 = E::F::from(M31::from(319));
-        let M31_321 = E::F::from(M31::from(321));
-        let M31_330 = E::F::from(M31::from(330));
-        let M31_334 = E::F::from(M31::from(334));
-        let M31_354 = E::F::from(M31::from(354));
-        let M31_3670016 = E::F::from(M31::from(3670016));
-        let M31_3670032 = E::F::from(M31::from(3670032));
-        let M31_377 = E::F::from(M31::from(377));
-        let M31_383 = E::F::from(M31::from(383));
-        let M31_385 = E::F::from(M31::from(385));
-        let M31_4 = E::F::from(M31::from(4));
-        let M31_413 = E::F::from(M31::from(413));
-        let M31_419 = E::F::from(M31::from(419));
-        let M31_422 = E::F::from(M31::from(422));
-        let M31_435 = E::F::from(M31::from(435));
-        let M31_458 = E::F::from(M31::from(458));
-        let M31_461 = E::F::from(M31::from(461));
-        let M31_464 = E::F::from(M31::from(464));
-        let M31_471 = E::F::from(M31::from(471));
-        let M31_472 = E::F::from(M31::from(472));
-        let M31_483 = E::F::from(M31::from(483));
-        let M31_50 = E::F::from(M31::from(50));
-        let M31_508 = E::F::from(M31::from(508));
         let M31_512 = E::F::from(M31::from(512));
-        let M31_7340048 = E::F::from(M31::from(7340048));
-        let M31_83 = E::F::from(M31::from(83));
-        let M31_92 = E::F::from(M31::from(92));
-        let M31_96 = E::F::from(M31::from(96));
+        let M31_7340032 = E::F::from(M31::from(7340032));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let value_limb_0_col0 = eval.next_trace_mask();
         let value_limb_1_col1 = eval.next_trace_mask();
@@ -208,291 +161,203 @@ impl FrameworkEval for Eval {
         let ms_limb_is_max_col63 = eval.next_trace_mask();
         let ms_and_mid_limbs_are_max_col64 = eval.next_trace_mask();
         let rc_input_col65 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_0_col66 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_1_col67 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_2_col68 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_3_col69 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_4_col70 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_5_col71 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_6_col72 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_7_col73 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_8_col74 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_9_col75 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_10_col76 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_11_col77 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_12_col78 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_13_col79 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_14_col80 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_15_col81 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_16_col82 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_17_col83 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_18_col84 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_19_col85 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_20_col86 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_21_col87 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_22_col88 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_23_col89 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_24_col90 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_25_col91 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_26_col92 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_27_col93 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_28_col94 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_29_col95 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_30_col96 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_31_col97 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_32_col98 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_33_col99 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_34_col100 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_35_col101 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_36_col102 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_37_col103 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_38_col104 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_39_col105 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_40_col106 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_41_col107 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_42_col108 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_43_col109 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_44_col110 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_45_col111 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_46_col112 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_47_col113 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_48_col114 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_49_col115 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_50_col116 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_51_col117 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_52_col118 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_53_col119 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_54_col120 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_55_col121 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_56_col122 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_57_col123 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_58_col124 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_59_col125 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_60_col126 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_61_col127 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_62_col128 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_63_col129 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_64_col130 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_65_col131 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_66_col132 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_67_col133 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_68_col134 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_69_col135 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_70_col136 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_0_col137 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_1_col138 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_2_col139 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_3_col140 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_4_col141 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_5_col142 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_6_col143 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_7_col144 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_8_col145 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_9_col146 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_10_col147 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_11_col148 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_12_col149 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_13_col150 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_14_col151 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_15_col152 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_16_col153 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_17_col154 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_18_col155 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_19_col156 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_20_col157 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_21_col158 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_22_col159 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_23_col160 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_24_col161 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_25_col162 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_26_col163 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_27_col164 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_28_col165 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_29_col166 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_30_col167 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_31_col168 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_32_col169 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_33_col170 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_34_col171 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_35_col172 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_36_col173 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_37_col174 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_38_col175 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_39_col176 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_40_col177 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_41_col178 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_42_col179 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_43_col180 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_44_col181 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_45_col182 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_46_col183 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_47_col184 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_48_col185 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_49_col186 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_50_col187 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_51_col188 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_52_col189 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_53_col190 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_54_col191 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_55_col192 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_56_col193 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_57_col194 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_58_col195 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_59_col196 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_60_col197 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_61_col198 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_62_col199 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_63_col200 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_64_col201 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_65_col202 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_66_col203 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_67_col204 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_68_col205 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_69_col206 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_70_col207 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_0_col208 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_1_col209 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_2_col210 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_3_col211 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_4_col212 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_5_col213 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_6_col214 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_7_col215 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_8_col216 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_9_col217 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_10_col218 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_11_col219 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_12_col220 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_13_col221 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_14_col222 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_15_col223 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_16_col224 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_17_col225 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_18_col226 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_19_col227 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_20_col228 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_21_col229 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_22_col230 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_23_col231 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_24_col232 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_25_col233 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_26_col234 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_27_col235 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_28_col236 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_29_col237 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_30_col238 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_31_col239 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_32_col240 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_33_col241 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_34_col242 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_35_col243 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_36_col244 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_37_col245 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_38_col246 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_39_col247 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_40_col248 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_41_col249 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_42_col250 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_43_col251 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_44_col252 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_45_col253 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_46_col254 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_47_col255 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_48_col256 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_49_col257 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_50_col258 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_51_col259 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_52_col260 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_53_col261 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_54_col262 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_55_col263 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_56_col264 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_57_col265 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_58_col266 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_59_col267 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_60_col268 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_61_col269 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_62_col270 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_63_col271 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_64_col272 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_65_col273 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_66_col274 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_67_col275 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_68_col276 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_69_col277 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_70_col278 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_0_col279 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_1_col280 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_2_col281 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_3_col282 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_4_col283 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_5_col284 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_6_col285 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_7_col286 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_8_col287 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_9_col288 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_10_col289 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_11_col290 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_12_col291 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_13_col292 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_14_col293 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_15_col294 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_16_col295 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_17_col296 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_18_col297 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_19_col298 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_20_col299 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_21_col300 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_22_col301 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_23_col302 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_24_col303 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_25_col304 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_26_col305 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_27_col306 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_28_col307 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_29_col308 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_30_col309 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_31_col310 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_32_col311 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_33_col312 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_34_col313 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_35_col314 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_36_col315 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_37_col316 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_38_col317 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_39_col318 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_40_col319 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_41_col320 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_42_col321 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_43_col322 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_44_col323 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_45_col324 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_46_col325 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_47_col326 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_48_col327 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_49_col328 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_50_col329 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_51_col330 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_52_col331 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_53_col332 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_54_col333 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_55_col334 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_56_col335 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_57_col336 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_58_col337 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_59_col338 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_60_col339 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_61_col340 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_62_col341 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_63_col342 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_64_col343 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_65_col344 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_66_col345 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_67_col346 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_68_col347 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_69_col348 = eval.next_trace_mask();
-        let partial_ec_mul_output_limb_70_col349 = eval.next_trace_mask();
-        let pedersen_result_id_col350 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_0_col66 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_1_col67 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_2_col68 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_3_col69 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_4_col70 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_5_col71 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_6_col72 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_7_col73 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_8_col74 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_9_col75 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_10_col76 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_11_col77 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_12_col78 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_13_col79 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_14_col80 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_15_col81 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_16_col82 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_17_col83 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_18_col84 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_19_col85 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_20_col86 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_21_col87 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_22_col88 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_23_col89 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_24_col90 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_25_col91 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_26_col92 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_27_col93 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_28_col94 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_29_col95 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_30_col96 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_31_col97 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_32_col98 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_33_col99 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_34_col100 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_35_col101 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_36_col102 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_37_col103 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_38_col104 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_39_col105 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_40_col106 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_41_col107 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_42_col108 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_43_col109 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_44_col110 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_45_col111 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_46_col112 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_47_col113 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_48_col114 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_49_col115 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_50_col116 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_51_col117 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_52_col118 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_53_col119 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_54_col120 = eval.next_trace_mask();
+        let pedersen_points_table_output_limb_55_col121 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_0_col122 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_1_col123 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_2_col124 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_3_col125 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_4_col126 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_5_col127 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_6_col128 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_7_col129 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_8_col130 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_9_col131 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_10_col132 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_11_col133 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_12_col134 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_13_col135 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_14_col136 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_15_col137 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_16_col138 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_17_col139 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_18_col140 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_19_col141 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_20_col142 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_21_col143 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_22_col144 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_23_col145 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_24_col146 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_25_col147 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_26_col148 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_27_col149 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_28_col150 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_29_col151 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_30_col152 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_31_col153 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_32_col154 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_33_col155 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_34_col156 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_35_col157 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_36_col158 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_37_col159 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_38_col160 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_39_col161 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_40_col162 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_41_col163 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_42_col164 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_43_col165 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_44_col166 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_45_col167 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_46_col168 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_47_col169 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_48_col170 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_49_col171 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_50_col172 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_51_col173 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_52_col174 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_53_col175 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_54_col176 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_55_col177 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_56_col178 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_57_col179 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_58_col180 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_59_col181 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_60_col182 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_61_col183 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_62_col184 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_63_col185 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_64_col186 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_65_col187 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_66_col188 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_67_col189 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_68_col190 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_69_col191 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_0_col192 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_1_col193 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_2_col194 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_3_col195 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_4_col196 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_5_col197 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_6_col198 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_7_col199 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_8_col200 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_9_col201 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_10_col202 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_11_col203 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_12_col204 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_13_col205 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_14_col206 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_15_col207 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_16_col208 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_17_col209 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_18_col210 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_19_col211 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_20_col212 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_21_col213 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_22_col214 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_23_col215 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_24_col216 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_25_col217 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_26_col218 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_27_col219 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_28_col220 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_29_col221 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_30_col222 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_31_col223 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_32_col224 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_33_col225 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_34_col226 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_35_col227 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_36_col228 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_37_col229 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_38_col230 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_39_col231 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_40_col232 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_41_col233 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_42_col234 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_43_col235 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_44_col236 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_45_col237 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_46_col238 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_47_col239 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_48_col240 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_49_col241 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_50_col242 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_51_col243 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_52_col244 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_53_col245 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_54_col246 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_55_col247 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_56_col248 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_57_col249 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_58_col250 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_59_col251 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_60_col252 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_61_col253 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_62_col254 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_63_col255 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_64_col256 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_65_col257 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_66_col258 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_67_col259 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_68_col260 = eval.next_trace_mask();
+        let partial_ec_mul_output_limb_69_col261 = eval.next_trace_mask();
+        let pedersen_result_id_col262 = eval.next_trace_mask();
 
         let instance_addr_tmp_d00c6_0 = eval.add_intermediate(
             ((seq.clone() * M31_3.clone())
@@ -650,14 +515,78 @@ impl FrameworkEval for Eval {
             &self.range_check_8_lookup_elements,
             &mut eval,
         );
-        let partial_ec_mul_chain_tmp_tmp_d00c6_17 =
-            eval.add_intermediate((seq.clone() * M31_4.clone()));
+        eval.add_to_relation(RelationEntry::new(
+            &self.pedersen_points_table_lookup_elements,
+            E::EF::one(),
+            &[
+                ((M31_7340032.clone() + (ms_limb_high_col58.clone() * M31_16.clone()))
+                    + ms_limb_high_col28.clone()),
+                pedersen_points_table_output_limb_0_col66.clone(),
+                pedersen_points_table_output_limb_1_col67.clone(),
+                pedersen_points_table_output_limb_2_col68.clone(),
+                pedersen_points_table_output_limb_3_col69.clone(),
+                pedersen_points_table_output_limb_4_col70.clone(),
+                pedersen_points_table_output_limb_5_col71.clone(),
+                pedersen_points_table_output_limb_6_col72.clone(),
+                pedersen_points_table_output_limb_7_col73.clone(),
+                pedersen_points_table_output_limb_8_col74.clone(),
+                pedersen_points_table_output_limb_9_col75.clone(),
+                pedersen_points_table_output_limb_10_col76.clone(),
+                pedersen_points_table_output_limb_11_col77.clone(),
+                pedersen_points_table_output_limb_12_col78.clone(),
+                pedersen_points_table_output_limb_13_col79.clone(),
+                pedersen_points_table_output_limb_14_col80.clone(),
+                pedersen_points_table_output_limb_15_col81.clone(),
+                pedersen_points_table_output_limb_16_col82.clone(),
+                pedersen_points_table_output_limb_17_col83.clone(),
+                pedersen_points_table_output_limb_18_col84.clone(),
+                pedersen_points_table_output_limb_19_col85.clone(),
+                pedersen_points_table_output_limb_20_col86.clone(),
+                pedersen_points_table_output_limb_21_col87.clone(),
+                pedersen_points_table_output_limb_22_col88.clone(),
+                pedersen_points_table_output_limb_23_col89.clone(),
+                pedersen_points_table_output_limb_24_col90.clone(),
+                pedersen_points_table_output_limb_25_col91.clone(),
+                pedersen_points_table_output_limb_26_col92.clone(),
+                pedersen_points_table_output_limb_27_col93.clone(),
+                pedersen_points_table_output_limb_28_col94.clone(),
+                pedersen_points_table_output_limb_29_col95.clone(),
+                pedersen_points_table_output_limb_30_col96.clone(),
+                pedersen_points_table_output_limb_31_col97.clone(),
+                pedersen_points_table_output_limb_32_col98.clone(),
+                pedersen_points_table_output_limb_33_col99.clone(),
+                pedersen_points_table_output_limb_34_col100.clone(),
+                pedersen_points_table_output_limb_35_col101.clone(),
+                pedersen_points_table_output_limb_36_col102.clone(),
+                pedersen_points_table_output_limb_37_col103.clone(),
+                pedersen_points_table_output_limb_38_col104.clone(),
+                pedersen_points_table_output_limb_39_col105.clone(),
+                pedersen_points_table_output_limb_40_col106.clone(),
+                pedersen_points_table_output_limb_41_col107.clone(),
+                pedersen_points_table_output_limb_42_col108.clone(),
+                pedersen_points_table_output_limb_43_col109.clone(),
+                pedersen_points_table_output_limb_44_col110.clone(),
+                pedersen_points_table_output_limb_45_col111.clone(),
+                pedersen_points_table_output_limb_46_col112.clone(),
+                pedersen_points_table_output_limb_47_col113.clone(),
+                pedersen_points_table_output_limb_48_col114.clone(),
+                pedersen_points_table_output_limb_49_col115.clone(),
+                pedersen_points_table_output_limb_50_col116.clone(),
+                pedersen_points_table_output_limb_51_col117.clone(),
+                pedersen_points_table_output_limb_52_col118.clone(),
+                pedersen_points_table_output_limb_53_col119.clone(),
+                pedersen_points_table_output_limb_54_col120.clone(),
+                pedersen_points_table_output_limb_55_col121.clone(),
+            ],
+        ));
+
+        let partial_ec_mul_chain_tmp_tmp_d00c6_18 =
+            eval.add_intermediate((seq.clone() * M31_2.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                partial_ec_mul_chain_tmp_tmp_d00c6_17.clone(),
-                M31_0.clone(),
+                partial_ec_mul_chain_tmp_tmp_d00c6_18.clone(),
                 M31_0.clone(),
                 (value_limb_0_col0.clone() + (value_limb_1_col1.clone() * M31_512.clone())),
                 (value_limb_2_col2.clone() + (value_limb_3_col3.clone() * M31_512.clone())),
@@ -673,62 +602,62 @@ impl FrameworkEval for Eval {
                 (value_limb_22_col22.clone() + (value_limb_23_col23.clone() * M31_512.clone())),
                 (value_limb_24_col24.clone() + (value_limb_25_col25.clone() * M31_512.clone())),
                 (value_limb_26_col26.clone() + (ms_limb_low_col27.clone() * M31_512.clone())),
-                M31_435.clone(),
-                M31_50.clone(),
-                M31_508.clone(),
-                M31_83.clone(),
-                M31_221.clone(),
-                M31_281.clone(),
-                M31_377.clone(),
-                M31_383.clone(),
-                M31_212.clone(),
-                M31_264.clone(),
-                M31_301.clone(),
-                M31_458.clone(),
-                M31_130.clone(),
-                M31_102.clone(),
-                M31_385.clone(),
-                M31_269.clone(),
-                M31_145.clone(),
-                M31_276.clone(),
-                M31_483.clone(),
-                M31_226.clone(),
-                M31_422.clone(),
-                M31_253.clone(),
-                M31_308.clone(),
-                M31_125.clone(),
-                M31_472.clone(),
-                M31_301.clone(),
-                M31_227.clone(),
-                M31_27.clone(),
-                M31_92.clone(),
-                M31_321.clone(),
-                M31_252.clone(),
-                M31_259.clone(),
-                M31_252.clone(),
-                M31_413.clone(),
-                M31_228.clone(),
-                M31_31.clone(),
-                M31_24.clone(),
-                M31_118.clone(),
-                M31_301.clone(),
-                M31_202.clone(),
-                M31_15.clone(),
-                M31_464.clone(),
-                M31_334.clone(),
-                M31_212.clone(),
-                M31_471.clone(),
-                M31_461.clone(),
-                M31_419.clone(),
-                M31_354.clone(),
-                M31_96.clone(),
-                M31_213.clone(),
-                M31_319.clone(),
-                M31_191.clone(),
-                M31_251.clone(),
-                M31_330.clone(),
-                M31_15.clone(),
-                M31_222.clone(),
+                pedersen_points_table_output_limb_0_col66.clone(),
+                pedersen_points_table_output_limb_1_col67.clone(),
+                pedersen_points_table_output_limb_2_col68.clone(),
+                pedersen_points_table_output_limb_3_col69.clone(),
+                pedersen_points_table_output_limb_4_col70.clone(),
+                pedersen_points_table_output_limb_5_col71.clone(),
+                pedersen_points_table_output_limb_6_col72.clone(),
+                pedersen_points_table_output_limb_7_col73.clone(),
+                pedersen_points_table_output_limb_8_col74.clone(),
+                pedersen_points_table_output_limb_9_col75.clone(),
+                pedersen_points_table_output_limb_10_col76.clone(),
+                pedersen_points_table_output_limb_11_col77.clone(),
+                pedersen_points_table_output_limb_12_col78.clone(),
+                pedersen_points_table_output_limb_13_col79.clone(),
+                pedersen_points_table_output_limb_14_col80.clone(),
+                pedersen_points_table_output_limb_15_col81.clone(),
+                pedersen_points_table_output_limb_16_col82.clone(),
+                pedersen_points_table_output_limb_17_col83.clone(),
+                pedersen_points_table_output_limb_18_col84.clone(),
+                pedersen_points_table_output_limb_19_col85.clone(),
+                pedersen_points_table_output_limb_20_col86.clone(),
+                pedersen_points_table_output_limb_21_col87.clone(),
+                pedersen_points_table_output_limb_22_col88.clone(),
+                pedersen_points_table_output_limb_23_col89.clone(),
+                pedersen_points_table_output_limb_24_col90.clone(),
+                pedersen_points_table_output_limb_25_col91.clone(),
+                pedersen_points_table_output_limb_26_col92.clone(),
+                pedersen_points_table_output_limb_27_col93.clone(),
+                pedersen_points_table_output_limb_28_col94.clone(),
+                pedersen_points_table_output_limb_29_col95.clone(),
+                pedersen_points_table_output_limb_30_col96.clone(),
+                pedersen_points_table_output_limb_31_col97.clone(),
+                pedersen_points_table_output_limb_32_col98.clone(),
+                pedersen_points_table_output_limb_33_col99.clone(),
+                pedersen_points_table_output_limb_34_col100.clone(),
+                pedersen_points_table_output_limb_35_col101.clone(),
+                pedersen_points_table_output_limb_36_col102.clone(),
+                pedersen_points_table_output_limb_37_col103.clone(),
+                pedersen_points_table_output_limb_38_col104.clone(),
+                pedersen_points_table_output_limb_39_col105.clone(),
+                pedersen_points_table_output_limb_40_col106.clone(),
+                pedersen_points_table_output_limb_41_col107.clone(),
+                pedersen_points_table_output_limb_42_col108.clone(),
+                pedersen_points_table_output_limb_43_col109.clone(),
+                pedersen_points_table_output_limb_44_col110.clone(),
+                pedersen_points_table_output_limb_45_col111.clone(),
+                pedersen_points_table_output_limb_46_col112.clone(),
+                pedersen_points_table_output_limb_47_col113.clone(),
+                pedersen_points_table_output_limb_48_col114.clone(),
+                pedersen_points_table_output_limb_49_col115.clone(),
+                pedersen_points_table_output_limb_50_col116.clone(),
+                pedersen_points_table_output_limb_51_col117.clone(),
+                pedersen_points_table_output_limb_52_col118.clone(),
+                pedersen_points_table_output_limb_53_col119.clone(),
+                pedersen_points_table_output_limb_54_col120.clone(),
+                pedersen_points_table_output_limb_55_col121.clone(),
             ],
         ));
 
@@ -736,253 +665,89 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                partial_ec_mul_chain_tmp_tmp_d00c6_17.clone(),
+                partial_ec_mul_chain_tmp_tmp_d00c6_18.clone(),
                 M31_14.clone(),
-                partial_ec_mul_output_limb_0_col66.clone(),
-                partial_ec_mul_output_limb_1_col67.clone(),
-                partial_ec_mul_output_limb_2_col68.clone(),
-                partial_ec_mul_output_limb_3_col69.clone(),
-                partial_ec_mul_output_limb_4_col70.clone(),
-                partial_ec_mul_output_limb_5_col71.clone(),
-                partial_ec_mul_output_limb_6_col72.clone(),
-                partial_ec_mul_output_limb_7_col73.clone(),
-                partial_ec_mul_output_limb_8_col74.clone(),
-                partial_ec_mul_output_limb_9_col75.clone(),
-                partial_ec_mul_output_limb_10_col76.clone(),
-                partial_ec_mul_output_limb_11_col77.clone(),
-                partial_ec_mul_output_limb_12_col78.clone(),
-                partial_ec_mul_output_limb_13_col79.clone(),
-                partial_ec_mul_output_limb_14_col80.clone(),
-                partial_ec_mul_output_limb_15_col81.clone(),
-                partial_ec_mul_output_limb_16_col82.clone(),
-                partial_ec_mul_output_limb_17_col83.clone(),
-                partial_ec_mul_output_limb_18_col84.clone(),
-                partial_ec_mul_output_limb_19_col85.clone(),
-                partial_ec_mul_output_limb_20_col86.clone(),
-                partial_ec_mul_output_limb_21_col87.clone(),
-                partial_ec_mul_output_limb_22_col88.clone(),
-                partial_ec_mul_output_limb_23_col89.clone(),
-                partial_ec_mul_output_limb_24_col90.clone(),
-                partial_ec_mul_output_limb_25_col91.clone(),
-                partial_ec_mul_output_limb_26_col92.clone(),
-                partial_ec_mul_output_limb_27_col93.clone(),
-                partial_ec_mul_output_limb_28_col94.clone(),
-                partial_ec_mul_output_limb_29_col95.clone(),
-                partial_ec_mul_output_limb_30_col96.clone(),
-                partial_ec_mul_output_limb_31_col97.clone(),
-                partial_ec_mul_output_limb_32_col98.clone(),
-                partial_ec_mul_output_limb_33_col99.clone(),
-                partial_ec_mul_output_limb_34_col100.clone(),
-                partial_ec_mul_output_limb_35_col101.clone(),
-                partial_ec_mul_output_limb_36_col102.clone(),
-                partial_ec_mul_output_limb_37_col103.clone(),
-                partial_ec_mul_output_limb_38_col104.clone(),
-                partial_ec_mul_output_limb_39_col105.clone(),
-                partial_ec_mul_output_limb_40_col106.clone(),
-                partial_ec_mul_output_limb_41_col107.clone(),
-                partial_ec_mul_output_limb_42_col108.clone(),
-                partial_ec_mul_output_limb_43_col109.clone(),
-                partial_ec_mul_output_limb_44_col110.clone(),
-                partial_ec_mul_output_limb_45_col111.clone(),
-                partial_ec_mul_output_limb_46_col112.clone(),
-                partial_ec_mul_output_limb_47_col113.clone(),
-                partial_ec_mul_output_limb_48_col114.clone(),
-                partial_ec_mul_output_limb_49_col115.clone(),
-                partial_ec_mul_output_limb_50_col116.clone(),
-                partial_ec_mul_output_limb_51_col117.clone(),
-                partial_ec_mul_output_limb_52_col118.clone(),
-                partial_ec_mul_output_limb_53_col119.clone(),
-                partial_ec_mul_output_limb_54_col120.clone(),
-                partial_ec_mul_output_limb_55_col121.clone(),
-                partial_ec_mul_output_limb_56_col122.clone(),
-                partial_ec_mul_output_limb_57_col123.clone(),
-                partial_ec_mul_output_limb_58_col124.clone(),
-                partial_ec_mul_output_limb_59_col125.clone(),
-                partial_ec_mul_output_limb_60_col126.clone(),
-                partial_ec_mul_output_limb_61_col127.clone(),
-                partial_ec_mul_output_limb_62_col128.clone(),
-                partial_ec_mul_output_limb_63_col129.clone(),
-                partial_ec_mul_output_limb_64_col130.clone(),
-                partial_ec_mul_output_limb_65_col131.clone(),
-                partial_ec_mul_output_limb_66_col132.clone(),
-                partial_ec_mul_output_limb_67_col133.clone(),
-                partial_ec_mul_output_limb_68_col134.clone(),
-                partial_ec_mul_output_limb_69_col135.clone(),
-                partial_ec_mul_output_limb_70_col136.clone(),
+                partial_ec_mul_output_limb_0_col122.clone(),
+                partial_ec_mul_output_limb_1_col123.clone(),
+                partial_ec_mul_output_limb_2_col124.clone(),
+                partial_ec_mul_output_limb_3_col125.clone(),
+                partial_ec_mul_output_limb_4_col126.clone(),
+                partial_ec_mul_output_limb_5_col127.clone(),
+                partial_ec_mul_output_limb_6_col128.clone(),
+                partial_ec_mul_output_limb_7_col129.clone(),
+                partial_ec_mul_output_limb_8_col130.clone(),
+                partial_ec_mul_output_limb_9_col131.clone(),
+                partial_ec_mul_output_limb_10_col132.clone(),
+                partial_ec_mul_output_limb_11_col133.clone(),
+                partial_ec_mul_output_limb_12_col134.clone(),
+                partial_ec_mul_output_limb_13_col135.clone(),
+                partial_ec_mul_output_limb_14_col136.clone(),
+                partial_ec_mul_output_limb_15_col137.clone(),
+                partial_ec_mul_output_limb_16_col138.clone(),
+                partial_ec_mul_output_limb_17_col139.clone(),
+                partial_ec_mul_output_limb_18_col140.clone(),
+                partial_ec_mul_output_limb_19_col141.clone(),
+                partial_ec_mul_output_limb_20_col142.clone(),
+                partial_ec_mul_output_limb_21_col143.clone(),
+                partial_ec_mul_output_limb_22_col144.clone(),
+                partial_ec_mul_output_limb_23_col145.clone(),
+                partial_ec_mul_output_limb_24_col146.clone(),
+                partial_ec_mul_output_limb_25_col147.clone(),
+                partial_ec_mul_output_limb_26_col148.clone(),
+                partial_ec_mul_output_limb_27_col149.clone(),
+                partial_ec_mul_output_limb_28_col150.clone(),
+                partial_ec_mul_output_limb_29_col151.clone(),
+                partial_ec_mul_output_limb_30_col152.clone(),
+                partial_ec_mul_output_limb_31_col153.clone(),
+                partial_ec_mul_output_limb_32_col154.clone(),
+                partial_ec_mul_output_limb_33_col155.clone(),
+                partial_ec_mul_output_limb_34_col156.clone(),
+                partial_ec_mul_output_limb_35_col157.clone(),
+                partial_ec_mul_output_limb_36_col158.clone(),
+                partial_ec_mul_output_limb_37_col159.clone(),
+                partial_ec_mul_output_limb_38_col160.clone(),
+                partial_ec_mul_output_limb_39_col161.clone(),
+                partial_ec_mul_output_limb_40_col162.clone(),
+                partial_ec_mul_output_limb_41_col163.clone(),
+                partial_ec_mul_output_limb_42_col164.clone(),
+                partial_ec_mul_output_limb_43_col165.clone(),
+                partial_ec_mul_output_limb_44_col166.clone(),
+                partial_ec_mul_output_limb_45_col167.clone(),
+                partial_ec_mul_output_limb_46_col168.clone(),
+                partial_ec_mul_output_limb_47_col169.clone(),
+                partial_ec_mul_output_limb_48_col170.clone(),
+                partial_ec_mul_output_limb_49_col171.clone(),
+                partial_ec_mul_output_limb_50_col172.clone(),
+                partial_ec_mul_output_limb_51_col173.clone(),
+                partial_ec_mul_output_limb_52_col174.clone(),
+                partial_ec_mul_output_limb_53_col175.clone(),
+                partial_ec_mul_output_limb_54_col176.clone(),
+                partial_ec_mul_output_limb_55_col177.clone(),
+                partial_ec_mul_output_limb_56_col178.clone(),
+                partial_ec_mul_output_limb_57_col179.clone(),
+                partial_ec_mul_output_limb_58_col180.clone(),
+                partial_ec_mul_output_limb_59_col181.clone(),
+                partial_ec_mul_output_limb_60_col182.clone(),
+                partial_ec_mul_output_limb_61_col183.clone(),
+                partial_ec_mul_output_limb_62_col184.clone(),
+                partial_ec_mul_output_limb_63_col185.clone(),
+                partial_ec_mul_output_limb_64_col186.clone(),
+                partial_ec_mul_output_limb_65_col187.clone(),
+                partial_ec_mul_output_limb_66_col188.clone(),
+                partial_ec_mul_output_limb_67_col189.clone(),
+                partial_ec_mul_output_limb_68_col190.clone(),
+                partial_ec_mul_output_limb_69_col191.clone(),
             ],
         ));
 
-        let partial_ec_mul_chain_id_tmp_d00c6_32 =
-            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_1.clone()));
+        let partial_ec_mul_chain_id_tmp_d00c6_33 =
+            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_18.clone() + M31_1.clone()));
         eval.add_to_relation(RelationEntry::new(
             &self.partial_ec_mul_lookup_elements,
             -E::EF::one(),
             &[
-                partial_ec_mul_chain_id_tmp_d00c6_32.clone(),
-                M31_0.clone(),
-                M31_3670016.clone(),
-                ms_limb_high_col28.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                partial_ec_mul_output_limb_15_col81.clone(),
-                partial_ec_mul_output_limb_16_col82.clone(),
-                partial_ec_mul_output_limb_17_col83.clone(),
-                partial_ec_mul_output_limb_18_col84.clone(),
-                partial_ec_mul_output_limb_19_col85.clone(),
-                partial_ec_mul_output_limb_20_col86.clone(),
-                partial_ec_mul_output_limb_21_col87.clone(),
-                partial_ec_mul_output_limb_22_col88.clone(),
-                partial_ec_mul_output_limb_23_col89.clone(),
-                partial_ec_mul_output_limb_24_col90.clone(),
-                partial_ec_mul_output_limb_25_col91.clone(),
-                partial_ec_mul_output_limb_26_col92.clone(),
-                partial_ec_mul_output_limb_27_col93.clone(),
-                partial_ec_mul_output_limb_28_col94.clone(),
-                partial_ec_mul_output_limb_29_col95.clone(),
-                partial_ec_mul_output_limb_30_col96.clone(),
-                partial_ec_mul_output_limb_31_col97.clone(),
-                partial_ec_mul_output_limb_32_col98.clone(),
-                partial_ec_mul_output_limb_33_col99.clone(),
-                partial_ec_mul_output_limb_34_col100.clone(),
-                partial_ec_mul_output_limb_35_col101.clone(),
-                partial_ec_mul_output_limb_36_col102.clone(),
-                partial_ec_mul_output_limb_37_col103.clone(),
-                partial_ec_mul_output_limb_38_col104.clone(),
-                partial_ec_mul_output_limb_39_col105.clone(),
-                partial_ec_mul_output_limb_40_col106.clone(),
-                partial_ec_mul_output_limb_41_col107.clone(),
-                partial_ec_mul_output_limb_42_col108.clone(),
-                partial_ec_mul_output_limb_43_col109.clone(),
-                partial_ec_mul_output_limb_44_col110.clone(),
-                partial_ec_mul_output_limb_45_col111.clone(),
-                partial_ec_mul_output_limb_46_col112.clone(),
-                partial_ec_mul_output_limb_47_col113.clone(),
-                partial_ec_mul_output_limb_48_col114.clone(),
-                partial_ec_mul_output_limb_49_col115.clone(),
-                partial_ec_mul_output_limb_50_col116.clone(),
-                partial_ec_mul_output_limb_51_col117.clone(),
-                partial_ec_mul_output_limb_52_col118.clone(),
-                partial_ec_mul_output_limb_53_col119.clone(),
-                partial_ec_mul_output_limb_54_col120.clone(),
-                partial_ec_mul_output_limb_55_col121.clone(),
-                partial_ec_mul_output_limb_56_col122.clone(),
-                partial_ec_mul_output_limb_57_col123.clone(),
-                partial_ec_mul_output_limb_58_col124.clone(),
-                partial_ec_mul_output_limb_59_col125.clone(),
-                partial_ec_mul_output_limb_60_col126.clone(),
-                partial_ec_mul_output_limb_61_col127.clone(),
-                partial_ec_mul_output_limb_62_col128.clone(),
-                partial_ec_mul_output_limb_63_col129.clone(),
-                partial_ec_mul_output_limb_64_col130.clone(),
-                partial_ec_mul_output_limb_65_col131.clone(),
-                partial_ec_mul_output_limb_66_col132.clone(),
-                partial_ec_mul_output_limb_67_col133.clone(),
-                partial_ec_mul_output_limb_68_col134.clone(),
-                partial_ec_mul_output_limb_69_col135.clone(),
-                partial_ec_mul_output_limb_70_col136.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
-            E::EF::one(),
-            &[
-                partial_ec_mul_chain_id_tmp_d00c6_32.clone(),
-                M31_1.clone(),
-                partial_ec_mul_output_limb_0_col137.clone(),
-                partial_ec_mul_output_limb_1_col138.clone(),
-                partial_ec_mul_output_limb_2_col139.clone(),
-                partial_ec_mul_output_limb_3_col140.clone(),
-                partial_ec_mul_output_limb_4_col141.clone(),
-                partial_ec_mul_output_limb_5_col142.clone(),
-                partial_ec_mul_output_limb_6_col143.clone(),
-                partial_ec_mul_output_limb_7_col144.clone(),
-                partial_ec_mul_output_limb_8_col145.clone(),
-                partial_ec_mul_output_limb_9_col146.clone(),
-                partial_ec_mul_output_limb_10_col147.clone(),
-                partial_ec_mul_output_limb_11_col148.clone(),
-                partial_ec_mul_output_limb_12_col149.clone(),
-                partial_ec_mul_output_limb_13_col150.clone(),
-                partial_ec_mul_output_limb_14_col151.clone(),
-                partial_ec_mul_output_limb_15_col152.clone(),
-                partial_ec_mul_output_limb_16_col153.clone(),
-                partial_ec_mul_output_limb_17_col154.clone(),
-                partial_ec_mul_output_limb_18_col155.clone(),
-                partial_ec_mul_output_limb_19_col156.clone(),
-                partial_ec_mul_output_limb_20_col157.clone(),
-                partial_ec_mul_output_limb_21_col158.clone(),
-                partial_ec_mul_output_limb_22_col159.clone(),
-                partial_ec_mul_output_limb_23_col160.clone(),
-                partial_ec_mul_output_limb_24_col161.clone(),
-                partial_ec_mul_output_limb_25_col162.clone(),
-                partial_ec_mul_output_limb_26_col163.clone(),
-                partial_ec_mul_output_limb_27_col164.clone(),
-                partial_ec_mul_output_limb_28_col165.clone(),
-                partial_ec_mul_output_limb_29_col166.clone(),
-                partial_ec_mul_output_limb_30_col167.clone(),
-                partial_ec_mul_output_limb_31_col168.clone(),
-                partial_ec_mul_output_limb_32_col169.clone(),
-                partial_ec_mul_output_limb_33_col170.clone(),
-                partial_ec_mul_output_limb_34_col171.clone(),
-                partial_ec_mul_output_limb_35_col172.clone(),
-                partial_ec_mul_output_limb_36_col173.clone(),
-                partial_ec_mul_output_limb_37_col174.clone(),
-                partial_ec_mul_output_limb_38_col175.clone(),
-                partial_ec_mul_output_limb_39_col176.clone(),
-                partial_ec_mul_output_limb_40_col177.clone(),
-                partial_ec_mul_output_limb_41_col178.clone(),
-                partial_ec_mul_output_limb_42_col179.clone(),
-                partial_ec_mul_output_limb_43_col180.clone(),
-                partial_ec_mul_output_limb_44_col181.clone(),
-                partial_ec_mul_output_limb_45_col182.clone(),
-                partial_ec_mul_output_limb_46_col183.clone(),
-                partial_ec_mul_output_limb_47_col184.clone(),
-                partial_ec_mul_output_limb_48_col185.clone(),
-                partial_ec_mul_output_limb_49_col186.clone(),
-                partial_ec_mul_output_limb_50_col187.clone(),
-                partial_ec_mul_output_limb_51_col188.clone(),
-                partial_ec_mul_output_limb_52_col189.clone(),
-                partial_ec_mul_output_limb_53_col190.clone(),
-                partial_ec_mul_output_limb_54_col191.clone(),
-                partial_ec_mul_output_limb_55_col192.clone(),
-                partial_ec_mul_output_limb_56_col193.clone(),
-                partial_ec_mul_output_limb_57_col194.clone(),
-                partial_ec_mul_output_limb_58_col195.clone(),
-                partial_ec_mul_output_limb_59_col196.clone(),
-                partial_ec_mul_output_limb_60_col197.clone(),
-                partial_ec_mul_output_limb_61_col198.clone(),
-                partial_ec_mul_output_limb_62_col199.clone(),
-                partial_ec_mul_output_limb_63_col200.clone(),
-                partial_ec_mul_output_limb_64_col201.clone(),
-                partial_ec_mul_output_limb_65_col202.clone(),
-                partial_ec_mul_output_limb_66_col203.clone(),
-                partial_ec_mul_output_limb_67_col204.clone(),
-                partial_ec_mul_output_limb_68_col205.clone(),
-                partial_ec_mul_output_limb_69_col206.clone(),
-                partial_ec_mul_output_limb_70_col207.clone(),
-            ],
-        ));
-
-        let partial_ec_mul_chain_id_tmp_d00c6_34 =
-            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_2.clone()));
-        eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
-            -E::EF::one(),
-            &[
-                partial_ec_mul_chain_id_tmp_d00c6_34.clone(),
-                M31_0.clone(),
-                M31_3670032.clone(),
+                partial_ec_mul_chain_id_tmp_d00c6_33.clone(),
+                M31_14.clone(),
                 (value_limb_0_col30.clone() + (value_limb_1_col31.clone() * M31_512.clone())),
                 (value_limb_2_col32.clone() + (value_limb_3_col33.clone() * M31_512.clone())),
                 (value_limb_4_col34.clone() + (value_limb_5_col35.clone() * M31_512.clone())),
@@ -997,62 +762,62 @@ impl FrameworkEval for Eval {
                 (value_limb_22_col52.clone() + (value_limb_23_col53.clone() * M31_512.clone())),
                 (value_limb_24_col54.clone() + (value_limb_25_col55.clone() * M31_512.clone())),
                 (value_limb_26_col56.clone() + (ms_limb_low_col57.clone() * M31_512.clone())),
-                partial_ec_mul_output_limb_15_col152.clone(),
-                partial_ec_mul_output_limb_16_col153.clone(),
-                partial_ec_mul_output_limb_17_col154.clone(),
-                partial_ec_mul_output_limb_18_col155.clone(),
-                partial_ec_mul_output_limb_19_col156.clone(),
-                partial_ec_mul_output_limb_20_col157.clone(),
-                partial_ec_mul_output_limb_21_col158.clone(),
-                partial_ec_mul_output_limb_22_col159.clone(),
-                partial_ec_mul_output_limb_23_col160.clone(),
-                partial_ec_mul_output_limb_24_col161.clone(),
-                partial_ec_mul_output_limb_25_col162.clone(),
-                partial_ec_mul_output_limb_26_col163.clone(),
-                partial_ec_mul_output_limb_27_col164.clone(),
-                partial_ec_mul_output_limb_28_col165.clone(),
-                partial_ec_mul_output_limb_29_col166.clone(),
-                partial_ec_mul_output_limb_30_col167.clone(),
-                partial_ec_mul_output_limb_31_col168.clone(),
-                partial_ec_mul_output_limb_32_col169.clone(),
-                partial_ec_mul_output_limb_33_col170.clone(),
-                partial_ec_mul_output_limb_34_col171.clone(),
-                partial_ec_mul_output_limb_35_col172.clone(),
-                partial_ec_mul_output_limb_36_col173.clone(),
-                partial_ec_mul_output_limb_37_col174.clone(),
-                partial_ec_mul_output_limb_38_col175.clone(),
-                partial_ec_mul_output_limb_39_col176.clone(),
-                partial_ec_mul_output_limb_40_col177.clone(),
-                partial_ec_mul_output_limb_41_col178.clone(),
-                partial_ec_mul_output_limb_42_col179.clone(),
-                partial_ec_mul_output_limb_43_col180.clone(),
-                partial_ec_mul_output_limb_44_col181.clone(),
-                partial_ec_mul_output_limb_45_col182.clone(),
-                partial_ec_mul_output_limb_46_col183.clone(),
-                partial_ec_mul_output_limb_47_col184.clone(),
-                partial_ec_mul_output_limb_48_col185.clone(),
-                partial_ec_mul_output_limb_49_col186.clone(),
-                partial_ec_mul_output_limb_50_col187.clone(),
-                partial_ec_mul_output_limb_51_col188.clone(),
-                partial_ec_mul_output_limb_52_col189.clone(),
-                partial_ec_mul_output_limb_53_col190.clone(),
-                partial_ec_mul_output_limb_54_col191.clone(),
-                partial_ec_mul_output_limb_55_col192.clone(),
-                partial_ec_mul_output_limb_56_col193.clone(),
-                partial_ec_mul_output_limb_57_col194.clone(),
-                partial_ec_mul_output_limb_58_col195.clone(),
-                partial_ec_mul_output_limb_59_col196.clone(),
-                partial_ec_mul_output_limb_60_col197.clone(),
-                partial_ec_mul_output_limb_61_col198.clone(),
-                partial_ec_mul_output_limb_62_col199.clone(),
-                partial_ec_mul_output_limb_63_col200.clone(),
-                partial_ec_mul_output_limb_64_col201.clone(),
-                partial_ec_mul_output_limb_65_col202.clone(),
-                partial_ec_mul_output_limb_66_col203.clone(),
-                partial_ec_mul_output_limb_67_col204.clone(),
-                partial_ec_mul_output_limb_68_col205.clone(),
-                partial_ec_mul_output_limb_69_col206.clone(),
-                partial_ec_mul_output_limb_70_col207.clone(),
+                partial_ec_mul_output_limb_14_col136.clone(),
+                partial_ec_mul_output_limb_15_col137.clone(),
+                partial_ec_mul_output_limb_16_col138.clone(),
+                partial_ec_mul_output_limb_17_col139.clone(),
+                partial_ec_mul_output_limb_18_col140.clone(),
+                partial_ec_mul_output_limb_19_col141.clone(),
+                partial_ec_mul_output_limb_20_col142.clone(),
+                partial_ec_mul_output_limb_21_col143.clone(),
+                partial_ec_mul_output_limb_22_col144.clone(),
+                partial_ec_mul_output_limb_23_col145.clone(),
+                partial_ec_mul_output_limb_24_col146.clone(),
+                partial_ec_mul_output_limb_25_col147.clone(),
+                partial_ec_mul_output_limb_26_col148.clone(),
+                partial_ec_mul_output_limb_27_col149.clone(),
+                partial_ec_mul_output_limb_28_col150.clone(),
+                partial_ec_mul_output_limb_29_col151.clone(),
+                partial_ec_mul_output_limb_30_col152.clone(),
+                partial_ec_mul_output_limb_31_col153.clone(),
+                partial_ec_mul_output_limb_32_col154.clone(),
+                partial_ec_mul_output_limb_33_col155.clone(),
+                partial_ec_mul_output_limb_34_col156.clone(),
+                partial_ec_mul_output_limb_35_col157.clone(),
+                partial_ec_mul_output_limb_36_col158.clone(),
+                partial_ec_mul_output_limb_37_col159.clone(),
+                partial_ec_mul_output_limb_38_col160.clone(),
+                partial_ec_mul_output_limb_39_col161.clone(),
+                partial_ec_mul_output_limb_40_col162.clone(),
+                partial_ec_mul_output_limb_41_col163.clone(),
+                partial_ec_mul_output_limb_42_col164.clone(),
+                partial_ec_mul_output_limb_43_col165.clone(),
+                partial_ec_mul_output_limb_44_col166.clone(),
+                partial_ec_mul_output_limb_45_col167.clone(),
+                partial_ec_mul_output_limb_46_col168.clone(),
+                partial_ec_mul_output_limb_47_col169.clone(),
+                partial_ec_mul_output_limb_48_col170.clone(),
+                partial_ec_mul_output_limb_49_col171.clone(),
+                partial_ec_mul_output_limb_50_col172.clone(),
+                partial_ec_mul_output_limb_51_col173.clone(),
+                partial_ec_mul_output_limb_52_col174.clone(),
+                partial_ec_mul_output_limb_53_col175.clone(),
+                partial_ec_mul_output_limb_54_col176.clone(),
+                partial_ec_mul_output_limb_55_col177.clone(),
+                partial_ec_mul_output_limb_56_col178.clone(),
+                partial_ec_mul_output_limb_57_col179.clone(),
+                partial_ec_mul_output_limb_58_col180.clone(),
+                partial_ec_mul_output_limb_59_col181.clone(),
+                partial_ec_mul_output_limb_60_col182.clone(),
+                partial_ec_mul_output_limb_61_col183.clone(),
+                partial_ec_mul_output_limb_62_col184.clone(),
+                partial_ec_mul_output_limb_63_col185.clone(),
+                partial_ec_mul_output_limb_64_col186.clone(),
+                partial_ec_mul_output_limb_65_col187.clone(),
+                partial_ec_mul_output_limb_66_col188.clone(),
+                partial_ec_mul_output_limb_67_col189.clone(),
+                partial_ec_mul_output_limb_68_col190.clone(),
+                partial_ec_mul_output_limb_69_col191.clone(),
             ],
         ));
 
@@ -1060,277 +825,114 @@ impl FrameworkEval for Eval {
             &self.partial_ec_mul_lookup_elements,
             E::EF::one(),
             &[
-                partial_ec_mul_chain_id_tmp_d00c6_34.clone(),
-                M31_14.clone(),
-                partial_ec_mul_output_limb_0_col208.clone(),
-                partial_ec_mul_output_limb_1_col209.clone(),
-                partial_ec_mul_output_limb_2_col210.clone(),
-                partial_ec_mul_output_limb_3_col211.clone(),
-                partial_ec_mul_output_limb_4_col212.clone(),
-                partial_ec_mul_output_limb_5_col213.clone(),
-                partial_ec_mul_output_limb_6_col214.clone(),
-                partial_ec_mul_output_limb_7_col215.clone(),
-                partial_ec_mul_output_limb_8_col216.clone(),
-                partial_ec_mul_output_limb_9_col217.clone(),
-                partial_ec_mul_output_limb_10_col218.clone(),
-                partial_ec_mul_output_limb_11_col219.clone(),
-                partial_ec_mul_output_limb_12_col220.clone(),
-                partial_ec_mul_output_limb_13_col221.clone(),
-                partial_ec_mul_output_limb_14_col222.clone(),
-                partial_ec_mul_output_limb_15_col223.clone(),
-                partial_ec_mul_output_limb_16_col224.clone(),
-                partial_ec_mul_output_limb_17_col225.clone(),
-                partial_ec_mul_output_limb_18_col226.clone(),
-                partial_ec_mul_output_limb_19_col227.clone(),
-                partial_ec_mul_output_limb_20_col228.clone(),
-                partial_ec_mul_output_limb_21_col229.clone(),
-                partial_ec_mul_output_limb_22_col230.clone(),
-                partial_ec_mul_output_limb_23_col231.clone(),
-                partial_ec_mul_output_limb_24_col232.clone(),
-                partial_ec_mul_output_limb_25_col233.clone(),
-                partial_ec_mul_output_limb_26_col234.clone(),
-                partial_ec_mul_output_limb_27_col235.clone(),
-                partial_ec_mul_output_limb_28_col236.clone(),
-                partial_ec_mul_output_limb_29_col237.clone(),
-                partial_ec_mul_output_limb_30_col238.clone(),
-                partial_ec_mul_output_limb_31_col239.clone(),
-                partial_ec_mul_output_limb_32_col240.clone(),
-                partial_ec_mul_output_limb_33_col241.clone(),
-                partial_ec_mul_output_limb_34_col242.clone(),
-                partial_ec_mul_output_limb_35_col243.clone(),
-                partial_ec_mul_output_limb_36_col244.clone(),
-                partial_ec_mul_output_limb_37_col245.clone(),
-                partial_ec_mul_output_limb_38_col246.clone(),
-                partial_ec_mul_output_limb_39_col247.clone(),
-                partial_ec_mul_output_limb_40_col248.clone(),
-                partial_ec_mul_output_limb_41_col249.clone(),
-                partial_ec_mul_output_limb_42_col250.clone(),
-                partial_ec_mul_output_limb_43_col251.clone(),
-                partial_ec_mul_output_limb_44_col252.clone(),
-                partial_ec_mul_output_limb_45_col253.clone(),
-                partial_ec_mul_output_limb_46_col254.clone(),
-                partial_ec_mul_output_limb_47_col255.clone(),
-                partial_ec_mul_output_limb_48_col256.clone(),
-                partial_ec_mul_output_limb_49_col257.clone(),
-                partial_ec_mul_output_limb_50_col258.clone(),
-                partial_ec_mul_output_limb_51_col259.clone(),
-                partial_ec_mul_output_limb_52_col260.clone(),
-                partial_ec_mul_output_limb_53_col261.clone(),
-                partial_ec_mul_output_limb_54_col262.clone(),
-                partial_ec_mul_output_limb_55_col263.clone(),
-                partial_ec_mul_output_limb_56_col264.clone(),
-                partial_ec_mul_output_limb_57_col265.clone(),
-                partial_ec_mul_output_limb_58_col266.clone(),
-                partial_ec_mul_output_limb_59_col267.clone(),
-                partial_ec_mul_output_limb_60_col268.clone(),
-                partial_ec_mul_output_limb_61_col269.clone(),
-                partial_ec_mul_output_limb_62_col270.clone(),
-                partial_ec_mul_output_limb_63_col271.clone(),
-                partial_ec_mul_output_limb_64_col272.clone(),
-                partial_ec_mul_output_limb_65_col273.clone(),
-                partial_ec_mul_output_limb_66_col274.clone(),
-                partial_ec_mul_output_limb_67_col275.clone(),
-                partial_ec_mul_output_limb_68_col276.clone(),
-                partial_ec_mul_output_limb_69_col277.clone(),
-                partial_ec_mul_output_limb_70_col278.clone(),
-            ],
-        ));
-
-        let partial_ec_mul_chain_id_tmp_d00c6_49 =
-            eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_d00c6_17.clone() + M31_3.clone()));
-        eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
-            -E::EF::one(),
-            &[
-                partial_ec_mul_chain_id_tmp_d00c6_49.clone(),
-                M31_0.clone(),
-                M31_7340048.clone(),
-                ms_limb_high_col58.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                M31_0.clone(),
-                partial_ec_mul_output_limb_15_col223.clone(),
-                partial_ec_mul_output_limb_16_col224.clone(),
-                partial_ec_mul_output_limb_17_col225.clone(),
-                partial_ec_mul_output_limb_18_col226.clone(),
-                partial_ec_mul_output_limb_19_col227.clone(),
-                partial_ec_mul_output_limb_20_col228.clone(),
-                partial_ec_mul_output_limb_21_col229.clone(),
-                partial_ec_mul_output_limb_22_col230.clone(),
-                partial_ec_mul_output_limb_23_col231.clone(),
-                partial_ec_mul_output_limb_24_col232.clone(),
-                partial_ec_mul_output_limb_25_col233.clone(),
-                partial_ec_mul_output_limb_26_col234.clone(),
-                partial_ec_mul_output_limb_27_col235.clone(),
-                partial_ec_mul_output_limb_28_col236.clone(),
-                partial_ec_mul_output_limb_29_col237.clone(),
-                partial_ec_mul_output_limb_30_col238.clone(),
-                partial_ec_mul_output_limb_31_col239.clone(),
-                partial_ec_mul_output_limb_32_col240.clone(),
-                partial_ec_mul_output_limb_33_col241.clone(),
-                partial_ec_mul_output_limb_34_col242.clone(),
-                partial_ec_mul_output_limb_35_col243.clone(),
-                partial_ec_mul_output_limb_36_col244.clone(),
-                partial_ec_mul_output_limb_37_col245.clone(),
-                partial_ec_mul_output_limb_38_col246.clone(),
-                partial_ec_mul_output_limb_39_col247.clone(),
-                partial_ec_mul_output_limb_40_col248.clone(),
-                partial_ec_mul_output_limb_41_col249.clone(),
-                partial_ec_mul_output_limb_42_col250.clone(),
-                partial_ec_mul_output_limb_43_col251.clone(),
-                partial_ec_mul_output_limb_44_col252.clone(),
-                partial_ec_mul_output_limb_45_col253.clone(),
-                partial_ec_mul_output_limb_46_col254.clone(),
-                partial_ec_mul_output_limb_47_col255.clone(),
-                partial_ec_mul_output_limb_48_col256.clone(),
-                partial_ec_mul_output_limb_49_col257.clone(),
-                partial_ec_mul_output_limb_50_col258.clone(),
-                partial_ec_mul_output_limb_51_col259.clone(),
-                partial_ec_mul_output_limb_52_col260.clone(),
-                partial_ec_mul_output_limb_53_col261.clone(),
-                partial_ec_mul_output_limb_54_col262.clone(),
-                partial_ec_mul_output_limb_55_col263.clone(),
-                partial_ec_mul_output_limb_56_col264.clone(),
-                partial_ec_mul_output_limb_57_col265.clone(),
-                partial_ec_mul_output_limb_58_col266.clone(),
-                partial_ec_mul_output_limb_59_col267.clone(),
-                partial_ec_mul_output_limb_60_col268.clone(),
-                partial_ec_mul_output_limb_61_col269.clone(),
-                partial_ec_mul_output_limb_62_col270.clone(),
-                partial_ec_mul_output_limb_63_col271.clone(),
-                partial_ec_mul_output_limb_64_col272.clone(),
-                partial_ec_mul_output_limb_65_col273.clone(),
-                partial_ec_mul_output_limb_66_col274.clone(),
-                partial_ec_mul_output_limb_67_col275.clone(),
-                partial_ec_mul_output_limb_68_col276.clone(),
-                partial_ec_mul_output_limb_69_col277.clone(),
-                partial_ec_mul_output_limb_70_col278.clone(),
-            ],
-        ));
-
-        eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
-            E::EF::one(),
-            &[
-                partial_ec_mul_chain_id_tmp_d00c6_49.clone(),
-                M31_1.clone(),
-                partial_ec_mul_output_limb_0_col279.clone(),
-                partial_ec_mul_output_limb_1_col280.clone(),
-                partial_ec_mul_output_limb_2_col281.clone(),
-                partial_ec_mul_output_limb_3_col282.clone(),
-                partial_ec_mul_output_limb_4_col283.clone(),
-                partial_ec_mul_output_limb_5_col284.clone(),
-                partial_ec_mul_output_limb_6_col285.clone(),
-                partial_ec_mul_output_limb_7_col286.clone(),
-                partial_ec_mul_output_limb_8_col287.clone(),
-                partial_ec_mul_output_limb_9_col288.clone(),
-                partial_ec_mul_output_limb_10_col289.clone(),
-                partial_ec_mul_output_limb_11_col290.clone(),
-                partial_ec_mul_output_limb_12_col291.clone(),
-                partial_ec_mul_output_limb_13_col292.clone(),
-                partial_ec_mul_output_limb_14_col293.clone(),
-                partial_ec_mul_output_limb_15_col294.clone(),
-                partial_ec_mul_output_limb_16_col295.clone(),
-                partial_ec_mul_output_limb_17_col296.clone(),
-                partial_ec_mul_output_limb_18_col297.clone(),
-                partial_ec_mul_output_limb_19_col298.clone(),
-                partial_ec_mul_output_limb_20_col299.clone(),
-                partial_ec_mul_output_limb_21_col300.clone(),
-                partial_ec_mul_output_limb_22_col301.clone(),
-                partial_ec_mul_output_limb_23_col302.clone(),
-                partial_ec_mul_output_limb_24_col303.clone(),
-                partial_ec_mul_output_limb_25_col304.clone(),
-                partial_ec_mul_output_limb_26_col305.clone(),
-                partial_ec_mul_output_limb_27_col306.clone(),
-                partial_ec_mul_output_limb_28_col307.clone(),
-                partial_ec_mul_output_limb_29_col308.clone(),
-                partial_ec_mul_output_limb_30_col309.clone(),
-                partial_ec_mul_output_limb_31_col310.clone(),
-                partial_ec_mul_output_limb_32_col311.clone(),
-                partial_ec_mul_output_limb_33_col312.clone(),
-                partial_ec_mul_output_limb_34_col313.clone(),
-                partial_ec_mul_output_limb_35_col314.clone(),
-                partial_ec_mul_output_limb_36_col315.clone(),
-                partial_ec_mul_output_limb_37_col316.clone(),
-                partial_ec_mul_output_limb_38_col317.clone(),
-                partial_ec_mul_output_limb_39_col318.clone(),
-                partial_ec_mul_output_limb_40_col319.clone(),
-                partial_ec_mul_output_limb_41_col320.clone(),
-                partial_ec_mul_output_limb_42_col321.clone(),
-                partial_ec_mul_output_limb_43_col322.clone(),
-                partial_ec_mul_output_limb_44_col323.clone(),
-                partial_ec_mul_output_limb_45_col324.clone(),
-                partial_ec_mul_output_limb_46_col325.clone(),
-                partial_ec_mul_output_limb_47_col326.clone(),
-                partial_ec_mul_output_limb_48_col327.clone(),
-                partial_ec_mul_output_limb_49_col328.clone(),
-                partial_ec_mul_output_limb_50_col329.clone(),
-                partial_ec_mul_output_limb_51_col330.clone(),
-                partial_ec_mul_output_limb_52_col331.clone(),
-                partial_ec_mul_output_limb_53_col332.clone(),
-                partial_ec_mul_output_limb_54_col333.clone(),
-                partial_ec_mul_output_limb_55_col334.clone(),
-                partial_ec_mul_output_limb_56_col335.clone(),
-                partial_ec_mul_output_limb_57_col336.clone(),
-                partial_ec_mul_output_limb_58_col337.clone(),
-                partial_ec_mul_output_limb_59_col338.clone(),
-                partial_ec_mul_output_limb_60_col339.clone(),
-                partial_ec_mul_output_limb_61_col340.clone(),
-                partial_ec_mul_output_limb_62_col341.clone(),
-                partial_ec_mul_output_limb_63_col342.clone(),
-                partial_ec_mul_output_limb_64_col343.clone(),
-                partial_ec_mul_output_limb_65_col344.clone(),
-                partial_ec_mul_output_limb_66_col345.clone(),
-                partial_ec_mul_output_limb_67_col346.clone(),
-                partial_ec_mul_output_limb_68_col347.clone(),
-                partial_ec_mul_output_limb_69_col348.clone(),
-                partial_ec_mul_output_limb_70_col349.clone(),
+                partial_ec_mul_chain_id_tmp_d00c6_33.clone(),
+                M31_28.clone(),
+                partial_ec_mul_output_limb_0_col192.clone(),
+                partial_ec_mul_output_limb_1_col193.clone(),
+                partial_ec_mul_output_limb_2_col194.clone(),
+                partial_ec_mul_output_limb_3_col195.clone(),
+                partial_ec_mul_output_limb_4_col196.clone(),
+                partial_ec_mul_output_limb_5_col197.clone(),
+                partial_ec_mul_output_limb_6_col198.clone(),
+                partial_ec_mul_output_limb_7_col199.clone(),
+                partial_ec_mul_output_limb_8_col200.clone(),
+                partial_ec_mul_output_limb_9_col201.clone(),
+                partial_ec_mul_output_limb_10_col202.clone(),
+                partial_ec_mul_output_limb_11_col203.clone(),
+                partial_ec_mul_output_limb_12_col204.clone(),
+                partial_ec_mul_output_limb_13_col205.clone(),
+                partial_ec_mul_output_limb_14_col206.clone(),
+                partial_ec_mul_output_limb_15_col207.clone(),
+                partial_ec_mul_output_limb_16_col208.clone(),
+                partial_ec_mul_output_limb_17_col209.clone(),
+                partial_ec_mul_output_limb_18_col210.clone(),
+                partial_ec_mul_output_limb_19_col211.clone(),
+                partial_ec_mul_output_limb_20_col212.clone(),
+                partial_ec_mul_output_limb_21_col213.clone(),
+                partial_ec_mul_output_limb_22_col214.clone(),
+                partial_ec_mul_output_limb_23_col215.clone(),
+                partial_ec_mul_output_limb_24_col216.clone(),
+                partial_ec_mul_output_limb_25_col217.clone(),
+                partial_ec_mul_output_limb_26_col218.clone(),
+                partial_ec_mul_output_limb_27_col219.clone(),
+                partial_ec_mul_output_limb_28_col220.clone(),
+                partial_ec_mul_output_limb_29_col221.clone(),
+                partial_ec_mul_output_limb_30_col222.clone(),
+                partial_ec_mul_output_limb_31_col223.clone(),
+                partial_ec_mul_output_limb_32_col224.clone(),
+                partial_ec_mul_output_limb_33_col225.clone(),
+                partial_ec_mul_output_limb_34_col226.clone(),
+                partial_ec_mul_output_limb_35_col227.clone(),
+                partial_ec_mul_output_limb_36_col228.clone(),
+                partial_ec_mul_output_limb_37_col229.clone(),
+                partial_ec_mul_output_limb_38_col230.clone(),
+                partial_ec_mul_output_limb_39_col231.clone(),
+                partial_ec_mul_output_limb_40_col232.clone(),
+                partial_ec_mul_output_limb_41_col233.clone(),
+                partial_ec_mul_output_limb_42_col234.clone(),
+                partial_ec_mul_output_limb_43_col235.clone(),
+                partial_ec_mul_output_limb_44_col236.clone(),
+                partial_ec_mul_output_limb_45_col237.clone(),
+                partial_ec_mul_output_limb_46_col238.clone(),
+                partial_ec_mul_output_limb_47_col239.clone(),
+                partial_ec_mul_output_limb_48_col240.clone(),
+                partial_ec_mul_output_limb_49_col241.clone(),
+                partial_ec_mul_output_limb_50_col242.clone(),
+                partial_ec_mul_output_limb_51_col243.clone(),
+                partial_ec_mul_output_limb_52_col244.clone(),
+                partial_ec_mul_output_limb_53_col245.clone(),
+                partial_ec_mul_output_limb_54_col246.clone(),
+                partial_ec_mul_output_limb_55_col247.clone(),
+                partial_ec_mul_output_limb_56_col248.clone(),
+                partial_ec_mul_output_limb_57_col249.clone(),
+                partial_ec_mul_output_limb_58_col250.clone(),
+                partial_ec_mul_output_limb_59_col251.clone(),
+                partial_ec_mul_output_limb_60_col252.clone(),
+                partial_ec_mul_output_limb_61_col253.clone(),
+                partial_ec_mul_output_limb_62_col254.clone(),
+                partial_ec_mul_output_limb_63_col255.clone(),
+                partial_ec_mul_output_limb_64_col256.clone(),
+                partial_ec_mul_output_limb_65_col257.clone(),
+                partial_ec_mul_output_limb_66_col258.clone(),
+                partial_ec_mul_output_limb_67_col259.clone(),
+                partial_ec_mul_output_limb_68_col260.clone(),
+                partial_ec_mul_output_limb_69_col261.clone(),
             ],
         ));
 
         MemVerify::evaluate(
             [
                 (instance_addr_tmp_d00c6_0.clone() + M31_2.clone()),
-                partial_ec_mul_output_limb_15_col294.clone(),
-                partial_ec_mul_output_limb_16_col295.clone(),
-                partial_ec_mul_output_limb_17_col296.clone(),
-                partial_ec_mul_output_limb_18_col297.clone(),
-                partial_ec_mul_output_limb_19_col298.clone(),
-                partial_ec_mul_output_limb_20_col299.clone(),
-                partial_ec_mul_output_limb_21_col300.clone(),
-                partial_ec_mul_output_limb_22_col301.clone(),
-                partial_ec_mul_output_limb_23_col302.clone(),
-                partial_ec_mul_output_limb_24_col303.clone(),
-                partial_ec_mul_output_limb_25_col304.clone(),
-                partial_ec_mul_output_limb_26_col305.clone(),
-                partial_ec_mul_output_limb_27_col306.clone(),
-                partial_ec_mul_output_limb_28_col307.clone(),
-                partial_ec_mul_output_limb_29_col308.clone(),
-                partial_ec_mul_output_limb_30_col309.clone(),
-                partial_ec_mul_output_limb_31_col310.clone(),
-                partial_ec_mul_output_limb_32_col311.clone(),
-                partial_ec_mul_output_limb_33_col312.clone(),
-                partial_ec_mul_output_limb_34_col313.clone(),
-                partial_ec_mul_output_limb_35_col314.clone(),
-                partial_ec_mul_output_limb_36_col315.clone(),
-                partial_ec_mul_output_limb_37_col316.clone(),
-                partial_ec_mul_output_limb_38_col317.clone(),
-                partial_ec_mul_output_limb_39_col318.clone(),
-                partial_ec_mul_output_limb_40_col319.clone(),
-                partial_ec_mul_output_limb_41_col320.clone(),
-                partial_ec_mul_output_limb_42_col321.clone(),
+                partial_ec_mul_output_limb_14_col206.clone(),
+                partial_ec_mul_output_limb_15_col207.clone(),
+                partial_ec_mul_output_limb_16_col208.clone(),
+                partial_ec_mul_output_limb_17_col209.clone(),
+                partial_ec_mul_output_limb_18_col210.clone(),
+                partial_ec_mul_output_limb_19_col211.clone(),
+                partial_ec_mul_output_limb_20_col212.clone(),
+                partial_ec_mul_output_limb_21_col213.clone(),
+                partial_ec_mul_output_limb_22_col214.clone(),
+                partial_ec_mul_output_limb_23_col215.clone(),
+                partial_ec_mul_output_limb_24_col216.clone(),
+                partial_ec_mul_output_limb_25_col217.clone(),
+                partial_ec_mul_output_limb_26_col218.clone(),
+                partial_ec_mul_output_limb_27_col219.clone(),
+                partial_ec_mul_output_limb_28_col220.clone(),
+                partial_ec_mul_output_limb_29_col221.clone(),
+                partial_ec_mul_output_limb_30_col222.clone(),
+                partial_ec_mul_output_limb_31_col223.clone(),
+                partial_ec_mul_output_limb_32_col224.clone(),
+                partial_ec_mul_output_limb_33_col225.clone(),
+                partial_ec_mul_output_limb_34_col226.clone(),
+                partial_ec_mul_output_limb_35_col227.clone(),
+                partial_ec_mul_output_limb_36_col228.clone(),
+                partial_ec_mul_output_limb_37_col229.clone(),
+                partial_ec_mul_output_limb_38_col230.clone(),
+                partial_ec_mul_output_limb_39_col231.clone(),
+                partial_ec_mul_output_limb_40_col232.clone(),
+                partial_ec_mul_output_limb_41_col233.clone(),
             ],
-            pedersen_result_id_col350.clone(),
+            pedersen_result_id_col262.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
@@ -1363,6 +965,7 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
+            pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
             partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());

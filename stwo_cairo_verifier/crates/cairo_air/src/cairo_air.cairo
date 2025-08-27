@@ -94,7 +94,7 @@ pub type MemoryIdToBigElements = LookupElements<29>;
 
 pub type OpcodesElements = LookupElements<3>;
 
-pub type PartialEcMulElements = LookupElements<73>;
+pub type PartialEcMulElements = LookupElements<72>;
 
 pub type PedersenPointsTableElements = LookupElements<57>;
 

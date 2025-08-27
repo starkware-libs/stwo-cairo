@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 2f6e7d38
 use crate::components::subroutines::read_positive_num_bits_96::read_positive_num_bits_96_evaluate;
 use crate::prelude::*;
 
@@ -13,8 +13,7 @@ pub struct Claim {
     pub range_check96_builtin_segment_start: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -26,6 +25,10 @@ pub impl ClaimImpl of ClaimTrait {
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
         channel.mix_u64((*self.range_check96_builtin_segment_start).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 

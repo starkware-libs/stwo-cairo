@@ -10,7 +10,7 @@ use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WIN
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-type PartialEcMulState = (M31, [M31; 14], [Felt252; 2]);
+type PartialEcMulState = ([M31; 14], [Felt252; 2]);
 
 pub struct PackedPedersenPointsTable {}
 impl PackedPedersenPointsTable {
@@ -28,18 +28,17 @@ impl PartialEcMul {
     pub fn deduce_output(
         chain: M31,
         round: M31,
-        (table_offset, m_shifted, accumulator): PartialEcMulState,
+        (m_shifted, accumulator): PartialEcMulState,
     ) -> (M31, M31, PartialEcMulState) {
         let round_usize = round.0 as usize;
-        let table_offset_usize = table_offset.0 as usize;
-        assert!(round_usize < NUM_WINDOWS);
+        assert!(round_usize < 2 * NUM_WINDOWS);
 
         let accumulator_point =
             ProjectivePoint::from_affine(accumulator[0].into(), accumulator[1].into())
                 .expect("The accumulator should contain a curve point");
 
         let window_value = m_shifted[0].0 as usize;
-        let table_row = table_offset_usize + round_usize * ROWS_PER_WINDOW + window_value;
+        let table_row = round_usize * ROWS_PER_WINDOW + window_value;
         let table_point: ProjectivePoint = PEDERSEN_TABLE
             .get_row(table_row)
             .try_into()
@@ -62,11 +61,7 @@ impl PartialEcMul {
         (
             chain,
             round + M31::one(),
-            (
-                table_offset,
-                new_m_shifted,
-                [new_accumulator_x, new_accumulator_y],
-            ),
+            (new_m_shifted, [new_accumulator_x, new_accumulator_y]),
         )
     }
 }
@@ -74,16 +69,8 @@ impl PartialEcMul {
 pub struct PackedPartialEcMul {}
 impl PackedPartialEcMul {
     pub fn deduce_output(
-        input: (
-            PackedM31,
-            PackedM31,
-            (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
-        ),
-    ) -> (
-        PackedM31,
-        PackedM31,
-        (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
-    ) {
+        input: (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2])),
+    ) -> (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2])) {
         let unpacked_inputs = input.unpack();
         <_ as Pack>::pack(
             unpacked_inputs
@@ -105,15 +92,14 @@ mod tests {
     #[test]
     fn test_deduce_output() {
         let chain = M31::from_u32_unchecked(1234);
-        let round = M31::from_u32_unchecked(1);
-        let table_offset = M31::from_u32_unchecked(P2_SECTION_START as u32);
+        let round = M31::from_u32_unchecked(15);
         let mut m_shifted = [M31::from_u32_unchecked(0); 14];
         m_shifted[0] = M31::from_u32_unchecked(5678);
         m_shifted[1] = M31::from_u32_unchecked(9999);
         let accumulator = [PEDERSEN_P1.x().into(), PEDERSEN_P1.y().into()];
 
-        let (new_chain, new_round, (new_table_offset, new_m_shifted, new_accumulator)) =
-            PartialEcMul::deduce_output(chain, round, (table_offset, m_shifted, accumulator));
+        let (new_chain, new_round, (new_m_shifted, new_accumulator)) =
+            PartialEcMul::deduce_output(chain, round, (m_shifted, accumulator));
 
         let mut expected_new_m_shifted = [M31::from_u32_unchecked(0); 14];
         expected_new_m_shifted[0] = M31::from_u32_unchecked(9999);
@@ -128,7 +114,6 @@ mod tests {
 
         assert_eq!(new_chain, chain);
         assert_eq!(new_round, round + M31::from_u32_unchecked(1));
-        assert_eq!(new_table_offset, table_offset);
         assert_eq!(new_m_shifted, expected_new_m_shifted);
         assert_eq!(expected_new_accumulator.x(), new_accumulator[0].into());
         assert_eq!(expected_new_accumulator.y(), new_accumulator[1].into());
