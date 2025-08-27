@@ -100,7 +100,7 @@ pub fn test_mix_u32s() {
 
     channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
 
-    assert_eq!(channel.digest, 0x078f5cf6a2e7362b75fc1f94daeae7ebddd64e6b2db771717519af7193dfa80b);
+    assert_eq!(channel.digest, 0x06c7fc11690eb272bcc81115e801ad52de4e6271ddff3f97a2b75315e3572ced);
 }
 
 #[test]

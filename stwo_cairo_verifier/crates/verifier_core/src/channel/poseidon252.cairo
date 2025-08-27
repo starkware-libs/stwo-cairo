@@ -7,7 +7,7 @@ use stwo_verifier_utils::MemorySection;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::{pack_qm31, pow2_u64};
+use crate::utils::{add_length_padding, pack_qm31, pow2_u64};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 #[cfg(test)]
@@ -101,7 +101,11 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             for _ in data.len()..7 {
                 chunk.append(0);
             }
-            res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
+            let chunk_as_f252 = construct_f252_be(*chunk.span().try_into().unwrap());
+            // Add the length padding to the chunk. Note that `chunk_as_f252` < 2^{7 * 32}
+            // and `data.len()` < 7, so the invocation of `add_length_padding` is sound.
+            // See also the docstring of [`crate::utils::add_length_padding`].
+            res.append(add_length_padding(chunk_as_f252, data.len()));
         }
 
         self.digest = poseidon_hash_span(res.span());
