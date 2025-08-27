@@ -601,7 +601,7 @@ dependencies = [
 [[package]]
 name = "cairo-air"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "clap",
  "itertools 0.12.1",
@@ -2185,6 +2185,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "lz4_flex"
+version = "0.11.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "08ab2867e3eeeca90e844d1940eab391c9dc5228783db2ed999acbc0a9ed375a"
+
+[[package]]
 name = "matrixmultiply"
 version = "0.3.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3380,7 +3386,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "std-shims"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 
 [[package]]
 name = "string_cache"
@@ -3403,7 +3409,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
  "blake2",
  "blake3",
@@ -3432,7 +3438,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3444,7 +3450,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3455,7 +3461,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-adapter"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "bincode",
  "bytemuck",
@@ -3480,7 +3486,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-common"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3497,7 +3503,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "starknet-ff",
  "stwo",
@@ -3509,7 +3515,7 @@ dependencies = [
 [[package]]
 name = "stwo-cairo-serialize-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "quote",
  "stwo",
@@ -3519,27 +3525,27 @@ dependencies = [
 [[package]]
 name = "stwo-compact-binary"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
+ "lz4_flex",
  "starknet-ff",
+ "std-shims",
  "unsigned-varint",
- "zip 4.3.0",
 ]
 
 [[package]]
 name = "stwo-compact-binary-derive"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
  "quote",
- "stwo-compact-binary",
  "syn 2.0.104",
 ]
 
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/massalabs/stwo?rev=ba8dd1c5#ba8dd1c57ea35b1e429c86e620676a614f36c2ab"
+source = "git+https://github.com/massalabs/stwo?rev=07122e04b17a511a4f036bfa1c8971e1e556b89b#07122e04b17a511a4f036bfa1c8971e1e556b89b"
 dependencies = [
  "hashbrown 0.15.4",
  "itertools 0.12.1",
@@ -3554,7 +3560,7 @@ dependencies = [
 [[package]]
 name = "stwo_cairo_prover"
 version = "0.1.0"
-source = "git+https://github.com/massalabs/stwo-cairo?rev=fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a#fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a"
+source = "git+https://github.com/massalabs/stwo-cairo?rev=b06d3afffb802cfc699f52a70de823683a0374aa#b06d3afffb802cfc699f52a70de823683a0374aa"
 dependencies = [
  "cairo-air",
  "hex",

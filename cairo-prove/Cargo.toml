@@ -4,12 +4,12 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-stwo-cairo-adapter = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a", features = [
+stwo-cairo-adapter = { git = "https://github.com/massalabs/stwo-cairo", rev = "b06d3afffb802cfc699f52a70de823683a0374aa", features = [
     "std",
 ] }
-stwo_cairo_prover = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
-stwo-cairo-serialize = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
-cairo-air = { git = "https://github.com/massalabs/stwo-cairo", rev = "fb4cdb6b9e390b93dbfa54210b2a3b9e81b2d69a" }
+stwo_cairo_prover = { git = "https://github.com/massalabs/stwo-cairo", rev = "b06d3afffb802cfc699f52a70de823683a0374aa" }
+stwo-cairo-serialize = { git = "https://github.com/massalabs/stwo-cairo", rev = "b06d3afffb802cfc699f52a70de823683a0374aa" }
+cairo-air = { git = "https://github.com/massalabs/stwo-cairo", rev = "b06d3afffb802cfc699f52a70de823683a0374aa" }
 cairo-lang-compiler = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
