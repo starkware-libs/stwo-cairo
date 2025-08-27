@@ -77,7 +77,7 @@ use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
     PreprocessedColumnSet, PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::{Channel, ChannelImpl};
+use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;

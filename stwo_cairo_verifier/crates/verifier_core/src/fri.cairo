@@ -3,7 +3,7 @@ use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use core::num::traits::{CheckedSub, Zero};
 use stwo_verifier_utils::zip_eq::zip_eq;
-use crate::channel::{Channel, ChannelImpl};
+use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
