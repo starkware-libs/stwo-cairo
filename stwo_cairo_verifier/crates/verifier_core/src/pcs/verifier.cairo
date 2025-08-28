@@ -1,4 +1,3 @@
-use core::iter::{IntoIterator, Iterator};
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
@@ -154,7 +153,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         }
 
         // Answer FRI queries.
-        let samples = get_flattened_samples(sampled_points, sampled_values);
+        let samples = zip_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
             column_indices_per_tree_by_degree_bound,
@@ -190,26 +189,36 @@ fn get_column_log_bounds(
     degree_bounds
 }
 
-#[inline]
-fn get_flattened_samples(
-    sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-    mut sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> TreeSpan<ColumnSpan<Array<PointSample>>> {
-    let mut res = array![];
-    assert!(sampled_points.len() == sampled_values.len());
-    for (tree_points, tree_values) in sampled_points.span().into_iter().zip(sampled_values) {
-        let mut tree_samples = array![];
-        assert!(tree_points.len() == tree_values.len());
-        for (column_points, column_values) in tree_points.into_iter().zip(tree_values) {
-            let mut column_samples = array![];
-            assert!(column_points.len() == column_values.len());
-            for (point, value) in column_points.into_iter().zip(column_values) {
-                column_samples.append(PointSample { point: *point, value: *value });
-            }
 
-            tree_samples.append(column_samples);
-        }
-        res.append(tree_samples.span());
-    }
-    res.span()
+/// Given sampled  point and values by column per tree, zips them into samples by column per tree.
+#[inline]
+fn zip_samples(
+    sampled_points_by_column_per_tree: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
+    sampled_values_by_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+) -> TreeSpan<ColumnSpan<Array<PointSample>>> {
+    zip_eq(sampled_points_by_column_per_tree, sampled_values_by_column_per_tree)
+        .map(
+            |tuple: (ColumnArray<Array<CirclePoint<QM31>>>, @ColumnSpan<Span<QM31>>)| -> ColumnSpan<
+                Array<PointSample>,
+            > {
+                let (points_by_column, values_by_column) = tuple;
+                zip_eq(points_by_column, *values_by_column)
+                    .map(
+                        |tuple: (Array<CirclePoint<QM31>>, @Span<QM31>)| -> Array<PointSample> {
+                            let (points, values) = tuple;
+                            zip_eq(points, *values)
+                                .map(
+                                    |tuple: (CirclePoint<QM31>, @QM31)| {
+                                        let (point, value) = tuple;
+                                        PointSample { point, value: *value }
+                                    },
+                                )
+                                .collect()
+                        },
+                    )
+                    .collect::<ColumnArray<Array<PointSample>>>()
+                    .span()
+            },
+        )
+        .collect::<TreeArray<ColumnSpan<Array<PointSample>>>>().span()
 }
