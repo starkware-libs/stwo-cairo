@@ -3,7 +3,7 @@ use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::{
-    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_with_digest,
+    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_ids, hash_memory_section_values,
 };
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
@@ -124,8 +124,14 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn mix_memory_section(ref self: Blake2sChannel, section: MemorySection) {
-        let res = hash_memory_section_with_digest(section, self.digest.hash);
-        update_digest(ref self, Blake2sHash { hash: res });
+        let digest = self.digest.hash.unbox();
+
+        // Mix ids hash
+        let ids_hash = hash_memory_section_ids(section, digest);
+
+        // Mix values hash
+        let values_hash = hash_memory_section_values(section, ids_hash.unbox());
+        update_digest(ref self, Blake2sHash { hash: values_hash });
     }
 
     fn draw_secure_felt(ref self: Blake2sChannel) -> SecureField {
