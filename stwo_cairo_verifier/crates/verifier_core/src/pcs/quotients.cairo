@@ -255,10 +255,10 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
 
             for (column_idx, column_value) in sample_batch.columns_and_values.span() {
                 alpha = alpha * random_coeff;
-                let alpha_mul_a = alpha * neg_twice_imaginary_part(*column_value);
+                let alpha_mul_a = alpha * neg_twice_imaginary_part(column_value);
                 let alpha_mul_c = alpha * neg_dbl_im_py;
                 let alpha_mul_b = QM31Trait::fused_mul_sub(
-                    **column_value, alpha_mul_c, alpha_mul_a * *sample_batch.point.y,
+                    *column_value, alpha_mul_c, alpha_mul_a * *sample_batch.point.y,
                 );
                 alpha_mul_a_sum += alpha_mul_a.into();
                 alpha_mul_b_sum += alpha_mul_b.into();
@@ -286,7 +286,7 @@ pub struct ColumnSampleBatch {
     /// The point at which the columns are sampled.
     pub point: CirclePoint<QM31>,
     /// The sampled column indices and their values at the point.
-    pub columns_and_values: Array<(usize, @QM31)>,
+    pub columns_and_values: Array<(usize, QM31)>,
 }
 
 #[generate_trait]
@@ -301,7 +301,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
     /// -> `Z-g`. the current ordering for these columns is: [Z-g, Z].
     fn group_by_point(samples_per_column: Array<@Array<PointSample>>) -> Array<ColumnSampleBatch> {
         // Samples grouped by point.
-        let mut grouped_samples: Felt252Dict<Nullable<Array<(usize, @QM31)>>> = Default::default();
+        let mut grouped_samples: Felt252Dict<Nullable<Array<(usize, QM31)>>> = Default::default();
         let mut point_set: Array<CirclePoint<QM31>> = array![];
 
         let mut column = 0_usize;
@@ -321,7 +321,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
                     },
                     FromNullableResult::NotNull(value) => value.unbox(),
                 };
-                point_samples.append((column, sample.value));
+                point_samples.append((column, *sample.value));
                 grouped_samples = entry.finalize(NullableTrait::new(point_samples));
             }
 
