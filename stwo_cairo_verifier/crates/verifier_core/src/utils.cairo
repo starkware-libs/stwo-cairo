@@ -5,6 +5,7 @@ use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
 use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
 use crate::fields::m31::{M31, M31_SHIFT};
+use crate::fields::qm31::QM31Trait;
 use crate::{ColumnSpan, TreeSpan};
 
 
@@ -164,7 +165,7 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
     }
 }
 
-// Packs 4 BaseField values and "append" to a felt252.
+// Packs a SecureField value (presented as 4 BaseField values) and "append" to a felt252.
 // The resulting felt252 is: cur || x0 || x1 || x2 || x3.
 pub fn pack_qm31(cur: felt252, values: [M31; 4]) -> felt252 {
     let [x0, x1, x2, x3] = values;
