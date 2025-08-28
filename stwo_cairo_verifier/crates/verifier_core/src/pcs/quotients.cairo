@@ -158,13 +158,22 @@ fn accumulate_row_quotients(
     quotient_accumulator
 }
 
+/// Computes the denominators of the FRI quotients for a given `domain_point`
+/// (corresponding to a query index).
+///
+/// For each `sample_point` the value at `domain_point` of the line
+/// passing through `(sample_point, conj(sample_point))`.
+///
+/// Conjugation is taken coordinate-wise conjugation with respect to CM31.
 fn quotient_denominator_inverses(
     sample_batches: Span<ColumnSampleBatch>, domain_point: CirclePoint<M31>,
 ) -> Array<CM31> {
     let mut denominators = array![];
 
     for sample_batch in sample_batches {
-        // Extract Pr, Pi.
+        // For a sample point `P: CirclePoint<QM31>` compute its real part Pr and its imaginary part
+        // Pi, both of type `CirclePoint<CM31>` (i.e. real and imaginary parts are with respect to
+        // CM31).
         let [a, b, c, d] = sample_batch.point.x.to_fixed_array();
         let prx = CM31Trait::pack(a.into(), b.into());
         let pix = CM31Trait::pack(c.into(), d.into());

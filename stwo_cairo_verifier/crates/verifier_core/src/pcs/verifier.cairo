@@ -88,6 +88,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             );
     }
 
+    /// Verifies that `proof.sampled_values` corresponds to the evaluations
+    /// of the committed polynomials at `sampled_points`.
+    ///
+    /// For each column of the trace, `sampled_points` contains translations
+    /// of the OOD point by a multiple of the coset step corresponding
+    /// to that column.
     fn verify_values(
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
