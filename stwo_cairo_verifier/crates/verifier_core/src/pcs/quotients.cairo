@@ -37,6 +37,9 @@ pub fn fri_answers(
     mut queried_values: TreeSpan<Span<M31>>,
 ) -> Array<Span<QM31>> {
     let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
+    // Check that the largest log size of a trace column is <= `M31_CIRCLE_LOG_ORDER` - 1.
+    // Note that `log_size` is equal to 1 + largest log size of a trace column (the additional 1
+    // comes from calling `len()` on `column_indices_per_tree_by_degree_bound`).
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
     let mut answers = array![];
