@@ -9,40 +9,12 @@ pub const BLAKE2S_256_INITIAL_STATE: [u32; 8] = [
     0x6B08E647, 0xBB67AE85, 0x3C6EF372, 0xA54FF53A, 0x510E527F, 0x9B05688C, 0x1F83D9AB, 0x5BE0CD19,
 ];
 
-/// Returns the hash of the memory section for packing purposes.
-pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
-    hash_memory_section_ex(section, BoxTrait::new(BLAKE2S_256_INITIAL_STATE), 0)
-}
-
-/// Returns the hash of the memory section with the channel's digest hash for mixing purposes.
-pub fn hash_memory_section_with_digest(
-    mut section: MemorySection, digest_hash: Box<[u32; 8]>,
-) -> Box<[u32; 8]> {
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let [d0, d1, d2, d3, d4, d5, d6, d7] = digest_hash.unbox();
-
-    let (buffer, byte_count) = if let Some(head) = section.pop_front() {
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
-        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7]), 64)
-    } else {
-        (BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]), 32)
-    };
-    if section.is_empty() {
-        state = blake2s_finalize(state, byte_count, buffer);
-    } else {
-        state = blake2s_compress(state, byte_count, buffer);
-        state = hash_memory_section_ex(section, state, byte_count)
-    }
-
-    state
-}
-
-/// Returns the hash of the memory section with the given initial state.
+/// Returns the hash of the memory section.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
-fn hash_memory_section_ex(
-    mut section: MemorySection, state: Box<[u32; 8]>, mut byte_count: u32,
-) -> Box<[u32; 8]> {
-    let mut state = state;
+pub fn hash_memory_section(mut section: MemorySection) -> Box<[u32; 8]> {
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
+    let mut byte_count = 0;
+
     let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
@@ -85,6 +57,16 @@ fn hash_memory_section_ex(
     blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
 }
 
+/// Returns the hash of the memory section ids.
+pub fn hash_memory_section_ids(section: MemorySection) -> Box<[u32; 8]> {
+    let mut ids = array![];
+    for entry in section {
+        let (id, _) = *entry;
+        ids.append(id);
+    }
+    hash_u32s(ids.span())
+}
+
 /// Returns the hash of the memory section after encoding it, for packing purposes.
 /// Note: this function ignores the ids and therefore assumes that the section is sorted.
 pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
@@ -93,8 +75,7 @@ pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
         let (_, val) = *entry;
         encode_felt_in_limbs_to_array(val, ref encoded_values);
     }
-    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    hash_u32s(encoded_values.span(), state)
+    hash_u32s(encoded_values.span())
 }
 
 /// Encodes a felt, represented by 8 u32 limbs in little-endian order, and appends the encoded
@@ -121,8 +102,8 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
-    let mut state = state;
+fn hash_u32s(section: Span<u32>) -> Box<[u32; 8]> {
+    let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut section = section;
 
     // Fill the buffer with the first 16 values.

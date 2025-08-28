@@ -43,7 +43,9 @@ pub trait ChannelTrait {
 
     fn mix_u32s(ref self: Channel, data: Span<u32>);
 
-    /// Mixes the values of a memory section (id-value pairs) into the channel.
+    /// Mixes a memory section (id-value pairs) into the channel.
+    /// All the ids are mixed first, then all the values, each of them in the order it appears in
+    /// the section.
     fn mix_memory_section(ref self: Channel, section: MemorySection);
 
     fn draw_secure_felt(ref self: Channel) -> SecureField;

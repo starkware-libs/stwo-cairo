@@ -3,7 +3,7 @@ use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::{
-    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_with_digest,
+    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section, hash_memory_section_ids,
 };
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
@@ -124,7 +124,22 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn mix_memory_section(ref self: Blake2sChannel, section: MemorySection) {
-        let res = hash_memory_section_with_digest(section, self.digest.hash);
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
+        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+
+        // Mix ids hash
+        let ids_hash = hash_memory_section_ids(section);
+        let [id0, id1, id2, id3, id4, id5, id6, id7] = ids_hash.unbox();
+        let msg = [d0, d1, d2, d3, d4, d5, d6, d7, id0, id1, id2, id3, id4, id5, id6, id7];
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = blake2s_finalize(state, 64, BoxImpl::new(msg))
+            .unbox();
+
+        // Mix values hash
+        let values_hash = hash_memory_section(section);
+        let [val0, val1, val2, val3, val4, val5, val6, val7] = values_hash.unbox();
+        let msg = [d0, d1, d2, d3, d4, d5, d6, d7, val0, val1, val2, val3, val4, val5, val6, val7];
+        let res = blake2s_finalize(state, 64, BoxImpl::new(msg));
+
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
