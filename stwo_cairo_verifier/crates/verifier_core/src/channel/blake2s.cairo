@@ -40,9 +40,9 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
 }
 
 pub impl Blake2sChannelImpl of ChannelTrait {
-    fn mix_root(ref self: Blake2sChannel, root: Blake2sHash) {
+    fn mix_commitment(ref self: Blake2sChannel, commitment: Blake2sHash) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
-        let [r0, r1, r2, r3, r4, r5, r6, r7] = root.hash.unbox();
+        let [r0, r1, r2, r3, r4, r5, r6, r7] = commitment.hash.unbox();
         let msg = [d0, d1, d2, d3, d4, d5, d6, d7, r0, r1, r2, r3, r4, r5, r6, r7];
         let res = blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, BoxImpl::new(msg));
         update_digest(ref self, Blake2sHash { hash: res });
