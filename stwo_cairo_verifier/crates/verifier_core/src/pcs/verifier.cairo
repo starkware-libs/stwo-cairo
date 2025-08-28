@@ -3,7 +3,7 @@ use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde};
-use crate::fri::{FriProof, FriVerifierImpl};
+use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{
     ArrayImpl, ColumnsIndicesPerTreeByDegreeBound, DictImpl, group_columns_by_degree_bound,
@@ -33,7 +33,7 @@ pub struct CommitmentSchemeProof {
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
-    pub trees: Array<MerkleVerifier<MerkleHasher>>,
+    pub trees: TreeArray<MerkleVerifier<MerkleHasher>>,
     pub config: PcsConfig,
 }
 
@@ -104,17 +104,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             fri_proof,
         } = proof;
 
-        let mut flattened_sampled_values = array![];
-
-        for sampled_values in sampled_values {
-            for column_sampled_values in *sampled_values {
-                for sampled_value in *column_sampled_values {
-                    flattened_sampled_values.append(*sampled_value);
-                };
-            };
-        }
-
-        channel.mix_felts(flattened_sampled_values.span());
+        mix_sampled_values(sampled_values, ref channel);
 
         let random_coeff = channel.draw_secure_felt();
         let fri_config = self.config.fri_config;
@@ -122,12 +112,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let column_indices_per_tree_by_degree_bound = self
             .column_indices_per_tree_by_degree_bound();
 
-        let column_log_bounds = get_column_log_bounds(column_indices_per_tree_by_degree_bound)
+        let column_log_degree_bounds = get_column_log_degree_bounds(
+            column_indices_per_tree_by_degree_bound,
+        )
             .span();
 
         // FRI commitment phase on OODS quotients.
-        let mut fri_verifier = FriVerifierImpl::commit(
-            ref channel, fri_config, fri_proof, column_log_bounds,
+        let mut fri_verifier = FriVerifierTrait::commit(
+            ref channel, fri_config, fri_proof, column_log_degree_bounds,
         );
 
         // Verify proof of work.
@@ -168,9 +160,24 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     }
 }
 
+#[inline]
+fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref channel: Channel) {
+    let mut flattened_sampled_values = array![];
+
+    for sampled_values in sampled_values {
+        for column_sampled_values in *sampled_values {
+            for sampled_value in *column_sampled_values {
+                flattened_sampled_values.append(*sampled_value);
+            };
+        };
+    }
+
+    channel.mix_felts(flattened_sampled_values.span());
+}
+
 /// Returns all column log bounds sorted in descending order.
 #[inline]
-fn get_column_log_bounds(
+fn get_column_log_degree_bounds(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
 ) -> Array<u32> {
     let mut degree_bounds = array![];
