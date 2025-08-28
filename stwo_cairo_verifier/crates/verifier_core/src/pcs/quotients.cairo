@@ -238,8 +238,6 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
         let mut point_constants = array![];
 
         for sample_batch in sample_batches_by_point.span() {
-            // TODO(ShaharS): Add salt. This assertion will fail at a probability of 1 to 2^62.
-            // Use a better solution.
             assert!(
                 *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
                 "Cannot evaluate a line with a single point ({:?}).",

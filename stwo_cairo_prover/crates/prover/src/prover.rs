@@ -23,8 +23,7 @@ pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
+    prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
@@ -32,6 +31,12 @@ where
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
     // because we compute on a half-coset, and account for blowup factor.
+    let ProverParameters {
+        channel_hash: _,
+        pcs_config,
+        preprocessed_trace,
+        channel_salt,
+    } = prover_params;
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
             .circle_domain()
@@ -40,6 +45,9 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
@@ -120,6 +128,7 @@ where
         interaction_pow,
         interaction_claim,
         stark_proof: proof,
+        channel_salt,
     })
 }
 
@@ -139,6 +148,11 @@ pub struct ProverParameters {
     pub pcs_config: PcsConfig,
     /// Preprocessed trace.
     pub preprocessed_trace: PreProcessedTraceVariant,
+    /// Optional salt for the channel initialization. If `None`, no salt is used.
+    /// Note that the salt is only used to allow recomputation of the proof with other drawals
+    /// of the randomness, in case of failure due to unprovable drawals (e.g. a zero in the
+    /// denominator).
+    pub channel_salt: Option<u64>,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -173,6 +187,7 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
             },
         },
         preprocessed_trace: PreProcessedTraceVariant::Canonical,
+        channel_salt: None,
     }
 }
 
@@ -220,6 +235,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace,
+                Some(42),
             )
             .unwrap();
 
@@ -313,6 +329,7 @@ pub mod tests {
                 input,
                 PcsConfig::default(),
                 preprocessed_trace,
+                None,
             )
             .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
@@ -330,6 +347,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 70),
                 },
                 preprocessed_trace,
+                None,
             )
             .unwrap();
 
@@ -389,6 +407,7 @@ pub mod tests {
                             input.clone(),
                             PcsConfig::default(),
                             PreProcessedTraceVariant::Canonical,
+                            None,
                         )
                         .unwrap(),
                     )
@@ -442,6 +461,7 @@ pub mod tests {
                     input,
                     PcsConfig::default(),
                     preprocessed_trace,
+                    None,
                 )
                 .unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
