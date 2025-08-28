@@ -7,7 +7,7 @@ use stwo_verifier_utils::MemorySection;
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::{pack4, pow2_u64};
+use crate::utils::{pack_qm31, pow2_u64};
 use super::{ChannelTime, ChannelTimeImpl, ChannelTrait};
 
 #[cfg(test)]
@@ -58,19 +58,19 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             match felts.multi_pop_front::<2>() {
                 Option::Some(pair) => {
                     let [x, y] = (*pair).unbox();
-                    // The first argument of `pack4` is 1 so that the felt252 that
+                    // The first argument of `pack_qm31` is 1 so that the felt252 that
                     // we will append to `res` can separate the case of a pair (x, y) of QM31
                     // with x = 0 from a singleton y (which would enter the other match arm).
                     // For any pair, the msb of the resulting felt252 is 2^248, while for
                     // any singleton, the msb of the resulting felt252 is 2^124.
                     // This also implies that we never overflow the 252-bit prime.
-                    let cur = pack4(1, x.to_fixed_array());
-                    res.append(pack4(cur, y.to_fixed_array()));
+                    let cur = pack_qm31(1, x);
+                    res.append(pack_qm31(cur, y));
                 },
                 Option::None => {
                     if !felts.is_empty() {
                         let x = felts.pop_front().unwrap();
-                        res.append(pack4(1, (*x).to_fixed_array()));
+                        res.append(pack_qm31(1, *x));
                     }
                     break;
                 },

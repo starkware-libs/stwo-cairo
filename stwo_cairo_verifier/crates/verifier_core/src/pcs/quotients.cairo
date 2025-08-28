@@ -11,7 +11,7 @@ use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, Q
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
     ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByDegreeBound, SpanImpl, bit_reverse_index,
-    pack4,
+    pack_qm31,
 };
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
@@ -362,7 +362,7 @@ pub struct PointSample {
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
         let [y_identifier, _, _, _] = key.y.to_fixed_array();
-        pack4(y_identifier.into(), (*key.x).to_fixed_array())
+        pack_qm31(y_identifier.into(), *key.x)
     }
 }
 
