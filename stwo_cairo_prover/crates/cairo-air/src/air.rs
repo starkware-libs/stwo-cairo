@@ -551,8 +551,10 @@ impl PublicMemory {
         // Mix public segments.
         public_segments.mix_into(channel);
 
-        // Mix output memory section.
-        channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
+        // Mix output memory section. All the ids are mixed first, then all the values, each of them
+        // in the order it appears in the section.
+        channel.mix_u32s(&output.iter().map(|(id, _)| *id).collect_vec());
+        channel.mix_u32s(&output.iter().flat_map(|(_, value)| *value).collect_vec());
 
         // Mix safe_ids memory section.
         for id in safe_call_ids {
