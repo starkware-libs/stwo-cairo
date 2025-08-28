@@ -1,7 +1,7 @@
-use std::io::Write;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
@@ -21,7 +21,7 @@ use stwo_cairo_prover::prover::{
 };
 use stwo_cairo_serialize::CairoSerialize;
 use stwo_cairo_utils::binary_utils::run_binary;
-use stwo_cairo_utils::file_utils::{create_file, read_to_string, IoErrorWithPath};
+use stwo_cairo_utils::file_utils::{read_to_string, IoErrorWithPath};
 use thiserror::Error;
 use tracing::{span, Level};
 
@@ -76,19 +76,11 @@ struct Args {
     /// The format of the proof output.
     /// - json: Standard JSON format (default)
     /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+    /// - binary: Binary format, compressed
     #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
     proof_format: ProofFormat,
     #[structopt(long = "verify", help = "Verify the generated proof.")]
     verify: bool,
-}
-
-#[derive(Debug, Clone, clap::ValueEnum)]
-enum ProofFormat {
-    /// Standard JSON format.
-    Json,
-    /// Array of field elements serialized as hex strings.
-    /// Compatible with `scarb execute`
-    CairoSerde,
 }
 
 #[derive(Debug, Error)]
@@ -165,30 +157,10 @@ where
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
     let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
-    let mut proof_file = create_file(&proof_path)?;
-
-    let span = span!(Level::INFO, "Serialize proof").entered();
-    match proof_format {
-        ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(&proof)?.as_bytes())?;
-        }
-        ProofFormat::CairoSerde => {
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&proof, &mut serialized);
-
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
-        }
-    }
-    span.exit();
+    serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
     if verify {
         verify_cairo::<MC>(proof, preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
-
     Ok(())
 }
