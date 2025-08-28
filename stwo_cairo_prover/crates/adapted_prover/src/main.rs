@@ -3,11 +3,9 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
-use cairo_air::PreProcessedTraceVariant;
 use clap::Parser;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
-use stwo::core::pcs::PcsConfig;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
@@ -65,9 +63,11 @@ struct Args {
     ///                 "n_queries": 70
     ///             }
     ///         },
-    ///         "preprocessed_trace": "canonical_without_pedersen"
+    ///         "preprocessed_trace": "canonical_without_pedersen",
+    ///         "channel_salt": 12345
     ///     }
     ///
+    /// The `channel_salt` field is optional. If not provided, no salt will be used.
     /// Default parameters are chosen to ensure 96 bits of security.
     #[structopt(long = "params_json")]
     params_json: Option<PathBuf>,
@@ -122,24 +122,19 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 
     log_prover_input(&vm_output);
 
-    let ProverParameters {
-        channel_hash,
-        pcs_config,
-        preprocessed_trace,
-    } = match args.params_json {
+    let prover_params: ProverParameters = match args.params_json {
         Some(path) => sonic_rs::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
-    let run_inner_fn = match channel_hash {
+    let run_inner_fn = match prover_params.channel_hash {
         ChannelHash::Blake2s => run_inner::<Blake2sMerkleChannel>,
         ChannelHash::Poseidon252 => run_inner::<Poseidon252MerkleChannel>,
     };
 
     run_inner_fn(
         vm_output,
-        pcs_config,
-        preprocessed_trace,
+        prover_params,
         args.verify,
         args.proof_path,
         args.proof_format,
@@ -153,8 +148,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
 /// Verifies the proof in case the respective flag is set.
 fn run_inner<MC: MerkleChannel>(
     vm_output: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
+    prover_params: ProverParameters,
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
@@ -164,7 +158,7 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
+    let proof = prove_cairo::<MC>(vm_output, prover_params)?;
     let mut proof_file = create_file(&proof_path)?;
 
     let span = span!(Level::INFO, "Serialize proof").entered();
@@ -186,7 +180,7 @@ where
     }
     span.exit();
     if verify {
-        verify_cairo::<MC>(proof, preprocessed_trace)?;
+        verify_cairo::<MC>(proof, prover_params.preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 
