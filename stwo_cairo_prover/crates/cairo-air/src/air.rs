@@ -551,8 +551,17 @@ impl PublicMemory {
         // Mix public segments.
         public_segments.mix_into(channel);
 
-        // Mix output memory section.
-        channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
+        // Mix output memory section, values first then ids (each in the given section's order).
+        // Total number of u32s to mix is 9 * output.len() = 1 u32 for id + 8 u32s for value per
+        // entry
+        let mut output_in_mixing_order = Vec::with_capacity(output.len() * 9);
+        let mut output_ids = Vec::with_capacity(output.len());
+        for (id, value) in output.iter() {
+            output_in_mixing_order.extend_from_slice(value);
+            output_ids.push(*id);
+        }
+        output_in_mixing_order.extend_from_slice(&output_ids);
+        channel.mix_u32s(&output_in_mixing_order);
 
         // Mix safe_ids memory section.
         for id in safe_call_ids {

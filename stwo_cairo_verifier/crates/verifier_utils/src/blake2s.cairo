@@ -90,12 +90,12 @@ pub fn hash_memory_section_with_digest(
         let [
             (first_id, [v0, v1, v2, v3, v4, v5, v6, v7]),
             (second_id, [v8, v9, v10, v11, v12, v13, v14, v15]),
-            ] =
+        ] =
             head
             .unbox();
         ids_buffer.append(first_id);
         ids_buffer.append(second_id);
-        
+
         // Append current value to the buffer without its id and compress.
         buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
         byte_count += 64;
@@ -173,7 +173,7 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>, byte_count: u32) -> Box<[
         return blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
     };
     byte_count += 64;
-    
+
     while let Some(head) = section.multi_pop_front::<16>() {
         // Compress and re-fill the buffer.
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
