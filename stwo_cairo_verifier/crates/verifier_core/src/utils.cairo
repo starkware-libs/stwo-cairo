@@ -5,7 +5,6 @@ use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
 use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
 use crate::fields::m31::{M31, M31_SHIFT};
-use crate::fields::qm31::QM31Trait;
 use crate::{ColumnSpan, TreeSpan};
 
 
