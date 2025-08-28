@@ -1672,7 +1672,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             blake: blake_interaction_claims,
             call: call_interaction_claims,
             call_rel_imm: call_rel_imm_interaction_claims,
-            generic: _, // generic opcode is not supported.
+            generic: generic_interaction_claims,
             jnz: jnz_interaction_claims,
             jnz_taken: jnz_taken_interaction_claims,
             jump: jump_interaction_claims,
@@ -1684,6 +1684,10 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             qm31: qm31_interaction_claims,
             ret: ret_interaction_claims,
         } = interaction_claim;
+
+        for _ in zip_eq(generic_claims.span(), generic_interaction_claims.span()) {
+            panic!("The generic opcode is not supported.");
+        }
 
         // Add components
         let mut add_components = array![];
