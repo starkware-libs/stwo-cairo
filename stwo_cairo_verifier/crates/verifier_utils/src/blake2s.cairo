@@ -1,5 +1,6 @@
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxTrait;
+use core::iter::Extend;
 use super::MemorySection;
 
 /// 2^31, used for encoding small felt252 values.
@@ -66,9 +67,10 @@ pub fn hash_memory_section_with_digest(
     let mut section = section;
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
     let mut byte_count = 0;
+    let mut ids_buffer = array![];
 
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest_hash.unbox();
-    let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
+    let (id, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
         byte_count += 32;
@@ -80,28 +82,38 @@ pub fn hash_memory_section_with_digest(
     };
 
     let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
+    ids_buffer.append(id);
     byte_count += 64;
+    state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
 
     while let Some(head) = section.multi_pop_front::<2>() {
-        // Append current value to the buffer without its id and compress.
-        state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let [(_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15])] =
+        let [
+            (first_id, [v0, v1, v2, v3, v4, v5, v6, v7]),
+            (second_id, [v8, v9, v10, v11, v12, v13, v14, v15]),
+            ] =
             head
             .unbox();
+        ids_buffer.append(first_id);
+        ids_buffer.append(second_id);
+        
+        // Append current value to the buffer without its id and compress.
         buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
         byte_count += 64;
-    }
-
-    // Pad buffer to blake hash message size.
-    if let Some(head) = section.pop_front() {
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
-        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
-        byte_count += 32;
     }
 
-    // Finalize hash.
-    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+    // Hash the remaining data and the all of the ids.
+    let u32_buffer = if let Some(head) = section.pop_front() {
+        let (id, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        ids_buffer.append(id);
+        let mut tmp = array![v0, v1, v2, v3, v4, v5, v6, v7];
+        tmp.extend(ids_buffer);
+        tmp
+    } else {
+        ids_buffer
+    };
+
+    hash_u32s(u32_buffer.span(), state, byte_count)
 }
 
 /// Returns the hash of the memory section after encoding it, for packing purposes.
@@ -113,7 +125,7 @@ pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
         encode_felt_in_limbs_to_array(val, ref encoded_values);
     }
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    hash_u32s(encoded_values.span(), state)
+    hash_u32s(encoded_values.span(), state, 0)
 }
 
 /// Encodes a felt, represented by 8 u32 limbs in little-endian order, and appends the encoded
@@ -140,9 +152,10 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
+fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>, byte_count: u32) -> Box<[u32; 8]> {
     let mut state = state;
     let mut section = section;
+    let mut byte_count = byte_count;
 
     // Fill the buffer with the first 16 values.
     // TODO(Gali): Use `let ... else ...` when supported.
@@ -151,15 +164,16 @@ fn hash_u32s(section: Span<u32>, state: Box<[u32; 8]>) -> Box<[u32; 8]> {
     } else {
         // Append values to the buffer and pad to blake hash message size.
         let mut buffer = array![];
-        let mut i = 0;
         buffer.append_span(section);
-        i += section.len();
+        let i = section.len();
         for _ in i..16 {
             buffer.append(0);
         }
-        return blake2s_finalize(state, i * 4, *buffer.span().try_into().unwrap());
+        byte_count += i * 4;
+        return blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
     };
-    let mut byte_count = 64;
+    byte_count += 64;
+    
     while let Some(head) = section.multi_pop_front::<16>() {
         // Compress and re-fill the buffer.
         state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
