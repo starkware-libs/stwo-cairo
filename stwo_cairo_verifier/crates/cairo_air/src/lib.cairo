@@ -131,6 +131,8 @@ pub struct CairoProof {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
 }
 
 /// The output of a verification.
@@ -181,7 +183,7 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
 }
 
 pub fn verify_cairo(proof: CairoProof) {
-    let CairoProof { claim, interaction_pow, interaction_claim, stark_proof } = proof;
+    let CairoProof { claim, interaction_pow, interaction_claim, stark_proof, channel_salt } = proof;
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
@@ -189,6 +191,9 @@ pub fn verify_cairo(proof: CairoProof) {
     verify_claim(@claim);
 
     let mut channel: Channel = Default::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
     pcs_config.mix_into(ref channel);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(pcs_config);
 
@@ -206,7 +211,7 @@ pub fn verify_cairo(proof: CairoProof) {
     ] =
         commitments
         .unbox();
-
+    
     // Unpack claim.log_sizes().
     let log_sizes: @Box<[Span<u32>; 3]> = claim.log_sizes().span().try_into().unwrap();
     let [preprocessed_log_size, trace_log_size, interaction_trace_log_size] = log_sizes.unbox();
