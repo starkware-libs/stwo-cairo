@@ -61,8 +61,8 @@ fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: Pr
 
 fn handle_verify(proof: &Path, with_pedersen: bool) {
     info!("Verifying proof from: {:?}", proof);
-    let cairo_proof =
-        serde_json::from_reader(std::fs::File::open(proof.to_str().unwrap()).unwrap()).unwrap();
+    let proof_str = std::fs::read_to_string(proof.to_str().unwrap()).expect("Failed to read proof");
+    let cairo_proof = serde_json::from_str(&proof_str).expect("Failed to parse proof");
     let preprocessed_trace = match with_pedersen {
         true => PreProcessedTraceVariant::Canonical,
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
