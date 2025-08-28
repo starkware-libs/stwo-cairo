@@ -362,7 +362,7 @@ pub struct PointSample {
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
         let [y_identifier, _, _, _] = key.y.to_fixed_array();
-        pack_qm31(y_identifier.into(), (*key.x).to_fixed_array())
+        pack_qm31(y_identifier.into(), *key.x)
     }
 }
 

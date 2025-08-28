@@ -4,9 +4,10 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedF
 use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
 use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
-use crate::fields::m31::{M31, M31_SHIFT};
+use crate::fields::SecureField;
+use crate::fields::m31::M31_SHIFT;
+use crate::fields::qm31::QM31Trait;
 use crate::{ColumnSpan, TreeSpan};
-
 
 /// Returns `2^n`, n in range [0, 32).
 /// Will panic (with index out of bounds) if n >= 32.
@@ -164,10 +165,11 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
     }
 }
 
-// Packs a SecureField value (presented as 4 BaseField values) and "append" to a felt252.
+// Packs a SecureField value into a felt252, injecting `cur` into
+// the most significant bits.
 // The resulting felt252 is: cur || x0 || x1 || x2 || x3.
-pub fn pack_qm31(cur: felt252, values: [M31; 4]) -> felt252 {
-    let [x0, x1, x2, x3] = values;
+pub fn pack_qm31(cur: felt252, secure_felt: SecureField) -> felt252 {
+    let [x0, x1, x2, x3] = secure_felt.to_fixed_array();
     (((cur * M31_SHIFT + x0.into()) * M31_SHIFT + x1.into()) * M31_SHIFT + x2.into()) * M31_SHIFT
         + x3.into()
 }

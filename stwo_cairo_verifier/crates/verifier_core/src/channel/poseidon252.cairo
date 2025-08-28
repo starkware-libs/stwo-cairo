@@ -64,13 +64,13 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
                     // For any pair, the msb of the resulting felt252 is 2^248, while for
                     // any singleton, the msb of the resulting felt252 is 2^124.
                     // This also implies that we never overflow the 252-bit prime.
-                    let cur = pack_qm31(1, x.to_fixed_array());
-                    res.append(pack_qm31(cur, y.to_fixed_array()));
+                    let cur = pack_qm31(1, x);
+                    res.append(pack_qm31(cur, y));
                 },
                 Option::None => {
                     if !felts.is_empty() {
                         let x = felts.pop_front().unwrap();
-                        res.append(pack_qm31(1, (*x).to_fixed_array()));
+                        res.append(pack_qm31(1, *x));
                     }
                     break;
                 },
