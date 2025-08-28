@@ -23,8 +23,7 @@ pub(crate) const LOG_MAX_ROWS: u32 = 26;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
+    prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
@@ -32,6 +31,12 @@ where
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
     // because we compute on a half-coset, and account for blowup factor.
+    let ProverParameters {
+        channel_hash: _,
+        channel_salt,
+        pcs_config,
+        preprocessed_trace,
+    } = prover_params;
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
             .circle_domain()
@@ -40,6 +45,9 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
@@ -120,6 +128,7 @@ where
         interaction_pow,
         interaction_claim,
         stark_proof: proof,
+        channel_salt,
     })
 }
 
@@ -135,6 +144,11 @@ pub struct ProverConfig {
 pub struct ProverParameters {
     /// Channel hash function.
     pub channel_hash: ChannelHash,
+    /// Optional salt for the channel initialization. If `None`, no salt is used.
+    /// Note that the salt is only used to allow recomputation of the proof with other drawals
+    /// of the randomness, in case of failure due to unprovable drawals (e.g. a zero in the
+    /// denominator).
+    pub channel_salt: Option<u64>,
     /// Parameters of the commitment scheme.
     pub pcs_config: PcsConfig,
     /// Preprocessed trace.
@@ -159,6 +173,7 @@ pub enum ChannelHash {
 pub fn default_prod_prover_parameters() -> ProverParameters {
     ProverParameters {
         channel_hash: ChannelHash::Blake2s,
+        channel_salt: None,
         pcs_config: PcsConfig {
             // Stay within 500ms on M3.
             pow_bits: 26,
@@ -206,22 +221,23 @@ pub mod tests {
         use test_log::test;
 
         use super::*;
-        use crate::prover::prove_cairo;
+        use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_ret_opcode");
             let input = run_program_and_adapter(&compiled_program, None);
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
-                input,
-                PcsConfig {
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Poseidon252,
+                pcs_config: PcsConfig {
                     pow_bits: 10,
                     fri_config: FriConfig::new(0, 1, 90),
                 },
-                preprocessed_trace,
-            )
-            .unwrap();
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: Some(42),
+            };
+            let cairo_proof =
+                prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
 
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
@@ -288,7 +304,9 @@ pub mod tests {
 
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
-        use crate::prover::{prove_cairo, PreProcessedTraceVariant, ProverInput};
+        use crate::prover::{
+            prove_cairo, ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters,
+        };
 
         // TODO(Ohad): fine-grained constraints tests.
         #[test]
@@ -308,30 +326,31 @@ pub mod tests {
                     "{opcode} isn't used in E2E full-Cairo opcode test"
                 );
             }
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                input,
-                PcsConfig::default(),
-                preprocessed_trace,
-            )
-            .unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig::default(),
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: None,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
+                .unwrap();
         }
 
         #[test]
         fn test_e2e_prove_cairo_verify_all_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
             let input = run_program_and_adapter(&compiled_program, None);
-            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                input,
-                PcsConfig {
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig {
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70),
                 },
-                preprocessed_trace,
-            )
-            .unwrap();
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: None,
+            };
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
 
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
@@ -381,16 +400,16 @@ pub mod tests {
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
             let compiled_program = get_test_program(path);
             let input = run_program_and_adapter(&compiled_program, None);
-
+            let prover_params = ProverParameters {
+                channel_hash: ChannelHash::Blake2s,
+                pcs_config: PcsConfig::default(),
+                preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                channel_salt: None,
+            };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
                     sonic_rs::to_string(
-                        &prove_cairo::<Blake2sMerkleChannel>(
-                            input.clone(),
-                            PcsConfig::default(),
-                            PreProcessedTraceVariant::Canonical,
-                        )
-                        .unwrap(),
+                        &prove_cairo::<Blake2sMerkleChannel>(input.clone(), prover_params).unwrap(),
                     )
                     .unwrap()
                 })
@@ -412,6 +431,7 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use dev_utils::utils::run_program_and_adapter;
+            use stwo::core::pcs::PcsConfig;
             use test_log::test;
 
             use super::*;
@@ -437,14 +457,16 @@ pub mod tests {
                 let compiled_program = get_test_program("test_prove_verify_all_builtins");
                 let input = run_program_and_adapter(&compiled_program, None);
                 assert_all_builtins_in_input(&input);
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig::default(),
+                    preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                    channel_salt: None,
+                };
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
+                    .unwrap();
             }
 
             #[test]
