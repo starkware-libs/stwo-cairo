@@ -16,15 +16,14 @@ use crate::utils::{
 #[test]
 fn test_fri_answers_for_log_size() {
     let log_size = 5;
-    let p0 = qm31_circle_gen();
-    let p1 = p0 + qm31_circle_gen();
-    let p2 = p1 + qm31_circle_gen();
-    let sample0 = PointSample { point: p0, value: qm31_const::<0, 1, 2, 3>() };
-    let sample1 = PointSample { point: p1, value: qm31_const::<1, 2, 3, 4>() };
-    let sample2 = PointSample { point: p2, value: qm31_const::<2, 3, 4, 5>() };
-    let col0_samples = array![sample0, sample1, sample2];
+    let p = qm31_circle_gen();
+    let other_point = p + qm31_circle_gen();
+    let sample0 = PointSample { point: p, value: qm31_const::<0, 1, 2, 3>() };
+    let sample1 = PointSample { point: other_point, value: qm31_const::<1, 2, 3, 4>() };
+    let sample2 = PointSample { point: other_point, value: qm31_const::<2, 3, 4, 5>() };
+    let col0_samples = array![sample1, sample0];
     let col1_samples = array![sample0];
-    let col2_samples = array![sample0, sample2];
+    let col2_samples = array![sample2, sample0];
     let samples_by_column = array![@col0_samples, @col1_samples, @col2_samples];
     let random_coeff = qm31_const::<9, 8, 7, 6>();
     let query_positions = array![4, 5, 6, 7].span();
@@ -40,10 +39,10 @@ fn test_fri_answers_for_log_size() {
 
     assert!(
         res == array![
-            qm31_const::<1791980583, 1709376644, 1911116353, 1204412580>(),
-            qm31_const::<1417689272, 1640898968, 1760036812, 1705156550>(),
-            qm31_const::<503725777, 621939055, 1324380556, 1450763049>(),
-            qm31_const::<1895961752, 170000503, 1562444038, 1465755799>(),
+            qm31_const::<61578437, 1786925223, 1318918402, 114872297>(),
+            qm31_const::<20070776, 1123841359, 1874314579, 1630078357>(),
+            qm31_const::<761673207, 81420669, 719839772, 2033359277>(),
+            qm31_const::<686120943, 1728733569, 951723406, 2033791667>(),
         ]
             .span(),
     );
@@ -64,7 +63,7 @@ fn test_fri_answers() {
     let p1 = qm31_circle_gen() + qm31_circle_gen();
     let sample0 = PointSample { point: p0, value: qm31_const::<0, 1, 2, 3>() };
     let sample1 = PointSample { point: p1, value: qm31_const::<1, 2, 3, 4>() };
-    let col0_samples = array![sample0, sample1];
+    let col0_samples = array![sample1, sample0];
     let col1_samples = array![sample0];
     let empty_span = array![].span();
     let samples_per_column_per_tree = array![
@@ -95,6 +94,7 @@ fn test_fri_answers() {
         query_evals,
     );
 
+
     assert!(
         res == array![
             array![
@@ -113,15 +113,14 @@ fn test_fri_answers() {
 
 #[test]
 fn test_column_sample_batch_group_by_point() {
-    let p0 = qm31_circle_gen();
-    let p1 = p0 + qm31_circle_gen();
-    let p2 = p1 + qm31_circle_gen();
-    let sample0 = PointSample { point: p0, value: qm31_const::<0, 1, 2, 3>() };
-    let sample1 = PointSample { point: p1, value: qm31_const::<1, 2, 3, 4>() };
-    let sample2 = PointSample { point: p2, value: qm31_const::<2, 3, 4, 5>() };
-    let col0_samples = array![sample0, sample1, sample2];
+    let p = qm31_circle_gen();
+    let other_point = p + qm31_circle_gen();
+    let sample0 = PointSample { point: p, value: qm31_const::<0, 1, 2, 3>() };
+    let sample1 = PointSample { point: other_point, value: qm31_const::<1, 2, 3, 4>() };
+    let sample2 = PointSample { point: other_point, value: qm31_const::<2, 3, 4, 5>() };
+    let col0_samples = array![sample1, sample0];
     let col1_samples = array![sample0];
-    let col2_samples = array![sample0, sample2];
+    let col2_samples = array![sample2, sample0];
     let samples_per_column = array![@col0_samples, @col1_samples, @col2_samples];
 
     let grouped_samples = ColumnSampleBatchImpl::group_by_point(samples_per_column);
@@ -129,18 +128,15 @@ fn test_column_sample_batch_group_by_point() {
     assert!(
         grouped_samples == array![
             ColumnSampleBatch {
-                point: sample0.point,
+                point: p,
                 columns_and_values: array![
                     (0, sample0.value), (1, sample0.value), (2, sample0.value),
                 ],
             },
             ColumnSampleBatch {
-                point: sample1.point, columns_and_values: array![(0, sample1.value)],
-            },
-            ColumnSampleBatch {
-                point: sample2.point,
-                columns_and_values: array![(0, sample2.value), (2, sample2.value)],
-            },
+                point: other_point,
+                columns_and_values: array![(0, sample1.value), (2, sample2.value)],
+            }           
         ],
     )
 }
@@ -182,15 +178,14 @@ fn test_fri_answers_with_1000_columns() {
     for query_position in 0..n_queries {
         query_positions.append(query_position);
     }
-    let p0 = qm31_circle_gen();
-    let p1 = p0 + qm31_circle_gen();
-    let p2 = p1 + qm31_circle_gen();
-    let sample0 = PointSample { point: p0, value: qm31_const::<0, 1, 2, 3>() };
-    let sample1 = PointSample { point: p1, value: qm31_const::<1, 2, 3, 4>() };
-    let sample2 = PointSample { point: p2, value: qm31_const::<2, 3, 4, 5>() };
-    let col0_samples = array![sample0, sample1, sample2];
+    let p = qm31_circle_gen();
+    let other_point = p + qm31_circle_gen();
+    let sample0 = PointSample { point: p, value: qm31_const::<0, 1, 2, 3>() };
+    let sample1 = PointSample { point: other_point, value: qm31_const::<1, 2, 3, 4>() };
+    let sample2 = PointSample { point: other_point, value: qm31_const::<2, 3, 4, 5>() };
+    let col0_samples = array![sample1, sample0];
     let col1_samples = array![sample0];
-    let col2_samples = array![sample0, sample2];
+    let col2_samples = array![sample2, sample0];
     let mut samples_per_column = array![@col0_samples, @col1_samples, @col2_samples];
     let mut query_values = array![];
 
