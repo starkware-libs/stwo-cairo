@@ -129,7 +129,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 
     fn draw_secure_felt(ref self: Blake2sChannel) -> SecureField {
-        let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
+        let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self).unbox();
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
@@ -137,7 +137,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let mut res = array![];
 
         while n_felts != 0 {
-            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_random_base_felts(ref self).unbox();
+            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self).unbox();
             res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
             if n_felts == 1 {
                 break;
@@ -194,7 +194,7 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
 }
 
 // TODO: Consider just returning secure felts.
-fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
+fn draw_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
     loop {
         let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
 
