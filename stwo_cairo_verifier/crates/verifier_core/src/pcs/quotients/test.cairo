@@ -131,15 +131,15 @@ fn test_column_sample_batch_group_by_point() {
             ColumnSampleBatch {
                 point: sample0.point,
                 columns_and_values: array![
-                    (0, @sample0.value), (1, @sample0.value), (2, @sample0.value),
+                    (0, sample0.value), (1, sample0.value), (2, sample0.value),
                 ],
             },
             ColumnSampleBatch {
-                point: sample1.point, columns_and_values: array![(0, @sample1.value)],
+                point: sample1.point, columns_and_values: array![(0, sample1.value)],
             },
             ColumnSampleBatch {
                 point: sample2.point,
-                columns_and_values: array![(0, @sample2.value), (2, @sample2.value)],
+                columns_and_values: array![(0, sample2.value), (2, sample2.value)],
             },
         ],
     )
@@ -154,10 +154,10 @@ fn test_accumulate_row_quotients() {
     let p1 = qm31_circle_gen() + qm31_circle_gen();
     let sample_batches = array![
         ColumnSampleBatch {
-            point: p0, columns_and_values: array![(0, @qm31_const::<0, 1, 2, 3>())],
+            point: p0, columns_and_values: array![(0, qm31_const::<0, 1, 2, 3>())],
         },
         ColumnSampleBatch {
-            point: p1, columns_and_values: array![(1, @qm31_const::<1, 2, 3, 4>())],
+            point: p1, columns_and_values: array![(1, qm31_const::<1, 2, 3, 4>())],
         },
     ];
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches, alpha);
