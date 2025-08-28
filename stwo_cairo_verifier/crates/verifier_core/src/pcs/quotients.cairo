@@ -1,6 +1,6 @@
 use core::array::ArrayImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait};
-use core::nullable::{FromNullableResult, Nullable, NullableTrait, match_nullable, null};
+use core::dict::Felt252Dict;
+use core::nullable::Nullable;
 use core::num::traits::{One, Zero};
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
@@ -316,46 +316,55 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
     /// NOTE: PrefixSum columns (LogUp) are sampled at a single point `Z` and a single offset `-1`
     /// -> `Z-g`. the current ordering for these columns is: [Z-g, Z].
     fn group_by_point(samples_per_column: Array<@Array<PointSample>>) -> Array<ColumnSampleBatch> {
-        // Samples grouped by point.
-        let mut grouped_samples: Felt252Dict<Nullable<Array<(usize, QM31)>>> = Default::default();
-        let mut point_set: Array<CirclePoint<QM31>> = array![];
+        /// The (column index, evaluation) pairs at the out of domain point 'Z'.
+        let mut indexed_evaluations_at_point = array![];
+        /// The (column index, evaluation) pairs at the point `Z-g`.
+        let mut indexed_evaluations_at_prev_point = array![];
+        for (column_idx, samples) in samples_per_column.span().into_iter().enumerate() {
+            let samples = samples.span();
+            if let Some(point_box) = samples.try_into() {
+                let [point_sample]: [PointSample; 1] = (*point_box).unbox();
 
-        let mut column = 0_usize;
-
-        for samples in samples_per_column {
-            // TODO(andrew): Almost all columns have a single sample at the OODS point.
-            // Handling this case specifically is more optimal than using the dictionary.
-            for sample in samples.span() {
-                let point_key = CirclePointQM31Key::encode(sample.point);
-                let (entry, value) = grouped_samples.entry(point_key);
-
-                let mut point_samples = match match_nullable(value) {
-                    FromNullableResult::Null => {
-                        // This is the first time we've seen this point, add it to the point set.
-                        point_set.append(*sample.point);
-                        array![]
-                    },
-                    FromNullableResult::NotNull(value) => value.unbox(),
-                };
-                point_samples.append((column, *sample.value));
-                grouped_samples = entry.finalize(NullableTrait::new(point_samples));
+                indexed_evaluations_at_point.append((column_idx, point_sample.value));
+                continue;
+            }
+            if let Some(tuple_box) = samples.try_into() {
+                let [prev_point_sample, point_sample]: [PointSample; 2] = (*tuple_box).unbox();
+                indexed_evaluations_at_prev_point.append((column_idx, prev_point_sample.value));
+                indexed_evaluations_at_point.append((column_idx, point_sample.value));
+                continue;
             }
 
-            column += 1;
+            assert!(samples.is_empty(), "Unexpected number of samples");
         }
 
-        let mut groups = array![];
+        if let Some((two_point_sample_idx, _)) = indexed_evaluations_at_prev_point.span().first() {
+            let tuple_box = samples_per_column[*two_point_sample_idx].span().try_into().unwrap();
+            let [prev_point_sample, point_sample]: [PointSample; 2] = (*tuple_box).unbox();
 
-        for point in point_set {
-            let point_key = CirclePointQM31Key::encode(@point);
-            let (entry, columns_and_values) = grouped_samples.entry(point_key);
-            let columns_and_values = columns_and_values.deref();
-
-            grouped_samples = entry.finalize(null());
-            groups.append(ColumnSampleBatch { point, columns_and_values });
+            return array![
+                ColumnSampleBatch {
+                    point: prev_point_sample.point,
+                    columns_and_values: indexed_evaluations_at_prev_point,
+                },
+                ColumnSampleBatch {
+                    point: point_sample.point, columns_and_values: indexed_evaluations_at_point,
+                },
+            ];
         }
 
-        groups
+        if let Some((one_point_sample_idx, _)) = indexed_evaluations_at_point.span().first() {
+            let point_box = samples_per_column[*one_point_sample_idx].span().try_into().unwrap();
+            let [point_sample]: [PointSample; 1] = (*point_box).unbox();
+
+            return array![
+                ColumnSampleBatch {
+                    point: point_sample.point, columns_and_values: indexed_evaluations_at_point,
+                },
+            ];
+        }
+
+        array![]
     }
 }
 
