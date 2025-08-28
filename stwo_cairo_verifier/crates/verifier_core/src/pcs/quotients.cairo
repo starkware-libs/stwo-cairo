@@ -19,6 +19,15 @@ use crate::{ColumnSpan, TreeArray, TreeSpan};
 #[cfg(test)]
 mod test;
 
+/// An OOD sample, consisting of:
+/// - a mask point, corresponding to the OODS point at a specific column.
+/// - the value the prover sampled at this point.
+#[derive(Copy, Debug, Drop)]
+pub struct PointSample {
+    pub point: CirclePoint<QM31>,
+    pub value: QM31,
+}
+
 /// Computes the OOD quotients at the query positions.
 ///
 /// # Arguments
@@ -82,7 +91,7 @@ fn fri_answers_for_log_size(
     random_coeff: QM31,
     mut query_positions: Span<usize>,
     ref queried_values: TreeSpan<Span<M31>>,
-    n_columns: TreeArray<usize>,
+    n_columns_per_tree: TreeArray<usize>,
 ) -> Span<QM31> {
     let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches_by_point, random_coeff);
@@ -90,7 +99,7 @@ fn fri_answers_for_log_size(
     let mut quotient_evals_at_queries = array![];
 
     for query_position in query_positions {
-        let queried_values_at_row = tree_take_n(ref queried_values, n_columns.span());
+        let queried_values_at_row = tree_take_n(ref queried_values, n_columns_per_tree.span());
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
@@ -349,12 +358,6 @@ pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
     let [_, _, c, d] = v.to_fixed_array();
     let v = QM31Trait::from_fixed_array([M31Zero::zero(), M31Zero::zero(), c, d]);
     -(v + v)
-}
-
-#[derive(Copy, Debug, Drop)]
-pub struct PointSample {
-    pub point: CirclePoint<QM31>,
-    pub value: QM31,
 }
 
 /// A circle point encoding to index into [`Felt252Dict`].
