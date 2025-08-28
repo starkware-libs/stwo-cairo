@@ -45,6 +45,8 @@ pub struct CairoProof<H: MerkleHasher> {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
 }
 
 impl<H: MerkleHasher> CairoSerialize for CairoProof<H>
@@ -57,11 +59,13 @@ where
             interaction_pow,
             interaction_claim,
             stark_proof,
+            channel_salt: _,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
+        CairoSerialize::serialize(&self.channel_salt, output);
     }
 }
 
@@ -74,12 +78,13 @@ where
         let interaction_pow = CairoDeserialize::deserialize(data);
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
-
+        let channel_salt = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
+            channel_salt,
         }
     }
 }

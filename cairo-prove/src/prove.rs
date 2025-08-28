@@ -96,6 +96,7 @@ fn prove_inner(
         input,
         pcs_config,
         preprocessed_trace,
+        None,
     )
     .unwrap()
 }

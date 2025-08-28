@@ -25,6 +25,7 @@ pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     pcs_config: PcsConfig,
     preprocessed_trace: PreProcessedTraceVariant,
+    channel_salt: Option<u64>,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
@@ -40,6 +41,9 @@ where
 
     // Setup protocol.
     let channel = &mut MC::C::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
@@ -120,7 +124,8 @@ where
         interaction_pow,
         interaction_claim,
         stark_proof: proof,
-    })
+        channel_salt 
+   })
 }
 
 #[derive(Default)]
@@ -139,6 +144,10 @@ pub struct ProverParameters {
     pub pcs_config: PcsConfig,
     /// Preprocessed trace.
     pub preprocessed_trace: PreProcessedTraceVariant,
+    /// Optional salt for the channel initialization. If `None`, no salt is used.
+    /// Note that the salt is only used to allow recomputation of the proof with other drawals
+    /// of the randomness, in case of failure due to unprovable drawals (e.g. a zero in the denominator).
+    pub channel_salt: Option<u64>,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -173,6 +182,7 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
             },
         },
         preprocessed_trace: PreProcessedTraceVariant::Canonical,
+        channel_salt: None,
     }
 }
 
@@ -220,6 +230,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace,
+                None,
             )
             .unwrap();
 
@@ -313,6 +324,7 @@ pub mod tests {
                 input,
                 PcsConfig::default(),
                 preprocessed_trace,
+                None,
             )
             .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
@@ -330,6 +342,7 @@ pub mod tests {
                     fri_config: FriConfig::new(0, 1, 70),
                 },
                 preprocessed_trace,
+                None,
             )
             .unwrap();
 
@@ -389,6 +402,7 @@ pub mod tests {
                             input.clone(),
                             PcsConfig::default(),
                             PreProcessedTraceVariant::Canonical,
+                            None,
                         )
                         .unwrap(),
                     )
@@ -442,6 +456,7 @@ pub mod tests {
                     input,
                     PcsConfig::default(),
                     preprocessed_trace,
+                    None,
                 )
                 .unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();

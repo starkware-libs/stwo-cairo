@@ -57,13 +57,14 @@ pub fn create_and_serialize_generic_proof<MC: MerkleChannel>(
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
+    channel_salt: Option<u64>,
 ) -> Result<(), Error>
 where
     SimdBackend: BackendForChannel<MC>,
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
+    let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace, channel_salt)?;
 
     serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
 
@@ -86,6 +87,7 @@ pub fn create_and_serialize_proof(
         channel_hash,
         pcs_config,
         preprocessed_trace,
+        channel_salt,
     } = match proof_params_json {
         Some(path) => sonic_rs::from_str(&std::fs::read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
@@ -98,6 +100,7 @@ pub fn create_and_serialize_proof(
         bool,
         PathBuf,
         ProofFormat,
+        Option<u64>,
     ) -> Result<(), Error> = match channel_hash {
         ChannelHash::Blake2s => create_and_serialize_generic_proof::<Blake2sMerkleChannel>,
         ChannelHash::Poseidon252 => create_and_serialize_generic_proof::<Poseidon252MerkleChannel>,
@@ -110,6 +113,7 @@ pub fn create_and_serialize_proof(
         verify,
         proof_path,
         proof_format,
+        channel_salt,
     )?;
 
     Ok(())

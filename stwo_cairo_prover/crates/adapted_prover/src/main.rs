@@ -65,9 +65,11 @@ struct Args {
     ///                 "n_queries": 70
     ///             }
     ///         },
-    ///         "preprocessed_trace": "canonical_without_pedersen"
+    ///         "preprocessed_trace": "canonical_without_pedersen",
+    ///         "channel_salt": 12345
     ///     }
     ///
+    /// The `channel_salt` field is optional. If not provided, no salt will be used.
     /// Default parameters are chosen to ensure 96 bits of security.
     #[structopt(long = "params_json")]
     params_json: Option<PathBuf>,
@@ -79,7 +81,7 @@ struct Args {
     #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
     proof_format: ProofFormat,
     #[structopt(long = "verify", help = "Verify the generated proof.")]
-    verify: bool,
+    verify: bool,  
 }
 
 #[derive(Debug, Clone, clap::ValueEnum)]
@@ -126,6 +128,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         channel_hash,
         pcs_config,
         preprocessed_trace,
+        channel_salt,
     } = match args.params_json {
         Some(path) => sonic_rs::from_str(&read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
@@ -143,6 +146,7 @@ fn run(args: impl Iterator<Item = String>) -> Result<(), Error> {
         args.verify,
         args.proof_path,
         args.proof_format,
+        channel_salt,
     )?;
 
     Ok(())
@@ -158,13 +162,14 @@ fn run_inner<MC: MerkleChannel>(
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
+    channel_salt: Option<u64>,
 ) -> Result<(), Error>
 where
     SimdBackend: BackendForChannel<MC>,
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace)?;
+    let proof = prove_cairo::<MC>(vm_output, pcs_config, preprocessed_trace, channel_salt)?;
     let mut proof_file = create_file(&proof_path)?;
 
     let span = span!(Level::INFO, "Serialize proof").entered();
