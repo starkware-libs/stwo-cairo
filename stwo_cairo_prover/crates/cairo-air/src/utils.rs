@@ -1,12 +1,15 @@
 use std::fs::File;
-use std::io::Write;
-use std::path::PathBuf;
+use std::io::{Read, Write};
+use std::path::Path;
 
+use bzip2::read::BzDecoder;
+use bzip2::write::BzEncoder;
+use bzip2::Compression;
+use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
-use stwo::core::channel::MerkleChannel;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::CairoSerialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
 use crate::air::{MemorySection, PublicMemory};
@@ -26,17 +29,19 @@ pub enum ProofFormat {
     /// Array of field elements serialized as hex strings.
     /// Compatible with `scarb execute`
     CairoSerde,
+    /// Binary format.
+    /// Additionally compressed to minimize the proof size.
+    Binary,
 }
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
-pub fn serialize_proof_to_file<MC: MerkleChannel>(
-    proof: &CairoProof<MC::H>,
-    proof_path: PathBuf,
+pub fn serialize_proof_to_file<H: MerkleHasher + Serialize>(
+    proof: &CairoProof<H>,
+    proof_path: &Path,
     proof_format: ProofFormat,
 ) -> Result<(), std::io::Error>
 where
-    MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
+    H::Hash: CairoSerialize,
 {
     let span = span!(Level::INFO, "Serialize proof").entered();
 
@@ -57,10 +62,49 @@ where
 
             proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
         }
+        ProofFormat::Binary => {
+            let serialized_bytes = bincode::serialize(proof)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+
+            let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
+            bz_encoder.write_all(&serialized_bytes)?;
+            bz_encoder.finish()?;
+        }
     }
 
     span.exit();
     Ok(())
+}
+
+/// Deserializes Cairo proof from a file given the desired format.
+pub fn deserialize_proof_from_file<H: MerkleHasher + DeserializeOwned>(
+    proof_path: &Path,
+    proof_format: ProofFormat,
+) -> Result<CairoProof<H>, std::io::Error>
+where
+    H::Hash: CairoDeserialize,
+{
+    match proof_format {
+        ProofFormat::Json => {
+            let proof_str = std::fs::read_to_string(proof_path)?;
+            sonic_rs::from_str(&proof_str)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        }
+        ProofFormat::CairoSerde => {
+            let proof_str = std::fs::read_to_string(proof_path)?;
+            let felts: Vec<starknet_ff::FieldElement> = sonic_rs::from_str(&proof_str)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+            Ok(CairoDeserialize::deserialize(&mut felts.iter()))
+        }
+        ProofFormat::Binary => {
+            let proof_file = File::open(proof_path)?;
+            let mut proof_bytes = Vec::new();
+            let mut bz_decoder = BzDecoder::new(proof_file);
+            bz_decoder.read_to_end(&mut proof_bytes)?;
+            bincode::deserialize(&proof_bytes)
+                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+        }
+    }
 }
 
 /// The data associated with the Cairo proof.

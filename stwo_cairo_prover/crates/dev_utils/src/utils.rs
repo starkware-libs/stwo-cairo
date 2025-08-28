@@ -65,7 +65,7 @@ where
 {
     let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
 
-    serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
+    serialize_proof_to_file::<MC::H>(&proof, &proof_path, proof_format)?;
 
     if verify {
         verify_cairo::<MC>(proof, preprocessed_trace)?;
