@@ -112,12 +112,15 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn mix_memory_section(ref self: Poseidon252Channel, section: MemorySection) {
         // TODO(Gali): Make this more efficient, use hash_memory_section.
-        let mut flat_data = array![];
+        let mut ids = array![];
+        let mut flat_values = array![];
         for entry in section {
-            let (_, val) = entry;
-            flat_data.append_span((*val).span());
+            let (id, val) = entry;
+            ids.append(*id);
+            flat_values.append_span((*val).span());
         }
-        self.mix_u32s(flat_data.span());
+        self.mix_u32s(ids.span());
+        self.mix_u32s(flat_values.span());
     }
 
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
