@@ -6,16 +6,10 @@ use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
 use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
 use crate::fields::qm31::QM31_EXTENSION_DEGREE;
+use crate::utils::add_length_padding;
 use super::hasher::MerkleHasher;
-
 /// 8 M31 elements are packed into a hash, since 252 // 31 = 8.
 const M31_ELEMENTS_IN_HASH: usize = 8;
-
-/// Equals `(2^31)^4`.
-const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
-
-// Equals `(2^31)^8`
-const M31_SHIFT_POW_8: felt252 = M31_SHIFT_POW_4 * M31_SHIFT_POW_4;
 
 pub impl PoseidonMerkleHasher of MerkleHasher {
     type Hash = felt252;
@@ -23,17 +17,6 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
-        // Helper lambda for adding length padding to a packed word with fewer than
-        // `M31_ELEMENTS_IN_HASH` (8) elements.
-        // In this case, we encode the number of packed elements in bits [248:251] of the word.
-        // This prevents hash collisions for different-length packings.
-        //
-        // Note that M31_ELEMENTS_IN_HASH * M31_SHIFT = 248, so those bits are set to 0 when packing
-        // M31_ELEMENTS_IN_HASH elements.
-        let add_length_padding = |word, n_packed_elements| {
-            word + n_packed_elements.into() * M31_SHIFT_POW_8
-        };
-
         let mut hash_array: Array<felt252> = Default::default();
         if let Some((x, y)) = children_hashes {
             // Most often a node has no column values.
@@ -57,7 +40,10 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
                 word = word * M31_SHIFT + v2.inner.into();
                 word = word * M31_SHIFT + v3.inner.into();
 
-                // Add the length padding to the word.
+                // Add the length padding to the word. Note that `word` < 2^124
+                // and `QM31_EXTENSION_DEGREE` = 4, so the invocation of
+                // `add_length_padding` is sound.
+                // See also the docstring of [`crate::utils::add_length_padding`].
                 let padded_word = add_length_padding(word, QM31_EXTENSION_DEGREE);
                 let (hash, _, _) = hades_permutation(padded_word, 1, 0);
                 return hash;
@@ -85,7 +71,10 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             for v in column_values {
                 word = word * M31_SHIFT + (*v).inner.into();
             }
-            // Add the length padding to the word.
+            // Add the length padding to the word. Note that `word` < 2^{7*31}
+            // and `remainder_length` < 8, so the invocation of
+            // `add_length_padding` is sound.
+            // See also the docstring of [`crate::utils::add_length_padding`].
             let padded_word = add_length_padding(word, remainder_length);
             hash_array.append(padded_word);
         }

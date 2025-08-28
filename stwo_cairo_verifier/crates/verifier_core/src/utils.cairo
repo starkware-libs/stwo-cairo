@@ -9,6 +9,14 @@ use crate::fields::m31::M31_SHIFT;
 use crate::fields::qm31::QM31Trait;
 use crate::{ColumnSpan, TreeSpan};
 
+
+/// Equals `(2^31)^4`.
+const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
+
+// Equals `(2^31)^8`
+const M31_SHIFT_POW_8: felt252 = M31_SHIFT_POW_4 * M31_SHIFT_POW_4;
+
+
 /// Returns `2^n`, n in range [0, 32).
 /// Will panic (with index out of bounds) if n >= 32.
 #[inline(always)]
@@ -295,3 +303,15 @@ pub fn pad_and_transpose_columns_by_deg_bound_per_tree(
     columns_per_tree_by_deg_bound.span()
 }
 
+/// A utility function used to modify the most significant bits of a felt252.
+/// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
+/// `n_packed_elements` into the bits at indices [248:251] of `word`.
+///
+/// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
+/// of packed elements, and the resulting felt252 is fed into a hash.
+/// The purpose of this function in this case is to avoid hash collisions between different-length
+/// lists of u32s or M31s that would lead to the same packing.
+#[inline(always)]
+pub fn add_length_padding(word: felt252, n_packed_elements: usize) -> felt252 {
+    word + n_packed_elements.into() * M31_SHIFT_POW_8
+}
