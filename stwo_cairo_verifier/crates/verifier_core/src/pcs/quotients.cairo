@@ -165,7 +165,8 @@ fn quotient_denominator_inverses(
 
     for sample_batch in sample_batches {
         // For a sample point `P: CirclePoint<QM31>` compute its real part Pr and its imaginary part
-        // Pi, both of type `CirclePoint<CM31>`. Real and imaginary parts are with respect to CM31.
+        // Pi, both of type `CirclePoint<CM31>` (i.e. real and imaginary parts are with respect to
+        // CM31).
         let [a, b, c, d] = sample_batch.point.x.to_fixed_array();
         let prx = CM31Trait::pack(a.into(), b.into());
         let pix = CM31Trait::pack(c.into(), d.into());
