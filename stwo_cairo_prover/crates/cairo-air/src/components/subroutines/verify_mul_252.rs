@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 422a7d51
 use crate::components::prelude::*;
 use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::DoubleKaratsubaN7LimbMaxBound511;
 
@@ -486,7 +486,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_h_lookup_elements,
             E::EF::one(),
-            &[(k_col0.clone() + M31_262144.clone())],
+            std::slice::from_ref(&(k_col0.clone() + M31_262144.clone())),
         ));
 
         eval.add_constraint(
@@ -496,7 +496,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_lookup_elements,
             E::EF::one(),
-            &[(carry_0_col1.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_0_col1.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -506,7 +506,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_b_lookup_elements,
             E::EF::one(),
-            &[(carry_1_col2.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_1_col2.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -516,7 +516,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_c_lookup_elements,
             E::EF::one(),
-            &[(carry_2_col3.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_2_col3.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -526,7 +526,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_d_lookup_elements,
             E::EF::one(),
-            &[(carry_3_col4.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_3_col4.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -536,7 +536,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_e_lookup_elements,
             E::EF::one(),
-            &[(carry_4_col5.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_4_col5.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -546,7 +546,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_f_lookup_elements,
             E::EF::one(),
-            &[(carry_5_col6.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_5_col6.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -556,7 +556,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_g_lookup_elements,
             E::EF::one(),
-            &[(carry_6_col7.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_6_col7.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -566,7 +566,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_h_lookup_elements,
             E::EF::one(),
-            &[(carry_7_col8.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_7_col8.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -576,7 +576,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_lookup_elements,
             E::EF::one(),
-            &[(carry_8_col9.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_8_col9.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -586,7 +586,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_b_lookup_elements,
             E::EF::one(),
-            &[(carry_9_col10.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_9_col10.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -596,7 +596,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_c_lookup_elements,
             E::EF::one(),
-            &[(carry_10_col11.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_10_col11.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -606,7 +606,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_d_lookup_elements,
             E::EF::one(),
-            &[(carry_11_col12.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_11_col12.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -616,7 +616,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_e_lookup_elements,
             E::EF::one(),
-            &[(carry_12_col13.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_12_col13.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -626,7 +626,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_f_lookup_elements,
             E::EF::one(),
-            &[(carry_13_col14.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_13_col14.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -636,7 +636,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_g_lookup_elements,
             E::EF::one(),
-            &[(carry_14_col15.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_14_col15.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -646,7 +646,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_h_lookup_elements,
             E::EF::one(),
-            &[(carry_15_col16.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_15_col16.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -656,7 +656,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_lookup_elements,
             E::EF::one(),
-            &[(carry_16_col17.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_16_col17.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -666,7 +666,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_b_lookup_elements,
             E::EF::one(),
-            &[(carry_17_col18.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_17_col18.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -676,7 +676,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_c_lookup_elements,
             E::EF::one(),
-            &[(carry_18_col19.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_18_col19.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -686,7 +686,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_d_lookup_elements,
             E::EF::one(),
-            &[(carry_19_col20.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_19_col20.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -696,7 +696,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_e_lookup_elements,
             E::EF::one(),
-            &[(carry_20_col21.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_20_col21.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -707,7 +707,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_f_lookup_elements,
             E::EF::one(),
-            &[(carry_21_col22.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_21_col22.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -717,7 +717,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_g_lookup_elements,
             E::EF::one(),
-            &[(carry_22_col23.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_22_col23.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -727,7 +727,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_h_lookup_elements,
             E::EF::one(),
-            &[(carry_23_col24.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_23_col24.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -737,7 +737,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_lookup_elements,
             E::EF::one(),
-            &[(carry_24_col25.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_24_col25.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -747,7 +747,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_b_lookup_elements,
             E::EF::one(),
-            &[(carry_25_col26.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_25_col26.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(
@@ -757,7 +757,7 @@ impl VerifyMul252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_19_c_lookup_elements,
             E::EF::one(),
-            &[(carry_26_col27.clone() + M31_131072.clone())],
+            std::slice::from_ref(&(carry_26_col27.clone() + M31_131072.clone())),
         ));
 
         eval.add_constraint(

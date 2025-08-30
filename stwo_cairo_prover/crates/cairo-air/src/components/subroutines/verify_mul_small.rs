@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 422a7d51
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -25,7 +25,7 @@ impl VerifyMulSmall {
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
             E::EF::one(),
-            &[carry_1_col0.clone()],
+            std::slice::from_ref(&carry_1_col0),
         ));
 
         // carry 1 definition.
@@ -45,7 +45,7 @@ impl VerifyMulSmall {
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
             E::EF::one(),
-            &[carry_3_col1.clone()],
+            std::slice::from_ref(&carry_3_col1),
         ));
 
         // carry 3 definition.
@@ -76,7 +76,7 @@ impl VerifyMulSmall {
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
             E::EF::one(),
-            &[carry_5_col2.clone()],
+            std::slice::from_ref(&carry_5_col2),
         ));
 
         // carry 5 definition.

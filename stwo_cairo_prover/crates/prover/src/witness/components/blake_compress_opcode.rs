@@ -1,3 +1,4 @@
+// AIR version 422a7d51
 #![allow(unused_parens)]
 use cairo_air::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -118,11 +119,11 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    blake_round_state: &blake_round::ClaimGenerator,
+    blake_round_state: &mut blake_round::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-    triple_xor_32_state: &triple_xor_32::ClaimGenerator,
+    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
 ) -> (

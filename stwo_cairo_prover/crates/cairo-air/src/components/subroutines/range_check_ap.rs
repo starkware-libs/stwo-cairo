@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version 422a7d51
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -23,16 +23,16 @@ impl RangeCheckAp {
         eval.add_to_relation(RelationEntry::new(
             range_check_18_lookup_elements,
             E::EF::one(),
-            &[
-                ((range_check_ap_input.clone() - range_check_ap_bot11bits_col0.clone())
+            std::slice::from_ref(
+                &((range_check_ap_input.clone() - range_check_ap_bot11bits_col0.clone())
                     * M31_1048576.clone()),
-            ],
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
             E::EF::one(),
-            &[range_check_ap_bot11bits_col0.clone()],
+            std::slice::from_ref(&range_check_ap_bot11bits_col0),
         ));
 
         []

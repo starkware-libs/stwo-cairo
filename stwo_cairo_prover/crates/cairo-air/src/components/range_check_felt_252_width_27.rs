@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 422a7d51
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;
@@ -123,13 +123,19 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[(input_limb_0_col0.clone() - (limb_0_high_part_col10.clone() * M31_262144.clone()))],
+            std::slice::from_ref(
+                &(input_limb_0_col0.clone()
+                    - (limb_0_high_part_col10.clone() * M31_262144.clone())),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[((input_limb_1_col1.clone() - limb_1_low_part_col11.clone()) * M31_4194304.clone())],
+            std::slice::from_ref(
+                &((input_limb_1_col1.clone() - limb_1_low_part_col11.clone())
+                    * M31_4194304.clone()),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -144,13 +150,19 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_b_lookup_elements,
             E::EF::one(),
-            &[(input_limb_2_col2.clone() - (limb_2_high_part_col12.clone() * M31_262144.clone()))],
+            std::slice::from_ref(
+                &(input_limb_2_col2.clone()
+                    - (limb_2_high_part_col12.clone() * M31_262144.clone())),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[((input_limb_3_col3.clone() - limb_3_low_part_col13.clone()) * M31_4194304.clone())],
+            std::slice::from_ref(
+                &((input_limb_3_col3.clone() - limb_3_low_part_col13.clone())
+                    * M31_4194304.clone()),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -165,13 +177,19 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[(input_limb_4_col4.clone() - (limb_4_high_part_col14.clone() * M31_262144.clone()))],
+            std::slice::from_ref(
+                &(input_limb_4_col4.clone()
+                    - (limb_4_high_part_col14.clone() * M31_262144.clone())),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[((input_limb_5_col5.clone() - limb_5_low_part_col15.clone()) * M31_4194304.clone())],
+            std::slice::from_ref(
+                &((input_limb_5_col5.clone() - limb_5_low_part_col15.clone())
+                    * M31_4194304.clone()),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -186,13 +204,19 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_b_lookup_elements,
             E::EF::one(),
-            &[(input_limb_6_col6.clone() - (limb_6_high_part_col16.clone() * M31_262144.clone()))],
+            std::slice::from_ref(
+                &(input_limb_6_col6.clone()
+                    - (limb_6_high_part_col16.clone() * M31_262144.clone())),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[((input_limb_7_col7.clone() - limb_7_low_part_col17.clone()) * M31_4194304.clone())],
+            std::slice::from_ref(
+                &((input_limb_7_col7.clone() - limb_7_low_part_col17.clone())
+                    * M31_4194304.clone()),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(
@@ -204,7 +228,10 @@ impl FrameworkEval for Eval {
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
             E::EF::one(),
-            &[(input_limb_8_col8.clone() - (limb_8_high_part_col18.clone() * M31_262144.clone()))],
+            std::slice::from_ref(
+                &(input_limb_8_col8.clone()
+                    - (limb_8_high_part_col18.clone() * M31_262144.clone())),
+            ),
         ));
 
         eval.add_to_relation(RelationEntry::new(

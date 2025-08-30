@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 422a7d51
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -34,7 +34,9 @@ impl VerifyReduced252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_8_lookup_elements,
             E::EF::one(),
-            &[(verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone())],
+            std::slice::from_ref(
+                &(verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
+            ),
         ));
 
         // If the MS limb is max, high limbs should be 0.
@@ -67,7 +69,7 @@ impl VerifyReduced252 {
         eval.add_to_relation(RelationEntry::new(
             range_check_8_lookup_elements,
             E::EF::one(),
-            &[rc_input_col2.clone()],
+            std::slice::from_ref(&rc_input_col2),
         ));
 
         // If the MS and mid limbs are max, low limbs should be 0.
