@@ -1,4 +1,4 @@
-// AIR version a91e5ba8
+// AIR version bc48deaa
 use crate::components::prelude::*;
 use crate::components::subroutines::felt_252_unpack_from_27::Felt252UnpackFrom27;
 use crate::components::subroutines::mem_verify::MemVerify;

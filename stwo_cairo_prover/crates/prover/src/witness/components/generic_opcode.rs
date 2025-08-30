@@ -1,4 +1,4 @@
-// AIR version a91e5ba8
+// AIR version bc48deaa
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
 use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};

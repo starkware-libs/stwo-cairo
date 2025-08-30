@@ -1,3 +1,4 @@
+// AIR version bc48deaa
 #![allow(unused_parens)]
 use cairo_air::components::pedersen_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -103,7 +104,7 @@ fn write_trace_simd(
     pedersen_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    partial_ec_mul_state: &partial_ec_mul::ClaimGenerator,
+    partial_ec_mul_state: &mut partial_ec_mul::ClaimGenerator,
     range_check_5_4_state: &range_check_5_4::ClaimGenerator,
     range_check_8_state: &range_check_8::ClaimGenerator,
 ) -> (
@@ -217,10 +218,10 @@ fn write_trace_simd(
     .into_par_iter()
     .enumerate()
     .for_each(
-        |(row_index,(mut row, lookup_data, sub_component_inputs,))| {
+        |(row_index,(mut row, lookup_data,sub_component_inputs,))| {
             let seq = seq.packed_at(row_index);let instance_addr_tmp_d00c6_0 = ((((seq) * (M31_3))) + (PackedM31::broadcast(M31::from(pedersen_builtin_segment_start))));
 
-            //Read Split.
+            // Read Split.
 
             let memory_address_to_id_value_tmp_d00c6_1 = memory_address_to_id_state.deduce_output(instance_addr_tmp_d00c6_0);let memory_id_to_big_value_tmp_d00c6_2 = memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_d00c6_1);let value_limb_0_col0 = memory_id_to_big_value_tmp_d00c6_2.get_m31(0);
             *row[0] = value_limb_0_col0;let value_limb_1_col1 = memory_id_to_big_value_tmp_d00c6_2.get_m31(1);
@@ -737,11 +738,11 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        range_check_5_4: &relations::RangeCheck_5_4,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
-        partial_ec_mul: &relations::PartialEcMul,
-        range_check_5_4: &relations::RangeCheck_5_4,
         range_check_8: &relations::RangeCheck_8,
+        partial_ec_mul: &relations::PartialEcMul,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 

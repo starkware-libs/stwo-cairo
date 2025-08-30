@@ -1,4 +1,4 @@
-// AIR version a91e5ba8
+// AIR version bc48deaa
 use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::components::subroutines::read_split::read_split_evaluate;
 use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evaluate;

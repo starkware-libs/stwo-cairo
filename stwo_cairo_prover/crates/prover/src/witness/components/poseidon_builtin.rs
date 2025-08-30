@@ -1,3 +1,4 @@
+// AIR version bc48deaa
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -136,15 +137,15 @@ struct SubComponentInputs {
 fn write_trace_simd(
     log_size: u32,
     poseidon_builtin_segment_start: u32,
-    cube_252_state: &cube_252::ClaimGenerator,
+    cube_252_state: &mut cube_252::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    poseidon_3_partial_rounds_chain_state: &poseidon_3_partial_rounds_chain::ClaimGenerator,
-    poseidon_full_round_chain_state: &poseidon_full_round_chain::ClaimGenerator,
+    poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
+    poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    range_check_felt_252_width_27_state: &range_check_felt_252_width_27::ClaimGenerator,
+    range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -957,15 +958,15 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252: &relations::Cube252,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
-        poseidon_3_partial_rounds_chain: &relations::Poseidon3PartialRoundsChain,
         poseidon_full_round_chain: &relations::PoseidonFullRoundChain,
         range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
+        cube_252: &relations::Cube252,
         range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
-        range_check_4_4: &relations::RangeCheck_4_4,
         range_check_4_4_4_4: &relations::RangeCheck_4_4_4_4,
+        range_check_4_4: &relations::RangeCheck_4_4,
+        poseidon_3_partial_rounds_chain: &relations::Poseidon3PartialRoundsChain,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
