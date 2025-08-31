@@ -1,4 +1,4 @@
-use core::ops::AddAssign;
+use core::ops::{AddAssign, SubAssign};
 use super::super::super::super::cm31::CM31;
 use super::super::super::super::m31::{AddM31Trait, M31Trait, MulByM31Trait};
 use super::super::super::{M31, PackedUnreducedQM31Trait, QM31};
@@ -131,6 +131,13 @@ pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUn
     #[inline]
     fn add_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
         self = self + rhs
+    }
+}
+
+pub impl PackedUnreducedQM31SubAssign of SubAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
+    #[inline]
+    fn sub_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
+        self = self - rhs
     }
 }
 
