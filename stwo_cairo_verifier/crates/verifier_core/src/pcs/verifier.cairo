@@ -6,8 +6,8 @@ use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::{PointSample, fri_answers};
 use crate::utils::{
-    ArrayImpl, ColumnsIndicesPerTreeByDegreeBound, DictImpl, group_columns_by_degree_bound,
-    pad_and_transpose_columns_by_deg_bound_per_tree,
+    ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, group_columns_by_degree_bound,
+    pad_and_transpose_columns_by_log_deg_bound_per_tree,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
@@ -46,13 +46,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
     fn column_indices_per_tree_by_degree_bound(
         self: @CommitmentSchemeVerifier,
-    ) -> ColumnsIndicesPerTreeByDegreeBound {
+    ) -> ColumnsIndicesPerTreeByLogDegreeBound {
         let mut columns_by_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
             columns_by_deg_bound_per_tree.append(*tree.column_indices_by_deg_bound);
         }
 
-        pad_and_transpose_columns_by_deg_bound_per_tree(columns_by_deg_bound_per_tree.span())
+        pad_and_transpose_columns_by_log_deg_bound_per_tree(columns_by_deg_bound_per_tree.span())
     }
 
     /// Reads a Merkle root commitment for a set of columns from the prover and registers it with
@@ -184,7 +184,7 @@ fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref chan
 /// Returns all column log bounds sorted in descending order.
 #[inline]
 fn get_column_log_degree_bounds(
-    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
 ) -> Array<u32> {
     let mut degree_bounds = array![];
     let mut degree_bound = column_indices_per_tree_by_degree_bound.len();
