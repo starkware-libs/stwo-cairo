@@ -34,7 +34,9 @@ impl ChannelTimeImpl of ChannelTimeTrait {
         self.n_sent += 1;
     }
 
+    // TODO(audit): Remove this function.
     fn next_challenges(ref self: ChannelTime) {
+        // TODO(audit): Remove n_challenges.
         self.n_challenges += 1;
         self.n_sent = 0;
     }

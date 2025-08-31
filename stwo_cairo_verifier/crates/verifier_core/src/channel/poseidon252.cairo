@@ -29,6 +29,7 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
     /// Helper function to mix a single `felt252` into the channel.
     #[inline(always)]
     fn mix_felt252(ref self: Poseidon252Channel, x: felt252) {
+        // TODO(audit): Fix domain separation.
         let (s0, _, _) = hades_permutation(self.digest, x, 2);
         self.digest = s0;
         self.channel_time.next_challenges();
@@ -55,6 +56,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
                     res.append(pack_qm31(cur, y));
                 },
                 Option::None => {
+                    // TODO(audit): Use if let.
                     if !felts.is_empty() {
                         let x = felts.pop_front().unwrap();
                         res.append(pack_qm31(1, *x));
@@ -217,10 +219,11 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 /// # Panics
 ///
 /// Panics if `n_bits` >= 64.
+// TODO(audit): Don't use the digest directly, use a different hash for pow.
 fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
     let two_pow_n_bits: u128 = pow2_u64(n_bits).into();
-    let nonzero_divisor = two_pow_n_bits.try_into().unwrap();
+    let nonzero_divisor: NonZero<u128> = two_pow_n_bits.try_into().unwrap();
     let (_, r) = DivRem::div_rem(low, nonzero_divisor);
     r == 0
 }
@@ -235,13 +238,16 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
 }
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
+    // TODO(audit): Can take two of the outputs of hades_permutation.
     let (res, _, _) = hades_permutation(channel.digest, channel.channel_time.n_sent.into(), 2);
     channel.channel_time.inc_sent();
     res
 }
 
 #[inline]
+// TODO(audit): Don't work with u256, work directly with u128. Make both cases of draw_secure_felts and draw_secure_felt more efficient.
 fn extract_m31(ref num: u256) -> M31 {
+    // TODO(audit): div_rem(num, 2**31 - 1).
     let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
     num = q;
     M31Trait::reduce_u128(r.low)

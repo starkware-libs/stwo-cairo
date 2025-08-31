@@ -89,16 +89,18 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         };
 
         // Bounds are stored in descending order.
-        // TODO(andrew): There is no check that it's sorted. Add check.
         let max_column_log_bound = *column_log_bounds.first().unwrap();
 
         let mut layer_index = 0;
         let mut inner_layers = array![];
         let mut layer_log_bound = max_column_log_bound - CIRCLE_TO_LINE_FOLD_STEP;
+        // TODO(audit): Change to column_commitment_domain.first().fold_to_line().
         let mut layer_domain = LineDomainImpl::new_unchecked(
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
+        // TODO(audit): Change to for loop.
+        // TODO(audit): Rename proof to layer_proof.
         while let Some(proof) = inner_layer_proofs.pop_front() {
             channel.mix_commitment(*proof.commitment);
 
@@ -113,11 +115,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                     },
                 );
 
-            layer_log_bound = match layer_log_bound.checked_sub(FOLD_STEP) {
-                Some(layer_log_bound) => layer_log_bound,
-                None => panic!("{}", FriVerificationError::InvalidNumFriLayers),
-            };
-
+            layer_log_bound -= FOLD_STEP;
             layer_index += 1;
             layer_domain = layer_domain.double();
         }
@@ -128,7 +126,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         );
 
         assert!(
-            last_layer_poly.len() == pow2(config.log_last_layer_degree_bound),
+            last_layer_poly.log_size == config.log_last_layer_degree_bound,
             "{}",
             FriVerificationError::LastLayerDegreeInvalid,
         );
@@ -141,6 +139,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             inner_layers,
             last_layer_domain: layer_domain,
             last_layer_poly,
+            // TODO(audit): Remove queries from the struct.
             queries: None,
         }
     }

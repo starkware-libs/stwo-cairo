@@ -41,15 +41,18 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
 ) {
-    let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
+    // TODO(audit): Add another lower bound on pow bits.
     assert!(
         commitment_scheme_proof.config.security_bits() >= min_security_bits,
         "{}",
         VerificationError::SecurityBitsTooLow,
     );
+
+    // TODO(audit): Rename to composition_random_coeff.
+    let random_coeff = channel.draw_secure_felt();
 
     // Read composition polynomial commitment.
     commitment_scheme
@@ -67,6 +70,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Add the composition polynomial mask points.
     sample_points.append(ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: array![ood_point]));
 
+    // TODO(audit): Assert that the length of sampled_oods_values same as sample_points.
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
@@ -89,6 +93,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 fn extract_composition_eval(
     mask: TreeSpan<ColumnSpan<Span<QM31>>>,
 ) -> Result<QM31, InvalidOodsSampleStructure> {
+    // TODO(audit): Use panic instead of result (unwrap).
     let cols = *mask.last().ok_or(InvalidOodsSampleStructure {})?;
     let [c0, c1, c2, c3] = (*cols.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
     let [v0] = (*c0.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
