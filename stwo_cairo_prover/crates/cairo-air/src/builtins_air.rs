@@ -255,6 +255,9 @@ impl BuiltinComponents {
                         .memory_id_to_value
                         .clone(),
                     partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+                    pedersen_points_table_lookup_elements: interaction_elements
+                        .pedersen_points_table
+                        .clone(),
                     range_check_5_4_lookup_elements: interaction_elements
                         .range_checks
                         .rc_5_4

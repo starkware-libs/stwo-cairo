@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version 2f6e7d38
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
@@ -16,8 +16,7 @@ pub struct Claim {
     pub mul_mod_builtin_segment_start: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -29,6 +28,10 @@ pub impl ClaimImpl of ClaimTrait {
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
         channel.mix_u64((*self.mul_mod_builtin_segment_start).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 

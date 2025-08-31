@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version 2f6e7d38
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 2f6e7d38
 use crate::components::subroutines::triple_sum_32::triple_sum_32_evaluate;
 use crate::components::subroutines::xor_rot_32_r_12::xor_rot_32_r_12_evaluate;
 use crate::components::subroutines::xor_rot_32_r_16::xor_rot_32_r_16_evaluate;
@@ -17,8 +17,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -29,6 +28,10 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
