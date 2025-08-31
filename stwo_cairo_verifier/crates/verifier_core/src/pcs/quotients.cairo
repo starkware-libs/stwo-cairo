@@ -10,7 +10,7 @@ use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
-    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByDegreeBound, SpanImpl, bit_reverse_index,
+    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByLogDegreeBound, SpanImpl, bit_reverse_index,
     pack_qm31,
 };
 use crate::{ColumnSpan, TreeArray, TreeSpan};
@@ -36,7 +36,7 @@ pub struct PointSample {
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
 /// * `queried_values`: Evals of each column at the columns corresponding query positions.
 pub fn fri_answers(
-    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByDegreeBound,
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
     log_blowup_factor: u32,
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,

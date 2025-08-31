@@ -10,7 +10,7 @@ use crate::pcs::quotients::{
 };
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
-    DictImpl, group_columns_by_degree_bound, pad_and_transpose_columns_by_deg_bound_per_tree,
+    DictImpl, group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree,
 };
 
 #[test]
@@ -82,7 +82,8 @@ fn test_fri_answers() {
     let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()]
         .span();
 
-    let column_indices_per_tree_by_degree_bound = pad_and_transpose_columns_by_deg_bound_per_tree(
+    let column_indices_per_tree_by_degree_bound =
+        pad_and_transpose_columns_by_log_deg_bound_per_tree(
         columns_by_degree_bound_per_tree,
     );
 

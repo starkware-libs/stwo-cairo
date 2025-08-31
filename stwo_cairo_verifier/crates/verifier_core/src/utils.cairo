@@ -197,36 +197,36 @@ pub fn bit_reverse_index(mut index: usize, mut n_bits: u32) -> usize {
     result
 }
 
-/// A span in which each element relates (by index) to a degree bound.
-pub type DegreeBoundSpan<T> = Span<T>;
+/// A span in which each element relates (by index) to the log 2 of a degree bound.
+pub type LogDegreeBoundSpan<T> = Span<T>;
 
-/// Holds the columns indices by degree bound.
+/// Holds the columns indices by log degree bound.
 ///
-/// column_indices_by_degree_bound[degree_bound] is a span of the columns indices with degree bound
-/// `degree_bound`.
+/// column_indices_by_degree_bound[log_degree_bound] is a span of the columns indices with degree
+/// bound `degree_bound`.
 /// The indices in each tree are 0-based.
 ///
-pub type ColumnsIndicesByDegreeBound = DegreeBoundSpan<Span<usize>>;
+pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
 
-/// Given a span of column log sizes, Return a span of the column indices grouped by their log
-/// size.
+/// Given a span of column log degree bounds, Return a span of the column indices grouped by their
+/// log degree bound.
 ///
 /// # Arguments
 ///
-/// * `column_log_sizes`: The log sizes of the columns.
+/// * `log_degree_bound_by_column`: The degree bounds of the columns.
 ///
 /// # Returns
 ///
-/// * `columns_by_log_size`: A span where the i'th element is a span of the column indices of size
-/// 2**i.
+/// * `columns_by_log_degree_bound`: A span where the i'th element is a span of the column indices
+/// of size 2**i.
 pub fn group_columns_by_degree_bound(
-    degree_bound_by_column: ColumnSpan<u32>,
+    log_degree_bound_by_column: ColumnSpan<u32>,
 ) -> ColumnsIndicesByDegreeBound {
     let mut column_by_degree_bound = Default::default();
     let mut col_index = 0_usize;
-    for column_degree_bound in degree_bound_by_column {
+    for column_log_degree_bound in log_degree_bound_by_column {
         let (column_by_degree_bound_entry, value) = column_by_degree_bound
-            .entry((*column_degree_bound).into());
+            .entry((*column_log_degree_bound).into());
         let mut column_indices = match match_nullable(value) {
             FromNullableResult::Null => array![],
             FromNullableResult::NotNull(value) => value.unbox(),
@@ -250,30 +250,31 @@ pub fn group_columns_by_degree_bound(
 
 /// Holds the columns indices per tree by degree bound.
 ///
-/// columns_indices_per_tree_by_degree_bound[degree_bound][tree] is a span of the columns indices
-/// with degree bound `degree_bound` in the tree `tree`.
+/// columns_indices_per_tree_by_log_degree_bound[log_degree_bound][tree] is a span of the columns
+/// indices with degree bound `log_degree_bound` in the tree `tree`.
 /// The indices in each tree are 0-based.
 ///
-pub type ColumnsIndicesPerTreeByDegreeBound = DegreeBoundSpan<TreeSpan<Span<usize>>>;
+pub type ColumnsIndicesPerTreeByLogDegreeBound = LogDegreeBoundSpan<TreeSpan<Span<usize>>>;
 
-/// Pads all the trees in `columns_by_log_size_per_tree` to the length of the longest tree
-/// and transposes the arrays from [tree][log_size][column] to [log_size][tree][column].
+/// Pads all the trees in `columns_by_log_degree_bound_per_tree` to the length of the longest tree
+/// and transposes the arrays from [tree][log_degree_bound][column] to
+/// [log_degree_bound][tree][column].
 ///
 /// # Arguments
 ///
-/// * `columns_by_log_size_per_tree`: The columns by log size per tree.
+/// * `columns_by_log_degree_bound_per_tree`: The columns by log size per tree.
 ///
 /// # Returns
 ///
-/// * `columns_per_tree_by_log_size`: The columns per tree by log size.
-pub fn pad_and_transpose_columns_by_deg_bound_per_tree(
+/// * `columns_per_tree_by_log_degree_bound`: The columns per tree by log degree bound.
+pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
     mut columns_by_deg_bound_per_tree: TreeSpan<ColumnsIndicesByDegreeBound>,
-) -> ColumnsIndicesPerTreeByDegreeBound {
-    let mut columns_per_tree_by_deg_bound = array![];
+) -> ColumnsIndicesPerTreeByLogDegreeBound {
+    let mut columns_per_tree_by_log_deg_bound = array![];
 
     loop {
-        // In each iteration we pop the the columns corresponding to `log_size` from each tree, so
-        // we need to prepare `columns_by_log_size_per_tree` for the next iteration.
+        // In each iteration we pop the the columns corresponding to `log_degree_bound` from each
+        // tree, so we need to prepare `next_columns_by_deg_bound_per_tree` for the next iteration.
         let mut next_columns_by_deg_bound_per_tree = array![];
 
         let mut done = true;
@@ -297,10 +298,10 @@ pub fn pad_and_transpose_columns_by_deg_bound_per_tree(
         }
 
         columns_by_deg_bound_per_tree = next_columns_by_deg_bound_per_tree.span();
-        columns_per_tree_by_deg_bound.append(columns_per_tree.span());
+        columns_per_tree_by_log_deg_bound.append(columns_per_tree.span());
     }
 
-    columns_per_tree_by_deg_bound.span()
+    columns_per_tree_by_log_deg_bound.span()
 }
 
 /// A utility function used to modify the most significant bits of a felt252.
