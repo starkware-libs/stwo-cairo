@@ -62,6 +62,8 @@ pub trait PackedUnreducedQM31Trait {
     /// Returns a zero element with each coordinate set to `P*P*P`.
     fn large_zero() -> PackedUnreducedQM31;
 
+    fn zero() -> PackedUnreducedQM31;
+
     fn reduce(self: PackedUnreducedQM31) -> QM31;
 }
 

@@ -53,6 +53,12 @@ pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
     }
 
     #[inline]
+    /// Returns a zero element with each coordinate set to `0`.
+    fn zero() -> PackedUnreducedCM31 {
+        PackedUnreducedCM31 { inner: 0 }
+    }
+
+    #[inline]
     fn reduce(self: PackedUnreducedCM31) -> CM31 {
         let u256 { low: a, high: b } = self.inner.into();
         CM31 { a: M31Trait::reduce_u128(a).into(), b: M31Trait::reduce_u128(b).into() }
@@ -118,6 +124,13 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     fn large_zero() -> PackedUnreducedQM31 {
         PackedUnreducedQM31 {
             a: PackedUnreducedCM31Trait::large_zero(), b: PackedUnreducedCM31Trait::large_zero(),
+        }
+    }
+
+    #[inline]
+    fn zero() -> PackedUnreducedQM31 {
+        PackedUnreducedQM31 {
+            a: PackedUnreducedCM31Trait::zero(), b: PackedUnreducedCM31Trait::zero(),
         }
     }
 

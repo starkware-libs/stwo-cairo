@@ -184,6 +184,11 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     }
 
     #[inline]
+    fn zero() -> PackedUnreducedQM31 {
+        Zero::zero()
+    }
+
+    #[inline]
     fn reduce(self: PackedUnreducedQM31) -> QM31 {
         self
     }
