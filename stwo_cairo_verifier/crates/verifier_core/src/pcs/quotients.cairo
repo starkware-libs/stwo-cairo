@@ -1,13 +1,15 @@
 use core::array::ArrayImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait};
 use core::nullable::{FromNullableResult, Nullable, NullableTrait, match_nullable, null};
-use core::num::traits::{One, Zero};
+use core::num::traits::Zero;
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
-use crate::fields::BatchInvertible;
-use crate::fields::cm31::CM31;
+use crate::fields::cm31::{CM31, CM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
-use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
+use crate::fields::qm31::{
+    PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait, qm31_const,
+};
+use crate::fields::{BatchInvertible, Invertible};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
     ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByLogDegreeBound, SpanImpl, bit_reverse_index,
@@ -149,6 +151,7 @@ fn accumulate_row_quotients(
         // `minus_numerator` is offset by `PackedUnreducedQM31Trait::large_zero()` via
         // `alpha_mul_b_sum`. This ensures the subtraction below does not underflow.
         let mut minus_numerator = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
+
         for (column_index, alpha_mul_c) in indexed_alpha_mul_c.span() {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
@@ -160,8 +163,6 @@ fn accumulate_row_quotients(
             // had the values sample_value and conj(sample_value) at these points.
             minus_numerator -= alpha_mul_c.mul_m31(query_eval_at_column);
         }
-
-        // Subtract the accumulated linear term.
 
         let minus_quotient = minus_numerator.reduce().mul_cm31(denom_inv);
         quotient_accumulator =
@@ -264,30 +265,38 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 sample_batch.point,
             );
 
-            let neg_dbl_im_py = neg_twice_imaginary_part(sample_batch.point.y);
+            let [a, b, c, d] = sample_batch.point.y.to_fixed_array();
+            let re_py = CM31Trait::pack(a, b);
+            let im_py_inv = CM31Trait::pack(c, d).inverse();
 
-            let mut alpha: QM31 = One::one();
-            let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
-            let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
+            let mut alpha = QM31Trait::from_fixed_array([M31Zero::zero(), M31Zero::zero(), c, d]);
+            alpha = -(alpha + alpha);
+            let mut alpha_mul_im_sum = PackedUnreducedQM31Trait::large_zero();
+            let mut alpha_mul_re_sum = PackedUnreducedQM31Trait::large_zero();
             let mut indexed_alpha_mul_c: Array<(usize, PackedUnreducedQM31)> = array![];
 
             for (column_idx, column_value) in sample_batch.columns_and_values.span() {
                 alpha = alpha * random_coeff;
-                let alpha_mul_a = alpha * neg_twice_imaginary_part(column_value);
-                let alpha_mul_c = alpha * neg_dbl_im_py;
-                let alpha_mul_b = QM31Trait::fused_mul_sub(
-                    *column_value, alpha_mul_c, alpha_mul_a * *sample_batch.point.y,
-                );
-                alpha_mul_a_sum += alpha_mul_a.into();
-                alpha_mul_b_sum += alpha_mul_b.into();
-                indexed_alpha_mul_c.append((*column_idx, alpha_mul_c.into()));
+                let [a, b, c, d] = column_value.to_fixed_array();
+                let re_cv = CM31Trait::pack(a, b);
+                let im_cv = CM31Trait::pack(c, d);
+
+                alpha_mul_re_sum += alpha.mul_cm31(re_cv).into();
+                alpha_mul_im_sum += alpha.mul_cm31(im_cv).into();
+                indexed_alpha_mul_c.append((*column_idx, alpha.into()));
             }
+
+            let alpha_mul_a_sum = alpha_mul_im_sum.reduce().mul_cm31(im_py_inv);
+            let alpha_mul_b_sum = alpha_mul_re_sum - alpha_mul_a_sum.mul_cm31(re_py).into();
+
+            // Multiply by (-2u)^(-1) = (1288490188 + 1503238553i)*u.
+            alpha = alpha.mul_cm31(im_py_inv) * qm31_const::<0, 0, 1288490188, 1503238553>();
 
             point_constants
                 .append(
                     PointQuotientConstants {
-                        alpha_mul_a_sum: alpha_mul_a_sum.reduce().into(),
-                        alpha_mul_b_sum: alpha_mul_b_sum,
+                        alpha_mul_a_sum: alpha_mul_a_sum.into(),
+                        alpha_mul_b_sum,
                         indexed_alpha_mul_c,
                         batch_random_coeff: alpha,
                     },
@@ -359,14 +368,6 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
 
         groups
     }
-}
-
-/// Returns `complex_conjugate(v) - v`.
-#[inline]
-pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
-    let [_, _, c, d] = v.to_fixed_array();
-    let v = QM31Trait::from_fixed_array([M31Zero::zero(), M31Zero::zero(), c, d]);
-    -(v + v)
 }
 
 /// A circle point encoding to index into [`Felt252Dict`].
