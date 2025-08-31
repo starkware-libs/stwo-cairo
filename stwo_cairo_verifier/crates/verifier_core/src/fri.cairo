@@ -89,16 +89,18 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         };
 
         // Bounds are stored in descending order.
-        // TODO(andrew): There is no check that it's sorted. Add check.
         let max_column_log_bound = *column_log_bounds.first().unwrap();
 
         let mut layer_index = 0;
         let mut inner_layers = array![];
         let mut layer_log_bound = max_column_log_bound - CIRCLE_TO_LINE_FOLD_STEP;
+        // TODO(audit): Change to column_commitment_domain.first().fold_to_line().
         let mut layer_domain = LineDomainImpl::new_unchecked(
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
+        // TODO(audit): Change to for loop.
+        // TODO(audit): Rename proof to layer_proof.
         while let Some(proof) = inner_layer_proofs.pop_front() {
             channel.mix_commitment(*proof.commitment);
 
@@ -113,11 +115,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                     },
                 );
 
-            layer_log_bound = match layer_log_bound.checked_sub(FOLD_STEP) {
-                Some(layer_log_bound) => layer_log_bound,
-                None => panic!("{}", FriVerificationError::InvalidNumFriLayers),
-            };
-
+            layer_log_bound -= FOLD_STEP;
             layer_index += 1;
             layer_domain = layer_domain.double();
         }
@@ -128,7 +126,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         );
 
         assert!(
-            last_layer_poly.len() == pow2(config.log_last_layer_degree_bound),
+            last_layer_poly.log_size == config.log_last_layer_degree_bound,
             "{}",
             FriVerificationError::LastLayerDegreeInvalid,
         );
@@ -141,6 +139,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
             inner_layers,
             last_layer_domain: layer_domain,
             last_layer_poly,
+            // TODO(audit): Remove queries from the struct.
             queries: None,
         }
     }
@@ -153,6 +152,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         self.decommit_on_queries(queries, first_layer_query_evals)
     }
 
+    // TODO(audit): Inline.
     fn decommit_on_queries(
         self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
     ) {
@@ -221,9 +221,11 @@ fn decommit_inner_layers(
     let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
     let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
 
+    // TODO(audit): Swap the order of the folds. In each iteration do the circle fold and line fold to the same column size.
     while let Some(layer) = inner_layers.pop_front() {
         let circle_poly_degree_bound = *layer.log_degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
 
+        // TODO(audit): Replace while with if (there's only one).
         // Check for evals committed in the first layer that need to be folded into this layer.
         while let Some(_) = first_layer_column_bounds.next_if_eq(@circle_poly_degree_bound) {
             let (sparse_eval, column_domain) = first_layer_iter.next().unwrap();
@@ -342,7 +344,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     ) -> ColumnArray<SparseEvaluation> {
         // Columns are provided in descending order by size.
         let max_column_log_size = (*self.column_commitment_domains).first().unwrap().log_size();
-        assert!(queries.log_domain_size == max_column_log_size);
+        assert!(queries.log_domain_size == max_column_log_size, "...");
 
         let mut column_queries = queries;
         let mut column_commitment_domains = *self.column_commitment_domains;
@@ -353,6 +355,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let mut sparse_evals_by_column = array![];
         let mut decommitted_values = array![];
 
+        // TODO(audit): Remove.
         // Check that the column commitment domains are sorted in descending order.
         for i in 1..column_commitment_domains.len() {
             assert!(
@@ -361,6 +364,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             );
         }
 
+        // TODO(audit): Change to zip_eq.
         while let (Some(column_domain), Some(column_query_evals)) =
             (column_commitment_domains.pop_front(), query_evals_by_column.pop_front()) {
             let column_domain_log_size = column_domain.log_size();
@@ -383,6 +387,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     NullableTrait::new(column_decommitment_positions),
                 );
 
+            // TODO(audit): Consider flattening sparse_evaluation.
             for subset_eval in sparse_evaluation.subset_evals.span() {
                 for eval in subset_eval.span() {
                     // Split the QM31 into its M31 coordinate values.
@@ -517,7 +522,6 @@ fn compute_decommitment_positions_and_rebuild_evals(
     fold_step: u32,
 ) -> (Span<usize>, SparseEvaluation) {
     let fold_factor = pow2(fold_step);
-    let mut query_evals_iter = query_evals.into_iter();
 
     let mut decommitment_positions = array![];
     let mut subset_evals = array![];
@@ -526,12 +530,14 @@ fn compute_decommitment_positions_and_rebuild_evals(
     let mut query_positions = queries.positions;
     let mut folded_query_positions = queries.fold(fold_step).positions;
 
+    // TODO(audit): Change to for loop.
     while let Some(folded_query_position) = folded_query_positions.pop_front() {
         let subset_start = *folded_query_position * fold_factor;
         let subset_end = subset_start + fold_factor;
         let mut subset_decommitment_positions = (subset_start..subset_end).into_iter();
         let mut subset_eval = array![];
 
+        // TODO(audit): Change to for loop.
         // Extract the subset eval and decommitment positions.
         while let Some(decommitment_position) = subset_decommitment_positions.next() {
             decommitment_positions.append(decommitment_position);
@@ -541,11 +547,8 @@ fn compute_decommitment_positions_and_rebuild_evals(
             subset_eval
                 .append(
                     *match query_positions.next_if_eq(@decommitment_position) {
-                        Some(_) => query_evals_iter.next().unwrap(),
-                        None => match witness_evals_iter.next() {
-                            Some(witness_eval) => { witness_eval },
-                            None => panic!("Insufficient Witness Error"),
-                        },
+                        Some(_) => query_evals.pop_front().unwrap(),
+                        None => witness_evals_iter.next().unwrap(),
                     },
                 );
         }
@@ -558,7 +561,7 @@ fn compute_decommitment_positions_and_rebuild_evals(
 
     // Sanity check all the values have been consumed.
     assert!(query_positions.is_empty());
-    assert!(query_evals_iter.next().is_none());
+    assert!(query_evals.is_empty());
 
     let sparse_evaluation = SparseEvaluationImpl::new(
         subset_evals, subset_domain_start_indices.span(),
@@ -598,6 +601,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
         let mut res = array![];
 
+        // TODO(audit): Use zip_eq.
         for subset_eval in self.subset_evals.span() {
             let x_inv = domain_initials_inv.pop_front().unwrap();
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
@@ -623,6 +627,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
         let mut res = array![];
 
+        // TODO(audit): Use zip_eq.
         for subset_eval in self.subset_evals.span() {
             let y_inv = domain_initial_ys_inv.pop_front().unwrap();
             let values: Box<[QM31; CIRCLE_TO_LINE_FOLD_FACTOR]> = *subset_eval

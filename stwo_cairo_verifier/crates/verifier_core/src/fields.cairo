@@ -16,6 +16,7 @@ pub trait Invertible<T> {
 }
 
 // TODO(andrew): Consider removing in favour of inverse libfunc.
+// TODO(audit): See Andrew's comment above, or consider not doing it per query.
 pub trait BatchInvertible<T, +Invertible<T>, +Copy<T>, +Drop<T>, +Mul<T>> {
     /// Computes all `1/arr[i]` with a single call to `inverse()` using Montgomery batch inversion.
     fn batch_inverse(

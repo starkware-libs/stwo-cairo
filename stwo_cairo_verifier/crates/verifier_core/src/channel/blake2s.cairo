@@ -85,7 +85,9 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         self.mix_u32s(array![nonce_lo, nonce_hi].span());
     }
 
+    // TODO(audit): Delete this function. Reimplement mix_u64.
     fn mix_u32s(ref self: Blake2sChannel, data: Span<u32>) {
+        // TODO(audit): Consider moving the digest to the end.
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
 
@@ -96,6 +98,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 
         while let Some(head) = data.multi_pop_front::<8>() {
             // Compress whenever the buffer reaches capacity.
+            // TODO(audit): Add type (like in mix_felts).
             if let Some(msg) = buffer.span().try_into() {
                 state = blake2s_compress(state, byte_count, *msg);
                 buffer = array![];
@@ -178,12 +181,13 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 /// # Panics
 ///
 /// Panics if `n_bits` >= 64.
+// TODO(audit): Don't use the digest directly.
 fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
     const U64_2_POW_32: u64 = 0x100000000;
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
 
-    let nonzero_divisor = pow2_u64(n_bits).try_into().unwrap();
+    let nonzero_divisor: NonZero<u64> = pow2_u64(n_bits).try_into().unwrap();
     let (_, r) = DivRem::div_rem(v, nonzero_divisor);
     r == 0
 }
@@ -195,6 +199,7 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
 
 // TODO: Consider just returning secure felts.
 fn draw_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
+    // TODO(audit): Make this consistent with Poseidon252Channel::draw_base_felts. We think that the loop is not necessary. Add documentation.
     loop {
         let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
 
@@ -214,8 +219,9 @@ fn draw_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
 
 fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
     let [d0, d1, d2, d3, d4, d5, d6, d7] = channel.digest.hash.unbox();
-    let counter = channel.channel_time.n_sent.into();
+    let counter = channel.channel_time.n_sent;
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
     channel.channel_time.inc_sent();
+    // TODO(audit): Add domain separation. E.g. change 36 to 37.
     Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 36, msg) }
 }

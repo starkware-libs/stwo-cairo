@@ -517,6 +517,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
+        // TODO(audit): Change name of field to composition_log_degree_bound.
         *self.log_degree_bound
     }
 

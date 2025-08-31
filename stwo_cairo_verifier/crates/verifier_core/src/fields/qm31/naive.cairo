@@ -68,6 +68,7 @@ pub impl QM31Impl of QM31Trait {
         unreduced::fused_mul_sub(a, b, c)
     }
 
+    // TODO(audit): Optimize.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
         e0

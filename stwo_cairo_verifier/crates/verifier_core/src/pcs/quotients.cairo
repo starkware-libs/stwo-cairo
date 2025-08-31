@@ -43,10 +43,10 @@ pub fn fri_answers(
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values: TreeSpan<Span<M31>>,
 ) -> Array<Span<QM31>> {
-    let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
-    // Check that the largest log size of a trace column is <= `M31_CIRCLE_LOG_ORDER` - 1.
     // Note that `log_size` is equal to 1 + largest log size of a trace column (the additional 1
     // comes from calling `len()` on `column_indices_per_tree_by_degree_bound`).
+    let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
+    // Check that the largest log size of a trace column is <= `M31_CIRCLE_LOG_ORDER` - 1.
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
     let mut answers = array![];
@@ -54,15 +54,17 @@ pub fn fri_answers(
         log_size = log_size - 1;
 
         // Collect the column samples and the number of columns in each tree.
-        let mut samples = array![];
+        let mut samples: Array<@Array<PointSample>> = array![];
         let mut n_columns_per_tree = array![];
         for (columns, samples_per_column) in zip_eq(columns_per_tree, samples_per_column_per_tree) {
             for column in columns {
+                // Note that samples_per_column[*column] can be an empty array.
                 samples.append(samples_per_column[*column]);
             }
             n_columns_per_tree.append(columns.len());
         }
 
+        // TODO(audit): Check if it's ok that we don't update answers when there are no samples.
         if samples.is_empty() {
             continue;
         }
@@ -79,6 +81,8 @@ pub fn fri_answers(
                 ),
             );
     }
+
+    // TODO(audit): Assert that queried values have been consumed.
 
     answers
 }
@@ -104,6 +108,8 @@ fn fri_answers_for_log_size(
                     @sample_batches_by_point,
                     queried_values_at_row.span(),
                     @quotient_constants,
+                    // TODO(audit): Consider avoid/optimize bit reverse.
+                    // TODO(audit): Consider only using at for top level and doubling for the rest.
                     commitment_domain.at(bit_reverse_index(*query_position, log_size)),
                 ),
             );
@@ -204,7 +210,7 @@ pub struct QuotientConstants {
 /// Holds constants associated with a batch of samples for a given evaluation point and domain size.
 ///
 /// # Overview
-/// To prove that `F(p) = value`, we apply *two-point quotienting* at `point`
+/// To prove that `F(p) = value`, we apply *two-point quotienting* at `p`
 /// and its conjugate `conj(p)`. The numerator of the quotient is:
 ///
 ///     c * F(q) - a * q.y - b
@@ -264,6 +270,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
 
             let neg_dbl_im_py = neg_twice_imaginary_part(sample_batch.point.y);
 
+            // TODO(audit): Instead of starting by alpha = 1, start with the previous alpha from last iteration and remove batch_random_coeff.
             let mut alpha: QM31 = One::one();
             let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
             let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
@@ -370,6 +377,7 @@ pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
 /// A circle point encoding to index into [`Felt252Dict`].
 #[generate_trait]
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
+    // TODO(audit): Put y entirely in the encoding as well.
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
         let [y_identifier, _, _, _] = key.y.to_fixed_array();
         pack_qm31(y_identifier.into(), *key.x)
