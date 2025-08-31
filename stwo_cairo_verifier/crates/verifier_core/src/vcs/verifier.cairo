@@ -191,11 +191,8 @@ impl MerkleVerifierImpl<
 fn next_decommitment_node<H>(
     layer_queries: Span<u32>, prev_queries: Span<(u32, H)>,
 ) -> Option<usize> {
-    let desnap = |v| {
-        *v
-    };
     let Some((prev_query, _)) = prev_queries.first() else {
-        return layer_queries.first().map(desnap);
+        return layer_queries.first().map(|v| *v);
     };
 
     let next_query = *prev_query / 2;
