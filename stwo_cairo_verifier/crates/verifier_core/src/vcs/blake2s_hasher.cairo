@@ -18,11 +18,13 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+        // TODO(audit): Consider domain separation.
 
         // No column values (most common case).
         if column_values.is_empty() {
-            let (msg, byte_count) = match children_hashes {
-                Some((x, y)) => (combine_u32_block(x.hash, y.hash), 64),
+            // TODO(audit): use expect.
+            let msg = match children_hashes {
+                Some((x, y)) => combine_u32_block(x.hash, y.hash),
                 None => panic!("Empty nodes are not supported"),
             };
 
@@ -31,7 +33,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             // and (children_hashes.is_none() && column_values.len() == 16 + K).
             // This is acceptable because the verifier always knows
             // the exact structure of the Merkle tree.
-            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+            return Blake2sHash { hash: blake2s_finalize(:state, byte_count: 64, :msg) };
         }
 
         let mut byte_count = 0_u32;
@@ -91,7 +93,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         for _ in last_block_length..M31_ELEMENTS_IN_MSG {
             padded_values.append(0);
         }
-        let msg = *padded_values.span().try_into().unwrap();
+        let msg: Box<[u32; 16]> = *padded_values.span().try_into().unwrap();
         byte_count += last_block_length * 4;
         Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }

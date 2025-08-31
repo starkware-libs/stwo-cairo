@@ -23,8 +23,9 @@ pub impl QueriesImpl of QueriesImplTrait {
         let mut positions_dict: Felt252Dict<felt252> = Default::default();
         let mut n_dict_entries = 0;
         let domain_size: NonZero<u32> = pow2(log_domain_size).try_into().unwrap();
-        while n_dict_entries < n_queries {
+        while n_dict_entries != n_queries {
             // In each iteration, random_bytes is truncated to multiples of 4 bytes.
+            // TODO(audit): Replace draw random bytes with draw u32s.
             let mut random_bytes = channel.draw_random_bytes().span();
             while let Some(bytes_chunk) = random_bytes.multi_pop_front() {
                 let [b0, b1, b2, b3] = (*bytes_chunk).unbox();
@@ -42,7 +43,7 @@ pub impl QueriesImpl of QueriesImplTrait {
 
         // A squashed dict's entries are sorted by key in ascending order.
         let dict_entries = positions_dict.squash().into_entries();
-        let mut sorted_positions = array![];
+        let mut sorted_positions: Array<u32> = array![];
 
         for (position, _, _) in dict_entries {
             sorted_positions.append(position.try_into().unwrap());

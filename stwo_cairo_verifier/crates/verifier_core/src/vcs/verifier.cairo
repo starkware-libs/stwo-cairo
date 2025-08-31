@@ -116,19 +116,24 @@ impl MerkleVerifierImpl<
         let mut layer_log_size: felt252 = (*self.tree_height).into();
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
+        // TODO(audit): Use unwrap.
         if let Some(layer_cols) = column_indices_by_deg_bound.pop_back() {
             let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
 
             let n_columns_in_layer = layer_cols.len();
+            // TODO(audit): Add assert: 
+            assert!(n_columns_in_layer != 0);
             for current_query in layer_column_queries {
                 let column_values = queried_values.pop_front_n(n_columns_in_layer);
 
+                // TODO(audit): Consider not hashing small values.
                 prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
             }
         }
 
         while layer_log_size != 0 {
             layer_log_size -= 1;
+            // None happens on the last log_blowup_factor iterations.
             let n_columns_in_layer = match column_indices_by_deg_bound.pop_back() {
                 Some(layer_cols) => layer_cols.len(),
                 None => 0,
@@ -148,6 +153,7 @@ impl MerkleVerifierImpl<
             // Merge previous layer queries and column queries.
             while let Some(current_query) =
                 next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
+                // TODO(audit): Move the error into the fetch_prev_node_hash function.
                 let witness_too_short_error = || panic!(
                     "{}", MerkleVerificationError::WitnessTooShort,
                 );
@@ -166,6 +172,7 @@ impl MerkleVerifierImpl<
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
+                    // TODO(audit): Remove this and add assert that n_columns_in_layer == 0.
                     column_witness.pop_front_n(n_columns_in_layer)
                 };
 
@@ -177,11 +184,13 @@ impl MerkleVerifierImpl<
         }
 
         // Check that all witnesses and values have been consumed.
+        // TODO(audit): Check also queried_values and prev_layer_hashes.
         assert!(hash_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
         assert!(column_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
         assert!(prev_layer_hashes.is_empty());
 
+        // TODO(audit): Use assert. Done
         assert!(@computed_root == self.root, "{}", MerkleVerificationError::RootMismatch);
     }
 }
@@ -215,13 +224,12 @@ fn fetch_prev_node_hash<H, +Clone<H>, +Drop<H>>(
     ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Span<H>, expected_query: u32,
 ) -> Option<@H> {
     // If the child was computed, use that value.
-    let mut prev_layer_hashes_span = prev_layer_hashes.span();
-    if let Some((q, h)) = prev_layer_hashes_span.pop_front() {
-        if *q == expected_query {
+    if let Some((q, h)) = prev_layer_hashes.span().first()
+        && *q == expected_query {
             let _ = prev_layer_hashes.pop_front();
             return Some(h);
-        }
     }
+
     // If the child was not computed, read it from the witness.
     hash_witness.pop_front()
 }

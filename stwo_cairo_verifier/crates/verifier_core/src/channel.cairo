@@ -20,6 +20,8 @@ mod feature_dependent_uses {
 
 pub use feature_dependent_uses::*;
 
+// TODO(audit): Remove ChannelTime and n_challenges. Done
+
 /// An interface for performing the Fiat-Shamir transformation on an interactive protocol.
 /// The methods `mix_*` take a part of the protocol transcript and mix it into the state
 /// of the pseudo-random oracle, so that subsequent queries are dependent on the transcript.

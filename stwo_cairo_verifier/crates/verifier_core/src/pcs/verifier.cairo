@@ -35,6 +35,7 @@ pub struct CommitmentSchemeProof {
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
     pub trees: TreeArray<MerkleVerifier<MerkleHasher>>,
+    // TODO(audit): Remove the config.
     pub config: PcsConfig,
 }
 
@@ -106,7 +107,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             commitments: _,
             sampled_values,
             decommitments,
-            queried_values,
+            queried_values: queried_values_per_tree,
             proof_of_work_nonce,
             fri_proof,
         } = proof;
@@ -144,10 +145,11 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         // Verify Merkle decommitments.
         for (tree, (queried_values, decommitment)) in zip_eq(
-            self.trees.span(), zip_eq(queried_values.span(), decommitments),
+            self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
         ) {
             // The Merkle implementation pops values from the query position dict so it has to
             // be duplicated.
+            // TODO(audit): Remove clone_subset, pass dict by reference.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
 
             tree.verify(query_positions, *queried_values, decommitment);
@@ -162,7 +164,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             samples,
             random_coeff,
             query_positions_by_log_size,
-            queried_values.span(),
+            queried_values_per_tree.span(),
         );
 
         fri_verifier.decommit(fri_answers, queries);
@@ -196,6 +198,8 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref channel: Channel) {
     let mut flattened_sampled_values = array![];
 
+    // TODO(audit): Add documentation  - where this structure is verified.
+    // TODO(audit): Change names.
     for sampled_values in sampled_values {
         for column_sampled_values in *sampled_values {
             for sampled_value in *column_sampled_values {
@@ -209,6 +213,7 @@ fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref chan
 
 /// Returns all column log bounds sorted in descending order.
 #[inline]
+// TODO(audit): Consider removing this function and going over all degree bounds.
 fn get_column_log_degree_bounds(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
 ) -> Array<u32> {
