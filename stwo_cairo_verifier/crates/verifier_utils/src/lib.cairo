@@ -93,6 +93,7 @@ pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
     result * offset + l0.into()
 }
 
+// TODO(Leo): implement ilya's suggestion: use u128.
 /// Deconstructs a `felt252` to 8 u32 little-endian limbs.
 pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
     let offset = 0x100000000;
