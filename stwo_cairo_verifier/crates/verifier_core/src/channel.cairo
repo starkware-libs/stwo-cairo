@@ -55,4 +55,6 @@ pub trait ChannelTrait {
     /// This interface allows the channel to use different hash function for the
     /// PoW than the one used by the channel.
     fn mix_and_check_pow_nonce(ref self: Channel, n_bits: u32, nonce: u64) -> bool;
+    
+    fn verify_pow_nonce(self: @Channel, n_bits: u32, nonce: u64) -> bool; 
 }
