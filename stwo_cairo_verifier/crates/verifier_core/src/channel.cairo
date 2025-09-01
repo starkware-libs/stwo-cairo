@@ -42,8 +42,7 @@ pub trait ChannelTrait {
     /// Generates a uniform random vector of SecureField elements.
     fn draw_secure_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
 
-    /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
-    fn draw_random_bytes(ref self: Channel) -> Array<u8>;
+    fn draw_u32s(ref self: Channel) -> Array<u32>;
 
     /// Verifies the proof of work nonce.
     ///
