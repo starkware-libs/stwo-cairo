@@ -167,3 +167,33 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
         PackedUnreducedQM31 { a: self.a.into(), b: self.b.into() }
     }
 }
+
+#[inline]
+pub fn mul_unreduced_cm31(lhs: QM31, rhs: CM31) -> PackedUnreducedQM31 {
+    /// Equals `P * P * 16`.
+    const PP16: felt252 = 0x3fffffff000000010;
+
+    // `lhs` 1st CM31 coordinate.
+    let lhs_aa: felt252 = lhs.a.a.into();
+    let lhs_ab: felt252 = lhs.a.b.into();
+
+    // `lhs` 2nd CM31 coordinate.
+    let lhs_ba: felt252 = lhs.b.a.into();
+    let lhs_bb: felt252 = lhs.b.b.into();
+
+    // `rhs` CM31 coordinate.
+    let rhs_a: felt252 = rhs.a.into();
+    let rhs_b: felt252 = rhs.b.into();
+
+    // lhs.a * rhs
+    let (aa_t_ba_a, aa_t_ba_b) = (lhs_aa * rhs_a - lhs_ab * rhs_b, lhs_aa * rhs_b + lhs_ab * rhs_a);
+
+    // lhs.b * rhs
+    let (ab_t_ba_a, ab_t_ba_b) = (lhs_ba * rhs_a - lhs_bb * rhs_b, lhs_ba * rhs_b + lhs_bb * rhs_a);
+
+    const POW2_128: felt252 = 0x100000000000000000000000000000000;
+    PackedUnreducedQM31 {
+        a: PackedUnreducedCM31 { inner: PP16 + aa_t_ba_a + aa_t_ba_b * POW2_128 },
+        b: PackedUnreducedCM31 { inner: PP16 + ab_t_ba_a + ab_t_ba_b * POW2_128 },
+    }
+}

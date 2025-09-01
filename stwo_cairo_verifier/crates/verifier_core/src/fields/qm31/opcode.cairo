@@ -39,6 +39,11 @@ pub impl QM31Impl of QM31Trait {
     }
 
     #[inline]
+    fn mul_cm31_unreduced(self: QM31, rhs: CM31) -> PackedUnreducedQM31 {
+        self * rhs.into()
+    }
+
+    #[inline]
     fn complex_conjugate(self: QM31) -> QM31 {
         let [a, b, c, d] = self.to_fixed_array();
         Self::from_fixed_array([a, b, -c, -d])

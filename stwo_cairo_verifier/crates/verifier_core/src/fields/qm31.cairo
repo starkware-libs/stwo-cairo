@@ -27,6 +27,8 @@ pub trait QM31Trait {
     // TODO(andrew): When associated types are supported, support `Mul<QM31, CM31>`.
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31;
 
+    fn mul_cm31_unreduced(self: QM31, rhs: CM31) -> PackedUnreducedQM31;
+
     fn complex_conjugate(self: QM31) -> QM31;
 
     /// Returns a fused multiply-add i.e. returns `a * b + c`.

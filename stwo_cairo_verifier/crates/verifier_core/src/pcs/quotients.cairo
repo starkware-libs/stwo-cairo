@@ -327,14 +327,13 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 let re_cv = CM31Trait::pack(a, b);
                 let im_cv = CM31Trait::pack(c, d);
 
-                alpha_mul_re_sum += alpha.mul_cm31(re_cv).into();
-                alpha_mul_im_sum += alpha.mul_cm31(im_cv).into();
+                alpha_mul_re_sum += alpha.mul_cm31_unreduced(re_cv);
+                alpha_mul_im_sum += alpha.mul_cm31_unreduced(im_cv);
                 alpha_mul_c_idx.append((*column_idx, alpha.into()));
             }
 
             let alpha_mul_a_sum = alpha_mul_im_sum.reduce().mul_cm31(im_py_inv);
-            let alpha_mul_b_sum = alpha_mul_re_sum.reduce() - alpha_mul_a_sum.mul_cm31(re_py);
-
+            let alpha_mul_b_sum = alpha_mul_re_sum - alpha_mul_a_sum.mul_cm31_unreduced(re_py);
             // Multiply by (-2u)^(-1) = (1288490188 + 1503238553i)*u.
             alpha = alpha.mul_cm31(im_py_inv) * qm31_const::<0, 0, 1288490188, 1503238553>();
 
@@ -342,7 +341,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 .append(
                     PointQuotientConstants {
                         alpha_mul_a_sum: alpha_mul_a_sum.into(),
-                        alpha_mul_b_sum: alpha_mul_b_sum.into(),
+                        alpha_mul_b_sum,
                         alpha_mul_c_idx,
                         batch_random_coeff: alpha,
                     },

@@ -1,4 +1,5 @@
 use crate::fields::Invertible;
+use crate::fields::cm31::CM31Trait;
 use crate::fields::m31::{MulByM31Trait, m31};
 use crate::fields::qm31::{
     PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Impl, QM31Trait, qm31_const,
@@ -57,4 +58,15 @@ fn test_packed_unreduced_qm31() {
     let res = res_unreduced.reduce();
 
     assert_eq!(res, a.mul_m31(b));
+}
+
+#[test]
+fn test_mul_cm31_unreduced() {
+    let a = qm31_const::<2147483643, 2147483557, 958, 2147483646>();
+    let b = CM31Trait::pack(m31(2147483464), m31(3737));
+
+    let res_unreduced = a.mul_cm31_unreduced(b);
+    let res = res_unreduced.reduce();
+
+    assert_eq!(res, a.mul_cm31(b));
 }

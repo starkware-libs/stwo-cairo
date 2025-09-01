@@ -54,6 +54,11 @@ pub impl QM31Impl of QM31Trait {
         QM31 { a: self.a * rhs, b: self.b * rhs }
     }
 
+    #[inline]
+    fn mul_cm31_unreduced(self: QM31, rhs: CM31) -> PackedUnreducedQM31 {
+        unreduced::mul_unreduced_cm31(self, rhs)
+    }
+
     fn complex_conjugate(self: QM31) -> QM31 {
         QM31 { a: self.a, b: -self.b }
     }
