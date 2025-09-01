@@ -7,7 +7,7 @@ use crate::circle::{
     CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Trait, CosetImpl,
     M31_CIRCLE_LOG_ORDER,
 };
-use crate::fields::cm31::{CM31, CM31Trait};
+use crate::fields::cm31::{CM31, CM31Trait, MulByCM31Trait};
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{
     PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait, qm31_const,
@@ -379,25 +379,26 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 let [re_cv_a, re_cv_b, im_cv_a, im_cv_b] = column_value.to_fixed_array();
                 let re_cv = CM31Trait::pack(re_cv_a, re_cv_b);
                 let im_cv = CM31Trait::pack(im_cv_a, im_cv_b);
+                let alpha_mul_c_packed: PackedUnreducedQM31 = alpha_mul_c.into();
 
-                alpha_mul_c_mul_re_sum += alpha_mul_c.mul_cm31(re_cv).into();
-                alpha_mul_c_mul_im_sum += alpha_mul_c.mul_cm31(im_cv).into();
-                indexed_alpha_mul_c.append((*column_idx, alpha_mul_c.into()));
+                alpha_mul_c_mul_re_sum += alpha_mul_c_packed.mul_cm31(re_cv);
+                alpha_mul_c_mul_im_sum += alpha_mul_c_packed.mul_cm31(im_cv);
+                indexed_alpha_mul_c.append((*column_idx, alpha_mul_c_packed));
                 alpha_mul_c = alpha_mul_c * random_coeff;
             }
 
-            let alpha_mul_a_sum = alpha_mul_c_mul_im_sum.reduce().mul_cm31(im_py_inv);
-            let alpha_mul_b_sum = alpha_mul_c_mul_re_sum - alpha_mul_a_sum.mul_cm31(re_py).into();
-
+            let alpha_mul_c_mul_im_sum_reduced: PackedUnreducedQM31 = alpha_mul_c_mul_im_sum
+                .reduce()
+                .into();
+            let alpha_mul_a_sum = alpha_mul_c_mul_im_sum_reduced.mul_cm31(im_py_inv);
+            let alpha_mul_b_sum = alpha_mul_c_mul_re_sum - alpha_mul_a_sum.mul_cm31(re_py);
             // Multiply by (-2u)^(-1) = (1288490188 + 1503238553i)*u.
             alpha = alpha_mul_c.mul_cm31(im_py_inv) * qm31_const::<0, 0, 1288490188, 1503238553>();
 
             point_constants
                 .append(
                     PointQuotientConstants {
-                        alpha_mul_a_sum: alpha_mul_a_sum.into(),
-                        alpha_mul_b_sum,
-                        indexed_alpha_mul_c,
+                        alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c,
                     },
                 );
         }
