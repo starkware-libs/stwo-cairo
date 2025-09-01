@@ -2,7 +2,6 @@
 //! Equivalent to CM31\[x\] over (x^2 - 2 - i) as the irreducible polynomial.
 //! Represented as ((a, b), (c, d)) of (a + bi) + (c + di)u.
 
-use super::cm31::CM31;
 use super::m31::M31;
 
 #[cfg(not(feature: "qm31_opcode"))]
@@ -23,9 +22,6 @@ pub trait QM31Trait {
     fn from_fixed_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31;
 
     fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE];
-
-    // TODO(andrew): When associated types are supported, support `Mul<QM31, CM31>`.
-    fn mul_cm31(self: QM31, rhs: CM31) -> QM31;
 
     fn complex_conjugate(self: QM31) -> QM31;
 

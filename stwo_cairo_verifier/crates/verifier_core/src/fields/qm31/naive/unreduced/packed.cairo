@@ -1,15 +1,17 @@
 use core::ops::{AddAssign, SubAssign};
-use super::super::super::super::cm31::CM31;
+use super::super::super::super::cm31::{CM31, MulByCM31Trait};
 use super::super::super::super::m31::{AddM31Trait, M31Trait, MulByM31Trait};
 use super::super::super::{M31, PackedUnreducedQM31Trait, QM31};
 
-/// A packed representation of an unreduced [`CM31`] as a single `felt252`.
+pub type WM31 = (M31, M31);
+
+/// A packed representation of an unreduced [`WM31`] as a single `felt252`.
 ///
 /// This format enables performing two arithmetic operations (multiplication, addition,
 /// or subtraction) simultaneously. However, explicit packing and unpacking steps are required
-/// to convert between `CM31` and `PackedUnreducedCM31`.
+/// to convert between `WM31` and `PackedUnreducedWM31`.
 #[derive(Copy, Drop, Debug)]
-pub struct PackedUnreducedCM31 {
+pub struct PackedUnreducedWM31 {
     /// Encodes two potentially unreduced M31 elements within a single `felt252`.
     /// Stored as `a + (b << 128)`.
     ///
@@ -19,69 +21,71 @@ pub struct PackedUnreducedCM31 {
     pub inner: felt252,
 }
 
-pub impl PackedCM31byM31Impl of MulByM31Trait<PackedUnreducedCM31> {
-    /// Multiplies a [`PackedUnreducedCM31`] by an [`M31`], returning a new [`PackedUnreducedCM31`].
+pub impl PackedWM31byM31Impl of MulByM31Trait<PackedUnreducedWM31> {
+    /// Multiplies a [`PackedUnreducedWM31`] by an [`M31`], returning a new [`PackedUnreducedWM31`].
     ///
     /// Typically, both operands are reduced 31-bit elements, yielding a 62-bit result.
     /// The packed form of `self` allows two multiplications to be executed concurrently.
     #[inline]
-    fn mul_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: self.inner * rhs.inner.into() }
+    fn mul_m31(self: PackedUnreducedWM31, rhs: M31) -> PackedUnreducedWM31 {
+        PackedUnreducedWM31 { inner: self.inner * rhs.inner.into() }
     }
 }
 
-pub impl PackedCM31AddM31Impl of AddM31Trait<PackedUnreducedCM31> {
+pub impl PackedWM31AddM31Impl of AddM31Trait<PackedUnreducedWM31> {
     #[inline]
-    fn add_m31(self: PackedUnreducedCM31, rhs: M31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: self.inner + rhs.into() }
+    fn add_m31(self: PackedUnreducedWM31, rhs: M31) -> PackedUnreducedWM31 {
+        PackedUnreducedWM31 { inner: self.inner + rhs.into() }
     }
 }
 
 #[generate_trait]
-pub impl PackedUnreducedCM31Impl of PackedUnreducedCM31Trait {
+pub impl PackedUnreducedWM31Impl of PackedUnreducedWM31Trait {
     /// Returns a zero element with each coordinate set to `P*P*P`.
     ///
     /// Using [`large_zero`] instead of direct zero initialization prevents underflow during
-    /// subtraction operations. Starting from [`large_zero`], it's safe to perform up to `P`
-    /// additions or subtractions of results produced by [`mul_m31`] without risking overflow or
-    /// underflow.
+    /// subtraction operations. Starting from [`large_zero`], it's safe to perform up to `2^16*P`
+    /// additions or subtractions of results produced by [`mul_m31`] and [`cmul_31`] without risking
+    /// overflow or underflow, as well as up to 2^12 additions or subtractions of results produced
+    /// by repeated applications of such muls.
     #[inline]
-    fn large_zero() -> PackedUnreducedCM31 {
-        // Stores `P*P*P + (P*P*P << 128)`.
-        const PPP_PPP: felt252 = 0x1fffffff400000017fffffff000000001fffffff400000017fffffff;
-        PackedUnreducedCM31 { inner: PPP_PPP }
+    fn large_zero() -> PackedUnreducedWM31 {
+        // Stores `2^16*P*P*P + (2^16*P*P*P << 128)`.
+        const PPP_PPP: felt252 = 0x1fffffff400000017fffffff000000001fffffff400000017fffffff0000;
+        PackedUnreducedWM31 { inner: PPP_PPP }
     }
 
     #[inline]
-    fn reduce(self: PackedUnreducedCM31) -> CM31 {
+    fn reduce(self: PackedUnreducedWM31) -> WM31 {
         let u256 { low: a, high: b } = self.inner.into();
-        CM31 { a: M31Trait::reduce_u128(a).into(), b: M31Trait::reduce_u128(b).into() }
+        (M31Trait::reduce_u128(a).into(), M31Trait::reduce_u128(b).into())
     }
 }
 
-pub impl PackedUnreducedCM31Add of Add<PackedUnreducedCM31> {
+pub impl PackedUnreducedWM31Add of Add<PackedUnreducedWM31> {
     #[inline]
-    fn add(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: lhs.inner + rhs.inner }
+    fn add(lhs: PackedUnreducedWM31, rhs: PackedUnreducedWM31) -> PackedUnreducedWM31 {
+        PackedUnreducedWM31 { inner: lhs.inner + rhs.inner }
     }
 }
 
-pub impl PackedUnreducedCM31Sub of Sub<PackedUnreducedCM31> {
-    /// Subtracts two [`PackedUnreducedCM31`] elements, returning a new [`PackedUnreducedCM31`].
+pub impl PackedUnreducedWM31Sub of Sub<PackedUnreducedWM31> {
+    /// Subtracts two [`PackedUnreducedWM31`] elements, returning a new [`PackedUnreducedWM31`].
     /// Note that there is a potential underflow here, `large_zero` should be used to prevent this.
     #[inline]
-    fn sub(lhs: PackedUnreducedCM31, rhs: PackedUnreducedCM31) -> PackedUnreducedCM31 {
-        PackedUnreducedCM31 { inner: lhs.inner - rhs.inner }
+    fn sub(lhs: PackedUnreducedWM31, rhs: PackedUnreducedWM31) -> PackedUnreducedWM31 {
+        PackedUnreducedWM31 { inner: lhs.inner - rhs.inner }
     }
 }
 
-pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
+pub impl WM31IntoPackedUnreducedWM31 of Into<WM31, PackedUnreducedWM31> {
     #[inline]
-    fn into(self: CM31) -> PackedUnreducedCM31 {
+    fn into(self: WM31) -> PackedUnreducedWM31 {
         const POW2_128: felt252 = 0x100000000000000000000000000000000;
-        let a_felt: felt252 = self.a.into();
-        let b_felt: felt252 = self.b.into();
-        PackedUnreducedCM31 { inner: a_felt + b_felt * POW2_128 }
+        let (a, b) = self;
+        let a_felt: felt252 = a.into();
+        let b_felt: felt252 = b.into();
+        PackedUnreducedWM31 { inner: a_felt + b_felt * POW2_128 }
     }
 }
 
@@ -94,14 +98,24 @@ pub impl CM31IntoPackedUnreducedCM31 of Into<CM31, PackedUnreducedCM31> {
 /// 4) felt252 operations per addition or M31 multiplication.
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedQM31 {
-    pub a: PackedUnreducedCM31,
-    pub b: PackedUnreducedCM31,
+    pub a: PackedUnreducedWM31,
+    pub b: PackedUnreducedWM31,
 }
 
 pub impl PackedQM31byM31Impl of MulByM31Trait<PackedUnreducedQM31> {
     #[inline]
     fn mul_m31(self: PackedUnreducedQM31, rhs: M31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: self.a.mul_m31(rhs), b: self.b.mul_m31(rhs) }
+    }
+}
+
+pub impl PackedQM31byCM31Impl of MulByCM31Trait<PackedUnreducedQM31> {
+    #[inline]
+    fn mul_cm31(self: PackedUnreducedQM31, rhs: CM31) -> PackedUnreducedQM31 {
+        let (a, b) = (self.a, self.b);
+        let (x, y) = (rhs.a, rhs.b);
+
+        PackedUnreducedQM31 { a: a.mul_m31(x) - b.mul_m31(y), b: a.mul_m31(y) + b.mul_m31(x) }
     }
 }
 
@@ -117,13 +131,15 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     #[inline]
     fn large_zero() -> PackedUnreducedQM31 {
         PackedUnreducedQM31 {
-            a: PackedUnreducedCM31Trait::large_zero(), b: PackedUnreducedCM31Trait::large_zero(),
+            a: PackedUnreducedWM31Trait::large_zero(), b: PackedUnreducedWM31Trait::large_zero(),
         }
     }
 
     #[inline]
     fn reduce(self: PackedUnreducedQM31) -> QM31 {
-        QM31 { a: self.a.reduce(), b: self.b.reduce() }
+        let (a, c) = self.a.reduce();
+        let (b, d) = self.b.reduce();
+        QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
     }
 }
 
@@ -158,6 +174,7 @@ pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
 pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
     #[inline]
     fn into(self: QM31) -> PackedUnreducedQM31 {
-        PackedUnreducedQM31 { a: self.a.into(), b: self.b.into() }
+        let ((a, b), (c, d)) = ((self.a.a, self.a.b), (self.b.a, self.b.b));
+        PackedUnreducedQM31 { a: (a, c).into(), b: (b, d).into() }
     }
 }
