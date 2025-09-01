@@ -147,9 +147,30 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         bytes
     }
 
-    fn mix_and_check_pow_nonce(ref self: Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
-        self.mix_u64(nonce);
-        check_proof_of_work(self.digest, n_bits)
+    /// Check that `H(H(POW_PREFIX || digest || n_bits) || nonce)` has `n_bits` starting zeros.
+    fn verify_pow_nonce(self: @Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
+        const POW_PREFIX: u32 = 0x12345678;
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
+        // Compute `POW_PREFIX || digest || workBits`.
+        //          1 u32      || 8 u32  || 1 u32.
+        let msg = BoxImpl::new(
+            [POW_PREFIX, d0, d1, d2, d3, d4, d5, d6, d7, n_bits, 0, 0, 0, 0, 0, 0],
+        );
+        let [q0, q1, q2, q3, q4, q5, q6, q7] = blake2s_finalize(
+            BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 40, msg,
+        )
+            .unbox();
+
+        let (q, r) = div_rem(nonce, NZ_U32_SHIFT);
+        let nonce_hi = upcast(q);
+        let nonce_lo = upcast(r);
+        let msg = BoxImpl::new(
+            [q0, q1, q2, q3, q4, q5, q6, q7, nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0],
+        );
+        let digest = Blake2sHash {
+            hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 40, msg),
+        };
+        check_leading_zeros(digest, n_bits)
     }
 }
 
@@ -159,7 +180,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
 /// # Panics
 ///
 /// Panics if `n_bits` >= 64.
-fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
+fn check_leading_zeros(digest: Blake2sHash, n_bits: u32) -> bool {
     const U64_2_POW_32: u64 = 0x100000000;
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
