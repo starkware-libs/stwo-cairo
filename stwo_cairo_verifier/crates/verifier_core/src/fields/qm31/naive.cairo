@@ -4,7 +4,7 @@ use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
 use super::super::cm31::CM31;
-use super::super::m31::{M31, M31InnerT, MulByM31Trait};
+use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait};
 // TODO(Gali): Remove.
 #[allow(unused_imports)]
 use super::{QM31Trait, QM31_EXTENSION_DEGREE};
@@ -70,10 +70,20 @@ pub impl QM31Impl of QM31Trait {
 
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
-        e0
-            + e1 * qm31_const::<0, 1, 0, 0>()
-            + e2 * qm31_const::<0, 0, 1, 0>()
-            + e3 * qm31_const::<0, 0, 0, 1>()
+        let [e00, e01, e02, e03] = e0.to_fixed_array();
+        let [e10, e11, e12, e13] = e1.to_fixed_array();
+        let [e20, e21, e22, e23] = e2.to_fixed_array();
+        let [e30, e31, e32, e33] = e3.to_fixed_array();
+
+        let [e22r, e23r] = [e22 + e22 - e23, e22 + e23 + e23];
+        let [e32r, e33r] = [e32 + e32 - e33, e32 + e33 + e33];
+
+        QM31Trait::from_fixed_array(
+            [
+                e00 - e11 + e22r - e33r, e01 + e10 + e23r + e32r, e02 - e13 + e20 - e31,
+                e03 + e12 + e21 + e30,
+            ],
+        )
     }
 }
 
