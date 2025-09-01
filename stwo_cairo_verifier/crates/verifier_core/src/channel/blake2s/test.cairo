@@ -143,18 +143,17 @@ fn test_check_proof_of_work_with_invalid_n_bits() {
 }
 
 #[test]
-fn test_blake_bytes() {
+fn test_blake_u32s() {
     let mut channel: Blake2sChannel = Default::default();
 
-    let result = channel.draw_random_bytes();
-
-    // Tested against velue produced from Rust code.
+    let result = channel.draw_u32s();
+    // Tested against values produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
     assert_eq!(
         result,
         array![
-            249, 212, 227, 89, 182, 215, 249, 2, 75, 175, 85, 110, 212, 213, 181, 38, 161, 5, 74,
-            90, 103, 231, 135, 252, 238, 216, 56, 31, 12, 218, 98, 242,
+            1508103417, 49928118, 1851109195, 649450964, 1514800545, 4236765031, 523819246,
+            4066564620,
         ],
     );
 }

@@ -1,9 +1,9 @@
+use bounded_int::M31_SHIFT_NZ_U256;
 use bounded_int::impls::*;
-use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
-use stwo_verifier_utils::{MemorySection, hash_u32s_with_state};
+use stwo_verifier_utils::{MemorySection, deconstruct_f252, hash_u32s_with_state};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -116,80 +116,14 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         res
     }
 
-    /// Returns 31 random bytes computed as the first 31 bytes of the representative of
-    /// `self.draw_secure_felt252()` in little endian.
-    /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
-    fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
-        let u256 { low, high } = draw_secure_felt252(ref self).into();
-
-        let mut bytes = array![];
-
-        // Extract the 16 bytes from the low 128 bits of the felt 252.
-        let (q, r) = div_rem(low, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        bytes.append(upcast(q));
-
-        // Extract the first 15 bytes from the high 128 bits of the felt 252.
-        let (q, r) = div_rem(high, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (_, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-
-        bytes
+    /// Draws 7 random u32s, constructed from the first 224 bytes
+    /// of a random felt252 in little endian.
+    fn draw_u32s(ref self: Poseidon252Channel) -> Array<u32> {
+        let secure_felt = draw_secure_felt252(ref self).into();
+        let x = deconstruct_f252(secure_felt);
+        let mut res = x.span();
+        let _ = res.pop_back();
+        res.into()
     }
 
     /// Check that `H(H(POW_PREFIX, digest, n_bits), nonce)` has `n_bits` starting zeros.
