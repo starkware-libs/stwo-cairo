@@ -1,5 +1,5 @@
 use core::box::BoxImpl;
-use crate::channel::blake2s::{Blake2sChannel, ChannelTrait, check_proof_of_work};
+use crate::channel::blake2s::{Blake2sChannel, ChannelTrait, check_leading_zeros};
 use crate::fields::qm31::qm31_const;
 use crate::vcs::blake2s_hasher::Blake2sHash;
 
@@ -128,7 +128,7 @@ fn test_mix_u64() {
 fn test_check_proof_of_work() {
     let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-    let res = check_proof_of_work(digest, 3);
+    let res = check_leading_zeros(digest, 3);
 
     assert!(res);
 }
@@ -137,7 +137,7 @@ fn test_check_proof_of_work() {
 fn test_check_proof_of_work_with_invalid_n_bits() {
     let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-    let res = check_proof_of_work(digest, 4);
+    let res = check_leading_zeros(digest, 4);
 
     assert!(!res);
 }

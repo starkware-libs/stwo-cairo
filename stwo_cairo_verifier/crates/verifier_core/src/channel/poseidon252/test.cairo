@@ -1,5 +1,5 @@
 use crate::channel::poseidon252::{
-    ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work,
+    ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_leading_zeros,
 };
 use crate::fields::qm31::qm31_const;
 
@@ -134,7 +134,7 @@ pub fn test_draw_random_bytes_3() {
 fn test_check_proof_of_work() {
     let digest = 0b1000;
 
-    let res = check_proof_of_work(digest, 3);
+    let res = check_leading_zeros(digest, 3);
 
     assert!(res);
 }
@@ -143,7 +143,7 @@ fn test_check_proof_of_work() {
 fn test_check_proof_of_work_with_invalid_n_bits() {
     let digest = 0b1000;
 
-    let res = check_proof_of_work(digest, 4);
+    let res = check_leading_zeros(digest, 4);
 
     assert!(!res);
 }
