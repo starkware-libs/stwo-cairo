@@ -13,6 +13,12 @@ mod opcode;
 #[cfg(feature: "qm31_opcode")]
 use opcode::*;
 
+// TODO(andrew): When associated types are supported, support `Mul<QM31, CM31>`.
+/// A trait for multiplying a value by a `CM31`.
+pub trait MulByCM31Trait<T> {
+    fn mul_cm31(self: T, rhs: CM31) -> T;
+}
+
 pub trait CM31Trait {
     // TODO(andrew): When associated types are supported, support `Sub<CM31, M31>`.
     fn sub_m31(self: CM31, rhs: M31) -> CM31;
