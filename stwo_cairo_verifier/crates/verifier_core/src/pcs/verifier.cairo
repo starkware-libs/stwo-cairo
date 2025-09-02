@@ -12,7 +12,7 @@ use crate::utils::{
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::VerificationError;
-use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
 
 
@@ -136,7 +136,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         );
 
         // Get FRI query positions.
-        let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
+        let (unique_column_log_sizes, mut query_positions_by_log_size, queries) = fri_verifier
             .sample_query_positions(ref channel);
 
         // Verify Merkle decommitments.
@@ -162,7 +162,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             queried_values.span(),
         );
 
-        fri_verifier.decommit(fri_answers);
+        fri_verifier.decommit(fri_answers, queries);
     }
 }
 

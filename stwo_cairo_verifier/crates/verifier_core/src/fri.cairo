@@ -53,7 +53,6 @@ pub struct FriVerifier {
     inner_layers: Array<FriInnerLayerVerifier>,
     last_layer_domain: LineDomain,
     last_layer_poly: LinePoly,
-    queries: Option<Queries>,
 }
 
 #[generate_trait]
@@ -136,20 +135,16 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         channel.mix_felts(last_layer_poly.coeffs.span());
 
         FriVerifier {
-            config,
-            first_layer,
-            inner_layers,
-            last_layer_domain: layer_domain,
-            last_layer_poly,
-            queries: None,
+            config, first_layer, inner_layers, last_layer_domain: layer_domain, last_layer_poly,
         }
     }
 
     /// Verifies the decommitment stage of FRI.
     ///
     /// The query evals need to be provided in the same order as their commitment.
-    fn decommit(self: FriVerifier, first_layer_query_evals: ColumnArray<Span<QM31>>) {
-        let queries = self.queries.expect('queries not sampled');
+    fn decommit(
+        self: FriVerifier, first_layer_query_evals: ColumnArray<Span<QM31>>, queries: Queries,
+    ) {
         self.decommit_on_queries(queries, first_layer_query_evals)
     }
 
@@ -173,8 +168,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     ///
     /// Output is of the form `(unique_log_sizes, queries_by_log_size)`.
     fn sample_query_positions(
-        ref self: FriVerifier, ref channel: Channel,
-    ) -> (Span<u32>, Felt252Dict<Nullable<Span<usize>>>) {
+        self: @FriVerifier, ref channel: Channel,
+    ) -> (Span<u32>, Felt252Dict<Nullable<Span<usize>>>, Queries) {
         // The sizes of input circle polynomial commitment domains.
         let mut column_log_sizes = array![];
 
@@ -186,11 +181,10 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
         // Column are sorted in descending order by size.
         let max_column_log_size = *column_log_sizes.first().unwrap();
-        let n_queries = self.config.n_queries;
+        let n_queries = *self.config.n_queries;
         let queries = QueriesImpl::generate(ref channel, max_column_log_size, n_queries);
-        self.queries = Some(queries);
 
-        (column_log_sizes, get_query_positions_by_log_size(queries, column_log_sizes))
+        (column_log_sizes, get_query_positions_by_log_size(queries, column_log_sizes), queries)
     }
 }
 
