@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::bitwise_xor_num_bits_9::BitwiseXorNumBits9;
@@ -256,7 +256,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_8 = eval.add_intermediate(
+        let and_tmp_efb2a_12 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_0_col1.clone() + op1_limb_0_col30.clone()) - xor_col58.clone())),
         );
@@ -266,7 +266,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_11 = eval.add_intermediate(
+        let and_tmp_efb2a_15 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_1_col2.clone() + op1_limb_1_col31.clone()) - xor_col59.clone())),
         );
@@ -276,7 +276,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_14 = eval.add_intermediate(
+        let and_tmp_efb2a_18 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_2_col3.clone() + op1_limb_2_col32.clone()) - xor_col60.clone())),
         );
@@ -286,7 +286,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_17 = eval.add_intermediate(
+        let and_tmp_efb2a_21 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_3_col4.clone() + op1_limb_3_col33.clone()) - xor_col61.clone())),
         );
@@ -296,7 +296,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_20 = eval.add_intermediate(
+        let and_tmp_efb2a_24 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_4_col5.clone() + op1_limb_4_col34.clone()) - xor_col62.clone())),
         );
@@ -306,7 +306,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_23 = eval.add_intermediate(
+        let and_tmp_efb2a_27 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_5_col6.clone() + op1_limb_5_col35.clone()) - xor_col63.clone())),
         );
@@ -316,7 +316,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_26 = eval.add_intermediate(
+        let and_tmp_efb2a_30 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_6_col7.clone() + op1_limb_6_col36.clone()) - xor_col64.clone())),
         );
@@ -326,7 +326,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_29 = eval.add_intermediate(
+        let and_tmp_efb2a_33 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_7_col8.clone() + op1_limb_7_col37.clone()) - xor_col65.clone())),
         );
@@ -336,7 +336,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_32 = eval.add_intermediate(
+        let and_tmp_efb2a_36 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_8_col9.clone() + op1_limb_8_col38.clone()) - xor_col66.clone())),
         );
@@ -346,7 +346,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_35 = eval.add_intermediate(
+        let and_tmp_efb2a_39 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_9_col10.clone() + op1_limb_9_col39.clone()) - xor_col67.clone())),
         );
@@ -356,7 +356,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_38 = eval.add_intermediate(
+        let and_tmp_efb2a_42 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_10_col11.clone() + op1_limb_10_col40.clone()) - xor_col68.clone())),
         );
@@ -366,7 +366,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_41 = eval.add_intermediate(
+        let and_tmp_efb2a_45 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_11_col12.clone() + op1_limb_11_col41.clone()) - xor_col69.clone())),
         );
@@ -376,7 +376,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_44 = eval.add_intermediate(
+        let and_tmp_efb2a_48 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_12_col13.clone() + op1_limb_12_col42.clone()) - xor_col70.clone())),
         );
@@ -386,7 +386,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_47 = eval.add_intermediate(
+        let and_tmp_efb2a_51 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_13_col14.clone() + op1_limb_13_col43.clone()) - xor_col71.clone())),
         );
@@ -396,7 +396,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_50 = eval.add_intermediate(
+        let and_tmp_efb2a_54 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_14_col15.clone() + op1_limb_14_col44.clone()) - xor_col72.clone())),
         );
@@ -406,7 +406,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_53 = eval.add_intermediate(
+        let and_tmp_efb2a_57 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_15_col16.clone() + op1_limb_15_col45.clone()) - xor_col73.clone())),
         );
@@ -416,7 +416,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_56 = eval.add_intermediate(
+        let and_tmp_efb2a_60 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_16_col17.clone() + op1_limb_16_col46.clone()) - xor_col74.clone())),
         );
@@ -426,7 +426,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_59 = eval.add_intermediate(
+        let and_tmp_efb2a_63 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_17_col18.clone() + op1_limb_17_col47.clone()) - xor_col75.clone())),
         );
@@ -436,7 +436,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_62 = eval.add_intermediate(
+        let and_tmp_efb2a_66 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_18_col19.clone() + op1_limb_18_col48.clone()) - xor_col76.clone())),
         );
@@ -446,7 +446,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_65 = eval.add_intermediate(
+        let and_tmp_efb2a_69 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_19_col20.clone() + op1_limb_19_col49.clone()) - xor_col77.clone())),
         );
@@ -456,7 +456,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_68 = eval.add_intermediate(
+        let and_tmp_efb2a_72 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_20_col21.clone() + op1_limb_20_col50.clone()) - xor_col78.clone())),
         );
@@ -466,7 +466,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_71 = eval.add_intermediate(
+        let and_tmp_efb2a_75 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_21_col22.clone() + op1_limb_21_col51.clone()) - xor_col79.clone())),
         );
@@ -476,7 +476,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_74 = eval.add_intermediate(
+        let and_tmp_efb2a_78 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_22_col23.clone() + op1_limb_22_col52.clone()) - xor_col80.clone())),
         );
@@ -486,7 +486,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_77 = eval.add_intermediate(
+        let and_tmp_efb2a_81 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_23_col24.clone() + op1_limb_23_col53.clone()) - xor_col81.clone())),
         );
@@ -496,7 +496,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_80 = eval.add_intermediate(
+        let and_tmp_efb2a_84 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_24_col25.clone() + op1_limb_24_col54.clone()) - xor_col82.clone())),
         );
@@ -506,7 +506,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_83 = eval.add_intermediate(
+        let and_tmp_efb2a_87 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_25_col26.clone() + op1_limb_25_col55.clone()) - xor_col83.clone())),
         );
@@ -516,7 +516,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_9_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_86 = eval.add_intermediate(
+        let and_tmp_efb2a_90 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_26_col27.clone() + op1_limb_26_col56.clone()) - xor_col84.clone())),
         );
@@ -526,7 +526,7 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_xor_8_lookup_elements,
             &mut eval,
         );
-        let and_tmp_efb2a_89 = eval.add_intermediate(
+        let and_tmp_efb2a_93 = eval.add_intermediate(
             (M31_1073741824.clone()
                 * ((op0_limb_27_col28.clone() + op1_limb_27_col57.clone()) - xor_col85.clone())),
         );
@@ -535,34 +535,34 @@ impl FrameworkEval for Eval {
                 ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_2.clone()),
-                and_tmp_efb2a_8.clone(),
-                and_tmp_efb2a_11.clone(),
-                and_tmp_efb2a_14.clone(),
-                and_tmp_efb2a_17.clone(),
-                and_tmp_efb2a_20.clone(),
-                and_tmp_efb2a_23.clone(),
-                and_tmp_efb2a_26.clone(),
-                and_tmp_efb2a_29.clone(),
-                and_tmp_efb2a_32.clone(),
-                and_tmp_efb2a_35.clone(),
-                and_tmp_efb2a_38.clone(),
-                and_tmp_efb2a_41.clone(),
-                and_tmp_efb2a_44.clone(),
-                and_tmp_efb2a_47.clone(),
-                and_tmp_efb2a_50.clone(),
-                and_tmp_efb2a_53.clone(),
-                and_tmp_efb2a_56.clone(),
-                and_tmp_efb2a_59.clone(),
-                and_tmp_efb2a_62.clone(),
-                and_tmp_efb2a_65.clone(),
-                and_tmp_efb2a_68.clone(),
-                and_tmp_efb2a_71.clone(),
-                and_tmp_efb2a_74.clone(),
-                and_tmp_efb2a_77.clone(),
-                and_tmp_efb2a_80.clone(),
-                and_tmp_efb2a_83.clone(),
-                and_tmp_efb2a_86.clone(),
-                and_tmp_efb2a_89.clone(),
+                and_tmp_efb2a_12.clone(),
+                and_tmp_efb2a_15.clone(),
+                and_tmp_efb2a_18.clone(),
+                and_tmp_efb2a_21.clone(),
+                and_tmp_efb2a_24.clone(),
+                and_tmp_efb2a_27.clone(),
+                and_tmp_efb2a_30.clone(),
+                and_tmp_efb2a_33.clone(),
+                and_tmp_efb2a_36.clone(),
+                and_tmp_efb2a_39.clone(),
+                and_tmp_efb2a_42.clone(),
+                and_tmp_efb2a_45.clone(),
+                and_tmp_efb2a_48.clone(),
+                and_tmp_efb2a_51.clone(),
+                and_tmp_efb2a_54.clone(),
+                and_tmp_efb2a_57.clone(),
+                and_tmp_efb2a_60.clone(),
+                and_tmp_efb2a_63.clone(),
+                and_tmp_efb2a_66.clone(),
+                and_tmp_efb2a_69.clone(),
+                and_tmp_efb2a_72.clone(),
+                and_tmp_efb2a_75.clone(),
+                and_tmp_efb2a_78.clone(),
+                and_tmp_efb2a_81.clone(),
+                and_tmp_efb2a_84.clone(),
+                and_tmp_efb2a_87.clone(),
+                and_tmp_efb2a_90.clone(),
+                and_tmp_efb2a_93.clone(),
             ],
             and_id_col86.clone(),
             &self.memory_address_to_id_lookup_elements,
@@ -613,34 +613,34 @@ impl FrameworkEval for Eval {
                 ((E::F::from(M31::from(self.claim.bitwise_builtin_segment_start))
                     + (seq.clone() * M31_5.clone()))
                     + M31_4.clone()),
-                (and_tmp_efb2a_8.clone() + xor_col58.clone()),
-                (and_tmp_efb2a_11.clone() + xor_col59.clone()),
-                (and_tmp_efb2a_14.clone() + xor_col60.clone()),
-                (and_tmp_efb2a_17.clone() + xor_col61.clone()),
-                (and_tmp_efb2a_20.clone() + xor_col62.clone()),
-                (and_tmp_efb2a_23.clone() + xor_col63.clone()),
-                (and_tmp_efb2a_26.clone() + xor_col64.clone()),
-                (and_tmp_efb2a_29.clone() + xor_col65.clone()),
-                (and_tmp_efb2a_32.clone() + xor_col66.clone()),
-                (and_tmp_efb2a_35.clone() + xor_col67.clone()),
-                (and_tmp_efb2a_38.clone() + xor_col68.clone()),
-                (and_tmp_efb2a_41.clone() + xor_col69.clone()),
-                (and_tmp_efb2a_44.clone() + xor_col70.clone()),
-                (and_tmp_efb2a_47.clone() + xor_col71.clone()),
-                (and_tmp_efb2a_50.clone() + xor_col72.clone()),
-                (and_tmp_efb2a_53.clone() + xor_col73.clone()),
-                (and_tmp_efb2a_56.clone() + xor_col74.clone()),
-                (and_tmp_efb2a_59.clone() + xor_col75.clone()),
-                (and_tmp_efb2a_62.clone() + xor_col76.clone()),
-                (and_tmp_efb2a_65.clone() + xor_col77.clone()),
-                (and_tmp_efb2a_68.clone() + xor_col78.clone()),
-                (and_tmp_efb2a_71.clone() + xor_col79.clone()),
-                (and_tmp_efb2a_74.clone() + xor_col80.clone()),
-                (and_tmp_efb2a_77.clone() + xor_col81.clone()),
-                (and_tmp_efb2a_80.clone() + xor_col82.clone()),
-                (and_tmp_efb2a_83.clone() + xor_col83.clone()),
-                (and_tmp_efb2a_86.clone() + xor_col84.clone()),
-                (and_tmp_efb2a_89.clone() + xor_col85.clone()),
+                (and_tmp_efb2a_12.clone() + xor_col58.clone()),
+                (and_tmp_efb2a_15.clone() + xor_col59.clone()),
+                (and_tmp_efb2a_18.clone() + xor_col60.clone()),
+                (and_tmp_efb2a_21.clone() + xor_col61.clone()),
+                (and_tmp_efb2a_24.clone() + xor_col62.clone()),
+                (and_tmp_efb2a_27.clone() + xor_col63.clone()),
+                (and_tmp_efb2a_30.clone() + xor_col64.clone()),
+                (and_tmp_efb2a_33.clone() + xor_col65.clone()),
+                (and_tmp_efb2a_36.clone() + xor_col66.clone()),
+                (and_tmp_efb2a_39.clone() + xor_col67.clone()),
+                (and_tmp_efb2a_42.clone() + xor_col68.clone()),
+                (and_tmp_efb2a_45.clone() + xor_col69.clone()),
+                (and_tmp_efb2a_48.clone() + xor_col70.clone()),
+                (and_tmp_efb2a_51.clone() + xor_col71.clone()),
+                (and_tmp_efb2a_54.clone() + xor_col72.clone()),
+                (and_tmp_efb2a_57.clone() + xor_col73.clone()),
+                (and_tmp_efb2a_60.clone() + xor_col74.clone()),
+                (and_tmp_efb2a_63.clone() + xor_col75.clone()),
+                (and_tmp_efb2a_66.clone() + xor_col76.clone()),
+                (and_tmp_efb2a_69.clone() + xor_col77.clone()),
+                (and_tmp_efb2a_72.clone() + xor_col78.clone()),
+                (and_tmp_efb2a_75.clone() + xor_col79.clone()),
+                (and_tmp_efb2a_78.clone() + xor_col80.clone()),
+                (and_tmp_efb2a_81.clone() + xor_col81.clone()),
+                (and_tmp_efb2a_84.clone() + xor_col82.clone()),
+                (and_tmp_efb2a_87.clone() + xor_col83.clone()),
+                (and_tmp_efb2a_90.clone() + xor_col84.clone()),
+                (and_tmp_efb2a_93.clone() + xor_col85.clone()),
             ],
             or_id_col88.clone(),
             &self.memory_address_to_id_lookup_elements,

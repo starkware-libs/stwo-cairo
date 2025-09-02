@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version a91e5ba8
 use crate::components::subroutines::decode_instruction_bc3cd::decode_instruction_bc3cd_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
@@ -13,8 +13,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -25,6 +24,10 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
@@ -313,7 +316,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_bc3cd_output_tmp_756b7_10_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_756b7_19_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_20_limb_0: QM31 = read_small_evaluate(
             (mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_10_offset0),
             dst_id_col14,
             msb_col15,
@@ -331,7 +334,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_28_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_30_limb_0: QM31 = read_small_evaluate(
             (mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_10_offset1),
             op0_id_col22,
             msb_col23,
@@ -349,7 +352,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_37_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_40_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_10_offset2),
             op1_id_col30,
             msb_col31,
@@ -369,8 +372,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         // Constraint - dst equals op0 + op1
-        let constraint_quotient = ((read_small_output_tmp_756b7_19_limb_0
-            - (read_small_output_tmp_756b7_28_limb_0 + read_small_output_tmp_756b7_37_limb_0)))
+        let constraint_quotient = ((read_small_output_tmp_756b7_20_limb_0
+            - (read_small_output_tmp_756b7_30_limb_0 + read_small_output_tmp_756b7_40_limb_0)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 

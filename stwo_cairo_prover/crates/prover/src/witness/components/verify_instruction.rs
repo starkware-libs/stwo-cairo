@@ -254,6 +254,8 @@ fn write_trace_simd(
 
                 // Mem Verify.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_16a4f_9 =
                     memory_address_to_id_state.deduce_output(input_limb_0_col0);
                 let instruction_id_col15 = memory_address_to_id_value_tmp_16a4f_9;

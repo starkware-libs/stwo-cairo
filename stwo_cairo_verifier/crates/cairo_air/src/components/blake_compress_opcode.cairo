@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version a91e5ba8
 use crate::components::subroutines::create_blake_output::create_blake_output_evaluate;
 use crate::components::subroutines::create_blake_round_input::create_blake_round_input_evaluate;
 use crate::components::subroutines::decode_blake_opcode::decode_blake_opcode_evaluate;
@@ -17,8 +17,7 @@ pub struct Claim {
     pub log_size: u32,
 }
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
@@ -29,6 +28,10 @@ pub impl ClaimImpl of ClaimTrait {
 
     fn mix_into(self: @Claim, ref channel: Channel) {
         channel.mix_u64((*(self.log_size)).into());
+    }
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {
+        accumulate_relation_uses(ref relation_uses, RELATION_USES_PER_ROW.span(), *self.log_size);
     }
 }
 
@@ -1061,10 +1064,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
-            decode_blake_opcode_output_tmp_53f39_35_limb_0,
-            decode_blake_opcode_output_tmp_53f39_35_limb_1,
-            decode_blake_opcode_output_tmp_53f39_35_limb_2,
-            decode_blake_opcode_output_tmp_53f39_35_limb_6,
+            decode_blake_opcode_output_tmp_53f39_42_limb_0,
+            decode_blake_opcode_output_tmp_53f39_42_limb_1,
+            decode_blake_opcode_output_tmp_53f39_42_limb_2,
+            decode_blake_opcode_output_tmp_53f39_42_limb_6,
         ] =
             decode_blake_opcode_evaluate(
             [input_pc_col0, input_ap_col1, input_fp_col2],
@@ -1123,15 +1126,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let [
-            create_blake_round_input_output_tmp_53f39_120_limb_24,
-            create_blake_round_input_output_tmp_53f39_120_limb_25,
-            create_blake_round_input_output_tmp_53f39_120_limb_28,
-            create_blake_round_input_output_tmp_53f39_120_limb_29,
+            create_blake_round_input_output_tmp_53f39_135_limb_24,
+            create_blake_round_input_output_tmp_53f39_135_limb_25,
+            create_blake_round_input_output_tmp_53f39_135_limb_28,
+            create_blake_round_input_output_tmp_53f39_135_limb_29,
         ] =
             create_blake_round_input_evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_35_limb_0, low_16_bits_col33,
-                high_16_bits_col34, decode_blake_opcode_output_tmp_53f39_35_limb_6,
+                decode_blake_opcode_output_tmp_53f39_42_limb_0, low_16_bits_col33,
+                high_16_bits_col34, decode_blake_opcode_output_tmp_53f39_42_limb_6,
             ],
             low_16_bits_col39,
             high_16_bits_col40,
@@ -1237,13 +1240,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     qm31_const::<47975, 0, 0, 0>(), qm31_const::<62322, 0, 0, 0>(),
                     qm31_const::<15470, 0, 0, 0>(), qm31_const::<62778, 0, 0, 0>(),
                     qm31_const::<42319, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_53f39_120_limb_24,
-                    create_blake_round_input_output_tmp_53f39_120_limb_25,
+                    create_blake_round_input_output_tmp_53f39_135_limb_24,
+                    create_blake_round_input_output_tmp_53f39_135_limb_25,
                     qm31_const::<26764, 0, 0, 0>(), qm31_const::<39685, 0, 0, 0>(),
-                    create_blake_round_input_output_tmp_53f39_120_limb_28,
-                    create_blake_round_input_output_tmp_53f39_120_limb_29,
+                    create_blake_round_input_output_tmp_53f39_135_limb_28,
+                    create_blake_round_input_output_tmp_53f39_135_limb_29,
                     qm31_const::<52505, 0, 0, 0>(), qm31_const::<23520, 0, 0, 0>(),
-                    decode_blake_opcode_output_tmp_53f39_35_limb_1,
+                    decode_blake_opcode_output_tmp_53f39_42_limb_1,
                 ],
             );
 
@@ -1324,7 +1327,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_35_limb_2, triple_xor_32_output_limb_0_col126,
+                decode_blake_opcode_output_tmp_53f39_42_limb_2, triple_xor_32_output_limb_0_col126,
                 triple_xor_32_output_limb_1_col127,
             ],
             low_7_ms_bits_col142,
@@ -1343,7 +1346,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<1, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<1, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col128, triple_xor_32_output_limb_1_col129,
             ],
             low_7_ms_bits_col146,
@@ -1362,7 +1365,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<2, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<2, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col130, triple_xor_32_output_limb_1_col131,
             ],
             low_7_ms_bits_col150,
@@ -1381,7 +1384,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<3, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<3, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col132, triple_xor_32_output_limb_1_col133,
             ],
             low_7_ms_bits_col154,
@@ -1400,7 +1403,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<4, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<4, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col134, triple_xor_32_output_limb_1_col135,
             ],
             low_7_ms_bits_col158,
@@ -1419,7 +1422,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<5, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<5, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col136, triple_xor_32_output_limb_1_col137,
             ],
             low_7_ms_bits_col162,
@@ -1438,7 +1441,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<6, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<6, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col138, triple_xor_32_output_limb_1_col139,
             ],
             low_7_ms_bits_col166,
@@ -1457,7 +1460,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
         verify_blake_word_evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_35_limb_2 + qm31_const::<7, 0, 0, 0>()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2 + qm31_const::<7, 0, 0, 0>()),
                 triple_xor_32_output_limb_0_col140, triple_xor_32_output_limb_1_col141,
             ],
             low_7_ms_bits_col170,

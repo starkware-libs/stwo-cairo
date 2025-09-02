@@ -1,4 +1,4 @@
-// AIR version 9acd5104
+// AIR version a91e5ba8
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -242,12 +242,12 @@ fn write_trace_simd(
 
                 // Read Positive Num Bits 29.
 
+                // Read Id.
+
                 let memory_address_to_id_value_tmp_39ce3_7 = memory_address_to_id_state
                     .deduce_output(
                         ((mem1_base_col7) + (decode_instruction_43e1c_output_tmp_39ce3_6.0[2])),
                     );
-                let memory_id_to_big_value_tmp_39ce3_8 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_39ce3_7);
                 let next_pc_id_col8 = memory_address_to_id_value_tmp_39ce3_7;
                 *row[8] = next_pc_id_col8;
                 *sub_component_inputs.memory_address_to_id[0] =
@@ -256,22 +256,27 @@ fn write_trace_simd(
                     ((mem1_base_col7) + (decode_instruction_43e1c_output_tmp_39ce3_6.0[2])),
                     next_pc_id_col8,
                 ];
-                let next_pc_limb_0_col9 = memory_id_to_big_value_tmp_39ce3_8.get_m31(0);
+
+                // Read Positive Known Id Num Bits 29.
+
+                let memory_id_to_big_value_tmp_39ce3_9 =
+                    memory_id_to_big_state.deduce_output(next_pc_id_col8);
+                let next_pc_limb_0_col9 = memory_id_to_big_value_tmp_39ce3_9.get_m31(0);
                 *row[9] = next_pc_limb_0_col9;
-                let next_pc_limb_1_col10 = memory_id_to_big_value_tmp_39ce3_8.get_m31(1);
+                let next_pc_limb_1_col10 = memory_id_to_big_value_tmp_39ce3_9.get_m31(1);
                 *row[10] = next_pc_limb_1_col10;
-                let next_pc_limb_2_col11 = memory_id_to_big_value_tmp_39ce3_8.get_m31(2);
+                let next_pc_limb_2_col11 = memory_id_to_big_value_tmp_39ce3_9.get_m31(2);
                 *row[11] = next_pc_limb_2_col11;
-                let next_pc_limb_3_col12 = memory_id_to_big_value_tmp_39ce3_8.get_m31(3);
+                let next_pc_limb_3_col12 = memory_id_to_big_value_tmp_39ce3_9.get_m31(3);
                 *row[12] = next_pc_limb_3_col12;
 
                 // Range Check Last Limb Bits In Ms Limb 2.
 
                 // Cond Range Check 2.
 
-                let partial_limb_msb_tmp_39ce3_9 =
+                let partial_limb_msb_tmp_39ce3_10 =
                     (((PackedUInt16::from_m31(next_pc_limb_3_col12)) & (UInt16_2)) >> (UInt16_1));
-                let partial_limb_msb_col13 = partial_limb_msb_tmp_39ce3_9.as_m31();
+                let partial_limb_msb_col13 = partial_limb_msb_tmp_39ce3_10.as_m31();
                 *row[13] = partial_limb_msb_col13;
 
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col8;
@@ -306,7 +311,7 @@ fn write_trace_simd(
                     M31_0,
                     M31_0,
                 ];
-                let read_positive_num_bits_29_output_tmp_39ce3_11 = (
+                let read_positive_known_id_num_bits_29_output_tmp_39ce3_12 =
                     PackedFelt252::from_limbs([
                         next_pc_limb_0_col9,
                         next_pc_limb_1_col10,
@@ -336,7 +341,10 @@ fn write_trace_simd(
                         M31_0,
                         M31_0,
                         M31_0,
-                    ]),
+                    ]);
+
+                let read_positive_num_bits_29_output_tmp_39ce3_13 = (
+                    read_positive_known_id_num_bits_29_output_tmp_39ce3_12,
                     next_pc_id_col8,
                 );
 

@@ -1,6 +1,7 @@
-// AIR version d1591e2a
+// AIR version a91e5ba8
 use crate::components::prelude::*;
-use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_6::RangeCheckLastLimbBitsInMsLimb6;
+use crate::components::subroutines::read_id::ReadId;
+use crate::components::subroutines::read_positive_known_id_num_bits_96::ReadPositiveKnownIdNumBits96;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadPositiveNumBits96 {}
@@ -31,36 +32,29 @@ impl ReadPositiveNumBits96 {
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 0] {
-        eval.add_to_relation(RelationEntry::new(
+        ReadId::evaluate(
+            [read_positive_num_bits_96_input.clone()],
+            id_col0.clone(),
             memory_address_to_id_lookup_elements,
-            E::EF::one(),
-            &[read_positive_num_bits_96_input.clone(), id_col0.clone()],
-        ));
-
-        RangeCheckLastLimbBitsInMsLimb6::evaluate(
-            [value_limb_10_col11.clone()],
-            range_check_6_lookup_elements,
             eval,
         );
-        eval.add_to_relation(RelationEntry::new(
+        ReadPositiveKnownIdNumBits96::evaluate(
+            [id_col0.clone()],
+            value_limb_0_col1.clone(),
+            value_limb_1_col2.clone(),
+            value_limb_2_col3.clone(),
+            value_limb_3_col4.clone(),
+            value_limb_4_col5.clone(),
+            value_limb_5_col6.clone(),
+            value_limb_6_col7.clone(),
+            value_limb_7_col8.clone(),
+            value_limb_8_col9.clone(),
+            value_limb_9_col10.clone(),
+            value_limb_10_col11.clone(),
+            range_check_6_lookup_elements,
             memory_id_to_big_lookup_elements,
-            E::EF::one(),
-            &[
-                id_col0.clone(),
-                value_limb_0_col1.clone(),
-                value_limb_1_col2.clone(),
-                value_limb_2_col3.clone(),
-                value_limb_3_col4.clone(),
-                value_limb_4_col5.clone(),
-                value_limb_5_col6.clone(),
-                value_limb_6_col7.clone(),
-                value_limb_7_col8.clone(),
-                value_limb_8_col9.clone(),
-                value_limb_9_col10.clone(),
-                value_limb_10_col11.clone(),
-            ],
-        ));
-
+            eval,
+        );
         []
     }
 }
