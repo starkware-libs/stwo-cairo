@@ -30,8 +30,7 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
     #[inline(always)]
     fn mix_felt252(ref self: Poseidon252Channel, x: felt252) {
         let (s0, _, _) = hades_permutation(self.digest, x, 2);
-        self.digest = s0;
-        self.channel_time.next_challenges();
+        update_digest(ref self, s0);
     }
 }
 pub impl Poseidon252ChannelImpl of ChannelTrait {
@@ -64,9 +63,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             };
         }
 
-        self.digest = poseidon_hash_span(res.span());
-
-        self.channel_time.next_challenges();
+        update_digest(ref self, poseidon_hash_span(res.span()));
     }
 
     fn mix_u64(ref self: Poseidon252Channel, nonce: u64) {
@@ -85,8 +82,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         let ids_hash = hash_u32s_with_state(self.digest, ids.span());
         let values_hash = hash_u32s_with_state(ids_hash, flat_values.span());
 
-        self.digest = values_hash;
-        self.channel_time.next_challenges();
+        update_digest(ref self, values_hash);
     }
 
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
@@ -205,6 +201,11 @@ fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
     let nonzero_divisor = two_pow_n_bits.try_into().unwrap();
     let (_, r) = DivRem::div_rem(low, nonzero_divisor);
     r == 0
+}
+
+fn update_digest(ref channel: Poseidon252Channel, new_digest: felt252) {
+    channel.digest = new_digest;
+    channel.channel_time.next_challenges();
 }
 
 // TODO(spapini): Check that this is sound.
