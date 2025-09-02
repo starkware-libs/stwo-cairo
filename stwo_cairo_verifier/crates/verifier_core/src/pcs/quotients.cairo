@@ -371,8 +371,8 @@ pub fn neg_twice_imaginary_part(v: @QM31) -> QM31 {
 #[generate_trait]
 pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
     fn encode(key: @CirclePoint<QM31>) -> felt252 {
-        let [y_identifier, _, _, _] = key.y.to_fixed_array();
-        pack_qm31(y_identifier.into(), *key.x)
+        let encoded_y = pack_qm31(Zero::zero(), *key.y);
+        pack_qm31(encoded_y, *key.x)
     }
 }
 
