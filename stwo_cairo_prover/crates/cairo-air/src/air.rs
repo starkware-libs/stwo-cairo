@@ -705,7 +705,7 @@ impl CairoComponents {
         preprocessed_column_ids: &[PreProcessedColumnId],
     ) -> Self {
         let tree_span_provider =
-            &mut TraceLocationAllocator::new_with_preproccessed_columns(preprocessed_column_ids);
+            &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
 
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,
