@@ -1,3 +1,4 @@
+use cairo_air::CairoClaim;
 use components::memory_address_to_id::{
     InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
 };
@@ -127,7 +128,7 @@ type RelationUse = (felt252, u32);
 
 #[derive(Drop, Serde)]
 pub struct CairoProof {
-    pub claim: CairoClaim,
+    pub serialized_claim: Span<felt252>,
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof,
@@ -151,15 +152,15 @@ pub struct VerificationOutput {
 
 /// Given a proof, returns the output of the verifier.
 #[cfg(not(or(feature: "blake_outputs_packing", feature: "poseidon_outputs_packing")))]
-pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
+pub fn get_verification_output(claim: @CairoClaim) -> VerificationOutput {
     // Note: the blake hash yields a 256-bit integer, the given program hash is taken modulo the
     // f252 prime to yield a felt.
     let program_hash = construct_f252(
-        encode_and_hash_program_memory_section(*proof.claim.public_data.public_memory.program),
+        encode_and_hash_program_memory_section(*claim.public_data.public_memory.program),
     );
 
     let mut output = array![];
-    for entry in proof.claim.public_data.public_memory.output {
+    for entry in claim.public_data.public_memory.output {
         let (_, val) = entry;
         output.append(construct_f252(BoxTrait::new(*val)));
     }
@@ -182,8 +183,11 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
     VerificationOutput { program_hash, output_hash }
 }
 
-pub fn verify_cairo(proof: CairoProof) {
-    let CairoProof { claim, interaction_pow, interaction_claim, stark_proof, channel_salt } = proof;
+pub fn verify_cairo(proof: CairoProof) -> VerificationOutput {
+    let CairoProof { mut serialized_claim, interaction_pow, interaction_claim, stark_proof, channel_salt } = proof;
+
+    let claim: CairoClaim = Serde::deserialize(ref serialized_claim).unwrap();
+    assert!(serialized_claim.is_empty());
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
@@ -246,6 +250,8 @@ pub fn verify_cairo(proof: CairoProof) {
     // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
     // of the trace plus 1.
     let cairo_air_log_degree_bound = trace_log_size - pcs_config.fri_config.log_blowup_factor + 1;
+
+   
     let cairo_air = CairoAirNewImpl::new(
         @claim, @interaction_elements, @interaction_claim, cairo_air_log_degree_bound,
     );
@@ -257,6 +263,8 @@ pub fn verify_cairo(proof: CairoProof) {
         SECURITY_BITS,
         composition_commitment,
     );
+
+    get_verification_output(@claim)
 }
 
 

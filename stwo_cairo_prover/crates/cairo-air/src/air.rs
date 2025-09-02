@@ -61,9 +61,25 @@ where
             stark_proof,
             channel_salt,
         } = self;
+
+        assert_eq!(output.len(), 0);
+
+        output.push(0_u32.into());
         CairoSerialize::serialize(claim, output);
+
+        for item in output.iter() {
+            let bytes = item.to_bytes_be();
+            for byte in bytes.iter().rev().skip(4){
+              assert_eq!(*byte, 0);
+            }
+          }
+        output[0] = (output.len() -1).into();
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
+
+      
+     
+
         CairoSerialize::serialize(stark_proof, output);
         CairoSerialize::serialize(channel_salt, output);
     }
