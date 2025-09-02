@@ -179,12 +179,10 @@ impl MerkleVerifierImpl<
         // Check that all witnesses and values have been consumed.
         assert!(hash_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
         assert!(column_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
-
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
+        assert!(prev_layer_hashes.is_empty());
 
-        if @computed_root != self.root {
-            panic!("{}", MerkleVerificationError::RootMismatch);
-        }
+        assert!(@computed_root == self.root, "{}", MerkleVerificationError::RootMismatch);
     }
 }
 
