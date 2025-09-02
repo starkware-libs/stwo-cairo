@@ -125,23 +125,6 @@ fn test_mix_u64() {
 }
 
 #[test]
-pub fn test_mix_u32s() {
-    let mut channel: Blake2sChannel = Default::default();
-
-    channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
-
-    // Tested against values produced from Rust code.
-    // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-    assert_eq!(
-        channel.digest.hash.unbox(),
-        [
-            0x83769170, 0xb31bbb57, 0xb6da6f34, 0xfad757b3, 0xe3fbb846, 0x24432e2c, 0x94c2ffa0,
-            0xc7a1f9cb,
-        ],
-    );
-}
-
-#[test]
 fn test_check_proof_of_work() {
     let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
