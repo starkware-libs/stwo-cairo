@@ -216,7 +216,7 @@ pub mod tests {
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
                 input,
                 PcsConfig {
-                    pow_bits: 6,
+                    pow_bits: 10,
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace,
