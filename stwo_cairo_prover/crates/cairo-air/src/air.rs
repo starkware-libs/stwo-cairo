@@ -545,8 +545,10 @@ impl PublicMemory {
             safe_call_ids,
         } = self;
 
-        // Program is the bootloader and doesn't need to be mixed into the channel.
-        let _ = program;
+        // Mix program memory section. All the ids are mixed first, then all the values, each of
+        // them in the order it appears in the section.
+        channel.mix_u32s(&program.iter().map(|(id, _)| *id).collect_vec());
+        channel.mix_u32s(&program.iter().flat_map(|(_, value)| *value).collect_vec());
 
         // Mix public segments.
         public_segments.mix_into(channel);
