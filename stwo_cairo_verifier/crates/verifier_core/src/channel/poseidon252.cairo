@@ -3,7 +3,7 @@ use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
-use stwo_verifier_utils::{MemorySection, construct_f252_be};
+use stwo_verifier_utils::{MemorySection, hash_u32s_with_state};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
@@ -73,30 +73,6 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.mix_felt252(nonce.into());
     }
 
-    fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
-        let mut res = array![self.digest];
-
-        let mut data = data;
-
-        while let Some(chunk) = data.multi_pop_front::<7>() {
-            res.append(construct_f252_be(*chunk));
-        }
-
-        if !data.is_empty() {
-            let mut chunk: Array<u32> = array![];
-            chunk.append_span(data);
-            for _ in data.len()..7 {
-                chunk.append(0);
-            }
-            res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
-        }
-
-        self.digest = poseidon_hash_span(res.span());
-
-        // TODO(spapini): do we need length padding?
-        self.channel_time.next_challenges();
-    }
-
     fn mix_memory_section(ref self: Poseidon252Channel, section: MemorySection) {
         // TODO(Gali): Make this more efficient, use hash_memory_section.
         let mut ids = array![];
@@ -106,8 +82,13 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             ids.append(*id);
             flat_values.append_span((*val).span());
         }
-        self.mix_u32s(ids.span());
-        self.mix_u32s(flat_values.span());
+        let ids_hash = hash_u32s_with_state(self.digest, ids.span());
+        let values_hash = hash_u32s_with_state(ids_hash, flat_values.span());
+
+        self.digest = values_hash;
+
+        // TODO(spapini): do we need length padding?
+        self.channel_time.next_challenges();
     }
 
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {

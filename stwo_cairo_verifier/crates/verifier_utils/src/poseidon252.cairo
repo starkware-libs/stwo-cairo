@@ -34,3 +34,25 @@ pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     }
     deconstruct_f252(poseidon_hash_span(felts.span()))
 }
+
+/// Returns the hash of the given state and data.
+pub fn hash_u32s_with_state(state: felt252, data: Span<u32>) -> felt252 {
+    let mut res = array![state];
+
+    let mut data = data;
+
+    while let Some(chunk) = data.multi_pop_front::<7>() {
+        res.append(construct_f252_be(*chunk));
+    }
+
+    if !data.is_empty() {
+        let mut chunk: Array<u32> = array![];
+        chunk.append_span(data);
+        for _ in data.len()..7 {
+            chunk.append(0);
+        }
+        res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
+    }
+
+    poseidon_hash_span(res.span())
+}

@@ -94,16 +94,6 @@ pub fn test_mix_felts() {
 }
 
 #[test]
-pub fn test_mix_u32s() {
-    let initial_digest = 0;
-    let mut channel = new_channel(initial_digest);
-
-    channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
-
-    assert_eq!(channel.digest, 0x078f5cf6a2e7362b75fc1f94daeae7ebddd64e6b2db771717519af7193dfa80b);
-}
-
-#[test]
 pub fn test_mix_u64() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
