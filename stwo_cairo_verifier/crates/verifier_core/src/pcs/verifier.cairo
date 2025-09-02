@@ -15,6 +15,8 @@ use crate::verifier::VerificationError;
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 use super::PcsConfig;
 
+/// Sanity check that the proof of work is not negligible.
+pub const MIN_POW_BITS: u32 = 10;
 
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
@@ -28,7 +30,6 @@ pub struct CommitmentSchemeProof {
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
 }
-
 
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 #[derive(Drop)]
@@ -129,6 +130,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         );
 
         // Verify proof of work.
+        assert!(self.config.pow_bits >= MIN_POW_BITS);
         assert!(
             channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
             "{}",
