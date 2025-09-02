@@ -7,7 +7,7 @@ use crate::pcs::verifier::{
 };
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
-use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
 /// Arithmetic Intermediate Representation (AIR).
 ///
@@ -40,6 +40,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
+    composition_commitment: Hash,
 ) {
     let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
@@ -54,7 +55,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            *commitment_scheme_proof.commitments.last().unwrap(),
+            composition_commitment,
             [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
             ref channel,
         );
