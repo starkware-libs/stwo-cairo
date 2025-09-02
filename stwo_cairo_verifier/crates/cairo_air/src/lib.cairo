@@ -685,8 +685,8 @@ pub impl PublicMemoryImpl of PublicMemoryTrait {
     fn mix_into(self: @PublicMemory, ref channel: Channel) {
         let PublicMemory { program, public_segments, output, safe_call_ids } = self;
 
-        // Program is the bootloader and doesn't need to be mixed into the channel.
-        let _ = program;
+        // Mix program memory section.
+        channel.mix_memory_section(*program);
 
         // Mix public segments.
         public_segments.mix_into(ref channel);
