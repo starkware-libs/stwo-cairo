@@ -82,44 +82,13 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let (q, r) = div_rem(nonce, NZ_U32_SHIFT);
         let nonce_hi = upcast(q);
         let nonce_lo = upcast(r);
-        self.mix_u32s(array![nonce_lo, nonce_hi].span());
-    }
 
-    fn mix_u32s(ref self: Blake2sChannel, data: Span<u32>) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0];
+        let mut byte_count = 40;
 
-        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
-        let mut byte_count = 32;
-
-        let mut data = data;
-
-        while let Some(head) = data.multi_pop_front::<8>() {
-            // Compress whenever the buffer reaches capacity.
-            if let Some(msg) = buffer.span().try_into() {
-                state = blake2s_compress(state, byte_count, *msg);
-                buffer = array![];
-            }
-
-            buffer.append_span(head.unbox().span());
-            byte_count += 32;
-        }
-
-        // Compress again if buffer is full but there is more data for finalize.
-        if !data.is_empty() {
-            if let Some(msg) = buffer.span().try_into() {
-                state = blake2s_compress(state, byte_count, *msg);
-                buffer = array![];
-            }
-        }
-
-        buffer.append_span(data);
-        byte_count += data.len() * 4;
-        for _ in buffer.len()..16 {
-            buffer.append(0);
-        }
-
-        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        let res = blake2s_finalize(state, byte_count, BoxImpl::new(buffer));
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
