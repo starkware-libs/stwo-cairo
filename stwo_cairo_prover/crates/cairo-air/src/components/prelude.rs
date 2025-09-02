@@ -1,6 +1,7 @@
 pub use num_traits::One;
 pub use serde::{Deserialize, Serialize};
 pub use stwo::core::channel::Channel;
+pub use stwo::core::compact_binary::CompactBinary;
 pub use stwo::core::fields::m31::M31;
 pub use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 pub use stwo::core::pcs::TreeVec;

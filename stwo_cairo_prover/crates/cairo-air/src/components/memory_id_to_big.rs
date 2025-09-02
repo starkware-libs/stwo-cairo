@@ -2,6 +2,7 @@ use itertools::{chain, Itertools};
 use num_traits::One;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
+use stwo::core::compact_binary::CompactBinary;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
@@ -336,7 +337,7 @@ impl FrameworkEval for SmallEval {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct Claim {
     pub big_log_sizes: Vec<u32>,
     pub small_log_size: u32,
@@ -377,7 +378,7 @@ impl Claim {
     }
 }
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize, CompactBinary)]
 pub struct InteractionClaim {
     pub big_claimed_sums: Vec<SecureField>,
     pub small_claimed_sum: SecureField,

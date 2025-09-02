@@ -3,7 +3,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
 use crate::components::subroutines::cond_range_check_2::CondRangeCheck2;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct CondFelt252AsRelImm {}
 
 impl CondFelt252AsRelImm {

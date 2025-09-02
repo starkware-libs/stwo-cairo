@@ -25,6 +25,7 @@ pub enum Commands {
         /// The format of the proof output.
         /// - json: Standard JSON format (default)
         /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        /// - compact_binary: Compact binary format
         #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
         proof_format: ProofFormat,
         /// Program arguments
@@ -35,9 +36,33 @@ pub enum Commands {
     Verify {
         /// Path to the proof JSON file
         proof: PathBuf,
+        /// The format of the proof output.
+        /// - json: Standard JSON format (default)
+        /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        /// - compact_binary: Compact binary format
+        #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
+        proof_format: ProofFormat,
         /// Canonical trace, if Pedersen is included in the program.
         #[arg(short, long)]
         with_pedersen: bool,
+    },
+    Transpile {
+        /// Path to the proof JSON file
+        in_proof: PathBuf,
+        /// Path to the output file
+        out_proof: PathBuf,
+        /// The format of the proof output.
+        /// - json: Standard JSON format (default)
+        /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        /// - compact_binary: Compact binary format
+        #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
+        in_proof_format: ProofFormat,
+        /// The format of the proof output.
+        /// - json: Standard JSON format (default)
+        /// - cairo_serde: Array of field elements serialized as hex strings, ex. `["0x1", "0x2"]`
+        /// - compact_binary: Compact binary format
+        #[arg(long, value_enum, default_value_t = ProofFormat::Json)]
+        out_proof_format: ProofFormat,
     },
 }
 

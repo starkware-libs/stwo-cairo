@@ -5,10 +5,10 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use log::{debug, info};
 use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
 use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
-use stwo_cairo_adapter::vm_import::{adapt_to_stwo_input, RelocatedTraceEntry};
+use stwo_cairo_adapter::vm_import::{RelocatedTraceEntry, adapt_to_stwo_input};
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
+use stwo_cairo_prover::stwo::core::pcs::PcsConfig;
+use stwo_cairo_prover::stwo::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
 
@@ -70,7 +70,7 @@ pub fn prover_input_from_runner(runner: &CairoRunner) -> ProverInput {
         "State transitions: {}",
         input.state_transitions.casm_states_by_opcode
     );
-    debug!("Builtins: {:#?}", input.builtins_segments.get_counts());
+    debug!("Builtins: {:#?}", input.builtin_segments.get_counts());
     input
 }
 

@@ -5,7 +5,7 @@ use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBi
 use crate::components::subroutines::read_positive_num_bits_99::ReadPositiveNumBits99;
 use crate::components::subroutines::read_small::ReadSmall;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct ModUtils {}
 
 impl ModUtils {

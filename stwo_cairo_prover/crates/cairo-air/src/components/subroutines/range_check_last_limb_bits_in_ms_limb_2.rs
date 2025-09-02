@@ -2,7 +2,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_range_check_2::CondRangeCheck2;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct RangeCheckLastLimbBitsInMsLimb2 {}
 
 impl RangeCheckLastLimbBitsInMsLimb2 {

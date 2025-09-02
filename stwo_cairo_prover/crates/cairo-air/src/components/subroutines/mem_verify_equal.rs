@@ -2,7 +2,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::read_id::ReadId;
 
-#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
+#[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CompactBinary)]
 pub struct MemVerifyEqual {}
 
 impl MemVerifyEqual {
