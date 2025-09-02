@@ -2,6 +2,7 @@ use components::memory_address_to_id::{
     InteractionClaimImpl as MemoryAddressToIdInteractionClaimImpl, LOG_MEMORY_ADDRESS_TO_ID_SPLIT,
 };
 use components::memory_id_to_big::InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl;
+use stwo_verifier_core::Hash;
 use stwo_verifier_utils::{PublicMemoryEntries, PublicMemoryEntriesTrait, PublicMemoryEntry};
 
 #[cfg(feature: "poseidon252_verifier")]
@@ -191,17 +192,32 @@ pub fn verify_cairo(proof: CairoProof) {
     pcs_config.mix_into(ref channel);
     let mut commitment_scheme = CommitmentSchemeVerifierImpl::new(pcs_config);
 
-    let log_sizes = claim.log_sizes();
+    // Unpack commitments.
+    let commitments: @Box<[Hash; 4]> = stark_proof
+        .commitment_scheme_proof
+        .commitments
+        .try_into()
+        .unwrap();
+    let [
+        preprocessed_commitment,
+        trace_commitment,
+        interaction_trace_commitment,
+        composition_commitment,
+    ] =
+        commitments
+        .unbox();
+
+    // Unpack claim.log_sizes().
+    let log_sizes: @Box<[Span<u32>; 3]> = claim.log_sizes().span().try_into().unwrap();
+    let [preprocessed_log_size, trace_log_size, interaction_trace_log_size] = log_sizes.unbox();
 
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
-    let preprocessed_root = *stark_proof.commitment_scheme_proof.commitments[0];
-    assert!(preprocessed_root == expected_preprocessed_root);
-    commitment_scheme.commit(preprocessed_root, *log_sizes[0], ref channel);
+    assert!(preprocessed_commitment == expected_preprocessed_root);
+    commitment_scheme.commit(preprocessed_commitment, preprocessed_log_size, ref channel);
     claim.mix_into(ref channel);
 
-    commitment_scheme
-        .commit(*stark_proof.commitment_scheme_proof.commitments[1], *log_sizes[1], ref channel);
+    commitment_scheme.commit(trace_commitment, trace_log_size, ref channel);
     assert!(
         channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -216,8 +232,7 @@ pub fn verify_cairo(proof: CairoProof) {
     );
 
     interaction_claim.mix_into(ref channel);
-    commitment_scheme
-        .commit(*stark_proof.commitment_scheme_proof.commitments[2], *log_sizes[2], ref channel);
+    commitment_scheme.commit(interaction_trace_commitment, interaction_trace_log_size, ref channel);
 
     let trace_log_size = *commitment_scheme.trees[1].tree_height;
     assert!(trace_log_size == *commitment_scheme.trees[2].tree_height);
@@ -228,7 +243,14 @@ pub fn verify_cairo(proof: CairoProof) {
     let cairo_air = CairoAirNewImpl::new(
         @claim, @interaction_elements, @interaction_claim, cairo_air_log_degree_bound,
     );
-    verify(cairo_air, ref channel, stark_proof, commitment_scheme, SECURITY_BITS);
+    verify(
+        cairo_air,
+        ref channel,
+        stark_proof,
+        commitment_scheme,
+        SECURITY_BITS,
+        composition_commitment,
+    );
 }
 
 pub fn lookup_sum(
