@@ -41,7 +41,7 @@ pub fn fri_answers(
     samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-    mut queried_values: TreeSpan<Span<M31>>,
+    mut queried_values_per_tree: TreeSpan<Span<M31>>,
 ) -> Array<Span<QM31>> {
     let mut log_size = column_indices_per_tree_by_degree_bound.len() + log_blowup_factor;
     // Check that the largest log size of a trace column is <= `M31_CIRCLE_LOG_ORDER` - 1.
@@ -74,10 +74,14 @@ pub fn fri_answers(
                     samples,
                     random_coeff,
                     query_positions_per_log_size.get(log_size.into()).deref(),
-                    ref queried_values,
+                    ref queried_values_per_tree,
                     n_columns_per_tree,
                 ),
             );
+    }
+
+    for queried_values in queried_values_per_tree {
+        assert!(queried_values.is_empty())
     }
 
     answers
@@ -88,7 +92,7 @@ fn fri_answers_for_log_size(
     samples_per_column: Array<@Array<PointSample>>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
-    ref queried_values: TreeSpan<Span<M31>>,
+    ref queried_values_per_tree: TreeSpan<Span<M31>>,
     n_columns_per_tree: TreeArray<usize>,
 ) -> Span<QM31> {
     let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
@@ -97,7 +101,9 @@ fn fri_answers_for_log_size(
     let mut quotient_evals_at_queries = array![];
 
     for query_position in query_positions {
-        let queried_values_at_row = tree_take_n(ref queried_values, n_columns_per_tree.span());
+        let queried_values_at_row = tree_take_n(
+            ref queried_values_per_tree, n_columns_per_tree.span(),
+        );
         quotient_evals_at_queries
             .append(
                 accumulate_row_quotients(
