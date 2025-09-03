@@ -1,4 +1,4 @@
-// AIR version a91e5ba8
+// AIR version bc48deaa
 #![allow(unused_parens)]
 use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -19,6 +19,10 @@ impl ClaimGenerator {
         Self {
             packed_inputs: vec![],
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.packed_inputs.is_empty()
     }
 
     pub fn write_trace(

@@ -1,3 +1,4 @@
+// AIR version bc48deaa
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_3_partial_rounds_chain::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -112,11 +113,11 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    cube_252_state: &cube_252::ClaimGenerator,
+    cube_252_state: &mut cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    range_check_felt_252_width_27_state: &range_check_felt_252_width_27::ClaimGenerator,
+    range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -689,17 +690,15 @@ fn write_trace_simd(
                 let linear_combination_n_1_coefs_2_output_tmp_44f04_35 = combination_tmp_44f04_14;
 
                 let poseidon_partial_round_output_tmp_44f04_36 = [
-                    poseidon_3_partial_rounds_chain_input.2[2],
-                    poseidon_3_partial_rounds_chain_input.2[3],
                     cube_252_output_tmp_44f04_1,
                     linear_combination_n_1_coefs_2_output_tmp_44f04_35,
                 ];
 
                 // Poseidon Partial Round.
 
-                *sub_component_inputs.cube_252[1] = poseidon_partial_round_output_tmp_44f04_36[3];
+                *sub_component_inputs.cube_252[1] = poseidon_partial_round_output_tmp_44f04_36[1];
                 let cube_252_output_tmp_44f04_37 =
-                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_36[3]);
+                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_36[1]);
                 let cube_252_output_limb_0_col104 = cube_252_output_tmp_44f04_37.get_m31(0);
                 *row[104] = cube_252_output_limb_0_col104;
                 let cube_252_output_limb_1_col105 = cube_252_output_tmp_44f04_37.get_m31(1);
@@ -749,19 +748,19 @@ fn write_trace_simd(
                     (((((((Felt252_0_0_0_0)
                         + ((Felt252_4_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[0],
+                                poseidon_3_partial_rounds_chain_input.2[2],
                             ))))
                         + ((Felt252_2_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[1],
+                                poseidon_3_partial_rounds_chain_input.2[3],
                             ))))
                         + ((Felt252_3_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[2],
+                                poseidon_partial_round_output_tmp_44f04_36[0],
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[3],
+                                poseidon_partial_round_output_tmp_44f04_36[1],
                             ))))
                         - ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
@@ -1013,17 +1012,15 @@ fn write_trace_simd(
                 let linear_combination_n_1_coefs_2_output_tmp_44f04_71 = combination_tmp_44f04_50;
 
                 let poseidon_partial_round_output_tmp_44f04_72 = [
-                    poseidon_partial_round_output_tmp_44f04_36[2],
-                    poseidon_partial_round_output_tmp_44f04_36[3],
                     cube_252_output_tmp_44f04_37,
                     linear_combination_n_1_coefs_2_output_tmp_44f04_71,
                 ];
 
                 // Poseidon Partial Round.
 
-                *sub_component_inputs.cube_252[2] = poseidon_partial_round_output_tmp_44f04_72[3];
+                *sub_component_inputs.cube_252[2] = poseidon_partial_round_output_tmp_44f04_72[1];
                 let cube_252_output_tmp_44f04_73 =
-                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_72[3]);
+                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_72[1]);
                 let cube_252_output_limb_0_col136 = cube_252_output_tmp_44f04_73.get_m31(0);
                 *row[136] = cube_252_output_limb_0_col136;
                 let cube_252_output_limb_1_col137 = cube_252_output_tmp_44f04_73.get_m31(1);
@@ -1073,19 +1070,19 @@ fn write_trace_simd(
                     (((((((Felt252_0_0_0_0)
                         + ((Felt252_4_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[0],
+                                poseidon_partial_round_output_tmp_44f04_36[0],
                             ))))
                         + ((Felt252_2_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[1],
+                                poseidon_partial_round_output_tmp_44f04_36[1],
                             ))))
                         + ((Felt252_3_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[2],
+                                poseidon_partial_round_output_tmp_44f04_72[0],
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[3],
+                                poseidon_partial_round_output_tmp_44f04_72[1],
                             ))))
                         - ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
@@ -1338,8 +1335,6 @@ fn write_trace_simd(
                 let linear_combination_n_1_coefs_2_output_tmp_44f04_107 = combination_tmp_44f04_86;
 
                 let poseidon_partial_round_output_tmp_44f04_108 = [
-                    poseidon_partial_round_output_tmp_44f04_72[2],
-                    poseidon_partial_round_output_tmp_44f04_72[3],
                     cube_252_output_tmp_44f04_73,
                     linear_combination_n_1_coefs_2_output_tmp_44f04_107,
                 ];
@@ -1470,12 +1465,12 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252: &relations::Cube252,
-        poseidon_3_partial_rounds_chain: &relations::Poseidon3PartialRoundsChain,
         poseidon_round_keys: &relations::PoseidonRoundKeys,
-        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
-        range_check_4_4: &relations::RangeCheck_4_4,
+        cube_252: &relations::Cube252,
         range_check_4_4_4_4: &relations::RangeCheck_4_4_4_4,
+        range_check_4_4: &relations::RangeCheck_4_4,
+        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
+        poseidon_3_partial_rounds_chain: &relations::Poseidon3PartialRoundsChain,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

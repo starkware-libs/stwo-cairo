@@ -1,3 +1,4 @@
+// AIR version bc48deaa
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_full_round_chain::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -15,6 +16,10 @@ impl ClaimGenerator {
         Self {
             packed_inputs: vec![],
         }
+    }
+
+    pub fn is_empty(&self) -> bool {
+        self.packed_inputs.is_empty()
     }
 
     pub fn write_trace(
@@ -85,7 +90,7 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    cube_252_state: &cube_252::ClaimGenerator,
+    cube_252_state: &mut cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
 ) -> (
@@ -996,9 +1001,9 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         cube_252: &relations::Cube252,
-        poseidon_full_round_chain: &relations::PoseidonFullRoundChain,
         poseidon_round_keys: &relations::PoseidonRoundKeys,
         range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
+        poseidon_full_round_chain: &relations::PoseidonFullRoundChain,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);

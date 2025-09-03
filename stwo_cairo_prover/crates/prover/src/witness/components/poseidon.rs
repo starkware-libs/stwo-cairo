@@ -178,21 +178,21 @@ impl InteractionClaimGenerator {
             .poseidon_3_partial_rounds_chain_interaction_gen
             .write_interaction_trace(
                 tree_builder,
-                &interaction_elements.cube_252,
-                &interaction_elements.poseidon_3_partial_rounds_chain,
                 &interaction_elements.poseidon_round_keys,
-                &interaction_elements.range_check_felt_252_width_27,
-                &interaction_elements.range_checks.rc_4_4,
+                &interaction_elements.cube_252,
                 &interaction_elements.range_checks.rc_4_4_4_4,
+                &interaction_elements.range_checks.rc_4_4,
+                &interaction_elements.range_check_felt_252_width_27,
+                &interaction_elements.poseidon_3_partial_rounds_chain,
             );
         let poseidon_full_round_chain_interaction_claim = self
             .poseidon_full_round_chain_interaction_gen
             .write_interaction_trace(
                 tree_builder,
                 &interaction_elements.cube_252,
-                &interaction_elements.poseidon_full_round_chain,
                 &interaction_elements.poseidon_round_keys,
                 &interaction_elements.range_checks.rc_3_3_3_3_3,
+                &interaction_elements.poseidon_full_round_chain,
             );
         let cube_252_interaction_claim = self.cube_252_interaction_gen.write_interaction_trace(
             tree_builder,

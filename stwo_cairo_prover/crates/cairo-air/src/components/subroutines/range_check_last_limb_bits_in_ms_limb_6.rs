@@ -1,4 +1,4 @@
-// AIR version a91e5ba8
+// AIR version bc48deaa
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -19,7 +19,7 @@ impl RangeCheckLastLimbBitsInMsLimb6 {
         eval.add_to_relation(RelationEntry::new(
             range_check_6_lookup_elements,
             E::EF::one(),
-            &[range_check_last_limb_bits_in_ms_limb_6_input.clone()],
+            std::slice::from_ref(&range_check_last_limb_bits_in_ms_limb_6_input),
         ));
 
         []

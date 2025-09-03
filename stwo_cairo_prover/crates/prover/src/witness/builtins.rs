@@ -317,11 +317,11 @@ impl BuiltinsInteractionClaimGenerator {
                 .map(|pedersen_builtin_interaction_gen| {
                     pedersen_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
+                        &interaction_elements.range_checks.rc_5_4,
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
-                        &interaction_elements.partial_ec_mul,
-                        &interaction_elements.range_checks.rc_5_4,
                         &interaction_elements.range_checks.rc_8,
+                        &interaction_elements.partial_ec_mul,
                     )
                 });
         let poseidon_builtin_interaction_claim =
@@ -329,15 +329,15 @@ impl BuiltinsInteractionClaimGenerator {
                 .map(|poseidon_builtin_interaction_gen| {
                     poseidon_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
-                        &interaction_elements.cube_252,
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
-                        &interaction_elements.poseidon_3_partial_rounds_chain,
                         &interaction_elements.poseidon_full_round_chain,
                         &interaction_elements.range_check_felt_252_width_27,
+                        &interaction_elements.cube_252,
                         &interaction_elements.range_checks.rc_3_3_3_3_3,
-                        &interaction_elements.range_checks.rc_4_4,
                         &interaction_elements.range_checks.rc_4_4_4_4,
+                        &interaction_elements.range_checks.rc_4_4,
+                        &interaction_elements.poseidon_3_partial_rounds_chain,
                     )
                 });
         let range_check_96_builtin_interaction_claim = self
