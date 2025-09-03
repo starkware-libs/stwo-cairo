@@ -1,8 +1,7 @@
 use core::array::ArrayTrait;
-use core::hash::HashStateTrait;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use core::num::traits::Zero;
-use core::poseidon::{HashState, hades_permutation, poseidon_hash_span};
+use core::poseidon::{hades_permutation, poseidon_hash_span};
 use crate::BaseField;
 use crate::fields::m31::M31_SHIFT;
 use crate::fields::qm31::QM31_EXTENSION_DEGREE;
@@ -21,11 +20,8 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         if let Some((x, y)) = children_hashes {
             // Most often a node has no column values.
             if column_values.len() == 0 {
-                // Inlined and simplified `poseidon_hash_span(...)` for better performance.
-                // TODO: Posiedon2 here { == hades_permutation(x, y, 2); }
-                let (s0, s1, s2) = hades_permutation(x, y, 0);
-                let hash_state = HashState { s0, s1, s2, odd: false };
-                return hash_state.finalize();
+                let (s0, _s1, _s2) = hades_permutation(x, y, 2);
+                return s0;
             }
             hash_array.append(x);
             hash_array.append(y);
