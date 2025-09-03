@@ -7,7 +7,7 @@ mod PoseidonTest {
 
     #[test]
     fn test_verifier() {
-        let root = 0x487d4619a3b49e2d33f289d6a47f4cdf3f71a03f48ac7012d36c2da9ed91d80;
+        let root = 0xd6a60f3700a026e94288e882a69e7627609177a62de03748d3b2c2e7fb59d9;
         let log_blowup_factor = 1;
         let degree_bound_by_column = array![3, 2, 3, 2, 2, 2, 3, 3, 2, 2];
         let decommitment = MerkleDecommitment::<

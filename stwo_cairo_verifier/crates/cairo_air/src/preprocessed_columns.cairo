@@ -340,11 +340,11 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
 #[cfg(feature: "poseidon252_verifier")]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x37135f0785b40da84b4edd5b92e532f9b96908f9d5222705e99e1ab51f0874e,
-        1 => 0x301e3e86d4f2ea10c5e1ab1ceec1a7ac3bba33838d185f886ec86fea3596394,
-        2 => 0x672b4c8a40b5da0bbe4220e2b3dbd7ffdf8a600a1d57c14749fe6da382ed543,
-        3 => 0x265cf99e281e42f542299815419ba8d4e61ff2fb31b67a1b0fd0915c69ec81d,
-        4 => 0x41e2af383bb39edc612dc626595df2bfc433bdfa9aeddf63b5ded918793cea9,
+        0 => 0x92f1cc082f3068583749a305bd84ebb4ed945a014a6b03f43dea3e500f9e4e,
+        1 => 0x60b73e7e6824f68a4a6ddf450bfe810be2c6b12ebad5fc133d7672a76bb4ec3,
+        2 => 0x71944a190ebd4721f696f8d1c5e7a95e8efc70d104d7391b0de4ac965baba70,
+        3 => 0x5d83b175ae26614b615d51c92927272a7b5b50a74afa6b84536142db0a25728,
+        4 => 0x6ba5cf14072a327807b33acc97bb365a796f9bedfcabde9461a25131205ff83,
         _ => panic!("invalid blowup factor"),
     }
 }
