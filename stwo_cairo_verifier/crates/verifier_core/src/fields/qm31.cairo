@@ -35,6 +35,12 @@ pub trait QM31Trait {
     /// Returns a fused multiply-subtract i.e. returns `a * b - c`.
     fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31;
 
+    /// Given a sample point `(px, py): CirclePoint<QM31>` and a domain point
+    /// `(dx, dy): CirclePoint<M31>` computes the quotient denominator, which has the formula:
+    ///   Re(px - dx) * Im(py) - Re(py - dy) * Im(px)
+    /// Equivalently, this is the imaginary part of (py - dy) * conj(px - dx).
+    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31;
+
     /// Returns the combined value, given the values of its composing base field polynomials at that
     /// point.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
