@@ -26,7 +26,7 @@ impl QM31InvertibleImpl of Invertible<QM31> {
         let ib2 = CM31 { a: -b2.b, b: b2.a };
         let denom = self.a * self.a - (b2 + b2 + ib2);
         let denom_inverse = denom.inverse();
-        QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
+        QM31 { a: self.a, b: -self.b }.mul_cm31(denom_inverse)
     }
 }
 
@@ -51,7 +51,7 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
-        QM31 { a: self.a * rhs, b: self.b * rhs }
+        unreduced::mul_cm31_using_unreduced(self, rhs)
     }
 
     fn complex_conjugate(self: QM31) -> QM31 {
@@ -95,7 +95,7 @@ pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
         // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
-        QM31 { a: lhs.a * rhs.a + mul_by_r(lhs.b) * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+        unreduced::mul_using_unreduced(lhs, rhs)
     }
 }
 

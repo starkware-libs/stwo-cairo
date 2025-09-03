@@ -88,6 +88,34 @@ fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
     }
 }
 
+#[inline]
+pub fn mul_cm31_using_unreduced(lhs: QM31, rhs: CM31) -> QM31 {
+    /// Equals `P * P * 16`.
+    const PP16: felt252 = 0x3fffffff000000010;
+
+    // `lhs` 1st CM31 coordinate.
+    let lhs_aa: felt252 = lhs.a.a.into();
+    let lhs_ab: felt252 = lhs.a.b.into();
+
+    // `lhs` 2nd CM31 coordinate.
+    let lhs_ba: felt252 = lhs.b.a.into();
+    let lhs_bb: felt252 = lhs.b.b.into();
+
+    // `rhs` CM31 coordinate.
+    let rhs_a: felt252 = rhs.a.into();
+    let rhs_b: felt252 = rhs.b.into();
+
+    // lhs.a * rhs
+    let (aa_t_ba_a, aa_t_ba_b) = (lhs_aa * rhs_a - lhs_ab * rhs_b, lhs_aa * rhs_b + lhs_ab * rhs_a);
+
+    // lhs.b * rhs
+    let (ab_t_ba_a, ab_t_ba_b) = (lhs_ba * rhs_a - lhs_bb * rhs_b, lhs_ba * rhs_b + lhs_bb * rhs_a);
+
+    let unreduced = UnreducedQM31 {
+        a: PP16 + aa_t_ba_a, b: aa_t_ba_b, c: PP16 + ab_t_ba_a, d: ab_t_ba_b,
+    };
+    reduce(unreduced)
+}
 
 #[inline]
 pub fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
@@ -107,4 +135,9 @@ pub fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
     mul_res.c -= c.b.a.inner.into();
     mul_res.d -= c.b.b.inner.into();
     reduce(mul_res)
+}
+
+#[inline]
+pub fn mul_using_unreduced(a: QM31, b: QM31) -> QM31 {
+    reduce(mul_unreduced(a, b))
 }
