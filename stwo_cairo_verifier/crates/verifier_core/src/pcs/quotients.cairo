@@ -5,7 +5,7 @@ use core::num::traits::{One, Zero};
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
 use crate::fields::BatchInvertible;
-use crate::fields::cm31::{CM31, CM31Trait};
+use crate::fields::cm31::CM31;
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
@@ -184,16 +184,14 @@ fn quotient_denominator_inverses(
     let mut denominators = array![];
 
     for sample_batch in sample_batches {
-        // For a sample point `P: CirclePoint<QM31>` compute its real part Pr and its imaginary part
-        // Pi, both of type `CirclePoint<CM31>` (i.e. real and imaginary parts are with respect to
-        // CM31).
-        let [a, b, c, d] = sample_batch.point.x.to_fixed_array();
-        let prx = CM31Trait::pack(a.into(), b.into());
-        let pix = CM31Trait::pack(c.into(), d.into());
-        let [a, b, c, d] = sample_batch.point.y.to_fixed_array();
-        let pry = CM31Trait::pack(a.into(), b.into());
-        let piy = CM31Trait::pack(c.into(), d.into());
-        denominators.append(prx.sub_m31(domain_point.x) * piy - pry.sub_m31(domain_point.y) * pix);
+        // For a sample point `P: CirclePoint<QM31>` domain point `D: CirclePoint<M31>`, the
+        // denominator is given by
+        //   (Pr.x - D.x) * Pi.y - (Pr.y - D.y) * Py.x
+        // where Pr, Pi are the real and imaginary parts of P, both of type `CirclePoint<CM31>`.
+        let denominator = QM31Trait::fused_quotient_denominator(
+            sample_batch.point.x, sample_batch.point.y, domain_point.x, domain_point.y,
+        );
+        denominators.append(denominator);
     }
 
     BatchInvertible::batch_inverse(denominators)

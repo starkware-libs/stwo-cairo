@@ -1,4 +1,5 @@
 use crate::fields::Invertible;
+use crate::fields::cm31::CM31Trait;
 use crate::fields::m31::{MulByM31Trait, m31};
 use crate::fields::qm31::{
     PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Impl, QM31Trait, qm31_const,
@@ -44,6 +45,27 @@ fn test_fused_mul_sub() {
     let res = QM31Trait::fused_mul_sub(a, b, c);
 
     assert_eq!(res, a * b - c);
+}
+
+#[test]
+fn test_fused_quotient_denominator() {
+    let px = qm31_const::<2147483643, 2147483557, 958, 2147483646>();
+    let py = qm31_const::<2147483464, 75, 2147482726, 2147477523>();
+    let dx = m31(345346);
+    let dy = m31(453737565);
+
+    let res = QM31Trait::fused_quotient_denominator(@px, @py, dx, dy);
+
+    // Compare to a generic implementation.
+    let [a, b, c, d] = px.to_fixed_array();
+    let prx = CM31Trait::pack(a.into(), b.into());
+    let pix = CM31Trait::pack(c.into(), d.into());
+    let [a, b, c, d] = py.to_fixed_array();
+    let pry = CM31Trait::pack(a.into(), b.into());
+    let piy = CM31Trait::pack(c.into(), d.into());
+    let res_generic = prx.sub_m31(dx) * piy - pry.sub_m31(dy) * pix;
+
+    assert_eq!(res, res_generic);
 }
 
 #[test]

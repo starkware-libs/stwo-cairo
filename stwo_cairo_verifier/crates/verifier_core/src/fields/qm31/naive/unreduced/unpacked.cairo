@@ -109,6 +109,27 @@ pub fn mul_cm_using_unreduced(lhs: CM31, rhs: CM31) -> CM31 {
     reduce_cm31(PP16 + res_a, res_b)
 }
 
+pub fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31 {
+    /// Equals `P * P * 16`.
+    const PP16: felt252 = 0x3fffffff000000010;
+
+    let px_aa: felt252 = px.a.a.into() - dx.into();
+    let px_ab: felt252 = px.a.b.into();
+    let px_ba: felt252 = px.b.a.into();
+    let px_bb: felt252 = px.b.b.into();
+
+    let py_aa: felt252 = py.a.a.into() - dy.into();
+    let py_ab: felt252 = py.a.b.into();
+    let py_ba: felt252 = py.b.a.into();
+    let py_bb: felt252 = py.b.b.into();
+
+    // px.a * py.b - px.b * py.a
+    let res_a = (px_aa * py_ba - px_ab * py_bb) - (px_ba * py_aa - px_bb * py_ab) + PP16;
+    let res_b = (px_aa * py_bb + px_ab * py_ba) - (px_ba * py_ab + px_bb * py_aa) + PP16;
+
+    reduce_cm31(res_a, res_b)
+}
+
 #[inline]
 pub fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
     let mut mul_res = mul_unreduced(a, b);
