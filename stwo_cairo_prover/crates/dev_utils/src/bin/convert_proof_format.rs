@@ -1,15 +1,14 @@
-use std::fs;
 use std::path::PathBuf;
 
+use cairo_air::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
 use cairo_air::CairoProof;
 use clap::Parser;
-use regex::Regex;
+use serde::de::DeserializeOwned;
 use serde::Serialize;
-use starknet_ff::FieldElement;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleHasher;
 use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::CairoDeserialize;
+use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 #[derive(Parser, Debug)]
 #[command(
@@ -30,33 +29,18 @@ struct Args {
     hash: String,
 }
 
-fn convert_proof<H: MerkleHasher + Serialize>(
+fn convert_proof<H: MerkleHasher + Serialize + DeserializeOwned>(
     input_path: &PathBuf,
     output_path: &PathBuf,
 ) -> Result<(), std::io::Error>
 where
-    H::Hash: CairoDeserialize,
+    H::Hash: CairoSerialize + CairoDeserialize,
 {
-    let values = read_to_felts(input_path)?;
-    let proof: CairoProof<H> = CairoDeserialize::deserialize(&mut values.iter());
-    let json_content = sonic_rs::to_string_pretty(&proof)?;
-    fs::write(output_path, json_content)?;
+    let proof: CairoProof<H> = deserialize_proof_from_file(input_path, ProofFormat::CairoSerde)?;
+    serialize_proof_to_file::<H>(&proof, output_path, ProofFormat::Json)?;
 
     println!("Successfully converted proof from Cairo-serde to JSON format");
     Ok(())
-}
-
-fn read_to_felts(input_path: &PathBuf) -> Result<Vec<FieldElement>, std::io::Error> {
-    let content = fs::read_to_string(input_path)?;
-    let re = Regex::new(r#""(0x[0-9A-Fa-f]+)""#).unwrap();
-    let values: Vec<FieldElement> = re
-        .captures_iter(content.as_str())
-        .filter_map(|cap| {
-            cap.get(1)
-                .map(|m| FieldElement::from_hex_be(m.as_str()).unwrap())
-        })
-        .collect();
-    Ok(values)
 }
 
 fn main() -> Result<(), std::io::Error> {
