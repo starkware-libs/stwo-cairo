@@ -70,6 +70,11 @@ pub impl QM31Impl of QM31Trait {
         unreduced::fused_mul_sub(a, b, c)
     }
 
+    #[inline]
+    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31 {
+        unreduced::fused_quotient_denominator(*px, *py, dx, dy)
+    }
+
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         let [e0, e1, e2, e3] = evals;
         e0
