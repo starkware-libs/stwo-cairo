@@ -21,11 +21,8 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
         if let Some((x, y)) = children_hashes {
             // Most often a node has no column values.
             if column_values.len() == 0 {
-                // Inlined and simplified `poseidon_hash_span(...)` for better performance.
-                // TODO: Posiedon2 here { == hades_permutation(x, y, 2); }
-                let (s0, s1, s2) = hades_permutation(x, y, 0);
-                let hash_state = HashState { s0, s1, s2, odd: false };
-                return hash_state.finalize();
+                let (s0, _s1, _s2) = hades_permutation(x, y, 2);
+                return s0;
             }
             hash_array.append(x);
             hash_array.append(y);
