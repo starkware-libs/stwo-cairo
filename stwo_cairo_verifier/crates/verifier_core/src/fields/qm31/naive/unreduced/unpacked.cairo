@@ -4,9 +4,9 @@
 /// `PackedUnreducedQM31` is less efficient for this use case because the saving in the additions
 /// are outweighed by the additional packing and unpacking.
 
-use super::super::QM31;
 use super::super::super::super::cm31::CM31;
 use super::super::super::super::m31::{M31, M31Trait};
+use super::super::{QM31, QM31Trait};
 
 /// Stores an unreduced [`CM31`] with each coordinate stored as a `felt252`.
 #[derive(Copy, Drop, Debug)]
@@ -135,4 +135,27 @@ pub fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
     mul_res.b.a -= c.b.a.inner.into();
     mul_res.b.b -= c.b.b.inner.into();
     reduce_qm31(mul_res)
+}
+
+#[inline]
+pub fn from_partial_evals(evals: [QM31; 4]) -> QM31 {
+    const P16: felt252 = 0x7_ffff_fff0;
+    let [e0, e1, e2, e3] = evals;
+    let [e00, e01, e02, e03] = e0.to_fixed_array().into();
+    let [e00, e01, e02, e03]: [felt252; 4] = [e00.into(), e01.into(), e02.into(), e03.into()];
+    let [e10, e11, e12, e13] = e1.to_fixed_array().into();
+    let [e10, e11, e12, e13]: [felt252; 4] = [e10.into(), e11.into(), e12.into(), e13.into()];
+    let [e20, e21, e22, e23] = e2.to_fixed_array().into();
+    let [e20, e21, e22, e23]: [felt252; 4] = [e20.into(), e21.into(), e22.into(), e23.into()];
+    let [e30, e31, e32, e33] = e3.to_fixed_array().into();
+    let [e30, e31, e32, e33]: [felt252; 4] = [e30.into(), e31.into(), e32.into(), e33.into()];
+
+    let [e22r, e23r] = [e22 + e22 - e23, e22 + e23 + e23];
+    let [e32r, e33r] = [e32 + e32 - e33, e32 + e33 + e33];
+
+    let unreduced = UnreducedQM31 {
+        a: UnreducedCM31 { a: e00 - e11 + e22r - e33r + P16, b: e01 + e10 + e23r + e32r + P16 },
+        b: UnreducedCM31 { a: e02 - e13 + e20 - e31 + P16, b: e03 + e12 + e21 + e30 },
+    };
+    reduce_qm31(unreduced)
 }
