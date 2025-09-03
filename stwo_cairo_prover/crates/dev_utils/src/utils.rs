@@ -2,7 +2,6 @@ use std::path::PathBuf;
 
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, CairoVerificationError};
-use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
@@ -15,7 +14,6 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::Felt252;
 use serde::Serialize;
 use stwo::core::channel::MerkleChannel;
-use stwo::core::pcs::PcsConfig;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
@@ -52,8 +50,7 @@ pub enum Error {
 /// Verifies the proof in case the respective flag is set.
 pub fn create_and_serialize_generic_proof<MC: MerkleChannel>(
     input: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
+    prover_params: ProverParameters,
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
@@ -63,12 +60,12 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
+    let proof = prove_cairo::<MC>(input, prover_params)?;
 
     serialize_proof_to_file::<MC>(&proof, proof_path, proof_format)?;
 
     if verify {
-        verify_cairo::<MC>(proof, preprocessed_trace)?;
+        verify_cairo::<MC>(proof, prover_params.preprocessed_trace)?;
         log::info!("Proof verified successfully");
     }
 
@@ -82,35 +79,23 @@ pub fn create_and_serialize_proof(
     proof_format: ProofFormat,
     proof_params_json: Option<PathBuf>,
 ) -> Result<(), Error> {
-    let ProverParameters {
-        channel_hash,
-        pcs_config,
-        preprocessed_trace,
-    } = match proof_params_json {
+    let prover_params: ProverParameters = match proof_params_json {
         Some(path) => sonic_rs::from_str(&std::fs::read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
     let create_and_serialize_generic_proof: fn(
         ProverInput,
-        PcsConfig,
-        PreProcessedTraceVariant,
+        ProverParameters,
         bool,
         PathBuf,
         ProofFormat,
-    ) -> Result<(), Error> = match channel_hash {
+    ) -> Result<(), Error> = match prover_params.channel_hash {
         ChannelHash::Blake2s => create_and_serialize_generic_proof::<Blake2sMerkleChannel>,
         ChannelHash::Poseidon252 => create_and_serialize_generic_proof::<Poseidon252MerkleChannel>,
     };
 
-    create_and_serialize_generic_proof(
-        input,
-        pcs_config,
-        preprocessed_trace,
-        verify,
-        proof_path,
-        proof_format,
-    )?;
+    create_and_serialize_generic_proof(input, prover_params, verify, proof_path, proof_format)?;
 
     Ok(())
 }
