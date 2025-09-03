@@ -3,7 +3,7 @@ use core::num::traits::one::One;
 use core::num::traits::zero::Zero;
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
-use super::super::cm31::CM31;
+use super::super::cm31::{CM31, MulByCM31Trait};
 use super::super::m31::{M31, M31InnerT, MulByM31Trait};
 // TODO(Gali): Remove.
 #[allow(unused_imports)]
@@ -39,6 +39,13 @@ pub impl QM31MulByM31Impl of MulByM31Trait<QM31> {
     }
 }
 
+pub impl QM31MulByCM31Impl of MulByCM31Trait<QM31> {
+    #[inline]
+    fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
+        QM31 { a: self.a * rhs, b: self.b * rhs }
+    }
+}
+
 pub impl QM31Impl of QM31Trait {
     #[inline]
     fn from_fixed_array(arr: [M31; QM31_EXTENSION_DEGREE]) -> QM31 {
@@ -49,11 +56,6 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn to_fixed_array(self: QM31) -> [M31; QM31_EXTENSION_DEGREE] {
         [self.a.a, self.a.b, self.b.a, self.b.b]
-    }
-
-    #[inline]
-    fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
-        QM31 { a: self.a * rhs, b: self.b * rhs }
     }
 
     fn complex_conjugate(self: QM31) -> QM31 {
