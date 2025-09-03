@@ -22,6 +22,12 @@ cd stwo-cairo/cairo-prove
 sudo cp target/release/cairo-prove /usr/local/bin/
 ```
 
+Alternatively use cargo install:
+
+```bash
+cargo install --git https://github.com/starkware-libs/stwo-cairo cairo-prove
+```
+
 ## Usage
 
 ### Compiling a project.
