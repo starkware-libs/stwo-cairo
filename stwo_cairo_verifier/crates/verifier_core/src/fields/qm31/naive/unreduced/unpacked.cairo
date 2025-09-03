@@ -6,7 +6,7 @@
 
 use super::super::QM31;
 use super::super::super::super::cm31::CM31;
-use super::super::super::super::m31::M31Trait;
+use super::super::super::super::m31::{M31, M31Trait};
 
 /// Stores an unreduced [`QM31`] with each coordinate stored as a `felt252`.
 #[derive(Copy, Drop, Debug)]
@@ -17,17 +17,19 @@ struct UnreducedQM31 {
     d: felt252,
 }
 
-fn reduce(value: UnreducedQM31) -> QM31 {
-    QM31 {
-        a: CM31 {
-            a: M31Trait::reduce_u128(value.a.try_into().unwrap()).into(),
-            b: M31Trait::reduce_u128(value.b.try_into().unwrap()).into(),
-        },
-        b: CM31 {
-            a: M31Trait::reduce_u128(value.c.try_into().unwrap()).into(),
-            b: M31Trait::reduce_u128(value.d.try_into().unwrap()).into(),
-        },
-    }
+#[inline]
+fn reduce_m31(value: felt252) -> M31 {
+    M31Trait::reduce_u128(value.try_into().unwrap())
+}
+
+#[inline]
+fn reduce_cm31(a: felt252, b: felt252) -> CM31 {
+    CM31 { a: reduce_m31(a), b: reduce_m31(b) }
+}
+
+#[inline]
+fn reduce_qm31(value: UnreducedQM31) -> QM31 {
+    QM31 { a: reduce_cm31(value.a, value.b), b: reduce_cm31(value.c, value.d) }
 }
 
 // TODO(andrew): Consider Karatsuba.
@@ -89,32 +91,22 @@ fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
 }
 
 #[inline]
-pub fn mul_cm31_using_unreduced(lhs: QM31, rhs: CM31) -> QM31 {
+pub fn mul_cm_using_unreduced(lhs: CM31, rhs: CM31) -> CM31 {
     /// Equals `P * P * 16`.
     const PP16: felt252 = 0x3fffffff000000010;
 
-    // `lhs` 1st CM31 coordinate.
-    let lhs_aa: felt252 = lhs.a.a.into();
-    let lhs_ab: felt252 = lhs.a.b.into();
-
-    // `lhs` 2nd CM31 coordinate.
-    let lhs_ba: felt252 = lhs.b.a.into();
-    let lhs_bb: felt252 = lhs.b.b.into();
+    // `lhs` coordinates.
+    let lhs_a: felt252 = lhs.a.into();
+    let lhs_b: felt252 = lhs.b.into();
 
     // `rhs` coordinates.
     let rhs_a: felt252 = rhs.a.into();
     let rhs_b: felt252 = rhs.b.into();
 
-    // lhs.a * rhs
-    let (aa_t_b_a, aa_t_b_b) = (lhs_aa * rhs_a - lhs_ab * rhs_b, lhs_aa * rhs_b + lhs_ab * rhs_a);
+    // lhs * rhs
+    let (res_a, res_b) = (lhs_a * rhs_a - lhs_b * rhs_b, lhs_a * rhs_b + lhs_b * rhs_a);
 
-    // lhs.b * rhs
-    let (ab_t_b_a, ab_t_b_b) = (lhs_ba * rhs_a - lhs_bb * rhs_b, lhs_ba * rhs_b + lhs_bb * rhs_a);
-
-    let unreduced = UnreducedQM31 {
-        a: PP16 + aa_t_b_a, b: aa_t_b_b, c: PP16 + ab_t_b_a, d: ab_t_b_b,
-    };
-    reduce(unreduced)
+    reduce_cm31(PP16 + res_a, res_b)
 }
 
 #[inline]
@@ -124,7 +116,7 @@ pub fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
     mul_res.b += c.a.b.inner.into();
     mul_res.c += c.b.a.inner.into();
     mul_res.d += c.b.b.inner.into();
-    reduce(mul_res)
+    reduce_qm31(mul_res)
 }
 
 #[inline]
@@ -134,10 +126,10 @@ pub fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
     mul_res.b -= c.a.b.inner.into();
     mul_res.c -= c.b.a.inner.into();
     mul_res.d -= c.b.b.inner.into();
-    reduce(mul_res)
+    reduce_qm31(mul_res)
 }
 
 #[inline]
-pub fn mul_using_unreduced(a: QM31, b: QM31) -> QM31 {
-    reduce(mul_unreduced(a, b))
+pub fn mul_qm_using_unreduced(a: QM31, b: QM31) -> QM31 {
+    reduce_qm31(mul_unreduced(a, b))
 }
