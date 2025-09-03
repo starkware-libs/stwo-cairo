@@ -11,7 +11,9 @@ use super::{QM31Trait, QM31_EXTENSION_DEGREE};
 
 mod unreduced;
 
-pub use unreduced::{PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl};
+pub use unreduced::{
+    PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl, mul_cm_using_unreduced,
+};
 
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -51,7 +53,7 @@ pub impl QM31Impl of QM31Trait {
 
     #[inline]
     fn mul_cm31(self: QM31, rhs: CM31) -> QM31 {
-        unreduced::mul_cm31_using_unreduced(self, rhs)
+        QM31 { a: self.a * rhs, b: self.b * rhs }
     }
 
     fn complex_conjugate(self: QM31) -> QM31 {
@@ -94,7 +96,7 @@ pub impl QM31Sub of core::traits::Sub<QM31> {
 pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
-        unreduced::mul_using_unreduced(lhs, rhs)
+        unreduced::mul_qm_using_unreduced(lhs, rhs)
     }
 }
 
@@ -184,14 +186,4 @@ pub fn qm31_const<
         a: CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } },
         b: CM31 { a: M31 { inner: W2 }, b: M31 { inner: W3 } },
     }
-}
-
-/// Returns `v * R` where `R = 2 + i = u^2`.
-#[inline(always)]
-fn mul_by_r(v: CM31) -> CM31 {
-    // = v * R
-    // = (a + bi) * (2 + i)
-    // = (2a - b) + (a + 2b)i
-    let CM31 { a, b } = v;
-    CM31 { a: a + a - b, b: a + b + b }
 }
