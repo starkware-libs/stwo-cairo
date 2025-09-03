@@ -2,7 +2,7 @@
 use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::super::Invertible;
-use super::super::cm31::CM31;
+use super::super::cm31::{CM31, CM31Trait};
 use super::super::m31::{M31, M31InnerT, M31Trait, MulByM31Trait};
 // TODO(Gali): Remove.
 #[allow(unused_imports)]
@@ -52,6 +52,13 @@ pub impl QM31Impl of QM31Trait {
     #[inline]
     fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
         QM31 { inner: a.inner * b.inner - c.inner }
+    }
+
+    #[inline]
+    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31 {
+        let [_, _, c, d] = ((*px - dx.into()).complex_conjugate() * (*py - dy.into()))
+            .to_fixed_array();
+        CM31Trait::pack(c, d)
     }
 
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
