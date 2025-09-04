@@ -38,7 +38,7 @@ pub struct PointSample {
 pub fn fri_answers(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
     log_blowup_factor: u32,
-    samples_per_column_per_tree: TreeSpan<ColumnSpan<Array<PointSample>>>,
+    samples_per_column_per_tree: TreeSpan<ColumnSpan<Span<PointSample>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values_per_tree: TreeSpan<Span<M31>>,
@@ -58,7 +58,7 @@ pub fn fri_answers(
         let mut n_columns_per_tree = array![];
         for (columns, samples_per_column) in zip_eq(columns_per_tree, samples_per_column_per_tree) {
             for column in columns {
-                samples.append(samples_per_column[*column]);
+                samples.append(*samples_per_column[*column]);
             }
             n_columns_per_tree.append(columns.len());
         }
@@ -89,7 +89,7 @@ pub fn fri_answers(
 
 fn fri_answers_for_log_size(
     log_size: u32,
-    samples_per_column: Array<@Array<PointSample>>,
+    samples_per_column: Array<Span<PointSample>>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
     ref queried_values_per_tree: TreeSpan<Span<M31>>,
@@ -317,7 +317,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
     /// and verifier must agree on the ordering of columns and points (offsets) for each column.
     /// NOTE: PrefixSum columns (LogUp) are sampled at a single point `Z` and a single offset `-1`
     /// -> `Z-g`. the current ordering for these columns is: [Z-g, Z].
-    fn group_by_point(samples_per_column: Array<@Array<PointSample>>) -> Array<ColumnSampleBatch> {
+    fn group_by_point(samples_per_column: Array<Span<PointSample>>) -> Array<ColumnSampleBatch> {
         // Samples grouped by point.
         let mut grouped_samples: Felt252Dict<Nullable<Array<(usize, QM31)>>> = Default::default();
         let mut point_set: Array<CirclePoint<QM31>> = array![];
@@ -327,7 +327,7 @@ impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
         for samples in samples_per_column {
             // TODO(andrew): Almost all columns have a single sample at the OODS point.
             // Handling this case specifically is more optimal than using the dictionary.
-            for sample in samples.span() {
+            for sample in samples {
                 let point_key = CirclePointQM31Key::encode(sample.point);
                 let (entry, value) = grouped_samples.entry(point_key);
 
