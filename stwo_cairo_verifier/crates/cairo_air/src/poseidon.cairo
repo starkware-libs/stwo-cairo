@@ -12,7 +12,7 @@ use stwo_cairo_air::CairoInteractionElements;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
@@ -68,27 +68,10 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
 
         // NOTE: The following components do not USE relations:
         // - poseidon_round_keys
-
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::poseidon_3_partial_rounds_chain::RELATION_USES_PER_ROW.span(),
-            *poseidon_3_partial_rounds_chain.log_size,
-        );
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::poseidon_full_round_chain::RELATION_USES_PER_ROW.span(),
-            *poseidon_full_round_chain.log_size,
-        );
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::cube_252::RELATION_USES_PER_ROW.span(),
-            *cube_252.log_size,
-        );
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::range_check_felt_252_width_27::RELATION_USES_PER_ROW.span(),
-            *range_check_felt_252_width_27.log_size,
-        );
+        poseidon_3_partial_rounds_chain.accumulate_relation_uses(ref relation_uses);
+        poseidon_full_round_chain.accumulate_relation_uses(ref relation_uses);
+        cube_252.accumulate_relation_uses(ref relation_uses);
+        range_check_felt_252_width_27.accumulate_relation_uses(ref relation_uses);
     }
 }
 
