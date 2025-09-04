@@ -25,7 +25,10 @@ stwo-cairo-adapter.workspace = true
 rayon.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+thiserror.workspace = true
+sonic-rs.workspace = true
 starknet-curve = "0.5.1"
+clap.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
@@ -33,6 +36,7 @@ cairo-air.workspace = true
 stwo.workspace = true
 stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
+log.workspace = true
 
 [dev-dependencies]
 dev-utils.workspace = true
