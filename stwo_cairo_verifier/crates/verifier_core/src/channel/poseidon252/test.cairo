@@ -103,8 +103,8 @@ pub fn test_draw_random_bytes_1() {
     let mut channel = new_channel(initial_digest);
     let result = channel.draw_random_bytes();
     let expected_result = array![
-        197, 20, 139, 143, 49, 135, 207, 202, 93, 167, 20, 244, 184, 186, 20, 136, 204, 43, 46, 147,
-        213, 253, 175, 170, 13, 64, 15, 168, 232, 211, 147,
+        202, 249, 218, 52, 208, 208, 120, 28, 251, 5, 215, 191, 0, 129, 91, 82, 5, 139, 123, 1, 233,
+        109, 186, 139, 66, 126, 67, 139, 136, 81, 93,
     ];
     assert_eq!(expected_result, result);
 }
@@ -115,8 +115,8 @@ pub fn test_draw_random_bytes_2() {
     let mut channel = new_channel(initial_digest);
     let result = channel.draw_random_bytes();
     let expected_result = array![
-        168, 175, 85, 209, 218, 65, 155, 212, 165, 88, 130, 167, 44, 242, 17, 127, 75, 251, 142,
-        180, 157, 176, 27, 167, 179, 247, 27, 113, 149, 41, 12,
+        122, 237, 190, 125, 191, 88, 175, 93, 133, 241, 197, 158, 15, 129, 95, 205, 251, 171, 97,
+        162, 35, 79, 107, 70, 39, 233, 52, 55, 28, 86, 174,
     ];
     assert_eq!(expected_result, result);
 }
