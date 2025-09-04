@@ -210,31 +210,28 @@ fn get_column_log_degree_bounds(
 fn zip_samples(
     sampled_points_by_column_per_tree: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
     sampled_values_by_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> TreeSpan<ColumnSpan<Array<PointSample>>> {
-    zip_eq(sampled_points_by_column_per_tree, sampled_values_by_column_per_tree)
-        .map(
-            |tuple: (ColumnArray<Array<CirclePoint<QM31>>>, @ColumnSpan<Span<QM31>>)| -> ColumnSpan<
-                Array<PointSample>,
-            > {
-                let (points_by_column, values_by_column) = tuple;
-                zip_eq(points_by_column, *values_by_column)
-                    .map(
-                        |tuple: (Array<CirclePoint<QM31>>, @Span<QM31>)| -> Array<PointSample> {
-                            let (points, values) = tuple;
-                            zip_eq(points, *values)
-                                .map(
-                                    |tuple: (CirclePoint<QM31>, @QM31)| {
-                                        let (point, value) = tuple;
-                                        PointSample { point, value: *value }
-                                    },
-                                )
-                                .collect()
-                        },
-                    )
-                    .collect::<ColumnArray<Array<PointSample>>>()
-                    .span()
-            },
-        )
-        .collect::<TreeArray<ColumnSpan<Array<PointSample>>>>()
-        .span()
+) -> TreeSpan<ColumnSpan<Span<PointSample>>> {
+    let mut samples_by_column_per_tree = array![];
+    for (points_by_column, values_by_column) in zip_eq(
+        sampled_points_by_column_per_tree, sampled_values_by_column_per_tree,
+    ) {
+        let mut samples_by_column: Array<Span<PointSample>> = array![];
+        for (points, values) in zip_eq(points_by_column, *values_by_column) {
+            samples_by_column
+                .append(
+                    zip_eq(points, *values)
+                        .map(
+                            |tuple: (CirclePoint<QM31>, @QM31)| {
+                                let (point, value) = tuple;
+                                PointSample { point, value: *value }
+                            },
+                        )
+                        .collect::<Array<PointSample>>()
+                        .span(),
+                );
+        }
+        samples_by_column_per_tree.append(samples_by_column.span());
+    }
+
+    samples_by_column_per_tree.span()
 }
