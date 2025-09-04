@@ -1,12 +1,12 @@
 use std::path::PathBuf;
 
-use cairo_air::verifier::verify_cairo;
+use cairo_air::verifier::{verify_cairo, CairoVerificationError};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use clap::Parser;
-use dev_utils::utils::Error;
 use stwo::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo::core::vcs::poseidon252_merkle::{Poseidon252MerkleChannel, Poseidon252MerkleHasher};
 use stwo_cairo_prover::prover::ChannelHash;
+use thiserror::Error;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -30,6 +30,18 @@ struct Args {
     /// Preprocessed trace variant (canonical or no_pedersen)
     #[arg(long = "pp_trace", default_value = "canonical")]
     pp_trace: String,
+}
+
+#[derive(Debug, Error)]
+pub enum Error {
+    #[error("Invalid arguments: {0}")]
+    Cli(#[from] clap::Error),
+    #[error("IO failed: {0}")]
+    IO(#[from] std::io::Error),
+    #[error("Cairo verification failed: {0}")]
+    CairoVerification(#[from] CairoVerificationError),
+    #[error("Serialization failed: {0}")]
+    Serializing(#[from] sonic_rs::error::Error),
 }
 
 fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash, Error> {
@@ -86,14 +98,8 @@ fn main() -> Result<(), Error> {
     let channel = parse_channel_hash(&args.channel_hash)?;
     let preprocessed_trace = parse_preprocessed_trace(&args.pp_trace);
 
-    let result = match channel {
+    match channel {
         ChannelHash::Blake2s => verify_blake2s_proof(proof, preprocessed_trace),
         ChannelHash::Poseidon252 => verify_poseidon252_proof(proof, preprocessed_trace),
-    };
-    match result {
-        Ok(_) => log::info!("✅ Proof verified successfully!"),
-        Err(e) => log::error!("❌ Proof verification failed: {e:?}"),
     }
-
-    Ok(())
 }
