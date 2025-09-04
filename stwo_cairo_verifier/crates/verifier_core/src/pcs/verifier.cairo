@@ -132,10 +132,11 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Verify proof of work.
         assert!(self.config.pow_bits >= MIN_POW_BITS);
         assert!(
-            channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
+            channel.verify_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
             "{}",
             VerificationError::QueriesProofOfWork,
         );
+        channel.mix_u64(proof_of_work_nonce);
 
         // Get FRI query positions.
         let (unique_column_log_sizes, mut query_positions_by_log_size, queries) = fri_verifier
