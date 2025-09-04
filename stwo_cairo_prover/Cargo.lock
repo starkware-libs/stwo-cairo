@@ -3471,9 +3471,11 @@ version = "0.1.0"
 dependencies = [
  "cairo-air",
  "cairo-vm",
+ "clap",
  "dev-utils",
  "hex",
  "itertools 0.12.1",
+ "log",
  "num-traits",
  "paste",
  "rand 0.8.5",
@@ -3493,6 +3495,7 @@ dependencies = [
  "stwo-constraint-framework",
  "tempfile",
  "test-log",
+ "thiserror",
  "tracing",
  "tracing-subscriber",
 ]
