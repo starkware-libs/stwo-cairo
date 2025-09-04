@@ -1,11 +1,12 @@
-use dev_utils::utils::get_proof_file_path;
-use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
-use tempfile::NamedTempFile;
-
-use crate::utils::{
-    construct_f252, deserialize_proof_from_file, encode_and_hash_memory_section,
-    encode_felt_in_limbs, serialize_proof_to_file, ProofFormat,
+#[cfg(feature = "slow-tests")]
+use {
+    crate::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat},
+    dev_utils::utils::get_proof_file_path,
+    stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher,
+    tempfile::NamedTempFile,
 };
+
+use crate::utils::{construct_f252, encode_and_hash_memory_section, encode_felt_in_limbs};
 
 #[test]
 fn test_encode_felt_in_limbs() {
@@ -81,7 +82,7 @@ fn test_serialize_and_deserialize_proof() {
     .expect("Failed to serialize proof (Json)");
 
     proof = deserialize_proof_from_file::<Blake2sMerkleHasher>(
-        &temp_json_file.path(),
+        temp_json_file.path(),
         ProofFormat::Json,
     )
     .expect("Failed to deserialize proof (Json)");
@@ -95,7 +96,7 @@ fn test_serialize_and_deserialize_proof() {
     .expect("Failed to serialize proof (Binary)");
 
     proof = deserialize_proof_from_file::<Blake2sMerkleHasher>(
-        &temp_binary_file.path(),
+        temp_binary_file.path(),
         ProofFormat::Binary,
     )
     .expect("Failed to deserialize proof (Binary)");
