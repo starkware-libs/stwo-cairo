@@ -224,7 +224,9 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     let counter: felt252 = channel.n_draws.into();
-    let (res, _, _) = hades_permutation(channel.digest, counter, 2);
+    // Use 3 as the capacity for domain separation between mix and draw operations.
+    // In all mix functions, the capacity is set to 0 or 2.
+    let (res, _, _) = hades_permutation(channel.digest, counter, 3);
     channel.n_draws += 1;
     res
 }
