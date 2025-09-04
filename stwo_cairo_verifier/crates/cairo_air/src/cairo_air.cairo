@@ -386,7 +386,7 @@ pub struct CairoAir {
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
     /// The degree bound of the cairo air.
-    log_degree_bound: u32,
+    composition_log_degree_bound: u32,
 }
 
 #[generate_trait]
@@ -396,7 +396,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         cairo_claim: @CairoClaim,
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @CairoInteractionClaim,
-        log_degree_bound: u32,
+        composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
@@ -509,7 +509,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
-            log_degree_bound,
+            composition_log_degree_bound,
         }
     }
 }
@@ -517,7 +517,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        *self.log_degree_bound
+        *self.composition_log_degree_bound
     }
 
     fn mask_points(
@@ -540,7 +540,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
-            log_degree_bound: _,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -689,7 +689,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
-            log_degree_bound: _,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -844,7 +844,7 @@ pub struct CairoAir {
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
     /// The degree bound of the cairo air.
-    log_degree_bound: u32,
+    composition_log_degree_bound: u32,
 }
 
 #[generate_trait]
@@ -854,7 +854,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         cairo_claim: @CairoClaim,
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @CairoInteractionClaim,
-        log_degree_bound: u32,
+        composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
@@ -957,7 +957,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
-            log_degree_bound,
+            composition_log_degree_bound,
         }
     }
 }
@@ -965,7 +965,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(feature: "poseidon252_verifier")]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        *self.log_degree_bound
+        *self.composition_log_degree_bound
     }
 
     fn mask_points(
@@ -986,7 +986,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
-            log_degree_bound: _,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -1120,7 +1120,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
-            log_degree_bound: _,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
