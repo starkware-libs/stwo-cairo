@@ -597,7 +597,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
             let [f_at_x, f_at_neg_x] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
-            res.append(f0 + fold_alpha * f1);
+            res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
         }
 
         res
@@ -625,7 +625,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
                 .unwrap();
             let [f_at_p, f_at_neg_p] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
-            res.append(f0 + fold_alpha * f1);
+            res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
         }
 
         res
