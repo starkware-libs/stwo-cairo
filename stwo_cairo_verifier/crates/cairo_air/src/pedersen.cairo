@@ -8,7 +8,7 @@ use stwo_cairo_air::CairoInteractionElements;
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{RelationUsesDict, accumulate_relation_uses, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
 };
@@ -48,12 +48,7 @@ pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
 
         // NOTE: The following components do not USE relations:
         // - pedersen_points_table
-
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::partial_ec_mul::RELATION_USES_PER_ROW.span(),
-            *partial_ec_mul.log_size,
-        );
+        partial_ec_mul.accumulate_relation_uses(ref relation_uses);
     }
 }
 

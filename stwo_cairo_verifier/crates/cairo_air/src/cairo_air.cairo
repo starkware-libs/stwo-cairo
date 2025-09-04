@@ -44,9 +44,7 @@ use stwo_cairo_air::range_checks::{
     RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
     RangeChecksInteractionElementsImpl,
 };
-use stwo_cairo_air::{
-    PublicData, PublicDataImpl, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
     PreprocessedColumnSet, PreprocessedMaskValuesImpl,
@@ -211,24 +209,8 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
         poseidon_context.accumulate_relation_uses(ref relation_uses);
-
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::verify_instruction::RELATION_USES_PER_ROW.span(),
-            *verify_instruction.log_size,
-        );
-        for log_size in memory_id_to_value.big_log_sizes.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::memory_id_to_big::RELATION_USES_PER_ROW_BIG.span(),
-                *log_size,
-            );
-        }
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::memory_id_to_big::RELATION_USES_PER_ROW_SMALL.span(),
-            *memory_id_to_value.small_log_size,
-        );
+        verify_instruction.accumulate_relation_uses(ref relation_uses);
+        memory_id_to_value.accumulate_relation_uses(ref relation_uses);
     }
 }
 
