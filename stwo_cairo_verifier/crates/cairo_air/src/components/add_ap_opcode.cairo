@@ -10,6 +10,24 @@ pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
     ('RangeCheck_8', 1), ('Opcodes', 1),
 ];
 
+pub struct FullClaim {
+    pub claim: Claim,
+    pub interaction_claim: InteractionClaim
+}
+
+pub impl FullClaimTraitImpl of FullClaimTrait<FullClaim> {
+    type Claim = Claim;
+    type InteractionClaim = InteractionClaim;
+
+    fn get_claim(self: @FullClaim) -> @Claim {
+        self.claim
+    }
+
+    fn get_interaction_claim(self: @FullClaim) -> @InteractionClaim {
+        self.interaction_claim
+    }
+}
+
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
     pub log_size: u32,
