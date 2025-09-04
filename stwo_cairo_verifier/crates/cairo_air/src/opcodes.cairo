@@ -1,73 +1,23 @@
-use components::add_ap_opcode::{
-    ClaimImpl as AddApOpcodeClaimImpl, InteractionClaimImpl as AddApOpcodeInteractionClaimImpl,
-};
-use components::add_opcode::{
-    ClaimImpl as AddOpcodeClaimImpl, InteractionClaimImpl as AddOpcodeInteractionClaimImpl,
-};
-use components::add_opcode_small::{
-    ClaimImpl as AddOpcodeSmallClaimImpl,
-    InteractionClaimImpl as AddOpcodeSmallInteractionClaimImpl,
-};
-use components::assert_eq_opcode::{
-    ClaimImpl as AssertEqOpcodeClaimImpl,
-    InteractionClaimImpl as AssertEqOpcodeInteractionClaimImpl,
-};
-use components::assert_eq_opcode_double_deref::{
-    ClaimImpl as AssertEqOpcodeDoubleDerefClaimImpl,
-    InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl,
-};
-use components::assert_eq_opcode_imm::{
-    ClaimImpl as AssertEqOpcodeImmClaimImpl,
-    InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl,
-};
-use components::blake_compress_opcode::{
-    ClaimImpl as BlakeCompressOpcodeClaimImpl,
-    InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl,
-};
-use components::call_opcode::{
-    ClaimImpl as CallOpcodeClaimImpl, InteractionClaimImpl as CallOpcodeInteractionClaimImpl,
-};
-use components::call_opcode_rel_imm::{
-    ClaimImpl as CallOpcodeRelClaimImpl, InteractionClaimImpl as CallOpcodeRelInteractionClaimImpl,
-};
-use components::generic_opcode::{
-    ClaimImpl as GenericOpcodeClaimImpl, InteractionClaimImpl as GenericOpcodeInteractionClaimImpl,
-};
-use components::jnz_opcode::{
-    ClaimImpl as JnzOpcodeClaimImpl, InteractionClaimImpl as JnzOpcodeInteractionClaimImpl,
-};
-use components::jnz_opcode_taken::{
-    ClaimImpl as JnzOpcodeTakenClaimImpl,
-    InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl,
-};
-use components::jump_opcode::{
-    ClaimImpl as JumpOpcodeClaimImpl, InteractionClaimImpl as JumpOpcodeInteractionClaimImpl,
-};
-use components::jump_opcode_double_deref::{
-    ClaimImpl as JumpOpcodeDoubleDerefClaimImpl,
-    InteractionClaimImpl as JumpOpcodeDoubleDerefInteractionClaimImpl,
-};
-use components::jump_opcode_rel::{
-    ClaimImpl as JumpOpcodeRelClaimImpl, InteractionClaimImpl as JumpOpcodeRelInteractionClaimImpl,
-};
-use components::jump_opcode_rel_imm::{
-    ClaimImpl as JumpOpcodeRelImmClaimImpl,
-    InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl,
-};
-use components::mul_opcode::{
-    ClaimImpl as MulOpcodeClaimImpl, InteractionClaimImpl as MulOpcodeInteractionClaimImpl,
-};
-use components::mul_opcode_small::{
-    ClaimImpl as MulOpcodeSmallClaimImpl,
-    InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl,
-};
-use components::qm_31_add_mul_opcode::{
-    ClaimImpl as Qm31AddMulOpcodeClaimImpl,
-    InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl,
-};
-use components::ret_opcode::{
-    ClaimImpl as RetOpcodeClaimImpl, InteractionClaimImpl as RetOpcodeInteractionClaimImpl,
-};
+use components::add_ap_opcode::InteractionClaimImpl as AddApOpcodeInteractionClaimImpl;
+use components::add_opcode::InteractionClaimImpl as AddOpcodeInteractionClaimImpl;
+use components::add_opcode_small::InteractionClaimImpl as AddOpcodeSmallInteractionClaimImpl;
+use components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteractionClaimImpl;
+use components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
+use components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
+use components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
+use components::call_opcode::InteractionClaimImpl as CallOpcodeInteractionClaimImpl;
+use components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelInteractionClaimImpl;
+use components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
+use components::jnz_opcode::InteractionClaimImpl as JnzOpcodeInteractionClaimImpl;
+use components::jnz_opcode_taken::InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl;
+use components::jump_opcode::InteractionClaimImpl as JumpOpcodeInteractionClaimImpl;
+use components::jump_opcode_double_deref::InteractionClaimImpl as JumpOpcodeDoubleDerefInteractionClaimImpl;
+use components::jump_opcode_rel::InteractionClaimImpl as JumpOpcodeRelInteractionClaimImpl;
+use components::jump_opcode_rel_imm::InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl;
+use components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
+use components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
+use components::qm_31_add_mul_opcode::InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl;
+use components::ret_opcode::InteractionClaimImpl as RetOpcodeInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;

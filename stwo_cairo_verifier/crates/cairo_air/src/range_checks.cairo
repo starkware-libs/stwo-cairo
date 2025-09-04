@@ -1,125 +1,35 @@
-use components::range_check_11::{
-    ClaimImpl as RangeCheck_11ClaimImpl, InteractionClaimImpl as RangeCheck_11InteractionClaimImpl,
-};
-use components::range_check_12::{
-    ClaimImpl as RangeCheck_12ClaimImpl, InteractionClaimImpl as RangeCheck_12InteractionClaimImpl,
-};
-use components::range_check_18::{
-    ClaimImpl as RangeCheck_18ClaimImpl, InteractionClaimImpl as RangeCheck_18InteractionClaimImpl,
-};
-use components::range_check_18_b::{
-    ClaimImpl as RangeCheck_18BClaimImpl,
-    InteractionClaimImpl as RangeCheck_18BInteractionClaimImpl,
-};
-use components::range_check_19::{
-    ClaimImpl as RangeCheck_19ClaimImpl, InteractionClaimImpl as RangeCheck_19InteractionClaimImpl,
-};
-use components::range_check_19_b::{
-    ClaimImpl as RangeCheck_19BClaimImpl,
-    InteractionClaimImpl as RangeCheck_19BInteractionClaimImpl,
-};
-use components::range_check_19_c::{
-    ClaimImpl as RangeCheck_19CClaimImpl,
-    InteractionClaimImpl as RangeCheck_19CInteractionClaimImpl,
-};
-use components::range_check_19_d::{
-    ClaimImpl as RangeCheck_19DClaimImpl,
-    InteractionClaimImpl as RangeCheck_19DInteractionClaimImpl,
-};
-use components::range_check_19_e::{
-    ClaimImpl as RangeCheck_19EClaimImpl,
-    InteractionClaimImpl as RangeCheck_19EInteractionClaimImpl,
-};
-use components::range_check_19_f::{
-    ClaimImpl as RangeCheck_19FClaimImpl,
-    InteractionClaimImpl as RangeCheck_19FInteractionClaimImpl,
-};
-use components::range_check_19_g::{
-    ClaimImpl as RangeCheck_19GClaimImpl,
-    InteractionClaimImpl as RangeCheck_19GInteractionClaimImpl,
-};
-use components::range_check_19_h::{
-    ClaimImpl as RangeCheck_19HClaimImpl,
-    InteractionClaimImpl as RangeCheck_19HInteractionClaimImpl,
-};
-use components::range_check_3_3_3_3_3::{
-    ClaimImpl as RangeCheck_3_3_3_3_3ClaimImpl,
-    InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl,
-};
-use components::range_check_3_6_6_3::{
-    ClaimImpl as RangeCheck_3_6_6_3ClaimImpl,
-    InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl,
-};
-use components::range_check_4_3::{
-    ClaimImpl as RangeCheck_4_3ClaimImpl,
-    InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl,
-};
-use components::range_check_4_4::{
-    ClaimImpl as RangeCheck_4_4ClaimImpl,
-    InteractionClaimImpl as RangeCheck_4_4InteractionClaimImpl,
-};
-use components::range_check_4_4_4_4::{
-    ClaimImpl as RangeCheck_4_4_4_4ClaimImpl,
-    InteractionClaimImpl as RangeCheck_4_4_4_4InteractionClaimImpl,
-};
-use components::range_check_5_4::{
-    ClaimImpl as RangeCheck_5_4ClaimImpl,
-    InteractionClaimImpl as RangeCheck_5_4InteractionClaimImpl,
-};
-use components::range_check_6::{
-    ClaimImpl as RangeCheck_6ClaimImpl, InteractionClaimImpl as RangeCheck_6InteractionClaimImpl,
-};
-use components::range_check_7_2_5::{
-    ClaimImpl as RangeCheck_7_2_5ClaimImpl,
-    InteractionClaimImpl as RangeCheck_7_2_5InteractionClaimImpl,
-};
-use components::range_check_8::{
-    ClaimImpl as RangeCheck_8ClaimImpl, InteractionClaimImpl as RangeCheck_8InteractionClaimImpl,
-};
-use components::range_check_9_9::{
-    ClaimImpl as RangeCheck_9_9ClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl,
-};
-use components::range_check_9_9_b::{
-    ClaimImpl as RangeCheck_9_9BClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9BInteractionClaimImpl,
-};
-use components::range_check_9_9_c::{
-    ClaimImpl as RangeCheck_9_9CClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9CInteractionClaimImpl,
-};
-use components::range_check_9_9_d::{
-    ClaimImpl as RangeCheck_9_9DClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9DInteractionClaimImpl,
-};
-use components::range_check_9_9_e::{
-    ClaimImpl as RangeCheck_9_9EClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9EInteractionClaimImpl,
-};
-use components::range_check_9_9_f::{
-    ClaimImpl as RangeCheck_9_9FClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9FInteractionClaimImpl,
-};
-use components::range_check_9_9_g::{
-    ClaimImpl as RangeCheck_9_9GClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9GInteractionClaimImpl,
-};
-use components::range_check_9_9_h::{
-    ClaimImpl as RangeCheck_9_9HClaimImpl,
-    InteractionClaimImpl as RangeCheck_9_9HInteractionClaimImpl,
-};
-use components::range_check_builtin_bits_128::{
-    ClaimImpl as RangeCheckBuiltinBits128ClaimImpl,
-    InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl,
-};
-use components::range_check_builtin_bits_96::{
-    ClaimImpl as RangeCheckBuiltinBits96ClaimImpl,
-    InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl,
-};
-use components::range_check_felt_252_width_27::{
-    ClaimImpl as RangeCheckFelt252Width27ClaimImpl,
-    InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl,
-};
+use components::range_check_11::InteractionClaimImpl as RangeCheck_11InteractionClaimImpl;
+use components::range_check_12::InteractionClaimImpl as RangeCheck_12InteractionClaimImpl;
+use components::range_check_18::InteractionClaimImpl as RangeCheck_18InteractionClaimImpl;
+use components::range_check_18_b::InteractionClaimImpl as RangeCheck_18BInteractionClaimImpl;
+use components::range_check_19::InteractionClaimImpl as RangeCheck_19InteractionClaimImpl;
+use components::range_check_19_b::InteractionClaimImpl as RangeCheck_19BInteractionClaimImpl;
+use components::range_check_19_c::InteractionClaimImpl as RangeCheck_19CInteractionClaimImpl;
+use components::range_check_19_d::InteractionClaimImpl as RangeCheck_19DInteractionClaimImpl;
+use components::range_check_19_e::InteractionClaimImpl as RangeCheck_19EInteractionClaimImpl;
+use components::range_check_19_f::InteractionClaimImpl as RangeCheck_19FInteractionClaimImpl;
+use components::range_check_19_g::InteractionClaimImpl as RangeCheck_19GInteractionClaimImpl;
+use components::range_check_19_h::InteractionClaimImpl as RangeCheck_19HInteractionClaimImpl;
+use components::range_check_3_3_3_3_3::InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl;
+use components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl;
+use components::range_check_4_3::InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl;
+use components::range_check_4_4::InteractionClaimImpl as RangeCheck_4_4InteractionClaimImpl;
+use components::range_check_4_4_4_4::InteractionClaimImpl as RangeCheck_4_4_4_4InteractionClaimImpl;
+use components::range_check_5_4::InteractionClaimImpl as RangeCheck_5_4InteractionClaimImpl;
+use components::range_check_6::InteractionClaimImpl as RangeCheck_6InteractionClaimImpl;
+use components::range_check_7_2_5::InteractionClaimImpl as RangeCheck_7_2_5InteractionClaimImpl;
+use components::range_check_8::InteractionClaimImpl as RangeCheck_8InteractionClaimImpl;
+use components::range_check_9_9::InteractionClaimImpl as RangeCheck_9_9InteractionClaimImpl;
+use components::range_check_9_9_b::InteractionClaimImpl as RangeCheck_9_9BInteractionClaimImpl;
+use components::range_check_9_9_c::InteractionClaimImpl as RangeCheck_9_9CInteractionClaimImpl;
+use components::range_check_9_9_d::InteractionClaimImpl as RangeCheck_9_9DInteractionClaimImpl;
+use components::range_check_9_9_e::InteractionClaimImpl as RangeCheck_9_9EInteractionClaimImpl;
+use components::range_check_9_9_f::InteractionClaimImpl as RangeCheck_9_9FInteractionClaimImpl;
+use components::range_check_9_9_g::InteractionClaimImpl as RangeCheck_9_9GInteractionClaimImpl;
+use components::range_check_9_9_h::InteractionClaimImpl as RangeCheck_9_9HInteractionClaimImpl;
+use components::range_check_builtin_bits_128::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
+use components::range_check_builtin_bits_96::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
+use components::range_check_felt_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
