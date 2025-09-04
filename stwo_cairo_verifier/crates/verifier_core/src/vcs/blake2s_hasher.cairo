@@ -27,8 +27,8 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
             };
 
             // Note: there is no domain separation between the cases
-            // (children_hashes.is_some() && column_values.is_empty())
-            // and (children_hashes.is_none() && column_values.len() == 16).
+            // (children_hashes.is_some() && column_values.len()= K)
+            // and (children_hashes.is_none() && column_values.len() == 16 + K).
             // This is acceptable because the verifier always knows
             // the exact structure of the Merkle tree.
             return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
