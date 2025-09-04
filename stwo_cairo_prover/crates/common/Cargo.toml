@@ -16,3 +16,7 @@ serde_arrays.workspace = true
 
 [dev-dependencies]
 rand.workspace = true
+
+[package.metadata.cargo-machete]
+# This is used only in proc macros, and the unused dependency checker does not recognize it.
+ignored = ["serde_arrays"]
