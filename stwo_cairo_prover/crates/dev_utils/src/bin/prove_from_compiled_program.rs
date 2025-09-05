@@ -57,12 +57,12 @@ struct Args {
 }
 
 fn main() -> Result<(), Error> {
+    let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
 
     let _span = span!(Level::INFO, "run").entered();
-    let args = Args::try_parse_from(std::env::args())?;
 
     let compiled_program = read_compiled_cairo_program(&args.compiled_program);
     let input = run_program_and_adapter(&compiled_program, None);
