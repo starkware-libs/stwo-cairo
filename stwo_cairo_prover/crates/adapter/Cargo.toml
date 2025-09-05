@@ -20,10 +20,6 @@ serde_json.workspace = true
 stwo-cairo-common.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
-
-[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-sonic-rs = { version = "0.3.17", optional = true }
-
 stwo-prover.workspace = true
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = [
@@ -32,6 +28,10 @@ bincode = { version = "2.0.1", features = [
 dashmap = "6.1.0"
 rayon.workspace = true
 crypto-bigint = "0.5.1"
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+sonic-rs = { version = "0.3.17", optional = true }
+
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
