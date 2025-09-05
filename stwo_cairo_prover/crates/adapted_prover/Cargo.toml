@@ -19,4 +19,5 @@ stwo-cairo-serialize.workspace = true
 stwo-prover.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
 sonic-rs = { version = "0.3.17" }
