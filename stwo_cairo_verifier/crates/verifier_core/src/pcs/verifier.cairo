@@ -166,6 +166,28 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         fri_verifier.decommit(fri_answers, queries);
     }
+
+    /// Gets the trace log size from the commitment scheme. Temporarily workarounds a compiler issue.
+    fn get_trace_log_size(self: CommitmentSchemeVerifier) -> u32 {
+        // The following loop is a workaround for a compiler issue. Directly accessing the trees at
+        // indices 1 and 2 causes the compiler to think this code will always panic.
+        // The following loop doesn't directly access these indices, so the code won't panic.
+        let mut second_tree_height: u32 = 0;
+        // Setting third_tree_height to a large value ensures that if there is no third tree, the assert
+        // below will fail.
+        let mut third_tree_height: u32 = 1000000;
+        for (tree_counter, tree) in self.trees.span().into_iter().enumerate() {
+            match tree_counter {
+                0 => {},
+                1 => { second_tree_height = *tree.tree_height; },
+                2 => { third_tree_height = *tree.tree_height; },
+                3 => { break; },
+                _ => {},
+            }
+        }
+        assert!(second_tree_height == third_tree_height);
+        second_tree_height
+    }
 }
 
 #[inline]
