@@ -239,8 +239,7 @@ pub fn verify_cairo(proof: CairoProof) {
     interaction_claim.mix_into(ref channel);
     commitment_scheme.commit(interaction_trace_commitment, interaction_trace_log_size, ref channel);
 
-    let trace_log_size = *commitment_scheme.trees[1].tree_height;
-    assert!(trace_log_size == *commitment_scheme.trees[2].tree_height);
+    let trace_log_size = commitment_scheme.get_trace_log_size();
 
     // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
     // of the trace plus 1.
@@ -257,6 +256,7 @@ pub fn verify_cairo(proof: CairoProof) {
         composition_commitment,
     );
 }
+
 
 pub fn lookup_sum(
     claim: @CairoClaim,
