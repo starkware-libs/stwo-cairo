@@ -11,7 +11,7 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::Parser;
-use dev_utils::utils::{run_program_and_adapter, ProgramType};
+use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
