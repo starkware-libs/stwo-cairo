@@ -21,6 +21,7 @@ pub mod opcodes;
 pub mod relocator;
 #[cfg(test)]
 pub mod test_utils;
+pub mod utils;
 pub mod vm_import;
 
 pub const N_REGISTERS: usize = 3;
