@@ -64,10 +64,11 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
-    use dev_utils::utils::{get_compiled_cairo_program_path, run_program_and_adapter};
+    use dev_utils::utils::get_compiled_cairo_program_path;
     use serde_json::to_value;
 
     use crate::test_utils::{get_prover_input_path, read_json, write_json};
+    use crate::utils::run_program_and_adapter;
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
