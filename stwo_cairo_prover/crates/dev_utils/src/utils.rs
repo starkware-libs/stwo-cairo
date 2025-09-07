@@ -6,10 +6,6 @@ use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
-use cairo_vm::cairo_run::{cairo_run_program, CairoRunConfig};
-use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
-use cairo_vm::hint_processor::hint_processor_definition::HintProcessor;
-use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::Felt252;
@@ -22,7 +18,7 @@ use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::ProvingError;
-use stwo_cairo_adapter::adapter::adapter;
+use stwo_cairo_adapter::utils::run_program_and_adapter;
 use stwo_cairo_adapter::vm_import::VmImportError;
 use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_prover::prover::{
@@ -157,7 +153,7 @@ pub fn run_cairo1_and_adapter(
         panic_traceback: Default::default(),
     };
 
-    run_program_and_adapter(&program, Some(&mut hint_processor))
+    run_program_and_adapter(&program, Some(&mut hint_processor), None)
 }
 
 pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
@@ -167,27 +163,6 @@ pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
         .into_iter()
         .map(|v| Arg::Value(v.value.into()))
         .collect()
-}
-
-pub fn run_program_and_adapter(
-    program: &Program,
-    hint_processor: Option<&mut dyn HintProcessor>,
-) -> ProverInput {
-    let cairo_run_config = CairoRunConfig {
-        trace_enabled: true,
-        relocate_trace: false,
-        layout: LayoutName::all_cairo_stwo,
-        proof_mode: true,
-        disable_trace_padding: true,
-        ..Default::default()
-    };
-
-    let mut default_hint_processor = BuiltinHintProcessor::new_empty();
-    let hint_processor = hint_processor.unwrap_or(&mut default_hint_processor);
-
-    let runner = cairo_run_program(program, &cairo_run_config, hint_processor)
-        .expect("Failed to run cairo program");
-    adapter(&runner)
 }
 
 pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {

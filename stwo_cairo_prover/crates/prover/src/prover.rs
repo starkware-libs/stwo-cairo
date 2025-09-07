@@ -179,13 +179,14 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
-    use dev_utils::utils::{get_test_program, run_program_and_adapter};
+    use dev_utils::utils::get_test_program;
+    use stwo_cairo_adapter::utils::run_program_and_adapter;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     #[test]
     fn test_all_cairo_constraints() {
         let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
-        let input = run_program_and_adapter(&compiled_program, None);
+        let input = run_program_and_adapter(&compiled_program, None, None);
         let pp_tree = testing_preprocessed_tree(20);
         assert_cairo_constraints(input, pp_tree);
     }
@@ -211,7 +212,7 @@ pub mod tests {
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_ret_opcode");
-            let input = run_program_and_adapter(&compiled_program, None);
+            let input = run_program_and_adapter(&compiled_program, None, None);
             let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
                 input,
@@ -294,14 +295,14 @@ pub mod tests {
         #[test]
         fn test_cairo_constraints() {
             let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, None);
+            let input = run_program_and_adapter(&compiled_program, None, None);
             assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
         }
 
         #[test]
         fn test_prove_verify_all_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, None);
+            let input = run_program_and_adapter(&compiled_program, None, None);
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 assert!(
                     *n_instances > 0,
@@ -321,7 +322,7 @@ pub mod tests {
         #[test]
         fn test_e2e_prove_cairo_verify_all_opcode_components() {
             let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, None);
+            let input = run_program_and_adapter(&compiled_program, None, None);
             let preprocessed_trace = PreProcessedTraceVariant::Canonical;
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                 input,
@@ -380,7 +381,7 @@ pub mod tests {
 
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
             let compiled_program = get_test_program(path);
-            let input = run_program_and_adapter(&compiled_program, None);
+            let input = run_program_and_adapter(&compiled_program, None, None);
 
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -411,7 +412,7 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use dev_utils::utils::run_program_and_adapter;
+            use stwo_cairo_adapter::utils::run_program_and_adapter;
             use test_log::test;
 
             use super::*;
@@ -435,7 +436,7 @@ pub mod tests {
             #[test]
             fn test_prove_verify_all_builtins() {
                 let compiled_program = get_test_program("test_prove_verify_all_builtins");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
@@ -450,35 +451,35 @@ pub mod tests {
             #[test]
             fn test_add_mod_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_add_mod_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
             }
 
             #[test]
             fn test_bitwise_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_bitwise_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
             fn test_mul_mod_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_mul_mod_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
             #[test]
             fn test_pedersen_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_pedersen_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, PreProcessedTrace::canonical());
             }
 
             #[test]
             fn test_poseidon_builtin_constraints() {
                 let compiled_program = get_test_program("test_prove_verify_poseidon_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
@@ -486,7 +487,7 @@ pub mod tests {
             fn test_range_check_bits_96_builtin_constraints() {
                 let compiled_program =
                     get_test_program("test_prove_verify_range_check_bits_96_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
 
@@ -494,7 +495,7 @@ pub mod tests {
             fn test_range_check_bits_128_builtin_constraints() {
                 let compiled_program =
                     get_test_program("test_prove_verify_range_check_bits_128_builtin");
-                let input = run_program_and_adapter(&compiled_program, None);
+                let input = run_program_and_adapter(&compiled_program, None, None);
                 assert_cairo_constraints(input, testing_preprocessed_tree(19));
             }
         }

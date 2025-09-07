@@ -56,16 +56,17 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
-    use dev_utils::utils::{get_test_program, run_program_and_adapter};
+    use dev_utils::utils::get_test_program;
     use serde_json::to_value;
 
     use crate::test_utils::{get_prover_input_path, read_json, write_json};
+    use crate::utils::run_program_and_adapter;
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_test_program(test_name);
-        let mut prover_input = run_program_and_adapter(&compiled_program, None);
+        let mut prover_input = run_program_and_adapter(&compiled_program, None, None);
         // Instruction cache and public memory addresses are not deterministic, sort them.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
         prover_input.public_memory_addresses.sort();
