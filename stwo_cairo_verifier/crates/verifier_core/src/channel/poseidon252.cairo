@@ -192,10 +192,14 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         bytes
     }
 
-    fn mix_and_check_pow_nonce(ref self: Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
-        // TODO(andrew): Use blake for proof of work.
-        self.mix_u64(nonce);
-        check_proof_of_work(self.digest, n_bits)
+    /// Check that `H(H(POW_PREFIX, digest, n_bits), nonce)` has `n_bits` starting zeros.
+    fn verify_pow_nonce(self: @Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
+        const POW_PREFIX: u32 = 0x012345678;
+        let prefix_hash = poseidon_hash_span(
+            [POW_PREFIX.into(), *self.digest, n_bits.into()].span(),
+        );
+        let (hash, _, _) = hades_permutation(prefix_hash, nonce.into(), 2);
+        check_leading_zeros(hash, n_bits)
     }
 }
 
@@ -205,7 +209,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 /// # Panics
 ///
 /// Panics if `n_bits` >= 64.
-fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
+fn check_leading_zeros(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
     let two_pow_n_bits: u128 = pow2_u64(n_bits).into();
     let nonzero_divisor = two_pow_n_bits.try_into().unwrap();

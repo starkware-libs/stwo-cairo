@@ -224,10 +224,11 @@ pub fn verify_cairo(proof: CairoProof) {
 
     commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel);
     assert!(
-        channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
+        channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
         CairoVerificationError::InteractionProofOfWork,
     );
+    channel.mix_u64(interaction_pow);
 
     let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
     assert!(
