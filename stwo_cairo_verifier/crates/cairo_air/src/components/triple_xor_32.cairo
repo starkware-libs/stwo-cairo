@@ -1,10 +1,13 @@
 // AIR version bc48deaa
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
+use crate::components::subroutines::bitwise_xor_num_bits_8_b::bitwise_xor_num_bits_8_b_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 21;
-pub const RELATION_USES_PER_ROW: [(felt252, u32); 1] = [('VerifyBitwiseXor_8', 8)];
+pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
+    ('VerifyBitwiseXor_8', 4), ('VerifyBitwiseXor_8_B', 4),
+];
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {
@@ -47,6 +50,7 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
+    pub verify_bitwise_xor_8_b_lookup_elements: crate::VerifyBitwiseXor_8_BElements,
     pub triple_xor_32_lookup_elements: crate::TripleXor32Elements,
 }
 
@@ -63,6 +67,9 @@ pub impl NewComponentImpl of NewComponent<Component> {
             claim: *claim,
             interaction_claim: *interaction_claim,
             verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                .verify_bitwise_xor_8_b
+                .clone(),
             triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
         }
     }
@@ -144,10 +151,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut verify_bitwise_xor_8_sum_1: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_2: QM31 = Zero::zero();
         let mut verify_bitwise_xor_8_sum_3: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_sum_4: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_sum_5: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_sum_6: QM31 = Zero::zero();
-        let mut verify_bitwise_xor_8_sum_7: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_4: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_5: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_6: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_7: QM31 = Zero::zero();
         let mut triple_xor_32_sum_8: QM31 = Zero::zero();
 
         let [
@@ -266,41 +273,41 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        bitwise_xor_num_bits_8_evaluate(
+        bitwise_xor_num_bits_8_b_evaluate(
             [
                 split_16_low_part_size_8_output_tmp_298db_3_limb_0,
                 split_16_low_part_size_8_output_tmp_298db_7_limb_0,
             ],
             xor_col16,
-            self.verify_bitwise_xor_8_lookup_elements,
-            ref verify_bitwise_xor_8_sum_4,
+            self.verify_bitwise_xor_8_b_lookup_elements,
+            ref verify_bitwise_xor_8_b_sum_4,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        bitwise_xor_num_bits_8_evaluate(
+        bitwise_xor_num_bits_8_b_evaluate(
             [xor_col16, split_16_low_part_size_8_output_tmp_298db_11_limb_0],
             xor_col17,
-            self.verify_bitwise_xor_8_lookup_elements,
-            ref verify_bitwise_xor_8_sum_5,
+            self.verify_bitwise_xor_8_b_lookup_elements,
+            ref verify_bitwise_xor_8_b_sum_5,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        bitwise_xor_num_bits_8_evaluate(
+        bitwise_xor_num_bits_8_b_evaluate(
             [ms_8_bits_col7, ms_8_bits_col9],
             xor_col18,
-            self.verify_bitwise_xor_8_lookup_elements,
-            ref verify_bitwise_xor_8_sum_6,
+            self.verify_bitwise_xor_8_b_lookup_elements,
+            ref verify_bitwise_xor_8_b_sum_6,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        bitwise_xor_num_bits_8_evaluate(
+        bitwise_xor_num_bits_8_b_evaluate(
             [xor_col18, ms_8_bits_col11],
             xor_col19,
-            self.verify_bitwise_xor_8_lookup_elements,
-            ref verify_bitwise_xor_8_sum_7,
+            self.verify_bitwise_xor_8_b_lookup_elements,
+            ref verify_bitwise_xor_8_b_sum_7,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -332,10 +339,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             verify_bitwise_xor_8_sum_1,
             verify_bitwise_xor_8_sum_2,
             verify_bitwise_xor_8_sum_3,
-            verify_bitwise_xor_8_sum_4,
-            verify_bitwise_xor_8_sum_5,
-            verify_bitwise_xor_8_sum_6,
-            verify_bitwise_xor_8_sum_7,
+            verify_bitwise_xor_8_b_sum_4,
+            verify_bitwise_xor_8_b_sum_5,
+            verify_bitwise_xor_8_b_sum_6,
+            verify_bitwise_xor_8_b_sum_7,
             triple_xor_32_sum_8,
         );
     }
@@ -354,10 +361,10 @@ fn lookup_constraints(
     verify_bitwise_xor_8_sum_1: QM31,
     verify_bitwise_xor_8_sum_2: QM31,
     verify_bitwise_xor_8_sum_3: QM31,
-    verify_bitwise_xor_8_sum_4: QM31,
-    verify_bitwise_xor_8_sum_5: QM31,
-    verify_bitwise_xor_8_sum_6: QM31,
-    verify_bitwise_xor_8_sum_7: QM31,
+    verify_bitwise_xor_8_b_sum_4: QM31,
+    verify_bitwise_xor_8_b_sum_5: QM31,
+    verify_bitwise_xor_8_b_sum_6: QM31,
+    verify_bitwise_xor_8_b_sum_7: QM31,
     triple_xor_32_sum_8: QM31,
 ) {
     let [
@@ -439,10 +446,10 @@ fn lookup_constraints(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * verify_bitwise_xor_8_sum_4
-        * verify_bitwise_xor_8_sum_5)
-        - verify_bitwise_xor_8_sum_4
-        - verify_bitwise_xor_8_sum_5)
+        * verify_bitwise_xor_8_b_sum_4
+        * verify_bitwise_xor_8_b_sum_5)
+        - verify_bitwise_xor_8_b_sum_4
+        - verify_bitwise_xor_8_b_sum_5)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -450,10 +457,10 @@ fn lookup_constraints(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
-        * verify_bitwise_xor_8_sum_6
-        * verify_bitwise_xor_8_sum_7)
-        - verify_bitwise_xor_8_sum_6
-        - verify_bitwise_xor_8_sum_7)
+        * verify_bitwise_xor_8_b_sum_6
+        * verify_bitwise_xor_8_b_sum_7)
+        - verify_bitwise_xor_8_b_sum_6
+        - verify_bitwise_xor_8_b_sum_7)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
