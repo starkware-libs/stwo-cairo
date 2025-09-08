@@ -1,6 +1,7 @@
 use core::array::ArrayTrait;
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
+use core::num::traits::WrappingAdd;
 use stwo_verifier_utils::BLAKE2S_256_INITIAL_STATE;
 use crate::BaseField;
 use crate::fields::m31::{M31, M31Zero};
@@ -17,83 +18,13 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
-        let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
-
-        // No column values (most common case).
-        if column_values.is_empty() {
-            let (msg, byte_count) = match children_hashes {
-                Some((x, y)) => (combine_u32_block(x.hash, y.hash), 64),
-                None => panic!("Empty nodes are not supported"),
-            };
-
-            // Note: there is no domain separation between the cases
-            // (children_hashes.is_some() && column_values.len()= K)
-            // and (children_hashes.is_none() && column_values.len() == 16 + K).
-            // This is acceptable because the verifier always knows
-            // the exact structure of the Merkle tree.
-            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        let mut hash = hash_node_inner(children_hashes, column_values);
+        if children_hashes.is_some() {
+            let [h0, h1, h2, h3, h4, h5, h6, h7] = hash.hash.unbox();
+            let h0 = h0.wrapping_add(0x1000000_u32);
+            return Blake2sHash { hash: BoxImpl::new([h0, h1, h2, h3, h4, h5, h6, h7]) };
         }
-
-        let mut byte_count = 0_u32;
-        if let Some((x, y)) = children_hashes {
-            let msg = combine_u32_block(x.hash, y.hash);
-            byte_count = 64;
-            state = blake2s_compress(:state, :byte_count, :msg);
-        }
-
-        // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
-        // decommitment phase.
-        if let Some(quadruplet_box) = column_values.try_into() {
-            let [v0, v1, v2, v3]: [M31; 4] = (*quadruplet_box).unbox();
-            let msg = BoxImpl::new(
-                [v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            );
-            byte_count += 16;
-            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
-        }
-
-        // Special case #2: Single M31 column, queried value decommitment phase, common for PP tree.
-        if let Some(singleton_box) = column_values.try_into() {
-            let [v0]: [M31; 1] = (*singleton_box).unbox();
-            let msg = BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-            byte_count += 4;
-            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
-        }
-
-        // Compress full 16-element blocks except the last one.
-        if let Some(mut full_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
-            // Compress intermediate blocks.
-            while let Some(next_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
-                let msg = as_u32_block(full_block);
-                byte_count += 64;
-                state = blake2s_compress(:state, :byte_count, :msg);
-                full_block = next_block;
-            }
-
-            // Handle the last full block.
-            let msg = as_u32_block(full_block);
-            byte_count += 64;
-            if column_values.is_empty() {
-                // The last block is a full 16-element block; finalize the hash using this block as
-                // the final input.
-                return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
-            }
-
-            state = blake2s_compress(:state, :byte_count, :msg);
-        }
-
-        // Handle the last partial block.
-        let mut padded_values: Array<u32> = column_values
-            .into_iter()
-            .map(|v| (*v).into())
-            .collect();
-        let last_block_length = padded_values.len();
-        for _ in last_block_length..M31_ELEMENTS_IN_MSG {
-            padded_values.append(0);
-        }
-        let msg = *padded_values.span().try_into().unwrap();
-        byte_count += last_block_length * 4;
-        Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
+        return hash;
     }
 }
 
@@ -157,3 +88,78 @@ impl Blake2sHashSerde of Serde<Blake2sHash> {
         )
     }
 }
+
+fn hash_node_inner(
+    children_hashes: Option<(Blake2sMerkleHasher::Hash, Blake2sMerkleHasher::Hash)>,
+    mut column_values: Span<BaseField>,
+) -> Blake2sMerkleHasher::Hash {
+    let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+
+    // No column values (most common case).
+    if column_values.is_empty() {
+        let (msg, byte_count) = match children_hashes {
+            Some((x, y)) => (combine_u32_block(x.hash, y.hash), 64),
+            None => panic!("Empty nodes are not supported"),
+        };
+        return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+    }
+
+    let mut byte_count = 0_u32;
+    if let Some((x, y)) = children_hashes {
+        let msg = combine_u32_block(x.hash, y.hash);
+        byte_count = 64;
+        state = blake2s_compress(:state, :byte_count, :msg);
+    }
+
+    // Special case #1: Single QM31 column (split into 4 M31 coordinates), inner FRI layer
+    // decommitment phase.
+    if let Some(quadruplet_box) = column_values.try_into() {
+        let [v0, v1, v2, v3]: [M31; 4] = (*quadruplet_box).unbox();
+        let msg = BoxImpl::new(
+            [v0.into(), v1.into(), v2.into(), v3.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        );
+        byte_count += 16;
+        return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+    }
+
+    // Special case #2: Single M31 column, queried value decommitment phase, common for PP tree.
+    if let Some(singleton_box) = column_values.try_into() {
+        let [v0]: [M31; 1] = (*singleton_box).unbox();
+        let msg = BoxImpl::new([v0.into(), 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+        byte_count += 4;
+        return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+    }
+
+    // Compress full 16-element blocks except the last one.
+    if let Some(mut full_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
+        // Compress intermediate blocks.
+        while let Some(next_block) = column_values.multi_pop_front::<M31_ELEMENTS_IN_MSG>() {
+            let msg = as_u32_block(full_block);
+            byte_count += 64;
+            state = blake2s_compress(:state, :byte_count, :msg);
+            full_block = next_block;
+        }
+
+        // Handle the last full block.
+        let msg = as_u32_block(full_block);
+        byte_count += 64;
+        if column_values.is_empty() {
+            // The last block is a full 16-element block; finalize the hash using this block as
+            // the final input.
+            return Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) };
+        }
+
+        state = blake2s_compress(:state, :byte_count, :msg);
+    }
+
+    // Handle the last partial block.
+    let mut padded_values: Array<u32> = column_values.into_iter().map(|v| (*v).into()).collect();
+    let last_block_length = padded_values.len();
+    for _ in last_block_length..M31_ELEMENTS_IN_MSG {
+        padded_values.append(0);
+    }
+    let msg = *padded_values.span().try_into().unwrap();
+    byte_count += last_block_length * 4;
+    Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
+}
+
