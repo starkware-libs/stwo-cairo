@@ -214,15 +214,15 @@ pub fn verify_cairo(proof: CairoProof) {
 
     // Unpack claim.log_sizes().
     let log_sizes: @Box<[Span<u32>; 3]> = claim.log_sizes().span().try_into().unwrap();
-    let [preprocessed_log_size, trace_log_size, interaction_trace_log_size] = log_sizes.unbox();
+    let [preprocessed_log_sizes, trace_log_sizes, interaction_trace_log_sizes] = log_sizes.unbox();
 
     // Preprocessed trace.
     let expected_preprocessed_root = preprocessed_root(pcs_config.fri_config.log_blowup_factor);
     assert!(preprocessed_commitment == expected_preprocessed_root);
-    commitment_scheme.commit(preprocessed_commitment, preprocessed_log_size, ref channel);
+    commitment_scheme.commit(preprocessed_commitment, preprocessed_log_sizes, ref channel);
     claim.mix_into(ref channel);
 
-    commitment_scheme.commit(trace_commitment, trace_log_size, ref channel);
+    commitment_scheme.commit(trace_commitment, trace_log_sizes, ref channel);
     assert!(
         channel.mix_and_check_pow_nonce(INTERACTION_POW_BITS, interaction_pow),
         "{}",
@@ -237,7 +237,8 @@ pub fn verify_cairo(proof: CairoProof) {
     );
 
     interaction_claim.mix_into(ref channel);
-    commitment_scheme.commit(interaction_trace_commitment, interaction_trace_log_size, ref channel);
+    commitment_scheme
+        .commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
 
     let trace_log_size = commitment_scheme.get_trace_log_size();
 
