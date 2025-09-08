@@ -6,6 +6,7 @@ edition.workspace = true
 [features]
 default = ["std"]
 std = ["stwo-cairo-adapter/std"]
+sonic-rs = ["stwo-cairo-adapter/sonic-rs"]
 
 [dependencies]
 itertools.workspace = true
