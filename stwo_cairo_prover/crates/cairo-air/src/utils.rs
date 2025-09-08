@@ -38,7 +38,14 @@ where
 
     match proof_format {
         ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
+            #[cfg(feature = "sonic-rs")]
+            {
+                proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
+            }
+            #[cfg(not(feature = "sonic-rs"))]
+            {
+                proof_file.write_all(serde_json::to_string_pretty(proof)?.as_bytes())?;
+            }
         }
         ProofFormat::CairoSerde => {
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
@@ -49,7 +56,14 @@ where
                 .map(|felt| format!("0x{:x}", felt))
                 .collect();
 
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
+            #[cfg(feature = "sonic-rs")]
+            {
+                proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
+            }
+            #[cfg(not(feature = "sonic-rs"))]
+            {
+                proof_file.write_all(serde_json::to_string_pretty(&hex_strings)?.as_bytes())?;
+            }
         }
     }
 
