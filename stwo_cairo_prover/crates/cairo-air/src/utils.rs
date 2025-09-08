@@ -63,8 +63,7 @@ where
             proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
         }
         ProofFormat::Binary => {
-            let serialized_bytes = bincode::serialize(proof)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+            let serialized_bytes = bincode::serialize(proof).map_err(std::io::Error::other)?;
 
             let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
             bz_encoder.write_all(&serialized_bytes)?;
@@ -87,13 +86,12 @@ where
     match proof_format {
         ProofFormat::Json => {
             let proof_str = std::fs::read_to_string(proof_path)?;
-            sonic_rs::from_str(&proof_str)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+            sonic_rs::from_str(&proof_str).map_err(std::io::Error::other)
         }
         ProofFormat::CairoSerde => {
             let proof_str = std::fs::read_to_string(proof_path)?;
-            let felts: Vec<starknet_ff::FieldElement> = sonic_rs::from_str(&proof_str)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))?;
+            let felts: Vec<starknet_ff::FieldElement> =
+                sonic_rs::from_str(&proof_str).map_err(std::io::Error::other)?;
             Ok(CairoDeserialize::deserialize(&mut felts.iter()))
         }
         ProofFormat::Binary => {
@@ -101,8 +99,7 @@ where
             let mut proof_bytes = Vec::new();
             let mut bz_decoder = BzDecoder::new(proof_file);
             bz_decoder.read_to_end(&mut proof_bytes)?;
-            bincode::deserialize(&proof_bytes)
-                .map_err(|e| std::io::Error::new(std::io::ErrorKind::Other, e))
+            bincode::deserialize(&proof_bytes).map_err(std::io::Error::other)
         }
     }
 }
