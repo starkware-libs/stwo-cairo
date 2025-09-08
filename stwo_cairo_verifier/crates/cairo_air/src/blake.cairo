@@ -1,20 +1,8 @@
-use components::blake_g::{
-    ClaimImpl as BlakeGClaimImpl, InteractionClaimImpl as BlakeGInteractionClaimImpl,
-};
-use components::blake_round::{
-    ClaimImpl as BlakeRoundClaimImpl, InteractionClaimImpl as BlakeRoundInteractionClaimImpl,
-};
-use components::blake_round_sigma::{
-    ClaimImpl as BlakeRoundSigmaClaimImpl,
-    InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl,
-};
-use components::triple_xor_32::{
-    ClaimImpl as TripleXor32ClaimImpl, InteractionClaimImpl as TripleXor32InteractionClaimImpl,
-};
-use components::verify_bitwise_xor_12::{
-    ClaimImpl as VerifyBitwiseXor12ClaimImpl,
-    InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl,
-};
+use components::blake_g::InteractionClaimImpl as BlakeGInteractionClaimImpl;
+use components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimImpl;
+use components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl;
+use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
+use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;

@@ -1,29 +1,10 @@
-use components::add_mod_builtin::{
-    ClaimImpl as AddModBuiltinClaimImpl, InteractionClaimImpl as AddModBuiltinInteractionClaimImpl,
-};
-use components::bitwise_builtin::{
-    ClaimImpl as BitwiseBuiltinClaimImpl,
-    InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl,
-};
-use components::mul_mod_builtin::{
-    ClaimImpl as MulModBuiltinClaimImpl, InteractionClaimImpl as MulModBuiltinInteractionClaimImpl,
-};
-use components::pedersen_builtin::{
-    ClaimImpl as PedersenBuiltinClaimImpl,
-    InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl,
-};
-use components::poseidon_builtin::{
-    ClaimImpl as PoseidonBuiltinClaimImpl,
-    InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl,
-};
-use components::range_check_builtin_bits_128::{
-    ClaimImpl as RangeCheckBuiltinBits128ClaimImpl,
-    InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl,
-};
-use components::range_check_builtin_bits_96::{
-    ClaimImpl as RangeCheckBuiltinBits96ClaimImpl,
-    InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl,
-};
+use components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
+use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
+use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
+use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
+use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
+use components::range_check_builtin_bits_128::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
+use components::range_check_builtin_bits_96::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
