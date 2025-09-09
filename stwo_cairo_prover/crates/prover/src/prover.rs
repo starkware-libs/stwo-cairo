@@ -179,7 +179,8 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
-    use dev_utils::utils::{get_compiled_cairo_program_path, run_program_and_adapter};
+    use dev_utils::utils::get_compiled_cairo_program_path;
+    use stwo_cairo_adapter::utils::run_program_and_adapter;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     #[test]
@@ -415,7 +416,7 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use dev_utils::utils::run_program_and_adapter;
+            use stwo_cairo_adapter::utils::run_program_and_adapter;
             use test_log::test;
 
             use super::*;

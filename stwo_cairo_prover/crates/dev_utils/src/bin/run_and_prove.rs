@@ -2,7 +2,8 @@ use std::path::PathBuf;
 
 use cairo_air::utils::ProofFormat;
 use clap::Parser;
-use dev_utils::utils::{create_and_serialize_proof, run_program_and_adapter, Error};
+use dev_utils::utils::{create_and_serialize_proof, Error};
+use stwo_cairo_adapter::utils::run_program_and_adapter;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
