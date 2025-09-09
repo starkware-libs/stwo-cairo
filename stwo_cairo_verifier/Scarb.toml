@@ -21,5 +21,5 @@ allow-warnings = false
 # This profile enables unsafe-panic to reduce the code size.
 [profile.proving]
 enable-gas = false
-unsafe-panic = true
+unsafe-panic = false
 allow-warnings = false
