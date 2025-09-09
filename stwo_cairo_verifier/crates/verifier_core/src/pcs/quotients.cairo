@@ -143,13 +143,13 @@ fn accumulate_row_quotients(
         quotient_constants.point_constants, denominator_inverses,
     ) {
         let PointQuotientConstants {
-            alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c, batch_random_coeff,
+            alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c, batch_random_coeff: _,
         } = point_constants;
 
         // `minus_numerator` is offset by `PackedUnreducedQM31Trait::large_zero()` via
         // `alpha_mul_b_sum`. This ensures the subtraction below does not underflow.
         let mut minus_numerator = alpha_mul_a_sum.mul_m31(domain_point_y) + *alpha_mul_b_sum;
-        for (column_index, alpha_mul_c) in indexed_alpha_mul_c.span() {
+        for (column_index, alpha_mul_c) in indexed_alpha_mul_c {
             let query_eval_at_column = *queried_values_at_row.at(*column_index);
 
             // The numerator is a line equation passing through
@@ -164,8 +164,7 @@ fn accumulate_row_quotients(
         // Subtract the accumulated linear term.
 
         let minus_quotient = minus_numerator.reduce().mul_cm31(denom_inv);
-        quotient_accumulator =
-            QM31Trait::fused_mul_sub(quotient_accumulator, *batch_random_coeff, minus_quotient);
+        quotient_accumulator = quotient_accumulator - minus_quotient;
     }
 
     quotient_accumulator
@@ -238,14 +237,14 @@ pub struct QuotientConstants {
 ///   For each batch, we exponentiate it by the number of columns (`α^(#columns)`)
 ///   to merge multiple batches consistently.
 ///
-#[derive(Debug, Drop)]
+#[derive(Debug, Drop, Copy)]
 pub struct PointQuotientConstants {
     /// Σ (α^(i+1) * a_i) across all samples in the batch.
     pub alpha_mul_a_sum: PackedUnreducedQM31,
     /// Σ (α^(i+1) * b_i) across all samples in the batch.
     pub alpha_mul_b_sum: PackedUnreducedQM31,
     /// Pairs of `(column index, α^i * c_i)` for every sample.
-    pub indexed_alpha_mul_c: Array<(usize, PackedUnreducedQM31)>,
+    pub indexed_alpha_mul_c: Span<(usize, PackedUnreducedQM31)>,
     /// The random coefficient `α^(#columns)` used in the linear combination above.
     pub batch_random_coeff: QM31,
 }
@@ -255,9 +254,12 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
     fn gen(
         sample_batches_by_point: @Array<ColumnSampleBatch>, random_coeff: QM31,
     ) -> QuotientConstants {
-        let mut point_constants = array![];
+        let mut rev_point_constants = array![];
 
-        for sample_batch in sample_batches_by_point.span() {
+        let mut sample_batches_by_point = sample_batches_by_point.span();
+
+        let mut alpha: QM31 = One::one();
+        while let Some(sample_batch) = sample_batches_by_point.pop_back() {
             assert!(
                 *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
                 "Cannot evaluate a line with a single point ({:?}).",
@@ -266,7 +268,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
 
             let neg_dbl_im_py = neg_twice_imaginary_part(sample_batch.point.y);
 
-            let mut alpha: QM31 = One::one();
+          
             let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
             let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
             let mut indexed_alpha_mul_c: Array<(usize, PackedUnreducedQM31)> = array![];
@@ -283,15 +285,22 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 indexed_alpha_mul_c.append((*column_idx, alpha_mul_c.into()));
             }
 
-            point_constants
+            rev_point_constants
                 .append(
                     PointQuotientConstants {
                         alpha_mul_a_sum: alpha_mul_a_sum.reduce().into(),
                         alpha_mul_b_sum: alpha_mul_b_sum,
-                        indexed_alpha_mul_c,
+                        indexed_alpha_mul_c: indexed_alpha_mul_c.span(),
                         batch_random_coeff: alpha,
                     },
                 );
+        }
+
+
+        let mut rev_point_constants = rev_point_constants.span();
+        let mut point_constants = array![];
+        while let Some(pc) = rev_point_constants.pop_back() {
+            point_constants.append(*pc);
         }
 
         QuotientConstants { point_constants }
