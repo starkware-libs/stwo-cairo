@@ -168,9 +168,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         fri_verifier.decommit(fri_answers, queries);
     }
 
-    /// Gets the trace log size from the commitment scheme. Temporarily workarounds a compiler
+    /// Gets the tree height from the commitment scheme. Temporarily workarounds a compiler
     /// issue.
-    fn get_trace_log_size(self: @CommitmentSchemeVerifier) -> u32 {
+    fn get_tree_height(self: @CommitmentSchemeVerifier) -> u32 {
         // The following loop is a workaround for a compiler issue. Directly accessing the trees at
         // indices 1 and 2 causes the compiler to think this code will always panic.
         // The following loop doesn't directly access these indices, so the code won't panic.
