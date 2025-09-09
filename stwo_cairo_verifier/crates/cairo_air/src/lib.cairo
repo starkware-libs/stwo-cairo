@@ -185,6 +185,8 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
 pub fn verify_cairo(proof: CairoProof) {
     let CairoProof { claim, interaction_pow, interaction_claim, stark_proof, channel_salt } = proof;
 
+    assert!(stark_proof.commitment_scheme_proof.commitments.len() == 4);
+
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
 
