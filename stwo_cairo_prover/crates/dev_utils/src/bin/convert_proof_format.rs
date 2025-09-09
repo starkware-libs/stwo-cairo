@@ -1,5 +1,6 @@
 use std::path::{Path, PathBuf};
 
+use anyhow::Result;
 use cairo_air::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
 use cairo_air::CairoProof;
 use clap::Parser;
@@ -53,7 +54,7 @@ where
     Ok(())
 }
 
-fn main() -> Result<(), std::io::Error> {
+fn main() -> Result<()> {
     let args = Args::parse();
 
     println!(
@@ -78,12 +79,11 @@ fn main() -> Result<(), std::io::Error> {
             args.output_format,
         )?,
         _ => {
-            panic!(
+            anyhow::bail!(
                 "supported hash functions are blake2s and poseidon252, got {}",
                 args.hash
-            );
+            )
         }
     }
-
     Ok(())
 }
