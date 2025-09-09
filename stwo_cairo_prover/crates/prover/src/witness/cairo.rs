@@ -147,6 +147,7 @@ impl CairoClaimGenerator {
             public_memory_addresses,
             builtin_segments,
             public_segment_context,
+            ..
         }: ProverInput,
     ) -> Self {
         let initial_state = state_transitions.initial_state;

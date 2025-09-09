@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
 use memmap2::Mmap;
+use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -150,6 +151,10 @@ pub fn adapt_to_stwo_input(
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_mem: Vec::new(),
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_trace: Vec::new(),
     })
 }
 
@@ -179,7 +184,7 @@ impl<T: Pod> MmappedFile<T> {
 
 /// A single entry from the trace file.
 #[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RelocatedTraceEntry {
     pub ap: usize,
     pub fp: usize,
