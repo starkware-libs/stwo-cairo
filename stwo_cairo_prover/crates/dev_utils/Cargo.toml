@@ -8,6 +8,7 @@ name = "extract_mem_trace"
 required-features = ["stwo-cairo-adapter/extract-mem-trace"]
 
 [dependencies]
+anyhow.workspace = true
 cairo-air.workspace = true
 clap.workspace = true
 serde.workspace = true

@@ -1467,6 +1467,7 @@ dependencies = [
 name = "dev-utils"
 version = "0.1.1"
 dependencies = [
+ "anyhow",
  "bincode 1.3.3",
  "cairo-air",
  "cairo-lang-executable",
@@ -3471,6 +3472,7 @@ dependencies = [
 name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
+ "anyhow",
  "cairo-air",
  "cairo-vm",
  "dev-utils",
