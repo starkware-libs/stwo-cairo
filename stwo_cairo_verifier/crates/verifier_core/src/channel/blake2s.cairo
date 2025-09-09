@@ -219,5 +219,8 @@ fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
     let counter = channel.n_draws;
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
     channel.n_draws += 1;
+
+    // Append a zero byte for domain separation between generating randomness and mixing a
+    // single u32.
     Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 37, msg) }
 }
