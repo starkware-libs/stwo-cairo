@@ -66,23 +66,24 @@ fn main() -> Result<()> {
     );
 
     match args.hash.as_str() {
-        "blake2s" => Ok(convert_proof::<Blake2sMerkleHasher>(
+        "blake2s" => convert_proof::<Blake2sMerkleHasher>(
             &args.input,
             &args.output,
             args.input_format,
             args.output_format,
-        )?),
-        "poseidon252" => Ok(convert_proof::<Poseidon252MerkleHasher>(
+        )?,
+        "poseidon252" => convert_proof::<Poseidon252MerkleHasher>(
             &args.input,
             &args.output,
             args.input_format,
             args.output_format,
-        )?),
+        )?,
         _ => {
             anyhow::bail!(
                 "supported hash functions are blake2s and poseidon252, got {}",
                 args.hash
-            );
+            )
         }
     }
+    Ok(())
 }

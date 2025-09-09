@@ -108,8 +108,8 @@ cargo install --path crates/bin/cairo-execute cairo-execute
 Also from the current directory create a symlink to the `corelib`:
 
 ```sh
-# CURDIR is stwo_cairo_verifier
-ln -s "~/cairo/corelib" corelib
+# Working directory is stwo_cairo_verifier
+ln -s ~/cairo/corelib corelib
 ```
 
 Now we can generate the profile:
@@ -125,7 +125,8 @@ cairo-execute \
     crates/cairo_verifier/blake_cairo_project > target/stwo_cairo_verifier.profile.txt
 ```
 
-You can visualize it with `flamegraph.pl` or with `scarb-burn` tool.
+You can visualize it with `flamegraph.pl` or with `scarb-burn` tool.  
+Use `crates/cairo_verifier/poseidon_cairo_project` if you want to profile the project with `poseidon252_verifier` feature enabled.  
 
 ```sh
 cargo install --git https://github.com/m-kus/scarb-burn --rev f01a5164576e29c002098ab397fb015808a4fb7b scarb-burn
