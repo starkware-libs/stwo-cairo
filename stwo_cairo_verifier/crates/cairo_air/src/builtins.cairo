@@ -9,9 +9,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -123,53 +121,25 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
         } = self;
 
         if let Some(claim) = add_mod_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_mod_builtin::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = bitwise_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::bitwise_builtin::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = mul_mod_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::mul_mod_builtin::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = pedersen_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::pedersen_builtin::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = poseidon_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::poseidon_builtin::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = range_check_96_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::range_check_builtin_bits_96::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = range_check_128_builtin {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::range_check_builtin_bits_128::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
     }
 }

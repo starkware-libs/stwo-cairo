@@ -22,9 +22,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -471,163 +469,82 @@ pub impl OpcodeClaimImpl of ClaimTrait<OpcodeClaim> {
             ret,
         } = self;
         for claim in add.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
-
         for claim in add_small.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_opcode_small::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in add_ap.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::add_ap_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in assert_eq.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in assert_eq_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in assert_eq_double_deref.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::assert_eq_opcode_double_deref::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in blake.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::blake_compress_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in call.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::call_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in call_rel_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::call_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in generic.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::generic_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jnz.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jnz_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jnz_taken.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jnz_opcode_taken::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jump.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jump_double_deref.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_double_deref::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jump_rel.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_rel::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in jump_rel_imm.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::jump_opcode_rel_imm::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in mul.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::mul_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in mul_small.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::mul_opcode_small::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in qm31.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::qm_31_add_mul_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
 
         for claim in ret.span() {
-            accumulate_relation_uses(
-                ref relation_uses,
-                components::ret_opcode::RELATION_USES_PER_ROW.span(),
-                *claim.log_size,
-            );
+            claim.accumulate_relation_uses(ref relation_uses);
         }
     }
 }

@@ -7,9 +7,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, components, utils,
-};
+use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedColumnSet,
     PreprocessedMaskValues, PreprocessedMaskValuesImpl,
@@ -58,19 +56,9 @@ pub impl BlakeClaimImpl of ClaimTrait<BlakeClaim> {
         // - blake_sigma
         // - verify_bitwise_xor_12
 
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::blake_round::RELATION_USES_PER_ROW.span(),
-            *blake_round.log_size,
-        );
-        accumulate_relation_uses(
-            ref relation_uses, components::blake_g::RELATION_USES_PER_ROW.span(), *blake_g.log_size,
-        );
-        accumulate_relation_uses(
-            ref relation_uses,
-            components::triple_xor_32::RELATION_USES_PER_ROW.span(),
-            *triple_xor_32.log_size,
-        );
+        blake_round.accumulate_relation_uses(ref relation_uses);
+        blake_g.accumulate_relation_uses(ref relation_uses);
+        triple_xor_32.accumulate_relation_uses(ref relation_uses);
     }
 }
 
