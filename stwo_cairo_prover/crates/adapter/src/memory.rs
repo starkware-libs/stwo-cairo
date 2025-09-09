@@ -35,7 +35,7 @@ pub const P_MIN_2: [u32; 8] = [
 pub(crate) type F252 = [u32; 8];
 
 #[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct MemoryEntry {
     // TODO(Stav): Change to `u32` after this struct is no longer used to read memory files.
     pub address: u64,
