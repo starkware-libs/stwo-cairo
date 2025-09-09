@@ -12,9 +12,8 @@ use std::fs::write;
 use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
-use dev_utils::utils::runner_from_compiled_program;
+use dev_utils::utils::run_program_and_adapter;
 use sonic_rs::to_string_pretty;
-use stwo_cairo_adapter::adapter::adapter;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -59,12 +58,11 @@ fn main() {
 
     let _span = span!(Level::INFO, "extract_mem_trace").entered();
 
-    let runner = runner_from_compiled_program(
+    let prover_input = run_program_and_adapter(
         &args.compiled_program,
         args.cairo1,
         args.program_arguments_file.as_ref(),
     );
-    let prover_input = adapter(&runner);
 
     if let Some(mem_file) = args.mem {
         match args.format {

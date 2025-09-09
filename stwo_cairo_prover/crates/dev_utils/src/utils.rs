@@ -7,9 +7,9 @@ use cairo_air::PreProcessedTraceVariant;
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
-use cairo_vm::cairo_run::{cairo_run_program, CairoRunConfig};
+use cairo_vm::cairo_run::{cairo_run_program_with_initial_scope, CairoRunConfig};
 use cairo_vm::hint_processor::builtin_hint_processor::builtin_hint_processor_definition::BuiltinHintProcessor;
-use cairo_vm::hint_processor::hint_processor_definition::HintProcessor;
+use cairo_vm::types::exec_scope::ExecutionScopes;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
@@ -118,28 +118,60 @@ pub fn create_and_serialize_proof(
     Ok(())
 }
 
-pub fn runner_from_compiled_program(
+pub fn run_program(
     program_path: &PathBuf,
-    cairo1: bool,
+    executable: bool,
     args: Option<&PathBuf>,
 ) -> CairoRunner {
-    if cairo1 {
+    let cairo_run_config = CairoRunConfig {
+        trace_enabled: true,
+        relocate_trace: false,
+        layout: LayoutName::all_cairo_stwo,
+        proof_mode: true,
+        disable_trace_padding: true,
+        ..Default::default()
+    };
+
+    if executable {
         let executable: Executable =
             from_reader(File::open(program_path).expect("Unable to open executable"))
                 .expect("Failed to read executable");
         let args = args.map(read_cairo_arguments_from_file).unwrap_or_default();
-        run_cairo1_program(executable, args)
+        let (program, mut hints) = get_program_and_hints_from_executable(&executable, args);
+        cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            &mut hints,
+            ExecutionScopes::new(),
+        )
+        .expect("Failed to run program")
     } else {
-        assert!(args.is_none(), "Can't run Cairo0 programs with arguments");
         let program = read_compiled_cairo_program(program_path);
-        run_program(&program, None)
+
+        let mut exec_scopes = ExecutionScopes::new();
+
+        if let Some(args) = args {
+            let program_input_contents =
+                std::fs::read_to_string(args).expect("Failed to read program input");
+            // Insert the program input into the execution scopes if exists
+            exec_scopes.insert_value("program_input", program_input_contents);
+        }
+        // Insert the program object into the execution scopes
+        exec_scopes.insert_value("program_object", program.clone());
+        cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            &mut BuiltinHintProcessor::new_empty(),
+            exec_scopes,
+        )
+        .expect("Failed to run program")
     }
 }
 
-pub fn run_cairo1_program(
-    executable: Executable,
+pub fn get_program_and_hints_from_executable<'a>(
+    executable: &'a Executable,
     args: Vec<cairo_lang_runner::Arg>,
-) -> CairoRunner {
+) -> (Program, CairoHintProcessor<'a>) {
     let data: Vec<MaybeRelocatable> = executable
         .program
         .bytecode
@@ -166,7 +198,7 @@ pub fn run_cairo1_program(
     )
     .unwrap();
 
-    let mut hint_processor = CairoHintProcessor {
+    let hint_processor = CairoHintProcessor {
         runner: None,
         user_args: vec![vec![Arg::Array(args)]],
         string_to_hint,
@@ -178,7 +210,7 @@ pub fn run_cairo1_program(
         panic_traceback: Default::default(),
     };
 
-    run_program(&program, Some(&mut hint_processor))
+    (program, hint_processor)
 }
 
 pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
@@ -191,45 +223,21 @@ pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
 }
 
 pub fn run_program_and_adapter(
-    program: &Program,
-    hint_processor: Option<&mut dyn HintProcessor>,
+    program_path: &PathBuf,
+    executable: bool,
+    args: Option<&PathBuf>,
 ) -> ProverInput {
-    let runner = run_program(program, hint_processor);
+    let runner = run_program(program_path, executable, args);
     adapter(&runner)
 }
 
-pub fn run_program(
-    program: &Program,
-    hint_processor: Option<&mut dyn HintProcessor>,
-) -> CairoRunner {
-    let cairo_run_config = CairoRunConfig {
-        trace_enabled: true,
-        relocate_trace: false,
-        layout: LayoutName::all_cairo_stwo,
-        proof_mode: true,
-        disable_trace_padding: true,
-        ..Default::default()
-    };
-
-    let mut default_hint_processor = BuiltinHintProcessor::new_empty();
-    let hint_processor = hint_processor.unwrap_or(&mut default_hint_processor);
-
-    cairo_run_program(program, &cairo_run_config, hint_processor)
-        .expect("Failed to run cairo program")
-}
-
-pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
+fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
     let bytes =
         std::fs::read(program_path).unwrap_or_else(|e| panic!("Failed to read program: {e:?}"));
     Program::from_bytes(&bytes, Some("main")).expect("Failed to create program from bytes")
 }
 
-pub fn get_test_program(test_name: &str) -> Program {
-    let program_path = get_compiled_cairo_program_path(test_name);
-    read_compiled_cairo_program(&program_path)
-}
-
-fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
+pub fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../test_data/")
         .join(test_name)
@@ -260,9 +268,7 @@ mod tests {
         // Use an existing test program
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-        let compiled_program = read_compiled_cairo_program(&compiled_program_path);
-
-        let prover_input = run_program_and_adapter(&compiled_program, None);
+        let prover_input = run_program_and_adapter(&compiled_program_path, false, None);
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");
