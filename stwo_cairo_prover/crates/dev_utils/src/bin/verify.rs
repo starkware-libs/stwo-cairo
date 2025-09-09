@@ -1,9 +1,9 @@
 use std::path::PathBuf;
 
+use anyhow::Result;
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use clap::Parser;
-use dev_utils::utils::Error;
 use stwo::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo::core::vcs::poseidon252_merkle::{Poseidon252MerkleChannel, Poseidon252MerkleHasher};
 use stwo_cairo_prover::prover::ChannelHash;
@@ -32,14 +32,14 @@ struct Args {
     pp_trace: String,
 }
 
-fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash, Error> {
+fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash> {
     match hash_str.to_lowercase().as_str() {
         "blake2s" => Ok(ChannelHash::Blake2s),
         "poseidon252" => Ok(ChannelHash::Poseidon252),
-        _ => Err(Error::Cli(clap::Error::raw(
-            clap::error::ErrorKind::InvalidValue,
-            format!("Invalid channel hash: {hash_str}. Must be 'blake2s' or 'poseidon252'"),
-        ))),
+        _ => anyhow::bail!(
+            "Invalid channel hash: {}. Must be 'blake2s' or 'poseidon252'",
+            hash_str
+        ),
     }
 }
 
@@ -53,10 +53,7 @@ fn parse_preprocessed_trace(preprocessed_trace: &str) -> PreProcessedTraceVarian
     }
 }
 
-fn verify_blake2s_proof(
-    proof: String,
-    preprocessed_trace: PreProcessedTraceVariant,
-) -> Result<(), Error> {
+fn verify_blake2s_proof(proof: String, preprocessed_trace: PreProcessedTraceVariant) -> Result<()> {
     let proof: CairoProof<Blake2sMerkleHasher> = sonic_rs::from_str(&proof)?;
     verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace)?;
     Ok(())
@@ -65,19 +62,19 @@ fn verify_blake2s_proof(
 fn verify_poseidon252_proof(
     proof: String,
     preprocessed_trace: PreProcessedTraceVariant,
-) -> Result<(), Error> {
+) -> Result<()> {
     let proof: CairoProof<Poseidon252MerkleHasher> = sonic_rs::from_str(&proof)?;
     verify_cairo::<Poseidon252MerkleChannel>(proof, preprocessed_trace)?;
     Ok(())
 }
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<()> {
+    let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
 
     let _span = span!(Level::INFO, "verify").entered();
-    let args = Args::try_parse_from(std::env::args())?;
 
     log::info!("Verifying a {:?} proof", args.channel_hash);
     log::info!("Proof path: {}", args.proof_path.display());
@@ -92,8 +89,7 @@ fn main() -> Result<(), Error> {
     };
     match result {
         Ok(_) => log::info!("✅ Proof verified successfully!"),
-        Err(e) => log::error!("❌ Proof verification failed: {e:?}"),
+        Err(ref e) => log::error!("❌ Proof verification failed: {e:?}"),
     }
-
-    Ok(())
+    result
 }

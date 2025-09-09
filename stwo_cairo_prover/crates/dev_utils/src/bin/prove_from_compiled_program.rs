@@ -1,10 +1,10 @@
 use std::path::PathBuf;
 
+use anyhow::Result;
 use cairo_air::utils::ProofFormat;
 use clap::Parser;
-use dev_utils::utils::{
-    create_and_serialize_proof, read_compiled_cairo_program, run_program_and_adapter, Error,
-};
+use dev_utils::utils::{read_compiled_cairo_program, run_program_and_adapter};
+use stwo_cairo_prover::prover::create_and_serialize_proof;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -55,13 +55,13 @@ struct Args {
     verify: bool,
 }
 
-fn main() -> Result<(), Error> {
+fn main() -> Result<()> {
+    let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
 
     let _span = span!(Level::INFO, "run").entered();
-    let args = Args::try_parse_from(std::env::args())?;
 
     let compiled_program = read_compiled_cairo_program(&args.compiled_program);
     let input = run_program_and_adapter(&compiled_program, None);
@@ -72,5 +72,11 @@ fn main() -> Result<(), Error> {
         args.proof_path,
         args.proof_format,
         args.params_json,
-    )
+    )?;
+
+    if args.verify {
+        log::info!("Proof verified successfully");
+    }
+
+    Ok(())
 }
