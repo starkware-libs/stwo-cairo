@@ -1,3 +1,4 @@
+use std::fs::File;
 use std::path::PathBuf;
 
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
@@ -12,8 +13,10 @@ use cairo_vm::hint_processor::hint_processor_definition::HintProcessor;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
+use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use cairo_vm::Felt252;
 use serde::Serialize;
+use serde_json::from_reader;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
@@ -115,10 +118,28 @@ pub fn create_and_serialize_proof(
     Ok(())
 }
 
-pub fn run_cairo1_and_adapter(
+pub fn runner_from_compiled_program(
+    program_path: &PathBuf,
+    cairo1: bool,
+    args: Option<&PathBuf>,
+) -> CairoRunner {
+    if cairo1 {
+        let executable: Executable =
+            from_reader(File::open(program_path).expect("Unable to open executable"))
+                .expect("Failed to read executable");
+        let args = args.map(read_cairo_arguments_from_file).unwrap_or_default();
+        run_cairo1_program(executable, args)
+    } else {
+        assert!(args.is_none(), "Can't run Cairo0 programs with arguments");
+        let program = read_compiled_cairo_program(program_path);
+        run_program(&program, None)
+    }
+}
+
+pub fn run_cairo1_program(
     executable: Executable,
     args: Vec<cairo_lang_runner::Arg>,
-) -> ProverInput {
+) -> CairoRunner {
     let data: Vec<MaybeRelocatable> = executable
         .program
         .bytecode
@@ -157,7 +178,7 @@ pub fn run_cairo1_and_adapter(
         panic_traceback: Default::default(),
     };
 
-    run_program_and_adapter(&program, Some(&mut hint_processor))
+    run_program(&program, Some(&mut hint_processor))
 }
 
 pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
@@ -173,6 +194,14 @@ pub fn run_program_and_adapter(
     program: &Program,
     hint_processor: Option<&mut dyn HintProcessor>,
 ) -> ProverInput {
+    let runner = run_program(program, hint_processor);
+    adapter(&runner)
+}
+
+pub fn run_program(
+    program: &Program,
+    hint_processor: Option<&mut dyn HintProcessor>,
+) -> CairoRunner {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
         relocate_trace: false,
@@ -185,9 +214,8 @@ pub fn run_program_and_adapter(
     let mut default_hint_processor = BuiltinHintProcessor::new_empty();
     let hint_processor = hint_processor.unwrap_or(&mut default_hint_processor);
 
-    let runner = cairo_run_program(program, &cairo_run_config, hint_processor)
-        .expect("Failed to run cairo program");
-    adapter(&runner)
+    cairo_run_program(program, &cairo_run_config, hint_processor)
+        .expect("Failed to run cairo program")
 }
 
 pub fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
@@ -201,7 +229,7 @@ pub fn get_test_program(test_name: &str) -> Program {
     read_compiled_cairo_program(&program_path)
 }
 
-fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
+pub fn get_compiled_cairo_program_path(test_name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
         .join("../../test_data/")
         .join(test_name)

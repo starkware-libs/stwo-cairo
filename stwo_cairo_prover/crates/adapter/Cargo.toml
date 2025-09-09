@@ -7,6 +7,7 @@ edition = "2021"
 [features]
 default = ["std"]
 slow-tests = []
+extract-mem-trace = []
 # TODO(STAV): Delete this feature when the old adapter is removed.
 std = ["dep:sonic-rs", "cairo-vm/std"]
 
