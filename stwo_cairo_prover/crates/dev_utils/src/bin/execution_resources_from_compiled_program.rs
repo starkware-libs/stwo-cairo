@@ -10,8 +10,7 @@
 use std::path::PathBuf;
 
 use clap::Parser;
-use dev_utils::utils::runner_from_compiled_program;
-use stwo_cairo_adapter::adapter::adapter;
+use dev_utils::utils::run_program_and_adapter;
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
@@ -38,13 +37,11 @@ fn main() {
 
     let _span = span!(Level::INFO, "run").entered();
 
-    let runner = runner_from_compiled_program(
+    let prover_input = run_program_and_adapter(
         &args.compiled_program,
         args.cairo1,
         args.program_arguments_file.as_ref(),
     );
-
-    let prover_input = adapter(&runner);
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
     log::info!("Execution resources: {execution_resources:#?}");

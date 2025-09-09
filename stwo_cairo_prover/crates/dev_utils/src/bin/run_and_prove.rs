@@ -2,16 +2,14 @@ use std::path::PathBuf;
 
 use cairo_air::utils::ProofFormat;
 use clap::Parser;
-use dev_utils::utils::{
-    create_and_serialize_proof, read_compiled_cairo_program, run_program_and_adapter, Error,
-};
+use dev_utils::utils::{create_and_serialize_proof, run_program_and_adapter, Error};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
 // Command line arguments for 'prove_from_compiled_program'.
 /// Example command line:
 ///     ```
-///     cargo run --bin prove_from_compiled_program -- --compiled_program
+///     cargo run --bin run_and_prove -- --program
 /// absolute/path/to/compiled.json     --proof_path path/to/proof
 ///     ```
 ///
@@ -21,8 +19,15 @@ use tracing_subscriber::fmt::format::FmtSpan;
 ///     ```
 #[derive(Parser, Debug)]
 struct Args {
-    #[structopt(long = "compiled_program")]
-    compiled_program: PathBuf,
+    #[structopt(long = "program")]
+    program: PathBuf,
+    #[arg(long = "executable")]
+    /// Indicates that the input program is executable
+    executable: bool,
+    /// Path to a file with arguments for the Cairo program.
+    #[arg(long = "program_arguments_file")]
+    program_arguments_file: Option<PathBuf>,
+    #[structopt(long = "params_json")]
     /// The path to the JSON file containing the prover parameters (optional).
     /// The expected file format is:
     ///     {
@@ -39,8 +44,7 @@ struct Args {
     ///     }
     ///
     /// Default parameters are chosen to ensure 96 bits of security.
-    #[structopt(long = "params_json")]
-    params_json: Option<PathBuf>,
+    proof_params_json: Option<PathBuf>,
     /// The output file path for the proof.
     #[structopt(long = "proof_path")]
     proof_path: PathBuf,
@@ -56,21 +60,24 @@ struct Args {
 }
 
 fn main() -> Result<(), Error> {
+    let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
 
     let _span = span!(Level::INFO, "run").entered();
-    let args = Args::try_parse_from(std::env::args())?;
 
-    let compiled_program = read_compiled_cairo_program(&args.compiled_program);
-    let input = run_program_and_adapter(&compiled_program, None);
+    let prover_input = run_program_and_adapter(
+        &args.program,
+        args.executable,
+        args.program_arguments_file.as_ref(),
+    );
 
     create_and_serialize_proof(
-        input,
+        prover_input,
         args.verify,
         args.proof_path,
         args.proof_format,
-        args.params_json,
+        args.proof_params_json,
     )
 }
