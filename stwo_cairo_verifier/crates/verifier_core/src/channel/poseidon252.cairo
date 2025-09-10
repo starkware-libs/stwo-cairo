@@ -196,7 +196,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     /// Check that `H(H(POW_PREFIX, digest, n_bits), nonce)` has `n_bits` starting zeros.
     fn verify_pow_nonce(self: @Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
-        const POW_PREFIX: u32 = 0x012345678;
+        const POW_PREFIX: u32 = 0x12345678;
         let prefix_hash = poseidon_hash_span(
             [POW_PREFIX.into(), *self.digest, n_bits.into()].span(),
         );

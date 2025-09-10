@@ -105,10 +105,10 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let digest = self.digest.hash.unbox();
 
         // Mix ids hash
-        let ids_hash = hash_memory_section_ids(section, digest);
+        let new_digest = hash_memory_section_ids(section, digest);
 
         // Mix values hash
-        let values_hash = hash_memory_section_values(section, ids_hash.unbox());
+        let values_hash = hash_memory_section_values(section, new_digest.unbox());
         update_digest(ref self, Blake2sHash { hash: values_hash });
     }
 
@@ -157,7 +157,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         // Compute `POW_PREFIX || digest || workBits`.
         //          1 u32      || 8 u32  || 1 u32.
         let msg = BoxImpl::new(
-            [POW_PREFIX, d0, d1, d2, d3, d4, d5, d6, d7, n_bits, 0, 0, 0, 0, 0, 0],
+            [POW_PREFIX, 0, 0, 0, 0, 0, 0, d0, d1, d2, d3, d4, d5, d6, d7, n_bits],
         );
         let [q0, q1, q2, q3, q4, q5, q6, q7] = blake2s_finalize(
             BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 40, msg,

@@ -259,17 +259,18 @@ fn decommit_last_layer(verifier: FriVerifier, mut queries: Queries, mut query_ev
 
     // TODO(andrew): Note depending on the proof parameters, doing FFT on the last layer poly vs
     // pointwize evaluation is less efficient.
-    let last_layer_evals = last_layer_poly.evaluate(last_layer_domain).values;
-    let domain_log_size = last_layer_domain.log_size();
+    assert!(last_layer_poly.coeffs.len() == 1);
+    // let last_layer_evals = last_layer_poly.evaluate(last_layer_domain).values;
+    // let domain_log_size = last_layer_domain.log_size();
 
     while let (Some(query), Some(query_eval)) =
         (queries.positions.pop_front(), query_evals.pop_front()) {
         // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
         // the FFT return evals in bit-reversed order to prevent this unnecessary bit-reverse.
-        let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
+        // let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
 
         assert!(
-            query_eval == *last_layer_evals[last_layer_eval_i],
+            query_eval == *last_layer_poly.coeffs[0],
             "{}",
             FriVerificationError::LastLayerEvaluationsInvalid,
         );
