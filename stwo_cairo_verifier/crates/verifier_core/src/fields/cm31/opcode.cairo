@@ -9,7 +9,7 @@ use super::super::{BatchInvertible, Invertible};
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
     // Represented using QM31, since QM31 has a dedicated opcode.
-    pub inner: super::super::qm31::QM31,
+    inner: super::super::qm31::QM31,
 }
 
 pub impl CM31InvertibleImpl of Invertible<CM31> {
