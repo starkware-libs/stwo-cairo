@@ -134,6 +134,13 @@ pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUn
     }
 }
 
+pub impl PackedUnreducedQM31SubAssign of SubAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
+    #[inline]
+    fn sub_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
+        self = self - rhs
+    }
+}
+
 pub impl PackedUnreducedQM31Add of Add<PackedUnreducedQM31> {
     #[inline]
     fn add(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
@@ -145,13 +152,6 @@ pub impl PackedUnreducedQM31Sub of Sub<PackedUnreducedQM31> {
     #[inline]
     fn sub(lhs: PackedUnreducedQM31, rhs: PackedUnreducedQM31) -> PackedUnreducedQM31 {
         PackedUnreducedQM31 { a: lhs.a - rhs.a, b: lhs.b - rhs.b }
-    }
-}
-
-pub impl PackedUnreducedSubAssign of SubAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
-    #[inline]
-    fn sub_assign(ref self: PackedUnreducedQM31, rhs: PackedUnreducedQM31) {
-        self = self - rhs
     }
 }
 
