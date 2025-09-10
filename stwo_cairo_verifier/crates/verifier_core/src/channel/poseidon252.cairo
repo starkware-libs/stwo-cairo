@@ -48,27 +48,20 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
         let mut res = array![self.digest];
-        loop {
-            match felts.multi_pop_front::<2>() {
-                Option::Some(pair) => {
-                    let [x, y] = (*pair).unbox();
-                    // The first argument of `pack_qm31` is 1 so that the felt252 that
-                    // we will append to `res` can separate the case of a pair (x, y) of QM31
-                    // with x = 0 from a singleton y (which would enter the other match arm).
-                    // For any pair, the msb of the resulting felt252 is 2^248, while for
-                    // any singleton, the msb of the resulting felt252 is 2^124.
-                    // This also implies that we never overflow the 252-bit prime.
-                    let cur = pack_qm31(1, x);
-                    res.append(pack_qm31(cur, y));
-                },
-                Option::None => {
-                    if !felts.is_empty() {
-                        let x = felts.pop_front().unwrap();
-                        res.append(pack_qm31(1, *x));
-                    }
-                    break;
-                },
-            };
+        while let Some(pair) = felts.multi_pop_front::<2>() {
+            let [x, y] = (*pair).unbox();
+            // The first argument of `pack_qm31` is 1 so that the felt252 that
+            // we will append to `res` can separate the case of a pair (x, y) of QM31
+            // with x = 0 from a singleton y (which would enter the other match arm).
+            // For any pair, the msb of the resulting felt252 is 2^248, while for
+            // any singleton, the msb of the resulting felt252 is 2^124.
+            // This also implies that we never overflow the 252-bit prime.
+            let cur = pack_qm31(1, x);
+            res.append(pack_qm31(cur, y));
+        }
+
+        if let Some(x) = felts.pop_front() {
+            res.append(pack_qm31(1, *x));
         }
 
         let next_digest = poseidon_hash_span(res.span());
@@ -148,7 +141,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 fn check_leading_zeros(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
     let two_pow_n_bits: u128 = pow2_u64(n_bits).into();
-    let nonzero_divisor = two_pow_n_bits.try_into().unwrap();
+    let nonzero_divisor: NonZero<u128> = two_pow_n_bits.try_into().unwrap();
     let (_, r) = DivRem::div_rem(low, nonzero_divisor);
     r == 0
 }
