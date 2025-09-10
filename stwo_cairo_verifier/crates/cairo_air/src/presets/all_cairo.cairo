@@ -668,7 +668,7 @@ fn preprocessed_root_without_pedersen(
 
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 #[cfg(feature: "poseidon252_verifier")]
-fn preprocessed_root(log_blowup_factor: u32) -> Hash {
+fn preprocessed_root_without_pedersen(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
         0 => 0x053be12b3503460f6657c5a46ed1b56719f91e45530a869327b39b7b8a20e0e6,
         1 => 0x009c3ff379acfd021edc6424e1db4efeaf89dcc33454f3dc4ebe4cab8eedf6b9,
