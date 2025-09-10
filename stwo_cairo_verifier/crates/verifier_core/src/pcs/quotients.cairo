@@ -143,7 +143,7 @@ fn accumulate_row_quotients(
         quotient_constants.point_constants, denominator_inverses,
     ) {
         let PointQuotientConstants {
-            alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c, batch_random_coeff,
+            alpha_mul_a_sum, alpha_mul_b_sum, indexed_alpha_mul_c,
         } = point_constants;
 
         // `minus_numerator` is offset by `PackedUnreducedQM31Trait::large_zero()` via
@@ -164,8 +164,7 @@ fn accumulate_row_quotients(
         // Subtract the accumulated linear term.
 
         let minus_quotient = minus_numerator.reduce().mul_cm31(denom_inv);
-        quotient_accumulator =
-            QM31Trait::fused_mul_sub(quotient_accumulator, *batch_random_coeff, minus_quotient);
+        quotient_accumulator = quotient_accumulator - minus_quotient;
     }
 
     quotient_accumulator
@@ -223,31 +222,28 @@ pub struct QuotientConstants {
 /// In batched evaluation proof verification, the verifier computes a pseudo-random
 /// linear combination of these quotients:
 ///
-///     Σ (α^(i+1) * (c_i * F_i(q) - a_i * q.y - b_i))
+///     Σ (α^i * (c_i * F_i(q) - a_i * q.y - b_i))
 ///
 /// which expands to:
 ///
-///     Σ (α^(i+1) * c_i * F_i(q)) - q.y * Σ (α^(i+1) * a_i) - Σ (α^(i+1) * b_i)
+///     Σ (α^i * c_i * F_i(q)) - q.y * Σ (α^i * a_i) - Σ (α^i * b_i)
 ///
 /// To evaluate this expression efficiently at the query point `q`, we store:
 ///
-/// - `alpha_mul_a_sum`: Σ (α^(i+1) * a_i) across all samples.
-/// - `alpha_mul_b_sum`: Σ (α^(i+1) * b_i) across all samples.
-/// - `indexed_alpha_mul_c`: Pairs `(column index, α^(i+1) * c_i)` for each sample.
-/// - `batch_random_coeff`: The pseudo-random coefficient used to generate the linear combination.
-///   For each batch, we exponentiate it by the number of columns (`α^(#columns)`)
-///   to merge multiple batches consistently.
+/// - `alpha_mul_a_sum`: Σ (α^i * a_i) across all samples.
+/// - `alpha_mul_b_sum`: Σ (α^i * b_i) across all samples.
+/// - `indexed_alpha_mul_c`: Pairs `(column index, α^i * c_i)` for each sample.
+///
+///  for each batch, where  i ∈ [first_sample_in_batch, first_sample_in_next_batch)
 ///
 #[derive(Debug, Drop)]
 pub struct PointQuotientConstants {
-    /// Σ (α^(i+1) * a_i) across all samples in the batch.
+    /// Σ (α^i * a_i) across all samples in the batch.
     pub alpha_mul_a_sum: PackedUnreducedQM31,
-    /// Σ (α^(i+1) * b_i) across all samples in the batch.
+    /// Σ (α^i * b_i) across all samples in the batch.
     pub alpha_mul_b_sum: PackedUnreducedQM31,
     /// Pairs of `(column index, α^i * c_i)` for every sample.
     pub indexed_alpha_mul_c: Array<(usize, PackedUnreducedQM31)>,
-    /// The random coefficient `α^(#columns)` used in the linear combination above.
-    pub batch_random_coeff: QM31,
 }
 
 #[generate_trait]
@@ -257,6 +253,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
     ) -> QuotientConstants {
         let mut point_constants = array![];
 
+        let mut alpha: QM31 = One::one();
         for sample_batch in sample_batches_by_point.span() {
             assert!(
                 *sample_batch.point.y != (*sample_batch.point.y).complex_conjugate(),
@@ -265,14 +262,11 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
             );
 
             let neg_dbl_im_py = neg_twice_imaginary_part(sample_batch.point.y);
-
-            let mut alpha: QM31 = One::one();
             let mut alpha_mul_a_sum = PackedUnreducedQM31Trait::large_zero();
             let mut alpha_mul_b_sum = PackedUnreducedQM31Trait::large_zero();
             let mut indexed_alpha_mul_c: Array<(usize, PackedUnreducedQM31)> = array![];
 
             for (column_idx, column_value) in sample_batch.columns_and_values.span() {
-                alpha = alpha * random_coeff;
                 let alpha_mul_a = alpha * neg_twice_imaginary_part(column_value);
                 let alpha_mul_c = alpha * neg_dbl_im_py;
                 let alpha_mul_b = QM31Trait::fused_mul_sub(
@@ -281,6 +275,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                 alpha_mul_a_sum += alpha_mul_a.into();
                 alpha_mul_b_sum += alpha_mul_b.into();
                 indexed_alpha_mul_c.append((*column_idx, alpha_mul_c.into()));
+                alpha = alpha * random_coeff;
             }
 
             point_constants
@@ -289,7 +284,6 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
                         alpha_mul_a_sum: alpha_mul_a_sum.reduce().into(),
                         alpha_mul_b_sum: alpha_mul_b_sum,
                         indexed_alpha_mul_c,
-                        batch_random_coeff: alpha,
                     },
                 );
         }
