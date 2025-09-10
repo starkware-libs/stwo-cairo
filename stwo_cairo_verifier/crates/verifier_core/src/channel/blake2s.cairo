@@ -102,10 +102,10 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let digest = self.digest.hash.unbox();
 
         // Mix ids hash
-        let ids_hash = hash_memory_section_ids(section, digest);
+        let new_digest = hash_memory_section_ids(section, digest);
 
         // Mix values hash
-        let values_hash = hash_memory_section_values(section, ids_hash.unbox());
+        let values_hash = hash_memory_section_values(section, new_digest.unbox());
         update_digest(ref self, Blake2sHash { hash: values_hash });
     }
 

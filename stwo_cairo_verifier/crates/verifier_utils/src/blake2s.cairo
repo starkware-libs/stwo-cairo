@@ -29,14 +29,15 @@ pub fn hash_memory_section_values(mut section: MemorySection, digest: [u32; 8]) 
     let mut byte_count = 0;
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest;
 
-    let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
+    // TODO(audit):use unwrap.
+    let (_id, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
         *head
     } else {
-        byte_count += 32;
+    
         return blake2s_finalize(
-            state,
-            byte_count,
-            BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
+            :state,
+            byte_count: 32,
+            msg: BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
         );
     };
 
@@ -60,8 +61,11 @@ pub fn hash_memory_section_values(mut section: MemorySection, digest: [u32; 8]) 
         buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
         byte_count += 32;
     }
+    // TODO(audit): make sure section is empty.
 
     // Finalize hash.
+
+    // use box new.
     blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
 }
 
@@ -100,20 +104,20 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(section: Span<u32>) -> Box<[u32; 8]> {
+fn hash_u32s(mut section: Span<u32>) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut section = section;
 
     // Fill the buffer with the first 16 values.
     // TODO(Gali): Use `let ... else ...` when supported.
+
+    // TODO(audit): remove unbox.
     let mut buffer = if let Some(head) = section.multi_pop_front::<16>() {
         head.unbox()
     } else {
         // Append values to the buffer and pad to blake hash message size.
         let mut buffer = array![];
-        let mut i = 0;
         buffer.append_span(section);
-        i += section.len();
+        let i = section.len();
         for _ in i..16 {
             buffer.append(0);
         }
