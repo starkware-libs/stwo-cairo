@@ -132,6 +132,7 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
         self.pop_back()
     }
 
+    /// Panics if self.len() < n.
     fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
         let (res, remainder) = self.split_at(n);
         self = remainder;
@@ -145,11 +146,9 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
         let mut self_copy = self;
-        if let Some(value) = self_copy.pop_front() {
-            if value == other {
-                self = self_copy;
-                return Some(other);
-            }
+        if let Some(value) = self_copy.pop_front() && value == other {
+            self = self_copy;
+            return Some(other);
         }
         None
     }
@@ -214,6 +213,7 @@ pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
 pub fn group_columns_by_degree_bound(
     log_degree_bound_by_column: ColumnSpan<u32>,
 ) -> ColumnsIndicesByDegreeBound {
+    // TODO(audit): Add type.
     let mut column_by_degree_bound = Default::default();
     let mut col_index = 0_usize;
     for column_log_degree_bound in log_degree_bound_by_column {
@@ -259,6 +259,8 @@ pub type ColumnsIndicesPerTreeByLogDegreeBound = LogDegreeBoundSpan<TreeSpan<Spa
 /// # Returns
 ///
 /// * `columns_per_tree_by_log_degree_bound`: The columns per tree by log degree bound.
+// TODO(audit): Consider fixing the sizes of the arrays in ColumnsIndicesPerTreeByDegreeBound to the
+// max.
 pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
     mut columns_by_deg_bound_per_tree: TreeSpan<ColumnsIndicesByDegreeBound>,
 ) -> ColumnsIndicesPerTreeByLogDegreeBound {
@@ -294,4 +296,17 @@ pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
     }
 
     columns_per_tree_by_log_deg_bound.span()
+}
+
+/// A utility function used to modify the most significant bits of a felt252.
+/// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
+/// `n_packed_elements` into the bits at indices [248, 251) of `word`.
+///
+/// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
+/// of packed elements, and the resulting felt252 is fed into a hash.
+/// The purpose of this function in this case is to avoid hash collisions between different-length
+/// lists of u32s or M31s that would lead to the same packing.
+#[inline(always)]
+pub fn add_length_padding(word: felt252, n_packed_elements: usize) -> felt252 {
+    word + n_packed_elements.into() * M31_SHIFT_POW_8
 }

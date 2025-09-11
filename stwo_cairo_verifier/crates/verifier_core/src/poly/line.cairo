@@ -3,7 +3,7 @@ use crate::circle::{CirclePoint, CirclePointIndexImpl, Coset, CosetImpl};
 use crate::fields::m31::{M31, m31};
 use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fields::{BaseField, SecureField};
-use crate::poly::utils::{butterfly, fold};
+use crate::poly::utils::butterfly;
 use crate::utils::pow2;
 
 /// A univariate polynomial defined on a [LineDomain].
@@ -33,16 +33,16 @@ pub impl LinePolyImpl of LinePolyTrait {
     /// Evaluates the polynomial at a single point.
     // TODO(andrew): Can remove if only use `Self::evaluate()` in the verifier.
     // Note there are tradeoffs depending on the blowup factor last FRI layer degree bound.
-    fn eval_at_point(self: @LinePoly, mut x: BaseField) -> SecureField {
-        let mut doublings = array![];
-        for _ in 0..*self.log_size {
-            doublings.append(x);
-            let x_square = x * x;
-            x = x_square + x_square - m31(1);
-        }
+    // fn eval_at_point(self: @LinePoly, mut x: BaseField) -> SecureField {
+    //     let mut doublings = array![];
+    //     for _ in 0..*self.log_size {
+    //         doublings.append(x);
+    //         let x_square = x * x;
+    //         x = x_square + x_square - m31(1);
+    //     }
 
-        fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
-    }
+    //     fold(self.coeffs, @doublings, 0, 0, self.coeffs.len())
+    // }
 
     fn evaluate(self: @LinePoly, domain: LineDomain) -> LineEvaluation {
         assert!(domain.size() >= self.coeffs.len());

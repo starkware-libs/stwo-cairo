@@ -115,7 +115,7 @@ pub impl CM31One of One<CM31> {
 pub impl M31IntoCM31 of core::traits::Into<M31, CM31> {
     #[inline]
     fn into(self: M31) -> CM31 {
-        CM31 { a: self, b: m31(0) }
+        CM31 { a: self, b: Zero::zero() }
     }
 }
 

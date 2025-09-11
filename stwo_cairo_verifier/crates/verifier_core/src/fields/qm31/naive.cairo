@@ -75,6 +75,7 @@ pub impl QM31Impl of QM31Trait {
         unreduced::fused_quotient_denominator(*px, *py, dx, dy)
     }
 
+    // TODO(audit): Optimize. Done?
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
         unreduced::from_partial_evals(evals)
     }

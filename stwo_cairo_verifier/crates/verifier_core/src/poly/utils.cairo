@@ -20,21 +20,21 @@ use crate::fields::{BaseField, SecureField};
 ///
 /// Panics if the number of values is not a power of two or if an incorrect number of of folding
 /// factors is provided.
-pub fn fold(
-    values: @Array<SecureField>,
-    folding_factors: @Array<BaseField>,
-    index: usize,
-    level: usize,
-    n: usize,
-) -> SecureField {
-    if n == 1 {
-        return *values[index];
-    }
+// pub fn fold(
+//     values: @Array<SecureField>,
+//     folding_factors: @Array<BaseField>,
+//     index: usize,
+//     level: usize,
+//     n: usize,
+// ) -> SecureField {
+//     if n == 1 {
+//         return *values[index];
+//     }
 
-    let lhs_val = fold(values, folding_factors, index, level + 1, n / 2);
-    let rhs_val = fold(values, folding_factors, index + n / 2, level + 1, n / 2);
-    return lhs_val + rhs_val.mul_m31(*folding_factors[level]);
-}
+//     let lhs_val = fold(values, folding_factors, index, level + 1, n / 2);
+//     let rhs_val = fold(values, folding_factors, index + n / 2, level + 1, n / 2);
+//     return lhs_val + rhs_val.mul_m31(*folding_factors[level]);
+// }
 
 #[inline]
 pub fn butterfly(v0: QM31, v1: QM31, twid: M31) -> (QM31, QM31) {

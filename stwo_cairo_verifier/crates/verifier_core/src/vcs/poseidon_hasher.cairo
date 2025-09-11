@@ -16,10 +16,12 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
     fn hash_node(
         children_hashes: Option<(Self::Hash, Self::Hash)>, mut column_values: Span<BaseField>,
     ) -> Self::Hash {
+        // TODO(audit): Consider domain separation.
         let mut hash_array: Array<felt252> = Default::default();
         if let Some((x, y)) = children_hashes {
             // Most often a node has no column values.
             if column_values.len() == 0 {
+                // TODO(audit): Posiedon2 here { == hades_permutation(x, y, 2); } Done
                 let (s0, _s1, _s2) = hades_permutation(x, y, 2);
                 return s0;
             }
@@ -31,7 +33,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             if let Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; QM31_EXTENSION_DEGREE] = (*values).unbox();
-                let mut word = v0.inner.into();
+                let mut word: felt252 = v0.inner.into();
                 word = word * M31_SHIFT + v1.inner.into();
                 word = word * M31_SHIFT + v2.inner.into();
                 word = word * M31_SHIFT + v3.inner.into();
