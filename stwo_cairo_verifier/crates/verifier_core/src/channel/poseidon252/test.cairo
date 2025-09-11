@@ -98,35 +98,35 @@ pub fn test_mix_u64() {
 }
 
 #[test]
-pub fn test_draw_random_bytes_1() {
+pub fn test_draw_u32s_1() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
-    let result = channel.draw_random_bytes();
+    let result = channel.draw_u32s();
+    // The expected result is computed from the Rust stwo code.
     let expected_result = array![
-        202, 249, 218, 52, 208, 208, 120, 28, 251, 5, 215, 191, 0, 129, 91, 82, 5, 139, 123, 1, 233,
-        109, 186, 139, 66, 126, 67, 139, 136, 81, 93,
+        886766026, 477679824, 3218540027, 1381728512, 24873733, 2344250857, 2336456258,
     ];
     assert_eq!(expected_result, result);
 }
 
 #[test]
-pub fn test_draw_random_bytes_2() {
+pub fn test_draw_u32s_2() {
     let initial_digest = 0xdeadbeef;
     let mut channel = new_channel(initial_digest);
-    let result = channel.draw_random_bytes();
+    let result = channel.draw_u32s();
+    // The expected result is computed from the Rust stwo code.
     let expected_result = array![
-        122, 237, 190, 125, 191, 88, 175, 93, 133, 241, 197, 158, 15, 129, 95, 205, 251, 171, 97,
-        162, 35, 79, 107, 70, 39, 233, 52, 55, 28, 86, 174,
+        2109664634, 1571772607, 2663772549, 3445588239, 2724310011, 1181437731, 926214439,
     ];
     assert_eq!(expected_result, result);
 }
 
 #[test]
-pub fn test_draw_random_bytes_3() {
+pub fn test_draw_u32s_3() {
     let initial_digest = 0xcafecafe;
     let mut channel = new_channel(initial_digest);
-    let first_result = channel.draw_random_bytes();
-    let second_result = channel.draw_random_bytes();
+    let first_result = channel.draw_u32s();
+    let second_result = channel.draw_u32s();
     assert_ne!(first_result, second_result);
 }
 

@@ -1,5 +1,5 @@
 use bounded_int::impls::*;
-use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
+use bounded_int::{NZ_U32_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::{
@@ -8,7 +8,7 @@ use stwo_verifier_utils::{
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::pow2_u64;
+use crate::utils::{ArrayImpl, pow2_u64};
 use crate::vcs::blake2s_hasher::Blake2sHash;
 use super::ChannelTrait;
 
@@ -130,21 +130,9 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         res
     }
 
-    fn draw_random_bytes(ref self: Blake2sChannel) -> Array<u8> {
-        let words = draw_random_words(ref self).hash.unbox();
-        let mut bytes = array![];
-
-        for word in words.span() {
-            let (q, r) = div_rem(*word, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            let (q, r) = div_rem(q, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            let (q, r) = div_rem(q, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            bytes.append(upcast(q));
-        }
-
-        bytes
+    /// Draws 8 random u32s.
+    fn draw_u32s(ref self: Blake2sChannel) -> Array<u32> {
+        draw_random_words(ref self).hash.span().into()
     }
 
     /// Check that `H(H(POW_PREFIX || digest || n_bits) || nonce)` has `n_bits` starting zeros.
