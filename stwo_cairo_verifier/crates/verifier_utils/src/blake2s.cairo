@@ -15,7 +15,7 @@ pub fn hash_memory_section_ids(section: MemorySection, digest: [u32; 8]) -> Box<
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest;
     let mut ids = array![d0, d1, d2, d3, d4, d5, d6, d7];
     for entry in section {
-        let (id, _) = *entry;
+        let (id, _val) = *entry;
         ids.append(id);
     }
     hash_u32s(ids.span())
@@ -25,44 +25,44 @@ pub fn hash_memory_section_ids(section: MemorySection, digest: [u32; 8]) -> Box<
 /// order in the memory section.
 pub fn hash_memory_section_values(mut section: MemorySection, digest: [u32; 8]) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut buffer = [0; 16];
-    let mut byte_count = 0;
     let [d0, d1, d2, d3, d4, d5, d6, d7] = digest;
 
-    let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = if let Some(head) = section.pop_front() {
-        *head
-    } else {
-        byte_count += 32;
+    let Some(head) = section.pop_front() else {
         return blake2s_finalize(
             state,
-            byte_count,
-            BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
+            byte_count: 32,
+            msg: BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, 0, 0, 0, 0, 0, 0, 0, 0]),
         );
     };
 
-    buffer = [d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7];
-    byte_count += 64;
+    let (_id, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+    let mut msg = BoxTrait::new([d0, d1, d2, d3, d4, d5, d6, d7, v0, v1, v2, v3, v4, v5, v6, v7]);
+    let mut byte_count = 64;
 
     while let Some(head) = section.multi_pop_front::<2>() {
-        // Append current value to the buffer without its id and compress.
-        state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let [(_, [v0, v1, v2, v3, v4, v5, v6, v7]), (_, [v8, v9, v10, v11, v12, v13, v14, v15])] =
+        // Append current value to the msg without its id and compress.
+        state = blake2s_compress(state, byte_count, msg);
+        let [
+            (_id0, [v0, v1, v2, v3, v4, v5, v6, v7]),
+            (_id1, [v8, v9, v10, v11, v12, v13, v14, v15]),
+        ] =
             head
             .unbox();
-        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15];
+        msg = BoxTrait::new([v0, v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12, v13, v14, v15]);
         byte_count += 64;
     }
 
-    // Pad buffer to blake hash message size.
+    // Pad msg to blake hash message size.
     if let Some(head) = section.pop_front() {
-        state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        let (_, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
-        buffer = [v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0];
+        state = blake2s_compress(state, byte_count, msg);
+        let (_id, [v0, v1, v2, v3, v4, v5, v6, v7]) = *head;
+        msg = BoxTrait::new([v0, v1, v2, v3, v4, v5, v6, v7, 0, 0, 0, 0, 0, 0, 0, 0]);
         byte_count += 32;
     }
+    assert!(section.is_empty());
 
     // Finalize hash.
-    blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+    blake2s_finalize(state, byte_count, msg)
 }
 
 /// Returns the hash of the memory section after encoding it, for packing purposes.
@@ -70,7 +70,7 @@ pub fn hash_memory_section_values(mut section: MemorySection, digest: [u32; 8]) 
 pub fn encode_and_hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
     let mut encoded_values = array![];
     for entry in section {
-        let (_, val) = *entry;
+        let (_id, val) = *entry;
         encode_felt_in_limbs_to_array(val, ref encoded_values);
     }
     hash_u32s(encoded_values.span())
@@ -100,46 +100,46 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(section: Span<u32>) -> Box<[u32; 8]> {
+fn hash_u32s(mut section: Span<u32>) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-    let mut section = section;
 
-    // Fill the buffer with the first 16 values.
+    // Fill msg with the first 16 values.
     // TODO(Gali): Use `let ... else ...` when supported.
-    let mut buffer = if let Some(head) = section.multi_pop_front::<16>() {
-        head.unbox()
+    let mut msg = if let Some(head) = section.multi_pop_front::<16>() {
+        *head
     } else {
-        // Append values to the buffer and pad to blake hash message size.
-        let mut buffer = array![];
-        let mut i = 0;
-        buffer.append_span(section);
-        i += section.len();
+        // Append values to msg and pad to blake hash message size.
+        let mut msg = array![];
+        msg.append_span(section);
+        let i = section.len();
         for _ in i..16 {
-            buffer.append(0);
+            msg.append(0);
         }
-        return blake2s_finalize(state, i * 4, *buffer.span().try_into().unwrap());
+        return blake2s_finalize(state, byte_count: i * 4, msg: *msg.span().try_into().unwrap());
     };
+
     let mut byte_count = 64;
+
     while let Some(head) = section.multi_pop_front::<16>() {
-        // Compress and re-fill the buffer.
-        state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
-        buffer = head.unbox();
+        // Compress and re-fill msg.
+        state = blake2s_compress(state, byte_count, msg);
+        msg = *head;
         byte_count += 64;
     }
 
     if !section.is_empty() {
-        // Compress, append remaining values to the buffer and pad to blake hash message size.
-        state = blake2s_compress(state, byte_count, BoxTrait::new(buffer));
+        // Compress, append remaining values to msg and pad to blake hash message size.
+        state = blake2s_compress(state, byte_count, msg);
 
-        let mut buffer = array![];
+        let mut msg = array![];
         let i = section.len();
-        buffer.append_span(section);
+        msg.append_span(section);
         for _ in i..16 {
-            buffer.append(0);
+            msg.append(0);
         }
         byte_count += i * 4;
-        blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap())
+        blake2s_finalize(state, byte_count, *msg.span().try_into().unwrap())
     } else {
-        blake2s_finalize(state, byte_count, BoxTrait::new(buffer))
+        blake2s_finalize(state, byte_count, msg)
     }
 }
