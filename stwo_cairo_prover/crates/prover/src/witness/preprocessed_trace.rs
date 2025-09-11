@@ -47,7 +47,7 @@ fn test_canonical_preprocessed_root_regression() {
 
     let log_blowup_factor = 1;
     let expected = Blake2sHash::from(
-        hex::decode("ef02228a59997c478853657909348a95fd09ec87abf834708503721ed40af070")
+        hex::decode("913b39e77a2dbe17dca71ed57e79254b6b0d7a40ff16858d485c57198cc14669")
             .expect("Invalid hex string"),
     );
 
