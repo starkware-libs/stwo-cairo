@@ -41,7 +41,7 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
     // TODO(spapini): Add output builtin to public memory.
     let (memory, inst_cache) = memory.build();
 
-    // TODO(Ohad): take this info from the input.
+    // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
     ProverInput {
         state_transitions,
