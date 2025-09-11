@@ -18,3 +18,12 @@ pub trait ClaimTrait<T> {
     /// Record the lookups used by the components associated with the claim.
     fn accumulate_relation_uses(self: @T, ref relation_uses: RelationUsesDict);
 }
+
+
+pub trait FullClaimTrait<T> {
+    type Claim;
+    type InteractionClaim;
+
+    fn get_claim(self: @T) -> @Self::Claim;
+    fn get_interaction_claim(self: @T) -> @Self::InteractionClaim;
+}
