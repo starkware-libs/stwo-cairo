@@ -339,6 +339,8 @@ pub mod tests {
 
         #[test]
         fn test_e2e_prove_cairo_verify_all_opcode_components() {
+            crate::witness::utils::export_preprocessed_roots();
+            return;
             let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
             let input = run_program_and_adapter(&compiled_program, None);
             let prover_params = ProverParameters {

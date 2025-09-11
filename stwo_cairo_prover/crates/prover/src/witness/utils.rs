@@ -164,20 +164,20 @@ pub fn export_preprocessed_roots() {
         println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
     });
 
-    // Poseidon252 roots.
-    get_preprocessed_roots::<Poseidon252MerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::CanonicalWithoutPedersen,
-    )
-    .into_iter()
-    .enumerate()
-    .for_each(|(i, root)| {
-        println!(
-            "log_blowup_factor: {}, poseidon root: [{:#010x}]",
-            i + 1,
-            root
-        );
-    });
+    // // Poseidon252 roots.
+    // get_preprocessed_roots::<Poseidon252MerkleChannel>(
+    //     max_log_blowup_factor,
+    //     PreProcessedTraceVariant::CanonicalWithoutPedersen,
+    // )
+    // .into_iter()
+    // .enumerate()
+    // .for_each(|(i, root)| {
+    //     println!(
+    //         "log_blowup_factor: {}, poseidon root: [{:#010x}]",
+    //         i + 1,
+    //         root
+    //     );
+    // });
 }
 
 #[cfg(test)]

@@ -7,12 +7,12 @@ use crate::vcs::hasher::MerkleHasher;
 
 const M31_ELEMENTS_IN_MSG: usize = 16;
 
-// compress(IV, 64, ['leaf'] +[0; 15])
+// compress(IV, 64, [b'leaf'] + [0_u32; 15])
 const LEAF_INITIAL_STATE: [u32; 8] = [
     0x6510b1f7, 0xfd531f42, 0xcff75ec3, 0x382935d0, 0xab15dbf2, 0x950eb564, 0xe8e92866, 0x28047aca,
 ];
 
-// compress(IV, 64, ['node'] +[0; 15])
+// compress(IV, 64, [b'node'] + [0_u32; 15])
 const NODE_INITIAL_STATE: [u32; 8] = [
     0xe5cf8926, 0x841cea30, 0x7b4acada, 0xfc5d8d28, 0xfc6ef857, 0xb29da528, 0xc0d319c7, 0x8ae795c8,
 ];
@@ -33,12 +33,6 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
                 None => panic!("Empty nodes are not supported"),
             };
             let mut state = BoxImpl::new(NODE_INITIAL_STATE);
-
-            // Note: there is no domain separation between the cases
-            // (children_hashes.is_some() && column_values.len()= K)
-            // and (children_hashes.is_none() && column_values.len() == 16 + K).
-            // This is acceptable because the verifier always knows
-            // the exact structure of the Merkle tree.
             return Blake2sHash { hash: blake2s_finalize(:state, byte_count: 128, :msg) };
         }
 

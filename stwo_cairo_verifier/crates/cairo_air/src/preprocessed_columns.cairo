@@ -295,40 +295,24 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x8a2202ef, 0x477c9959, 0x79655388, 0x958a3409, 0x87ec09fd, 0x7034f8ab,
-                    0x1e720385, 0x70f00ad4,
+                    0xe7393b91, 0x17be2d7a, 0xd51ea7dc, 0x4b25797e, 0x407a0d6b, 0x8d8516ff,
+                    0x19575c48, 0x6946c18c,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1966f0a8, 0xa0059272, 0x9eca2f06, 0x82791af7, 0x9a2c1522, 0x2fbdff33,
-                    0x5553d795, 0x3fc5a18a,
+                    0xe2ace1c9, 0xabac1acd, 0x550d7ea5, 0x13a03b91, 0x53b1d6d3, 0x756feda4,
+                    0x6b1ec6af, 0x8bc6d336,
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x1d553a98, 0x78da025b, 0x87686d83, 0xce0aa49a, 0x9c5752d8, 0xc3954c47,
-                    0xc80ca41a, 0xc757f720,
-                ],
-            ),
-        },
-        3 => Hash {
-            hash: BoxImpl::new(
-                [
-                    0x6bd0149a, 0x786401f3, 0x98edb866, 0x53b8113b, 0xa18ef714, 0x155b1183,
-                    0x19d8fff5, 0x9e792495,
-                ],
-            ),
-        },
-        4 => Hash {
-            hash: BoxImpl::new(
-                [
-                    0x1bfe4fde, 0xeddf6d4b, 0x2bf346c4, 0x8332fe5f, 0x43ce2525, 0x55611509,
-                    0xe13c2956, 0x66aeb325,
+                    0xf937429a, 0x97988c3c, 0x8bc41d5d, 0xeed48adf, 0x0faaade2, 0x49c43f67,
+                    0x76ace5e2, 0xbbd1592b,
                 ],
             ),
         },
