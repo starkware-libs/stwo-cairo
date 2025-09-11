@@ -91,15 +91,14 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         // TODO(andrew): There is no check that it's sorted. Add check.
         let max_column_log_bound = *column_log_bounds.first().unwrap();
 
-        let mut layer_index = 0;
         let mut inner_layers = array![];
         let mut layer_log_bound = max_column_log_bound - CIRCLE_TO_LINE_FOLD_STEP;
         let mut layer_domain = LineDomainImpl::new_unchecked(
             CosetImpl::half_odds(layer_log_bound + config.log_blowup_factor),
         );
 
-        while let Some(proof) = inner_layer_proofs.pop_front() {
-            channel.mix_commitment(*proof.commitment);
+        for (layer_index, layer_proof) in inner_layer_proofs.into_iter().enumerate() {
+            channel.mix_commitment(*layer_proof.commitment);
 
             inner_layers
                 .append(
@@ -108,7 +107,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                         domain: layer_domain,
                         folding_alpha: channel.draw_secure_felt(),
                         layer_index,
-                        proof,
+                        proof: layer_proof,
                     },
                 );
 
@@ -117,7 +116,6 @@ pub impl FriVerifierImpl of FriVerifierTrait {
                 None => panic!("{}", FriVerificationError::InvalidNumFriLayers),
             };
 
-            layer_index += 1;
             layer_domain = layer_domain.double();
         }
         assert!(
