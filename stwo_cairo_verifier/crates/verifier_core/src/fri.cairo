@@ -8,7 +8,7 @@ use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
 use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
-use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly, LinePolyImpl};
+use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::ibutterfly;
 use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{
@@ -127,7 +127,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         );
 
         assert!(
-            last_layer_poly.len() == pow2(config.log_last_layer_degree_bound),
+            last_layer_poly.coeffs.len() == pow2(config.log_last_layer_degree_bound),
             "{}",
             FriVerificationError::LastLayerDegreeInvalid,
         );
@@ -251,22 +251,20 @@ fn decommit_inner_layers(
 }
 
 /// Verifies the last layer.
+#[inline]
 fn decommit_last_layer(verifier: FriVerifier, mut queries: Queries, mut query_evals: Array<QM31>) {
-    let FriVerifier { last_layer_domain, last_layer_poly, .. } = verifier;
+    let FriVerifier { last_layer_poly, .. } = verifier;
 
-    // TODO(andrew): Note depending on the proof parameters, doing FFT on the last layer poly vs
-    // pointwize evaluation is less efficient.
-    let last_layer_evals = last_layer_poly.evaluate(last_layer_domain).values;
-    let domain_log_size = last_layer_domain.log_size();
+    let single_value_box: Box<[QM31; 1]> = *last_layer_poly
+        .coeffs
+        .span()
+        .try_into()
+        .unwrap_or_else(|| panic!("{}", FriVerificationError::LastLayerLogDegreeMustBeZero));
+    let [expected_last_layer_value] = single_value_box.unbox();
 
-    while let (Some(query), Some(query_eval)) =
-        (queries.positions.pop_front(), query_evals.pop_front()) {
-        // TODO(andrew): Makes more sense for the proof to provide coeffs in natural order and
-        // the FFT return evals in bit-reversed order to prevent this unnecessary bit-reverse.
-        let last_layer_eval_i = bit_reverse_index(*query, domain_log_size);
-
+    for query_eval in query_evals {
         assert!(
-            query_eval == *last_layer_evals[last_layer_eval_i],
+            query_eval == expected_last_layer_value,
             "{}",
             FriVerificationError::LastLayerEvaluationsInvalid,
         );
@@ -650,6 +648,7 @@ pub enum FriVerificationError {
     InnerLayerEvaluationsInvalid,
     LastLayerDegreeInvalid,
     LastLayerEvaluationsInvalid,
+    LastLayerLogDegreeMustBeZero,
 }
 
 impl FriVerificationErrorDisplay of core::fmt::Display<FriVerificationError> {
@@ -667,6 +666,9 @@ impl FriVerificationErrorDisplay of core::fmt::Display<FriVerificationError> {
             FriVerificationError::LastLayerDegreeInvalid => write!(f, "Invalid last layer degree"),
             FriVerificationError::LastLayerEvaluationsInvalid => write!(
                 f, "Invalid last layer evaluations",
+            ),
+            FriVerificationError::LastLayerLogDegreeMustBeZero => write!(
+                f, "last layer log degree must be zero",
             ),
         }
     }
