@@ -204,41 +204,42 @@ fn decommit_inner_layers(
     queries: Queries,
     mut first_layer_sparse_evals: ColumnArray<SparseEvaluation>,
 ) -> (Queries, Array<QM31>) {
-    let mut inner_layers = verifier.inner_layers.span();
-    let mut layer_queries = queries;
-    let mut layer_query_evals = ArrayImpl::new_repeated(n: layer_queries.len(), v: Zero::zero());
+    let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
+    first_layer_column_bounds.pop_front().expect('must have least one inner layer');
+
     let mut first_layer_iter = zip_eq(
         first_layer_sparse_evals, *verifier.first_layer.column_commitment_domains,
     );
-    let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
-    let mut prev_fold_alpha = *verifier.first_layer.folding_alpha;
+    let (mut sparse_eval, column_domain) = first_layer_iter.next().expect('must have least one inner layer');
+    let mut layer_query_evals = sparse_eval.fold_circle(*verifier.first_layer.folding_alpha, *column_domain);
 
-    while let Some(layer) = inner_layers.pop_front() {
-        let circle_poly_degree_bound = *layer.log_degree_bound + CIRCLE_TO_LINE_FOLD_STEP;
+    let mut layer_queries = queries;
+    for layer in verifier.inner_layers.span() {
+        let (next_layer_queries, next_layer_query_evals) = layer
+            .verify_and_fold(queries: layer_queries, evals_at_queries: layer_query_evals.span());
 
-        // Check for evals committed in the first layer that need to be folded into this layer.
-        while let Some(_) = first_layer_column_bounds.next_if_eq(@circle_poly_degree_bound) {
+        layer_queries = next_layer_queries;
+        layer_query_evals = next_layer_query_evals;
+
+        // If we the first layer commitment has a circle poly with the same degree bound as this layer (before it was folded),
+        // then we need to fold it into this layer.
+        if first_layer_column_bounds.next_if_eq(layer.log_degree_bound).is_some() {
             let (sparse_eval, column_domain) = first_layer_iter.next().unwrap();
-            let mut folded_column_evals = sparse_eval.fold_circle(prev_fold_alpha, *column_domain);
-            let prev_fold_alpha_pow_fold_factor = prev_fold_alpha * prev_fold_alpha;
 
+            let folding_alpha = *layer.folding_alpha;
+            let mut folded_column_evals = sparse_eval.fold_circle(folding_alpha, *column_domain);
+            let folding_alpha_squared = folding_alpha * folding_alpha;
             layer_query_evals = zip_eq(layer_query_evals, folded_column_evals)
                 .map(
                     |tuple| {
                         let (curr_layer_eval, folded_column_eval) = tuple;
                         QM31Trait::fused_mul_add(
-                            curr_layer_eval, prev_fold_alpha_pow_fold_factor, folded_column_eval,
+                            curr_layer_eval, folding_alpha_squared, folded_column_eval,
                         )
                     },
                 )
                 .collect();
         }
-
-        let (next_layer_queries, next_layer_query_evals) = layer
-            .verify_and_fold(queries: layer_queries, evals_at_queries: layer_query_evals.span());
-        layer_queries = next_layer_queries;
-        layer_query_evals = next_layer_query_evals;
-        prev_fold_alpha = *layer.folding_alpha;
     }
 
     // Check all values have been consumed.
