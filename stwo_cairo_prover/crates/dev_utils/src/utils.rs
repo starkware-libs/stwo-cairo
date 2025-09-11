@@ -179,6 +179,7 @@ pub fn run_program_and_adapter(
         layout: LayoutName::all_cairo_stwo,
         proof_mode: true,
         disable_trace_padding: true,
+        fill_holes: true,
         ..Default::default()
     };
 
