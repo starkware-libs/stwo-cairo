@@ -38,11 +38,11 @@ where
 
     match proof_format {
         ProofFormat::Json => {
-            #[cfg(feature = "sonic-rs")]
+            #[cfg(not(target_arch = "wasm32"))]
             {
                 proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
             }
-            #[cfg(not(feature = "sonic-rs"))]
+            #[cfg(target_arch = "wasm32")]
             {
                 proof_file.write_all(serde_json::to_string_pretty(proof)?.as_bytes())?;
             }
@@ -56,11 +56,11 @@ where
                 .map(|felt| format!("0x{:x}", felt))
                 .collect();
 
-            #[cfg(feature = "sonic-rs")]
+            #[cfg(not(target_arch = "wasm32"))]
             {
                 proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
             }
-            #[cfg(not(feature = "sonic-rs"))]
+            #[cfg(target_arch = "wasm32")]
             {
                 proof_file.write_all(serde_json::to_string_pretty(&hex_strings)?.as_bytes())?;
             }

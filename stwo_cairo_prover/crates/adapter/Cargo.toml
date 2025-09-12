@@ -7,8 +7,7 @@ edition = "2021"
 [features]
 default = ["std"]
 slow-tests = []
-std = ["cairo-vm/std"]
-sonic-rs = ["dep:sonic-rs"]
+std = ["dep:sonic-rs", "cairo-vm/std"]
 
 [dependencies]
 bytemuck.workspace = true
@@ -31,7 +30,7 @@ rayon.workspace = true
 crypto-bigint = "0.5.1"
 
 [target.'cfg(not(target_arch = "wasm32"))'.dependencies]
-sonic-rs = { version = "0.3.17", optional = true }
+sonic-rs = { workspace = true, optional = true }
 
 
 [dev-dependencies]
