@@ -214,7 +214,7 @@ pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
 pub fn group_columns_by_degree_bound(
     log_degree_bound_by_column: ColumnSpan<u32>,
 ) -> ColumnsIndicesByDegreeBound {
-    let mut column_by_degree_bound = Default::default();
+    let mut column_by_degree_bound: Felt252Dict<Nullable<Array<u32>>> = Default::default();
     let mut col_index = 0_usize;
     for column_log_degree_bound in log_degree_bound_by_column {
         let (column_by_degree_bound_entry, value) = column_by_degree_bound
