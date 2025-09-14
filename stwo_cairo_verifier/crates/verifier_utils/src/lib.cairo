@@ -3,6 +3,8 @@ mod test;
 pub mod zip_eq;
 #[cfg(test)]
 mod zip_eq_test;
+use bounded_int::impls::*;
+use bounded_int::{NZ_U32_SHIFT, div_rem, upcast};
 
 /// Equals `2^31`.
 pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
@@ -93,24 +95,25 @@ pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
     result * offset + l0.into()
 }
 
-// TODO(Leo): implement ilya's suggestion: use u128.
+
 /// Deconstructs a `felt252` to 8 u32 little-endian limbs.
 pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
-    let offset = 0x100000000;
-    let cur: u256 = x.into();
-    let (cur, l0) = DivRem::div_rem(cur, offset);
-    let (cur, l1) = DivRem::div_rem(cur, offset);
-    let (cur, l2) = DivRem::div_rem(cur, offset);
-    let (cur, l3) = DivRem::div_rem(cur, offset);
-    let (cur, l4) = DivRem::div_rem(cur, offset);
-    let (cur, l5) = DivRem::div_rem(cur, offset);
-    let (cur, l6) = DivRem::div_rem(cur, offset);
-    let (_, l7) = DivRem::div_rem(cur, offset);
+    let u256 { low, high } = x.into();
+
+    // Deconstruct the low 128 bits.
+    let (q, r0) = div_rem(low, NZ_U32_SHIFT);
+    let (q, r1) = div_rem(q, NZ_U32_SHIFT);
+    let (r3, r2) = div_rem(q, NZ_U32_SHIFT);
+
+    // Deconstruct the high 128 bits.
+    let (q, r4) = div_rem(high, NZ_U32_SHIFT);
+    let (q, r5) = div_rem(q, NZ_U32_SHIFT);
+    let (r7, r6) = div_rem(q, NZ_U32_SHIFT);
+
     BoxTrait::new(
         [
-            l0.try_into().unwrap(), l1.try_into().unwrap(), l2.try_into().unwrap(),
-            l3.try_into().unwrap(), l4.try_into().unwrap(), l5.try_into().unwrap(),
-            l6.try_into().unwrap(), l7.try_into().unwrap(),
+            upcast(r0), upcast(r1), upcast(r2), upcast(r3), upcast(r4), upcast(r5), upcast(r6),
+            upcast(r7),
         ],
     )
 }
