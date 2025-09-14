@@ -588,11 +588,10 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         let mut domain_initials_inv = BatchInvertible::batch_inverse(domain_initials);
         let mut res = array![];
 
-        for subset_eval in self.subset_evals.span() {
-            let x_inv = domain_initials_inv.pop_front().unwrap();
+        for (subset_eval, x_inv) in zip_eq(self.subset_evals.span(), domain_initials_inv.span()) {
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
             let [f_at_x, f_at_neg_x] = values.unbox();
-            let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, x_inv);
+            let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, *x_inv);
             res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
         }
 
@@ -613,14 +612,13 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
         let mut domain_initial_ys_inv = BatchInvertible::batch_inverse(domain_initial_ys);
         let mut res = array![];
 
-        for subset_eval in self.subset_evals.span() {
-            let y_inv = domain_initial_ys_inv.pop_front().unwrap();
+        for (subset_eval, y_inv) in zip_eq(self.subset_evals.span(), domain_initial_ys_inv.span()) {
             let values: Box<[QM31; CIRCLE_TO_LINE_FOLD_FACTOR]> = *subset_eval
                 .span()
                 .try_into()
                 .unwrap();
             let [f_at_p, f_at_neg_p] = values.unbox();
-            let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, y_inv);
+            let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, *y_inv);
             res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
         }
 
