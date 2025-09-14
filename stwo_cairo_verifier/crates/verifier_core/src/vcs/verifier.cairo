@@ -104,6 +104,12 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
 impl MerkleVerifierImpl<
     impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>,
 > of MerkleVerifierTrait<H> {
+    /// Verifies openings of a Merkle commitment at positions given by `queries_per_log_size`.
+    ///
+    /// The current implementation only supports verification of query positions such that
+    /// the set of query indices in a given column contains at least all the foldings of
+    /// query indices in longer columns.
+    /// This assumption implies that the `column_witness` in `decommitment` is empty.
     fn verify(
         self: @MerkleVerifier<H>,
         mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
@@ -116,19 +122,20 @@ impl MerkleVerifierImpl<
         let mut layer_log_size: felt252 = (*self.tree_height).into();
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
-        if let Some(layer_cols) = column_indices_by_deg_bound.pop_back() {
-            let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
+        let layer_cols = column_indices_by_deg_bound.pop_back().unwrap();
+        let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
 
-            let n_columns_in_layer = layer_cols.len();
-            for current_query in layer_column_queries {
-                let column_values = queried_values.pop_front_n(n_columns_in_layer);
+        let n_columns_in_layer = layer_cols.len();
+        assert!(n_columns_in_layer != 0);
+        for current_query in layer_column_queries {
+            let column_values = queried_values.pop_front_n(n_columns_in_layer);
 
-                prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
-            }
+            prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
         }
 
         while layer_log_size != 0 {
             layer_log_size -= 1;
+            // `None` happens only in the last `log_blowup_factor` layers.
             let n_columns_in_layer = match column_indices_by_deg_bound.pop_back() {
                 Some(layer_cols) => layer_cols.len(),
                 None => 0,
@@ -159,11 +166,11 @@ impl MerkleVerifierImpl<
                     .unwrap();
                 let node_hashes = Some((left_hash.clone(), right_hash.clone()));
 
-                // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
-                    column_witness.pop_front_n(n_columns_in_layer)
+                    assert!(n_columns_in_layer == 0);
+                    array![].span()
                 };
 
                 layer_total_queries
@@ -178,6 +185,7 @@ impl MerkleVerifierImpl<
         assert!(column_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
         assert!(prev_layer_hashes.is_empty());
+        assert!(queried_values.is_empty());
 
         assert!(@computed_root == self.root, "{}", MerkleVerificationError::RootMismatch);
     }
