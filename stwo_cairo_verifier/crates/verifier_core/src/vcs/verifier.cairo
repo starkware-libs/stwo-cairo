@@ -148,18 +148,13 @@ impl MerkleVerifierImpl<
             // Merge previous layer queries and column queries.
             while let Some(current_query) =
                 next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
-                let witness_too_short_error = || panic!(
-                    "{}", MerkleVerificationError::WitnessTooShort,
-                );
                 let left_child_index = current_query * 2;
                 let left_hash = fetch_prev_node_hash(
                     ref prev_layer_hashes, ref hash_witness, left_child_index,
-                )
-                    .unwrap_or_else(witness_too_short_error);
+                );
                 let right_hash = fetch_prev_node_hash(
                     ref prev_layer_hashes, ref hash_witness, left_child_index + 1,
-                )
-                    .unwrap_or_else(witness_too_short_error);
+                );
                 let node_hashes = Some((left_hash.clone(), right_hash.clone()));
 
                 // If the column values were queried, read them from `queried_value`.
@@ -210,20 +205,25 @@ fn next_decommitment_node<H>(
 
 /// Fetches the hash of the next node from the previous layer in the Merkle tree.
 /// The hash is fetched either from the computed values or from the witness.
+///
+/// # Panics
+///
+/// Panics if the required hash should be fetched from `hash_witness` but `hash_witness`
+/// is empty.
 #[inline]
 fn fetch_prev_node_hash<H, +Clone<H>, +Drop<H>>(
     ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Span<H>, expected_query: u32,
-) -> Option<@H> {
+) -> @H {
     // If the child was computed, use that value.
-    let mut prev_layer_hashes_span = prev_layer_hashes.span();
-    if let Some((q, h)) = prev_layer_hashes_span.pop_front() {
-        if *q == expected_query {
-            let _ = prev_layer_hashes.pop_front();
-            return Some(h);
-        }
+    if let Some((q, h)) = prev_layer_hashes.span().first() && *q == expected_query {
+        let _ = prev_layer_hashes.pop_front();
+        return h;
     }
-    // If the child was not computed, read it from the witness.
-    hash_witness.pop_front()
+    // If the child was not computed, read it from the witness. Panics if the witness
+    // is already empty.
+    hash_witness
+        .pop_front()
+        .unwrap_or_else(|| panic!("{}", MerkleVerificationError::WitnessTooShort))
 }
 
 #[derive(Drop, Debug)]
