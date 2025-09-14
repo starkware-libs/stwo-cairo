@@ -132,6 +132,7 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
         self.pop_back()
     }
 
+    /// Panics if self.len() < n.
     fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
         let (res, remainder) = self.split_at(n);
         self = remainder;
@@ -145,11 +146,9 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
         let mut self_copy = self;
-        if let Some(value) = self_copy.pop_front() {
-            if value == other {
-                self = self_copy;
-                return Some(other);
-            }
+        if let Some(value) = self_copy.pop_front() && value == other {
+            self = self_copy;
+            return Some(other);
         }
         None
     }
