@@ -3,7 +3,7 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
 use super::super::m31::{M31, M31Zero, MulByM31Trait};
-use super::super::qm31::{M31IntoQM31, QM31Trait};
+use super::super::qm31::{M31IntoQM31, QM31, QM31Trait};
 use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -16,6 +16,12 @@ pub impl CM31InvertibleImpl of Invertible<CM31> {
     #[inline(always)]
     fn inverse(self: CM31) -> CM31 {
         CM31 { inner: self.inner.inverse() }
+    }
+}
+pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
+    #[inline]
+    fn into(self: CM31) -> QM31 {
+        self.inner
     }
 }
 
