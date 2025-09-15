@@ -70,9 +70,9 @@ macro_rules! range_check_eval{
             use stwo_constraint_framework::RelationEntry;
             use stwo::core::pcs::TreeVec;
 
-            use $crate::preprocessed::RangeCheck;
-            use $crate::preprocessed::Seq;
-            use $crate::preprocessed::PreProcessedColumn;
+            use stwo_cairo_common::preprocessed_columns::preprocessed_trace::RangeCheck;
+            use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
+            use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedColumn;
             use $crate::relations;
 
             const N_MULTIPLICITY_COLUMNS: usize = 1;

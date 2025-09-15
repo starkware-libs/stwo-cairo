@@ -1,8 +1,5 @@
-use crate::prover_types::cpu::{Felt252Width27, FELT252WIDTH27_N_WORDS};
-
-pub const N_ROUNDS: usize = 35;
-pub const N_FELT252WIDTH27: usize = 3;
-pub const N_WORDS: usize = FELT252WIDTH27_N_WORDS * N_FELT252WIDTH27;
+use super::poseidon::{N_FELT252WIDTH27, N_ROUNDS};
+use crate::prover_types::cpu::Felt252Width27;
 
 pub fn round_keys(round: usize) -> [Felt252Width27; N_FELT252WIDTH27] {
     POSEIDON_ROUND_KEYS[round].map(|k| Felt252Width27 { limbs: k })
