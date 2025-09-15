@@ -230,7 +230,7 @@ pub mod tests {
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Poseidon252,
                 pcs_config: PcsConfig {
-                    pow_bits: 10,
+                    pow_bits: 24,
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
