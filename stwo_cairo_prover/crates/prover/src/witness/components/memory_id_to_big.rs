@@ -1,7 +1,6 @@
 use std::simd::Simd;
 
 use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use cairo_air::preprocessed::SIMD_ENUMERATION_0;
 use cairo_air::relations;
 use itertools::{chain, Itertools};
 use rayon::iter::{
@@ -11,6 +10,7 @@ use stwo_cairo_adapter::memory::{
     u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
 };
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 

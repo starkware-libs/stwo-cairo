@@ -27,9 +27,6 @@ mod tests {
     #[cfg(test)]
     use starknet_types_core::felt::Felt;
 
-    #[cfg(test)]
-    use crate::pedersen::utils::felt_batch_inverse;
-
     #[test]
     fn test_batch_inverse() {
         assert_eq!(felt_batch_inverse(&[1.into()]), [1.into()]);

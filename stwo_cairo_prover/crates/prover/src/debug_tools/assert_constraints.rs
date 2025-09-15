@@ -3,13 +3,13 @@ use std::ops::Deref;
 use cairo_air::air::{CairoComponents, CairoInteractionElements};
 use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
-use cairo_air::preprocessed::PreProcessedTrace;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::TreeVec;
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::{
     assert_constraints_on_trace, FrameworkComponent, FrameworkEval, PREPROCESSED_TRACE_IDX,
 };
