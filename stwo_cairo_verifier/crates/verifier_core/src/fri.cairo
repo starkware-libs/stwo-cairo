@@ -163,7 +163,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// Output is of the form `(unique_log_sizes, queries_by_log_size)`.
     fn sample_query_positions(
         self: @FriVerifier, ref channel: Channel,
-    ) -> (Span<u32>, Felt252Dict<Nullable<Span<usize>>>, Queries) {
+    ) -> (Felt252Dict<Nullable<Span<usize>>>, Queries) {
         // The sizes of input circle polynomial commitment domains.
         let mut column_log_sizes = array![];
 
@@ -178,7 +178,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         let n_queries = *self.config.n_queries;
         let queries = QueriesImpl::generate(ref channel, max_column_log_size, n_queries);
 
-        (column_log_sizes, get_query_positions_by_log_size(queries, column_log_sizes), queries)
+        (get_query_positions_by_log_size(queries, column_log_sizes), queries)
     }
 }
 
@@ -402,7 +402,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
 
         merkle_verifier
             .verify(
-                decommitment_positions_by_log_size,
+                ref decommitment_positions_by_log_size,
                 decommitted_values.span(),
                 self.proof.decommitment.clone(),
             );
@@ -476,7 +476,7 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
 
         merkle_verifier
             .verify(
-                decommitment_positions_dict,
+                ref decommitment_positions_dict,
                 decommitted_values.span(),
                 (*self.proof.decommitment).clone(),
             );
