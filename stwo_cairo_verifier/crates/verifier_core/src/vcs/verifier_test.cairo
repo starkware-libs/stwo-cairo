@@ -52,6 +52,6 @@ mod PoseidonTest {
             tree_height: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
             column_indices_by_deg_bound,
         }
-            .verify(queries_per_log_size, queried_values, decommitment);
+            .verify(ref queries_per_log_size, queried_values, decommitment);
     }
 }

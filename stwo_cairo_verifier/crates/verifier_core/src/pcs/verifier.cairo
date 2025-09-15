@@ -139,18 +139,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         channel.mix_u64(proof_of_work_nonce);
 
         // Get FRI query positions.
-        let (unique_column_log_sizes, mut query_positions_by_log_size, queries) = fri_verifier
+        let (mut query_positions_by_log_size, queries) = fri_verifier
             .sample_query_positions(ref channel);
 
         // Verify Merkle decommitments.
         for (tree, (queried_values, decommitment)) in zip_eq(
             self.trees.span(), zip_eq(queried_values.span(), decommitments),
         ) {
-            // The Merkle implementation pops values from the query position dict so it has to
-            // be duplicated.
-            let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
-
-            tree.verify(query_positions, *queried_values, decommitment);
+            tree.verify(ref query_positions_by_log_size, *queried_values, decommitment);
         }
 
         // Answer FRI queries.
