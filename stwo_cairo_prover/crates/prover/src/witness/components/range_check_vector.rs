@@ -101,8 +101,8 @@ macro_rules! range_check_prover {
                     // Lookup values columns.
                     for vec_row in 0..(1 << (log_size - LOG_N_LANES)) {
                         let numerator = (-self.multiplicities[vec_row]).into();
-                        let partitions = cairo_air::preprocessed::partition_into_bit_segments(
-                            cairo_air::preprocessed::SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32),
+                        let partitions = stwo_cairo_common::preprocessed_columns::preprocessed_trace::partition_into_bit_segments(
+                            stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32),
                             RANGES,
                         );
                         let partitions: [_; N_RANGES] =
@@ -183,10 +183,6 @@ mod tests {
     use std::simd::Simd;
 
     use cairo_air::components::range_check_vector::range_check_7_2_5::Eval;
-    use cairo_air::preprocessed::{
-        generate_partitioned_enumeration, partition_into_bit_segments, PreProcessedColumn,
-        RangeCheck,
-    };
     use cairo_air::relations;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
@@ -201,6 +197,10 @@ mod tests {
     use stwo::prover::backend::simd::SimdBackend;
     use stwo::prover::poly::circle::PolyOps;
     use stwo::prover::CommitmentSchemeProver;
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+        generate_partitioned_enumeration, partition_into_bit_segments, PreProcessedColumn,
+        RangeCheck,
+    };
     use stwo_constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
