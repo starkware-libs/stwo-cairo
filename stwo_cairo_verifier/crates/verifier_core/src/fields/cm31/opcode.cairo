@@ -3,13 +3,13 @@ use core::num::traits::{One, Zero};
 use core::ops::{AddAssign, MulAssign, SubAssign};
 use super::CM31Trait;
 use super::super::m31::{M31, M31Zero, MulByM31Trait};
-use super::super::qm31::{M31IntoQM31, QM31Trait};
+use super::super::qm31::{M31IntoQM31, QM31, QM31Trait};
 use super::super::{BatchInvertible, Invertible};
 
 #[derive(Copy, Drop, Debug, PartialEq)]
 pub struct CM31 {
     // Represented using QM31, since QM31 has a dedicated opcode.
-    pub inner: super::super::qm31::QM31,
+    inner: super::super::qm31::QM31,
 }
 
 pub impl CM31InvertibleImpl of Invertible<CM31> {
@@ -152,5 +152,12 @@ pub impl CM31Serde of Serde<CM31> {
         let a: M31 = Serde::deserialize(ref serialized)?;
         let b: M31 = Serde::deserialize(ref serialized)?;
         Some(CM31 { inner: QM31Trait::from_fixed_array([a, b, M31Zero::zero(), M31Zero::zero()]) })
+    }
+}
+
+pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
+    #[inline]
+    fn into(self: CM31) -> QM31 {
+        self.inner
     }
 }
