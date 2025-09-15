@@ -42,7 +42,6 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     min_security_bits: u32,
     composition_commitment: Hash,
 ) {
-    let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
@@ -51,6 +50,10 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         "{}",
         VerificationError::SecurityBitsTooLow,
     );
+
+    // Sample a random coefficient to be used in the composition polynomial.
+    // The composition poly is constructed as: Sum_i (composition_random_coeff^i * quotients_i).
+    let composition_random_coeff = channel.draw_secure_felt();
 
     // Read composition polynomial commitment.
     commitment_scheme
@@ -78,7 +81,9 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
     assert!(
         composition_oods_eval == air
-            .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff),
+            .eval_composition_polynomial_at_point(
+                ood_point, sampled_oods_values, composition_random_coeff,
+            ),
         "{}",
         VerificationError::OodsNotMatching,
     );
