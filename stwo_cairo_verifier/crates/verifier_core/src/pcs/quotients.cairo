@@ -54,7 +54,7 @@ pub fn fri_answers(
         log_size = log_size - 1;
 
         // Collect the column samples and the number of columns in each tree.
-        let mut samples = array![];
+        let mut samples: Array<@Array<PointSample>> = array![];
         let mut n_columns_per_tree = array![];
         for (columns, samples_per_column) in zip_eq(columns_per_tree, samples_per_column_per_tree) {
             for column in columns {
