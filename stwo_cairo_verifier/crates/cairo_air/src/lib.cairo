@@ -254,6 +254,7 @@ pub fn verify_cairo(proof: CairoProof) {
         ref channel,
         stark_proof,
         commitment_scheme,
+        INTERACTION_POW_BITS,
         SECURITY_BITS,
         composition_commitment,
     );

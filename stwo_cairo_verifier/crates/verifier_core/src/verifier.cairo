@@ -39,6 +39,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     ref channel: Channel,
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
+    min_pow_bits: u32,
     min_security_bits: u32,
     composition_commitment: Hash,
 ) {
@@ -50,6 +51,11 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         commitment_scheme_proof.config.security_bits() >= min_security_bits,
         "{}",
         VerificationError::SecurityBitsTooLow,
+    );
+    assert!(
+        commitment_scheme_proof.config.pow_bits >= min_pow_bits,
+        "{}",
+        VerificationError::PowBitsTooLow,
     );
 
     // Read composition polynomial commitment.
@@ -116,6 +122,8 @@ pub enum VerificationError {
     QueriesProofOfWork,
     /// Invalid OODS eval.
     OodsNotMatching,
+    /// Proof of work bits are too low.
+    PowBitsTooLow,
     /// Security bits are too low.
     SecurityBitsTooLow,
 }
@@ -128,6 +136,7 @@ impl VerificationErrorDisplay of core::fmt::Display<VerificationError> {
             ),
             VerificationError::QueriesProofOfWork => write!(f, "Proof of work verification failed"),
             VerificationError::OodsNotMatching => write!(f, "Invalid OODS eval"),
+            VerificationError::PowBitsTooLow => write!(f, "Proof of work bits are too low"),
             VerificationError::SecurityBitsTooLow => write!(f, "Security bits are too low"),
         }
     }
