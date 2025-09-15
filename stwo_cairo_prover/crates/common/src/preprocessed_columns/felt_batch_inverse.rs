@@ -28,7 +28,7 @@ mod tests {
     use starknet_types_core::felt::Felt;
 
     #[cfg(test)]
-    use crate::pedersen::utils::felt_batch_inverse;
+    use crate::preprocessed_columns::felt_batch_inverse::felt_batch_inverse;
 
     #[test]
     fn test_batch_inverse() {
