@@ -1,7 +1,9 @@
 use starknet_ff::FieldElement;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
-use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, POSEIDON_ROUND_KEYS};
+use stwo_cairo_common::preprocessed_columns::poseidon_round_keys::{
+    round_keys, POSEIDON_ROUND_KEYS,
+};
 use stwo_cairo_common::prover_types::cpu::{Felt252Width27, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252Width27;
 

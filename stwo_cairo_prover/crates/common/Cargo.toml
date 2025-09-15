@@ -12,7 +12,10 @@ starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo.workspace = true
+stwo-constraint-framework.workspace = true
 serde_arrays.workspace = true
+starknet-curve = "0.5.1"
+rayon.workspace = true
 
 [dev-dependencies]
 rand.workspace = true

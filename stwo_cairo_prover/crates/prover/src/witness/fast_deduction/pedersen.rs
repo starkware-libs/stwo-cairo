@@ -1,12 +1,13 @@
 #![allow(unused)]
 use std::array::from_fn;
 
-use cairo_air::pedersen::const_columns::PEDERSEN_TABLE;
 use num_traits::{One, Zero};
 use starknet_types_core::curve::ProjectivePoint;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
-use stwo_cairo_common::preprocessed_consts::pedersen::{NUM_WINDOWS, ROWS_PER_WINDOW};
+use stwo_cairo_common::preprocessed_columns::pedersen::{
+    NUM_WINDOWS, PEDERSEN_TABLE, ROWS_PER_WINDOW,
+};
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
@@ -97,7 +98,7 @@ mod tests {
     use starknet_curve::curve_params::{PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
     use starknet_types_core::curve::ProjectivePoint;
     use starknet_types_core::felt::Felt;
-    use stwo_cairo_common::preprocessed_consts::pedersen::{BITS_PER_WINDOW, P2_SECTION_START};
+    use stwo_cairo_common::preprocessed_columns::pedersen::{BITS_PER_WINDOW, P2_SECTION_START};
     use stwo_cairo_common::prover_types::cpu::M31;
 
     use super::PartialEcMul;
