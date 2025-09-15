@@ -116,7 +116,7 @@ pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
 
 /// A utility function used to modify the most significant bits of a felt252.
 /// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
-/// `n_packed_elements` into the bits at indices [248:251] of `word`.
+/// `n_packed_elements` into the bits at indices [248, 251) of `word`.
 ///
 /// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
 /// of packed elements, and the resulting felt252 is fed into a hash.
