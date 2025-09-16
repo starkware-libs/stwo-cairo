@@ -9,6 +9,7 @@
 //! ```
 use std::path::PathBuf;
 
+use anyhow::Result;
 use clap::Parser;
 use dev_utils::utils::runner_from_compiled_program;
 use stwo_cairo_adapter::adapter::adapter;
@@ -30,7 +31,7 @@ struct Args {
     program_arguments_file: Option<PathBuf>,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let args = Args::parse();
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
@@ -48,4 +49,6 @@ fn main() {
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
     log::info!("Execution resources: {execution_resources:#?}");
+
+    Ok(())
 }
