@@ -1,11 +1,11 @@
-use bounded_int::M31_SHIFT_NZ_U256;
+use bounded_int::M31_SHIFT_NZ_U128;
 use bounded_int::impls::*;
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
 use stwo_verifier_utils::{MemorySection, deconstruct_f252, hash_u32s_with_state};
 use crate::SecureField;
-use crate::fields::m31::{M31, M31Trait};
+use crate::fields::m31::{M31, M31Zero};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{pack_qm31, pow2_u64};
 use super::ChannelTrait;
@@ -123,7 +123,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
 
     /// Check that `H(H(POW_PREFIX, digest, n_bits), nonce)` has `n_bits` starting zeros.
     fn verify_pow_nonce(self: @Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
-        const POW_PREFIX: u32 = 0x012345678;
+        const POW_PREFIX: u32 = 0x12345678;
         let prefix_hash = poseidon_hash_span(
             [POW_PREFIX.into(), *self.digest, n_bits.into()].span(),
         );
@@ -148,11 +148,21 @@ fn check_leading_zeros(digest: felt252, n_bits: u32) -> bool {
 
 // TODO(spapini): Check that this is sound.
 fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
-    let mut cur: u256 = draw_secure_felt252(ref channel).into();
-    [
-        extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
-        extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur), extract_m31(ref cur),
-    ]
+    let u256 { mut low, mut high } = draw_secure_felt252(ref channel).into();
+    let b0 = extract_m31(ref low);
+    let b1 = extract_m31(ref low);
+    let b2 = extract_m31(ref low);
+    let b3 = extract_m31(ref low);
+    // We consumed the first 31*4 = 124 bits of `low`.
+    // We inject its last 4 bits into `high`. There
+    // is no overflow since `high` < 2^124.
+    high = high * 16 + low;
+    let b4 = extract_m31(ref high);
+    let b5 = extract_m31(ref high);
+    let b6 = extract_m31(ref high);
+    let b7 = extract_m31(ref high);
+
+    [b0, b1, b2, b3, b4, b5, b6, b7]
 }
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
@@ -164,11 +174,17 @@ fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     res
 }
 
+/// Extracts the 31 lsb of `num` and interprets them as an M31 field element.
+///
+/// Assuming that `num` is a uniformly random u128, the probability that
+/// `extract_m31(ref num) == 0` is twice than the probability of
+/// `extract_m31(ref num) != 0`. All nonzero outcomes are equally likely.
 #[inline]
-fn extract_m31(ref num: u256) -> M31 {
-    let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U256);
+fn extract_m31(ref num: u128) -> M31 {
+    let (q, r) = DivRem::div_rem(num, M31_SHIFT_NZ_U128);
     num = q;
-    M31Trait::reduce_u128(r.low)
+    // Unwrap fails if `r == M31_SHIFT_NZ_U128 - 1`.
+    r.try_into().unwrap_or(M31Zero::zero())
 }
 
 fn update_digest(ref channel: Poseidon252Channel, new_digest: felt252) {
