@@ -1,5 +1,9 @@
+use core::num::traits::Zero;
 use core::num::traits::one::One;
 use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
+use stwo_verifier_core::ColumnSpan;
+use stwo_verifier_core::fields::m31::M31;
+use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
 use stwo_verifier_core::utils::ArrayImpl;
 use super::{
     CairoInteractionElements, LookupElements, MemorySmallValue, PublicDataImpl, PublicMemory,
@@ -106,4 +110,43 @@ pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
     }
+}
+
+pub fn make_lookup_elements<const N: usize>(z: QM31, alpha: QM31) -> LookupElements<N> {
+    let mut alpha_powers = array![];
+    let mut power = alpha;
+    for _ in 0..N {
+        alpha_powers.append(power);
+        power = power * alpha;
+    }
+    LookupElements { z, alpha, alpha_powers }
+}
+
+pub fn qm31_from_m31(m31: M31) -> QM31 {
+    QM31Impl::from_fixed_array([m31, Zero::zero(), Zero::zero(), Zero::zero()])
+}
+
+pub fn make_interaction_trace(values: Array<QM31>, last_row_sum: QM31) -> ColumnSpan<Span<QM31>> {
+    let last_row_sum_parts = last_row_sum.to_fixed_array().span();
+    let mut result = array![];
+
+    for i in 0..values.len() {
+        let value_parts = values[i].to_fixed_array().span();
+        let mut columns: Array<Span<QM31>> = array![];
+        if i < values.len() - 1 {
+            for j in 0..4_u32 {
+                columns.append([qm31_from_m31(*value_parts[j])].span())
+            }
+        } else {
+            for j in 0..4_u32 {
+                columns
+                    .append(
+                        [qm31_from_m31(*last_row_sum_parts[j]), qm31_from_m31(*value_parts[j])]
+                            .span(),
+                    )
+            }
+        }
+        result.append_span(columns.span());
+    }
+    result.span()
 }
