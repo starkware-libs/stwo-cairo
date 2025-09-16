@@ -12,9 +12,8 @@ use std::fs::write;
 use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
-use dev_utils::utils::runner_from_compiled_program;
+use dev_utils::utils::{run_program_and_adapter, ProgramType};
 use sonic_rs::{to_string_pretty, Serialize};
-use stwo_cairo_adapter::adapter::adapter;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -33,15 +32,15 @@ struct Args {
     /// Path to the compiled Cairo program.
     #[arg(long = "program")]
     program: PathBuf,
+    /// Indicates if program is an executable or json.
+    #[arg(long = "program_type", default_value = "json")]
+    program_type: ProgramType,
     /// Output file path for the memory.
     #[arg(long = "mem")]
     mem: Option<PathBuf>,
     /// Output file path for the trace.
     #[arg(long = "trace")]
     trace: Option<PathBuf>,
-    #[arg(long = "executable")]
-    /// Indicates that the input program is an executable
-    executable: bool,
     /// Path to a file with arguments for the Cairo program.
     #[arg(long = "program_arguments_file")]
     program_arguments_file: Option<PathBuf>,
@@ -59,12 +58,11 @@ fn main() {
 
     let _span = span!(Level::INFO, "extract_mem_trace").entered();
 
-    let runner = runner_from_compiled_program(
+    let prover_input = run_program_and_adapter(
         &args.program,
-        args.executable,
+        args.program_type,
         args.program_arguments_file.as_ref(),
     );
-    let prover_input = adapter(&runner);
 
     fn write_output<T: Serialize>(path: &PathBuf, format: &OutputFormat, data: &T) {
         match format {
@@ -93,9 +91,7 @@ mod tests {
     use std::process::Command;
 
     use bincode::deserialize;
-    use dev_utils::utils::{
-        get_compiled_cairo_program_path, read_compiled_cairo_program, run_program_and_adapter,
-    };
+    use dev_utils::utils::{get_compiled_cairo_program_path, run_program_and_adapter, ProgramType};
     use fs::read;
     use stwo_cairo_adapter::memory::MemoryEntry;
     use stwo_cairo_adapter::vm_import::RelocatedTraceEntry;
@@ -106,9 +102,8 @@ mod tests {
         // Use an existing test program
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-        let compiled_program = read_compiled_cairo_program(&compiled_program_path);
 
-        let prover_input = run_program_and_adapter(&compiled_program, None);
+        let prover_input = run_program_and_adapter(&compiled_program_path, ProgramType::Json, None);
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");

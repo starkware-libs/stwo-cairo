@@ -1,18 +1,17 @@
 //! // ### Example command to run the verifier:
 //! ```
-//! cargo run --bin execution_resources_from_compiled_program -- --cairo1 --compiled_program  /path/to/executable.json --arguments-file /path/to/proof.json
+//! cargo run --bin get_execution_resources -- --program  /path/to/verifier.executable --program_type executable --arguments-file /path/to/proof.json
 //! ```
 //!
 //! To view all available command-line options, run:
 //! ```
-//! cargo run --bin execution_resources_from_compiled_program -- --help
+//! cargo run --bin get_execution_resources -- --help
 //! ```
 use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::Parser;
-use dev_utils::utils::runner_from_compiled_program;
-use stwo_cairo_adapter::adapter::adapter;
+use dev_utils::utils::{run_program_and_adapter, ProgramType};
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
@@ -21,11 +20,11 @@ use tracing_subscriber::fmt::format::FmtSpan;
 #[derive(Parser, Debug)]
 struct Args {
     /// Path to the compiled Cairo program.
-    #[arg(long = "compiled_program")]
-    compiled_program: PathBuf,
-    /// Indicates that the input program is compiled from Cairo 1
-    #[arg(long = "cairo1")]
-    cairo1: bool,
+    #[arg(long = "program")]
+    program: PathBuf,
+    /// Indicates if program is an executable or json.
+    #[arg(long = "program_type", default_value = "json")]
+    program_type: ProgramType,
     /// Path to a file with arguments for the Cairo program.
     #[arg(long = "program_arguments_file")]
     program_arguments_file: Option<PathBuf>,
@@ -39,13 +38,11 @@ fn main() -> Result<()> {
 
     let _span = span!(Level::INFO, "run").entered();
 
-    let runner = runner_from_compiled_program(
-        &args.compiled_program,
-        args.cairo1,
+    let prover_input = run_program_and_adapter(
+        &args.program,
+        args.program_type,
         args.program_arguments_file.as_ref(),
     );
-
-    let prover_input = adapter(&runner);
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
     log::info!("Execution resources: {execution_resources:#?}");
