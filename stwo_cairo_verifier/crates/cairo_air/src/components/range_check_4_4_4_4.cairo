@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version 4cb69bd0
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
@@ -7,8 +7,7 @@ const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck4(([4, 4, 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
-#[generate_trait]
-pub impl ClaimImpl of ClaimTrait {
+pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
         let log_size = SOME_COLUMN.log_size();
         let preprocessed_log_sizes = array![log_size].span();
@@ -18,6 +17,8 @@ pub impl ClaimImpl of ClaimTrait {
     }
 
     fn mix_into(self: @Claim, ref channel: Channel) {}
+
+    fn accumulate_relation_uses(self: @Claim, ref relation_uses: RelationUsesDict) {}
 }
 
 #[derive(Drop, Serde, Copy)]
@@ -80,10 +81,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
-    fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        SOME_COLUMN.log_size() + 1
     }
 
     fn evaluate_constraints_at_point(
