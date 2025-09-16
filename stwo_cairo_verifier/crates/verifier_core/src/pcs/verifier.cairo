@@ -16,7 +16,7 @@ use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
 
 /// Sanity check that the proof of work is not negligible.
-pub const MIN_POW_BITS: u32 = 10;
+pub const MIN_POW_BITS: u32 = 20;
 
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
