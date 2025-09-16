@@ -141,13 +141,13 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     fn verify_pow_nonce(self: @Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
         const POW_PREFIX: u32 = 0x12345678;
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
-        // Compute `POW_PREFIX || digest || workBits`.
-        //          1 u32      || 8 u32  || 1 u32.
+        // Compute `POW_PREFIX || zeros  || digest || n_bits`.
+        //          1 u32      || 6 u32s || 8 u32  || 1 u32.
         let msg = BoxImpl::new(
-            [POW_PREFIX, d0, d1, d2, d3, d4, d5, d6, d7, n_bits, 0, 0, 0, 0, 0, 0],
+            [POW_PREFIX, 0, 0, 0, 0, 0, 0, d0, d1, d2, d3, d4, d5, d6, d7, n_bits],
         );
         let [q0, q1, q2, q3, q4, q5, q6, q7] = blake2s_finalize(
-            BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 40, msg,
+            BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, msg,
         )
             .unbox();
 
@@ -164,7 +164,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
     }
 }
 
-/// Checks that the last `n_bits` bits of the digest are zero.
+/// Checks that the leading `n_bits` bits of the digest are zero.
 /// `n_bits` is in range [0, 63].
 ///
 /// # Panics
