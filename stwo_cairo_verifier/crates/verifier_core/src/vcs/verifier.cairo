@@ -95,7 +95,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// * The computed root does not match the expected root.
     fn verify(
         self: @MerkleVerifier<H>,
-        queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        ref queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     );
@@ -106,7 +106,7 @@ impl MerkleVerifierImpl<
 > of MerkleVerifierTrait<H> {
     fn verify(
         self: @MerkleVerifier<H>,
-        mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        ref queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         mut queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) {

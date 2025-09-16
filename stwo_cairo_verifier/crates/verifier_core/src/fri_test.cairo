@@ -241,8 +241,7 @@ fn mixed_degree_proof_with_queries_sampled_from_channel_passes_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
     let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
-    let (_unique_column_log_sizes, _query_positions_by_log_size, queries) = verifier
-        .sample_query_positions(ref channel);
+    let (_query_positions_by_log_size, queries) = verifier.sample_query_positions(ref channel);
 
     verifier.decommit(query_evals_by_column, queries);
 }
