@@ -173,7 +173,7 @@ fn check_leading_zeros(digest: Blake2sHash, n_bits: u32) -> bool {
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
 
-    let nonzero_divisor = pow2_u64(n_bits).try_into().unwrap();
+    let nonzero_divisor: NonZero<u64> = pow2_u64(n_bits).try_into().unwrap();
     let (_, r) = DivRem::div_rem(v, nonzero_divisor);
     r == 0
 }
