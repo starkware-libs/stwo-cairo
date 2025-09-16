@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version c4472dc1
 #![allow(unused_parens)]
 use cairo_air::components::bitwise_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

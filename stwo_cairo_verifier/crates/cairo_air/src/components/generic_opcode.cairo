@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version c4472dc1
 use crate::components::subroutines::decode_generic_instruction::decode_generic_instruction_evaluate;
 use crate::components::subroutines::eval_operands::eval_operands_evaluate;
 use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
@@ -496,10 +496,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
-    fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        *(self.claim.log_size) + 1
     }
 
     fn evaluate_constraints_at_point(

@@ -1,4 +1,4 @@
-// AIR version 38bef2b6
+// AIR version c4472dc1
 #![allow(unused_parens)]
 use cairo_air::components::qm_31_add_mul_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
