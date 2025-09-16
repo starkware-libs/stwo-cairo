@@ -220,14 +220,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
         }
     }
 
-    fn max_constraint_log_degree_bound(self: @PoseidonContextComponents) -> u32 {
-        if let Option::Some(components) = self.components {
-            components.max_constraint_log_degree_bound()
-        } else {
-            0
-        }
-    }
-
     fn mask_points(
         self: @PoseidonContextComponents,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -433,25 +425,5 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 random_coeff,
                 point,
             );
-    }
-
-    fn max_constraint_log_degree_bound(self: @PoseidonComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree =
-            core::cmp::max(
-                max_degree, self.poseidon_3_partial_rounds_chain.max_constraint_log_degree_bound(),
-            );
-        max_degree =
-            core::cmp::max(
-                max_degree, self.poseidon_full_round_chain.max_constraint_log_degree_bound(),
-            );
-        max_degree = core::cmp::max(max_degree, self.cube_252.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.poseidon_round_keys.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(
-                max_degree, self.range_check_felt_252_width_27.max_constraint_log_degree_bound(),
-            );
-        max_degree
     }
 }
