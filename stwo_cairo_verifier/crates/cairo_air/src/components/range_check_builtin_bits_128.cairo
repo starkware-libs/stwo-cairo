@@ -1,4 +1,4 @@
-// AIR version d1591e2a
+// AIR version c4472dc1
 use crate::components::subroutines::read_positive_num_bits_128::read_positive_num_bits_128_evaluate;
 use crate::prelude::*;
 
@@ -101,10 +101,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
-    fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        *(self.claim.log_size) + 1
     }
 
     fn evaluate_constraints_at_point(
