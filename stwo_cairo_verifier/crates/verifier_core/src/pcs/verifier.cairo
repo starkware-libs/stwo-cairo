@@ -106,7 +106,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             commitments: _,
             sampled_values,
             decommitments,
-            queried_values,
+            queried_values: queried_values_per_tree,
             proof_of_work_nonce,
             fri_proof,
         } = proof;
@@ -144,7 +144,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
         // Verify Merkle decommitments.
         for (tree, (queried_values, decommitment)) in zip_eq(
-            self.trees.span(), zip_eq(queried_values.span(), decommitments),
+            self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
         ) {
             tree.verify(ref query_positions_by_log_size, *queried_values, decommitment);
         }
@@ -158,7 +158,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             samples,
             random_coeff,
             query_positions_by_log_size,
-            queried_values.span(),
+            queried_values_per_tree.span(),
         );
 
         fri_verifier.decommit(fri_answers, queries);

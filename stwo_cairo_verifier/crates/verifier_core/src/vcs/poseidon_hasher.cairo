@@ -31,7 +31,7 @@ pub impl PoseidonMerkleHasher of MerkleHasher {
             if let Some(values) = column_values.try_into() {
                 // Inlined and simplified `poseidon_hash_span(...)` for better performance.
                 let [v0, v1, v2, v3]: [BaseField; QM31_EXTENSION_DEGREE] = (*values).unbox();
-                let mut word = v0.inner.into();
+                let mut word: felt252 = v0.inner.into();
                 word = word * M31_SHIFT + v1.inner.into();
                 word = word * M31_SHIFT + v2.inner.into();
                 word = word * M31_SHIFT + v3.inner.into();

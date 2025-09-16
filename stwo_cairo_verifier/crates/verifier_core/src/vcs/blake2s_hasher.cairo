@@ -94,7 +94,7 @@ pub impl Blake2sMerkleHasher of MerkleHasher {
         for _ in last_block_length..M31_ELEMENTS_IN_MSG {
             padded_values.append(0);
         }
-        let msg = *padded_values.span().try_into().unwrap();
+        let msg: Box<[u32; 16]> = *padded_values.span().try_into().unwrap();
         byte_count += last_block_length * 4;
         Blake2sHash { hash: blake2s_finalize(:state, :byte_count, :msg) }
     }
