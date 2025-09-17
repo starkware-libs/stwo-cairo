@@ -38,7 +38,7 @@ use stwo_verifier_core::fields::m31::{M31, P_U32};
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
 use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
-use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
+use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_lde_log_size};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::{StarkProof, verify};
 use stwo_verifier_utils::{MemorySection, PubMemoryValue, construct_f252};
@@ -241,11 +241,11 @@ pub fn verify_cairo(proof: CairoProof) {
     commitment_scheme
         .commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
 
-    let trace_log_size = commitment_scheme.get_trace_log_size();
-
+    let trace_lde_log_size = get_trace_lde_log_size(@commitment_scheme.trees);
+    let trace_log_size = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
     // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
     // of the trace plus 1.
-    let cairo_air_log_degree_bound = trace_log_size - pcs_config.fri_config.log_blowup_factor + 1;
+    let cairo_air_log_degree_bound = trace_log_size + 1;
     let cairo_air = CairoAirNewImpl::new(
         @claim, @interaction_elements, @interaction_claim, cairo_air_log_degree_bound,
     );
