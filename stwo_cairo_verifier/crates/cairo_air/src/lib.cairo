@@ -241,12 +241,13 @@ pub fn verify_cairo(proof: CairoProof) {
     commitment_scheme
         .commit(interaction_trace_commitment, interaction_trace_log_sizes, ref channel);
 
-    let trace_log_size = *commitment_scheme.trees[1].tree_height;
-    assert!(trace_log_size == *commitment_scheme.trees[2].tree_height);
+    let trace_lde_log_size = *commitment_scheme.trees[1].tree_height;
+    assert!(trace_lde_log_size == *commitment_scheme.trees[2].tree_height);
 
     // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
     // of the trace plus 1.
-    let cairo_air_log_degree_bound = trace_log_size - pcs_config.fri_config.log_blowup_factor + 1;
+    let trace_log_size = trace_lde_log_size - pcs_config.fri_config.log_blowup_factor;
+    let cairo_air_log_degree_bound = trace_log_size + 1;
     let cairo_air = CairoAirNewImpl::new(
         @claim, @interaction_elements, @interaction_claim, cairo_air_log_degree_bound,
     );
