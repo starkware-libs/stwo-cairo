@@ -4,6 +4,7 @@ use std::simd::u32x16;
 
 use cairo_air::components::blake_round_sigma::{Claim, InteractionClaim, LOG_SIZE};
 use itertools::{chain, Itertools};
+use stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 
 use crate::witness::prelude::*;
 

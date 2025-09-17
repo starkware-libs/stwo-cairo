@@ -3,7 +3,7 @@
 use cairo_air::components::pedersen_points_table::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
-use stwo_cairo_common::preprocessed_consts::pedersen::PEDERSEN_TABLE_N_ROWS;
+use stwo_cairo_common::preprocessed_columns::pedersen::PEDERSEN_TABLE_N_ROWS;
 
 use crate::witness::prelude::*;
 

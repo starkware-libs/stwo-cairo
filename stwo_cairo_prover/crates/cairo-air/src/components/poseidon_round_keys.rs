@@ -1,4 +1,4 @@
-use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
+use stwo_cairo_common::preprocessed_columns::poseidon::N_ROUNDS;
 
 use crate::components::prelude::*;
 

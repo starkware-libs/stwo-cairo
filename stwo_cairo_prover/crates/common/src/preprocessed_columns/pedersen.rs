@@ -16,17 +16,25 @@ use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
-use stwo_cairo_common::preprocessed_consts::pedersen::{
-    BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE_N_ROWS, ROWS_PER_WINDOW,
-};
-use stwo_cairo_common::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
-use super::utils::felt_batch_inverse;
-use crate::preprocessed::PreProcessedColumn;
+use super::felt_batch_inverse::felt_batch_inverse;
+use super::preprocessed_trace::PreProcessedColumn;
+use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
 pub static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> = LazyLock::new(PedersenPointsTable::new);
+
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
+
+pub const BITS_PER_WINDOW: usize = 18;
+pub const NUM_WINDOWS: usize = 252usize.div_ceil(BITS_PER_WINDOW);
+pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
+
+pub const P0_SECTION_START: usize = 0;
+pub const P1_SECTION_START: usize = P0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub const P2_SECTION_START: usize = P1_SECTION_START + 16;
+pub const P3_SECTION_START: usize = P2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub const PEDERSEN_TABLE_N_ROWS: usize = P3_SECTION_START + 16;
 
 #[derive(Debug)]
 pub struct PedersenPoints {

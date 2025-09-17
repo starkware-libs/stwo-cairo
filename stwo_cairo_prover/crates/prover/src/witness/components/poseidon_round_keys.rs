@@ -3,7 +3,7 @@
 use cairo_air::components::poseidon_round_keys::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
-use stwo_cairo_common::preprocessed_consts::poseidon::N_ROUNDS;
+use stwo_cairo_common::preprocessed_columns::poseidon::N_ROUNDS;
 
 use crate::witness::prelude::*;
 

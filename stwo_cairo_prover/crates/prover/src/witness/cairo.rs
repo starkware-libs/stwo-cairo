@@ -9,6 +9,7 @@ use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
 use tracing::{span, Level};
 
 use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
@@ -282,7 +283,7 @@ impl CairoClaimGenerator {
             .write_trace(tree_builder);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
-        const LOG_MAX_BIG_SIZE: u32 = cairo_air::preprocessed::MAX_SEQUENCE_LOG_SIZE;
+        const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
             self.memory_id_to_value_trace_generator.write_trace(
                 tree_builder,

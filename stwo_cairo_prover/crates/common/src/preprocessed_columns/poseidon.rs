@@ -5,16 +5,20 @@ use stwo::prover::backend::simd::m31::PackedM31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
-use stwo_cairo_common::preprocessed_consts::poseidon::{round_keys, N_ROUNDS, N_WORDS};
-use stwo_cairo_common::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
-use stwo_cairo_common::prover_types::simd::N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
-use crate::preprocessed::PreProcessedColumn;
-use crate::preprocessed_utils::pad;
+use super::preprocessed_trace::PreProcessedColumn;
+use super::preprocessed_utils::pad;
+use crate::preprocessed_columns::poseidon_round_keys::round_keys;
+use crate::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
+use crate::prover_types::simd::N_LANES;
 
 const LOG_N_ROWS: u32 = (N_ROUNDS as u32).next_power_of_two().ilog2();
 const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;
+
+pub const N_ROUNDS: usize = 35;
+pub const N_FELT252WIDTH27: usize = 3;
+pub const N_WORDS: usize = FELT252WIDTH27_N_WORDS * N_FELT252WIDTH27;
 
 pub fn round_keys_m31(round: usize, col: usize) -> M31 {
     assert!(col < N_WORDS);
@@ -69,10 +73,9 @@ mod tests {
     use std::array::from_fn;
 
     use stwo::prover::backend::simd::m31::N_LANES;
-    use stwo_cairo_common::preprocessed_consts::poseidon::N_FELT252WIDTH27;
-    use stwo_cairo_common::prover_types::cpu::Felt252Width27;
 
     use super::*;
+    use crate::prover_types::cpu::Felt252Width27;
 
     #[test]
     fn test_packed_at_round_keys() {

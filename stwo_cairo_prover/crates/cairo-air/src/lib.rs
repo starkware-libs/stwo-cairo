@@ -2,8 +2,6 @@
 #![feature(array_chunks)]
 use serde::{Deserialize, Serialize};
 
-use crate::preprocessed::PreProcessedTrace;
-
 pub mod air;
 pub mod blake;
 pub mod builtins_air;
@@ -11,8 +9,6 @@ pub mod components;
 pub mod opcodes_air;
 pub mod pedersen;
 pub mod poseidon;
-pub mod preprocessed;
-pub mod preprocessed_utils;
 pub mod range_checks_air;
 pub mod relations;
 pub mod utils;
@@ -21,6 +17,7 @@ pub mod utils;
 pub mod verifier;
 
 pub use air::CairoProof;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 /// The preprocessed trace used for the prover.
 // TODO(Ohad): move somewhere else.

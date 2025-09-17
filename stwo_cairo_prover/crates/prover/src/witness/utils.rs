@@ -1,7 +1,6 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::air::CairoClaim;
-use cairo_air::preprocessed::PreProcessedTrace;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};
@@ -17,6 +16,7 @@ use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 
 use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;

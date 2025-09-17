@@ -1,5 +1,5 @@
 use std::iter::zip;
-use std::simd::{u32x16, Simd};
+use std::simd::Simd;
 
 use itertools::{chain, Itertools};
 use stwo::core::fields::m31::{BaseField, M31, MODULUS_BITS};
@@ -10,14 +10,14 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::Col;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
-use stwo_cairo_common::preprocessed_consts::blake::N_BLAKE_SIGMA_COLS;
-use stwo_cairo_common::preprocessed_consts::poseidon::N_WORDS as POSEIDON_N_WORDS;
-use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
-use super::pedersen::const_columns::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
-use super::poseidon::const_columns::PoseidonRoundKeys;
-use crate::blake::const_columns::BlakeSigma;
+use super::bitwise_xor::BitwiseXor;
+use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
+use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
+use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
+use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
+use crate::prover_types::simd::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
@@ -185,66 +185,6 @@ impl PreProcessedColumn for Seq {
     }
 }
 
-/// A table of a,b,c, where a,b,c are integers and a ^ b = c.
-///
-/// # Attributes
-///
-/// - `n_bits`: The number of bits in each integer.
-/// - `col_index`: The column index in the preprocessed table.
-#[derive(Debug)]
-pub struct BitwiseXor {
-    n_bits: u32,
-    col_index: usize,
-}
-impl BitwiseXor {
-    pub const fn new(n_bits: u32, col_index: usize) -> Self {
-        assert!(col_index < 3, "col_index must be in range 0..=2");
-        Self { n_bits, col_index }
-    }
-
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let lhs = || -> u32x16 {
-            (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32)) >> self.n_bits
-        };
-        let rhs = || -> u32x16 {
-            (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32))
-                & Simd::splat((1 << self.n_bits) - 1)
-        };
-        let simd = match self.col_index {
-            0 => lhs(),
-            1 => rhs(),
-            2 => lhs() ^ rhs(),
-            _ => unreachable!(),
-        };
-        unsafe { PackedM31::from_simd_unchecked(simd) }
-    }
-}
-impl PreProcessedColumn for BitwiseXor {
-    fn log_size(&self) -> u32 {
-        2 * self.n_bits
-    }
-
-    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
-        CircleEvaluation::new(
-            CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_simd(
-                (0..(1 << (self.log_size() - LOG_N_LANES)))
-                    .map(|i| self.packed_at(i))
-                    .collect(),
-            ),
-        )
-    }
-
-    fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("bitwise_xor_{}_{}", self.n_bits, self.col_index),
-        }
-    }
-}
-
-pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
-    Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-
 /// Partitions a number into 'N' bit segments.
 ///
 /// For example: partition_into_bit_segments(0b110101010, [3, 4, 2]) -> [0b110, 0b1010, 0b10]
@@ -361,25 +301,6 @@ pub mod tests {
         })
         .concat();
         assert_eq!(packed_seq, expected_seq);
-    }
-
-    #[test]
-    fn test_packed_at_bitwise_xor() {
-        let bitwise_a = BitwiseXor::new(LOG_SIZE, 0);
-        let bitwise_b = BitwiseXor::new(LOG_SIZE, 1);
-        let bitwise_xor = BitwiseXor::new(LOG_SIZE, 2);
-        let index: usize = 1000;
-        let a = index / (1 << LOG_SIZE);
-        let b = index % (1 << LOG_SIZE);
-        let expected_xor = a ^ b;
-
-        let res_a = bitwise_a.packed_at(index / N_LANES).to_array()[index % N_LANES];
-        let res_b = bitwise_b.packed_at(index / N_LANES).to_array()[index % N_LANES];
-        let res_xor = bitwise_xor.packed_at(index / N_LANES).to_array()[index % N_LANES];
-
-        assert_eq!(res_a.0, a as u32);
-        assert_eq!(res_b.0, b as u32);
-        assert_eq!(res_xor.0, expected_xor as u32);
     }
 
     #[test]

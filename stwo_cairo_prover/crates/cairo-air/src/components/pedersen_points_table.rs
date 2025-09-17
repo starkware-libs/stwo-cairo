@@ -1,4 +1,4 @@
-use stwo_cairo_common::preprocessed_consts::pedersen::PEDERSEN_TABLE_N_ROWS;
+use stwo_cairo_common::preprocessed_columns::pedersen::PEDERSEN_TABLE_N_ROWS;
 
 use crate::components::prelude::*;
 
