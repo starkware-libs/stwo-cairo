@@ -29,7 +29,11 @@ memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
 dashmap = "6.1.0"
 rayon.workspace = true
+clap.workspace = true
 crypto-bigint = "0.5.1"
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true

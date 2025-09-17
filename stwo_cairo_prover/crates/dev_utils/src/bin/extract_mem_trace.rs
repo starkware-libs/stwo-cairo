@@ -12,8 +12,8 @@ use std::fs::write;
 use std::path::PathBuf;
 
 use clap::{Parser, ValueEnum};
-use dev_utils::utils::{run_program_and_adapter, ProgramType};
 use sonic_rs::{to_string_pretty, Serialize};
+use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -91,9 +91,10 @@ mod tests {
     use std::process::Command;
 
     use bincode::deserialize;
-    use dev_utils::utils::{get_compiled_cairo_program_path, run_program_and_adapter, ProgramType};
+    use dev_utils::utils::get_compiled_cairo_program_path;
     use fs::read;
     use stwo_cairo_adapter::memory::MemoryEntry;
+    use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
     use stwo_cairo_adapter::vm_import::RelocatedTraceEntry;
     use tempfile::NamedTempFile;
 

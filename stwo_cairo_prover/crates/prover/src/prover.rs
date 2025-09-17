@@ -254,7 +254,8 @@ pub fn create_and_serialize_proof(
 #[cfg(test)]
 pub mod tests {
     use cairo_air::preprocessed::testing_preprocessed_tree;
-    use dev_utils::utils::{get_compiled_cairo_program_path, run_program_and_adapter, ProgramType};
+    use dev_utils::utils::get_compiled_cairo_program_path;
+    use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     #[test]
@@ -273,10 +274,11 @@ pub mod tests {
         use std::process::Command;
 
         use cairo_air::PreProcessedTraceVariant;
-        use dev_utils::utils::{get_proof_file_path, ProgramType};
+        use dev_utils::utils::get_proof_file_path;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+        use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
         use test_log::test;
@@ -353,7 +355,7 @@ pub mod tests {
 
         use cairo_air::preprocessed::PreProcessedTrace;
         use cairo_air::verifier::verify_cairo;
-        use dev_utils::utils::{get_compiled_cairo_program_path, get_proof_file_path, ProgramType};
+        use dev_utils::utils::{get_compiled_cairo_program_path, get_proof_file_path};
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
@@ -490,7 +492,7 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-            use dev_utils::utils::{run_program_and_adapter, ProgramType};
+            use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
             use test_log::test;
 
             use super::*;
