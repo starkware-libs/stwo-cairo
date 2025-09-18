@@ -22,4 +22,4 @@ sort-module-level-items = true
 bounded_int = { path = "../bounded_int" }
 
 [dev-dependencies]
-cairo_test = "2.12.0"
+cairo_test = "2.12.2"
