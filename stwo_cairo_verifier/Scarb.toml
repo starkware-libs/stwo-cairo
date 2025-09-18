@@ -19,7 +19,7 @@ allow-warnings = false
 
 # The profile that should be used when compiling the verifier for proving.
 # This profile enables unsafe-panic to reduce the code size.
-[profile.proving]
+[profile.proving.cairo]
 enable-gas = false
 unsafe-panic = true
 allow-warnings = false
