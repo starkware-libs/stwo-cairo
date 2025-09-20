@@ -17,9 +17,9 @@ use stwo_cairo_air::{CairoProof, VerificationOutput, get_verification_output};
 ///
 /// Note: the input JSON file should contain data that is deserialized to `CairoProof`. The data
 /// should be given as an array of hex numbers (felt252s) as strings. For example: ["0x7", "0x80"].
-#[executable]
-fn main(proof: CairoProof) -> VerificationOutput {
-    // In the real verifier, here is the actual verification. Here we skip it.
+// #[executable]
+// fn main(proof: CairoProof) -> VerificationOutput {
+//     // In the real verifier, here is the actual verification. Here we skip it.
 
-    get_verification_output(proof: @proof)
-}
+//    // get_verification_output(proof: @proof)
+// }
