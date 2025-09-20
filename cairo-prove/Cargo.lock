@@ -1138,7 +1138,6 @@ version = "0.1.0"
 dependencies = [
  "cairo-air",
  "cairo-lang-casm 2.11.4 (git+https://github.com/starkware-libs/cairo.git?rev=5cc466a)",
- "cairo-lang-compiler",
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-lang-utils 2.11.4 (git+https://github.com/starkware-libs/cairo.git?rev=5cc466a)",
@@ -1150,7 +1149,6 @@ dependencies = [
  "num-bigint",
  "serde_json",
  "stwo-cairo-adapter",
- "stwo-cairo-serialize",
  "stwo_cairo_prover",
 ]
 
