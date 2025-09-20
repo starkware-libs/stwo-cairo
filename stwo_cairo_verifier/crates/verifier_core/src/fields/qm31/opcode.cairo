@@ -165,13 +165,6 @@ pub impl M31IntoQM31 of core::traits::Into<M31, QM31> {
     }
 }
 
-pub impl CM31IntoQM31 of core::traits::Into<CM31, QM31> {
-    #[inline]
-    fn into(self: CM31) -> QM31 {
-        self.inner
-    }
-}
-
 pub impl QM31Neg of Neg<QM31> {
     #[inline]
     fn neg(a: QM31) -> QM31 {
