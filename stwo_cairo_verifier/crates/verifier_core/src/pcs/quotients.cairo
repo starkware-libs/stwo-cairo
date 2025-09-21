@@ -207,7 +207,7 @@ pub struct QuotientConstants {
 /// Constants associated with a batch of samples for a given evaluation point and domain size.
 ///
 /// # Overview
-/// To prove that `F(p) = value`, we apply *two-point quotienting* at `point`
+/// To prove that `F(p) = value`, we apply *two-point quotienting* at `p`
 /// and its conjugate `conj(p)`. The numerator of the quotient is:
 ///
 ///     c * F(q) - a * q.y - b
@@ -218,7 +218,7 @@ pub struct QuotientConstants {
 ///
 /// Since `F` is a polynomial over the base field, we also have:
 ///
-///     F(conj(point)) = conj(F(point))
+///     F(conj(p)) = conj(F(p))
 ///
 /// # Batched Evaluation Proofs
 /// In batched evaluation proof verification, the verifier computes a pseudo-random
