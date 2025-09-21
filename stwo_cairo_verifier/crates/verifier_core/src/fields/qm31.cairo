@@ -37,9 +37,9 @@ pub trait QM31Trait {
 
     /// Given a sample point `(px, py): CirclePoint<QM31>` and a domain point
     /// `(dx, dy): CirclePoint<M31>` computes the quotient denominator, which has the formula:
-    ///   Re(px - dx) * Im(py) - Re(py - dy) * Im(px)
+    ///   Re(px - dx) * Im(py - dy) - Re(py - dy) * Im(px - dx)
     /// Equivalently, this is the imaginary part of (py - dy) * conj(px - dx).
-    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31;
+    fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31;
 
     /// Returns the combined value, given the values of its composing base field polynomials at that
     /// point.

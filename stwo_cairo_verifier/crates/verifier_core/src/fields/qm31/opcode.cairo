@@ -55,8 +55,8 @@ pub impl QM31Impl of QM31Trait {
     }
 
     #[inline]
-    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31 {
-        let [_, _, c, d] = ((*px - dx.into()).complex_conjugate() * (*py - dy.into()))
+    fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31 {
+        let [_, _, c, d] = ((px - dx.into()).complex_conjugate() * (py - dy.into()))
             .to_fixed_array();
         CM31Trait::pack(c, d)
     }
