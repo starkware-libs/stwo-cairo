@@ -163,6 +163,7 @@ pub fn run_program_and_adapter(
         relocate_trace: false,
         layout: LayoutName::all_cairo_stwo,
         proof_mode: true,
+        fill_holes: true,
         disable_trace_padding: true,
         ..Default::default()
     };
