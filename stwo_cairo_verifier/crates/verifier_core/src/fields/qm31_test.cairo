@@ -54,7 +54,7 @@ fn test_fused_quotient_denominator() {
     let dx = m31(345346);
     let dy = m31(453737565);
 
-    let res = QM31Trait::fused_quotient_denominator(@px, @py, dx, dy);
+    let res = QM31Trait::fused_quotient_denominator(px, py, dx, dy);
 
     // Compare to a generic implementation.
     let [a, b, c, d] = px.to_fixed_array();

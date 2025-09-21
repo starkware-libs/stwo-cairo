@@ -71,8 +71,8 @@ pub impl QM31Impl of QM31Trait {
     }
 
     #[inline]
-    fn fused_quotient_denominator(px: @QM31, py: @QM31, dx: M31, dy: M31) -> CM31 {
-        unreduced::fused_quotient_denominator(*px, *py, dx, dy)
+    fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31 {
+        unreduced::fused_quotient_denominator(px, py, dx, dy)
     }
 
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
