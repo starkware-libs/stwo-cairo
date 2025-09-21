@@ -19,7 +19,7 @@ stwo-cairo-common.workspace = true
 stwo-cairo-adapter.workspace = true
 rayon.workspace = true
 serde.workspace = true
-starknet-curve = "0.5.1"
+starknet-curve = "0.6.0"
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
