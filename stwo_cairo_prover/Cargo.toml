@@ -18,10 +18,10 @@ edition = "2021"
 
 [workspace.dependencies]
 bytemuck = { version = "1.20.0", features = ["derive"] }
-cairo-lang-casm = "2.7.1"
+cairo-lang-casm = { version = "2.12.4-dev.0" }
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
+cairo-vm = { version = "3.0.0-rc.3", features = [
     "mod_builtin",
 ], default-features = false }
 clap = { version = "4.3.10", features = ["derive"] }
