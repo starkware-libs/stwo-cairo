@@ -610,9 +610,9 @@ dependencies = [
 
 [[package]]
 name = "cairo-lang-casm"
-version = "2.12.4-dev.0"
+version = "2.12.4-dev.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c39e3efa742d8dc9982a3039aa7f820b00236acbf2501b13a4c463801779b1bd"
+checksum = "16ffaa93d5b1b77c60ba014139c95a04aeb4fa61f622fec685c7d4a5d94bc475"
 dependencies = [
  "cairo-lang-utils",
  "indoc",
@@ -1146,9 +1146,9 @@ dependencies = [
 
 [[package]]
 name = "cairo-lang-utils"
-version = "2.12.4-dev.0"
+version = "2.12.4-dev.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3410d21cb89a5fe9f88d8be5dd6e250d43d1fe829c66ae5b4b0e704ad5afd6b9"
+checksum = "d40373deba5872449e71932afa9273faa3e44ab02767d5cf0ef49eb53aeed548"
 dependencies = [
  "hashbrown 0.15.5",
  "indexmap 2.10.0",
