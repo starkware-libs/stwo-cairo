@@ -188,7 +188,7 @@ fn quotient_denominator_inverses(
         //   (Pr.x - D.x) * Pi.y - (Pr.y - D.y) * Py.x
         // where Pr, Pi are the real and imaginary parts of P, both of type `CirclePoint<CM31>`.
         let denominator = QM31Trait::fused_quotient_denominator(
-            sample_batch.point.x, sample_batch.point.y, domain_point.x, domain_point.y,
+            *sample_batch.point.x, *sample_batch.point.y, domain_point.x, domain_point.y,
         );
         denominators.append(denominator);
     }
