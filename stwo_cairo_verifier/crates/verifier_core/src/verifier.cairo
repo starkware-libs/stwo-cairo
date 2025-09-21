@@ -61,6 +61,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
             composition_commitment,
             [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
             ref channel,
+            commitment_scheme_proof.config.fri_config.log_blowup_factor,
         );
 
     // Draw OOD point.

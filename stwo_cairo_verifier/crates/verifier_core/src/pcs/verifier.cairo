@@ -35,13 +35,12 @@ pub struct CommitmentSchemeProof {
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
     pub trees: TreeArray<MerkleVerifier<MerkleHasher>>,
-    pub config: PcsConfig,
 }
 
 #[generate_trait]
 pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
-    fn new(config: PcsConfig) -> CommitmentSchemeVerifier {
-        CommitmentSchemeVerifier { trees: array![], config }
+    fn new() -> CommitmentSchemeVerifier {
+        CommitmentSchemeVerifier { trees: array![] }
     }
 
     /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
@@ -71,6 +70,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         commitment: Hash,
         degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
+        log_blowup_factor: u32,
     ) {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
@@ -81,9 +81,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             .append(
                 MerkleVerifier {
                     root: commitment,
-                    tree_height: self.config.fri_config.log_blowup_factor
-                        + column_indices_by_deg_bound.len()
-                        - 1,
+                    tree_height: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
                     column_indices_by_deg_bound,
                 },
             );
@@ -102,7 +100,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) {
         let CommitmentSchemeProof {
-            config: _,
+            config,
             commitments: _,
             sampled_values,
             decommitments,
@@ -114,7 +112,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         mix_sampled_values(sampled_values, ref channel);
 
         let random_coeff = channel.draw_secure_felt();
-        let fri_config = self.config.fri_config;
+        let fri_config = config.fri_config;
 
         let column_indices_per_tree_by_degree_bound = self
             .column_indices_per_tree_by_degree_bound();
@@ -130,9 +128,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         );
 
         // Verify proof of work.
-        assert!(self.config.pow_bits >= MIN_POW_BITS);
+        assert!(config.pow_bits >= MIN_POW_BITS);
         assert!(
-            channel.verify_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
+            channel.verify_pow_nonce(config.pow_bits, proof_of_work_nonce),
             "{}",
             VerificationError::QueriesProofOfWork,
         );
