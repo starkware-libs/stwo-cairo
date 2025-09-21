@@ -88,6 +88,17 @@ impl U32TryIntoM31 of TryInto<u32, M31> {
     }
 }
 
+impl U128TryIntoM31 of TryInto<u128, M31> {
+    /// Returns Some if value is in the range `[0, P)`, else returns None.
+    #[inline]
+    fn try_into(self: u128) -> Option<M31> {
+        match bounded_int::constrain::<u128, P>(self.into()) {
+            Ok(x) => Some(M31Trait::new(x)),
+            Err(_) => None,
+        }
+    }
+}
+
 pub impl M31Zero of core::num::traits::Zero<M31> {
     #[inline]
     fn zero() -> M31 {
@@ -121,6 +132,12 @@ pub impl M31One of core::num::traits::One<M31> {
 impl M31ConstrainHelper of bounded_int::ConstrainHelper<u32, P> {
     type LowT = M31InnerT;
     type HighT = BoundedInt<P, 0xffffffff>;
+}
+
+impl U128M31ConstrainHelper of bounded_int::ConstrainHelper<u128, P> {
+    type LowT = M31InnerT;
+    // 0xffffffffffffffffffffffffffffffff = 2**128 - 1.
+    type HighT = BoundedInt<P, 0xffffffffffffffffffffffffffffffff>;
 }
 
 impl DivRemU32ByP of DivRemHelper<u32, ConstValue<P>> {

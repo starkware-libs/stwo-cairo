@@ -18,7 +18,7 @@ const NZ_U8_SHIFT: NonZero<ConstValue<U8_SHIFT>> = 0x100;
 const NZ_U9_SHIFT: NonZero<ConstValue<U9_SHIFT>> = 0x200;
 const NZ_U32_SHIFT: NonZero<ConstValue<U32_SHIFT>> = 0x100000000;
 
-const M31_SHIFT_NZ_U256: NonZero<u256> = 0x80000000; // 2**31
+const M31_SHIFT_NZ_U128: NonZero<u128> = 0x80000000; // 2**31
 
 pub mod impls {
     use super::{BoundedInt, ConstValue, DivRemHelper, U32_SHIFT, U8_SHIFT, U9_SHIFT};
