@@ -55,44 +55,6 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
-    /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
-    /// TODO(Stav): remove after using 'get_builtins_segment'.
-    pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
-        let mut res = BuiltinSegments::default();
-        for (name, value) in memory_segments.iter() {
-            if let Some(builtin_name) = BuiltinName::from_str(name) {
-                // Filter empty segments.
-                let segment = if value.begin_addr == value.stop_ptr {
-                    None
-                } else {
-                    assert!(
-                        value.begin_addr < value.stop_ptr,
-                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
-                        value.begin_addr,
-                        value.stop_ptr,
-                    );
-                    Some(*value)
-                };
-                match builtin_name {
-                    BuiltinName::range_check => res.range_check_bits_128 = segment,
-                    BuiltinName::pedersen => res.pedersen = segment,
-                    BuiltinName::bitwise => res.bitwise = segment,
-                    BuiltinName::poseidon => res.poseidon = segment,
-                    BuiltinName::range_check96 => res.range_check_bits_96 = segment,
-                    BuiltinName::add_mod => res.add_mod = segment,
-                    BuiltinName::mul_mod => res.mul_mod = segment,
-                    BuiltinName::output => res.output = segment,
-                    BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
-                        assert!(segment.is_none(), "{name} builtin is not supported");
-                    }
-                    // Not builtins.
-                    BuiltinName::segment_arena => {}
-                }
-            };
-        }
-        res
-    }
-
     /// Returns the number of instances for each builtin.
     pub fn get_counts(&self) -> HashMap<BuiltinName, usize> {
         let mut counts = HashMap::new();
@@ -258,43 +220,6 @@ impl BuiltinSegments {
             );
         }
     }
-
-    /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
-    ///
-    /// The memory provided by the runner only contains values that were accessed during program
-    /// execution. However, the builtin AIR applies constraints on it's entire range, including
-    /// addresses that were not accessed.
-    // TODO(Stav): remove when this is fixed by the runner.
-    pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
-        self.resize_memory_to_cover_holes(memory);
-        // bitwise.
-        if let Some(segment) = &self.bitwise {
-            builtin_padding::bitwise(segment, memory)
-        };
-    }
-
-    // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
-    // resized to include the hole.
-    // TODO (Stav): remove when the new adapter is used.
-    fn resize_memory_to_cover_holes(&self, memory: &mut MemoryBuilder) {
-        let max_stop_ptr = [
-            self.add_mod.as_ref(),
-            self.bitwise.as_ref(),
-            self.mul_mod.as_ref(),
-            self.pedersen.as_ref(),
-            self.poseidon.as_ref(),
-            self.range_check_bits_96.as_ref(),
-            self.range_check_bits_128.as_ref(),
-        ]
-        .iter()
-        .filter_map(|segment| segment.map(|s| s.stop_ptr))
-        .max()
-        .unwrap_or(0);
-        let len = memory.address_to_id.len();
-        memory
-            .address_to_id
-            .resize(std::cmp::max(len, max_stop_ptr), Default::default());
-    }
 }
 
 /// The minimum number of instances in a builtin segment supported by the prover. This must be a
@@ -355,38 +280,6 @@ fn pad_segment(
 /// Return the size of a memory segment.
 fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
-}
-
-mod builtin_padding {
-    use itertools::Itertools;
-
-    use super::MemorySegmentAddresses;
-    use crate::builtins::BITWISE_MEMORY_CELLS;
-    use crate::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
-
-    pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
-        let range = segment.begin_addr as u32..segment.stop_ptr as u32;
-        assert!(range.len().is_multiple_of(BITWISE_MEMORY_CELLS));
-        for (op0_addr, op1_addr, and_addr, xor_addr, or_addr) in range.tuples() {
-            let op0 = memory.get(op0_addr).as_u256();
-            let op1 = memory.get(op1_addr).as_u256();
-
-            if let MemoryValueId::Empty = memory.address_to_id[and_addr as usize].decode() {
-                let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
-                memory.set(and_addr, and_res);
-            }
-
-            if let MemoryValueId::Empty = memory.address_to_id[xor_addr as usize].decode() {
-                let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
-                memory.set(xor_addr, xor_res);
-            }
-
-            if let MemoryValueId::Empty = memory.address_to_id[or_addr as usize].decode() {
-                let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
-                memory.set(or_addr, or_res);
-            }
-        }
-    }
 }
 
 #[cfg(test)]

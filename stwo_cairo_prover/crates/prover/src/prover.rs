@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::fs::read_to_string;
 
 use anyhow::Result;
 use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
@@ -13,14 +14,13 @@ use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
-use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
+use sonic_rs::from_str;
 
 use crate::stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 use crate::stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
@@ -187,30 +187,6 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 /// Generates proof given the Cairo VM output and prover config/parameters.
 /// Serializes the proof as JSON and write to the output path.
 /// Verifies the proof in case the respective flag is set.
-fn create_and_serialize_generic_proof<MC: MerkleChannel>(
-    input: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
-    verify: bool,
-    proof_path: PathBuf,
-    proof_format: ProofFormat,
-) -> Result<()>
-where
-    SimdBackend: BackendForChannel<MC>,
-    MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
-{
-    let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
-
-    serialize_proof_to_file::<MC::H>(&proof, &proof_path, proof_format)?;
-
-    if verify {
-        verify_cairo::<MC>(proof, preprocessed_trace)?;
-    }
-
-    Ok(())
-}
-
 pub fn create_and_serialize_proof(
     input: ProverInput,
     verify: bool,
@@ -218,35 +194,28 @@ pub fn create_and_serialize_proof(
     proof_format: ProofFormat,
     proof_params_json: Option<PathBuf>,
 ) -> Result<()> {
-    let ProverParameters {
-        channel_hash,
-        pcs_config,
-        preprocessed_trace,
-    } = match proof_params_json {
-        Some(path) => sonic_rs::from_str(&std::fs::read_to_string(&path)?)?,
-        None => default_prod_prover_parameters(),
+    let proof_params = if let Some(proof_params_json) = proof_params_json {
+        from_str(&read_to_string(&proof_params_json)?)?
+    } else {
+        default_prod_prover_parameters()
     };
 
-    let create_and_serialize_generic_proof: fn(
-        ProverInput,
-        PcsConfig,
-        PreProcessedTraceVariant,
-        bool,
-        PathBuf,
-        ProofFormat,
-    ) -> Result<()> = match channel_hash {
-        ChannelHash::Blake2s => create_and_serialize_generic_proof::<Blake2sMerkleChannel>,
-        ChannelHash::Poseidon252 => create_and_serialize_generic_proof::<Poseidon252MerkleChannel>,
+    match proof_params.channel_hash {
+        ChannelHash::Blake2s => {
+            let proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params.pcs_config, proof_params.preprocessed_trace)?;
+            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            if verify {
+                verify_cairo::<Blake2sMerkleChannel>(proof, proof_params.preprocessed_trace)?;
+            }
+        }
+        ChannelHash::Poseidon252 => {
+            let proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params.pcs_config, proof_params.preprocessed_trace)?;
+            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            if verify {
+                verify_cairo::<Poseidon252MerkleChannel>(proof, proof_params.preprocessed_trace)?;
+            }
+        }
     };
-
-    create_and_serialize_generic_proof(
-        input,
-        pcs_config,
-        preprocessed_trace,
-        verify,
-        proof_path,
-        proof_format,
-    )?;
 
     Ok(())
 }

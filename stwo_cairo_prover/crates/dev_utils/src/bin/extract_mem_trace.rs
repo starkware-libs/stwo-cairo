@@ -87,15 +87,15 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::fs::read;
     use std::process::Command;
 
     use bincode::deserialize;
+    use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
+
     use dev_utils::utils::get_compiled_cairo_program_path;
-    use fs::read;
     use stwo_cairo_adapter::memory::MemoryEntry;
     use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
-    use stwo_cairo_adapter::vm_import::RelocatedTraceEntry;
     use tempfile::NamedTempFile;
 
     #[test]

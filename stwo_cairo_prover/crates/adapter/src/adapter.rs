@@ -1,5 +1,6 @@
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use tracing::{info, span, Level};
+use anyhow::Result;
 
 use super::memory::{MemoryBuilder, MemoryConfig};
 use super::ProverInput;
@@ -7,13 +8,11 @@ use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapter(runner: &CairoRunner) -> ProverInput {
+pub fn adapter(runner: &CairoRunner) -> Result<ProverInput> {
     let _span = span!(Level::INFO, "adapter").entered();
 
     // Extract the relevant information from the Runner.
-    let relocatable_trace = runner
-        .get_relocatable_trace()
-        .expect("Trace was not enabled in the run");
+    let relocatable_trace = runner.get_relocatable_trace()?;
 
     info!("Num steps: {:?}", relocatable_trace.len());
 
@@ -47,7 +46,8 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
 
     // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
-    ProverInput {
+
+    Ok(ProverInput {
         state_transitions,
         memory,
         inst_cache,
@@ -58,7 +58,7 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
         relocated_mem: relocated_memory_clone,
         #[cfg(feature = "extract-mem-trace")]
         relocated_trace: relocated_trace.clone(),
-    }
+    })
 }
 
 #[cfg(test)]
@@ -67,7 +67,7 @@ mod tests {
     use dev_utils::utils::get_compiled_cairo_program_path;
     use serde_json::to_value;
 
-    use crate::test_utils::{get_prover_input_path, read_json, write_json};
+    use crate::test_utils::{get_prover_input_path};
     use crate::utils::{run_program_and_adapter, ProgramType};
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
@@ -84,9 +84,11 @@ mod tests {
 
         let expected_prover_input_path = get_prover_input_path(test_name);
         if is_fix_mode {
-            write_json(&expected_prover_input_path, &prover_input_value);
+            let mut file = File::create(&expected_prover_input_path).unwrap();
+            write!(file, "{}", &to_string_pretty(&prover_input_value).unwrap()).unwrap();
         }
-        let expected_prover_input = read_json(&expected_prover_input_path);
+        let expected_prover_input = serde_json::from_str(&read_to_string(&expected_prover_input_path).unwrap()).unwrap();
+
 
         assert_eq!(
             prover_input_value,
