@@ -73,7 +73,7 @@ fn main() -> Result<()> {
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
-    );
+    )?;
 
     create_and_serialize_proof(
         prover_input,
@@ -82,10 +82,6 @@ fn main() -> Result<()> {
         args.proof_format,
         args.proof_params_json,
     )?;
-
-    if args.verify {
-        log::info!("Proof verified successfully");
-    }
 
     Ok(())
 }
