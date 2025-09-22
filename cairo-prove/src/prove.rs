@@ -5,12 +5,12 @@ use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use log::{debug, info};
 use stwo_cairo_adapter::builtins::MemorySegmentAddresses;
 use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
-use stwo_cairo_adapter::vm_import::{RelocatedTraceEntry, adapt_to_stwo_input};
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
 use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
     Blake2sMerkleChannel, Blake2sMerkleHasher,
 };
+use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 
 /// Extracts artifacts from a finished cairo runner, to later be used for proving.
 pub fn prover_input_from_runner(runner: &CairoRunner) -> ProverInput {
@@ -98,4 +98,32 @@ fn prove_inner(
         preprocessed_trace,
     )
     .unwrap()
+}
+
+/// Creates Cairo input for Stwo, utilized by `adapt_vm_output` in the prover.
+pub fn adapt_to_stwo_input(
+    trace: &[RelocatedTraceEntry],
+    mut memory: MemoryBuilder,
+    public_memory_addresses: Vec<u32>,
+    memory_segments: &HashMap<&str, MemorySegmentAddresses>,
+    public_segment_context: PublicSegmentContext,
+) -> Result<ProverInput, VmImportError> {
+    let state_transitions = StateTransitions::from_slice_parallel(trace, &memory);
+    let mut builtin_segments = BuiltinSegments::from_memory_segments(memory_segments);
+    builtin_segments.fill_memory_holes(&mut memory);
+    builtin_segments.pad_builtin_segments(&mut memory);
+    let (memory, inst_cache) = memory.build();
+
+    Ok(ProverInput {
+        state_transitions,
+        memory,
+        inst_cache,
+        public_memory_addresses,
+        builtin_segments,
+        public_segment_context,
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_mem: Vec::new(),
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_trace: Vec::new(),
+    })
 }
