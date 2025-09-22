@@ -22,13 +22,14 @@ use crate::PublicSegmentContext;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
-    #[cfg(not(feature = "std"))]
+    #[cfg(any(not(feature = "std"), target_arch = "wasm32"))]
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
 
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "std", not(target_arch = "wasm32")))]
     #[error("JSON error: {0}")]
     Json(#[from] sonic_rs::Error),
+
     #[error("No memory segments")]
     NoMemorySegments,
 
@@ -43,14 +44,14 @@ fn deserialize_inputs<'a>(
     public_input_string: &'a str,
     private_input_string: &'a str,
 ) -> Result<(PublicInput<'a>, PrivateInput), VmImportError> {
-    #[cfg(feature = "std")]
+    #[cfg(all(feature = "std", not(target_arch = "wasm32")))]
     {
         Ok((
             sonic_rs::from_str(public_input_string)?,
             sonic_rs::from_str(private_input_string)?,
         ))
     }
-    #[cfg(not(feature = "std"))]
+    #[cfg(any(not(feature = "std"), target_arch = "wasm32"))]
     {
         Ok((
             serde_json::from_str(public_input_string)?,
