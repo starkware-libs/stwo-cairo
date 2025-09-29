@@ -634,7 +634,6 @@ dependencies = [
  "serde",
  "serde_json",
  "sonic-rs",
- "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
  "stwo",
@@ -3428,13 +3427,16 @@ dependencies = [
  "bytemuck",
  "itertools 0.12.1",
  "rand 0.8.5",
+ "rayon",
  "ruint",
  "serde",
  "serde_arrays",
+ "starknet-curve 0.5.1",
  "starknet-ff",
  "starknet-types-core",
  "stwo",
  "stwo-cairo-serialize",
+ "stwo-constraint-framework",
 ]
 
 [[package]]

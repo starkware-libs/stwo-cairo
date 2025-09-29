@@ -6,7 +6,6 @@ use cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
     N_TRACE_COLUMNS,
 };
-use cairo_air::preprocessed::Seq;
 use cairo_air::relations;
 use itertools::{izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
@@ -19,6 +18,7 @@ use stwo::prover::backend::{Col, Column};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
 use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
