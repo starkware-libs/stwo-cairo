@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::read_positive_num_bits_128::ReadPositiveNumBits128;
 
@@ -32,6 +32,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.range_check_builtin_segment_start as u64);
@@ -50,6 +51,21 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+        memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+    ) -> Self {
+        Self {
+            claim,
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

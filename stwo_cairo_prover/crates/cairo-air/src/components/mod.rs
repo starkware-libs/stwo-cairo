@@ -36,7 +36,6 @@ pub mod qm_31_add_mul_opcode;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_felt_252_width_27;
-pub mod range_check_vector;
 pub mod ret_opcode;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;
@@ -50,14 +49,6 @@ pub(crate) mod prelude;
 pub(crate) mod subroutines;
 
 use itertools::Itertools;
-pub use range_check_vector::{
-    range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_19,
-    range_check_19_b, range_check_19_c, range_check_19_d, range_check_19_e, range_check_19_f,
-    range_check_19_g, range_check_19_h, range_check_3_3_3_3_3, range_check_3_6_6_3,
-    range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
-    range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
-    range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
-};
 use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 
 #[cfg(test)]
@@ -80,3 +71,32 @@ pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkCompon
         .map(|component| indented_component_display(component))
         .join("\n")
 }
+pub mod range_check_11;
+pub mod range_check_12;
+pub mod range_check_18;
+pub mod range_check_18_b;
+pub mod range_check_19;
+pub mod range_check_19_b;
+pub mod range_check_19_c;
+pub mod range_check_19_d;
+pub mod range_check_19_e;
+pub mod range_check_19_f;
+pub mod range_check_19_g;
+pub mod range_check_19_h;
+pub mod range_check_3_3_3_3_3;
+pub mod range_check_3_6_6_3;
+pub mod range_check_4_3;
+pub mod range_check_4_4;
+pub mod range_check_4_4_4_4;
+pub mod range_check_5_4;
+pub mod range_check_6;
+pub mod range_check_7_2_5;
+pub mod range_check_8;
+pub mod range_check_9_9;
+pub mod range_check_9_9_b;
+pub mod range_check_9_9_c;
+pub mod range_check_9_9_d;
+pub mod range_check_9_9_e;
+pub mod range_check_9_9_f;
+pub mod range_check_9_9_g;
+pub mod range_check_9_9_h;

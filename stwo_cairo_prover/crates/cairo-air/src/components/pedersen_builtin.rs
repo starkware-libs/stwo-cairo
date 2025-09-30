@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_split::ReadSplit;
@@ -49,6 +49,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.pedersen_builtin_segment_start as u64);
@@ -67,6 +68,27 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        range_check_5_4_lookup_elements: relations::RangeCheck_5_4,
+        memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+        memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+        range_check_8_lookup_elements: relations::RangeCheck_8,
+        partial_ec_mul_lookup_elements: relations::PartialEcMul,
+    ) -> Self {
+        Self {
+            claim,
+            range_check_5_4_lookup_elements,
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            range_check_8_lookup_elements,
+            partial_ec_mul_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

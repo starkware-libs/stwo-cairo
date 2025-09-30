@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_m1_1_1::LinearCombinationN4Coefs1M111;
@@ -43,6 +43,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }
@@ -60,6 +61,25 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        cube_252_lookup_elements: relations::Cube252,
+        poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys,
+        range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3,
+        poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain,
+    ) -> Self {
+        Self {
+            claim,
+            cube_252_lookup_elements,
+            poseidon_round_keys_lookup_elements,
+            range_check_3_3_3_3_3_lookup_elements,
+            poseidon_full_round_chain_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

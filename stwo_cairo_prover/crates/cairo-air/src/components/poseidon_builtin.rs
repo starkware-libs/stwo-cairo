@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::felt_252_unpack_from_27::Felt252UnpackFrom27;
 use crate::components::subroutines::mem_verify::MemVerify;
@@ -70,6 +70,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.poseidon_builtin_segment_start as u64);
@@ -88,6 +89,37 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+        memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+        poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain,
+        range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
+        cube_252_lookup_elements: relations::Cube252,
+        range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3,
+        range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4,
+        range_check_4_4_lookup_elements: relations::RangeCheck_4_4,
+        poseidon_3_partial_rounds_chain_lookup_elements: relations::Poseidon3PartialRoundsChain,
+    ) -> Self {
+        Self {
+            claim,
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            poseidon_full_round_chain_lookup_elements,
+            range_check_felt_252_width_27_lookup_elements:
+                range_check_felt_252_width_27_lookup_elements,
+            cube_252_lookup_elements,
+            range_check_3_3_3_3_3_lookup_elements,
+            range_check_4_4_4_4_lookup_elements,
+            range_check_4_4_lookup_elements,
+            poseidon_3_partial_rounds_chain_lookup_elements:
+                poseidon_3_partial_rounds_chain_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

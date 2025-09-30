@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::triple_sum_32::TripleSum32;
 use crate::components::subroutines::xor_rot_32_r_12::XorRot32R12;
@@ -51,6 +51,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }
@@ -68,6 +69,29 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+        verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12,
+        verify_bitwise_xor_4_lookup_elements: relations::VerifyBitwiseXor_4,
+        verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7,
+        verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
+        blake_g_lookup_elements: relations::BlakeG,
+    ) -> Self {
+        Self {
+            claim,
+            verify_bitwise_xor_8_lookup_elements,
+            verify_bitwise_xor_12_lookup_elements,
+            verify_bitwise_xor_4_lookup_elements,
+            verify_bitwise_xor_7_lookup_elements,
+            verify_bitwise_xor_9_lookup_elements,
+            blake_g_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

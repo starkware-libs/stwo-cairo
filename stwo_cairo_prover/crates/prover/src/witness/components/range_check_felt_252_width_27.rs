@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 #![allow(unused_parens)]
 use cairo_air::components::range_check_felt_252_width_27::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,

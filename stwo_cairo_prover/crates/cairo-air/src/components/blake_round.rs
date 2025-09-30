@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 
@@ -51,6 +51,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }
@@ -68,6 +69,29 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
+        range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
+        memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
+        memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+        blake_g_lookup_elements: relations::BlakeG,
+        blake_round_lookup_elements: relations::BlakeRound,
+    ) -> Self {
+        Self {
+            claim,
+            blake_round_sigma_lookup_elements,
+            range_check_7_2_5_lookup_elements,
+            memory_address_to_id_lookup_elements,
+            memory_id_to_big_lookup_elements,
+            blake_g_lookup_elements,
+            blake_round_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

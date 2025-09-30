@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 #![allow(unused_parens)]
 use cairo_air::components::mul_opcode_small::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

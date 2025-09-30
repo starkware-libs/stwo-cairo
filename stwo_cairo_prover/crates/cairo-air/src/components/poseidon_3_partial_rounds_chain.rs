@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version aade2df9
 use crate::components::prelude::*;
 use crate::components::subroutines::poseidon_partial_round::PoseidonPartialRound;
 
@@ -51,6 +51,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }
@@ -68,6 +69,31 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys,
+        cube_252_lookup_elements: relations::Cube252,
+        range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4,
+        range_check_4_4_lookup_elements: relations::RangeCheck_4_4,
+        range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
+        poseidon_3_partial_rounds_chain_lookup_elements: relations::Poseidon3PartialRoundsChain,
+    ) -> Self {
+        Self {
+            claim,
+            poseidon_round_keys_lookup_elements,
+            cube_252_lookup_elements,
+            range_check_4_4_4_4_lookup_elements,
+            range_check_4_4_lookup_elements,
+            range_check_felt_252_width_27_lookup_elements:
+                range_check_felt_252_width_27_lookup_elements,
+            poseidon_3_partial_rounds_chain_lookup_elements:
+                poseidon_3_partial_rounds_chain_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         self.claim.log_size

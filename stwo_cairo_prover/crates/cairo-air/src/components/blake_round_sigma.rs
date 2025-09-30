@@ -1,7 +1,9 @@
+// AIR version aade2df9
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
 pub const LOG_SIZE: u32 = 4;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
@@ -17,7 +19,8 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
+    #[allow(unused_variables)]
+    pub fn mix_into(&self, channel: &mut impl Channel) {}
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -32,6 +35,19 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
+    ) -> Self {
+        Self {
+            claim,
+            blake_round_sigma_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         LOG_SIZE
@@ -45,6 +61,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let blakesigma_0 = eval.get_preprocessed_column((BlakeSigma::new(0)).id());
         let blakesigma_1 = eval.get_preprocessed_column((BlakeSigma::new(1)).id());
         let blakesigma_2 = eval.get_preprocessed_column((BlakeSigma::new(2)).id());
@@ -61,7 +78,6 @@ impl FrameworkEval for Eval {
         let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
         let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
         let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
@@ -111,7 +127,6 @@ mod tests {
             claim: Claim {},
             blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

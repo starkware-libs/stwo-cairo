@@ -1,8 +1,9 @@
+// AIR version aade2df9
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const N_BITS: u32 = 9;
-pub const LOG_SIZE: u32 = 2 * N_BITS;
+pub const LOG_SIZE: u32 = 18;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
@@ -18,7 +19,8 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
+    #[allow(unused_variables)]
+    pub fn mix_into(&self, channel: &mut impl Channel) {}
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -33,6 +35,19 @@ impl InteractionClaim {
 
 pub type Component = FrameworkComponent<Eval>;
 
+impl Eval {
+    #[allow(clippy::too_many_arguments)]
+    #[allow(clippy::redundant_field_names)]
+    pub fn new(
+        claim: Claim,
+        verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
+    ) -> Self {
+        Self {
+            claim,
+            verify_bitwise_xor_9_lookup_elements,
+        }
+    }
+}
 impl FrameworkEval for Eval {
     fn log_size(&self) -> u32 {
         LOG_SIZE
@@ -84,7 +99,6 @@ mod tests {
             claim: Claim {},
             verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
