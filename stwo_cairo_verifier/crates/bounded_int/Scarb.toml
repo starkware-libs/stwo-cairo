@@ -1,0 +1,17 @@
+[package]
+name = "bounded_int"
+version = "0.1.0"
+edition = "2023_10"
+
+[lib]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[tool]
+cairo-lint.workspace = true
+
+[dependencies]
+
+[dev-dependencies]
+cairo_test = "2.12.0"

@@ -1,0 +1,49 @@
+use std::fs::{read_to_string, File};
+use std::io::Write;
+use std::path::PathBuf;
+
+use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::relocatable::MaybeRelocatable;
+use itertools::Itertools;
+use serde_json::{to_string_pretty, Value};
+
+pub fn program_from_casm(
+    casm: Vec<cairo_lang_casm::instructions::Instruction>,
+) -> (cairo_vm::types::program::Program, usize) {
+    let felt_code = casm
+        .into_iter()
+        .flat_map(|instruction| instruction.assemble().encode())
+        .map(|felt| MaybeRelocatable::Int(felt.into()))
+        .collect_vec();
+    let program_len = felt_code.len();
+    let program = cairo_vm::types::program::Program::new_for_proof(
+        vec![],
+        felt_code,
+        0,
+        1,
+        HashMap::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+        Default::default(),
+    )
+    .expect("Program creation failed");
+    (program, program_len)
+}
+
+pub fn get_prover_input_path(test_name: &str) -> PathBuf {
+    PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        .join("../../test_data/")
+        .join(test_name)
+        .join("prover_input.json")
+}
+
+pub fn read_json(file_path: &PathBuf) -> Value {
+    let json_file = read_to_string(file_path).unwrap();
+    serde_json::from_str(&json_file).expect("Invalid JSON file")
+}
+
+pub fn write_json(file_path: &PathBuf, value: &Value) {
+    let mut file = File::create(file_path).unwrap();
+    write!(file, "{}", &to_string_pretty(&value).unwrap()).unwrap();
+}

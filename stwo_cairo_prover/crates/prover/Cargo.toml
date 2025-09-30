@@ -1,0 +1,46 @@
+[package]
+name = "stwo_cairo_prover"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+slow-tests = []
+relation-tracker = []
+
+# Define Nightly features in order to allow selective tests
+# Use the following #[cfg(feature = "nightly")]
+# to enable nightly features on specific tests.
+nightly = []
+
+[dependencies]
+stwo-air-utils-derive.workspace = true
+stwo-air-utils.workspace = true
+hex.workspace = true
+itertools.workspace = true
+num-traits.workspace = true
+paste.workspace = true
+# TODO(Ohad): Add parallel config.
+stwo-cairo-common.workspace = true
+stwo-cairo-adapter.workspace = true
+rayon.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sonic-rs.workspace = true
+anyhow.workspace = true
+starknet-curve = "0.5.1"
+starknet-ff.workspace = true
+starknet-types-core.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+cairo-air.workspace = true
+stwo.workspace = true
+stwo-constraint-framework = { workspace = true, features = ["parallel"] }
+tracing.workspace = true
+
+[dev-dependencies]
+dev-utils.workspace = true
+cairo-vm = { workspace = true, default-features = true }
+tempfile = "3.19.1"
+test-log = { version = "0.2.17", features = ["trace"] }
+tracing-subscriber.workspace = true
+rand.workspace = true
+sonic-rs = { version = "0.3.17" }

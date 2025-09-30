@@ -1,0 +1,26 @@
+[package]
+name = "stwo_verifier_core"
+version = "0.1.0"
+edition = "2024_07"
+
+[lib]
+casm = true
+
+[features]
+poseidon252_verifier = ["stwo_verifier_utils/poseidon252_verifier"]
+qm31_opcode = ["stwo_verifier_utils/qm31_opcode"]
+blake_outputs_packing = ["stwo_verifier_utils/blake_outputs_packing"]
+poseidon_outputs_packing = ["stwo_verifier_utils/poseidon_outputs_packing"]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[tool]
+cairo-lint.workspace = true
+
+[dependencies]
+bounded_int = { path = "../bounded_int" }
+stwo_verifier_utils = { path = "../verifier_utils" }
+
+[dev-dependencies]
+cairo_test = "2.12.0"

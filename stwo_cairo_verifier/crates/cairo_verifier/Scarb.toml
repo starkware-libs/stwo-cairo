@@ -1,0 +1,25 @@
+[package]
+name = "stwo_cairo_verifier"
+version = "0.1.0"
+edition = "2024_07"
+
+[[target.executable]]
+
+[tool.fmt]
+sort-module-level-items = true
+
+[tool]
+cairo-lint.workspace = true
+
+[features]
+poseidon252_verifier = ["stwo_cairo_air/poseidon252_verifier"]
+qm31_opcode = ["stwo_cairo_air/qm31_opcode"]
+blake_outputs_packing = ["stwo_cairo_air/blake_outputs_packing"]
+poseidon_outputs_packing = ["stwo_cairo_air/poseidon_outputs_packing"]
+
+[dependencies]
+stwo_cairo_air = { path = "../cairo_air" }
+cairo_execute = "2.9.2"
+
+[dev-dependencies]
+cairo_test = "2.12.0"

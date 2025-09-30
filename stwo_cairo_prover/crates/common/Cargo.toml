@@ -1,0 +1,21 @@
+[package]
+name = "stwo-cairo-common"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bytemuck.workspace = true
+itertools.workspace = true
+ruint.workspace = true
+serde.workspace = true
+starknet-ff.workspace = true
+starknet-types-core.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize" }
+stwo.workspace = true
+stwo-constraint-framework.workspace = true
+serde_arrays.workspace = true
+starknet-curve = "0.5.1"
+rayon.workspace = true
+
+[dev-dependencies]
+rand.workspace = true

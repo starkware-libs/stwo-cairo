@@ -1,0 +1,156 @@
+name: Cairo workflow
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+  pull_request:
+  merge_group:
+    types:
+      - checks_requested
+
+jobs:
+  scarb-test:
+    runs-on: stwo-cairo-avx-l
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_verifier
+    steps:
+      - uses: actions/checkout@v3
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.0"
+      - run: scarb fmt --check
+      - run: scarb lint --features=qm31_opcode --deny-warnings
+      - run: scarb test --features=poseidon252_verifier --package stwo_verifier_core
+      - run: scarb test --features=poseidon252_verifier --package stwo_cairo_air
+      - run: scarb test --features=poseidon252_verifier --package stwo_cairo_verifier
+      - run: scarb test --features=poseidon252_verifier --package stwo_verifier_utils
+      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features poseidon252_verifier --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_ret_opcode/proof.json
+      - run: scarb test --features=qm31_opcode --package stwo_verifier_core
+      - run: scarb test --features=qm31_opcode --package stwo_cairo_air
+      - run: scarb test --features=qm31_opcode --package stwo_cairo_verifier
+      - run: scarb test --features=qm31_opcode --package stwo_verifier_utils
+      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing  --package stwo_verifier_core
+      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_cairo_air
+      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_cairo_verifier
+      - run: scarb test --features=qm31_opcode --features=blake_outputs_packing --package stwo_verifier_utils
+      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features blake_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing  --package stwo_verifier_core
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_air
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_cairo_verifier
+      - run: scarb test --features=qm31_opcode --features=poseidon_outputs_packing --package stwo_verifier_utils
+      - run: scarb --profile proving execute --package stwo_cairo_verifier  --features qm31_opcode --features poseidon_outputs_packing --print-resource-usage --output none --arguments-file ../stwo_cairo_prover/test_data/test_prove_verify_all_opcode_components/proof.json
+  run-tests:
+    runs-on: stwo-cairo-avx-l
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.0"
+      - name: Install latest nextest release
+        uses: taiki-e/install-action@nextest
+      - name: Fetch cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: stwo_cairo_prover
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=slow-tests,std -j 1 -P ci
+        env:
+          RUST_MIN_STACK: 4194304
+          RUSTFLAGS: -C target-cpu=native
+          RUST_LOG_SPAN_EVENTS: enter,close
+          RUST_LOG: info
+      - run: cargo nextest run --cargo-profile witness-opt-1 --features=extract-mem-trace test_serialize_deserialize_mem_trace -j 1 -P ci
+        env:
+          RUST_MIN_STACK: 4194304
+          RUSTFLAGS: -C target-cpu=native
+          RUST_LOG_SPAN_EVENTS: enter,close
+          RUST_LOG: info
+
+  cairo-prove-test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./cairo-prove
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
+      - uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.0"
+      - name: Fetch cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: cairo-prove
+      - run: ./scripts/test_flow.sh
+
+  format:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: rustfmt
+          toolchain: nightly-2025-07-14
+      - uses: Swatinem/rust-cache@v2
+      - run: scripts/rust_fmt.sh --check
+
+  clippy:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: clippy
+          toolchain: nightly-2025-07-14
+      - uses: Swatinem/rust-cache@v2
+      - run: scripts/clippy.sh
+
+  typos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: crate-ci/typos@v1.30.1
+
+  merge-gatekeeper:
+    runs-on: ubuntu-latest
+    # Restrict permissions of the GITHUB_TOKEN.
+    # Docs: https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
+    permissions:
+      checks: read
+      statuses: read
+    steps:
+      - name: Run Merge Gatekeeper on pull request
+        if: github.event_name == 'pull_request'
+        uses: upsidr/merge-gatekeeper@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          timeout: 2500
+          interval: 30
+          ignored: "code-review/reviewable"
+
+      - name: Run Merge Gatekeeper on Merge Queue || push
+        if: github.event_name == 'merge_group' || github.event_name == 'push'
+        uses: upsidr/merge-gatekeeper@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{github.ref}}
+          timeout: 2500
+          interval: 30
+          ignored: "code-review/reviewable"

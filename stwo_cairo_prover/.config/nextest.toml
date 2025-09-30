@@ -1,0 +1,4 @@
+[profile.ci]
+# Do not cancel the test run on the first failure.
+fail-fast = false
+slow-timeout = { period = "60s", terminate-after = 10 , grace-period = "0s"}

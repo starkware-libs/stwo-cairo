@@ -1,0 +1,9 @@
+[package]
+name = "stwo-cairo-serialize"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+starknet-ff.workspace = true
+stwo-cairo-serialize-derive = { path = "../cairo-serialize-derive" }
+stwo.workspace = true
