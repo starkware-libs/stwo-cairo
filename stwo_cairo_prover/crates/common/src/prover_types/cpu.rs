@@ -255,6 +255,13 @@ impl BitXor for UInt16 {
     }
 }
 
+impl Not for UInt16 {
+    type Output = UInt16;
+    fn not(self) -> UInt16 {
+        UInt16 { value: !self.value }
+    }
+}
+
 #[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
 pub struct UInt32 {
     pub value: u32,

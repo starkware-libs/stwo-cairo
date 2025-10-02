@@ -146,6 +146,7 @@ macro_rules! generate_range_check_witness {
 }
 
 pub mod range_check_trace_generators {
+    generate_range_check_witness!([2]);
     generate_range_check_witness!([6]);
     generate_range_check_witness!([8]);
     generate_range_check_witness!([11]);

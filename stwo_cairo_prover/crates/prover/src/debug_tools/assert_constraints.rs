@@ -88,6 +88,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         ret,
     } = opcodes;
     let RangeChecksComponents {
+        rc_2,
         rc_6,
         rc_8,
         rc_11,

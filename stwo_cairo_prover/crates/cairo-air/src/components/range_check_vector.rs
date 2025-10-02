@@ -27,6 +27,7 @@ macro_rules! generate_range_check_constraints {
     };
 }
 
+generate_range_check_constraints!([2]);
 generate_range_check_constraints!([6]);
 generate_range_check_constraints!([8]);
 generate_range_check_constraints!([11]);

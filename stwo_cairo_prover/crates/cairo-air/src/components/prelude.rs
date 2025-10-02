@@ -13,4 +13,5 @@ pub use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 pub use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 pub use crate::relations;
+pub use crate::sha256::*;
 pub use crate::verifier::RelationUse;

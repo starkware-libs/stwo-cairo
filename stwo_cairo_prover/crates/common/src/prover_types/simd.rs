@@ -1,5 +1,5 @@
 use std::mem::transmute;
-use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Shl, Shr, Sub};
+use std::ops::{Add, BitAnd, BitOr, BitXor, Div, Mul, Not, Rem, Shl, Shr, Sub};
 use std::simd::cmp::SimdPartialEq;
 use std::simd::num::{SimdInt, SimdUint};
 use std::simd::Simd;
@@ -154,6 +154,13 @@ impl BitXor for PackedUInt16 {
         Self {
             value: self.value ^ rhs.value,
         }
+    }
+}
+
+impl Not for PackedUInt16 {
+    type Output = Self;
+    fn not(self) -> Self::Output {
+        Self { value: !self.value }
     }
 }
 
