@@ -3,7 +3,6 @@ name = "stwo-cairo-adapter"
 version = "0.1.0"
 edition = "2021"
 
-
 [features]
 default = []
 slow-tests = []
@@ -21,7 +20,6 @@ serde_json.workspace = true
 stwo-cairo-common.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
-sonic-rs = { version = "0.3.17", optional = true }
 stwo.workspace = true
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
@@ -33,6 +31,9 @@ cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", r
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 anyhow.workspace = true
+
+[target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
+sonic-rs = { workspace = true, optional = true }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
