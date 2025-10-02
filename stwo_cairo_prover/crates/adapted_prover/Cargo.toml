@@ -19,4 +19,4 @@ stwo-cairo-serialize.workspace = true
 stwo.workspace = true
 thiserror.workspace = true
 tracing.workspace = true
-sonic-rs = { version = "0.3.17" }
+sonic-rs.workspace = true
