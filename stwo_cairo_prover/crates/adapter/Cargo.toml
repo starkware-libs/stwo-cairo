@@ -23,7 +23,6 @@ serde_json.workspace = true
 stwo-cairo-common.workspace = true
 tracing.workspace = true
 thiserror.workspace = true
-sonic-rs = { version = "0.3.17", optional = true }
 stwo.workspace = true
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
@@ -34,6 +33,9 @@ crypto-bigint = "0.5.1"
 cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+sonic-rs = { workspace = true, optional = true }
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
