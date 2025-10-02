@@ -10,10 +10,8 @@ slow-tests = []
 
 [dependencies]
 bincode.workspace = true
-bzip2.workspace = true
 itertools.workspace = true
 clap.workspace = true
-sonic-rs.workspace = true
 log.workspace = true
 num-traits.workspace = true
 paste.workspace = true
