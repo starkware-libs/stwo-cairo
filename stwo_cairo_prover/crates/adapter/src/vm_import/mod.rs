@@ -9,6 +9,14 @@ use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
 use memmap2::Mmap;
 use serde::{Deserialize, Serialize};
+#[cfg(any(not(feature = "std"), target_arch = "wasm32", target_arch = "wasm64"))]
+use serde_json as json_backend;
+#[cfg(all(
+    feature = "std",
+    not(target_arch = "wasm32"),
+    not(target_arch = "wasm64")
+))]
+use sonic_rs as json_backend;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -23,13 +31,9 @@ use crate::PublicSegmentContext;
 
 #[derive(Debug, Error)]
 pub enum VmImportError {
-    #[cfg(not(feature = "std"))]
     #[error("JSON error: {0}")]
-    Json(#[from] serde_json::Error),
+    Json(#[from] json_backend::Error),
 
-    #[cfg(feature = "std")]
-    #[error("JSON error: {0}")]
-    Json(#[from] sonic_rs::Error),
     #[error("No memory segments")]
     NoMemorySegments,
 
@@ -44,20 +48,10 @@ fn deserialize_inputs<'a>(
     public_input_string: &'a str,
     private_input_string: &'a str,
 ) -> Result<(PublicInput<'a>, PrivateInput), VmImportError> {
-    #[cfg(feature = "std")]
-    {
-        Ok((
-            sonic_rs::from_str(public_input_string)?,
-            sonic_rs::from_str(private_input_string)?,
-        ))
-    }
-    #[cfg(not(feature = "std"))]
-    {
-        Ok((
-            serde_json::from_str(public_input_string)?,
-            serde_json::from_str(private_input_string)?,
-        ))
-    }
+    Ok((
+        json_backend::from_str(public_input_string)?,
+        json_backend::from_str(private_input_string)?,
+    ))
 }
 
 /// Adapts the VM's output files to the Cairo input of the prover.
