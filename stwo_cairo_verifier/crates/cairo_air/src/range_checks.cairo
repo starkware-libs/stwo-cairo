@@ -10,6 +10,7 @@ use components::range_check_19_e::InteractionClaimImpl as RangeCheck_19EInteract
 use components::range_check_19_f::InteractionClaimImpl as RangeCheck_19FInteractionClaimImpl;
 use components::range_check_19_g::InteractionClaimImpl as RangeCheck_19GInteractionClaimImpl;
 use components::range_check_19_h::InteractionClaimImpl as RangeCheck_19HInteractionClaimImpl;
+use components::range_check_2::InteractionClaimImpl as RangeCheck_2InteractionClaimImpl;
 use components::range_check_3_3_3_3_3::InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl;
 use components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl;
 use components::range_check_4_3::InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl;
@@ -48,6 +49,7 @@ use stwo_verifier_core::{ColumnSpan, TreeArray};
 
 pub mod range_check_elements {
     use stwo_constraint_framework::LookupElements;
+    pub type RangeCheck_2Elements = LookupElements<1>;
     pub type RangeCheck_6Elements = LookupElements<1>;
 
     pub type RangeCheck_8Elements = LookupElements<1>;
@@ -96,6 +98,7 @@ use range_check_elements::*;
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksClaim {
+    pub rc_2: components::range_check_2::Claim,
     pub rc_6: components::range_check_6::Claim,
     pub rc_8: components::range_check_8::Claim,
     pub rc_11: components::range_check_11::Claim,
@@ -129,6 +132,7 @@ pub struct RangeChecksClaim {
 
 pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
     fn mix_into(self: @RangeChecksClaim, ref channel: Channel) {
+        self.rc_2.mix_into(ref channel);
         self.rc_6.mix_into(ref channel);
         self.rc_8.mix_into(ref channel);
         self.rc_11.mix_into(ref channel);
@@ -163,16 +167,17 @@ pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
     fn log_sizes(self: @RangeChecksClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
-                self.rc_6.log_sizes(), self.rc_8.log_sizes(), self.rc_11.log_sizes(),
-                self.rc_12.log_sizes(), self.rc_18.log_sizes(), self.rc_18_b.log_sizes(),
-                self.rc_19.log_sizes(), self.rc_19_b.log_sizes(), self.rc_19_c.log_sizes(),
-                self.rc_19_d.log_sizes(), self.rc_19_e.log_sizes(), self.rc_19_f.log_sizes(),
-                self.rc_19_g.log_sizes(), self.rc_19_h.log_sizes(), self.rc_4_3.log_sizes(),
-                self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(), self.rc_9_9.log_sizes(),
-                self.rc_9_9_b.log_sizes(), self.rc_9_9_c.log_sizes(), self.rc_9_9_d.log_sizes(),
-                self.rc_9_9_e.log_sizes(), self.rc_9_9_f.log_sizes(), self.rc_9_9_g.log_sizes(),
-                self.rc_9_9_h.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
-                self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
+                self.rc_2.log_sizes(), self.rc_6.log_sizes(), self.rc_8.log_sizes(),
+                self.rc_11.log_sizes(), self.rc_12.log_sizes(), self.rc_18.log_sizes(),
+                self.rc_18_b.log_sizes(), self.rc_19.log_sizes(), self.rc_19_b.log_sizes(),
+                self.rc_19_c.log_sizes(), self.rc_19_d.log_sizes(), self.rc_19_e.log_sizes(),
+                self.rc_19_f.log_sizes(), self.rc_19_g.log_sizes(), self.rc_19_h.log_sizes(),
+                self.rc_4_3.log_sizes(), self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(),
+                self.rc_9_9.log_sizes(), self.rc_9_9_b.log_sizes(), self.rc_9_9_c.log_sizes(),
+                self.rc_9_9_d.log_sizes(), self.rc_9_9_e.log_sizes(), self.rc_9_9_f.log_sizes(),
+                self.rc_9_9_g.log_sizes(), self.rc_9_9_h.log_sizes(), self.rc_7_2_5.log_sizes(),
+                self.rc_3_6_6_3.log_sizes(), self.rc_4_4_4_4.log_sizes(),
+                self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
     }
@@ -183,6 +188,7 @@ pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksInteractionClaim {
+    pub rc_2: components::range_check_2::InteractionClaim,
     pub rc_6: components::range_check_6::InteractionClaim,
     pub rc_8: components::range_check_8::InteractionClaim,
     pub rc_11: components::range_check_11::InteractionClaim,
@@ -217,6 +223,7 @@ pub struct RangeChecksInteractionClaim {
 #[generate_trait]
 pub impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
     fn mix_into(self: @RangeChecksInteractionClaim, ref channel: Channel) {
+        self.rc_2.mix_into(ref channel);
         self.rc_6.mix_into(ref channel);
         self.rc_8.mix_into(ref channel);
         self.rc_11.mix_into(ref channel);
@@ -250,6 +257,7 @@ pub impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
 
     fn sum(self: @RangeChecksInteractionClaim) -> QM31 {
         let mut sum = Zero::zero();
+        sum += *self.rc_2.claimed_sum;
         sum += *self.rc_6.claimed_sum;
         sum += *self.rc_8.claimed_sum;
         sum += *self.rc_11.claimed_sum;
@@ -286,6 +294,7 @@ pub impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
 
 #[derive(Drop)]
 pub struct RangeChecksComponents {
+    rc_2: components::range_check_2::Component,
     rc_6: components::range_check_6::Component,
     rc_8: components::range_check_8::Component,
     rc_11: components::range_check_11::Component,
@@ -325,6 +334,9 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         interaction_claim: @RangeChecksInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
+            rc_2: components::range_check_2::NewComponentImpl::new(
+                claim.rc_2, interaction_claim.rc_2, interaction_elements,
+            ),
             rc_6: components::range_check_6::NewComponentImpl::new(
                 claim.rc_6, interaction_claim.rc_6, interaction_elements,
             ),
@@ -422,6 +434,14 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
+        self
+            .rc_2
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .rc_6
             .mask_points(
@@ -658,6 +678,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
 
     fn max_constraint_log_degree_bound(self: @RangeChecksComponents) -> u32 {
         let mut max_degree = 0;
+        max_degree = core::cmp::max(max_degree, self.rc_2.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_6.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_8.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, self.rc_11.max_constraint_log_degree_bound());
@@ -700,6 +721,16 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
+        self
+            .rc_2
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
         self
             .rc_6
             .evaluate_constraints_at_point(
@@ -996,6 +1027,7 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
 
 #[derive(Drop)]
 pub struct RangeChecksInteractionElements {
+    pub rc_2: RangeCheck_2Elements,
     pub rc_6: RangeCheck_6Elements,
     pub rc_8: RangeCheck_8Elements,
     pub rc_11: RangeCheck_11Elements,
@@ -1031,6 +1063,7 @@ pub struct RangeChecksInteractionElements {
 pub impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
     fn draw(ref channel: Channel) -> RangeChecksInteractionElements {
         RangeChecksInteractionElements {
+            rc_2: LookupElementsImpl::draw(ref channel),
             rc_6: LookupElementsImpl::draw(ref channel),
             rc_8: LookupElementsImpl::draw(ref channel),
             rc_11: LookupElementsImpl::draw(ref channel),

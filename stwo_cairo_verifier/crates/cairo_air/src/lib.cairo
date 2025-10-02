@@ -89,6 +89,7 @@ pub const KECCAK_MEMORY_CELLS: usize = 16;
 pub const MUL_MOD_MEMORY_CELLS: usize = 7;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
+pub const SHA256_MEMORY_CELLS: usize = 24;
 // This is for both the 128 and 96 bit range checks.
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
@@ -347,6 +348,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         add_mod: add_mod_segment_range,
         mul_mod: mul_mod_segment_range,
         poseidon: poseidon_segment_range,
+        sha256: sha256_segment_range,
     } = segment_ranges;
 
     // Check that non-supported builtins aren't used.
@@ -367,6 +369,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         mul_mod_builtin,
         pedersen_builtin,
         poseidon_builtin,
+        sha256_builtin,
     } = builtins_claim;
     check_builtin(
         range_check_128_builtin
@@ -453,6 +456,18 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
             ),
         *poseidon_segment_range,
         POSEIDON_MEMORY_CELLS,
+    );
+    check_builtin(
+        sha256_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.sha256_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *sha256_segment_range,
+        SHA256_MEMORY_CELLS,
     );
 }
 
@@ -565,6 +580,7 @@ pub struct PublicSegmentRanges {
     pub range_check_96: SegmentRange,
     pub add_mod: SegmentRange,
     pub mul_mod: SegmentRange,
+    pub sha256: SegmentRange,
 }
 
 #[generate_trait]
@@ -589,6 +605,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
             range_check_96,
             add_mod,
             mul_mod,
+            sha256,
         } = self;
 
         segments.append(output);
@@ -602,6 +619,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         segments.append(range_check_96);
         segments.append(add_mod);
         segments.append(mul_mod);
+        segments.append(sha256);
         segments
     }
 }

@@ -98,6 +98,46 @@ pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+pub type VerifyBitwiseXor_16Elements = LookupElements<3>;
+
+pub type VerifyBitwiseAnd_16Elements = LookupElements<3>;
+
+pub type VerifyBitwiseNot_16Elements = LookupElements<2>;
+
+pub type SigmaElements = LookupElements<4>;
+
+pub type Sha256ScheduleElements = LookupElements<34>;
+
+pub type Sha256KTableElements = LookupElements<3>;
+
+pub type Sha256RoundElements = LookupElements<50>;
+
+pub type Sha256SigmaTableElements = LookupElements<14>;
+
+pub type Sha256BigSigma0O0Elements = LookupElements<6>;
+
+pub type Sha256BigSigma0O1Elements = LookupElements<6>;
+
+pub type Sha256BigSigma0Elements = LookupElements<4>;
+
+pub type Sha256BigSigma1O0Elements = LookupElements<6>;
+
+pub type Sha256BigSigma1O1Elements = LookupElements<6>;
+
+pub type Sha256BigSigma1Elements = LookupElements<4>;
+
+pub type Sha256SmallSigma0O0Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma0O1Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma0Elements = LookupElements<4>;
+
+pub type Sha256SmallSigma1O0Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma1O1Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma1Elements = LookupElements<4>;
+
 
 #[derive(Drop, Serde)]
 pub struct CairoClaim {
@@ -290,6 +330,26 @@ pub struct CairoInteractionElements {
     pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
     pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
     pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
+    pub verify_bitwise_xor_16: VerifyBitwiseXor_16Elements,
+    pub verify_bitwise_and_16: VerifyBitwiseAnd_16Elements,
+    pub verify_bitwise_not_16: VerifyBitwiseNot_16Elements,
+    pub sigma: SigmaElements,
+    pub sha_256_schedule: Sha256ScheduleElements,
+    pub sha_256_k_table: Sha256KTableElements,
+    pub sha_256_round: Sha256RoundElements,
+    pub sha_256_sigma_table: Sha256SigmaTableElements,
+    pub sha_256_big_sigma_0_o_0: Sha256BigSigma0O0Elements,
+    pub sha_256_big_sigma_0_o_1: Sha256BigSigma0O1Elements,
+    pub sha_256_big_sigma_0: Sha256BigSigma0Elements,
+    pub sha_256_big_sigma_1_o_0: Sha256BigSigma1O0Elements,
+    pub sha_256_big_sigma_1_o_1: Sha256BigSigma1O1Elements,
+    pub sha_256_big_sigma_1: Sha256BigSigma1Elements,
+    pub sha_256_small_sigma_0_o_0: Sha256SmallSigma0O0Elements,
+    pub sha_256_small_sigma_0_o_1: Sha256SmallSigma0O1Elements,
+    pub sha_256_small_sigma_0: Sha256SmallSigma0Elements,
+    pub sha_256_small_sigma_1_o_0: Sha256SmallSigma1O0Elements,
+    pub sha_256_small_sigma_1_o_1: Sha256SmallSigma1O1Elements,
+    pub sha_256_small_sigma_1: Sha256SmallSigma1Elements,
 }
 
 #[generate_trait]
@@ -317,6 +377,26 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_xor_16: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_and_16: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_not_16: LookupElementsImpl::draw(ref channel),
+            sigma: LookupElementsImpl::draw(ref channel),
+            sha_256_schedule: LookupElementsImpl::draw(ref channel),
+            sha_256_k_table: LookupElementsImpl::draw(ref channel),
+            sha_256_round: LookupElementsImpl::draw(ref channel),
+            sha_256_sigma_table: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1: LookupElementsImpl::draw(ref channel),
         }
     }
 }

@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 98896da1
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_rel::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

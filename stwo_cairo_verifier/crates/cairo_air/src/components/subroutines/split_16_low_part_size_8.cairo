@@ -1,5 +1,7 @@
-// AIR version bc48deaa
+// AIR version 98896da1
 use crate::prelude::*;
+
+
 
 
 pub fn split_16_low_part_size_8_evaluate(
@@ -10,6 +12,7 @@ pub fn split_16_low_part_size_8_evaluate(
     random_coeff: QM31,
 ) -> QM31 {
     let split_16_low_part_size_8_input = input;
+    
 
     (split_16_low_part_size_8_input - (ms_8_bits_col0 * qm31_const::<256, 0, 0, 0>()))
 }

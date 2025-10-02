@@ -61,7 +61,7 @@ macro_rules! range_check_prover {
                     self,
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
                 ) -> (Claim, InteractionClaimGenerator) {
-                    let log_size = self.log_size();
+                    let log_size = std::cmp::max(self.log_size(), stwo_cairo_common::prover_types::simd::LOG_N_LANES);
 
                     let multiplicity_data = self.multiplicities.into_simd_vec();
                     let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());
@@ -94,7 +94,7 @@ macro_rules! range_check_prover {
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
                     lookup_elements: &relations::$name_upper,
                 ) -> InteractionClaim {
-                    let log_size = RANGES.iter().sum::<u32>();
+                    let log_size = std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES);
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
                     let mut col_gen = logup_gen.new_col();
 

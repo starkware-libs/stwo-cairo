@@ -141,6 +141,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_many(ret, &trace);
 
     assert_component(verify_instruction, &trace);
+    assert_component(rc_2, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
     assert_component(rc_11, &trace);

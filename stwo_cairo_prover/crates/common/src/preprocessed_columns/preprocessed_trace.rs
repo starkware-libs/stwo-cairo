@@ -55,7 +55,7 @@ impl PreProcessedTrace {
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (LOG_N_LANES..=MAX_SEQUENCE_LOG_SIZE)
+        let seq = (2..=MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
             .map(|n_bits| {

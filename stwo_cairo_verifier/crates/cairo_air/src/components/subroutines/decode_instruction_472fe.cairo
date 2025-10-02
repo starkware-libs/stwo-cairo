@@ -1,4 +1,4 @@
-// AIR version c574c96b
+// AIR version 98896da1
 use crate::prelude::*;
 
 
@@ -21,18 +21,15 @@ pub fn decode_instruction_472fe_evaluate(
     let decode_instruction_472fe_input_pc = input;
 
     // Constraint - Flag dst_base_fp is a bit
-    let constraint_quotient = ((dst_base_fp_col3 * (qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((dst_base_fp_col3 * (qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3))) * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op0_base_fp is a bit
-    let constraint_quotient = ((op0_base_fp_col4 * (qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op0_base_fp_col4 * (qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4))) * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op1_base_fp is a bit
-    let constraint_quotient = ((op1_base_fp_col5 * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col5)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op1_base_fp_col5 * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col5))) * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag ap_update_add_1 is a bit
