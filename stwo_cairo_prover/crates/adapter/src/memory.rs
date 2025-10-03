@@ -5,7 +5,9 @@ use std::ops::{Deref, DerefMut};
 use bytemuck::{Pod, Zeroable};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_common::memory::{N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::memory::{
+    LARGE_MEMORY_VALUE_ID_BASE, N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252,
+};
 use tracing::{span, Level};
 
 /// P is 2^251 + 17 * 2^192 - 1.
@@ -234,8 +236,6 @@ impl DerefMut for MemoryBuilder {
         &mut self.memory
     }
 }
-
-pub const LARGE_MEMORY_VALUE_ID_BASE: u32 = 0x4000_0000;
 
 /// Used to mark an unused address.
 /// Cannot be assigned as a valid ID, as [`DEFAULT_ID`] > 2**[`LOG_MEMORY_ADDRESS_BOUND`].

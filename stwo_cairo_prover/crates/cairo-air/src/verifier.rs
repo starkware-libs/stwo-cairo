@@ -6,13 +6,11 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify, VerificationError};
-use stwo_cairo_adapter::builtins::{
+use stwo_cairo_common::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
-use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
-use stwo_cairo_adapter::HashMap;
-use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
+use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
@@ -23,6 +21,7 @@ use crate::air::{
 };
 use crate::builtins_air::BuiltinsClaim;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::utils::HashMap;
 use crate::{CairoProof, PreProcessedTraceVariant};
 
 fn verify_claim(claim: &CairoClaim) {
