@@ -92,7 +92,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
 }
 
 impl MerkleVerifierImpl<
-    impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>,
+    impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>, +Debug<H::Hash>,
 > of MerkleVerifierTrait<H> {
     fn verify(
         self: @MerkleVerifier<H>,

@@ -89,6 +89,7 @@ pub const KECCAK_MEMORY_CELLS: usize = 16;
 pub const MUL_MOD_MEMORY_CELLS: usize = 7;
 pub const PEDERSEN_MEMORY_CELLS: usize = 3;
 pub const POSEIDON_MEMORY_CELLS: usize = 6;
+pub const SHA256_MEMORY_CELLS: usize = 32;
 // This is for both the 128 and 96 bit range checks.
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
@@ -101,6 +102,9 @@ use poseidon::PoseidonContextInteractionClaimImpl;
 
 pub mod blake;
 use blake::BlakeContextInteractionClaimImpl;
+
+pub mod sha256;
+use sha256::Sha256ContextInteractionClaimImpl;
 
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
@@ -241,6 +245,7 @@ pub fn lookup_sum(
         builtins,
         pedersen_context,
         poseidon_context,
+        sha256_context,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -248,6 +253,7 @@ pub fn lookup_sum(
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        verify_bitwise_and_8,
     } = interaction_claim;
 
     sum += opcodes.sum();
@@ -256,6 +262,7 @@ pub fn lookup_sum(
     sum += builtins.sum();
     sum += pedersen_context.sum();
     sum += poseidon_context.sum();
+    sum += sha256_context.sum();
     sum += *memory_address_to_id.claimed_sum;
     sum += memory_id_to_value.sum();
     sum += range_checks.sum();
@@ -263,6 +270,7 @@ pub fn lookup_sum(
     sum += *verify_bitwise_xor_7.claimed_sum;
     sum += *verify_bitwise_xor_8.claimed_sum;
     sum += *verify_bitwise_xor_9.claimed_sum;
+    sum += *verify_bitwise_and_8.claimed_sum;
     sum
 }
 
@@ -347,6 +355,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         add_mod: add_mod_segment_range,
         mul_mod: mul_mod_segment_range,
         poseidon: poseidon_segment_range,
+        sha256: sha256_segment_range,
     } = segment_ranges;
 
     // Check that non-supported builtins aren't used.
@@ -367,6 +376,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         mul_mod_builtin,
         pedersen_builtin,
         poseidon_builtin,
+        sha256_builtin,
     } = builtins_claim;
     check_builtin(
         range_check_128_builtin
@@ -453,6 +463,18 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
             ),
         *poseidon_segment_range,
         POSEIDON_MEMORY_CELLS,
+    );
+    check_builtin(
+        sha256_builtin
+            .map(
+                |
+                    claim,
+                | BuiltinClaim {
+                    segment_start: claim.sha256_builtin_segment_start, log_size: claim.log_size,
+                },
+            ),
+        *sha256_segment_range,
+        SHA256_MEMORY_CELLS,
     );
 }
 
@@ -562,6 +584,7 @@ pub struct PublicSegmentRanges {
     pub ec_op: SegmentRange,
     pub keccak: SegmentRange,
     pub poseidon: SegmentRange,
+    pub sha256: SegmentRange,
     pub range_check_96: SegmentRange,
     pub add_mod: SegmentRange,
     pub mul_mod: SegmentRange,
@@ -586,6 +609,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
             ec_op,
             keccak,
             poseidon,
+            sha256,
             range_check_96,
             add_mod,
             mul_mod,
@@ -599,6 +623,7 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         segments.append(ec_op);
         segments.append(keccak);
         segments.append(poseidon);
+        segments.append(sha256);
         segments.append(range_check_96);
         segments.append(add_mod);
         segments.append(mul_mod);

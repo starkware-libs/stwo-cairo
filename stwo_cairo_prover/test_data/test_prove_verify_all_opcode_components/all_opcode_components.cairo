@@ -1,4 +1,4 @@
-%builtins output pedersen range_check ecdsa bitwise ec_op keccak poseidon range_check96 add_mod mul_mod
+%builtins output pedersen range_check ecdsa bitwise ec_op keccak poseidon sha256 range_check96 add_mod mul_mod
 
 from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.bool import FALSE, TRUE
@@ -13,6 +13,7 @@ func main{
     ec_op_ptr,
     keccak_ptr,
     poseidon_ptr,
+    sha256_ptr,
     range_check96_ptr,
     add_mod_ptr,
     mul_mod_ptr,

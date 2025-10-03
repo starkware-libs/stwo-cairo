@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use stwo_cairo_common::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS, EC_OP_MEMORY_CELLS,
     KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, OUTPUT_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
-    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS, SHA256_MEMORY_CELLS,
 };
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{info, span, Level};
@@ -44,6 +44,7 @@ pub struct BuiltinSegments {
     pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
     pub poseidon: Option<MemorySegmentAddresses>,
+    pub sha256: Option<MemorySegmentAddresses>,
     pub range_check_bits_96: Option<MemorySegmentAddresses>,
     pub range_check_bits_128: Option<MemorySegmentAddresses>,
 }
@@ -64,6 +65,7 @@ impl BuiltinSegments {
         insert_builtin(BuiltinName::mul_mod, &self.mul_mod, MUL_MOD_MEMORY_CELLS);
         insert_builtin(BuiltinName::pedersen, &self.pedersen, PEDERSEN_MEMORY_CELLS);
         insert_builtin(BuiltinName::poseidon, &self.poseidon, POSEIDON_MEMORY_CELLS);
+        insert_builtin(BuiltinName::sha256, &self.sha256, SHA256_MEMORY_CELLS);
         insert_builtin(
             BuiltinName::range_check,
             &self.range_check_bits_128,
@@ -128,6 +130,16 @@ impl BuiltinSegments {
                 Some("poseidon"),
             ));
         }
+
+        if let Some(segment) = &self.sha256 {
+            self.sha256 = Some(pad_segment(
+                segment,
+                memory,
+                SHA256_MEMORY_CELLS as u32,
+                Some("sha256"),
+            ));
+        }
+
         if let Some(segment) = &self.range_check_bits_96 {
             self.range_check_bits_96 = Some(pad_segment(
                 segment,
@@ -176,6 +188,7 @@ impl BuiltinSegments {
                 BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
                 BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
                 BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
+                BuiltinName::sha256 => SHA256_MEMORY_CELLS,
                 BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
                 BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
                 _ => panic!("Invalid builtin name"),

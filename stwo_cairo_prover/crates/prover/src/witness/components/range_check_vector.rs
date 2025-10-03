@@ -15,7 +15,7 @@ macro_rules! range_check_prover {
             impl ClaimGenerator {
                 #[allow(clippy::new_without_default)]
                 pub fn new() -> Self {
-                    let length = 1 << (RANGES.iter().sum::<u32>()) as usize;
+                    let length = 1 << std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES) as usize;
                     let multiplicities = AtomicMultiplicityColumn::new(length);
 
                     Self {
@@ -24,7 +24,7 @@ macro_rules! range_check_prover {
                 }
 
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    std::cmp::max(RANGES.iter().sum(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)
                 }
 
                 pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
@@ -94,7 +94,7 @@ macro_rules! range_check_prover {
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
                     lookup_elements: &relations::$name_upper,
                 ) -> InteractionClaim {
-                    let log_size = RANGES.iter().sum::<u32>();
+                    let log_size = std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES);
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
                     let mut col_gen = logup_gen.new_col();
 
@@ -146,6 +146,7 @@ macro_rules! generate_range_check_witness {
 }
 
 pub mod range_check_trace_generators {
+    generate_range_check_witness!([2]);
     generate_range_check_witness!([6]);
     generate_range_check_witness!([8]);
     generate_range_check_witness!([11]);

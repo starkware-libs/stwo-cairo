@@ -108,8 +108,10 @@ fn cairo_relation_entries(
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        verify_bitwise_and_8,
         pedersen_context,
         poseidon_context,
+        sha256_context,
     } = cairo_components;
     let OpcodeComponents {
         add,
@@ -135,6 +137,7 @@ fn cairo_relation_entries(
     } = opcodes;
 
     let RangeChecksComponents {
+        rc_2,
         rc_6,
         rc_8,
         rc_11,
@@ -188,6 +191,7 @@ fn cairo_relation_entries(
         add_to_relation_entries_many(qm31, trace),
         add_to_relation_entries_many(ret, trace),
         add_to_relation_entries(verify_instruction, trace),
+        add_to_relation_entries(rc_2, trace),
         add_to_relation_entries(rc_6, trace),
         add_to_relation_entries(rc_8, trace),
         add_to_relation_entries(rc_11, trace),
@@ -221,6 +225,7 @@ fn cairo_relation_entries(
         add_to_relation_entries(verify_bitwise_xor_7, trace),
         add_to_relation_entries(verify_bitwise_xor_8, trace),
         add_to_relation_entries(verify_bitwise_xor_9, trace),
+        add_to_relation_entries(verify_bitwise_and_8, trace),
         add_to_relation_entries(memory_address_to_id, trace),
         add_to_relation_entries_many(&memory_id_to_value.0, trace),
         add_to_relation_entries(&memory_id_to_value.1, trace),
@@ -250,6 +255,7 @@ fn cairo_relation_entries(
         bitwise_builtin,
         pedersen_builtin,
         poseidon_builtin,
+        sha256_builtin,
         mul_mod_builtin,
         range_check_96_builtin,
         range_check_128_builtin,
@@ -265,6 +271,9 @@ fn cairo_relation_entries(
     }
     if let Some(poseidon) = poseidon_builtin {
         entries.extend(add_to_relation_entries(poseidon, trace));
+    }
+    if let Some(sha256) = sha256_builtin {
+        entries.extend(add_to_relation_entries(sha256, trace));
     }
     if let Some(mul_mod) = mul_mod_builtin {
         entries.extend(add_to_relation_entries(mul_mod, trace));
@@ -301,6 +310,42 @@ fn cairo_relation_entries(
         entries.extend(chain!(
             add_to_relation_entries(pedersen_points_table, trace),
             add_to_relation_entries(partial_ec_mul, trace),
+        ));
+    }
+    if let Some(cairo_air::sha256::air::Components {
+        sha_256_round,
+        sha_256_big_sigma_0,
+        sha_256_big_sigma_1,
+        sha_256_schedule,
+        sha_256_small_sigma_0,
+        sha_256_small_sigma_1,
+        sha_256_big_sigma_0_o_0,
+        sha_256_big_sigma_0_o_1,
+        sha_256_big_sigma_1_o_0,
+        sha_256_big_sigma_1_o_1,
+        sha_256_small_sigma_0_o_0,
+        sha_256_small_sigma_0_o_1,
+        sha_256_small_sigma_1_o_0,
+        sha_256_small_sigma_1_o_1,
+        sha_256_k_table,
+    }) = &sha256_context.components
+    {
+        entries.extend(chain!(
+            add_to_relation_entries(sha_256_round, trace),
+            add_to_relation_entries(sha_256_big_sigma_0, trace),
+            add_to_relation_entries(sha_256_big_sigma_1, trace),
+            add_to_relation_entries(sha_256_schedule, trace),
+            add_to_relation_entries(sha_256_small_sigma_0, trace),
+            add_to_relation_entries(sha_256_small_sigma_1, trace),
+            add_to_relation_entries(sha_256_small_sigma_1_o_0, trace),
+            add_to_relation_entries(sha_256_small_sigma_1_o_1, trace),
+            add_to_relation_entries(sha_256_small_sigma_0_o_0, trace),
+            add_to_relation_entries(sha_256_small_sigma_0_o_1, trace),
+            add_to_relation_entries(sha_256_big_sigma_0_o_0, trace),
+            add_to_relation_entries(sha_256_big_sigma_0_o_1, trace),
+            add_to_relation_entries(sha_256_big_sigma_1_o_0, trace),
+            add_to_relation_entries(sha_256_big_sigma_1_o_1, trace),
+            add_to_relation_entries(sha_256_k_table, trace),
         ));
     }
 

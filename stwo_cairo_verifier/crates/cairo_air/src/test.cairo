@@ -65,6 +65,10 @@ fn test_public_data_logup_sum() {
                     start_ptr: MemorySmallValue { id: 228, value: 2520 },
                     stop_ptr: MemorySmallValue { id: 228, value: 2520 },
                 },
+                sha256: SegmentRange {
+                    start_ptr: MemorySmallValue { id: 228, value: 2520 },
+                    stop_ptr: MemorySmallValue { id: 228, value: 2520 },
+                },
             },
             output: [].span(),
             safe_call_ids: [227, 5],
@@ -81,7 +85,7 @@ fn test_public_data_logup_sum() {
 
     let sum = public_data.logup_sum(@dummy_lookup_elements);
 
-    assert_eq!(sum, qm31_const::<971792689, 636659210, 1237675822, 245392094>());
+    assert_eq!(sum, qm31_const::<1061455695, 456171397, 899463914, 507447677>());
 }
 
 fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
@@ -102,6 +106,7 @@ fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         memory_address_to_id: LookupElementsDummyImpl::dummy(),
         memory_id_to_value: LookupElementsDummyImpl::dummy(),
         range_checks: RangeChecksInteractionElements {
+            rc_2: LookupElementsDummyImpl::dummy(),
             rc_6: LookupElementsDummyImpl::dummy(),
             rc_8: LookupElementsDummyImpl::dummy(),
             rc_11: LookupElementsDummyImpl::dummy(),
@@ -137,6 +142,22 @@ fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         verify_bitwise_xor_8: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
+        verify_bitwise_and_8: LookupElementsDummyImpl::dummy(),
+        sha_256_schedule: LookupElementsDummyImpl::dummy(),
+        sha_256_k_table: LookupElementsDummyImpl::dummy(),
+        sha_256_round: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_0_o_0: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_0_o_1: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_0: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_1_o_0: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_1_o_1: LookupElementsDummyImpl::dummy(),
+        sha_256_big_sigma_1: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_0_o_0: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_0_o_1: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_0: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_1_o_0: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_1_o_1: LookupElementsDummyImpl::dummy(),
+        sha_256_small_sigma_1: LookupElementsDummyImpl::dummy(),
     }
 }
 
