@@ -110,6 +110,21 @@ jobs:
       - name: Build stwo_cairo_prover for wasm64
         run: RUSTFLAGS='--cfg getrandom_backend="custom"' cargo check --target wasm64-unknown-unknown -Z build-std=std,panic_abort --package stwo_cairo_prover --release 
 
+  cairo-air-wasm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-07-14
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Build cairo-air for wasm32 no_std
+        run: cargo check --package cairo-air --no-default-features --target wasm32-unknown-unknown --release
+
   format:
     runs-on: ubuntu-latest
     defaults:

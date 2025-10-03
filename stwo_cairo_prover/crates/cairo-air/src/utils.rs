@@ -1,3 +1,6 @@
+// Use std::collections::HashMap when std feature is set, and hashbrown::HashMap for no_std.
+#[cfg(feature = "std")]
+pub use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -6,6 +9,8 @@ use bzip2::read::BzDecoder;
 use bzip2::write::BzEncoder;
 use bzip2::Compression;
 use clap::ValueEnum;
+#[cfg(not(feature = "std"))]
+pub use hashbrown::HashMap;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
