@@ -1,6 +1,12 @@
 use serde::{Deserialize, Serialize};
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 
+// Use std::collections::HashMap when std feature is set, and hashbrown::HashMap for no_std.
+#[cfg(feature = "std")]
+pub use std::collections::HashMap;
+#[cfg(not(feature = "std"))]
+pub use hashbrown::HashMap;
+
 use crate::air::{MemorySection, PublicMemory};
 
 /// 2^31, used for encoding small felt252 values.

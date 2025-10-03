@@ -94,6 +94,22 @@ jobs:
           workspaces: cairo-prove
       - run: ./scripts/test_flow.sh
 
+  cairo-air-wasm:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./stwo_cairo_prover
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: nightly-2025-07-14
+          targets: wasm32-unknown-unknown
+      - uses: Swatinem/rust-cache@v2
+      - name: Build cairo-air for wasm32 / no_std
+        run: cargo build --package cairo-air --no-default-features --target wasm32-unknown-unknown --release
+      - name: Build cairo-air for wasm32 / std
+        run: cargo build --package cairo-air --features std --target wasm32-unknown-unknown --release
   format:
     runs-on: ubuntu-latest
     defaults:
