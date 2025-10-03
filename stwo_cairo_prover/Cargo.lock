@@ -3482,7 +3482,6 @@ dependencies = [
 name = "stwo_cairo_utils"
 version = "0.1.0"
 dependencies = [
- "cairo-vm",
  "clap",
  "env_logger",
  "log",

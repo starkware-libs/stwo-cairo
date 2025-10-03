@@ -14,7 +14,7 @@ std = ["dep:sonic-rs", "cairo-vm/std"]
 [dependencies]
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
-cairo-vm.workspace = true
+cairo-vm = { workspace = true, features = ["extensive_hints", "mod_builtin", "clap"] }
 indoc.workspace = true
 itertools.workspace = true
 log.workspace = true
