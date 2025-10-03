@@ -1,3 +1,5 @@
+#[cfg(feature = "std")]
+pub use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -5,6 +7,8 @@ use std::path::Path;
 use bzip2::read::BzDecoder;
 use bzip2::write::BzEncoder;
 use bzip2::Compression;
+#[cfg(not(feature = "std"))]
+pub use hashbrown::HashMap;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 #[cfg(any(not(feature = "std"), target_arch = "wasm32"))]

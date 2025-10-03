@@ -11,7 +11,6 @@ use stwo::core::proof::StarkProof;
 use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -37,6 +36,7 @@ use crate::components::{
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::relations;
+use crate::utils::HashMap;
 use crate::verifier::RelationUse;
 
 #[derive(Serialize, Deserialize)]
@@ -945,9 +945,8 @@ impl std::fmt::Display for CairoComponents {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_adapter::HashMap;
-
     use crate::air::accumulate_relation_uses;
+    use crate::utils::HashMap;
     use crate::verifier::RelationUse;
 
     #[test]

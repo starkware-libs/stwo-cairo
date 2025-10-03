@@ -5,21 +5,15 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
+use stwo_cairo_common::builtins::{
+    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS, EC_OP_MEMORY_CELLS,
+    KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, OUTPUT_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{info, span, Level};
 
 use super::memory::MemoryBuilder;
-
-pub const ADD_MOD_MEMORY_CELLS: usize = 7;
-pub const BITWISE_MEMORY_CELLS: usize = 5;
-pub const EC_OP_MEMORY_CELLS: usize = 7;
-pub const ECDSA_MEMORY_CELLS: usize = 2;
-pub const KECCAK_MEMORY_CELLS: usize = 16;
-pub const MUL_MOD_MEMORY_CELLS: usize = 7;
-pub const PEDERSEN_MEMORY_CELLS: usize = 3;
-pub const POSEIDON_MEMORY_CELLS: usize = 6;
-pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
-pub const OUTPUT_MEMORY_CELLS: usize = 1;
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
 pub const MIN_SEGMENT_SIZE: usize = N_LANES;
