@@ -21,6 +21,11 @@ use serde_json as json_backend;
 #[cfg(all(feature = "std", not(target_arch = "wasm32")))]
 use sonic_rs as json_backend;
 
+#[cfg(feature = "std")]
+pub use std::collections::HashMap;
+#[cfg(not(feature = "std"))]
+pub use hashbrown::HashMap;
+
 #[cfg(test)]
 mod tests;
 

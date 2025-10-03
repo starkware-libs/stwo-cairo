@@ -6,17 +6,16 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify, VerificationError};
-use stwo_cairo_adapter::builtins::{
-    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
-    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
-};
-use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::memory::LOG_MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
 
+use crate::constants::{
+    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS, LARGE_MEMORY_VALUE_ID_BASE
+};
+use crate::utils::HashMap;
 use crate::air::{
     lookup_sum, CairoClaim, CairoComponents, CairoInteractionElements, MemorySection, PublicData,
     PublicMemory, PublicSegmentRanges, SegmentRange,

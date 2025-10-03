@@ -5,7 +5,6 @@ use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_adapter::memory::LARGE_MEMORY_VALUE_ID_BASE;
 use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -15,6 +14,7 @@ use stwo_constraint_framework::{
 
 use super::prelude::RelationUse;
 use crate::relations;
+use crate::constants::LARGE_MEMORY_VALUE_ID_BASE;
 
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;

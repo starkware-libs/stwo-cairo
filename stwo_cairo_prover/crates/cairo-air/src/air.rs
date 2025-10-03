@@ -11,7 +11,6 @@ use stwo::core::proof::StarkProof;
 use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_adapter::HashMap;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -38,6 +37,7 @@ use crate::components::{
 };
 use crate::relations;
 use crate::verifier::RelationUse;
+use crate::utils::HashMap;
 
 #[derive(Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasher> {
@@ -945,7 +945,7 @@ impl std::fmt::Display for CairoComponents {
 
 #[cfg(test)]
 mod tests {
-    use stwo_cairo_adapter::HashMap;
+    use crate::utils::HashMap;
 
     use crate::air::accumulate_relation_uses;
     use crate::verifier::RelationUse;

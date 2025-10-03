@@ -12,6 +12,7 @@ pub mod poseidon;
 pub mod range_checks_air;
 pub mod relations;
 pub mod utils;
+pub mod constants;
 
 // TODO(Ohad): verifier crate.
 pub mod verifier;
