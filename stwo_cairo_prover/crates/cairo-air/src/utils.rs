@@ -16,6 +16,14 @@ use tracing::{span, Level};
 use crate::air::{MemorySection, PublicMemory};
 use crate::CairoProof;
 
+pub(crate) mod hashmap {
+    #[cfg(feature = "std")]
+    pub use std::collections::HashMap;
+
+    #[cfg(not(feature = "std"))]
+    pub use hashbrown::HashMap;
+}
+
 mod json {
     #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
     pub use serde_json::{from_str, to_string_pretty};
