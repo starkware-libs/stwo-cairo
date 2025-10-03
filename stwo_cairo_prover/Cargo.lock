@@ -613,7 +613,6 @@ dependencies = [
  "starknet-ff",
  "starknet-types-core",
  "stwo",
- "stwo-cairo-adapter",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
  "stwo-constraint-framework",
