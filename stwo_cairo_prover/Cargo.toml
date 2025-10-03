@@ -30,6 +30,7 @@ cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev =
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
+hashbrown = { version = "0.15.2", features = ["serde"] }
 hex = "0.4.3"
 itertools = "0.12.0"
 log = "0.4.21"
