@@ -4,8 +4,6 @@ version.workspace = true
 edition.workspace = true
 
 [features]
-default = ["std"]
-std = ["stwo/std", "stwo-constraint-framework/std"]
 slow-tests = []
 
 [dependencies]
@@ -19,7 +17,6 @@ num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
 stwo-cairo-common.workspace = true
-stwo-cairo-adapter.workspace = true
 rayon.workspace = true
 serde.workspace = true
 starknet-curve.workspace = true
