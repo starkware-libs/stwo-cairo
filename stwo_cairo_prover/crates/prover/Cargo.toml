@@ -13,6 +13,9 @@ relation-tracker = []
 nightly = []
 
 [dependencies]
+bincode.workspace = true
+bzip2.workspace = true
+clap.workspace = true
 stwo-air-utils-derive.workspace = true
 stwo-air-utils.workspace = true
 hex.workspace = true

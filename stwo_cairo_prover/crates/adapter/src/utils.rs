@@ -1,6 +1,7 @@
-use std::fs::{read, File};
+use std::fs::{read, read_to_string, File};
 use std::path::PathBuf;
 
+use anyhow::{Context, Result};
 use cairo_lang_executable::executable::{EntryPointKind, Executable};
 use cairo_lang_runner::{build_hints_dict, Arg, CairoHintProcessor};
 use cairo_lang_utils::bigint::BigUintAsHex;
@@ -11,12 +12,11 @@ use cairo_vm::types::exec_scope::ExecutionScopes;
 use cairo_vm::types::layout_name::LayoutName;
 use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
-use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use cairo_vm::Felt252;
 use clap::ValueEnum;
 use serde_json::from_reader;
 
-use crate::adapter::adapter;
+use crate::adapter::adapt;
 use crate::ProverInput;
 
 #[derive(Clone, Debug, ValueEnum)]
@@ -25,20 +25,11 @@ pub enum ProgramType {
     Json,
 }
 
-pub fn run_program_and_adapter(
+pub fn run_and_adapt(
     program_path: &PathBuf,
     program_type: ProgramType,
     args: Option<&PathBuf>,
-) -> ProverInput {
-    let runner = run_program(program_path, program_type, args);
-    adapter(&runner)
-}
-
-pub fn run_program(
-    program_path: &PathBuf,
-    program_type: ProgramType,
-    args: Option<&PathBuf>,
-) -> CairoRunner {
+) -> Result<ProverInput> {
     let cairo_run_config = CairoRunConfig {
         trace_enabled: true,
         relocate_trace: false,
@@ -50,26 +41,33 @@ pub fn run_program(
 
     let (program, mut hints, exec_scopes) = match program_type {
         ProgramType::Executable => {
-            let executable: Executable =
-                from_reader(File::open(program_path).expect("Unable to open executable"))
-                    .expect("Failed to read executable");
-            let args = args.map(read_cairo_arguments_from_file).unwrap_or_default();
-            let (program, hints) = get_program_and_hints_from_executable(&executable, args);
+            let executable: Executable = from_reader(File::open(program_path)?)?;
+
+            let args = if let Some(args) = args {
+                let args_biguint: Vec<BigUintAsHex> = from_reader(File::open(args)?)?;
+                args_biguint
+                    .into_iter()
+                    .map(|i| Arg::Value(i.value.into()))
+                    .collect()
+            } else {
+                vec![]
+            };
+
+            let (program, hints) = get_program_and_hints_from_executable(&executable, args)?;
+
             (program, hints, ExecutionScopes::new())
         }
         ProgramType::Json => {
-            let program = read_compiled_cairo_program(program_path);
+            let program = Program::from_bytes(&read(program_path)?, Some("main"))?;
 
             let mut exec_scopes = ExecutionScopes::new();
-
             if let Some(args) = args {
-                let program_input_contents =
-                    std::fs::read_to_string(args).expect("Failed to read program input");
                 // Insert the program input into the execution scopes if exists
-                exec_scopes.insert_value("program_input", program_input_contents);
+                exec_scopes.insert_value("program_input", read_to_string(args)?);
             }
             // Insert the program object into the execution scopes
             exec_scopes.insert_value("program_object", program.clone());
+
             (
                 program,
                 Box::new(BuiltinHintProcessor::new_empty()) as Box<dyn HintProcessor>,
@@ -78,14 +76,18 @@ pub fn run_program(
         }
     };
 
-    cairo_run_program_with_initial_scope(&program, &cairo_run_config, hints.as_mut(), exec_scopes)
-        .expect("Failed to run program")
+    adapt(&cairo_run_program_with_initial_scope(
+        &program,
+        &cairo_run_config,
+        hints.as_mut(),
+        exec_scopes,
+    )?)
 }
 
-pub fn get_program_and_hints_from_executable(
+fn get_program_and_hints_from_executable(
     executable: &Executable,
     args: Vec<cairo_lang_runner::Arg>,
-) -> (Program, Box<dyn HintProcessor>) {
+) -> Result<(Program, Box<dyn HintProcessor>)> {
     let data: Vec<MaybeRelocatable> = executable
         .program
         .bytecode
@@ -98,7 +100,7 @@ pub fn get_program_and_hints_from_executable(
         .entrypoints
         .iter()
         .find(|e| matches!(e.kind, EntryPointKind::Standalone))
-        .expect("Failed to find entrypoint");
+        .with_context(|| "Failed to find entrypoint")?;
     let program = Program::new_for_proof(
         entrypoint.builtins.clone(),
         data,
@@ -109,8 +111,7 @@ pub fn get_program_and_hints_from_executable(
         Default::default(),
         vec![],
         None,
-    )
-    .unwrap();
+    )?;
 
     let hint_processor = CairoHintProcessor {
         runner: None,
@@ -124,19 +125,5 @@ pub fn get_program_and_hints_from_executable(
         panic_traceback: Default::default(),
     };
 
-    (program, Box::new(hint_processor))
-}
-
-pub fn read_cairo_arguments_from_file(path: &PathBuf) -> Vec<Arg> {
-    let file = std::fs::File::open(path).unwrap();
-    let as_vec: Vec<BigUintAsHex> = serde_json::from_reader(file).unwrap();
-    as_vec
-        .into_iter()
-        .map(|v| Arg::Value(v.value.into()))
-        .collect()
-}
-
-fn read_compiled_cairo_program(program_path: &PathBuf) -> Program {
-    let bytes = read(program_path).unwrap_or_else(|e| panic!("Failed to read program: {e:?}"));
-    Program::from_bytes(&bytes, Some("main")).expect("Failed to create program from bytes")
+    Ok((program, Box::new(hint_processor)))
 }

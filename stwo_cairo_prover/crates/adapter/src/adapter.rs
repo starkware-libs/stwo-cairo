@@ -1,3 +1,4 @@
+use anyhow::Result;
 use cairo_vm::vm::runners::cairo_runner::CairoRunner;
 use tracing::{info, span, Level};
 
@@ -7,23 +8,18 @@ use crate::builtins::BuiltinSegments;
 use crate::relocator::Relocator;
 use crate::{PublicSegmentContext, StateTransitions};
 
-pub fn adapter(runner: &CairoRunner) -> ProverInput {
-    let _span = span!(Level::INFO, "adapter").entered();
+pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
+    let _span = span!(Level::INFO, "adapt").entered();
 
     // Extract the relevant information from the Runner.
-    let relocatable_trace = runner
-        .get_relocatable_trace()
-        .expect("Trace was not enabled in the run");
-
+    let relocatable_trace = runner.get_relocatable_trace()?;
     info!("Num steps: {:?}", relocatable_trace.len());
-
     let mut relocatable_memory = runner.get_relocatable_memory();
-
     let public_memory_offsets = &runner.vm.segments.public_memory_offsets;
     let builtin_segments = runner.get_builtin_segments();
-    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
 
     // Relocation part.
+    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
     let relocator = Relocator::new(&relocatable_memory);
     let relocated_memory = relocator.relocate_memory(&relocatable_memory);
 
@@ -47,7 +43,8 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
 
     // TODO(Ohad): take this from the input.
     let public_segment_context = PublicSegmentContext::bootloader_context();
-    ProverInput {
+
+    Ok(ProverInput {
         state_transitions,
         memory,
         inst_cache,
@@ -58,23 +55,26 @@ pub fn adapter(runner: &CairoRunner) -> ProverInput {
         relocated_mem: relocated_memory_clone,
         #[cfg(feature = "extract-mem-trace")]
         relocated_trace: relocated_trace.clone(),
-    }
+    })
 }
 
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod tests {
-    use dev_utils::utils::get_compiled_cairo_program_path;
-    use serde_json::to_value;
+    use std::fs::{read_to_string, File};
+    use std::io::Write;
 
-    use crate::test_utils::{get_prover_input_path, read_json, write_json};
-    use crate::utils::{run_program_and_adapter, ProgramType};
+    use dev_utils::utils::get_compiled_cairo_program_path;
+    use serde_json::{to_string_pretty, to_value};
+
+    use crate::test_utils::get_prover_input_path;
+    use crate::utils::{run_and_adapt, ProgramType};
 
     fn test_compare_prover_input_to_expected_file(test_name: &str) {
         let is_fix_mode = std::env::var("FIX") == Ok("1".to_string());
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
-        let mut prover_input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+        let mut prover_input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
         // Instruction cache and public memory addresses are not deterministic, sort them.
         prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
         prover_input.public_memory_addresses.sort();
@@ -84,9 +84,11 @@ mod tests {
 
         let expected_prover_input_path = get_prover_input_path(test_name);
         if is_fix_mode {
-            write_json(&expected_prover_input_path, &prover_input_value);
+            let mut file = File::create(&expected_prover_input_path).unwrap();
+            write!(file, "{}", &to_string_pretty(&prover_input_value).unwrap()).unwrap();
         }
-        let expected_prover_input = read_json(&expected_prover_input_path);
+        let expected_prover_input: serde_json::Value =
+            serde_json::from_str(&read_to_string(&expected_prover_input_path).unwrap()).unwrap();
 
         assert_eq!(
             prover_input_value,

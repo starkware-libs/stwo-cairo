@@ -11,9 +11,11 @@
 use std::fs::write;
 use std::path::PathBuf;
 
+use anyhow::Result;
 use clap::{Parser, ValueEnum};
-use sonic_rs::{to_string_pretty, Serialize};
-use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
+use serde::Serialize;
+use sonic_rs::to_string_pretty;
+use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -49,53 +51,54 @@ struct Args {
     format: OutputFormat,
 }
 
-fn main() {
+fn main() -> Result<()> {
     let args = Args::parse();
 
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
-
     let _span = span!(Level::INFO, "extract_mem_trace").entered();
 
-    let prover_input = run_program_and_adapter(
+    let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
-    );
-
-    fn write_output<T: Serialize>(path: &PathBuf, format: &OutputFormat, data: &T) {
-        match format {
-            OutputFormat::Binary => {
-                let bytes = bincode::serialize(data).expect("Failed to serialize data to binary");
-                write(path, bytes).expect("Failed to write data to file");
-            }
-            OutputFormat::Json => {
-                let data = to_string_pretty(data).expect("Failed to serialize data to JSON");
-                write(path, data).expect("Failed to write data to file");
-            }
-        }
-    }
+    )?;
 
     if let Some(mem_file) = args.mem.as_ref() {
         write_output(mem_file, &args.format, &prover_input.relocated_mem);
     }
+
     if let Some(trace_file) = args.trace.as_ref() {
         write_output(trace_file, &args.format, &prover_input.relocated_trace);
+    }
+
+    Ok(())
+}
+
+fn write_output<T: Serialize>(path: &PathBuf, format: &OutputFormat, data: &T) {
+    match format {
+        OutputFormat::Binary => {
+            let bytes = bincode::serialize(data).expect("Failed to serialize data to binary");
+            write(path, bytes).expect("Failed to write data to file");
+        }
+        OutputFormat::Json => {
+            let data = to_string_pretty(data).expect("Failed to serialize data to JSON");
+            write(path, data).expect("Failed to write data to file");
+        }
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use std::fs;
+    use std::fs::read;
     use std::process::Command;
 
     use bincode::deserialize;
+    use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
     use dev_utils::utils::get_compiled_cairo_program_path;
-    use fs::read;
     use stwo_cairo_adapter::memory::MemoryEntry;
-    use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
-    use stwo_cairo_adapter::vm_import::RelocatedTraceEntry;
+    use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
     use tempfile::NamedTempFile;
 
     #[test]
@@ -104,7 +107,7 @@ mod tests {
         let compiled_program_path =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
 
-        let prover_input = run_program_and_adapter(&compiled_program_path, ProgramType::Json, None);
+        let prover_input = run_and_adapt(&compiled_program_path, ProgramType::Json, None).unwrap();
 
         // Test JSON format first
         let temp_mem_file = NamedTempFile::new().expect("Failed to create temp file");

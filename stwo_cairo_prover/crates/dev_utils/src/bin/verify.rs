@@ -6,7 +6,7 @@ use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use clap::Parser;
 use stwo::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
 use stwo::core::vcs::poseidon252_merkle::{Poseidon252MerkleChannel, Poseidon252MerkleHasher};
-use stwo_cairo_prover::prover::ChannelHash;
+use stwo_cairo_prover::utils::ChannelHash;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -73,7 +73,6 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
-
     let _span = span!(Level::INFO, "verify").entered();
 
     log::info!("Verifying a {:?} proof", args.channel_hash);
@@ -91,5 +90,6 @@ fn main() -> Result<()> {
         Ok(_) => log::info!("✅ Proof verified successfully!"),
         Err(ref e) => log::error!("❌ Proof verification failed: {e:?}"),
     }
+
     result
 }

@@ -7,11 +7,13 @@
 //! ```
 //! cargo run --bin get_execution_resources -- --help
 //! ```
+use std::fs::write;
 use std::path::PathBuf;
 
 use anyhow::Result;
 use clap::Parser;
-use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
+use serde_json::to_string_pretty;
+use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
 use stwo_cairo_adapter::ExecutionResources;
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
@@ -28,6 +30,9 @@ struct Args {
     /// Path to a file with arguments for the Cairo program.
     #[arg(long = "program_arguments_file")]
     program_arguments_file: Option<PathBuf>,
+    /// Output file path for the execution resources.
+    #[arg(long = "output")]
+    output: Option<PathBuf>,
 }
 
 fn main() -> Result<()> {
@@ -35,17 +40,21 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
+    let _span = span!(Level::INFO, "get_execution_resources").entered();
 
-    let _span = span!(Level::INFO, "run").entered();
-
-    let prover_input = run_program_and_adapter(
+    let prover_input = run_and_adapt(
         &args.program,
         args.program_type,
         args.program_arguments_file.as_ref(),
-    );
+    )?;
 
     let execution_resources = ExecutionResources::from_prover_input(&prover_input);
     log::info!("Execution resources: {execution_resources:#?}");
+
+    if let Some(output) = args.output {
+        let serialized = to_string_pretty(&execution_resources)?;
+        write(output, serialized)?;
+    }
 
     Ok(())
 }
