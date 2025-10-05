@@ -1,8 +1,9 @@
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const N_BITS: u32 = 8;
-pub const LOG_SIZE: u32 = 2 * N_BITS;
+pub const LOG_SIZE: u32 = 16;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
@@ -18,7 +19,8 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
-    pub fn mix_into(&self, _channel: &mut impl Channel) {}
+    #[allow(unused_variables)]
+    pub fn mix_into(&self, channel: &mut impl Channel) {}
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -84,7 +86,6 @@ mod tests {
             claim: Claim {},
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

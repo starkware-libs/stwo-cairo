@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::DoubleKaratsubaN8LimbMaxBound4095;
 use crate::components::subroutines::mod_utils::ModUtils;
@@ -49,6 +49,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.mul_mod_builtin_segment_start as u64);

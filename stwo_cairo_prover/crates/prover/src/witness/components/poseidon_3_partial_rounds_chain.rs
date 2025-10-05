@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_3_partial_rounds_chain::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,

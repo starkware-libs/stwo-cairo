@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::Felt252UnpackFrom27RangeCheckOutput;
 use crate::components::subroutines::mul_252::Mul252;
@@ -103,6 +103,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }

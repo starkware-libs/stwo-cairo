@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_f1edd::DecodeInstructionF1Edd;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
@@ -42,6 +42,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }

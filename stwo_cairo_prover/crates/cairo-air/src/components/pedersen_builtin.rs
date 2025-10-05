@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 use crate::components::subroutines::mem_verify::MemVerify;
 use crate::components::subroutines::read_split::ReadSplit;
@@ -49,6 +49,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
         channel.mix_u64(self.pedersen_builtin_segment_start as u64);

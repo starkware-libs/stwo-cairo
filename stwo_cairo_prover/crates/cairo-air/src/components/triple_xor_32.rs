@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 9a845a6b
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
@@ -26,6 +26,7 @@ impl Claim {
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
+    #[allow(unused_variables)]
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_u64(self.log_size as u64);
     }
