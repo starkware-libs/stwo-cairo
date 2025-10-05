@@ -15,9 +15,8 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::Felt252;
 use clap::ValueEnum;
 use serde_json::from_reader;
-
-use crate::adapter::adapt;
-use crate::ProverInput;
+use stwo_cairo_adapter::adapter::adapt;
+use stwo_cairo_adapter::ProverInput;
 
 #[derive(Clone, Debug, ValueEnum)]
 pub enum ProgramType {
@@ -101,7 +100,7 @@ fn get_program_and_hints_from_executable(
         .entrypoints
         .iter()
         .find(|e| matches!(e.kind, EntryPointKind::Standalone))
-        .context("Failed to find entrypoint")?;
+        .with_context(|| "Failed to find entrypoint")?;
     let program = Program::new_for_proof(
         entrypoint.builtins.clone(),
         data,
