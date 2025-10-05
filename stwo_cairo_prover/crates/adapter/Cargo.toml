@@ -5,11 +5,9 @@ edition = "2021"
 
 
 [features]
-default = ["std"]
+default = []
 slow-tests = []
 extract-mem-trace = []
-# TODO(STAV): Delete this feature when the old adapter is removed.
-std = ["dep:sonic-rs", "cairo-vm/std"]
 
 [dependencies]
 bytemuck.workspace = true
@@ -34,6 +32,7 @@ crypto-bigint = "0.5.1"
 cairo-lang-executable.workspace = true
 cairo-lang-runner.workspace = true
 cairo-lang-utils.workspace = true
+anyhow.workspace = true
 
 [dev-dependencies]
 cairo-lang-casm.workspace = true
