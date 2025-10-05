@@ -1,7 +1,6 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
-use cairo_air::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
 use cairo_air::CairoProof;
 use clap::Parser;
 use serde::de::DeserializeOwned;
@@ -9,6 +8,7 @@ use serde::Serialize;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
 use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleHasher;
 use stwo::core::vcs::MerkleHasher;
+use stwo_cairo_prover::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 #[derive(Parser, Debug)]
