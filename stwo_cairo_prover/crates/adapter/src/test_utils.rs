@@ -1,11 +1,9 @@
-use std::fs::{read_to_string, File};
-use std::io::Write;
 use std::path::PathBuf;
 
 use cairo_vm::stdlib::collections::HashMap;
+use cairo_vm::types::program::Program;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use itertools::Itertools;
-use serde_json::{to_string_pretty, Value};
 
 pub fn program_from_casm(
     casm: Vec<cairo_lang_casm::instructions::Instruction>,
@@ -16,7 +14,7 @@ pub fn program_from_casm(
         .map(|felt| MaybeRelocatable::Int(felt.into()))
         .collect_vec();
     let program_len = felt_code.len();
-    let program = cairo_vm::types::program::Program::new_for_proof(
+    let program = Program::new_for_proof(
         vec![],
         felt_code,
         0,
@@ -38,12 +36,24 @@ pub fn get_prover_input_path(test_name: &str) -> PathBuf {
         .join("prover_input.json")
 }
 
-pub fn read_json(file_path: &PathBuf) -> Value {
-    let json_file = read_to_string(file_path).unwrap();
-    serde_json::from_str(&json_file).expect("Invalid JSON file")
+#[macro_export]
+macro_rules! casm_state {
+    ($val1 : expr, $val2 : expr, $val3: expr) => {
+        CasmState {
+            pc: M31($val1),
+            ap: M31($val2),
+            fp: M31($val3),
+        }
+    };
 }
 
-pub fn write_json(file_path: &PathBuf, value: &Value) {
-    let mut file = File::create(file_path).unwrap();
-    write!(file, "{}", &to_string_pretty(&value).unwrap()).unwrap();
+#[macro_export]
+macro_rules! relocated_trace_entry {
+    ($val1 : expr, $val2 : expr, $val3: expr) => {
+        RelocatedTraceEntry {
+            ap: $val1,
+            fp: $val2,
+            pc: $val3,
+        }
+    };
 }
