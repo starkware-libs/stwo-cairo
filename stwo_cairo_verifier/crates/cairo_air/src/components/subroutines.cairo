@@ -19,7 +19,7 @@ pub mod decode_instruction_3802d;
 pub mod decode_instruction_3b105;
 pub mod decode_instruction_43e1c;
 pub mod decode_instruction_4b8cf;
-pub mod decode_instruction_64420;
+pub mod decode_instruction_472fe;
 pub mod decode_instruction_7ebc4;
 pub mod decode_instruction_9bd86;
 pub mod decode_instruction_bc3cd;
