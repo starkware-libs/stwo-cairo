@@ -1,9 +1,9 @@
-use stwo_cairo_common::preprocessed_columns::poseidon::N_ROUNDS;
-
+// AIR version 54d95c0d
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = N_ROUNDS.next_power_of_two().ilog2();
+pub const LOG_SIZE: u32 = 6;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
@@ -47,6 +47,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let poseidonroundkeys_0 = eval.get_preprocessed_column((PoseidonRoundKeys::new(0)).id());
         let poseidonroundkeys_1 = eval.get_preprocessed_column((PoseidonRoundKeys::new(1)).id());
         let poseidonroundkeys_2 = eval.get_preprocessed_column((PoseidonRoundKeys::new(2)).id());
@@ -77,7 +78,6 @@ impl FrameworkEval for Eval {
         let poseidonroundkeys_27 = eval.get_preprocessed_column((PoseidonRoundKeys::new(27)).id());
         let poseidonroundkeys_28 = eval.get_preprocessed_column((PoseidonRoundKeys::new(28)).id());
         let poseidonroundkeys_29 = eval.get_preprocessed_column((PoseidonRoundKeys::new(29)).id());
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
@@ -141,7 +141,6 @@ mod tests {
             claim: Claim {},
             poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

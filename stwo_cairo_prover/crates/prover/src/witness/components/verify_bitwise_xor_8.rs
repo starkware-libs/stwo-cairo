@@ -1,10 +1,12 @@
 #![allow(unused_parens)]
 #![allow(dead_code)]
 use cairo_air::components::verify_bitwise_xor_8::{
-    Claim, InteractionClaim, LOG_SIZE, N_BITS, N_TRACE_COLUMNS,
+    Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
 
 use crate::witness::prelude::*;
+
+const N_BITS: u32 = 8;
 
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
