@@ -1,108 +1,10 @@
-use std::fs::File;
-use std::io::{Read, Write};
-use std::path::Path;
-
-use bzip2::read::BzDecoder;
-use bzip2::write::BzEncoder;
-use bzip2::Compression;
-use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
-use stwo::core::vcs::MerkleHasher;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
-use tracing::{span, Level};
 
 use crate::air::{MemorySection, PublicMemory};
-use crate::CairoProof;
-
-#[cfg(test)]
-mod tests;
 
 /// 2^31, used for encoding small felt252 values.
 const MSB_U32: u32 = 0x80000000;
-
-/// Cairo proof format
-#[derive(Debug, Clone, clap::ValueEnum)]
-pub enum ProofFormat {
-    /// Standard JSON format.
-    Json,
-    /// Array of field elements serialized as hex strings.
-    /// Compatible with `scarb execute`
-    CairoSerde,
-    /// Binary format.
-    /// Additionally compressed to minimize the proof size.
-    Binary,
-}
-
-/// Serializes Cairo proof given the desired format and writes it to a file.
-pub fn serialize_proof_to_file<H: MerkleHasher + Serialize>(
-    proof: &CairoProof<H>,
-    proof_path: &Path,
-    proof_format: ProofFormat,
-) -> Result<(), std::io::Error>
-where
-    H::Hash: CairoSerialize,
-{
-    let span = span!(Level::INFO, "Serialize proof").entered();
-
-    let mut proof_file = File::create(proof_path)?;
-
-    match proof_format {
-        ProofFormat::Json => {
-            proof_file.write_all(sonic_rs::to_string_pretty(proof)?.as_bytes())?;
-        }
-        ProofFormat::CairoSerde => {
-            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(proof, &mut serialized);
-
-            let hex_strings: Vec<String> = serialized
-                .into_iter()
-                .map(|felt| format!("0x{felt:x}"))
-                .collect();
-
-            proof_file.write_all(sonic_rs::to_string_pretty(&hex_strings)?.as_bytes())?;
-        }
-        ProofFormat::Binary => {
-            let serialized_bytes = bincode::serialize(proof).map_err(std::io::Error::other)?;
-
-            let mut bz_encoder = BzEncoder::new(proof_file, Compression::best());
-            bz_encoder.write_all(&serialized_bytes)?;
-            bz_encoder.finish()?;
-        }
-    }
-
-    span.exit();
-    Ok(())
-}
-
-/// Deserializes Cairo proof from a file given the desired format.
-pub fn deserialize_proof_from_file<H: MerkleHasher + DeserializeOwned>(
-    proof_path: &Path,
-    proof_format: ProofFormat,
-) -> Result<CairoProof<H>, std::io::Error>
-where
-    H::Hash: CairoDeserialize,
-{
-    match proof_format {
-        ProofFormat::Json => {
-            let proof_str = std::fs::read_to_string(proof_path)?;
-            sonic_rs::from_str(&proof_str).map_err(std::io::Error::other)
-        }
-        ProofFormat::CairoSerde => {
-            let proof_str = std::fs::read_to_string(proof_path)?;
-            let felts: Vec<starknet_ff::FieldElement> =
-                sonic_rs::from_str(&proof_str).map_err(std::io::Error::other)?;
-            Ok(CairoDeserialize::deserialize(&mut felts.iter()))
-        }
-        ProofFormat::Binary => {
-            let proof_file = File::open(proof_path)?;
-            let mut proof_bytes = Vec::new();
-            let mut bz_decoder = BzDecoder::new(proof_file);
-            bz_decoder.read_to_end(&mut proof_bytes)?;
-            bincode::deserialize(&proof_bytes).map_err(std::io::Error::other)
-        }
-    }
-}
 
 /// The data associated with the Cairo proof.
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -174,5 +76,67 @@ pub fn encode_felt_in_limbs(felt: [u32; 8]) -> Vec<u32> {
         vec![v1, v0]
     } else {
         vec![v7 + MSB_U32, v6, v5, v4, v3, v2, v1, v0]
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::utils::{construct_f252, encode_and_hash_memory_section, encode_felt_in_limbs};
+
+    #[test]
+    fn test_encode_felt_in_limbs() {
+        let felt0 = [0x12345678, 0x70000000, 0, 0, 0, 0, 0, 0];
+        let felt1 = [
+            0x12345678, 0x90abcdef, 0xabcdef12, 0x34567890, 0x01234567, 0x89abcdef, 0x01234567, 0,
+        ];
+        let limbs0 = encode_felt_in_limbs(felt0);
+        let limbs1 = encode_felt_in_limbs(felt1);
+        assert_eq!(limbs0, vec![1879048192, 305419896]);
+        assert_eq!(
+            limbs1,
+            vec![
+                2147483648, 19088743, 2309737967, 19088743, 878082192, 2882400018, 2427178479,
+                305419896
+            ]
+        );
+    }
+
+    #[test]
+    fn test_encode_and_hash_memory_section() {
+        let memory_section = vec![
+            (0, [0x12345678, 0x90abcdef, 0, 0, 0, 0, 0, 0]),
+            (1, [0xabcdef12, 0x34567890, 0, 0, 0, 0, 0, 0]),
+        ];
+        let hash = encode_and_hash_memory_section(&memory_section);
+        let expected = [
+            2421522214_u32,
+            635981307,
+            2862863578,
+            1664236125,
+            1878536921,
+            1607560013,
+            4274188691,
+            2957079540,
+        ];
+        assert_eq!(hash, expected);
+    }
+
+    #[test]
+    fn test_construct_f252() {
+        let limbs = [
+            2421522214_u32,
+            635981307,
+            2862863578,
+            1664236125,
+            1878536921,
+            1607560013,
+            4274188691,
+            2957079540,
+        ];
+        let expected = starknet_ff::FieldElement::from_dec_str(
+            "115645365096977585374207223166120623839439046970571781411593222716768222992",
+        )
+        .unwrap();
+        assert_eq!(construct_f252(&limbs), expected);
     }
 }

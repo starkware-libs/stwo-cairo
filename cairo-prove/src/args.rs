@@ -1,11 +1,11 @@
 use std::path::PathBuf;
 
-use cairo_air::utils::ProofFormat;
 use cairo_lang_runner::Arg;
 use cairo_lang_utils::bigint::BigUintAsHex;
 use camino::Utf8PathBuf;
 use clap::{Parser, Subcommand};
 use num_bigint::BigInt;
+use stwo_cairo_prover::utils::ProofFormat;
 
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]

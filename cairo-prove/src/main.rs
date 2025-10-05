@@ -1,20 +1,19 @@
 use std::path::Path;
 use std::time::Instant;
 
-use cairo_air::utils::{ProofFormat, serialize_proof_to_file};
 use cairo_air::verifier::verify_cairo;
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use cairo_lang_runner::Arg;
 use cairo_prove::args::{Cli, Commands, ProgramArguments};
 use cairo_prove::execute::execute;
-use cairo_prove::prove::{prove, prover_input_from_runner};
+use cairo_prove::prove::prove;
 use clap::Parser;
 use log::{error, info};
-use stwo_cairo_prover::stwo_prover::core::fri::FriConfig;
-use stwo_cairo_prover::stwo_prover::core::pcs::PcsConfig;
-use stwo_cairo_prover::stwo_prover::core::vcs::blake2_merkle::{
-    Blake2sMerkleChannel, Blake2sMerkleHasher,
-};
+use stwo::core::fri::FriConfig;
+use stwo::core::pcs::PcsConfig;
+use stwo::core::vcs::blake2_merkle::{Blake2sMerkleChannel, Blake2sMerkleHasher};
+use stwo_cairo_adapter::adapter::adapt;
+use stwo_cairo_prover::utils::{ProofFormat, serialize_proof_to_file};
 
 fn execute_and_prove(
     target_path: &str,
@@ -27,7 +26,7 @@ fn execute_and_prove(
     let runner = execute(executable, args);
 
     // Prove.
-    let prover_input = prover_input_from_runner(&runner);
+    let prover_input = adapt(&runner).expect("Failed to adapt to prover input");
     prove(prover_input, pcs_config)
 }
 
@@ -43,7 +42,7 @@ fn secure_pcs_config() -> PcsConfig {
 }
 
 fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: ProgramArguments) {
-    info!("Generating proof for target: {:?}", target);
+    info!("Generating proof for target: {target:?}");
     let start = Instant::now();
     let cairo_proof = execute_and_prove(
         target.to_str().unwrap(),
@@ -52,26 +51,25 @@ fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: Pr
     );
     let elapsed = start.elapsed();
 
-    serialize_proof_to_file::<Blake2sMerkleChannel>(&cairo_proof, proof.into(), proof_format)
+    serialize_proof_to_file::<Blake2sMerkleHasher>(&cairo_proof, proof, proof_format)
         .expect("Failed to serialize proof");
 
-    info!("Proof saved to: {:?}", proof);
-    info!("Proof generation completed in {:.2?}", elapsed);
+    info!("Proof saved to: {proof:?}");
+    info!("Proof generation completed in {elapsed:.2?}");
 }
 
 fn handle_verify(proof: &Path, with_pedersen: bool) {
-    info!("Verifying proof from: {:?}", proof);
+    info!("Verifying proof from: {proof:?}");
     let proof_str = std::fs::read_to_string(proof.to_str().unwrap()).expect("Failed to read proof");
     let cairo_proof = serde_json::from_str(&proof_str).expect("Failed to parse proof");
     let preprocessed_trace = match with_pedersen {
         true => PreProcessedTraceVariant::Canonical,
         false => PreProcessedTraceVariant::CanonicalWithoutPedersen,
     };
-    let result =
-        verify_cairo::<Blake2sMerkleChannel>(cairo_proof, secure_pcs_config(), preprocessed_trace);
+    let result = verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace);
     match result {
         Ok(_) => info!("Verification successful"),
-        Err(e) => error!("Verification failed: {:?}", e),
+        Err(e) => error!("Verification failed: {e:?}"),
     }
 }
 
@@ -110,9 +108,8 @@ mod tests {
         let target_path = "./example/target/release/example.executable.json";
         let args = vec![Arg::Value(Felt252::from(BigInt::from(100)))];
         let proof = execute_and_prove(target_path, args, PcsConfig::default());
-        let pcs_config = PcsConfig::default();
         let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-        let result = verify_cairo::<Blake2sMerkleChannel>(proof, pcs_config, preprocessed_trace);
+        let result = verify_cairo::<Blake2sMerkleChannel>(proof, preprocessed_trace);
         assert!(result.is_ok());
     }
 }
