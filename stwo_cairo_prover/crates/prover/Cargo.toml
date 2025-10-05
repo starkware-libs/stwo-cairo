@@ -38,6 +38,7 @@ tracing.workspace = true
 
 [dev-dependencies]
 dev-utils.workspace = true
+stwo_cairo_utils.workspace = true
 cairo-vm = { workspace = true, features = [
     "extensive_hints",
     "mod_builtin",

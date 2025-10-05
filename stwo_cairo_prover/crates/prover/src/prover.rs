@@ -228,8 +228,8 @@ pub fn create_and_serialize_proof(
 #[cfg(test)]
 pub mod tests {
     use dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
+    use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
     #[test]
@@ -252,8 +252,8 @@ pub mod tests {
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
-        use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
         use stwo_cairo_serialize::CairoSerialize;
+        use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
         use tempfile::NamedTempFile;
         use test_log::test;
 
@@ -471,8 +471,8 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use stwo::core::pcs::PcsConfig;
-            use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
             use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
+            use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
             use test_log::test;
 
             use super::*;
