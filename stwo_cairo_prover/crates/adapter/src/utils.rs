@@ -101,7 +101,7 @@ fn get_program_and_hints_from_executable(
         .entrypoints
         .iter()
         .find(|e| matches!(e.kind, EntryPointKind::Standalone))
-        .context("Failed to find entrypoint")?;
+        .with_context(|| "Failed to find entrypoint")?;
     let program = Program::new_for_proof(
         entrypoint.builtins.clone(),
         data,
