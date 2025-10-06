@@ -1,4 +1,4 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
@@ -95,6 +95,7 @@ impl FrameworkEval for Eval {
         let M31_22 = E::F::from(M31::from(22));
         let M31_23 = E::F::from(M31::from(23));
         let M31_23520 = E::F::from(M31::from(23520));
+        let M31_24 = E::F::from(M31::from(24));
         let M31_26764 = E::F::from(M31::from(26764));
         let M31_27145 = E::F::from(M31::from(27145));
         let M31_3 = E::F::from(M31::from(3));
@@ -296,7 +297,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 (E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone())),
+                    + (seq.clone() * M31_24.clone())),
             ],
             low_16_bits_col0.clone(),
             high_16_bits_col1.clone(),
@@ -312,7 +313,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_1.clone()),
             ],
             low_16_bits_col6.clone(),
@@ -329,7 +330,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_2.clone()),
             ],
             low_16_bits_col12.clone(),
@@ -346,7 +347,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_3.clone()),
             ],
             low_16_bits_col18.clone(),
@@ -363,7 +364,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_4.clone()),
             ],
             low_16_bits_col24.clone(),
@@ -380,7 +381,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_5.clone()),
             ],
             low_16_bits_col30.clone(),
@@ -397,7 +398,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_6.clone()),
             ],
             low_16_bits_col36.clone(),
@@ -414,7 +415,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_7.clone()),
             ],
             low_16_bits_col42.clone(),
@@ -431,7 +432,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_8.clone()),
             ],
             low_16_bits_col48.clone(),
@@ -448,7 +449,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_9.clone()),
             ],
             low_16_bits_col54.clone(),
@@ -465,7 +466,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_10.clone()),
             ],
             low_16_bits_col60.clone(),
@@ -482,7 +483,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_11.clone()),
             ],
             low_16_bits_col66.clone(),
@@ -499,7 +500,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_12.clone()),
             ],
             low_16_bits_col72.clone(),
@@ -516,7 +517,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_13.clone()),
             ],
             low_16_bits_col78.clone(),
@@ -533,7 +534,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_14.clone()),
             ],
             low_16_bits_col84.clone(),
@@ -550,7 +551,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_15.clone()),
             ],
             low_16_bits_col90.clone(),
@@ -681,7 +682,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_16.clone()),
                 sha_256_round_output_limb_0_col96.clone(),
                 sha_256_round_output_limb_1_col97.clone(),
@@ -698,7 +699,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_17.clone()),
                 sha_256_round_output_limb_2_col98.clone(),
                 sha_256_round_output_limb_3_col99.clone(),
@@ -715,7 +716,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_18.clone()),
                 sha_256_round_output_limb_4_col100.clone(),
                 sha_256_round_output_limb_5_col101.clone(),
@@ -732,7 +733,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_19.clone()),
                 sha_256_round_output_limb_6_col102.clone(),
                 sha_256_round_output_limb_7_col103.clone(),
@@ -749,7 +750,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_20.clone()),
                 sha_256_round_output_limb_8_col104.clone(),
                 sha_256_round_output_limb_9_col105.clone(),
@@ -766,7 +767,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_21.clone()),
                 sha_256_round_output_limb_10_col106.clone(),
                 sha_256_round_output_limb_11_col107.clone(),
@@ -783,7 +784,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_22.clone()),
                 sha_256_round_output_limb_12_col108.clone(),
                 sha_256_round_output_limb_13_col109.clone(),
@@ -800,7 +801,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_16.clone()))
+                    + (seq.clone() * M31_24.clone()))
                     + M31_23.clone()),
                 sha_256_round_output_limb_14_col110.clone(),
                 sha_256_round_output_limb_15_col111.clone(),

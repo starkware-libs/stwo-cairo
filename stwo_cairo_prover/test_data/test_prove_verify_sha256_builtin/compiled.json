@@ -1,0 +1,4941 @@
+{
+    "attributes": [],
+    "builtins": [
+        "output",
+        "pedersen",
+        "range_check",
+        "ecdsa",
+        "bitwise",
+        "ec_op",
+        "keccak",
+        "poseidon",
+        "sha256",
+        "range_check96",
+        "add_mod",
+        "mul_mod"
+    ],
+    "compiler_version": "0.14.0.1",
+    "data": [
+        "0x40780017fff7fff",
+        "0xc",
+        "0x1104800180018000",
+        "0x5a",
+        "0x10780017fff7fff",
+        "0x0",
+        "0x40780017fff7fff",
+        "0x1",
+        "0x208b7fff7fff7ffe",
+        "0x20780017fff7ffd",
+        "0x4",
+        "0x480a7ffc7fff8000",
+        "0x208b7fff7fff7ffe",
+        "0x480680017fff8000",
+        "0x48656c6c",
+        "0x400280007ffc7fff",
+        "0x480680017fff8000",
+        "0x6f800000",
+        "0x400280017ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280027ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280037ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280047ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280057ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280067ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280077ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280087ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x400280097ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x4002800a7ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x4002800b7ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x4002800c7ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x4002800d7ffc7fff",
+        "0x480680017fff8000",
+        "0x0",
+        "0x4002800e7ffc7fff",
+        "0x480680017fff8000",
+        "0x28",
+        "0x4002800f7ffc7fff",
+        "0x480680017fff8000",
+        "0xae55a74c",
+        "0x400280107ffc7fff",
+        "0x480680017fff8000",
+        "0x670a4fa0",
+        "0x400280117ffc7fff",
+        "0x480680017fff8000",
+        "0xb8f2b38a",
+        "0x400280127ffc7fff",
+        "0x480680017fff8000",
+        "0xee3b38ec",
+        "0x400280137ffc7fff",
+        "0x480680017fff8000",
+        "0xf1f899b1",
+        "0x400280147ffc7fff",
+        "0x480680017fff8000",
+        "0xb3d4e8f4",
+        "0x400280157ffc7fff",
+        "0x480680017fff8000",
+        "0xe84d9c9d",
+        "0x400280167ffc7fff",
+        "0x480680017fff8000",
+        "0xca574c50",
+        "0x400280177ffc7fff",
+        "0x482680017ffc8000",
+        "0x18",
+        "0x482680017ffd8000",
+        "0x800000000000011000000000000000000000000000000000000000000000000",
+        "0x1104800180018000",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffb1",
+        "0x208b7fff7fff7ffe",
+        "0x40780017fff7fff",
+        "0x1",
+        "0x400780017fff8000",
+        "0x32",
+        "0x480a7ffa7fff8000",
+        "0x480a80007fff8000",
+        "0x1104800180018000",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffa8",
+        "0x480a7ff27fff8000",
+        "0x480a7ff37fff8000",
+        "0x480a7ff47fff8000",
+        "0x480a7ff57fff8000",
+        "0x480a7ff67fff8000",
+        "0x480a7ff77fff8000",
+        "0x480a7ff87fff8000",
+        "0x480a7ff97fff8000",
+        "0x48127ff77fff8000",
+        "0x480a7ffb7fff8000",
+        "0x480a7ffc7fff8000",
+        "0x480a7ffd7fff8000",
+        "0x208b7fff7fff7ffe"
+    ],
+    "debug_info": {
+        "file_contents": {
+            "<start>": "__start__:\nap += main.Args.SIZE + main.ImplicitArgs.SIZE;\ncall main;\n\n__end__:\njmp rel 0;\n"
+        },
+        "instruction_locations": {
+            "0": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 0,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 46,
+                    "end_line": 2,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 2
+                }
+            },
+            "2": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 0,
+                        "offset": 12
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 10,
+                    "end_line": 3,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 3
+                }
+            },
+            "4": {
+                "accessible_scopes": [
+                    "__main__"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 1,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 10,
+                    "end_line": 6,
+                    "input_file": {
+                        "filename": "<start>"
+                    },
+                    "start_col": 1,
+                    "start_line": 6
+                }
+            },
+            "6": {
+                "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [
+                    {
+                        "location": {
+                            "end_col": 38,
+                            "end_line": 3,
+                            "input_file": {
+                                "filename": "/opt/homebrew/lib/python3.13/site-packages/starkware/cairo/common/alloc.cairo"
+                            },
+                            "start_col": 5,
+                            "start_line": 3
+                        },
+                        "n_prefix_newlines": 0
+                    }
+                ],
+                "inst": {
+                    "end_col": 12,
+                    "end_line": 4,
+                    "input_file": {
+                        "filename": "/opt/homebrew/lib/python3.13/site-packages/starkware/cairo/common/alloc.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 4
+                }
+            },
+            "8": {
+                "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 1
+                    },
+                    "reference_ids": {}
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 40,
+                    "end_line": 5,
+                    "input_file": {
+                        "filename": "/opt/homebrew/lib/python3.13/site-packages/starkware/cairo/common/alloc.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 5
+                }
+            },
+            "9": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 9,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 9
+                }
+            },
+            "11": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 42,
+                    "end_line": 8,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 42,
+                            "end_line": 8,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 19,
+                                    "end_line": 10,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 9,
+                                    "start_line": 10
+                                },
+                                "While trying to retrieve the implicit argument 'sha256_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 8
+                        },
+                        "While expanding the reference 'sha256_ptr' in:"
+                    ],
+                    "start_col": 16,
+                    "start_line": 8
+                }
+            },
+            "12": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 19,
+                    "end_line": 10,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 9,
+                    "start_line": 10
+                }
+            },
+            "13": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 56,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 46,
+                    "start_line": 13
+                }
+            },
+            "15": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "16": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 71,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 61,
+                    "start_line": 13
+                }
+            },
+            "18": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "19": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 77,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 76,
+                    "start_line": 13
+                }
+            },
+            "21": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "22": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 83,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 82,
+                    "start_line": 13
+                }
+            },
+            "24": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "25": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 89,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 88,
+                    "start_line": 13
+                }
+            },
+            "27": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "28": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 95,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 94,
+                    "start_line": 13
+                }
+            },
+            "30": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "31": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 101,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 100,
+                    "start_line": 13
+                }
+            },
+            "33": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "34": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 107,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 106,
+                    "start_line": 13
+                }
+            },
+            "36": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "37": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 113,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 112,
+                    "start_line": 13
+                }
+            },
+            "39": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "40": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 119,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 118,
+                    "start_line": 13
+                }
+            },
+            "42": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "43": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 126,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 125,
+                    "start_line": 13
+                }
+            },
+            "45": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 11
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "46": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 11
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 133,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 132,
+                    "start_line": 13
+                }
+            },
+            "48": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 12
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "49": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 12
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 140,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 139,
+                    "start_line": 13
+                }
+            },
+            "51": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 13
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "52": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 13
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 147,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 146,
+                    "start_line": 13
+                }
+            },
+            "54": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 14
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "55": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 14
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 154,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 153,
+                    "start_line": 13
+                }
+            },
+            "57": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 15
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "58": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 15
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 162,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 160,
+                    "start_line": 13
+                }
+            },
+            "60": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 16
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 164,
+                    "end_line": 13,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 13
+                }
+            },
+            "61": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 16
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 15,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 15
+                }
+            },
+            "63": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 17
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "64": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 17
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 16,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 16
+                }
+            },
+            "66": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 18
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "67": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 18
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 17,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 17
+                }
+            },
+            "69": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 19
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "70": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 19
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 18,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 18
+                }
+            },
+            "72": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 20
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "73": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 20
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 19,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 19
+                }
+            },
+            "75": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 21
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "76": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 21
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 20,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 20
+                }
+            },
+            "78": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 22
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "79": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 22
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 21,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 21
+                }
+            },
+            "81": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 23
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "82": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 23
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 22,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 12,
+                    "start_line": 22
+                }
+            },
+            "84": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 24
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp23": 25,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 1
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 23,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 14
+                }
+            },
+            "85": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 24
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp23": 25,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 53,
+                    "end_line": 24,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 42,
+                            "end_line": 8,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 53,
+                                    "end_line": 26,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 26
+                                },
+                                "While trying to retrieve the implicit argument 'sha256_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 8
+                        },
+                        "While expanding the reference 'sha256_ptr' in:"
+                    ],
+                    "start_col": 22,
+                    "start_line": 24
+                }
+            },
+            "87": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 25
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp23": 25,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 52,
+                    "end_line": 26,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 32,
+                    "start_line": 26
+                }
+            },
+            "89": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 3,
+                        "offset": 26
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp23": 25,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 53,
+                    "end_line": 26,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 26
+                }
+            },
+            "91": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_sha256"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 4,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_sha256.__temp0": 2,
+                        "__main__.do_sha256.__temp1": 3,
+                        "__main__.do_sha256.__temp10": 12,
+                        "__main__.do_sha256.__temp11": 13,
+                        "__main__.do_sha256.__temp12": 14,
+                        "__main__.do_sha256.__temp13": 15,
+                        "__main__.do_sha256.__temp14": 16,
+                        "__main__.do_sha256.__temp15": 17,
+                        "__main__.do_sha256.__temp16": 18,
+                        "__main__.do_sha256.__temp17": 19,
+                        "__main__.do_sha256.__temp18": 20,
+                        "__main__.do_sha256.__temp19": 21,
+                        "__main__.do_sha256.__temp2": 4,
+                        "__main__.do_sha256.__temp20": 22,
+                        "__main__.do_sha256.__temp21": 23,
+                        "__main__.do_sha256.__temp22": 24,
+                        "__main__.do_sha256.__temp23": 25,
+                        "__main__.do_sha256.__temp3": 5,
+                        "__main__.do_sha256.__temp4": 6,
+                        "__main__.do_sha256.__temp5": 7,
+                        "__main__.do_sha256.__temp6": 8,
+                        "__main__.do_sha256.__temp7": 9,
+                        "__main__.do_sha256.__temp8": 10,
+                        "__main__.do_sha256.__temp9": 11,
+                        "__main__.do_sha256.n_builtin_usages": 0,
+                        "__main__.do_sha256.sha256_ptr": 27
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 27
+                }
+            },
+            "92": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 36
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 18,
+                    "end_line": 46,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 46
+                }
+            },
+            "94": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 5,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 36
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 25,
+                    "end_line": 47,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 47
+                }
+            },
+            "96": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 5,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 36
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 31,
+                    "end_line": 41,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 42,
+                            "end_line": 8,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 41,
+                                    "end_line": 49,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 49
+                                },
+                                "While trying to retrieve the implicit argument 'sha256_ptr' in:"
+                            ],
+                            "start_col": 16,
+                            "start_line": 8
+                        },
+                        "While expanding the reference 'sha256_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 41
+                }
+            },
+            "97": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 5,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 36
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 19,
+                    "end_line": 47,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 40,
+                            "end_line": 49,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "start_col": 32,
+                            "start_line": 49
+                        },
+                        "While expanding the reference 'n_sha256' in:"
+                    ],
+                    "start_col": 11,
+                    "start_line": 47
+                }
+            },
+            "98": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 5,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 36
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 41,
+                    "end_line": 49,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 49
+                }
+            },
+            "100": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 33,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 33,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'output_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 33
+                        },
+                        "While expanding the reference 'output_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 33
+                }
+            },
+            "101": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 34,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 34
+                        },
+                        "While expanding the reference 'pedersen_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 34
+                }
+            },
+            "102": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 20,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 20,
+                            "end_line": 35,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'range_check_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 35
+                        },
+                        "While expanding the reference 'range_check_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 35
+                }
+            },
+            "103": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 36,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 36,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'ecdsa_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 36
+                        },
+                        "While expanding the reference 'ecdsa_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 36
+                }
+            },
+            "104": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 4
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 37,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 37,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'bitwise_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 37
+                        },
+                        "While expanding the reference 'bitwise_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 37
+                }
+            },
+            "105": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 5
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 14,
+                    "end_line": 38,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 14,
+                            "end_line": 38,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'ec_op_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 38
+                        },
+                        "While expanding the reference 'ec_op_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 38
+                }
+            },
+            "106": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 6
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 39,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 15,
+                            "end_line": 39,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'keccak_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 39
+                        },
+                        "While expanding the reference 'keccak_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 39
+                }
+            },
+            "107": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 7
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 17,
+                    "end_line": 40,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 17,
+                            "end_line": 40,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 40
+                        },
+                        "While expanding the reference 'poseidon_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 40
+                }
+            },
+            "108": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 8
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 42,
+                    "end_line": 8,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 41,
+                            "end_line": 49,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 31,
+                                    "end_line": 41,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "parent_location": [
+                                        {
+                                            "end_col": 15,
+                                            "end_line": 52,
+                                            "input_file": {
+                                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                                            },
+                                            "start_col": 5,
+                                            "start_line": 52
+                                        },
+                                        "While trying to retrieve the implicit argument 'sha256_ptr' in:"
+                                    ],
+                                    "start_col": 5,
+                                    "start_line": 41
+                                },
+                                "While expanding the reference 'sha256_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 49
+                        },
+                        "While trying to update the implicit return value 'sha256_ptr' in:"
+                    ],
+                    "start_col": 16,
+                    "start_line": 8
+                }
+            },
+            "109": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 9
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 22,
+                    "end_line": 42,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 22,
+                            "end_line": 42,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'range_check96_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 42
+                        },
+                        "While expanding the reference 'range_check96_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 42
+                }
+            },
+            "110": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 10
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 43,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 43,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'add_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 43
+                        },
+                        "While expanding the reference 'add_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 43
+                }
+            },
+            "111": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 11
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 16,
+                    "end_line": 44,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 16,
+                            "end_line": 44,
+                            "input_file": {
+                                "filename": "./builtin_usage_flexible_cairo.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 15,
+                                    "end_line": 52,
+                                    "input_file": {
+                                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 52
+                                },
+                                "While trying to retrieve the implicit argument 'mul_mod_ptr' in:"
+                            ],
+                            "start_col": 5,
+                            "start_line": 44
+                        },
+                        "While expanding the reference 'mul_mod_ptr' in:"
+                    ],
+                    "start_col": 5,
+                    "start_line": 44
+                }
+            },
+            "112": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.main"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 6,
+                        "offset": 12
+                    },
+                    "reference_ids": {
+                        "__main__.main.add_mod_ptr": 38,
+                        "__main__.main.bitwise_ptr": 32,
+                        "__main__.main.ec_op_ptr": 33,
+                        "__main__.main.ecdsa_ptr": 31,
+                        "__main__.main.keccak_ptr": 34,
+                        "__main__.main.mul_mod_ptr": 39,
+                        "__main__.main.n_sha256": 40,
+                        "__main__.main.output_ptr": 28,
+                        "__main__.main.pedersen_ptr": 29,
+                        "__main__.main.poseidon_ptr": 35,
+                        "__main__.main.range_check96_ptr": 37,
+                        "__main__.main.range_check_ptr": 30,
+                        "__main__.main.sha256_ptr": 41
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 52,
+                    "input_file": {
+                        "filename": "./builtin_usage_flexible_cairo.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 52
+                }
+            }
+        }
+    },
+    "hints": {
+        "6": [
+            {
+                "accessible_scopes": [
+                    "starkware.cairo.common.alloc",
+                    "starkware.cairo.common.alloc.alloc"
+                ],
+                "code": "memory[ap] = segments.add()",
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 2,
+                        "offset": 0
+                    },
+                    "reference_ids": {}
+                }
+            }
+        ]
+    },
+    "identifiers": {
+        "__main__.Sha256Builtin": {
+            "destination": "starkware.cairo.common.cairo_builtins.Sha256Builtin",
+            "type": "alias"
+        },
+        "__main__.Sha256Input": {
+            "destination": "starkware.cairo.common.sha256_state.Sha256Input",
+            "type": "alias"
+        },
+        "__main__.Sha256State": {
+            "destination": "starkware.cairo.common.sha256_state.Sha256State",
+            "type": "alias"
+        },
+        "__main__.__end__": {
+            "pc": 4,
+            "type": "label"
+        },
+        "__main__.__start__": {
+            "pc": 0,
+            "type": "label"
+        },
+        "__main__.alloc": {
+            "destination": "starkware.cairo.common.alloc.alloc",
+            "type": "alias"
+        },
+        "__main__.do_sha256": {
+            "decorators": [],
+            "pc": 9,
+            "type": "function"
+        },
+        "__main__.do_sha256.Args": {
+            "full_name": "__main__.do_sha256.Args",
+            "members": {
+                "n_builtin_usages": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                }
+            },
+            "size": 1,
+            "type": "struct"
+        },
+        "__main__.do_sha256.ImplicitArgs": {
+            "full_name": "__main__.do_sha256.ImplicitArgs",
+            "members": {
+                "sha256_ptr": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.Sha256Builtin*",
+                    "offset": 0
+                }
+            },
+            "size": 1,
+            "type": "struct"
+        },
+        "__main__.do_sha256.Return": {
+            "cairo_type": "()",
+            "type": "type_definition"
+        },
+        "__main__.do_sha256.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
+        "__main__.do_sha256.__temp0": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp0",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 1
+                    },
+                    "pc": 15,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp1": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp1",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 2
+                    },
+                    "pc": 18,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp10": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp10",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 11
+                    },
+                    "pc": 45,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp11": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp11",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 12
+                    },
+                    "pc": 48,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp12": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp12",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 13
+                    },
+                    "pc": 51,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp13": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp13",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 14
+                    },
+                    "pc": 54,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp14": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp14",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 15
+                    },
+                    "pc": 57,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp15": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp15",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 16
+                    },
+                    "pc": 60,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp16": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp16",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 17
+                    },
+                    "pc": 63,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp17": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp17",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 18
+                    },
+                    "pc": 66,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp18": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp18",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 19
+                    },
+                    "pc": 69,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp19": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp19",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 20
+                    },
+                    "pc": 72,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp2": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp2",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 3
+                    },
+                    "pc": 21,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp20": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp20",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 21
+                    },
+                    "pc": 75,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp21": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp21",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 22
+                    },
+                    "pc": 78,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp22": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp22",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 23
+                    },
+                    "pc": 81,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp23": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp23",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 24
+                    },
+                    "pc": 84,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp3": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp3",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 4
+                    },
+                    "pc": 24,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp4": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp4",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 5
+                    },
+                    "pc": 27,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp5": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp5",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 6
+                    },
+                    "pc": 30,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp6": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp6",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 7
+                    },
+                    "pc": 33,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp7": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp7",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 8
+                    },
+                    "pc": 36,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp8": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp8",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 9
+                    },
+                    "pc": 39,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.__temp9": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.__temp9",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 10
+                    },
+                    "pc": 42,
+                    "value": "[cast(ap + (-1), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.n_builtin_usages": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_sha256.n_builtin_usages",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 0
+                    },
+                    "pc": 9,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_sha256.sha256_ptr": {
+            "cairo_type": "starkware.cairo.common.cairo_builtins.Sha256Builtin*",
+            "full_name": "__main__.do_sha256.sha256_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 0
+                    },
+                    "pc": 9,
+                    "value": "[cast(fp + (-4), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 3,
+                        "offset": 24
+                    },
+                    "pc": 85,
+                    "value": "cast([fp + (-4)] + 24, starkware.cairo.common.cairo_builtins.Sha256Builtin*)"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 4,
+                        "offset": 0
+                    },
+                    "pc": 91,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main": {
+            "decorators": [],
+            "pc": 92,
+            "type": "function"
+        },
+        "__main__.main.Args": {
+            "full_name": "__main__.main.Args",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "__main__.main.ImplicitArgs": {
+            "full_name": "__main__.main.ImplicitArgs",
+            "members": {
+                "add_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 10
+                },
+                "bitwise_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "ec_op_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "ecdsa_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "keccak_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "mul_mod_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 11
+                },
+                "output_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "pedersen_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "poseidon_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                },
+                "range_check96_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 9
+                },
+                "range_check_ptr": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "sha256_ptr": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.Sha256Builtin*",
+                    "offset": 8
+                }
+            },
+            "size": 12,
+            "type": "struct"
+        },
+        "__main__.main.Return": {
+            "cairo_type": "()",
+            "type": "type_definition"
+        },
+        "__main__.main.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 1
+        },
+        "__main__.main.add_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.add_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-4), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.bitwise_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.bitwise_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-10), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ec_op_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ec_op_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-9), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.ecdsa_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.ecdsa_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-11), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.keccak_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.keccak_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-8), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.mul_mod_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.mul_mod_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.n_sha256": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.n_sha256",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 1
+                    },
+                    "pc": 96,
+                    "value": "[cast(fp, felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.output_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.output_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-14), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.pedersen_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.pedersen_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-13), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.poseidon_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.poseidon_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-7), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.range_check96_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.range_check96_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-5), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.range_check_ptr": {
+            "cairo_type": "felt",
+            "full_name": "__main__.main.range_check_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-12), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.main.sha256_ptr": {
+            "cairo_type": "starkware.cairo.common.cairo_builtins.Sha256Builtin*",
+            "full_name": "__main__.main.sha256_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 5,
+                        "offset": 0
+                    },
+                    "pc": 92,
+                    "value": "[cast(fp + (-6), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 6,
+                        "offset": 0
+                    },
+                    "pc": 100,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "starkware.cairo.common.alloc.alloc": {
+            "decorators": [],
+            "pc": 6,
+            "type": "function"
+        },
+        "starkware.cairo.common.alloc.alloc.Args": {
+            "full_name": "starkware.cairo.common.alloc.alloc.Args",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "starkware.cairo.common.alloc.alloc.ImplicitArgs": {
+            "full_name": "starkware.cairo.common.alloc.alloc.ImplicitArgs",
+            "members": {},
+            "size": 0,
+            "type": "struct"
+        },
+        "starkware.cairo.common.alloc.alloc.Return": {
+            "cairo_type": "(ptr: felt*)",
+            "type": "type_definition"
+        },
+        "starkware.cairo.common.alloc.alloc.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
+        "starkware.cairo.common.cairo_builtins.BitwiseBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.BitwiseBuiltin",
+            "members": {
+                "x": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "x_and_y": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "x_or_y": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "x_xor_y": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "y": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                }
+            },
+            "size": 5,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.EcOpBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.EcOpBuiltin",
+            "members": {
+                "m": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "p": {
+                    "cairo_type": "starkware.cairo.common.ec_point.EcPoint",
+                    "offset": 0
+                },
+                "q": {
+                    "cairo_type": "starkware.cairo.common.ec_point.EcPoint",
+                    "offset": 2
+                },
+                "r": {
+                    "cairo_type": "starkware.cairo.common.ec_point.EcPoint",
+                    "offset": 5
+                }
+            },
+            "size": 7,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.EcPoint": {
+            "destination": "starkware.cairo.common.ec_point.EcPoint",
+            "type": "alias"
+        },
+        "starkware.cairo.common.cairo_builtins.HashBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.HashBuiltin",
+            "members": {
+                "result": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "x": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "y": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                }
+            },
+            "size": 3,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.KeccakBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.KeccakBuiltin",
+            "members": {
+                "input": {
+                    "cairo_type": "starkware.cairo.common.keccak_state.KeccakBuiltinState",
+                    "offset": 0
+                },
+                "output": {
+                    "cairo_type": "starkware.cairo.common.keccak_state.KeccakBuiltinState",
+                    "offset": 8
+                }
+            },
+            "size": 16,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.KeccakBuiltinState": {
+            "destination": "starkware.cairo.common.keccak_state.KeccakBuiltinState",
+            "type": "alias"
+        },
+        "starkware.cairo.common.cairo_builtins.ModBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.ModBuiltin",
+            "members": {
+                "n": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "offsets_ptr": {
+                    "cairo_type": "felt*",
+                    "offset": 5
+                },
+                "p": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.UInt384",
+                    "offset": 0
+                },
+                "values_ptr": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.UInt384*",
+                    "offset": 4
+                }
+            },
+            "size": 7,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.PoseidonBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.PoseidonBuiltin",
+            "members": {
+                "input": {
+                    "cairo_type": "starkware.cairo.common.poseidon_state.PoseidonBuiltinState",
+                    "offset": 0
+                },
+                "output": {
+                    "cairo_type": "starkware.cairo.common.poseidon_state.PoseidonBuiltinState",
+                    "offset": 3
+                }
+            },
+            "size": 6,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.PoseidonBuiltinState": {
+            "destination": "starkware.cairo.common.poseidon_state.PoseidonBuiltinState",
+            "type": "alias"
+        },
+        "starkware.cairo.common.cairo_builtins.Sha256Builtin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.Sha256Builtin",
+            "members": {
+                "input": {
+                    "cairo_type": "starkware.cairo.common.sha256_state.Sha256Input",
+                    "offset": 0
+                },
+                "output": {
+                    "cairo_type": "starkware.cairo.common.sha256_state.Sha256State",
+                    "offset": 16
+                }
+            },
+            "size": 24,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.Sha256Input": {
+            "destination": "starkware.cairo.common.sha256_state.Sha256Input",
+            "type": "alias"
+        },
+        "starkware.cairo.common.cairo_builtins.Sha256State": {
+            "destination": "starkware.cairo.common.sha256_state.Sha256State",
+            "type": "alias"
+        },
+        "starkware.cairo.common.cairo_builtins.SignatureBuiltin": {
+            "full_name": "starkware.cairo.common.cairo_builtins.SignatureBuiltin",
+            "members": {
+                "message": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "pub_key": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                }
+            },
+            "size": 2,
+            "type": "struct"
+        },
+        "starkware.cairo.common.cairo_builtins.UInt384": {
+            "full_name": "starkware.cairo.common.cairo_builtins.UInt384",
+            "members": {
+                "d0": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "d1": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "d2": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "d3": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                }
+            },
+            "size": 4,
+            "type": "struct"
+        },
+        "starkware.cairo.common.ec_point.EcPoint": {
+            "full_name": "starkware.cairo.common.ec_point.EcPoint",
+            "members": {
+                "x": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "y": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                }
+            },
+            "size": 2,
+            "type": "struct"
+        },
+        "starkware.cairo.common.keccak_state.KeccakBuiltinState": {
+            "full_name": "starkware.cairo.common.keccak_state.KeccakBuiltinState",
+            "members": {
+                "s0": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "s1": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "s2": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "s3": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "s4": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "s5": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "s6": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "s7": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                }
+            },
+            "size": 8,
+            "type": "struct"
+        },
+        "starkware.cairo.common.poseidon_state.PoseidonBuiltinState": {
+            "full_name": "starkware.cairo.common.poseidon_state.PoseidonBuiltinState",
+            "members": {
+                "s0": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "s1": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "s2": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                }
+            },
+            "size": 3,
+            "type": "struct"
+        },
+        "starkware.cairo.common.sha256_state.Sha256Input": {
+            "full_name": "starkware.cairo.common.sha256_state.Sha256Input",
+            "members": {
+                "s0": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "s1": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "s10": {
+                    "cairo_type": "felt",
+                    "offset": 10
+                },
+                "s11": {
+                    "cairo_type": "felt",
+                    "offset": 11
+                },
+                "s12": {
+                    "cairo_type": "felt",
+                    "offset": 12
+                },
+                "s13": {
+                    "cairo_type": "felt",
+                    "offset": 13
+                },
+                "s14": {
+                    "cairo_type": "felt",
+                    "offset": 14
+                },
+                "s15": {
+                    "cairo_type": "felt",
+                    "offset": 15
+                },
+                "s2": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "s3": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "s4": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "s5": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "s6": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "s7": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                },
+                "s8": {
+                    "cairo_type": "felt",
+                    "offset": 8
+                },
+                "s9": {
+                    "cairo_type": "felt",
+                    "offset": 9
+                }
+            },
+            "size": 16,
+            "type": "struct"
+        },
+        "starkware.cairo.common.sha256_state.Sha256ProcessBlock": {
+            "full_name": "starkware.cairo.common.sha256_state.Sha256ProcessBlock",
+            "members": {
+                "in_state": {
+                    "cairo_type": "starkware.cairo.common.sha256_state.Sha256State",
+                    "offset": 16
+                },
+                "input": {
+                    "cairo_type": "starkware.cairo.common.sha256_state.Sha256Input",
+                    "offset": 0
+                },
+                "out_state": {
+                    "cairo_type": "starkware.cairo.common.sha256_state.Sha256State",
+                    "offset": 24
+                }
+            },
+            "size": 32,
+            "type": "struct"
+        },
+        "starkware.cairo.common.sha256_state.Sha256State": {
+            "full_name": "starkware.cairo.common.sha256_state.Sha256State",
+            "members": {
+                "s0": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "s1": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                },
+                "s2": {
+                    "cairo_type": "felt",
+                    "offset": 2
+                },
+                "s3": {
+                    "cairo_type": "felt",
+                    "offset": 3
+                },
+                "s4": {
+                    "cairo_type": "felt",
+                    "offset": 4
+                },
+                "s5": {
+                    "cairo_type": "felt",
+                    "offset": 5
+                },
+                "s6": {
+                    "cairo_type": "felt",
+                    "offset": 6
+                },
+                "s7": {
+                    "cairo_type": "felt",
+                    "offset": 7
+                }
+            },
+            "size": 8,
+            "type": "struct"
+        }
+    },
+    "main_scope": "__main__",
+    "prime": "0x800000000000011000000000000000000000000000000000000000000000001",
+    "reference_manager": {
+        "references": [
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 0
+                },
+                "pc": 9,
+                "value": "[cast(fp + (-3), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 0
+                },
+                "pc": 9,
+                "value": "[cast(fp + (-4), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 1
+                },
+                "pc": 15,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 2
+                },
+                "pc": 18,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 3
+                },
+                "pc": 21,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 4
+                },
+                "pc": 24,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 5
+                },
+                "pc": 27,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 6
+                },
+                "pc": 30,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 7
+                },
+                "pc": 33,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 8
+                },
+                "pc": 36,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 9
+                },
+                "pc": 39,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 10
+                },
+                "pc": 42,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 11
+                },
+                "pc": 45,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 12
+                },
+                "pc": 48,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 13
+                },
+                "pc": 51,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 14
+                },
+                "pc": 54,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 15
+                },
+                "pc": 57,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 16
+                },
+                "pc": 60,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 17
+                },
+                "pc": 63,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 18
+                },
+                "pc": 66,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 19
+                },
+                "pc": 69,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 20
+                },
+                "pc": 72,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 21
+                },
+                "pc": 75,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 22
+                },
+                "pc": 78,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 23
+                },
+                "pc": 81,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 24
+                },
+                "pc": 84,
+                "value": "[cast(ap + (-1), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 3,
+                    "offset": 24
+                },
+                "pc": 85,
+                "value": "cast([fp + (-4)] + 24, starkware.cairo.common.cairo_builtins.Sha256Builtin*)"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 4,
+                    "offset": 0
+                },
+                "pc": 91,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-14), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-13), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-12), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-11), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-10), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-9), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-8), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-7), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-6), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-5), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-4), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 0
+                },
+                "pc": 92,
+                "value": "[cast(fp + (-3), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 5,
+                    "offset": 1
+                },
+                "pc": 96,
+                "value": "[cast(fp, felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 6,
+                    "offset": 0
+                },
+                "pc": 100,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.Sha256Builtin**)]"
+            }
+        ]
+    }
+}

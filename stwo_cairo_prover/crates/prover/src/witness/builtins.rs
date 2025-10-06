@@ -4,17 +4,18 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
-    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS, SHA256_MEMORY_CELLS
 };
 
 use super::components::pedersen::PedersenContextClaimGenerator;
 use super::components::poseidon::PoseidonContextClaimGenerator;
+use crate::witness::components::sha256::Sha256ContextClaimGenerator;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_3_3_3_3,
     range_check_3_6_6_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
-    range_check_8, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_8,
-    verify_bitwise_xor_9,
+    range_check_7_2_5, range_check_8, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    sha_256_builtin, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
 pub struct BuiltinsClaimGenerator {
@@ -23,6 +24,7 @@ pub struct BuiltinsClaimGenerator {
     mul_mod_builtin_trace_generator: Option<mul_mod_builtin::ClaimGenerator>,
     pedersen_builtin_trace_generator: Option<pedersen_builtin::ClaimGenerator>,
     poseidon_builtin_trace_generator: Option<poseidon_builtin::ClaimGenerator>,
+    sha256_builtin_trace_generator: Option<sha_256_builtin::ClaimGenerator>,
     range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
     range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
 }
@@ -95,6 +97,17 @@ impl BuiltinsClaimGenerator {
 
             poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
+
+        let sha256_builtin_trace_generator = builtin_segments.sha256.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            let n_instances = segment_length / SHA256_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "sha256 instances number is not a power of two"
+            );
+            sha_256_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+
         let range_check_96_builtin_trace_generator =
             builtin_segments.range_check_bits_96.map(|segment| {
                 let segment_length = segment.stop_ptr - segment.begin_addr;
@@ -127,6 +140,7 @@ impl BuiltinsClaimGenerator {
             mul_mod_builtin_trace_generator,
             pedersen_builtin_trace_generator,
             poseidon_builtin_trace_generator,
+            sha256_builtin_trace_generator,
             range_check_96_builtin_trace_generator,
             range_check_128_builtin_trace_generator,
         }
@@ -141,6 +155,7 @@ impl BuiltinsClaimGenerator {
         range_check_5_4_trace_generator: &range_check_5_4::ClaimGenerator,
         range_check_8_trace_generator: &range_check_8::ClaimGenerator,
         poseidon_context_trace_generator: &mut PoseidonContextClaimGenerator,
+        sha256_context_trace_generator: &mut Sha256ContextClaimGenerator,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
         range_check_12_trace_generator: &range_check_12::ClaimGenerator,
         range_check_18_trace_generator: &range_check_18::ClaimGenerator,
@@ -148,6 +163,7 @@ impl BuiltinsClaimGenerator {
         range_check_3_6_6_3_trace_generator: &range_check_3_6_6_3::ClaimGenerator,
         range_check_4_4_4_4_trace_generator: &range_check_4_4_4_4::ClaimGenerator,
         range_check_3_3_3_3_3_trace_generator: &range_check_3_3_3_3_3::ClaimGenerator,
+        range_check_7_2_5_trace_generator: &range_check_7_2_5::ClaimGenerator,
         verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BuiltinsClaim, BuiltinsInteractionClaimGenerator) {
@@ -219,6 +235,19 @@ impl BuiltinsClaimGenerator {
             })
             .unzip();
 
+        let (sha256_builtin_claim, sha256_builtin_interaction_gen) = self
+            .sha256_builtin_trace_generator
+            .map(|sha256_builtin_trace_generator| {
+                sha256_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator,
+                    memory_id_to_value_trace_generator,
+                    range_check_7_2_5_trace_generator,
+                    &mut sha256_context_trace_generator.sha_256_round_trace_generator,
+                )
+            })
+            .unzip();
+
         let (range_check_96_builtin_claim, range_check_96_builtin_interaction_gen) = self
             .range_check_96_builtin_trace_generator
             .map(|range_check_96_builtin_trace_generator| {
@@ -250,6 +279,7 @@ impl BuiltinsClaimGenerator {
                 poseidon_builtin: poseidon_builtin_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
+                sha256_builtin: sha256_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
                 add_mod_builtin_interaction_gen,
@@ -259,6 +289,7 @@ impl BuiltinsClaimGenerator {
                 poseidon_builtin_interaction_gen,
                 range_check_96_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
+                sha256_builtin_interaction_gen,
             },
         )
     }
@@ -270,6 +301,7 @@ pub struct BuiltinsInteractionClaimGenerator {
     mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
     pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
     poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
+    sha256_builtin_interaction_gen: Option<sha_256_builtin::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
         Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
     range_check_128_builtin_interaction_gen:
@@ -341,6 +373,18 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.poseidon_3_partial_rounds_chain,
                     )
                 });
+
+        let sha256_builtin_interaction_claim =
+            self.sha256_builtin_interaction_gen
+                .map(|sha256_builtin_interaction_gen| {
+                    sha256_builtin_interaction_gen.write_interaction_trace(
+                        tree_builder,
+                        &interaction_elements.range_checks.rc_7_2_5,
+                        &interaction_elements.memory_address_to_id,
+                        &interaction_elements.memory_id_to_value,
+                        &interaction_elements.sha_256_round,
+                    )
+                });
         let range_check_96_builtin_interaction_claim = self
             .range_check_96_builtin_interaction_gen
             .map(|range_check_96_builtin_interaction_gen| {
@@ -367,6 +411,7 @@ impl BuiltinsInteractionClaimGenerator {
             mul_mod_builtin: mul_mod_builtin_interaction_claim,
             pedersen_builtin: pedersen_builtin_interaction_claim,
             poseidon_builtin: poseidon_builtin_interaction_claim,
+            sha256_builtin: sha256_builtin_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,
         }

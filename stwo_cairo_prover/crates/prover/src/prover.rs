@@ -515,6 +515,13 @@ pub mod tests {
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
             }
+            #[test]
+            fn test_sha256_builtin_constraints() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_sha256_builtin");
+                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
+            }
 
             #[test]
             fn test_bitwise_builtin_constraints() {

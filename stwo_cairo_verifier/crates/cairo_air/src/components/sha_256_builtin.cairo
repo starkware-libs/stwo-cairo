@@ -1,4 +1,4 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 use crate::prelude::*;use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
 
 pub const N_TRACE_COLUMNS: usize = 176;pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
@@ -118,7 +118,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         read_blake_word_evaluate(
-            (sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())),
+            (sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())),
 low_16_bits_col0,
 high_16_bits_col1,
 low_7_ms_bits_col2,
@@ -135,7 +135,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<1, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<1, 0, 0, 0>()),
 low_16_bits_col6,
 high_16_bits_col7,
 low_7_ms_bits_col8,
@@ -152,7 +152,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<2, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<2, 0, 0, 0>()),
 low_16_bits_col12,
 high_16_bits_col13,
 low_7_ms_bits_col14,
@@ -169,7 +169,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<3, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<3, 0, 0, 0>()),
 low_16_bits_col18,
 high_16_bits_col19,
 low_7_ms_bits_col20,
@@ -186,7 +186,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<4, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<4, 0, 0, 0>()),
 low_16_bits_col24,
 high_16_bits_col25,
 low_7_ms_bits_col26,
@@ -203,7 +203,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<5, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<5, 0, 0, 0>()),
 low_16_bits_col30,
 high_16_bits_col31,
 low_7_ms_bits_col32,
@@ -220,7 +220,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<6, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<6, 0, 0, 0>()),
 low_16_bits_col36,
 high_16_bits_col37,
 low_7_ms_bits_col38,
@@ -237,7 +237,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<7, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<7, 0, 0, 0>()),
 low_16_bits_col42,
 high_16_bits_col43,
 low_7_ms_bits_col44,
@@ -254,7 +254,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<8, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<8, 0, 0, 0>()),
 low_16_bits_col48,
 high_16_bits_col49,
 low_7_ms_bits_col50,
@@ -271,7 +271,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<9, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<9, 0, 0, 0>()),
 low_16_bits_col54,
 high_16_bits_col55,
 low_7_ms_bits_col56,
@@ -288,7 +288,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<10, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<10, 0, 0, 0>()),
 low_16_bits_col60,
 high_16_bits_col61,
 low_7_ms_bits_col62,
@@ -305,7 +305,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<11, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<11, 0, 0, 0>()),
 low_16_bits_col66,
 high_16_bits_col67,
 low_7_ms_bits_col68,
@@ -322,7 +322,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<12, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<12, 0, 0, 0>()),
 low_16_bits_col72,
 high_16_bits_col73,
 low_7_ms_bits_col74,
@@ -339,7 +339,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<13, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<13, 0, 0, 0>()),
 low_16_bits_col78,
 high_16_bits_col79,
 low_7_ms_bits_col80,
@@ -356,7 +356,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<14, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<14, 0, 0, 0>()),
 low_16_bits_col84,
 high_16_bits_col85,
 low_7_ms_bits_col86,
@@ -373,7 +373,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );read_blake_word_evaluate(
-            ((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<15, 0, 0, 0>()),
+            ((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<15, 0, 0, 0>()),
 low_16_bits_col90,
 high_16_bits_col91,
 low_7_ms_bits_col92,
@@ -500,7 +500,7 @@ sha_256_round_output_limb_46_col142,
 sha_256_round_output_limb_47_col143
             ],
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<16, 0, 0, 0>()), sha_256_round_output_limb_0_col96, sha_256_round_output_limb_1_col97],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<16, 0, 0, 0>()), sha_256_round_output_limb_0_col96, sha_256_round_output_limb_1_col97],
 low_7_ms_bits_col144,
 high_14_ms_bits_col145,
 high_5_ms_bits_col146,
@@ -515,7 +515,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<17, 0, 0, 0>()), sha_256_round_output_limb_2_col98, sha_256_round_output_limb_3_col99],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<17, 0, 0, 0>()), sha_256_round_output_limb_2_col98, sha_256_round_output_limb_3_col99],
 low_7_ms_bits_col148,
 high_14_ms_bits_col149,
 high_5_ms_bits_col150,
@@ -530,7 +530,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<18, 0, 0, 0>()), sha_256_round_output_limb_4_col100, sha_256_round_output_limb_5_col101],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<18, 0, 0, 0>()), sha_256_round_output_limb_4_col100, sha_256_round_output_limb_5_col101],
 low_7_ms_bits_col152,
 high_14_ms_bits_col153,
 high_5_ms_bits_col154,
@@ -545,7 +545,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<19, 0, 0, 0>()), sha_256_round_output_limb_6_col102, sha_256_round_output_limb_7_col103],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<19, 0, 0, 0>()), sha_256_round_output_limb_6_col102, sha_256_round_output_limb_7_col103],
 low_7_ms_bits_col156,
 high_14_ms_bits_col157,
 high_5_ms_bits_col158,
@@ -560,7 +560,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<20, 0, 0, 0>()), sha_256_round_output_limb_8_col104, sha_256_round_output_limb_9_col105],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<20, 0, 0, 0>()), sha_256_round_output_limb_8_col104, sha_256_round_output_limb_9_col105],
 low_7_ms_bits_col160,
 high_14_ms_bits_col161,
 high_5_ms_bits_col162,
@@ -575,7 +575,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<21, 0, 0, 0>()), sha_256_round_output_limb_10_col106, sha_256_round_output_limb_11_col107],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<21, 0, 0, 0>()), sha_256_round_output_limb_10_col106, sha_256_round_output_limb_11_col107],
 low_7_ms_bits_col164,
 high_14_ms_bits_col165,
 high_5_ms_bits_col166,
@@ -590,7 +590,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<22, 0, 0, 0>()), sha_256_round_output_limb_12_col108, sha_256_round_output_limb_13_col109],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<22, 0, 0, 0>()), sha_256_round_output_limb_12_col108, sha_256_round_output_limb_13_col109],
 low_7_ms_bits_col168,
 high_14_ms_bits_col169,
 high_5_ms_bits_col170,
@@ -605,7 +605,7 @@ ref sum,
 domain_vanishing_eval_inv,
 random_coeff
         );verify_blake_word_evaluate(
-            [((sha256_builtin_segment_start + (seq * qm31_const::<16, 0, 0, 0>())) + qm31_const::<23, 0, 0, 0>()), sha_256_round_output_limb_14_col110, sha_256_round_output_limb_15_col111],
+            [((sha256_builtin_segment_start + (seq * qm31_const::<24, 0, 0, 0>())) + qm31_const::<23, 0, 0, 0>()), sha_256_round_output_limb_14_col110, sha_256_round_output_limb_15_col111],
 low_7_ms_bits_col172,
 high_14_ms_bits_col173,
 high_5_ms_bits_col174,

@@ -14,6 +14,7 @@ use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    sha_256_builtin,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -25,6 +26,7 @@ pub struct BuiltinsClaim {
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
+    pub sha256_builtin: Option<sha_256_builtin::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -48,6 +50,9 @@ impl BuiltinsClaim {
         }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel);
+        }
+        if let Some(sha256_builtin) = &self.sha256_builtin {
+            sha256_builtin.mix_into(channel);
         }
     }
 
@@ -74,6 +79,9 @@ impl BuiltinsClaim {
             self.range_check_128_builtin
                 .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
                 .into_iter(),
+            self.sha256_builtin
+                .map(|sha256_builtin| sha256_builtin.log_sizes())
+                .into_iter(),
         ))
     }
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
@@ -85,6 +93,7 @@ impl BuiltinsClaim {
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
+            sha256_builtin,
         } = self;
 
         // TODO(alonf): canonicalize the name of field and module.
@@ -106,6 +115,7 @@ impl BuiltinsClaim {
         relation_uses!(poseidon_builtin, poseidon_builtin);
         relation_uses!(range_check_96_builtin, range_check_builtin_bits_96);
         relation_uses!(range_check_128_builtin, range_check_builtin_bits_128);
+        relation_uses!(sha256_builtin, sha_256_builtin);
     }
 }
 
@@ -118,6 +128,7 @@ pub struct BuiltinsInteractionClaim {
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
+    pub sha256_builtin: Option<sha_256_builtin::InteractionClaim>,
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -141,6 +152,9 @@ impl BuiltinsInteractionClaim {
         }
         if let Some(range_check_128_builtin) = self.range_check_128_builtin {
             range_check_128_builtin.mix_into(channel)
+        }
+        if let Some(sha256_builtin) = &self.sha256_builtin {
+            sha256_builtin.mix_into(channel);
         }
     }
 
@@ -167,6 +181,9 @@ impl BuiltinsInteractionClaim {
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             sum += range_check_128_builtin.claimed_sum;
         }
+        if let Some(sha256_builtin) = &self.sha256_builtin {
+            sum += sha256_builtin.claimed_sum;
+        }
         sum
     }
 }
@@ -178,6 +195,7 @@ pub struct BuiltinComponents {
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
     pub range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
+    pub sha256_builtin: Option<sha_256_builtin::Component>,
 }
 impl BuiltinComponents {
     pub fn new(
@@ -345,6 +363,26 @@ impl BuiltinComponents {
                             .claimed_sum,
                     )
                 });
+        let sha256_builtin_component = claim.sha256_builtin.map(|sha256_builtin| {
+            sha_256_builtin::Component::new(
+                tree_span_provider,
+                sha_256_builtin::Eval {
+                    claim: sha256_builtin,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    range_check_7_2_5_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_7_2_5
+                        .clone(),
+                    sha_256_round_lookup_elements: interaction_elements.sha_256_round.clone(),
+                },
+                interaction_claim.sha256_builtin.unwrap().claimed_sum,
+            )
+        });
         Self {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
@@ -353,6 +391,7 @@ impl BuiltinComponents {
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
+            sha256_builtin: sha256_builtin_component,
         }
     }
 
@@ -378,6 +417,9 @@ impl BuiltinComponents {
         }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
             vec.push(range_check_128_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(sha256_builtin) = &self.sha256_builtin {
+            vec.push(sha256_builtin as &dyn ComponentProver<SimdBackend>);
         }
         vec
     }
@@ -432,6 +474,13 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "RangeCheck128Builtin: {}",
                 indented_component_display(range_check_128_builtin)
+            )?;
+        }
+        if let Some(sha256_builtin) = &self.sha256_builtin {
+            writeln!(
+                f,
+                "Sha256Builtin: {}",
+                indented_component_display(sha256_builtin)
             )?;
         }
         Ok(())

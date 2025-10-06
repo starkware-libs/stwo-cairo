@@ -1,4 +1,4 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
@@ -7,7 +7,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_bitwise_xor_16_lookup_elements: relations::VerifyBitwiseXor_16,
+    pub verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -49,18 +49,18 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let bitwisexor_16_0 = eval.get_preprocessed_column((BitwiseXor::new(16, 0)).id());
-        let bitwisexor_16_1 = eval.get_preprocessed_column((BitwiseXor::new(16, 1)).id());
-        let bitwisexor_16_2 = eval.get_preprocessed_column((BitwiseXor::new(16, 2)).id());
+        let bitwiseand_8_0 = eval.get_preprocessed_column((BitwiseAnd::new(8, 0)).id());
+        let bitwiseand_8_1 = eval.get_preprocessed_column((BitwiseAnd::new(8, 1)).id());
+        let bitwiseand_8_2 = eval.get_preprocessed_column((BitwiseAnd::new(8, 2)).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_16_lookup_elements,
+            &self.verify_bitwise_and_8_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                bitwisexor_16_0.clone(),
-                bitwisexor_16_1.clone(),
-                bitwisexor_16_2.clone(),
+                bitwiseand_8_0.clone(),
+                bitwiseand_8_1.clone(),
+                bitwiseand_8_2.clone(),
             ],
         ));
 
@@ -78,14 +78,14 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::VERIFY_BITWISE_XOR_16;
+    use crate::components::constraints_regression_test_values::VERIFY_BITWISE_AND_8;
 
     #[test]
-    fn verify_bitwise_xor_16_constraints_regression() {
+    fn verify_bitwise_and_8_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            verify_bitwise_xor_16_lookup_elements: relations::VerifyBitwiseXor_16::dummy(),
+            verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -95,6 +95,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, VERIFY_BITWISE_XOR_16);
+        assert_eq!(sum, VERIFY_BITWISE_AND_8);
     }
 }

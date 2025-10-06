@@ -98,9 +98,7 @@ pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
-pub type VerifyBitwiseXor_16Elements = LookupElements<3>;
-
-pub type VerifyBitwiseAnd_16Elements = LookupElements<3>;
+pub type VerifyBitwiseAnd_8Elements = LookupElements<3>;
 
 pub type VerifyBitwiseNot_16Elements = LookupElements<2>;
 
@@ -330,8 +328,7 @@ pub struct CairoInteractionElements {
     pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
     pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
     pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
-    pub verify_bitwise_xor_16: VerifyBitwiseXor_16Elements,
-    pub verify_bitwise_and_16: VerifyBitwiseAnd_16Elements,
+    pub verify_bitwise_and_8: VerifyBitwiseAnd_8Elements,
     pub verify_bitwise_not_16: VerifyBitwiseNot_16Elements,
     pub sigma: SigmaElements,
     pub sha_256_schedule: Sha256ScheduleElements,
@@ -377,9 +374,8 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_16: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_and_16: LookupElementsImpl::draw(ref channel),
             verify_bitwise_not_16: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_and_8: LookupElementsImpl::draw(ref channel),
             sigma: LookupElementsImpl::draw(ref channel),
             sha_256_schedule: LookupElementsImpl::draw(ref channel),
             sha_256_k_table: LookupElementsImpl::draw(ref channel),

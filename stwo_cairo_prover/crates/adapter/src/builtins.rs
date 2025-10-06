@@ -44,6 +44,7 @@ pub struct BuiltinSegments {
     pub mul_mod: Option<MemorySegmentAddresses>,
     pub pedersen: Option<MemorySegmentAddresses>,
     pub poseidon: Option<MemorySegmentAddresses>,
+    pub sha256: Option<MemorySegmentAddresses>,
     pub range_check_bits_96: Option<MemorySegmentAddresses>,
     pub range_check_bits_128: Option<MemorySegmentAddresses>,
 }
@@ -176,6 +177,7 @@ impl BuiltinSegments {
                 BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
                 BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
                 BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
+                BuiltinName::sha256 => SHA256_MEMORY_CELLS,
                 BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
                 BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
                 _ => panic!("Invalid builtin name"),

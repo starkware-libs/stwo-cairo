@@ -1,10 +1,10 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct BitwiseXorNumBits16 {}
+pub struct BitwiseAndNumBits8 {}
 
-impl BitwiseXorNumBits16 {
+impl BitwiseAndNumBits8 {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -12,18 +12,18 @@ impl BitwiseXorNumBits16 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [bitwise_xor_num_bits_16_input_limb_0, bitwise_xor_num_bits_16_input_limb_1]: [E::F; 2],
-        xor_col0: E::F,
-        verify_bitwise_xor_16_lookup_elements: &relations::VerifyBitwiseXor_16,
+        [bitwise_and_num_bits_8_input_limb_0, bitwise_and_num_bits_8_input_limb_1]: [E::F; 2],
+        and_col0: E::F,
+        verify_bitwise_and_8_lookup_elements: &relations::VerifyBitwiseAnd_8,
         eval: &mut E,
     ) -> [E::F; 0] {
         eval.add_to_relation(RelationEntry::new(
-            verify_bitwise_xor_16_lookup_elements,
+            verify_bitwise_and_8_lookup_elements,
             E::EF::one(),
             &[
-                bitwise_xor_num_bits_16_input_limb_0.clone(),
-                bitwise_xor_num_bits_16_input_limb_1.clone(),
-                xor_col0.clone(),
+                bitwise_and_num_bits_8_input_limb_0.clone(),
+                bitwise_and_num_bits_8_input_limb_1.clone(),
+                and_col0.clone(),
             ],
         ));
 

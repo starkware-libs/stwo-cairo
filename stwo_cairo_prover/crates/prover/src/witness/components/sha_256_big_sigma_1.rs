@@ -1,9 +1,9 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_big_sigma_1::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{
-    sha_256_big_sigma_1_o_0, sha_256_big_sigma_1_o_1, verify_bitwise_and_16, verify_bitwise_xor_16,
+    sha_256_big_sigma_1_o_0, sha_256_big_sigma_1_o_1, verify_bitwise_and_8, verify_bitwise_xor_8,
 };
 use crate::witness::prelude::*;
 
@@ -29,8 +29,8 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         sha_256_big_sigma_1_o_0_state: &sha_256_big_sigma_1_o_0::ClaimGenerator,
         sha_256_big_sigma_1_o_1_state: &sha_256_big_sigma_1_o_1::ClaimGenerator,
-        verify_bitwise_and_16_state: &verify_bitwise_and_16::ClaimGenerator,
-        verify_bitwise_xor_16_state: &verify_bitwise_xor_16::ClaimGenerator,
+        verify_bitwise_and_8_state: &verify_bitwise_and_8::ClaimGenerator,
+        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -45,14 +45,14 @@ impl ClaimGenerator {
             n_rows,
             sha_256_big_sigma_1_o_0_state,
             sha_256_big_sigma_1_o_1_state,
-            verify_bitwise_and_16_state,
-            verify_bitwise_xor_16_state,
+            verify_bitwise_and_8_state,
+            verify_bitwise_xor_8_state,
         );
         sub_component_inputs
-            .verify_bitwise_and_16
+            .verify_bitwise_and_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_and_16_state.add_packed_inputs(inputs);
+                verify_bitwise_and_8_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
             .sha_256_big_sigma_1_o_0
@@ -67,10 +67,10 @@ impl ClaimGenerator {
                 sha_256_big_sigma_1_o_1_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
-            .verify_bitwise_xor_16
+            .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_16_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -91,10 +91,10 @@ impl ClaimGenerator {
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
-    verify_bitwise_and_16: [Vec<verify_bitwise_and_16::PackedInputType>; 6],
+    verify_bitwise_and_8: [Vec<verify_bitwise_and_8::PackedInputType>; 12],
     sha_256_big_sigma_1_o_0: [Vec<sha_256_big_sigma_1_o_0::PackedInputType>; 1],
     sha_256_big_sigma_1_o_1: [Vec<sha_256_big_sigma_1_o_1::PackedInputType>; 1],
-    verify_bitwise_xor_16: [Vec<verify_bitwise_xor_16::PackedInputType>; 2],
+    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -106,8 +106,8 @@ fn write_trace_simd(
     n_rows: usize,
     sha_256_big_sigma_1_o_0_state: &sha_256_big_sigma_1_o_0::ClaimGenerator,
     sha_256_big_sigma_1_o_1_state: &sha_256_big_sigma_1_o_1::ClaimGenerator,
-    verify_bitwise_and_16_state: &verify_bitwise_and_16::ClaimGenerator,
-    verify_bitwise_xor_16_state: &verify_bitwise_xor_16::ClaimGenerator,
+    verify_bitwise_and_8_state: &verify_bitwise_and_8::ClaimGenerator,
+    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -123,24 +123,32 @@ fn write_trace_simd(
         )
     };
 
+    let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_109 = PackedM31::broadcast(M31::from(109));
+    let M31_114 = PackedM31::broadcast(M31::from(114));
+    let M31_141 = PackedM31::broadcast(M31::from(141));
+    let M31_146 = PackedM31::broadcast(M31::from(146));
+    let M31_156 = PackedM31::broadcast(M31::from(156));
     let M31_214 = PackedM31::broadcast(M31::from(214));
-    let M31_25385 = PackedM31::broadcast(M31::from(25385));
-    let M31_29330 = PackedM31::broadcast(M31::from(29330));
-    let M31_36096 = PackedM31::broadcast(M31::from(36096));
-    let M31_39936 = PackedM31::broadcast(M31::from(39936));
+    let M31_256 = PackedM31::broadcast(M31::from(256));
+    let M31_41 = PackedM31::broadcast(M31::from(41));
+    let M31_99 = PackedM31::broadcast(M31::from(99));
+    let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_109 = PackedUInt16::broadcast(UInt16::from(109));
+    let UInt16_114 = PackedUInt16::broadcast(UInt16::from(114));
+    let UInt16_141 = PackedUInt16::broadcast(UInt16::from(141));
+    let UInt16_146 = PackedUInt16::broadcast(UInt16::from(146));
     let UInt16_14698 = PackedUInt16::broadcast(UInt16::from(14698));
+    let UInt16_156 = PackedUInt16::broadcast(UInt16::from(156));
     let UInt16_16913 = PackedUInt16::broadcast(UInt16::from(16913));
     let UInt16_2122 = PackedUInt16::broadcast(UInt16::from(2122));
     let UInt16_214 = PackedUInt16::broadcast(UInt16::from(214));
-    let UInt16_25385 = PackedUInt16::broadcast(UInt16::from(25385));
-    let UInt16_29330 = PackedUInt16::broadcast(UInt16::from(29330));
     let UInt16_33924 = PackedUInt16::broadcast(UInt16::from(33924));
-    let UInt16_36096 = PackedUInt16::broadcast(UInt16::from(36096));
-    let UInt16_39936 = PackedUInt16::broadcast(UInt16::from(39936));
+    let UInt16_41 = PackedUInt16::broadcast(UInt16::from(41));
     let UInt16_54148 = PackedUInt16::broadcast(UInt16::from(54148));
+    let UInt16_8 = PackedUInt16::broadcast(UInt16::from(8));
     let UInt16_9265 = PackedUInt16::broadcast(UInt16::from(9265));
+    let UInt16_99 = PackedUInt16::broadcast(UInt16::from(99));
     let UInt32_11 = PackedUInt32::broadcast(UInt32::from(11));
     let UInt32_21 = PackedUInt32::broadcast(UInt32::from(21));
     let UInt32_25 = PackedUInt32::broadcast(UInt32::from(25));
@@ -167,196 +175,413 @@ fn write_trace_simd(
                 let input_limb_1_col1 = sha_256_big_sigma_1_input.high().as_m31();
                 *row[1] = input_limb_1_col1;
 
-                // Bitwise And Num Bits 16.
+                // Split 16 Low Part Size 8.
 
-                let and_tmp_438a7_0 =
-                    ((PackedUInt16::from_m31(input_limb_0_col0)) & (UInt16_29330));
-                let and_col2 = and_tmp_438a7_0.as_m31();
-                *row[2] = and_col2;
-                *sub_component_inputs.verify_bitwise_and_16[0] =
-                    [input_limb_0_col0, M31_29330, and_col2];
-                *lookup_data.verify_bitwise_and_16_0 = [input_limb_0_col0, M31_29330, and_col2];
+                let ms_8_bits_tmp_438a7_0 = ((sha_256_big_sigma_1_input.low()) >> (UInt16_8));
+                let ms_8_bits_col2 = ms_8_bits_tmp_438a7_0.as_m31();
+                *row[2] = ms_8_bits_col2;
+                let split_16_low_part_size_8_output_tmp_438a7_1 = [
+                    ((input_limb_0_col0) - ((ms_8_bits_col2) * (M31_256))),
+                    ms_8_bits_col2,
+                ];
 
-                // Bitwise And Num Bits 16.
+                // Split 16 Low Part Size 8.
 
-                let and_tmp_438a7_2 = ((PackedUInt16::from_m31(input_limb_0_col0)) & (UInt16_109));
-                let and_col3 = and_tmp_438a7_2.as_m31();
-                *row[3] = and_col3;
-                *sub_component_inputs.verify_bitwise_and_16[1] =
-                    [input_limb_0_col0, M31_109, and_col3];
-                *lookup_data.verify_bitwise_and_16_1 = [input_limb_0_col0, M31_109, and_col3];
+                let ms_8_bits_tmp_438a7_2 = ((sha_256_big_sigma_1_input.high()) >> (UInt16_8));
+                let ms_8_bits_col3 = ms_8_bits_tmp_438a7_2.as_m31();
+                *row[3] = ms_8_bits_col3;
+                let split_16_low_part_size_8_output_tmp_438a7_3 = [
+                    ((input_limb_1_col1) - ((ms_8_bits_col3) * (M31_256))),
+                    ms_8_bits_col3,
+                ];
 
-                // Bitwise And Num Bits 16.
+                // Bitwise And Num Bits 8.
 
                 let and_tmp_438a7_4 =
-                    ((PackedUInt16::from_m31(input_limb_0_col0)) & (UInt16_36096));
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_1[0]))
+                        & (UInt16_146));
                 let and_col4 = and_tmp_438a7_4.as_m31();
                 *row[4] = and_col4;
-                *sub_component_inputs.verify_bitwise_and_16[2] =
-                    [input_limb_0_col0, M31_36096, and_col4];
-                *lookup_data.verify_bitwise_and_16_2 = [input_limb_0_col0, M31_36096, and_col4];
+                *sub_component_inputs.verify_bitwise_and_8[0] = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_146,
+                    and_col4,
+                ];
+                *lookup_data.verify_bitwise_and_8_0 = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_146,
+                    and_col4,
+                ];
 
-                // Bitwise And Num Bits 16.
+                // Bitwise And Num Bits 8.
 
-                let and_tmp_438a7_6 = ((PackedUInt16::from_m31(input_limb_1_col1)) & (UInt16_214));
+                let and_tmp_438a7_6 = ((PackedUInt16::from_m31(ms_8_bits_col2)) & (UInt16_114));
                 let and_col5 = and_tmp_438a7_6.as_m31();
                 *row[5] = and_col5;
-                *sub_component_inputs.verify_bitwise_and_16[3] =
-                    [input_limb_1_col1, M31_214, and_col5];
-                *lookup_data.verify_bitwise_and_16_3 = [input_limb_1_col1, M31_214, and_col5];
+                *sub_component_inputs.verify_bitwise_and_8[1] = [ms_8_bits_col2, M31_114, and_col5];
+                *lookup_data.verify_bitwise_and_8_1 = [ms_8_bits_col2, M31_114, and_col5];
 
-                // Bitwise And Num Bits 16.
+                let l0_col6 = ((and_col4) + ((and_col5) * (M31_256)));
+                *row[6] = l0_col6;
+
+                // Bitwise And Num Bits 8.
 
                 let and_tmp_438a7_8 =
-                    ((PackedUInt16::from_m31(input_limb_1_col1)) & (UInt16_39936));
-                let and_col6 = and_tmp_438a7_8.as_m31();
-                *row[6] = and_col6;
-                *sub_component_inputs.verify_bitwise_and_16[4] =
-                    [input_limb_1_col1, M31_39936, and_col6];
-                *lookup_data.verify_bitwise_and_16_4 = [input_limb_1_col1, M31_39936, and_col6];
-
-                // Bitwise And Num Bits 16.
-
-                let and_tmp_438a7_10 =
-                    ((PackedUInt16::from_m31(input_limb_1_col1)) & (UInt16_25385));
-                let and_col7 = and_tmp_438a7_10.as_m31();
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_1[0]))
+                        & (UInt16_109));
+                let and_col7 = and_tmp_438a7_8.as_m31();
                 *row[7] = and_col7;
-                *sub_component_inputs.verify_bitwise_and_16[5] =
-                    [input_limb_1_col1, M31_25385, and_col7];
-                *lookup_data.verify_bitwise_and_16_5 = [input_limb_1_col1, M31_25385, and_col7];
-
-                let sigma_rotated0_tmp_438a7_12 =
-                    (((((PackedUInt32::from_limbs([((and_col3) + (and_col4)), and_col7]))
-                        >> (UInt32_6))
-                        | ((PackedUInt32::from_limbs([((and_col3) + (and_col4)), and_col7]))
-                            << (UInt32_26)))
-                        ^ (((PackedUInt32::from_limbs([((and_col3) + (and_col4)), and_col7]))
-                            >> (UInt32_11))
-                            | ((PackedUInt32::from_limbs([
-                                ((and_col3) + (and_col4)),
-                                and_col7,
-                            ])) << (UInt32_21))))
-                        ^ (((PackedUInt32::from_limbs([((and_col3) + (and_col4)), and_col7]))
-                            >> (UInt32_25))
-                            | ((PackedUInt32::from_limbs([((and_col3) + (and_col4)), and_col7]))
-                                << (UInt32_7))));
-                let sigma_rotated1_tmp_438a7_13 =
-                    (((((PackedUInt32::from_limbs([and_col2, ((and_col5) + (and_col6))]))
-                        >> (UInt32_6))
-                        | ((PackedUInt32::from_limbs([and_col2, ((and_col5) + (and_col6))]))
-                            << (UInt32_26)))
-                        ^ (((PackedUInt32::from_limbs([and_col2, ((and_col5) + (and_col6))]))
-                            >> (UInt32_11))
-                            | ((PackedUInt32::from_limbs([
-                                and_col2,
-                                ((and_col5) + (and_col6)),
-                            ])) << (UInt32_21))))
-                        ^ (((PackedUInt32::from_limbs([and_col2, ((and_col5) + (and_col6))]))
-                            >> (UInt32_25))
-                            | ((PackedUInt32::from_limbs([and_col2, ((and_col5) + (and_col6))]))
-                                << (UInt32_7))));
-                let sigma_O0_L_tmp_438a7_14 = ((sigma_rotated0_tmp_438a7_12.low()) & (UInt16_9265));
-                let sigma_O0_L_col8 = sigma_O0_L_tmp_438a7_14.as_m31();
-                *row[8] = sigma_O0_L_col8;
-                let sigma_O0_H_tmp_438a7_15 =
-                    ((sigma_rotated0_tmp_438a7_12.high()) & (UInt16_33924));
-                let sigma_O0_H_col9 = sigma_O0_H_tmp_438a7_15.as_m31();
-                *row[9] = sigma_O0_H_col9;
-                let sigma_O1_L_tmp_438a7_16 = ((sigma_rotated1_tmp_438a7_13.low()) & (UInt16_2122));
-                let sigma_O1_L_col10 = sigma_O1_L_tmp_438a7_16.as_m31();
-                *row[10] = sigma_O1_L_col10;
-                let sigma_O1_H_tmp_438a7_17 =
-                    ((sigma_rotated1_tmp_438a7_13.high()) & (UInt16_16913));
-                let sigma_O1_H_col11 = sigma_O1_H_tmp_438a7_17.as_m31();
-                *row[11] = sigma_O1_H_col11;
-                let sigma_O2_L_tmp_438a7_18 =
-                    ((sigma_rotated0_tmp_438a7_12.low()) & (UInt16_54148));
-                let sigma_O2_L_col12 = sigma_O2_L_tmp_438a7_18.as_m31();
-                *row[12] = sigma_O2_L_col12;
-                let sigma_O2_H_tmp_438a7_19 =
-                    ((sigma_rotated0_tmp_438a7_12.high()) & (UInt16_14698));
-                let sigma_O2_H_col13 = sigma_O2_H_tmp_438a7_19.as_m31();
-                *row[13] = sigma_O2_H_col13;
-                let sigma_O2_prime_L_tmp_438a7_20 =
-                    ((sigma_rotated1_tmp_438a7_13.low()) & (UInt16_54148));
-                let sigma_O2_prime_L_col14 = sigma_O2_prime_L_tmp_438a7_20.as_m31();
-                *row[14] = sigma_O2_prime_L_col14;
-                let sigma_O2_prime_H_tmp_438a7_21 =
-                    ((sigma_rotated1_tmp_438a7_13.high()) & (UInt16_14698));
-                let sigma_O2_prime_H_col15 = sigma_O2_prime_H_tmp_438a7_21.as_m31();
-                *row[15] = sigma_O2_prime_H_col15;
-                *sub_component_inputs.sha_256_big_sigma_1_o_0[0] = [
-                    ((and_col3) + (and_col4)),
+                *sub_component_inputs.verify_bitwise_and_8[2] = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_109,
                     and_col7,
-                    sigma_O0_L_col8,
-                    sigma_O0_H_col9,
-                    sigma_O2_L_col12,
-                    sigma_O2_H_col13,
+                ];
+                *lookup_data.verify_bitwise_and_8_2 = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_109,
+                    and_col7,
+                ];
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_10 = ((PackedUInt16::from_m31(ms_8_bits_col2)) & (UInt16_0));
+                let and_col8 = and_tmp_438a7_10.as_m31();
+                *row[8] = and_col8;
+                *sub_component_inputs.verify_bitwise_and_8[3] = [ms_8_bits_col2, M31_0, and_col8];
+                *lookup_data.verify_bitwise_and_8_3 = [ms_8_bits_col2, M31_0, and_col8];
+
+                let l1_col9 = ((and_col7) + ((and_col8) * (M31_256)));
+                *row[9] = l1_col9;
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_12 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_1[0]))
+                        & (UInt16_0));
+                let and_col10 = and_tmp_438a7_12.as_m31();
+                *row[10] = and_col10;
+                *sub_component_inputs.verify_bitwise_and_8[4] = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_0,
+                    and_col10,
+                ];
+                *lookup_data.verify_bitwise_and_8_4 = [
+                    split_16_low_part_size_8_output_tmp_438a7_1[0],
+                    M31_0,
+                    and_col10,
+                ];
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_14 = ((PackedUInt16::from_m31(ms_8_bits_col2)) & (UInt16_141));
+                let and_col11 = and_tmp_438a7_14.as_m31();
+                *row[11] = and_col11;
+                *sub_component_inputs.verify_bitwise_and_8[5] =
+                    [ms_8_bits_col2, M31_141, and_col11];
+                *lookup_data.verify_bitwise_and_8_5 = [ms_8_bits_col2, M31_141, and_col11];
+
+                let l2_col12 = ((and_col10) + ((and_col11) * (M31_256)));
+                *row[12] = l2_col12;
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_16 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_3[0]))
+                        & (UInt16_214));
+                let and_col13 = and_tmp_438a7_16.as_m31();
+                *row[13] = and_col13;
+                *sub_component_inputs.verify_bitwise_and_8[6] = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_214,
+                    and_col13,
+                ];
+                *lookup_data.verify_bitwise_and_8_6 = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_214,
+                    and_col13,
+                ];
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_18 = ((PackedUInt16::from_m31(ms_8_bits_col3)) & (UInt16_0));
+                let and_col14 = and_tmp_438a7_18.as_m31();
+                *row[14] = and_col14;
+                *sub_component_inputs.verify_bitwise_and_8[7] = [ms_8_bits_col3, M31_0, and_col14];
+                *lookup_data.verify_bitwise_and_8_7 = [ms_8_bits_col3, M31_0, and_col14];
+
+                let h0_col15 = ((and_col13) + ((and_col14) * (M31_256)));
+                *row[15] = h0_col15;
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_20 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_3[0]))
+                        & (UInt16_0));
+                let and_col16 = and_tmp_438a7_20.as_m31();
+                *row[16] = and_col16;
+                *sub_component_inputs.verify_bitwise_and_8[8] = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_0,
+                    and_col16,
+                ];
+                *lookup_data.verify_bitwise_and_8_8 = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_0,
+                    and_col16,
+                ];
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_22 = ((PackedUInt16::from_m31(ms_8_bits_col3)) & (UInt16_156));
+                let and_col17 = and_tmp_438a7_22.as_m31();
+                *row[17] = and_col17;
+                *sub_component_inputs.verify_bitwise_and_8[9] =
+                    [ms_8_bits_col3, M31_156, and_col17];
+                *lookup_data.verify_bitwise_and_8_9 = [ms_8_bits_col3, M31_156, and_col17];
+
+                let h1_col18 = ((and_col16) + ((and_col17) * (M31_256)));
+                *row[18] = h1_col18;
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_24 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_3[0]))
+                        & (UInt16_41));
+                let and_col19 = and_tmp_438a7_24.as_m31();
+                *row[19] = and_col19;
+                *sub_component_inputs.verify_bitwise_and_8[10] = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_41,
+                    and_col19,
+                ];
+                *lookup_data.verify_bitwise_and_8_10 = [
+                    split_16_low_part_size_8_output_tmp_438a7_3[0],
+                    M31_41,
+                    and_col19,
+                ];
+
+                // Bitwise And Num Bits 8.
+
+                let and_tmp_438a7_26 = ((PackedUInt16::from_m31(ms_8_bits_col3)) & (UInt16_99));
+                let and_col20 = and_tmp_438a7_26.as_m31();
+                *row[20] = and_col20;
+                *sub_component_inputs.verify_bitwise_and_8[11] =
+                    [ms_8_bits_col3, M31_99, and_col20];
+                *lookup_data.verify_bitwise_and_8_11 = [ms_8_bits_col3, M31_99, and_col20];
+
+                let h2_col21 = ((and_col19) + ((and_col20) * (M31_256)));
+                *row[21] = h2_col21;
+                let sigma_rotated0_tmp_438a7_28 =
+                    (((((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                        >> (UInt32_6))
+                        | ((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                            << (UInt32_26)))
+                        ^ (((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                            >> (UInt32_11))
+                            | ((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                                << (UInt32_21))))
+                        ^ (((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                            >> (UInt32_25))
+                            | ((PackedUInt32::from_limbs([((l1_col9) + (l2_col12)), h2_col21]))
+                                << (UInt32_7))));
+                let sigma_rotated1_tmp_438a7_29 =
+                    (((((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                        >> (UInt32_6))
+                        | ((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                            << (UInt32_26)))
+                        ^ (((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                            >> (UInt32_11))
+                            | ((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                                << (UInt32_21))))
+                        ^ (((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                            >> (UInt32_25))
+                            | ((PackedUInt32::from_limbs([l0_col6, ((h0_col15) + (h1_col18))]))
+                                << (UInt32_7))));
+                let sigma_O0_L_tmp_438a7_30 = ((sigma_rotated0_tmp_438a7_28.low()) & (UInt16_9265));
+                let sigma_O0_L_col22 = sigma_O0_L_tmp_438a7_30.as_m31();
+                *row[22] = sigma_O0_L_col22;
+                let sigma_O0_H_tmp_438a7_31 =
+                    ((sigma_rotated0_tmp_438a7_28.high()) & (UInt16_33924));
+                let sigma_O0_H_col23 = sigma_O0_H_tmp_438a7_31.as_m31();
+                *row[23] = sigma_O0_H_col23;
+                let sigma_O1_L_tmp_438a7_32 = ((sigma_rotated1_tmp_438a7_29.low()) & (UInt16_2122));
+                let sigma_O1_L_col24 = sigma_O1_L_tmp_438a7_32.as_m31();
+                *row[24] = sigma_O1_L_col24;
+                let sigma_O1_H_tmp_438a7_33 =
+                    ((sigma_rotated1_tmp_438a7_29.high()) & (UInt16_16913));
+                let sigma_O1_H_col25 = sigma_O1_H_tmp_438a7_33.as_m31();
+                *row[25] = sigma_O1_H_col25;
+                let sigma_O2_L_tmp_438a7_34 =
+                    ((sigma_rotated0_tmp_438a7_28.low()) & (UInt16_54148));
+                let sigma_O2_L_col26 = sigma_O2_L_tmp_438a7_34.as_m31();
+                *row[26] = sigma_O2_L_col26;
+                let sigma_O2_H_tmp_438a7_35 =
+                    ((sigma_rotated0_tmp_438a7_28.high()) & (UInt16_14698));
+                let sigma_O2_H_col27 = sigma_O2_H_tmp_438a7_35.as_m31();
+                *row[27] = sigma_O2_H_col27;
+                let sigma_O2_prime_L_tmp_438a7_36 =
+                    ((sigma_rotated1_tmp_438a7_29.low()) & (UInt16_54148));
+                let sigma_O2_prime_L_col28 = sigma_O2_prime_L_tmp_438a7_36.as_m31();
+                *row[28] = sigma_O2_prime_L_col28;
+                let sigma_O2_prime_H_tmp_438a7_37 =
+                    ((sigma_rotated1_tmp_438a7_29.high()) & (UInt16_14698));
+                let sigma_O2_prime_H_col29 = sigma_O2_prime_H_tmp_438a7_37.as_m31();
+                *row[29] = sigma_O2_prime_H_col29;
+                *sub_component_inputs.sha_256_big_sigma_1_o_0[0] = [
+                    ((l1_col9) + (l2_col12)),
+                    h2_col21,
+                    sigma_O0_L_col22,
+                    sigma_O0_H_col23,
+                    sigma_O2_L_col26,
+                    sigma_O2_H_col27,
                 ];
                 *lookup_data.sha_256_big_sigma_1_o_0_0 = [
-                    ((and_col3) + (and_col4)),
-                    and_col7,
-                    sigma_O0_L_col8,
-                    sigma_O0_H_col9,
-                    sigma_O2_L_col12,
-                    sigma_O2_H_col13,
+                    ((l1_col9) + (l2_col12)),
+                    h2_col21,
+                    sigma_O0_L_col22,
+                    sigma_O0_H_col23,
+                    sigma_O2_L_col26,
+                    sigma_O2_H_col27,
                 ];
                 *sub_component_inputs.sha_256_big_sigma_1_o_1[0] = [
-                    and_col2,
-                    ((and_col5) + (and_col6)),
-                    sigma_O1_L_col10,
-                    sigma_O1_H_col11,
-                    sigma_O2_prime_L_col14,
-                    sigma_O2_prime_H_col15,
+                    l0_col6,
+                    ((h0_col15) + (h1_col18)),
+                    sigma_O1_L_col24,
+                    sigma_O1_H_col25,
+                    sigma_O2_prime_L_col28,
+                    sigma_O2_prime_H_col29,
                 ];
                 *lookup_data.sha_256_big_sigma_1_o_1_0 = [
-                    and_col2,
-                    ((and_col5) + (and_col6)),
-                    sigma_O1_L_col10,
-                    sigma_O1_H_col11,
-                    sigma_O2_prime_L_col14,
-                    sigma_O2_prime_H_col15,
+                    l0_col6,
+                    ((h0_col15) + (h1_col18)),
+                    sigma_O1_L_col24,
+                    sigma_O1_H_col25,
+                    sigma_O2_prime_L_col28,
+                    sigma_O2_prime_H_col29,
                 ];
 
-                // Bitwise Xor Num Bits 16.
+                // Split 16 Low Part Size 8.
 
-                let xor_tmp_438a7_22 = ((PackedUInt16::from_m31(sigma_O2_prime_L_col14))
-                    ^ (PackedUInt16::from_m31(sigma_O2_L_col12)));
-                let xor_col16 = xor_tmp_438a7_22.as_m31();
-                *row[16] = xor_col16;
-                *sub_component_inputs.verify_bitwise_xor_16[0] =
-                    [sigma_O2_prime_L_col14, sigma_O2_L_col12, xor_col16];
-                *lookup_data.verify_bitwise_xor_16_0 =
-                    [sigma_O2_prime_L_col14, sigma_O2_L_col12, xor_col16];
+                let ms_8_bits_tmp_438a7_38 = ((sigma_O2_prime_L_tmp_438a7_36) >> (UInt16_8));
+                let ms_8_bits_col30 = ms_8_bits_tmp_438a7_38.as_m31();
+                *row[30] = ms_8_bits_col30;
+                let split_16_low_part_size_8_output_tmp_438a7_39 = [
+                    ((sigma_O2_prime_L_col28) - ((ms_8_bits_col30) * (M31_256))),
+                    ms_8_bits_col30,
+                ];
 
-                // Bitwise Xor Num Bits 16.
+                // Split 16 Low Part Size 8.
 
-                let xor_tmp_438a7_24 = ((PackedUInt16::from_m31(sigma_O2_prime_H_col15))
-                    ^ (PackedUInt16::from_m31(sigma_O2_H_col13)));
-                let xor_col17 = xor_tmp_438a7_24.as_m31();
-                *row[17] = xor_col17;
-                *sub_component_inputs.verify_bitwise_xor_16[1] =
-                    [sigma_O2_prime_H_col15, sigma_O2_H_col13, xor_col17];
-                *lookup_data.verify_bitwise_xor_16_1 =
-                    [sigma_O2_prime_H_col15, sigma_O2_H_col13, xor_col17];
+                let ms_8_bits_tmp_438a7_40 = ((sigma_O2_L_tmp_438a7_34) >> (UInt16_8));
+                let ms_8_bits_col31 = ms_8_bits_tmp_438a7_40.as_m31();
+                *row[31] = ms_8_bits_col31;
+                let split_16_low_part_size_8_output_tmp_438a7_41 = [
+                    ((sigma_O2_L_col26) - ((ms_8_bits_col31) * (M31_256))),
+                    ms_8_bits_col31,
+                ];
 
-                let output_low_tmp_438a7_26 = (((sigma_O0_L_tmp_438a7_14)
-                    + (sigma_O1_L_tmp_438a7_16))
-                    + (PackedUInt16::from_m31(xor_col16)));
-                let output_low_col18 = output_low_tmp_438a7_26.as_m31();
-                *row[18] = output_low_col18;
-                let output_high_tmp_438a7_27 = (((sigma_O0_H_tmp_438a7_15)
-                    + (sigma_O1_H_tmp_438a7_17))
-                    + (PackedUInt16::from_m31(xor_col17)));
-                let output_high_col19 = output_high_tmp_438a7_27.as_m31();
-                *row[19] = output_high_col19;
+                // Bitwise Xor Num Bits 8.
+
+                let xor_tmp_438a7_42 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_39[0]))
+                        ^ (PackedUInt16::from_m31(
+                            split_16_low_part_size_8_output_tmp_438a7_41[0],
+                        )));
+                let xor_col32 = xor_tmp_438a7_42.as_m31();
+                *row[32] = xor_col32;
+                *sub_component_inputs.verify_bitwise_xor_8[0] = [
+                    split_16_low_part_size_8_output_tmp_438a7_39[0],
+                    split_16_low_part_size_8_output_tmp_438a7_41[0],
+                    xor_col32,
+                ];
+                *lookup_data.verify_bitwise_xor_8_0 = [
+                    split_16_low_part_size_8_output_tmp_438a7_39[0],
+                    split_16_low_part_size_8_output_tmp_438a7_41[0],
+                    xor_col32,
+                ];
+
+                // Bitwise Xor Num Bits 8.
+
+                let xor_tmp_438a7_44 = ((PackedUInt16::from_m31(ms_8_bits_col30))
+                    ^ (PackedUInt16::from_m31(ms_8_bits_col31)));
+                let xor_col33 = xor_tmp_438a7_44.as_m31();
+                *row[33] = xor_col33;
+                *sub_component_inputs.verify_bitwise_xor_8[1] =
+                    [ms_8_bits_col30, ms_8_bits_col31, xor_col33];
+                *lookup_data.verify_bitwise_xor_8_1 = [ms_8_bits_col30, ms_8_bits_col31, xor_col33];
+
+                let output2l_col34 = ((xor_col32) + ((xor_col33) * (M31_256)));
+                *row[34] = output2l_col34;
+
+                // Split 16 Low Part Size 8.
+
+                let ms_8_bits_tmp_438a7_46 = ((sigma_O2_prime_H_tmp_438a7_37) >> (UInt16_8));
+                let ms_8_bits_col35 = ms_8_bits_tmp_438a7_46.as_m31();
+                *row[35] = ms_8_bits_col35;
+                let split_16_low_part_size_8_output_tmp_438a7_47 = [
+                    ((sigma_O2_prime_H_col29) - ((ms_8_bits_col35) * (M31_256))),
+                    ms_8_bits_col35,
+                ];
+
+                // Split 16 Low Part Size 8.
+
+                let ms_8_bits_tmp_438a7_48 = ((sigma_O2_H_tmp_438a7_35) >> (UInt16_8));
+                let ms_8_bits_col36 = ms_8_bits_tmp_438a7_48.as_m31();
+                *row[36] = ms_8_bits_col36;
+                let split_16_low_part_size_8_output_tmp_438a7_49 = [
+                    ((sigma_O2_H_col27) - ((ms_8_bits_col36) * (M31_256))),
+                    ms_8_bits_col36,
+                ];
+
+                // Bitwise Xor Num Bits 8.
+
+                let xor_tmp_438a7_50 =
+                    ((PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_438a7_47[0]))
+                        ^ (PackedUInt16::from_m31(
+                            split_16_low_part_size_8_output_tmp_438a7_49[0],
+                        )));
+                let xor_col37 = xor_tmp_438a7_50.as_m31();
+                *row[37] = xor_col37;
+                *sub_component_inputs.verify_bitwise_xor_8[2] = [
+                    split_16_low_part_size_8_output_tmp_438a7_47[0],
+                    split_16_low_part_size_8_output_tmp_438a7_49[0],
+                    xor_col37,
+                ];
+                *lookup_data.verify_bitwise_xor_8_2 = [
+                    split_16_low_part_size_8_output_tmp_438a7_47[0],
+                    split_16_low_part_size_8_output_tmp_438a7_49[0],
+                    xor_col37,
+                ];
+
+                // Bitwise Xor Num Bits 8.
+
+                let xor_tmp_438a7_52 = ((PackedUInt16::from_m31(ms_8_bits_col35))
+                    ^ (PackedUInt16::from_m31(ms_8_bits_col36)));
+                let xor_col38 = xor_tmp_438a7_52.as_m31();
+                *row[38] = xor_col38;
+                *sub_component_inputs.verify_bitwise_xor_8[3] =
+                    [ms_8_bits_col35, ms_8_bits_col36, xor_col38];
+                *lookup_data.verify_bitwise_xor_8_3 = [ms_8_bits_col35, ms_8_bits_col36, xor_col38];
+
+                let output2h_col39 = ((xor_col37) + ((xor_col38) * (M31_256)));
+                *row[39] = output2h_col39;
+                let output_low_tmp_438a7_54 = (((sigma_O0_L_tmp_438a7_30)
+                    + (sigma_O1_L_tmp_438a7_32))
+                    + (PackedUInt16::from_m31(output2l_col34)));
+                let output_low_col40 = output_low_tmp_438a7_54.as_m31();
+                *row[40] = output_low_col40;
+                let output_high_tmp_438a7_55 = (((sigma_O0_H_tmp_438a7_31)
+                    + (sigma_O1_H_tmp_438a7_33))
+                    + (PackedUInt16::from_m31(output2h_col39)));
+                let output_high_col41 = output_high_tmp_438a7_55.as_m31();
+                *row[41] = output_high_col41;
                 *lookup_data.sha_256_big_sigma_1_0 = [
                     input_limb_0_col0,
                     input_limb_1_col1,
-                    output_low_col18,
-                    output_high_col19,
+                    output_low_col40,
+                    output_high_col41,
                 ];
-                *row[20] = enabler_col.packed_at(row_index);
+                *row[42] = enabler_col.packed_at(row_index);
             },
         );
 
@@ -368,14 +593,22 @@ struct LookupData {
     sha_256_big_sigma_1_0: Vec<[PackedM31; 4]>,
     sha_256_big_sigma_1_o_0_0: Vec<[PackedM31; 6]>,
     sha_256_big_sigma_1_o_1_0: Vec<[PackedM31; 6]>,
-    verify_bitwise_and_16_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_and_16_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_and_16_2: Vec<[PackedM31; 3]>,
-    verify_bitwise_and_16_3: Vec<[PackedM31; 3]>,
-    verify_bitwise_and_16_4: Vec<[PackedM31; 3]>,
-    verify_bitwise_and_16_5: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_16_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_16_1: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_1: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_2: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_3: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_4: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_5: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_6: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_7: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_8: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_9: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_10: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_11: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_1: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_2: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_3: Vec<[PackedM31; 3]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -387,10 +620,10 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_and_16: &relations::VerifyBitwiseAnd_16,
+        verify_bitwise_and_8: &relations::VerifyBitwiseAnd_8,
         sha_256_big_sigma_1_o_0: &relations::Sha256BigSigma1O0,
         sha_256_big_sigma_1_o_1: &relations::Sha256BigSigma1O1,
-        verify_bitwise_xor_16: &relations::VerifyBitwiseXor_16,
+        verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
         sha_256_big_sigma_1: &relations::Sha256BigSigma1,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
@@ -400,13 +633,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_and_16_0,
-            &self.lookup_data.verify_bitwise_and_16_1,
+            &self.lookup_data.verify_bitwise_and_8_0,
+            &self.lookup_data.verify_bitwise_and_8_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_and_16.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_and_16.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -414,13 +647,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_and_16_2,
-            &self.lookup_data.verify_bitwise_and_16_3,
+            &self.lookup_data.verify_bitwise_and_8_2,
+            &self.lookup_data.verify_bitwise_and_8_3,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_and_16.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_and_16.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -428,13 +661,55 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_and_16_4,
-            &self.lookup_data.verify_bitwise_and_16_5,
+            &self.lookup_data.verify_bitwise_and_8_4,
+            &self.lookup_data.verify_bitwise_and_8_5,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_and_16.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_and_16.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_and_8_6,
+            &self.lookup_data.verify_bitwise_and_8_7,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_and_8_8,
+            &self.lookup_data.verify_bitwise_and_8_9,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_and_8_10,
+            &self.lookup_data.verify_bitwise_and_8_11,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_bitwise_and_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_and_8.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -456,13 +731,27 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_16_0,
-            &self.lookup_data.verify_bitwise_xor_16_1,
+            &self.lookup_data.verify_bitwise_xor_8_0,
+            &self.lookup_data.verify_bitwise_xor_8_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_16.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_16.combine(values1);
+                let denom0: PackedQM31 = verify_bitwise_xor_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_xor_8.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
+        col_gen.finalize_col();
+
+        let mut col_gen = logup_gen.new_col();
+        (
+            col_gen.par_iter_mut(),
+            &self.lookup_data.verify_bitwise_xor_8_2,
+            &self.lookup_data.verify_bitwise_xor_8_3,
+        )
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = verify_bitwise_xor_8.combine(values0);
+                let denom1: PackedQM31 = verify_bitwise_xor_8.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

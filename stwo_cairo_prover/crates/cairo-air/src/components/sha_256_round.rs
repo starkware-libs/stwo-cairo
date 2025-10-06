@@ -1,11 +1,12 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 use crate::components::prelude::*;
-use crate::components::subroutines::bitwise_and_num_bits_16::BitwiseAndNumBits16;
+use crate::components::subroutines::bitwise_and_num_bits_8::BitwiseAndNumBits8;
 use crate::components::subroutines::bitwise_not_num_bits_16::BitwiseNotNumBits16;
-use crate::components::subroutines::bitwise_xor_num_bits_16::BitwiseXorNumBits16;
+use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
+use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 use crate::components::subroutines::triple_sum_32::TripleSum32;
 
-pub const N_TRACE_COLUMNS: usize = 91;
+pub const N_TRACE_COLUMNS: usize = 125;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
     RelationUse {
         relation_id: "Sha256BigSigma0",
@@ -28,16 +29,16 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
         uses: 1,
     },
     RelationUse {
-        relation_id: "VerifyBitwiseAnd_16",
-        uses: 10,
+        relation_id: "VerifyBitwiseAnd_8",
+        uses: 20,
     },
     RelationUse {
         relation_id: "VerifyBitwiseNot_16",
         uses: 2,
     },
     RelationUse {
-        relation_id: "VerifyBitwiseXor_16",
-        uses: 6,
+        relation_id: "VerifyBitwiseXor_8",
+        uses: 12,
     },
 ];
 
@@ -45,9 +46,9 @@ pub struct Eval {
     pub claim: Claim,
     pub sha_256_big_sigma_1_lookup_elements: relations::Sha256BigSigma1,
     pub sha_256_big_sigma_0_lookup_elements: relations::Sha256BigSigma0,
-    pub verify_bitwise_and_16_lookup_elements: relations::VerifyBitwiseAnd_16,
+    pub verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8,
     pub verify_bitwise_not_16_lookup_elements: relations::VerifyBitwiseNot_16,
-    pub verify_bitwise_xor_16_lookup_elements: relations::VerifyBitwiseXor_16,
+    pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
     pub sha_256_k_table_lookup_elements: relations::Sha256KTable,
     pub sha_256_schedule_lookup_elements: relations::Sha256Schedule,
     pub sha_256_round_lookup_elements: relations::Sha256Round,
@@ -60,7 +61,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 12];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 20];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -96,6 +97,7 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
+        let M31_256 = E::F::from(M31::from(256));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -150,42 +152,76 @@ impl FrameworkEval for Eval {
         let sha_256_big_sigma_1_output_limb_1_col51 = eval.next_trace_mask();
         let sha_256_big_sigma_0_output_limb_0_col52 = eval.next_trace_mask();
         let sha_256_big_sigma_0_output_limb_1_col53 = eval.next_trace_mask();
-        let and_col54 = eval.next_trace_mask();
-        let and_col55 = eval.next_trace_mask();
-        let not_a_col56 = eval.next_trace_mask();
-        let not_a_col57 = eval.next_trace_mask();
+        let ms_8_bits_col54 = eval.next_trace_mask();
+        let ms_8_bits_col55 = eval.next_trace_mask();
+        let ms_8_bits_col56 = eval.next_trace_mask();
+        let ms_8_bits_col57 = eval.next_trace_mask();
         let and_col58 = eval.next_trace_mask();
         let and_col59 = eval.next_trace_mask();
-        let xor_col60 = eval.next_trace_mask();
-        let xor_col61 = eval.next_trace_mask();
-        let ch_limb_0_col62 = eval.next_trace_mask();
-        let ch_limb_1_col63 = eval.next_trace_mask();
-        let sha_256_k_table_output_limb_0_col64 = eval.next_trace_mask();
-        let sha_256_k_table_output_limb_1_col65 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col66 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col67 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col68 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col69 = eval.next_trace_mask();
+        let and_col60 = eval.next_trace_mask();
+        let and_col61 = eval.next_trace_mask();
+        let not_a_col62 = eval.next_trace_mask();
+        let not_a_col63 = eval.next_trace_mask();
+        let ms_8_bits_col64 = eval.next_trace_mask();
+        let ms_8_bits_col65 = eval.next_trace_mask();
+        let ms_8_bits_col66 = eval.next_trace_mask();
+        let ms_8_bits_col67 = eval.next_trace_mask();
+        let and_col68 = eval.next_trace_mask();
+        let and_col69 = eval.next_trace_mask();
         let and_col70 = eval.next_trace_mask();
         let and_col71 = eval.next_trace_mask();
-        let and_col72 = eval.next_trace_mask();
-        let and_col73 = eval.next_trace_mask();
-        let and_col74 = eval.next_trace_mask();
-        let and_col75 = eval.next_trace_mask();
-        let xor_col76 = eval.next_trace_mask();
-        let xor_col77 = eval.next_trace_mask();
-        let xor_col78 = eval.next_trace_mask();
-        let xor_col79 = eval.next_trace_mask();
-        let maj_limb_0_col80 = eval.next_trace_mask();
-        let maj_limb_1_col81 = eval.next_trace_mask();
+        let xor_col72 = eval.next_trace_mask();
+        let xor_col73 = eval.next_trace_mask();
+        let xor_col74 = eval.next_trace_mask();
+        let xor_col75 = eval.next_trace_mask();
+        let chl_col76 = eval.next_trace_mask();
+        let chh_col77 = eval.next_trace_mask();
+        let ch_limb_0_col78 = eval.next_trace_mask();
+        let ch_limb_1_col79 = eval.next_trace_mask();
+        let sha_256_k_table_output_limb_0_col80 = eval.next_trace_mask();
+        let sha_256_k_table_output_limb_1_col81 = eval.next_trace_mask();
         let triple_sum32_res_limb_0_col82 = eval.next_trace_mask();
         let triple_sum32_res_limb_1_col83 = eval.next_trace_mask();
-        let sha_256_schedule_output_limb_0_col84 = eval.next_trace_mask();
-        let sha_256_schedule_output_limb_1_col85 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col86 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col87 = eval.next_trace_mask();
-        let triple_sum32_res_limb_0_col88 = eval.next_trace_mask();
-        let triple_sum32_res_limb_1_col89 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col84 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col85 = eval.next_trace_mask();
+        let ms_8_bits_col86 = eval.next_trace_mask();
+        let ms_8_bits_col87 = eval.next_trace_mask();
+        let ms_8_bits_col88 = eval.next_trace_mask();
+        let ms_8_bits_col89 = eval.next_trace_mask();
+        let ms_8_bits_col90 = eval.next_trace_mask();
+        let ms_8_bits_col91 = eval.next_trace_mask();
+        let and_col92 = eval.next_trace_mask();
+        let and_col93 = eval.next_trace_mask();
+        let and_col94 = eval.next_trace_mask();
+        let and_col95 = eval.next_trace_mask();
+        let and_col96 = eval.next_trace_mask();
+        let and_col97 = eval.next_trace_mask();
+        let and_col98 = eval.next_trace_mask();
+        let and_col99 = eval.next_trace_mask();
+        let and_col100 = eval.next_trace_mask();
+        let and_col101 = eval.next_trace_mask();
+        let and_col102 = eval.next_trace_mask();
+        let and_col103 = eval.next_trace_mask();
+        let xor_col104 = eval.next_trace_mask();
+        let xor_col105 = eval.next_trace_mask();
+        let xor_col106 = eval.next_trace_mask();
+        let xor_col107 = eval.next_trace_mask();
+        let xor_col108 = eval.next_trace_mask();
+        let xor_col109 = eval.next_trace_mask();
+        let xor_col110 = eval.next_trace_mask();
+        let xor_col111 = eval.next_trace_mask();
+        let majl_col112 = eval.next_trace_mask();
+        let majh_col113 = eval.next_trace_mask();
+        let maj_limb_0_col114 = eval.next_trace_mask();
+        let maj_limb_1_col115 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col116 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col117 = eval.next_trace_mask();
+        let sha_256_schedule_output_limb_0_col118 = eval.next_trace_mask();
+        let sha_256_schedule_output_limb_1_col119 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col120 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col121 = eval.next_trace_mask();
+        let triple_sum32_res_limb_0_col122 = eval.next_trace_mask();
+        let triple_sum32_res_limb_1_col123 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -212,61 +248,173 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_10_col10.clone(), input_limb_12_col12.clone()],
-            and_col54.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_3_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_10_col10.clone()],
+            ms_8_bits_col54.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_11_col11.clone(), input_limb_13_col13.clone()],
-            and_col55.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_5_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_11_col11.clone()],
+            ms_8_bits_col55.clone(),
+            &mut eval,
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_7_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_12_col12.clone()],
+            ms_8_bits_col56.clone(),
+            &mut eval,
+        );
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_9_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_13_col13.clone()],
+            ms_8_bits_col57.clone(),
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_3_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_7_limb_0.clone(),
+            ],
+            and_col58.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col54.clone(), ms_8_bits_col56.clone()],
+            and_col59.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_5_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_9_limb_0.clone(),
+            ],
+            and_col60.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col55.clone(), ms_8_bits_col57.clone()],
+            and_col61.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
         );
         BitwiseNotNumBits16::evaluate(
             [input_limb_10_col10.clone()],
-            not_a_col56.clone(),
+            not_a_col62.clone(),
             &self.verify_bitwise_not_16_lookup_elements,
             &mut eval,
         );
         BitwiseNotNumBits16::evaluate(
             [input_limb_11_col11.clone()],
-            not_a_col57.clone(),
+            not_a_col63.clone(),
             &self.verify_bitwise_not_16_lookup_elements,
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [not_a_col56.clone(), input_limb_14_col14.clone()],
-            and_col58.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_23_limb_0] = Split16LowPartSize8::evaluate(
+            [not_a_col62.clone()],
+            ms_8_bits_col64.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [not_a_col57.clone(), input_limb_15_col15.clone()],
-            and_col59.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_25_limb_0] = Split16LowPartSize8::evaluate(
+            [not_a_col63.clone()],
+            ms_8_bits_col65.clone(),
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [and_col54.clone(), and_col58.clone()],
-            xor_col60.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_27_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_14_col14.clone()],
+            ms_8_bits_col66.clone(),
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [and_col55.clone(), and_col59.clone()],
-            xor_col61.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_29_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_15_col15.clone()],
+            ms_8_bits_col67.clone(),
             &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_23_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_27_limb_0.clone(),
+            ],
+            and_col68.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col64.clone(), ms_8_bits_col66.clone()],
+            and_col69.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_25_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_29_limb_0.clone(),
+            ],
+            and_col70.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col65.clone(), ms_8_bits_col67.clone()],
+            and_col71.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col58.clone(), and_col68.clone()],
+            xor_col72.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col59.clone(), and_col69.clone()],
+            xor_col73.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col60.clone(), and_col70.clone()],
+            xor_col74.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col61.clone(), and_col71.clone()],
+            xor_col75.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        // chl.
+        eval.add_constraint(
+            (chl_col76.clone() - (xor_col72.clone() + (xor_col73.clone() * M31_256.clone()))),
+        );
+        // chh.
+        eval.add_constraint(
+            (chh_col77.clone() - (xor_col74.clone() + (xor_col75.clone() * M31_256.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.sha_256_k_table_lookup_elements,
             E::EF::one(),
             &[
                 input_limb_1_col1.clone(),
-                sha_256_k_table_output_limb_0_col64.clone(),
-                sha_256_k_table_output_limb_1_col65.clone(),
+                sha_256_k_table_output_limb_0_col80.clone(),
+                sha_256_k_table_output_limb_1_col81.clone(),
             ],
         ));
 
@@ -276,97 +424,225 @@ impl FrameworkEval for Eval {
                 input_limb_17_col17.clone(),
                 sha_256_big_sigma_1_output_limb_0_col50.clone(),
                 sha_256_big_sigma_1_output_limb_1_col51.clone(),
-                ch_limb_0_col62.clone(),
-                ch_limb_1_col63.clone(),
+                ch_limb_0_col78.clone(),
+                ch_limb_1_col79.clone(),
             ],
-            triple_sum32_res_limb_0_col66.clone(),
-            triple_sum32_res_limb_1_col67.clone(),
+            triple_sum32_res_limb_0_col82.clone(),
+            triple_sum32_res_limb_1_col83.clone(),
             &mut eval,
         );
         TripleSum32::evaluate(
             [
-                triple_sum32_res_limb_0_col66.clone(),
-                triple_sum32_res_limb_1_col67.clone(),
-                sha_256_k_table_output_limb_0_col64.clone(),
-                sha_256_k_table_output_limb_1_col65.clone(),
+                triple_sum32_res_limb_0_col82.clone(),
+                triple_sum32_res_limb_1_col83.clone(),
+                sha_256_k_table_output_limb_0_col80.clone(),
+                sha_256_k_table_output_limb_1_col81.clone(),
                 input_limb_18_col18.clone(),
                 input_limb_19_col19.clone(),
             ],
-            triple_sum32_res_limb_0_col68.clone(),
-            triple_sum32_res_limb_1_col69.clone(),
+            triple_sum32_res_limb_0_col84.clone(),
+            triple_sum32_res_limb_1_col85.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_2_col2.clone(), input_limb_4_col4.clone()],
-            and_col70.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_2_col2.clone()],
+            ms_8_bits_col86.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_3_col3.clone(), input_limb_5_col5.clone()],
-            and_col71.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_3_col3.clone()],
+            ms_8_bits_col87.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_2_col2.clone(), input_limb_6_col6.clone()],
-            and_col72.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_4_col4.clone()],
+            ms_8_bits_col88.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_3_col3.clone(), input_limb_7_col7.clone()],
-            and_col73.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_5_col5.clone()],
+            ms_8_bits_col89.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_4_col4.clone(), input_limb_6_col6.clone()],
-            and_col74.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_6_col6.clone()],
+            ms_8_bits_col90.clone(),
             &mut eval,
         );
-        BitwiseAndNumBits16::evaluate(
-            [input_limb_5_col5.clone(), input_limb_7_col7.clone()],
-            and_col75.clone(),
-            &self.verify_bitwise_and_16_lookup_elements,
+        #[allow(clippy::unused_unit)]
+        #[allow(unused_variables)]
+        let [split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0] = Split16LowPartSize8::evaluate(
+            [input_limb_7_col7.clone()],
+            ms_8_bits_col91.clone(),
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [and_col70.clone(), and_col72.clone()],
-            xor_col76.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0.clone(),
+            ],
+            and_col92.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [and_col71.clone(), and_col73.clone()],
-            xor_col77.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col86.clone(), ms_8_bits_col88.clone()],
+            and_col93.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [xor_col76.clone(), and_col74.clone()],
-            xor_col78.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0.clone(),
+            ],
+            and_col94.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
         );
-        BitwiseXorNumBits16::evaluate(
-            [xor_col77.clone(), and_col75.clone()],
-            xor_col79.clone(),
-            &self.verify_bitwise_xor_16_lookup_elements,
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col87.clone(), ms_8_bits_col89.clone()],
+            and_col95.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0.clone(),
+            ],
+            and_col96.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col86.clone(), ms_8_bits_col90.clone()],
+            and_col97.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0.clone(),
+            ],
+            and_col98.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col87.clone(), ms_8_bits_col91.clone()],
+            and_col99.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0.clone(),
+            ],
+            and_col100.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col88.clone(), ms_8_bits_col90.clone()],
+            and_col101.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [
+                split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0.clone(),
+            ],
+            and_col102.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseAndNumBits8::evaluate(
+            [ms_8_bits_col89.clone(), ms_8_bits_col91.clone()],
+            and_col103.clone(),
+            &self.verify_bitwise_and_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col92.clone(), and_col96.clone()],
+            xor_col104.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col93.clone(), and_col97.clone()],
+            xor_col105.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col94.clone(), and_col98.clone()],
+            xor_col106.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [and_col95.clone(), and_col99.clone()],
+            xor_col107.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [xor_col104.clone(), and_col100.clone()],
+            xor_col108.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [xor_col105.clone(), and_col101.clone()],
+            xor_col109.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [xor_col106.clone(), and_col102.clone()],
+            xor_col110.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        BitwiseXorNumBits8::evaluate(
+            [xor_col107.clone(), and_col103.clone()],
+            xor_col111.clone(),
+            &self.verify_bitwise_xor_8_lookup_elements,
+            &mut eval,
+        );
+        // majl.
+        eval.add_constraint(
+            (majl_col112.clone() - (xor_col108.clone() + (xor_col109.clone() * M31_256.clone()))),
+        );
+        // majh.
+        eval.add_constraint(
+            (majh_col113.clone() - (xor_col110.clone() + (xor_col111.clone() * M31_256.clone()))),
         );
         TripleSum32::evaluate(
             [
                 sha_256_big_sigma_0_output_limb_0_col52.clone(),
                 sha_256_big_sigma_0_output_limb_1_col53.clone(),
-                maj_limb_0_col80.clone(),
-                maj_limb_1_col81.clone(),
+                maj_limb_0_col114.clone(),
+                maj_limb_1_col115.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            triple_sum32_res_limb_0_col82.clone(),
-            triple_sum32_res_limb_1_col83.clone(),
+            triple_sum32_res_limb_0_col116.clone(),
+            triple_sum32_res_limb_1_col117.clone(),
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -405,35 +681,35 @@ impl FrameworkEval for Eval {
                 input_limb_47_col47.clone(),
                 input_limb_48_col48.clone(),
                 input_limb_49_col49.clone(),
-                sha_256_schedule_output_limb_0_col84.clone(),
-                sha_256_schedule_output_limb_1_col85.clone(),
+                sha_256_schedule_output_limb_0_col118.clone(),
+                sha_256_schedule_output_limb_1_col119.clone(),
             ],
         ));
 
         TripleSum32::evaluate(
             [
-                triple_sum32_res_limb_0_col68.clone(),
-                triple_sum32_res_limb_1_col69.clone(),
+                triple_sum32_res_limb_0_col84.clone(),
+                triple_sum32_res_limb_1_col85.clone(),
                 input_limb_8_col8.clone(),
                 input_limb_9_col9.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            triple_sum32_res_limb_0_col86.clone(),
-            triple_sum32_res_limb_1_col87.clone(),
+            triple_sum32_res_limb_0_col120.clone(),
+            triple_sum32_res_limb_1_col121.clone(),
             &mut eval,
         );
         TripleSum32::evaluate(
             [
-                triple_sum32_res_limb_0_col68.clone(),
-                triple_sum32_res_limb_1_col69.clone(),
-                triple_sum32_res_limb_0_col82.clone(),
-                triple_sum32_res_limb_1_col83.clone(),
+                triple_sum32_res_limb_0_col84.clone(),
+                triple_sum32_res_limb_1_col85.clone(),
+                triple_sum32_res_limb_0_col116.clone(),
+                triple_sum32_res_limb_1_col117.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
             ],
-            triple_sum32_res_limb_0_col88.clone(),
-            triple_sum32_res_limb_1_col89.clone(),
+            triple_sum32_res_limb_0_col122.clone(),
+            triple_sum32_res_limb_1_col123.clone(),
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -499,16 +775,16 @@ impl FrameworkEval for Eval {
             &[
                 input_limb_0_col0.clone(),
                 (input_limb_1_col1.clone() + M31_1.clone()),
-                triple_sum32_res_limb_0_col88.clone(),
-                triple_sum32_res_limb_1_col89.clone(),
+                triple_sum32_res_limb_0_col122.clone(),
+                triple_sum32_res_limb_1_col123.clone(),
                 input_limb_2_col2.clone(),
                 input_limb_3_col3.clone(),
                 input_limb_4_col4.clone(),
                 input_limb_5_col5.clone(),
                 input_limb_6_col6.clone(),
                 input_limb_7_col7.clone(),
-                triple_sum32_res_limb_0_col86.clone(),
-                triple_sum32_res_limb_1_col87.clone(),
+                triple_sum32_res_limb_0_col120.clone(),
+                triple_sum32_res_limb_1_col121.clone(),
                 input_limb_10_col10.clone(),
                 input_limb_11_col11.clone(),
                 input_limb_12_col12.clone(),
@@ -545,8 +821,8 @@ impl FrameworkEval for Eval {
                 input_limb_47_col47.clone(),
                 input_limb_48_col48.clone(),
                 input_limb_49_col49.clone(),
-                sha_256_schedule_output_limb_0_col84.clone(),
-                sha_256_schedule_output_limb_1_col85.clone(),
+                sha_256_schedule_output_limb_0_col118.clone(),
+                sha_256_schedule_output_limb_1_col119.clone(),
             ],
         ));
 
@@ -573,9 +849,9 @@ mod tests {
             claim: Claim { log_size: 4 },
             sha_256_big_sigma_1_lookup_elements: relations::Sha256BigSigma1::dummy(),
             sha_256_big_sigma_0_lookup_elements: relations::Sha256BigSigma0::dummy(),
-            verify_bitwise_and_16_lookup_elements: relations::VerifyBitwiseAnd_16::dummy(),
+            verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8::dummy(),
             verify_bitwise_not_16_lookup_elements: relations::VerifyBitwiseNot_16::dummy(),
-            verify_bitwise_xor_16_lookup_elements: relations::VerifyBitwiseXor_16::dummy(),
+            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
             sha_256_k_table_lookup_elements: relations::Sha256KTable::dummy(),
             sha_256_schedule_lookup_elements: relations::Sha256Schedule::dummy(),
             sha_256_round_lookup_elements: relations::Sha256Round::dummy(),

@@ -21,6 +21,8 @@ use crate::prover_types::simd::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
+const AND_N_BITS: [u32; 1] = [8];
+const NOT_N_BITS: [u32; 1] = [16];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
@@ -65,15 +67,39 @@ impl PreProcessedTrace {
             })
             .into_iter()
             .flatten();
+        let bitwise_and = AND_N_BITS
+            .map(|n_bits| {
+                (0..3).map(move |col_index| {
+                    Box::new(BitwiseAnd::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
+                })
+            })
+            .into_iter()
+            .flatten();
+        let bitwise_not = NOT_N_BITS
+            .map(|n_bits| {
+                (0..2).map(move |col_index| {
+                    Box::new(BitwiseNot::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
+                })
+            })
+            .into_iter()
+            .flatten();
         let range_check = gen_range_check_columns();
         let poseidon_keys = (0..POSEIDON_N_WORDS)
             .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
         let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
-            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-            .collect();
+        let columns = chain!(
+            seq,
+            bitwise_xor,
+            bitwise_and,
+            bitwise_not,
+            range_check,
+            poseidon_keys,
+            blake_sigma
+        )
+        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+        .collect();
 
         Self { columns }
     }

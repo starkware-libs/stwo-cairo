@@ -22,9 +22,13 @@ use crate::witness::components::pedersen::{
 use crate::witness::components::poseidon::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };
+use crate::witness::components::sha256::{
+    Sha256ContextClaimGenerator, Sha256ContextInteractionClaimGenerator,
+};
 use crate::witness::components::{
-    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
+    memory_address_to_id, memory_id_to_big, verify_bitwise_and_8, verify_bitwise_not_16,
+    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -72,6 +76,7 @@ fn extract_public_segments(
         range_check_96: next(),
         add_mod: next(),
         mul_mod: next(),
+        sha256: next(),
     }
 }
 
@@ -130,6 +135,7 @@ pub struct CairoClaimGenerator {
     builtins: BuiltinsClaimGenerator,
     pedersen_context_trace_generator: PedersenContextClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
+    sha256_context_trace_generator: Sha256ContextClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
     range_checks_trace_generator: RangeChecksClaimGenerator,
@@ -137,6 +143,8 @@ pub struct CairoClaimGenerator {
     verify_bitwise_xor_7_trace_generator: verify_bitwise_xor_7::ClaimGenerator,
     verify_bitwise_xor_8_trace_generator: verify_bitwise_xor_8::ClaimGenerator,
     verify_bitwise_xor_9_trace_generator: verify_bitwise_xor_9::ClaimGenerator,
+    verify_bitwise_not_16_trace_generator: verify_bitwise_not_16::ClaimGenerator,
+    verify_bitwise_and_8_trace_generator: verify_bitwise_and_8::ClaimGenerator,
     // ...
 }
 impl CairoClaimGenerator {
@@ -159,6 +167,7 @@ impl CairoClaimGenerator {
         let builtins = BuiltinsClaimGenerator::new(builtin_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
+        let sha256_context_trace_generator = Sha256ContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&memory);
         let memory_id_to_value_trace_generator = memory_id_to_big::ClaimGenerator::new(&memory);
@@ -167,6 +176,9 @@ impl CairoClaimGenerator {
         let verify_bitwise_xor_7_trace_generator = verify_bitwise_xor_7::ClaimGenerator::new();
         let verify_bitwise_xor_8_trace_generator = verify_bitwise_xor_8::ClaimGenerator::new();
         let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
+        let verify_bitwise_not_16_trace_generator =
+            verify_bitwise_not_16::ClaimGenerator::default();
+        let verify_bitwise_and_8_trace_generator = verify_bitwise_and_8::ClaimGenerator::default();
 
         // Yield public memory.
         for addr in public_memory_addresses
@@ -207,6 +219,7 @@ impl CairoClaimGenerator {
             builtins,
             pedersen_context_trace_generator,
             poseidon_context_trace_generator,
+            sha256_context_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
             range_checks_trace_generator,
@@ -214,6 +227,8 @@ impl CairoClaimGenerator {
             verify_bitwise_xor_7_trace_generator,
             verify_bitwise_xor_8_trace_generator,
             verify_bitwise_xor_9_trace_generator,
+            verify_bitwise_not_16_trace_generator,
+            verify_bitwise_and_8_trace_generator,
         }
     }
 
@@ -260,6 +275,7 @@ impl CairoClaimGenerator {
             &self.range_checks_trace_generator.rc_5_4_trace_generator,
             &self.range_checks_trace_generator.rc_8_trace_generator,
             &mut self.poseidon_context_trace_generator,
+            &mut self.sha256_context_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
             &self.range_checks_trace_generator.rc_12_trace_generator,
             &self.range_checks_trace_generator.rc_18_trace_generator,
@@ -269,6 +285,7 @@ impl CairoClaimGenerator {
             &self
                 .range_checks_trace_generator
                 .rc_3_3_3_3_3_trace_generator,
+            &self.range_checks_trace_generator.rc_7_2_5_trace_generator,
             &self.verify_bitwise_xor_8_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
@@ -278,6 +295,14 @@ impl CairoClaimGenerator {
         let (poseidon_context_claim, poseidon_context_interaction_gen) = self
             .poseidon_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
+        let (sha256_context_claim, sha256_context_interaction_gen) =
+            self.sha256_context_trace_generator.write_trace(
+                tree_builder,
+                &self.range_checks_trace_generator,
+                &self.verify_bitwise_and_8_trace_generator,
+                &self.verify_bitwise_not_16_trace_generator,
+                &self.verify_bitwise_xor_8_trace_generator,
+            );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
@@ -311,6 +336,12 @@ impl CairoClaimGenerator {
         let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
             .verify_bitwise_xor_9_trace_generator
             .write_trace(tree_builder);
+        let (verify_bitwise_not_16_claim, verify_bitwise_not_16_interaction_gen) = self
+            .verify_bitwise_not_16_trace_generator
+            .write_trace(tree_builder);
+        let (verify_bitwise_and_8_claim, verify_bitwise_and_8_interaction_gen) = self
+            .verify_bitwise_and_8_trace_generator
+            .write_trace(tree_builder);
         span.exit();
         (
             CairoClaim {
@@ -321,6 +352,7 @@ impl CairoClaimGenerator {
                 builtins: builtins_claim,
                 pedersen_context: pedersen_context_claim,
                 poseidon_context: poseidon_context_claim,
+                sha256_context: sha256_context_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
                 range_checks: range_checks_claim,
@@ -328,6 +360,8 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_7: verify_bitwise_xor_7_claim,
                 verify_bitwise_xor_8: verify_bitwise_xor_8_claim,
                 verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
+                verify_bitwise_not_16: verify_bitwise_not_16_claim,
+                verify_bitwise_and_8: verify_bitwise_and_8_claim,
             },
             CairoInteractionClaimGenerator {
                 opcodes_interaction_gen,
@@ -336,6 +370,7 @@ impl CairoClaimGenerator {
                 builtins_interaction_gen,
                 pedersen_context_interaction_gen,
                 poseidon_context_interaction_gen,
+                sha256_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
                 range_checks_interaction_gen,
@@ -343,6 +378,8 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_7_interaction_gen,
                 verify_bitwise_xor_8_interaction_gen,
                 verify_bitwise_xor_9_interaction_gen,
+                verify_bitwise_not_16_interaction_gen,
+                verify_bitwise_and_8_interaction_gen,
             },
         )
     }
@@ -355,6 +392,7 @@ pub struct CairoInteractionClaimGenerator {
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
+    sha256_context_interaction_gen: Sha256ContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
     range_checks_interaction_gen: RangeChecksInteractionClaimGenerator,
@@ -362,6 +400,8 @@ pub struct CairoInteractionClaimGenerator {
     verify_bitwise_xor_7_interaction_gen: verify_bitwise_xor_7::InteractionClaimGenerator,
     verify_bitwise_xor_8_interaction_gen: verify_bitwise_xor_8::InteractionClaimGenerator,
     verify_bitwise_xor_9_interaction_gen: verify_bitwise_xor_9::InteractionClaimGenerator,
+    verify_bitwise_not_16_interaction_gen: verify_bitwise_not_16::InteractionClaimGenerator,
+    verify_bitwise_and_8_interaction_gen: verify_bitwise_and_8::InteractionClaimGenerator,
     // ...
 }
 impl CairoInteractionClaimGenerator {
@@ -395,6 +435,10 @@ impl CairoInteractionClaimGenerator {
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
+        let sha256_context_interaction_claim = self
+            .sha256_context_interaction_gen
+            .write_interaction_trace(tree_builder, interaction_elements);
+
         let memory_address_to_id_interaction_claim = self
             .memory_address_to_id_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.memory_address_to_id);
@@ -428,6 +472,12 @@ impl CairoInteractionClaimGenerator {
         let verify_bitwise_xor_9_interaction_claim = self
             .verify_bitwise_xor_9_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_9);
+        let verify_bitwise_not_16_interaction_claim = self
+            .verify_bitwise_not_16_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_not_16);
+        let verify_bitwise_and_8_interaction_claim = self
+            .verify_bitwise_and_8_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_and_8);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,
@@ -436,6 +486,7 @@ impl CairoInteractionClaimGenerator {
             builtins: builtins_interaction_claims,
             pedersen_context: pedersen_context_interaction_claim,
             poseidon_context: poseidon_context_interaction_claim,
+            sha256_context: sha256_context_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
             range_checks: range_checks_interaction_claim,
@@ -443,6 +494,8 @@ impl CairoInteractionClaimGenerator {
             verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
             verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
             verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+            verify_bitwise_not_16: verify_bitwise_not_16_interaction_claim,
+            verify_bitwise_and_8: verify_bitwise_and_8_interaction_claim,
         }
     }
 }

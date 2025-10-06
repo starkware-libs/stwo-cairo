@@ -1,6 +1,6 @@
-// AIR version 98896da1
+// AIR version 98896da1-dirty
 #![allow(unused_parens)]
-use cairo_air::components::verify_bitwise_and_16::{
+use cairo_air::components::verify_bitwise_and_8::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
 
@@ -58,19 +58,18 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         )
     };
 
-    let bitwiseand_16_0 = BitwiseAnd::new(16, 0);
-    let bitwiseand_16_1 = BitwiseAnd::new(16, 1);
-    let bitwiseand_16_2 = BitwiseAnd::new(16, 2);
+    let bitwiseand_8_0 = BitwiseAnd::new(8, 0);
+    let bitwiseand_8_1 = BitwiseAnd::new(8, 1);
+    let bitwiseand_8_2 = BitwiseAnd::new(8, 2);
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (mut row, lookup_data))| {
-            let bitwiseand_16_0 = bitwiseand_16_0.packed_at(row_index);
-            let bitwiseand_16_1 = bitwiseand_16_1.packed_at(row_index);
-            let bitwiseand_16_2 = bitwiseand_16_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_and_16_0 =
-                [bitwiseand_16_0, bitwiseand_16_1, bitwiseand_16_2];
+            let bitwiseand_8_0 = bitwiseand_8_0.packed_at(row_index);
+            let bitwiseand_8_1 = bitwiseand_8_1.packed_at(row_index);
+            let bitwiseand_8_2 = bitwiseand_8_2.packed_at(row_index);
+            *lookup_data.verify_bitwise_and_8_0 = [bitwiseand_8_0, bitwiseand_8_1, bitwiseand_8_2];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;
@@ -81,7 +80,7 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_and_16_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_and_8_0: Vec<[PackedM31; 3]>,
     mults: Vec<PackedM31>,
 }
 
@@ -92,7 +91,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_and_16: &relations::VerifyBitwiseAnd_16,
+        verify_bitwise_and_8: &relations::VerifyBitwiseAnd_8,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -100,12 +99,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_and_16_0,
+            &self.lookup_data.verify_bitwise_and_8_0,
             self.lookup_data.mults,
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = verify_bitwise_and_16.combine(values);
+                let denom = verify_bitwise_and_8.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

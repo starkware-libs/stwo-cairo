@@ -88,23 +88,23 @@ pub trait NewComponent<T> {
         interaction_elements: @CairoInteractionElements,
     ) -> T;
 }
-pub mod sha_256_small_sigma_1_o_1;
-pub mod sha_256_small_sigma_0_o_1;
-pub mod sha_256_small_sigma_1_o_0;
-pub mod sha_256_small_sigma_0_o_0;
-pub mod sha_256_round;
-pub mod verify_bitwise_not_16;
-pub mod sha_256_schedule;
-pub mod verify_bitwise_and_16;
-pub mod verify_bitwise_xor_16;
-pub mod sha_256_k_table;
 pub mod range_check_2;
-pub mod sha_256_big_sigma_1_o_1;
-pub mod sha_256_big_sigma_0_o_1;
 pub mod sha_256_big_sigma_0;
+pub mod sha_256_big_sigma_0_o_0;
+pub mod sha_256_big_sigma_0_o_1;
 pub mod sha_256_big_sigma_1;
 pub mod sha_256_big_sigma_1_o_0;
-pub mod sha_256_big_sigma_0_o_0;
-pub mod sha_256_small_sigma_1;
-pub mod sha_256_small_sigma_0;
+pub mod sha_256_big_sigma_1_o_1;
 pub mod sha_256_builtin;
+pub mod sha_256_k_table;
+pub mod sha_256_round;
+pub mod sha_256_schedule;
+pub mod sha_256_small_sigma_0;
+pub mod sha_256_small_sigma_0_o_0;
+pub mod sha_256_small_sigma_0_o_1;
+pub mod sha_256_small_sigma_1;
+pub mod sha_256_small_sigma_1_o_0;
+pub mod sha_256_small_sigma_1_o_1;
+pub mod verify_bitwise_and_8;
+pub mod verify_bitwise_not_16;
+

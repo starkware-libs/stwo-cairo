@@ -16,9 +16,7 @@ cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev =
 cairo-lang-casm = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
 cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "5cc466a" }
 serde_json = "1.0.138"
-cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "b1a91f929b5fa29a1a2e9e6990a68a1220c0c673", features = [
-    "mod_builtin",
-] }
+cairo-vm = { path = "/Users/lucas/cairo-vm/vm", features = ["mod_builtin"] }
 clap = { version = "4.5.38", features = ["derive"] }
 num-bigint = "0.4.6"
 camino = "1.1.9"
