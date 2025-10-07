@@ -15,9 +15,8 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::Felt252;
 use clap::ValueEnum;
 use serde_json::from_reader;
-
-use crate::adapter::adapt;
-use crate::ProverInput;
+use stwo_cairo_adapter::adapter::adapt;
+use stwo_cairo_adapter::ProverInput;
 
 #[derive(Clone, Debug, ValueEnum)]
 pub enum ProgramType {
