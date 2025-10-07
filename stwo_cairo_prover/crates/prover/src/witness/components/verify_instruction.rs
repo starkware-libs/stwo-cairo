@@ -1,10 +1,10 @@
 #![allow(unused_parens)]
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::components::verify_instruction::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use itertools::Itertools;
 use stwo_cairo_adapter::decode::deconstruct_instruction;
-use stwo_cairo_adapter::HashMap;
 
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,

@@ -8,7 +8,10 @@ use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
-use sonic_rs::from_str;
+#[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
+use serde_json as json_backend;
+#[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+use sonic_rs as json_backend;
 use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
@@ -16,7 +19,6 @@ use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
@@ -167,7 +169,7 @@ pub fn create_and_serialize_proof(
     proof_params_json: Option<PathBuf>,
 ) -> Result<()> {
     let proof_params = if let Some(proof_params_json) = proof_params_json {
-        from_str(&read_to_string(&proof_params_json)?)?
+        json_backend::from_str(&read_to_string(&proof_params_json)?)?
     } else {
         // The default prover parameters for prod use (96 bits of security).
         // The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
@@ -202,7 +204,13 @@ pub fn create_and_serialize_proof(
                 verify_cairo::<Blake2sMerkleChannel>(proof, proof_params.preprocessed_trace)?;
             }
         }
+        #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
         ChannelHash::Poseidon252 => {
+            unimplemented!("Poseidon252 is not supported for wasm targets");
+        }
+        #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+        ChannelHash::Poseidon252 => {
+            use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
             let proof = prove_cairo::<Poseidon252MerkleChannel>(
                 input,
                 proof_params.pcs_config,
