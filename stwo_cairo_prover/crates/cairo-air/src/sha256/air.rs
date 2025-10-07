@@ -289,9 +289,6 @@ impl Components {
                 verify_bitwise_and_8_lookup_elements: interaction_elements
                     .verify_bitwise_and_8
                     .clone(),
-                verify_bitwise_not_16_lookup_elements: interaction_elements
-                    .verify_bitwise_not_16
-                    .clone(),
                 verify_bitwise_xor_8_lookup_elements: interaction_elements
                     .verify_bitwise_xor_8
                     .clone(),

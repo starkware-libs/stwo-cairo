@@ -16,13 +16,13 @@ use super::bitwise_xor::BitwiseXor;
 use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
 use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
+use super::sha256::{Sha256K, Sha256SigmaTable, Sha256SigmaType};
 use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use crate::prover_types::simd::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 const AND_N_BITS: [u32; 1] = [8];
-const NOT_N_BITS: [u32; 1] = [16];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
@@ -75,28 +75,40 @@ impl PreProcessedTrace {
             })
             .into_iter()
             .flatten();
-        let bitwise_not = NOT_N_BITS
-            .map(|n_bits| {
-                (0..2).map(move |col_index| {
-                    Box::new(BitwiseNot::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
-                })
-            })
-            .into_iter()
-            .flatten();
+
         let range_check = gen_range_check_columns();
         let poseidon_keys = (0..POSEIDON_N_WORDS)
             .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
         let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
+        let sha256_k = (0..2).map(|x| Box::new(Sha256K::new(x)) as Box<dyn PreProcessedColumn>);
+        let sha256_sigma = [
+            Sha256SigmaType::SmallSigma0O0,
+            Sha256SigmaType::SmallSigma0O1,
+            Sha256SigmaType::SmallSigma1O0,
+            Sha256SigmaType::SmallSigma1O1,
+            Sha256SigmaType::BigSigma0O0,
+            Sha256SigmaType::BigSigma0O1,
+            Sha256SigmaType::BigSigma1O0,
+            Sha256SigmaType::BigSigma1O1,
+        ]
+        .map(|sigma_type| {
+            (0..6).map(move |x| {
+                Box::new(Sha256SigmaTable::new(sigma_type, x)) as Box<dyn PreProcessedColumn>
+            })
+        })
+        .into_iter()
+        .flatten();
 
         let columns = chain!(
             seq,
             bitwise_xor,
             bitwise_and,
-            bitwise_not,
             range_check,
             poseidon_keys,
-            blake_sigma
+            blake_sigma,
+            sha256_k,
+            sha256_sigma,
         )
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect();

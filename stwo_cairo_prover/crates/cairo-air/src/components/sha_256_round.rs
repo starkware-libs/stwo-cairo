@@ -1,13 +1,12 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_and_num_bits_8::BitwiseAndNumBits8;
-use crate::components::subroutines::bitwise_not_num_bits_16::BitwiseNotNumBits16;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::split_16_low_part_size_8::Split16LowPartSize8;
 use crate::components::subroutines::triple_sum_32::TripleSum32;
 
 pub const N_TRACE_COLUMNS: usize = 125;
-pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
+pub const RELATION_USES_PER_ROW: [RelationUse; 7] = [
     RelationUse {
         relation_id: "Sha256BigSigma0",
         uses: 1,
@@ -33,10 +32,6 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
         uses: 20,
     },
     RelationUse {
-        relation_id: "VerifyBitwiseNot_16",
-        uses: 2,
-    },
-    RelationUse {
         relation_id: "VerifyBitwiseXor_8",
         uses: 12,
     },
@@ -47,7 +42,6 @@ pub struct Eval {
     pub sha_256_big_sigma_1_lookup_elements: relations::Sha256BigSigma1,
     pub sha_256_big_sigma_0_lookup_elements: relations::Sha256BigSigma0,
     pub verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8,
-    pub verify_bitwise_not_16_lookup_elements: relations::VerifyBitwiseNot_16,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
     pub sha_256_k_table_lookup_elements: relations::Sha256KTable,
     pub sha_256_schedule_lookup_elements: relations::Sha256Schedule,
@@ -61,7 +55,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 20];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 19];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -98,6 +92,7 @@ impl FrameworkEval for Eval {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_256 = E::F::from(M31::from(256));
+        let M31_65535 = E::F::from(M31::from(65535));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -160,8 +155,8 @@ impl FrameworkEval for Eval {
         let and_col59 = eval.next_trace_mask();
         let and_col60 = eval.next_trace_mask();
         let and_col61 = eval.next_trace_mask();
-        let not_a_col62 = eval.next_trace_mask();
-        let not_a_col63 = eval.next_trace_mask();
+        let not_e_l_col62 = eval.next_trace_mask();
+        let not_e_h_col63 = eval.next_trace_mask();
         let ms_8_bits_col64 = eval.next_trace_mask();
         let ms_8_bits_col65 = eval.next_trace_mask();
         let ms_8_bits_col66 = eval.next_trace_mask();
@@ -306,50 +301,46 @@ impl FrameworkEval for Eval {
             &self.verify_bitwise_and_8_lookup_elements,
             &mut eval,
         );
-        BitwiseNotNumBits16::evaluate(
-            [input_limb_10_col10.clone()],
-            not_a_col62.clone(),
-            &self.verify_bitwise_not_16_lookup_elements,
-            &mut eval,
+        // not_e_l.
+        eval.add_constraint(
+            (not_e_l_col62.clone() - (M31_65535.clone() - input_limb_10_col10.clone())),
         );
-        BitwiseNotNumBits16::evaluate(
-            [input_limb_11_col11.clone()],
-            not_a_col63.clone(),
-            &self.verify_bitwise_not_16_lookup_elements,
-            &mut eval,
+        // not_e_h.
+        eval.add_constraint(
+            (not_e_h_col63.clone() - (M31_65535.clone() - input_limb_11_col11.clone())),
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_23_limb_0] = Split16LowPartSize8::evaluate(
-            [not_a_col62.clone()],
+        let [split_16_low_part_size_8_output_tmp_ce7d8_19_limb_0] = Split16LowPartSize8::evaluate(
+            [not_e_l_col62.clone()],
             ms_8_bits_col64.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_25_limb_0] = Split16LowPartSize8::evaluate(
-            [not_a_col63.clone()],
+        let [split_16_low_part_size_8_output_tmp_ce7d8_21_limb_0] = Split16LowPartSize8::evaluate(
+            [not_e_h_col63.clone()],
             ms_8_bits_col65.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_27_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_23_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_14_col14.clone()],
             ms_8_bits_col66.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_29_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_25_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_15_col15.clone()],
             ms_8_bits_col67.clone(),
             &mut eval,
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_19_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_23_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_27_limb_0.clone(),
             ],
             and_col68.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -363,8 +354,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_21_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_25_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_29_limb_0.clone(),
             ],
             and_col70.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -446,50 +437,50 @@ impl FrameworkEval for Eval {
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_53_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_2_col2.clone()],
             ms_8_bits_col86.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_55_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_3_col3.clone()],
             ms_8_bits_col87.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_4_col4.clone()],
             ms_8_bits_col88.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_5_col5.clone()],
             ms_8_bits_col89.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_6_col6.clone()],
             ms_8_bits_col90.clone(),
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0] = Split16LowPartSize8::evaluate(
+        let [split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0] = Split16LowPartSize8::evaluate(
             [input_limb_7_col7.clone()],
             ms_8_bits_col91.clone(),
             &mut eval,
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_53_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0.clone(),
             ],
             and_col92.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -503,8 +494,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_55_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0.clone(),
             ],
             and_col94.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -518,8 +509,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
-                split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_53_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0.clone(),
             ],
             and_col96.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -533,8 +524,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
-                split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_55_limb_0.clone(),
+                split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0.clone(),
             ],
             and_col98.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -548,8 +539,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_57_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_61_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_65_limb_0.clone(),
             ],
             and_col100.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -563,8 +554,8 @@ impl FrameworkEval for Eval {
         );
         BitwiseAndNumBits8::evaluate(
             [
+                split_16_low_part_size_8_output_tmp_ce7d8_59_limb_0.clone(),
                 split_16_low_part_size_8_output_tmp_ce7d8_63_limb_0.clone(),
-                split_16_low_part_size_8_output_tmp_ce7d8_67_limb_0.clone(),
             ],
             and_col102.clone(),
             &self.verify_bitwise_and_8_lookup_elements,
@@ -850,7 +841,6 @@ mod tests {
             sha_256_big_sigma_1_lookup_elements: relations::Sha256BigSigma1::dummy(),
             sha_256_big_sigma_0_lookup_elements: relations::Sha256BigSigma0::dummy(),
             verify_bitwise_and_8_lookup_elements: relations::VerifyBitwiseAnd_8::dummy(),
-            verify_bitwise_not_16_lookup_elements: relations::VerifyBitwiseNot_16::dummy(),
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
             sha_256_k_table_lookup_elements: relations::Sha256KTable::dummy(),
             sha_256_schedule_lookup_elements: relations::Sha256Schedule::dummy(),

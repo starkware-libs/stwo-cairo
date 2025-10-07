@@ -1,9 +1,9 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 4;
-pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
+pub const N_BITS: u32 = 8;
+pub const LOG_SIZE: u32 = 2 * N_BITS;
 
 pub struct Eval {
     pub claim: Claim,

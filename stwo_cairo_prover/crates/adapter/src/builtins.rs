@@ -129,6 +129,16 @@ impl BuiltinSegments {
                 Some("poseidon"),
             ));
         }
+
+        if let Some(segment) = &self.sha256 {
+            self.sha256 = Some(pad_segment(
+                segment,
+                memory,
+                SHA256_MEMORY_CELLS as u32,
+                Some("sha256"),
+            ));
+        }
+
         if let Some(segment) = &self.range_check_bits_96 {
             self.range_check_bits_96 = Some(pad_segment(
                 segment,

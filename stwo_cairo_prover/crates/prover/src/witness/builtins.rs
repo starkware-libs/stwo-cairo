@@ -277,9 +277,9 @@ impl BuiltinsClaimGenerator {
                 mul_mod_builtin: mul_mod_builtin_claim,
                 pedersen_builtin: pedersen_builtin_claim,
                 poseidon_builtin: poseidon_builtin_claim,
+                sha256_builtin: sha256_builtin_claim,
                 range_check_96_builtin: range_check_96_builtin_claim,
                 range_check_128_builtin: range_check_128_builtin_claim,
-                sha256_builtin: sha256_builtin_claim,
             },
             BuiltinsInteractionClaimGenerator {
                 add_mod_builtin_interaction_gen,
@@ -287,9 +287,9 @@ impl BuiltinsClaimGenerator {
                 mul_mod_builtin_interaction_gen,
                 pedersen_builtin_interaction_gen,
                 poseidon_builtin_interaction_gen,
+                sha256_builtin_interaction_gen,
                 range_check_96_builtin_interaction_gen,
                 range_check_128_builtin_interaction_gen,
-                sha256_builtin_interaction_gen,
             },
         )
     }

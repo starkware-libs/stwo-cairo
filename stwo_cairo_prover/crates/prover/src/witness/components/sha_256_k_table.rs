@@ -1,4 +1,4 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_k_table::{Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS};
 
@@ -30,8 +30,8 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
+    pub fn add_input(&self, input: &InputType) {
+        self.mults.increase_at(input[0].0);
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {

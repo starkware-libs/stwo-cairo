@@ -1,8 +1,9 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_big_sigma_1_o_1::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
+use cairo_air::sha256::const_columns::BIG_SIGMA1_1_COLUMNS;
 
 use crate::witness::prelude::*;
 
@@ -32,8 +33,14 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, _input: &InputType) {
-        todo!()
+    pub fn add_input(&self, input: &InputType) {
+        let pos = BIG_SIGMA1_1_COLUMNS[0]
+            .iter()
+            .zip(&*BIG_SIGMA1_1_COLUMNS[1])
+            .map(|(a, b)| a.0 + (b.0 << 16))
+            .position(|x| x == input[0].0 + (input[1].0 << 16))
+            .unwrap() as u32;
+        self.mults.increase_at(pos);
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {

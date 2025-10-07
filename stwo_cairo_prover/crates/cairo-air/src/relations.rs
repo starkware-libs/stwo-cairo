@@ -52,7 +52,6 @@ relation!(VerifyBitwiseXor_7, 3);
 relation!(VerifyBitwiseXor_8, 3);
 relation!(VerifyBitwiseXor_9, 3);
 relation!(VerifyInstruction, 7);
-relation!(VerifyBitwiseNot_16, 2);
 relation!(VerifyBitwiseAnd_8, 3);
 relation!(Sigma, 4);
 relation!(Sha256Schedule, 34);

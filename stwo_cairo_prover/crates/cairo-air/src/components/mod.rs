@@ -96,5 +96,4 @@ pub mod sha_256_small_sigma_0_o_1;
 pub mod sha_256_small_sigma_1;
 pub mod sha_256_small_sigma_1_o_0;
 pub mod sha_256_small_sigma_1_o_1;
-pub mod verify_bitwise_not_16;
 pub mod verify_bitwise_and_8;

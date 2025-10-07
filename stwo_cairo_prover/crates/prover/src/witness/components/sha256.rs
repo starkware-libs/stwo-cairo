@@ -9,7 +9,7 @@ use crate::witness::components::{
     sha_256_big_sigma_1_o_0, sha_256_big_sigma_1_o_1, sha_256_k_table, sha_256_round,
     sha_256_schedule, sha_256_small_sigma_0, sha_256_small_sigma_0_o_0, sha_256_small_sigma_0_o_1,
     sha_256_small_sigma_1, sha_256_small_sigma_1_o_0, sha_256_small_sigma_1_o_1,
-    verify_bitwise_and_8, verify_bitwise_not_16, verify_bitwise_xor_8,
+    verify_bitwise_and_8, verify_bitwise_xor_8,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
@@ -87,9 +87,8 @@ impl Sha256ContextClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
-        mut bitwise_and_8_trace_generator: &verify_bitwise_and_8::ClaimGenerator,
-        bitwise_not_16_trace_generator: &verify_bitwise_not_16::ClaimGenerator,
-        mut bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
+        bitwise_and_8_trace_generator: &verify_bitwise_and_8::ClaimGenerator,
+        bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (Sha256ContextClaim, Sha256ContextInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write poseidon context trace").entered();
         if self.sha_256_round_trace_generator.is_empty() {
@@ -103,27 +102,26 @@ impl Sha256ContextClaimGenerator {
                 tree_builder,
                 &mut self.sha_256_big_sigma_0_trace_generator,
                 &mut self.sha_256_big_sigma_1_trace_generator,
-                &mut self.sha_256_k_table_trace_generator,
+                &self.sha_256_k_table_trace_generator,
                 &mut self.sha_256_schedule_trace_generator,
-                &bitwise_and_8_trace_generator,
-                &bitwise_not_16_trace_generator,
-                &bitwise_xor_8_trace_generator,
+                bitwise_and_8_trace_generator,
+                bitwise_xor_8_trace_generator,
             );
         let (sha_256_big_sigma_0_claim, sha_256_big_sigma_0_interaction_gen) =
             self.sha_256_big_sigma_0_trace_generator.write_trace(
                 tree_builder,
-                &mut self.sha_256_big_sigma_0_o_0_trace_generator,
-                &mut self.sha_256_big_sigma_0_o_1_trace_generator,
-                &mut bitwise_and_8_trace_generator,
-                &mut bitwise_xor_8_trace_generator,
+                &self.sha_256_big_sigma_0_o_0_trace_generator,
+                &self.sha_256_big_sigma_0_o_1_trace_generator,
+                bitwise_and_8_trace_generator,
+                bitwise_xor_8_trace_generator,
             );
         let (sha_256_big_sigma_1_claim, sha_256_big_sigma_1_interaction_gen) =
             self.sha_256_big_sigma_1_trace_generator.write_trace(
                 tree_builder,
-                &mut self.sha_256_big_sigma_1_o_0_trace_generator,
-                &mut self.sha_256_big_sigma_1_o_1_trace_generator,
-                &mut bitwise_and_8_trace_generator,
-                &mut bitwise_xor_8_trace_generator,
+                &self.sha_256_big_sigma_1_o_0_trace_generator,
+                &self.sha_256_big_sigma_1_o_1_trace_generator,
+                bitwise_and_8_trace_generator,
+                bitwise_xor_8_trace_generator,
             );
         let (sha_256_schedule_claim, sha_256_schedule_interaction_gen) =
             self.sha_256_schedule_trace_generator.write_trace(
@@ -135,18 +133,18 @@ impl Sha256ContextClaimGenerator {
         let (sha_256_small_sigma_0_claim, sha_256_small_sigma_0_interaction_gen) =
             self.sha_256_small_sigma_0_trace_generator.write_trace(
                 tree_builder,
-                &mut self.sha_256_small_sigma_0_o_0_trace_generator,
-                &mut self.sha_256_small_sigma_0_o_1_trace_generator,
-                &mut bitwise_and_8_trace_generator,
-                &mut bitwise_xor_8_trace_generator,
+                &self.sha_256_small_sigma_0_o_0_trace_generator,
+                &self.sha_256_small_sigma_0_o_1_trace_generator,
+                bitwise_and_8_trace_generator,
+                bitwise_xor_8_trace_generator,
             );
         let (sha_256_small_sigma_1_claim, sha_256_small_sigma_1_interaction_gen) =
             self.sha_256_small_sigma_1_trace_generator.write_trace(
                 tree_builder,
-                &mut self.sha_256_small_sigma_1_o_0_trace_generator,
-                &mut self.sha_256_small_sigma_1_o_1_trace_generator,
-                &mut bitwise_and_8_trace_generator,
-                &mut bitwise_xor_8_trace_generator,
+                &self.sha_256_small_sigma_1_o_0_trace_generator,
+                &self.sha_256_small_sigma_1_o_1_trace_generator,
+                bitwise_and_8_trace_generator,
+                bitwise_xor_8_trace_generator,
             );
         let (sha_256_big_sigma_0_o_0_claim, sha_256_big_sigma_0_o_0_interaction_gen) = self
             .sha_256_big_sigma_0_o_0_trace_generator
@@ -265,7 +263,6 @@ impl InteractionClaimGenerator {
                 &interaction_elements.sha_256_big_sigma_1,
                 &interaction_elements.sha_256_big_sigma_0,
                 &interaction_elements.verify_bitwise_and_8,
-                &interaction_elements.verify_bitwise_not_16,
                 &interaction_elements.verify_bitwise_xor_8,
                 &interaction_elements.sha_256_k_table,
                 &interaction_elements.sha_256_schedule,

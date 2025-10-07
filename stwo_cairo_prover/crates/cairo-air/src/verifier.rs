@@ -120,10 +120,10 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         ec_op,
         keccak,
         poseidon,
+        sha256,
         range_check_96,
         add_mod,
         mul_mod,
-        sha256,
     } = *segment_ranges;
     // Check that non-supported builtins aren't used.
     if let Some(ecdsa) = ecdsa {

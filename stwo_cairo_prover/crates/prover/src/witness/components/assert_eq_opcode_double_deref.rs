@@ -1,4 +1,4 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode_double_deref::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,

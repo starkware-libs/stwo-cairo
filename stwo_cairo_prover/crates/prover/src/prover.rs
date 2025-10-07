@@ -507,6 +507,21 @@ pub mod tests {
                 .unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
             }
+            #[test]
+            fn test_prove_verify_sha256_builtin() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_sha256_builtin");
+                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                // assert_all_builtins_in_input(&input);
+                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                    input,
+                    PcsConfig::default(),
+                    preprocessed_trace,
+                )
+                .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
+            }
 
             #[test]
             fn test_add_mod_builtin_constraints() {

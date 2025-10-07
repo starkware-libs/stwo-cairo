@@ -1,4 +1,4 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;

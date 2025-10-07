@@ -1,4 +1,4 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::jnz_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

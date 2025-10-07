@@ -108,7 +108,6 @@ pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
         verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
         verify_bitwise_and_8: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_not_16: LookupElementsDummyImpl::dummy(),
         sigma: LookupElementsDummyImpl::dummy(),
         sha_256_schedule: LookupElementsDummyImpl::dummy(),
         sha_256_k_table: LookupElementsDummyImpl::dummy(),

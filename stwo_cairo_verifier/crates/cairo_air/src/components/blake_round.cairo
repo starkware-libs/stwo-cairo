@@ -1,4 +1,4 @@
-// AIR version 98896da1-dirty
+// AIR version 52ac7695-dirty
 use crate::prelude::*;use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 
 pub const N_TRACE_COLUMNS: usize = 212;pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [

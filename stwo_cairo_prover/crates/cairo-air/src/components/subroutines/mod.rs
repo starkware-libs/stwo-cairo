@@ -1,5 +1,5 @@
 pub mod add_252;
-pub mod bitwise_not_num_bits_16;
+pub mod bitwise_and_num_bits_8;
 pub mod bitwise_xor_num_bits_12;
 pub mod bitwise_xor_num_bits_4;
 pub mod bitwise_xor_num_bits_7;
@@ -97,4 +97,3 @@ pub mod xor_rot_32_r_12;
 pub mod xor_rot_32_r_16;
 pub mod xor_rot_32_r_7;
 pub mod xor_rot_32_r_8;
-pub mod bitwise_and_num_bits_8;

@@ -123,7 +123,12 @@ macro_rules! range_check_eval{
 
             impl FrameworkEval for Eval {
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    // Keep the evaluation domain at least one SIMD vector wide,
+                    // to match the writer (prover) which packs by LOG_N_LANES.
+                    core::cmp::max(
+                        RANGES.iter().sum(),
+                        stwo_cairo_common::prover_types::simd::LOG_N_LANES,
+                    )
                 }
                 fn max_constraint_log_degree_bound(&self) -> u32 {
                     self.log_size() + 1

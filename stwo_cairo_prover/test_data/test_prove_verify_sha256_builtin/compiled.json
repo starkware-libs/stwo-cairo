@@ -111,7 +111,7 @@
         "0x40780017fff7fff",
         "0x1",
         "0x400780017fff8000",
-        "0x32",
+        "0x1",
         "0x480a7ffa7fff8000",
         "0x480a80007fff8000",
         "0x1104800180018000",
@@ -2473,7 +2473,7 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 25,
+                    "end_col": 24,
                     "end_line": 47,
                     "input_file": {
                         "filename": "./builtin_usage_flexible_cairo.cairo"

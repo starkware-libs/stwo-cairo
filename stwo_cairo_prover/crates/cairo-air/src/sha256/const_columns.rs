@@ -14,6 +14,11 @@ use stwo_cairo_common::prover_types::cpu::M31;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
+use crate::components::{
+    sha_256_big_sigma_0_o_0, sha_256_big_sigma_0_o_1, sha_256_big_sigma_1_o_0,
+    sha_256_big_sigma_1_o_1, sha_256_small_sigma_0_o_0, sha_256_small_sigma_0_o_1,
+    sha_256_small_sigma_1_o_0, sha_256_small_sigma_1_o_1,
+};
 use crate::preprocessed::PreProcessedColumn;
 use crate::preprocessed_utils::pad;
 
@@ -32,7 +37,13 @@ impl Sha256K {
     pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let array = K[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
             .iter()
-            .map(|&x| M31::from_u32_unchecked(x))
+            .map(|&x| {
+                M31::from_u32_unchecked(if self.col == 0 {
+                    x & u16::MAX as u32
+                } else {
+                    x >> 16
+                })
+            })
             .collect::<Vec<M31>>()
             .try_into()
             .unwrap();
@@ -46,9 +57,19 @@ impl PreProcessedColumn for Sha256K {
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        let table = K
+            .into_iter()
+            .map(|x| {
+                if self.col == 0 {
+                    M31::from_u32_unchecked(x & u16::MAX as u32)
+                } else {
+                    M31::from_u32_unchecked(x >> 16)
+                }
+            })
+            .collect::<Vec<M31>>();
         CircleEvaluation::new(
             CanonicCoset::new(K_LOG_N_ROWS).circle_domain(),
-            BaseColumn::from_iter(K.into_iter().map(M31::from_u32_unchecked)),
+            BaseColumn::from_iter(table),
         )
     }
 
@@ -61,7 +82,6 @@ impl PreProcessedColumn for Sha256K {
 
 pub const SHA256_SIGMA_TABLE: &str = "sha256_sigma";
 
-const SIGMA_LOG_N_ROWS: u32 = 21;
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Sha256SigmaType {
     BigSigma0O0,
@@ -88,21 +108,21 @@ impl std::fmt::Display for Sha256SigmaType {
         }
     }
 }
-static SMALL_SIGMA0_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static SMALL_SIGMA0_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::SmallSigma0O0));
-static SMALL_SIGMA0_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static SMALL_SIGMA0_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::SmallSigma0O1));
-static SMALL_SIGMA1_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static SMALL_SIGMA1_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::SmallSigma1O0));
-static SMALL_SIGMA1_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static SMALL_SIGMA1_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::SmallSigma1O1));
-static BIG_SIGMA0_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static BIG_SIGMA0_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::BigSigma0O0));
-static BIG_SIGMA0_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static BIG_SIGMA0_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::BigSigma0O1));
-static BIG_SIGMA1_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static BIG_SIGMA1_0_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::BigSigma1O0));
-static BIG_SIGMA1_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
+pub static BIG_SIGMA1_1_COLUMNS: LazyLock<[Vec<M31>; 6]> =
     LazyLock::new(|| generate_sigma_columns(Sha256SigmaType::BigSigma1O1));
 
 fn get_m31_big_sigma00(round: usize, col: usize) -> M31 {
@@ -180,8 +200,8 @@ fn generate_sigma_columns(sigma: Sha256SigmaType) -> [Vec<M31>; 6] {
         }
         Sha256SigmaType::SmallSigma0O1 => {
             input_indexes.extend(small_sigma0::L0_INDEXES);
+            input_indexes.extend(small_sigma0::H0_INDEXES);
             input_indexes.extend(small_sigma0::H1_INDEXES);
-            input_indexes.extend(small_sigma0::H2_INDEXES);
         }
         Sha256SigmaType::SmallSigma1O0 => {
             input_indexes.extend(small_sigma1::L0_INDEXES);
@@ -306,7 +326,16 @@ fn generate_sigma_columns(sigma: Sha256SigmaType) -> [Vec<M31>; 6] {
 
 impl PreProcessedColumn for Sha256SigmaTable {
     fn log_size(&self) -> u32 {
-        SIGMA_LOG_N_ROWS
+        match self.sigma {
+            Sha256SigmaType::SmallSigma0O0 => sha_256_small_sigma_0_o_0::LOG_SIZE,
+            Sha256SigmaType::SmallSigma0O1 => sha_256_small_sigma_0_o_1::LOG_SIZE,
+            Sha256SigmaType::SmallSigma1O0 => sha_256_small_sigma_1_o_0::LOG_SIZE,
+            Sha256SigmaType::SmallSigma1O1 => sha_256_small_sigma_1_o_1::LOG_SIZE,
+            Sha256SigmaType::BigSigma0O0 => sha_256_big_sigma_0_o_0::LOG_SIZE,
+            Sha256SigmaType::BigSigma0O1 => sha_256_big_sigma_0_o_1::LOG_SIZE,
+            Sha256SigmaType::BigSigma1O0 => sha_256_big_sigma_1_o_0::LOG_SIZE,
+            Sha256SigmaType::BigSigma1O1 => sha_256_big_sigma_1_o_1::LOG_SIZE,
+        }
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
@@ -331,6 +360,7 @@ impl PreProcessedColumn for Sha256SigmaTable {
             Sha256SigmaType::SmallSigma1O0 => get_m31_small_sigma10,
             Sha256SigmaType::SmallSigma1O1 => get_m31_small_sigma11,
         };
+
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
             BaseColumn::from_cpu(pad(get_m31, table[self.col].len(), self.col)),

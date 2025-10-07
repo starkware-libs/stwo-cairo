@@ -38,27 +38,27 @@ impl Sha256Round {
 
         // w[16 - 16] = w[0] and w[16 - 7] = w[9]
         let w16 = UInt32::from(
-            ((w0.value as u64
-                + small_sigma0(w0.value).value as u64
-                + w9.value as u64
-                + small_sigma1(w14.value).value as u64)
-                % (1 << 32)) as u32,
+            w0.value
+                .wrapping_add(small_sigma0(w1.value).value)
+                .wrapping_add(w9.value)
+                .wrapping_add(small_sigma1(w14.value).value),
         );
 
         let t1 = UInt32::from(
-            (h.value as u64
-                + big_sigma1(e.value).value as u64
-                + ch(e, f, g).value as u64
-                + K[round.0 as usize] as u64
-                + w0.value as u64) as u32,
+            h.value.wrapping_add(
+                big_sigma1(e.value)
+                    .value
+                    .wrapping_add(ch(e, f, g).value)
+                    .wrapping_add(K[round.0 as usize])
+                    .wrapping_add(w0.value),
+            ),
         );
 
         let maj = |a: UInt32, b: UInt32, c: UInt32| -> UInt32 {
             UInt32::from((a.value & b.value) ^ (a.value & c.value) ^ (b.value & c.value))
         };
 
-        let t2 =
-            UInt32::from((big_sigma0(a.value).value as u64 + maj(a, b, c).value as u64) as u32);
+        let t2 = UInt32::from(big_sigma0(a.value).value.wrapping_add(maj(a, b, c).value));
 
         let h = g;
         let g = f;
@@ -116,11 +116,12 @@ impl Sha256Schedule {
         let [w0, w1, _w2, _w3, _w4, _w5, _w6, _w7, _w8, w9, _w10, _w11, _w12, _w13, w14, _w15] =
             input;
         UInt32::from(
-            ((w0.value as u64
-                + small_sigma0(w1.value).value as u64
-                + w9.value as u64
-                + small_sigma1(w14.value).value as u64)
-                % (1 << 32)) as u32,
+            w0.value.wrapping_add(
+                small_sigma0(w1.value)
+                    .value
+                    .wrapping_add(w9.value)
+                    .wrapping_add(small_sigma1(w14.value).value),
+            ),
         )
     }
 }

@@ -121,6 +121,10 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (mut row, lookup_data))| {
+            if row_index == (1 << log_n_packed_rows) - 1 {
+                println!("row_index: {:?}", row_index * N_LANES);
+                println!("pedersen length: {:?}", 8388608u32);
+            }
             let pedersenpoints_0 = pedersenpoints_0.packed_at(row_index);
             let pedersenpoints_1 = pedersenpoints_1.packed_at(row_index);
             let pedersenpoints_2 = pedersenpoints_2.packed_at(row_index);
