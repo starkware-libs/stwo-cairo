@@ -36,10 +36,7 @@ fn parse_channel_hash(hash_str: &str) -> Result<ChannelHash> {
     match hash_str.to_lowercase().as_str() {
         "blake2s" => Ok(ChannelHash::Blake2s),
         "poseidon252" => Ok(ChannelHash::Poseidon252),
-        _ => anyhow::bail!(
-            "Invalid channel hash: {}. Must be 'blake2s' or 'poseidon252'",
-            hash_str
-        ),
+        _ => anyhow::bail!("Invalid channel hash: {hash_str}. Must be 'blake2s' or 'poseidon252'"),
     }
 }
 
