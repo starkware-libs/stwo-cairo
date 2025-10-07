@@ -25,7 +25,6 @@ stwo-cairo-adapter.workspace = true
 rayon.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-sonic-rs.workspace = true
 anyhow.workspace = true
 starknet-curve.workspace = true
 starknet-ff.workspace = true
@@ -35,6 +34,14 @@ cairo-air.workspace = true
 stwo.workspace = true
 stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
+
+[target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
+sonic-rs.workspace = true
+
+# Override getrandom feature flags for indirect dependencies.
+[target.'cfg(any(target_arch = "wasm32", target_arch = "wasm64"))'.dependencies]
+getrandom_v2 = { version = "0.2", package = "getrandom", features = ["js"] }
+getrandom_v3 = { version = "0.3", package = "getrandom", features = ["wasm_js"] }
 
 [dev-dependencies]
 dev-utils.workspace = true
@@ -48,4 +55,4 @@ tempfile = "3.19.1"
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true
 rand.workspace = true
-sonic-rs = { version = "0.3.17" }
+sonic-rs.workspace = true
