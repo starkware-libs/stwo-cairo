@@ -15,7 +15,7 @@ use anyhow::Result;
 use clap::{Parser, ValueEnum};
 use serde::Serialize;
 use sonic_rs::to_string_pretty;
-use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
+use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 
@@ -98,7 +98,7 @@ mod tests {
     use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
     use dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_adapter::memory::MemoryEntry;
-    use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
+    use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
     use tempfile::NamedTempFile;
 
     #[test]
