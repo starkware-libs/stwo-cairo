@@ -8,7 +8,6 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo::core::vcs::MerkleHasher;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
@@ -164,20 +163,24 @@ pub fn export_preprocessed_roots() {
         println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
     });
 
-    // Poseidon252 roots.
-    get_preprocessed_roots::<Poseidon252MerkleChannel>(
-        max_log_blowup_factor,
-        PreProcessedTraceVariant::CanonicalWithoutPedersen,
-    )
-    .into_iter()
-    .enumerate()
-    .for_each(|(i, root)| {
-        println!(
-            "log_blowup_factor: {}, poseidon root: [{:#010x}]",
-            i + 1,
-            root
-        );
-    });
+    #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
+    {
+        use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+        // Poseidon252 roots.
+        get_preprocessed_roots::<Poseidon252MerkleChannel>(
+            max_log_blowup_factor,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        )
+        .into_iter()
+        .enumerate()
+        .for_each(|(i, root)| {
+            println!(
+                "log_blowup_factor: {}, poseidon root: [{:#010x}]",
+                i + 1,
+                root
+            );
+        });
+    }
 }
 
 #[cfg(test)]
