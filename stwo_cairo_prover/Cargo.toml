@@ -27,7 +27,8 @@ cairo-lang-runner = { version = "2.12.4-dev.1", default-features = false }
 cairo-lang-utils = { version = "2.12.4-dev.1", default-features = false }
 cairo-vm = { version = "3.0.0-rc.3", features = [
     "mod_builtin",
-], default-features = false }
+], default-features = false } # TODO(yuval): Use an official version, not a specific commit.
+# Note: This revision does not originate from the main branch but from 'starkware-development'.
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
