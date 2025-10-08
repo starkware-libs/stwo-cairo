@@ -602,10 +602,10 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
             ec_op,
             keccak,
             poseidon,
+            sha256,
             range_check_96,
             add_mod,
             mul_mod,
-            sha256,
         } = self;
 
         segments.append(output);
@@ -616,10 +616,10 @@ impl PublicSegmentRangesImpl of PublicSegmentRangesTrait {
         segments.append(ec_op);
         segments.append(keccak);
         segments.append(poseidon);
+        segments.append(sha256);
         segments.append(range_check_96);
         segments.append(add_mod);
         segments.append(mul_mod);
-        segments.append(sha256);
         segments
     }
 }

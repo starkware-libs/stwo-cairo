@@ -28,6 +28,7 @@ impl ClaimGenerator {
         assert_ne!(n_rows, 0);
         let size = std::cmp::max(n_rows.next_power_of_two(), N_LANES);
         let log_size = size.ilog2();
+        print!("{log_size}, ");
         self.inputs.resize(size, *self.inputs.first().unwrap());
         let packed_inputs = pack_values(&self.inputs);
 

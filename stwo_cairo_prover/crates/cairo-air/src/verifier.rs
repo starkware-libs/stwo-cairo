@@ -300,7 +300,10 @@ pub fn verify_cairo<MC: MerkleChannel>(
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
 
     claim.mix_into(channel);
+    println!("-------------------------------------------------------------");
+    println!("log_sizes[1]: {:?}", log_sizes[1]);
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
+    println!("-------------------------------------------------------------");
 
     // Proof of work.
     channel.mix_u64(interaction_pow);

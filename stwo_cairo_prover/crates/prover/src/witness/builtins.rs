@@ -100,6 +100,10 @@ impl BuiltinsClaimGenerator {
 
         let sha256_builtin_trace_generator = builtin_segments.sha256.map(|segment| {
             let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(SHA256_MEMORY_CELLS),
+                "sha256 segment length is not a multiple of its cells_per_instance"
+            );
             let n_instances = segment_length / SHA256_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
