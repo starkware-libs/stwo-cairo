@@ -90,8 +90,22 @@ impl Sha256ContextClaimGenerator {
         bitwise_and_8_trace_generator: &verify_bitwise_and_8::ClaimGenerator,
         bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (Sha256ContextClaim, Sha256ContextInteractionClaimGenerator) {
-        let span = span!(Level::INFO, "write poseidon context trace").entered();
+        let span = span!(Level::INFO, "write sha256 context trace").entered();
+
+        // Debug: Check if sha256 round generator has data
+        println!(
+            "Sha256Context: sha_256_round_trace_generator is_empty: {}",
+            self.sha_256_round_trace_generator.is_empty()
+        );
+        println!(
+            "Sha256Context: packed_inputs len: {}",
+            self.sha_256_round_trace_generator.packed_inputs.len()
+        );
+
         if self.sha_256_round_trace_generator.is_empty() {
+            println!(
+                "Sha256Context: WARNING - sha_256_round_trace_generator is empty, returning None"
+            );
             return (
                 Sha256ContextClaim { claim: None },
                 Sha256ContextInteractionClaimGenerator { gen: None },

@@ -29,6 +29,9 @@ impl ClaimGenerator {
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
         sha_256_round_state: &mut sha_256_round::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
+        println!("Sha256Builtin: Writing trace with log_size: {}", self.log_size);
+        println!("Sha256Builtin: sha_256_round_state is_empty before: {}", sha_256_round_state.is_empty());
+
         let log_size = self.log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
@@ -63,6 +66,10 @@ impl ClaimGenerator {
             .for_each(|inputs| {
                 sha_256_round_state.add_packed_inputs(inputs);
             });
+
+        println!("Sha256Builtin: Added {} packed inputs to sha_256_round_state", sub_component_inputs.sha_256_round.len());
+        println!("Sha256Builtin: sha_256_round_state is_empty after: {}", sha_256_round_state.is_empty());
+
         tree_builder.extend_evals(trace.to_evals());
 
         (

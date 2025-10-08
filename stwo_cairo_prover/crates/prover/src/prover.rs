@@ -72,6 +72,27 @@ where
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
 
+    // DEBUG: Print log_sizes structure
+    let log_sizes = claim.log_sizes();
+    eprintln!("\n=== PROVER log_sizes structure ===");
+    for (tree_idx, tree) in log_sizes.as_ref().iter().enumerate() {
+        eprintln!("Tree {}: {} columns", tree_idx, tree.len());
+    }
+
+    // DEBUG: Print SHA256 context claim details
+    eprintln!(
+        "\nSHA256 context has_claim: {}",
+        claim.sha256_context.claim.is_some()
+    );
+    if let Some(ref sha256_claim) = claim.sha256_context.claim {
+        let sha256_log_sizes = sha256_claim.log_sizes();
+        eprintln!("SHA256 internal log_sizes:");
+        for (tree_idx, tree) in sha256_log_sizes.as_ref().iter().enumerate() {
+            eprintln!("  SHA256 Tree {}: {} columns", tree_idx, tree.len());
+        }
+    }
+    eprintln!("====================================\n");
+
     claim.mix_into(channel);
     println!("---------------------BASE TRACE PROVE--------------------------------");
     tree_builder.commit(channel);
@@ -93,10 +114,10 @@ where
         witness_trace_cells(&claim, &preprocessed_trace)
     );
     // Validate lookup argument.
-    // debug_assert_eq!(
-    //     lookup_sum(&claim, &interaction_elements, &interaction_claim),
-    //     SecureField::zero()
-    // );
+    debug_assert_eq!(
+        lookup_sum(&claim, &interaction_elements, &interaction_claim),
+        SecureField::zero()
+    );
 
     interaction_claim.mix_into(channel);
     println!("---------------------INTERACTION TRACE PROVE--------------------------------");
