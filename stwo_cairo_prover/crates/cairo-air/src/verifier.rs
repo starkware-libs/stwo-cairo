@@ -69,6 +69,15 @@ fn verify_claim(claim: &CairoClaim) {
 
     // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
     // Check that IDs in (ID -> Value) do not overflow P.
+    println!(
+        "claim.memory_id_to_value.big_log_sizes: {:?}",
+        claim
+            .memory_id_to_value
+            .big_log_sizes
+            .iter()
+            .map(|log_size| 1 << log_size)
+            .sum::<u32>()
+    );
     let largest_id = claim
         .memory_id_to_value
         .big_log_sizes
@@ -297,13 +306,12 @@ pub fn verify_cairo<MC: MerkleChannel>(
     log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.to_preprocessed_trace().log_sizes();
 
     // Preproccessed trace.
+    println!("---------------------PREPROCESSED TRACE VERIFY--------------------------------");
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
 
     claim.mix_into(channel);
-    println!("-------------------------------------------------------------");
-    println!("log_sizes[1]: {:?}", log_sizes[1]);
+    println!("---------------------BASE TRACE VERIFY--------------------------------");
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
-    println!("-------------------------------------------------------------");
 
     // Proof of work.
     channel.mix_u64(interaction_pow);
@@ -318,6 +326,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         return Err(CairoVerificationError::InvalidLogupSum);
     }
     interaction_claim.mix_into(channel);
+    println!("---------------------INTERACTION TRACE VERIFY--------------------------------");
     commitment_scheme_verifier.commit(stark_proof.commitments[2], &log_sizes[2], channel);
 
     let component_generator = CairoComponents::new(

@@ -30,7 +30,6 @@ impl ClaimGenerator {
         verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
-        print!("{log_size}, ");
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
             self.bitwise_builtin_segment_start,

@@ -84,6 +84,11 @@ lto = true
 inherits = "dev"
 package = { "stwo_cairo_prover" = { opt-level = 1 }, "stwo" = { opt-level = 1 } }
 
+[profile.release-debug]
+inherits = "release"
+debug-assertions = true
+debug = true
+
 [profile.adapter-release]
 inherits = "dev"
 package = { "stwo-cairo-adapter" = { opt-level = 3 } }

@@ -26,7 +26,6 @@ impl ClaimGenerator {
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
-        print!("{log_size}, ");
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
             self.add_mod_builtin_segment_start,
