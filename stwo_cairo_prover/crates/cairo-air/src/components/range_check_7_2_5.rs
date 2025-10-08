@@ -7,7 +7,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7,
+    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -47,18 +47,18 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let bitwisexor_7_0 = eval.get_preprocessed_column((BitwiseXor::new(7, 0)).id());
-        let bitwisexor_7_1 = eval.get_preprocessed_column((BitwiseXor::new(7, 1)).id());
-        let bitwisexor_7_2 = eval.get_preprocessed_column((BitwiseXor::new(7, 2)).id());
+        let rangecheck_7_2_5_0 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 0)).id());
+        let rangecheck_7_2_5_1 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 1)).id());
+        let rangecheck_7_2_5_2 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 2)).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_7_lookup_elements,
+            &self.range_check_7_2_5_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                bitwisexor_7_0.clone(),
-                bitwisexor_7_1.clone(),
-                bitwisexor_7_2.clone(),
+                rangecheck_7_2_5_0.clone(),
+                rangecheck_7_2_5_1.clone(),
+                rangecheck_7_2_5_2.clone(),
             ],
         ));
 
@@ -76,14 +76,14 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::VERIFY_BITWISE_XOR_7;
+    use crate::components::constraints_regression_test_values::RANGE_CHECK_7_2_5;
 
     #[test]
-    fn verify_bitwise_xor_7_constraints_regression() {
+    fn range_check_7_2_5_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            verify_bitwise_xor_7_lookup_elements: relations::VerifyBitwiseXor_7::dummy(),
+            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -93,6 +93,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, VERIFY_BITWISE_XOR_7);
+        assert_eq!(sum, RANGE_CHECK_7_2_5);
     }
 }

@@ -1,10 +1,16 @@
 #[macro_export]
+macro_rules! count_elements {
+    ($x:expr) => (1);
+    ($x:expr, $($xs:expr),*) => (1 + $crate::count_elements!($($xs),*));
+}
+
+#[macro_export]
 macro_rules! range_check_prover {
     ($name:ident, $name_upper:ident, $($log_range:expr),+) => {
         paste::paste! {
-            use cairo_air::components::range_check_vector::$name::{Claim, InteractionClaim};
+            use cairo_air::components::$name::{Claim, InteractionClaim};
             use $crate::witness::prelude::*;
-            const N_RANGES: usize = cairo_air::count_elements!($($log_range),*);
+            const N_RANGES: usize = $crate::count_elements!($($log_range),*);
             const RANGES : [u32; N_RANGES] = [$($log_range),+];
             pub type PackedInputType = [PackedM31; N_RANGES];
             pub type InputType = [M31; N_RANGES];
@@ -182,7 +188,7 @@ mod tests {
     use std::ops::Deref;
     use std::simd::Simd;
 
-    use cairo_air::components::range_check_vector::range_check_7_2_5::Eval;
+    use cairo_air::components::range_check_7_2_5::{Claim, Eval};
     use cairo_air::relations;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
@@ -265,7 +271,10 @@ mod tests {
         let tree_span_provider = &mut TraceLocationAllocator::default();
         let component = FrameworkComponent::new(
             tree_span_provider,
-            Eval { lookup_elements },
+            Eval {
+                claim: Claim {},
+                range_check_7_2_5_lookup_elements: lookup_elements,
+            },
             interaction_claim.claimed_sum,
         );
 

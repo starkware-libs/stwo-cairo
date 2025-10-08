@@ -1,9 +1,9 @@
-use stwo_cairo_common::preprocessed_columns::pedersen::PEDERSEN_TABLE_N_ROWS;
-
+// AIR version 54d95c0d
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2();
+pub const LOG_SIZE: u32 = 23;
+pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
@@ -47,6 +47,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let pedersenpoints_0 = eval.get_preprocessed_column((PedersenPoints::new(0)).id());
         let pedersenpoints_1 = eval.get_preprocessed_column((PedersenPoints::new(1)).id());
         let pedersenpoints_2 = eval.get_preprocessed_column((PedersenPoints::new(2)).id());
@@ -103,7 +104,6 @@ impl FrameworkEval for Eval {
         let pedersenpoints_53 = eval.get_preprocessed_column((PedersenPoints::new(53)).id());
         let pedersenpoints_54 = eval.get_preprocessed_column((PedersenPoints::new(54)).id());
         let pedersenpoints_55 = eval.get_preprocessed_column((PedersenPoints::new(55)).id());
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
@@ -193,7 +193,6 @@ mod tests {
             claim: Claim {},
             pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
         };
-
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 
