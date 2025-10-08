@@ -3,7 +3,6 @@ name = "stwo-cairo-adapter"
 version = "0.1.0"
 edition = "2021"
 
-
 [features]
 default = []
 slow-tests = []
@@ -29,12 +28,10 @@ dashmap = "6.1.0"
 rayon.workspace = true
 clap.workspace = true
 crypto-bigint = "0.5.1"
-cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
-cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
-cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 anyhow.workspace = true
 
 [dev-dependencies]
+stwo_cairo_utils.workspace = true
 cairo-lang-casm.workspace = true
 rand.workspace = true
 test-case.workspace = true

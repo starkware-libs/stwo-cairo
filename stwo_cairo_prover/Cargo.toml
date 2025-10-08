@@ -25,6 +25,9 @@ cairo-lang-casm = "2.7.1"
 cairo-vm = { git = "https://github.com/lambdaclass/cairo-vm", rev = "e2c6c91c73cd0bc351721f302390fcc0965c6224", features = [
     "mod_builtin",
 ], default-features = false }
+cairo-lang-executable = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-runner = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
+cairo-lang-utils = { git = "https://github.com/starkware-libs/cairo.git", rev = "86eb25173f9d8700adbd2770406d715fbf1bb9f8" }
 clap = { version = "4.3.10", features = ["derive"] }
 env_logger = { version = "0.11.5", default-features = false }
 hex = "0.4.3"
