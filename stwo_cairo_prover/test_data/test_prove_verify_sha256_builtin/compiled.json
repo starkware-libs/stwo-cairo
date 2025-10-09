@@ -2473,7 +2473,7 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 24,
+                    "end_col": 25,
                     "end_line": 47,
                     "input_file": {
                         "filename": "./builtin_usage_flexible_cairo.cairo"

@@ -27,6 +27,7 @@ impl ClaimGenerator {
         let mults = self.mults.into_simd_vec();
 
         let (trace, lookup_data) = write_trace_simd(mults);
+        println!("verify_bitwise_and_8: log_size: {}", LOG_SIZE);
         tree_builder.extend_evals(trace.to_evals());
 
         (Claim {}, InteractionClaimGenerator { lookup_data })

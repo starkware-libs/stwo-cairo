@@ -83,14 +83,14 @@ impl PreProcessedTrace {
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
         let sha256_k = (0..2).map(|x| Box::new(Sha256K::new(x)) as Box<dyn PreProcessedColumn>);
         let sha256_sigma = [
-            Sha256SigmaType::SmallSigma0O0,
-            Sha256SigmaType::SmallSigma0O1,
-            Sha256SigmaType::SmallSigma1O0,
-            Sha256SigmaType::SmallSigma1O1,
             Sha256SigmaType::BigSigma0O0,
             Sha256SigmaType::BigSigma0O1,
             Sha256SigmaType::BigSigma1O0,
             Sha256SigmaType::BigSigma1O1,
+            Sha256SigmaType::SmallSigma0O0,
+            Sha256SigmaType::SmallSigma0O1,
+            Sha256SigmaType::SmallSigma1O0,
+            Sha256SigmaType::SmallSigma1O1,
         ]
         .map(|sigma_type| {
             (0..6).map(move |x| {
@@ -107,8 +107,8 @@ impl PreProcessedTrace {
             range_check,
             poseidon_keys,
             blake_sigma,
-            sha256_k,
             sha256_sigma,
+            sha256_k,
         )
         .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
         .collect();

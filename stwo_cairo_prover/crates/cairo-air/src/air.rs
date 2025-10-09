@@ -598,15 +598,6 @@ pub struct CairoInteractionElements {
     pub cube_252: relations::Cube252,
     pub poseidon_round_keys: relations::PoseidonRoundKeys,
     pub range_check_felt_252_width_27: relations::RangeCheckFelt252Width27,
-    pub memory_address_to_id: relations::MemoryAddressToId,
-    pub memory_id_to_value: relations::MemoryIdToBig,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: relations::VerifyBitwiseXor_4,
-    pub verify_bitwise_xor_7: relations::VerifyBitwiseXor_7,
-    pub verify_bitwise_xor_8: relations::VerifyBitwiseXor_8,
-    pub verify_bitwise_xor_9: relations::VerifyBitwiseXor_9,
-    pub verify_bitwise_xor_12: relations::VerifyBitwiseXor_12,
-    pub verify_bitwise_and_8: relations::VerifyBitwiseAnd_8,
     pub sha_256_round: relations::Sha256Round,
     pub sha_256_big_sigma_0: relations::Sha256BigSigma0,
     pub sha_256_big_sigma_1: relations::Sha256BigSigma1,
@@ -622,6 +613,15 @@ pub struct CairoInteractionElements {
     pub sha_256_small_sigma_1_o_0: relations::Sha256SmallSigma1O0,
     pub sha_256_small_sigma_1_o_1: relations::Sha256SmallSigma1O1,
     pub sha_256_k_table: relations::Sha256KTable,
+    pub memory_address_to_id: relations::MemoryAddressToId,
+    pub memory_id_to_value: relations::MemoryIdToBig,
+    pub range_checks: RangeChecksInteractionElements,
+    pub verify_bitwise_xor_4: relations::VerifyBitwiseXor_4,
+    pub verify_bitwise_xor_7: relations::VerifyBitwiseXor_7,
+    pub verify_bitwise_xor_8: relations::VerifyBitwiseXor_8,
+    pub verify_bitwise_xor_9: relations::VerifyBitwiseXor_9,
+    pub verify_bitwise_xor_12: relations::VerifyBitwiseXor_12,
+    pub verify_bitwise_and_8: relations::VerifyBitwiseAnd_8,
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
@@ -639,15 +639,6 @@ impl CairoInteractionElements {
             range_check_felt_252_width_27: relations::RangeCheckFelt252Width27::draw(channel),
             partial_ec_mul: relations::PartialEcMul::draw(channel),
             pedersen_points_table: relations::PedersenPointsTable::draw(channel),
-            memory_address_to_id: relations::MemoryAddressToId::draw(channel),
-            memory_id_to_value: relations::MemoryIdToBig::draw(channel),
-            range_checks: RangeChecksInteractionElements::draw(channel),
-            verify_bitwise_xor_4: relations::VerifyBitwiseXor_4::draw(channel),
-            verify_bitwise_xor_7: relations::VerifyBitwiseXor_7::draw(channel),
-            verify_bitwise_xor_8: relations::VerifyBitwiseXor_8::draw(channel),
-            verify_bitwise_xor_9: relations::VerifyBitwiseXor_9::draw(channel),
-            verify_bitwise_xor_12: relations::VerifyBitwiseXor_12::draw(channel),
-            verify_bitwise_and_8: relations::VerifyBitwiseAnd_8::draw(channel),
             sha_256_round: relations::Sha256Round::draw(channel),
             sha_256_big_sigma_0: relations::Sha256BigSigma0::draw(channel),
             sha_256_big_sigma_1: relations::Sha256BigSigma1::draw(channel),
@@ -663,6 +654,15 @@ impl CairoInteractionElements {
             sha_256_small_sigma_1_o_0: relations::Sha256SmallSigma1O0::draw(channel),
             sha_256_small_sigma_1_o_1: relations::Sha256SmallSigma1O1::draw(channel),
             sha_256_k_table: relations::Sha256KTable::draw(channel),
+            memory_address_to_id: relations::MemoryAddressToId::draw(channel),
+            memory_id_to_value: relations::MemoryIdToBig::draw(channel),
+            range_checks: RangeChecksInteractionElements::draw(channel),
+            verify_bitwise_xor_4: relations::VerifyBitwiseXor_4::draw(channel),
+            verify_bitwise_xor_7: relations::VerifyBitwiseXor_7::draw(channel),
+            verify_bitwise_xor_8: relations::VerifyBitwiseXor_8::draw(channel),
+            verify_bitwise_xor_9: relations::VerifyBitwiseXor_9::draw(channel),
+            verify_bitwise_xor_12: relations::VerifyBitwiseXor_12::draw(channel),
+            verify_bitwise_and_8: relations::VerifyBitwiseAnd_8::draw(channel),
         }
     }
 }
@@ -965,15 +965,25 @@ impl CairoComponents {
     }
 
     pub fn components(&self) -> Vec<&dyn Component> {
-        let components: Vec<_> = self.provers()
+        let components: Vec<_> = self
+            .provers()
             .into_iter()
             .map(|component| component as &dyn Component)
             .collect();
         eprintln!("DEBUG: Total components count: {}", components.len());
-        eprintln!("DEBUG: SHA256 context components: {}", 
-            if self.sha256_context.components.is_some() { "Some" } else { "None" });
+        eprintln!(
+            "DEBUG: SHA256 context components: {}",
+            if self.sha256_context.components.is_some() {
+                "Some"
+            } else {
+                "None"
+            }
+        );
         if let Some(sha256_comps) = &self.sha256_context.components {
-            eprintln!("DEBUG: SHA256 sub-components count: {}", sha256_comps.provers().len());
+            eprintln!(
+                "DEBUG: SHA256 sub-components count: {}",
+                sha256_comps.provers().len()
+            );
         }
         components
     }

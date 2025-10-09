@@ -44,7 +44,7 @@ func main{
     mul_mod_ptr,
 }() {
     alloc_locals;
-    local n_sha256 = 1;
+    local n_sha256 = 16;
 
     do_sha256(n_builtin_usages=n_sha256);
 

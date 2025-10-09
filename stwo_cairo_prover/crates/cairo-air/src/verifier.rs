@@ -305,13 +305,6 @@ pub fn verify_cairo<MC: MerkleChannel>(
     let mut log_sizes = claim.log_sizes();
     log_sizes[PREPROCESSED_TRACE_IDX] = preprocessed_trace.to_preprocessed_trace().log_sizes();
 
-    // DEBUG: Print log_sizes structure
-    eprintln!("\n=== VERIFIER log_sizes structure ===");
-    for (tree_idx, tree) in log_sizes.as_ref().iter().enumerate() {
-        eprintln!("Tree {}: {} columns", tree_idx, tree.len());
-    }
-    eprintln!("=====================================\n");
-
     // Preproccessed trace.
     println!("---------------------PREPROCESSED TRACE VERIFY--------------------------------");
     commitment_scheme_verifier.commit(stark_proof.commitments[0], &log_sizes[0], channel);
