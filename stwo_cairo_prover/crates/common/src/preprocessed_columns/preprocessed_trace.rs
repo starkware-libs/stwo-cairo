@@ -16,6 +16,7 @@ use super::bitwise_xor::BitwiseXor;
 use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
 use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
+use crate::preprocessed_columns::bitwise_and::BitwiseAnd;
 use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use crate::prover_types::simd::LOG_N_LANES;
 
@@ -55,7 +56,7 @@ impl PreProcessedTrace {
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (LOG_N_LANES..=MAX_SEQUENCE_LOG_SIZE)
+        let seq = (1..=MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
             .map(|n_bits| {
@@ -65,15 +66,25 @@ impl PreProcessedTrace {
             })
             .into_iter()
             .flatten();
+        let bitwise_and = (0..3).map(|col_index| {
+            Box::new(BitwiseAnd::new(8, col_index)) as Box<dyn PreProcessedColumn>
+        });
         let range_check = gen_range_check_columns();
         let poseidon_keys = (0..POSEIDON_N_WORDS)
             .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
         let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
-            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-            .collect();
+        let columns = chain!(
+            seq,
+            bitwise_xor,
+            bitwise_and,
+            range_check,
+            poseidon_keys,
+            blake_sigma
+        )
+        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+        .collect();
 
         Self { columns }
     }
@@ -206,15 +217,15 @@ pub fn partition_into_bit_segments<const N: usize>(
 
 /// Generates the map from 0..2^(sum_bits) to the corresponding value's partition segments.
 pub fn generate_partitioned_enumeration<const N: usize>(
-    n_bits_per_segmants: [u32; N],
+    n_bits_per_segments: [u32; N],
 ) -> [Vec<PackedM31>; N] {
-    let sum_bits = n_bits_per_segmants.iter().sum::<u32>();
+    let sum_bits = std::cmp::max(n_bits_per_segments.iter().sum::<u32>(), LOG_N_LANES);
     assert!(sum_bits < MODULUS_BITS);
 
     let mut res = std::array::from_fn(|_| vec![]);
     for vec_row in 0..1 << (sum_bits - LOG_N_LANES) {
         let value = SIMD_ENUMERATION_0 + Simd::splat(vec_row * N_LANES as u32);
-        let segments = partition_into_bit_segments(value, n_bits_per_segmants);
+        let segments = partition_into_bit_segments(value, n_bits_per_segments);
         for i in 0..N {
             res[i].push(unsafe { PackedM31::from_simd_unchecked(segments[i]) });
         }
@@ -235,7 +246,7 @@ impl<const N: usize> RangeCheck<N> {
 }
 impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     fn log_size(&self) -> u32 {
-        self.ranges.iter().sum()
+        std::cmp::max(self.ranges.iter().sum(), LOG_N_LANES)
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {

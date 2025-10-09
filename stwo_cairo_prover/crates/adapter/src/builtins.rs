@@ -85,6 +85,9 @@ impl BuiltinSegments {
                     BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
                         assert!(segment.is_none(), "{name} builtin is not supported");
                     }
+                    BuiltinName::sha256 => {
+                        todo!()
+                    }
                     // Not builtins.
                     BuiltinName::segment_arena => {}
                 }

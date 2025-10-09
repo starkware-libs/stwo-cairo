@@ -113,6 +113,7 @@ impl Relocator {
                 BuiltinName::ecdsa | BuiltinName::keccak | BuiltinName::ec_op => {
                     panic!("Builtin {builtin_name} is not supported in Stwo")
                 }
+                BuiltinName::sha256 => {}
                 // Not builtins.
                 BuiltinName::segment_arena => {}
             };

@@ -64,6 +64,7 @@ impl PublicSegmentContext {
                 BuiltinName::range_check96 => present[8] = true,
                 BuiltinName::add_mod => present[9] = true,
                 BuiltinName::mul_mod => present[10] = true,
+                BuiltinName::sha256 => todo!(),
                 BuiltinName::segment_arena => {
                     // Do nothing.
                 }

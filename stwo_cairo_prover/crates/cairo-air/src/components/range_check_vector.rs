@@ -27,6 +27,7 @@ macro_rules! generate_range_check_constraints {
     };
 }
 
+generate_range_check_constraints!([2]);
 generate_range_check_constraints!([6]);
 generate_range_check_constraints!([8]);
 generate_range_check_constraints!([11]);
@@ -85,7 +86,7 @@ macro_rules! range_check_eval{
 
             impl Claim {
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    std::cmp::max(RANGES.iter().sum(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)
                 }
 
                 pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -122,7 +123,12 @@ macro_rules! range_check_eval{
 
             impl FrameworkEval for Eval {
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                   // Keep the evaluation domain at least one SIMD vector wide,
+                    // to match the writer (prover) which packs by LOG_N_LANES.
+                    core::cmp::max(
+                        RANGES.iter().sum(),
+                        stwo_cairo_common::prover_types::simd::LOG_N_LANES,
+                    )
                 }
                 fn max_constraint_log_degree_bound(&self) -> u32 {
                     self.log_size() + 1

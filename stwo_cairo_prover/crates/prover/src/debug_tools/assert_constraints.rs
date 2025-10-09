@@ -64,6 +64,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        verify_bitwise_and_8,
     } = cairo_components;
     let OpcodeComponents {
         add,
@@ -88,6 +89,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         ret,
     } = opcodes;
     let RangeChecksComponents {
+        rc_2,
         rc_6,
         rc_8,
         rc_11,
@@ -140,6 +142,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_many(ret, &trace);
 
     assert_component(verify_instruction, &trace);
+    assert_component(rc_2, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
     assert_component(rc_11, &trace);
@@ -173,6 +176,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_bitwise_xor_7, &trace);
     assert_component(verify_bitwise_xor_8, &trace);
     assert_component(verify_bitwise_xor_9, &trace);
+    assert_component(verify_bitwise_and_8, &trace);
     assert_component(memory_address_to_id, &trace);
     for component in &memory_id_to_value.0 {
         assert_component(component, &trace);

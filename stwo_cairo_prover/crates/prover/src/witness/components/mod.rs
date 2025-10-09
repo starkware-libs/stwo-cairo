@@ -44,6 +44,7 @@ pub mod range_check_builtin_bits_96;
 pub mod range_check_felt_252_width_27;
 pub mod ret_opcode;
 pub mod triple_xor_32;
+pub mod verify_bitwise_and_8;
 pub mod verify_bitwise_xor_12;
 pub mod verify_bitwise_xor_4;
 pub mod verify_bitwise_xor_7;

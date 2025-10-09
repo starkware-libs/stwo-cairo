@@ -1,4 +1,5 @@
 pub mod add_252;
+pub mod bitwise_and_numb_bits_8;
 pub mod bitwise_xor_num_bits_12;
 pub mod bitwise_xor_num_bits_4;
 pub mod bitwise_xor_num_bits_7;

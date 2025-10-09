@@ -15,7 +15,7 @@ macro_rules! range_check_prover {
             impl ClaimGenerator {
                 #[allow(clippy::new_without_default)]
                 pub fn new() -> Self {
-                    let length = 1 << (RANGES.iter().sum::<u32>()) as usize;
+                    let length = 1 << (std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)) as usize;
                     let multiplicities = AtomicMultiplicityColumn::new(length);
 
                     Self {
@@ -24,7 +24,7 @@ macro_rules! range_check_prover {
                 }
 
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    std::cmp::max(RANGES.iter().sum(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)
                 }
 
                 pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
@@ -94,7 +94,7 @@ macro_rules! range_check_prover {
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
                     lookup_elements: &relations::$name_upper,
                 ) -> InteractionClaim {
-                    let log_size = RANGES.iter().sum::<u32>();
+                    let log_size = std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES);
                     let mut logup_gen = LogupTraceGenerator::new(log_size);
                     let mut col_gen = logup_gen.new_col();
 
@@ -146,6 +146,7 @@ macro_rules! generate_range_check_witness {
 }
 
 pub mod range_check_trace_generators {
+    generate_range_check_witness!([2]);
     generate_range_check_witness!([6]);
     generate_range_check_witness!([8]);
     generate_range_check_witness!([11]);
@@ -182,6 +183,7 @@ mod tests {
     use std::ops::Deref;
     use std::simd::Simd;
 
+    use cairo_air::components::range_check_vector::range_check_2::Eval as Rc2Eval;
     use cairo_air::components::range_check_vector::range_check_7_2_5::Eval;
     use cairo_air::relations;
     use itertools::Itertools;
@@ -201,11 +203,12 @@ mod tests {
         generate_partitioned_enumeration, partition_into_bit_segments, PreProcessedColumn,
         RangeCheck,
     };
+    use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
     use stwo_constraint_framework::{
         FrameworkComponent, FrameworkEval as _, TraceLocationAllocator,
     };
 
-    use crate::witness::components::range_check_7_2_5;
+    use crate::witness::components::{range_check_2, range_check_7_2_5};
     #[test]
     fn test_prove() {
         let mut rng = SmallRng::seed_from_u64(0);
@@ -278,6 +281,76 @@ mod tests {
         stwo_constraint_framework::assert_constraints_on_polys(
             &trace_polys,
             CanonicCoset::new(LOG_HEIGHT),
+            |eval| {
+                component_eval.evaluate(eval);
+            },
+            interaction_claim.claimed_sum,
+        )
+    }
+    #[test]
+    fn test_prove_simple() {
+        let mut rng = SmallRng::seed_from_u64(0);
+        const LOG_HEIGHT: u32 = 2;
+        const LOG_BLOWUP_FACTOR: u32 = 1;
+        let log_ranges = [2];
+        let claim_generator = range_check_2::ClaimGenerator::new();
+
+        let twiddles = SimdBackend::precompute_twiddles(
+            CanonicCoset::new(LOG_HEIGHT + LOG_BLOWUP_FACTOR)
+                .circle_domain()
+                .half_coset,
+        );
+
+        let channel = &mut Blake2sChannel::default();
+        let config = PcsConfig::default();
+        let commitment_scheme =
+            &mut CommitmentSchemeProver::<SimdBackend, Blake2sMerkleChannel>::new(
+                config, &twiddles,
+            );
+
+        // Preprocessed trace.
+        let preproceseed_column_0 = RangeCheck::new(log_ranges, 0).gen_column_simd();
+        let mut tree_builder = commitment_scheme.tree_builder();
+        tree_builder.extend_evals(vec![preproceseed_column_0]);
+        tree_builder.commit(channel);
+
+        let inputs: [[PackedM31; 1]; 30] = std::array::from_fn(|_| {
+            [PackedM31::from_array(std::array::from_fn(|_| {
+                M31(rng.gen::<u32>() & ((1 << LOG_HEIGHT) - 1))
+            }))]
+        });
+
+        inputs.into_iter().for_each(|input| {
+            claim_generator.add_packed_m31(&input);
+        });
+
+        let mut tree_builder = commitment_scheme.tree_builder();
+        let (_, interaction_claim_generator) = claim_generator.write_trace(&mut tree_builder);
+
+        tree_builder.commit(channel);
+        let mut tree_builder = commitment_scheme.tree_builder();
+
+        let lookup_elements = relations::RangeCheck_2::draw(channel);
+        let interaction_claim = interaction_claim_generator
+            .write_interaction_trace(&mut tree_builder, &lookup_elements);
+        tree_builder.commit(channel);
+
+        let tree_span_provider = &mut TraceLocationAllocator::default();
+        let component = FrameworkComponent::new(
+            tree_span_provider,
+            Rc2Eval { lookup_elements },
+            interaction_claim.claimed_sum,
+        );
+
+        let trace_polys = commitment_scheme
+            .trees
+            .as_ref()
+            .map(|t| t.polynomials.iter().cloned().collect_vec());
+
+        let component_eval = component.deref();
+        stwo_constraint_framework::assert_constraints_on_polys(
+            &trace_polys,
+            CanonicCoset::new(std::cmp::max(LOG_HEIGHT, LOG_N_LANES)),
             |eval| {
                 component_eval.evaluate(eval);
             },

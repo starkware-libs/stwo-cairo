@@ -1,3 +1,4 @@
+pub mod bitwise_and;
 pub mod bitwise_xor;
 pub mod blake;
 mod felt_batch_inverse;

@@ -23,8 +23,8 @@ use crate::witness::components::poseidon::{
     PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
 };
 use crate::witness::components::{
-    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
+    memory_address_to_id, memory_id_to_big, verify_bitwise_and_8, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -137,6 +137,7 @@ pub struct CairoClaimGenerator {
     verify_bitwise_xor_7_trace_generator: verify_bitwise_xor_7::ClaimGenerator,
     verify_bitwise_xor_8_trace_generator: verify_bitwise_xor_8::ClaimGenerator,
     verify_bitwise_xor_9_trace_generator: verify_bitwise_xor_9::ClaimGenerator,
+    verify_bitwise_and_8_trace_generator: verify_bitwise_and_8::ClaimGenerator,
     // ...
 }
 impl CairoClaimGenerator {
@@ -167,6 +168,7 @@ impl CairoClaimGenerator {
         let verify_bitwise_xor_7_trace_generator = verify_bitwise_xor_7::ClaimGenerator::new();
         let verify_bitwise_xor_8_trace_generator = verify_bitwise_xor_8::ClaimGenerator::new();
         let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
+        let verify_bitwise_and_8_trace_generator = verify_bitwise_and_8::ClaimGenerator::new();
 
         // Yield public memory.
         for addr in public_memory_addresses
@@ -214,6 +216,7 @@ impl CairoClaimGenerator {
             verify_bitwise_xor_7_trace_generator,
             verify_bitwise_xor_8_trace_generator,
             verify_bitwise_xor_9_trace_generator,
+            verify_bitwise_and_8_trace_generator,
         }
     }
 
@@ -311,6 +314,9 @@ impl CairoClaimGenerator {
         let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
             .verify_bitwise_xor_9_trace_generator
             .write_trace(tree_builder);
+        let (verify_bitwise_and_8_claim, verify_bitwise_and_8_interaction_gen) = self
+            .verify_bitwise_and_8_trace_generator
+            .write_trace(tree_builder);
         span.exit();
         (
             CairoClaim {
@@ -328,6 +334,7 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_7: verify_bitwise_xor_7_claim,
                 verify_bitwise_xor_8: verify_bitwise_xor_8_claim,
                 verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
+                verify_bitwise_and_8: verify_bitwise_and_8_claim,
             },
             CairoInteractionClaimGenerator {
                 opcodes_interaction_gen,
@@ -343,6 +350,7 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_7_interaction_gen,
                 verify_bitwise_xor_8_interaction_gen,
                 verify_bitwise_xor_9_interaction_gen,
+                verify_bitwise_and_8_interaction_gen,
             },
         )
     }
@@ -362,6 +370,7 @@ pub struct CairoInteractionClaimGenerator {
     verify_bitwise_xor_7_interaction_gen: verify_bitwise_xor_7::InteractionClaimGenerator,
     verify_bitwise_xor_8_interaction_gen: verify_bitwise_xor_8::InteractionClaimGenerator,
     verify_bitwise_xor_9_interaction_gen: verify_bitwise_xor_9::InteractionClaimGenerator,
+    verify_bitwise_and_8_interaction_gen: verify_bitwise_and_8::InteractionClaimGenerator,
     // ...
 }
 impl CairoInteractionClaimGenerator {
@@ -428,6 +437,9 @@ impl CairoInteractionClaimGenerator {
         let verify_bitwise_xor_9_interaction_claim = self
             .verify_bitwise_xor_9_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_9);
+        let verify_bitwise_and_8_interaction_claim = self
+            .verify_bitwise_and_8_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_and_8);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,
@@ -443,6 +455,7 @@ impl CairoInteractionClaimGenerator {
             verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
             verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
             verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+            verify_bitwise_and_8: verify_bitwise_and_8_interaction_claim,
         }
     }
 }
