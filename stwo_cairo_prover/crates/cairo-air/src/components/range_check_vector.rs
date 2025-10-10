@@ -134,8 +134,8 @@ macro_rules! range_check_eval{
                     self.log_size() + 1
                 }
                 fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-                    let values = if N_RANGES == 1 {
-                        vec![eval.get_preprocessed_column(Seq::new(self.log_size()).id())]
+                    let values = if N_RANGES == 1 && RANGES.iter().sum::<u32>() >= stwo_cairo_common::prover_types::simd::LOG_N_LANES {
+                        vec![eval.get_preprocessed_column(Seq::new(RANGES[0]).id())]
                     } else {
                         (0..N_RANGES)
                         .map(|i| eval.get_preprocessed_column(RangeCheck::new(RANGES, i).id()))
