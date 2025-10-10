@@ -965,26 +965,12 @@ impl CairoComponents {
     }
 
     pub fn components(&self) -> Vec<&dyn Component> {
-        let components: Vec<_> = self
+        let components = self
             .provers()
             .into_iter()
             .map(|component| component as &dyn Component)
             .collect();
-        eprintln!("DEBUG: Total components count: {}", components.len());
-        eprintln!(
-            "DEBUG: SHA256 context components: {}",
-            if self.sha256_context.components.is_some() {
-                "Some"
-            } else {
-                "None"
-            }
-        );
-        if let Some(sha256_comps) = &self.sha256_context.components {
-            eprintln!(
-                "DEBUG: SHA256 sub-components count: {}",
-                sha256_comps.provers().len()
-            );
-        }
+
         components
     }
 }

@@ -1142,7 +1142,7 @@ dependencies = [
  "cairo-lang-executable",
  "cairo-lang-runner",
  "cairo-lang-utils 2.11.4 (git+https://github.com/starkware-libs/cairo.git?rev=5cc466a)",
- "cairo-vm 2.0.1",
+ "cairo-vm 2.0.1 (git+https://github.com/0xLucqs/cairo-vm.git?branch=main)",
  "camino",
  "clap",
  "env_logger",
@@ -1157,6 +1157,7 @@ dependencies = [
 [[package]]
 name = "cairo-vm"
 version = "2.0.1"
+source = "git+https://github.com/0xLucqs/cairo-vm.git?branch=main#b6f0a205c45d738330f656d7b8895faf7eccf036"
 dependencies = [
  "anyhow",
  "bincode 2.0.1",

@@ -15,7 +15,7 @@ macro_rules! range_check_prover {
             impl ClaimGenerator {
                 #[allow(clippy::new_without_default)]
                 pub fn new() -> Self {
-                    let length = 1 << (RANGES.iter().sum::<u32>()) as usize;
+                    let length = 1 << std::cmp::max(RANGES.iter().sum::<u32>(), stwo_cairo_common::prover_types::simd::LOG_N_LANES) as usize;
                     let multiplicities = AtomicMultiplicityColumn::new(length);
 
                     Self {
@@ -24,7 +24,7 @@ macro_rules! range_check_prover {
                 }
 
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    std::cmp::max(RANGES.iter().sum(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)
                 }
 
                 pub fn add_inputs(&self, inputs: &[[M31; N_RANGES]]) {
@@ -61,7 +61,7 @@ macro_rules! range_check_prover {
                     self,
                     tree_builder: &mut impl TreeBuilder<SimdBackend>,
                 ) -> (Claim, InteractionClaimGenerator) {
-                    let log_size = std::cmp::max(self.log_size(), stwo_cairo_common::prover_types::simd::LOG_N_LANES);
+                    let log_size = self.log_size();
 
                     let multiplicity_data = self.multiplicities.into_simd_vec();
                     let multiplicity_column = BaseColumn::from_simd(multiplicity_data.clone());

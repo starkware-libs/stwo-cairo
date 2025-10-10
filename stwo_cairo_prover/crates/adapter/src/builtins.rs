@@ -178,7 +178,6 @@ impl BuiltinSegments {
                 // Do not pad empty segments.
                 continue;
             }
-            println!("{builtin_name} is an segment {segment_index}");
 
             let cells_per_instance = match builtin_name {
                 BuiltinName::add_mod => ADD_MOD_MEMORY_CELLS,
@@ -199,12 +198,7 @@ impl BuiltinSegments {
                 "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisble by {cells_per_instance}"
             );
 
-            if !current_builtin_segment.iter().enumerate().all(|(i, x)| {
-                if x.is_none() {
-                    println!("hole at {i}/{original_segment_len}");
-                }
-                x.is_some()
-            }) {
+            if !current_builtin_segment.iter().all(|x| x.is_some()) {
                 panic!(
                     "Builtins segments '{builtin_name}' at segment index: {segment_index}, contains a hole."
                 );

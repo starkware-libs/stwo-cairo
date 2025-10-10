@@ -86,7 +86,7 @@ macro_rules! range_check_eval{
 
             impl Claim {
                 fn log_size(&self) -> u32 {
-                    RANGES.iter().sum()
+                    std::cmp::max(RANGES.iter().sum(), stwo_cairo_common::prover_types::simd::LOG_N_LANES)
                 }
 
                 pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -134,7 +134,7 @@ macro_rules! range_check_eval{
                     self.log_size() + 1
                 }
                 fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-                    let values = if N_RANGES == 1 {
+                    let values = if N_RANGES == 1 && RANGES.iter().sum::<u32>() >= stwo_cairo_common::prover_types::simd::LOG_N_LANES {
                         vec![eval.get_preprocessed_column(Seq::new(self.log_size()).id())]
                     } else {
                         (0..N_RANGES)

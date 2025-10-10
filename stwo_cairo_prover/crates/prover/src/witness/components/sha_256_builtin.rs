@@ -29,10 +29,6 @@ impl ClaimGenerator {
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
         sha_256_round_state: &mut sha_256_round::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        println!(
-            "Sha256Builtin: Writing trace with log_size: {}",
-            self.log_size
-        );
         let log_size = self.log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(

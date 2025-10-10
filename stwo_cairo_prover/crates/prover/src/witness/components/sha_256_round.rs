@@ -44,7 +44,6 @@ impl ClaimGenerator {
         let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
-        println!("sha_256_round: log_size: {}", log_size);
         self.packed_inputs
             .resize(packed_size, *self.packed_inputs.first().unwrap());
 

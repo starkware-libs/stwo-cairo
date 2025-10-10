@@ -242,7 +242,6 @@ impl BuiltinsClaimGenerator {
         let (sha256_builtin_claim, sha256_builtin_interaction_gen) = self
             .sha256_builtin_trace_generator
             .map(|sha256_builtin_trace_generator| {
-                println!("Builtins: Writing sha256 builtin trace");
                 sha256_builtin_trace_generator.write_trace(
                     tree_builder,
                     memory_address_to_id_trace_generator,

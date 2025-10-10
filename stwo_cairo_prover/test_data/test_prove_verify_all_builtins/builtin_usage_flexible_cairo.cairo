@@ -310,59 +310,59 @@ func main{
     mul_mod_ptr: ModBuiltin*,
 }() {
     alloc_locals;
-    // local n_output = 50;
-    // local n_pedersen = 50;
-    // local n_range_check = 50;
-    // local n_ecdsa = 0;
-    // local n_bitwise = 50;
-    // local n_ec_op = 0;
-    // local n_keccak = 0;
-    // local n_poseidon = 50;
-    // local n_range_check96 = 50;
-    // local n_add_mod = 50;
-    // local n_mul_mod = 50;
-    // local n_memory_holes = 50;
+    local n_output = 50;
+    local n_pedersen = 50;
+    local n_range_check = 50;
+    local n_ecdsa = 0;
+    local n_bitwise = 50;
+    local n_ec_op = 0;
+    local n_keccak = 0;
+    local n_poseidon = 50;
+    local n_range_check96 = 50;
+    local n_add_mod = 50;
+    local n_mul_mod = 50;
+    local n_memory_holes = 50;
     local n_sha256 = 50;
 
     do_sha256(n_builtin_usages=n_sha256);
 
-    // // Call output builtin.
-    // do_output(n_builtin_usages=n_output);
+    // Call output builtin.
+    do_output(n_builtin_usages=n_output);
 
-    // // Call pedersen builtin.
-    // do_pedersen(n_builtin_usages=n_pedersen);
+    // Call pedersen builtin.
+    do_pedersen(n_builtin_usages=n_pedersen);
 
-    // // Call range_check builtin.
-    // do_range_check(n_builtin_usages=n_range_check);
+    // Call range_check builtin.
+    do_range_check(n_builtin_usages=n_range_check);
 
-    // // Call ecdsa builtin.
-    // do_ecdsa(n_builtin_usages=n_ecdsa);
+    // Call ecdsa builtin.
+    do_ecdsa(n_builtin_usages=n_ecdsa);
 
-    // // Call bitwise builtin.
-    // do_bitwise(n_builtin_usages=n_bitwise);
+    // Call bitwise builtin.
+    do_bitwise(n_builtin_usages=n_bitwise);
 
-    // // Call ec_op builtin.
-    // do_ec_op(n_builtin_usages=n_ec_op);
+    // Call ec_op builtin.
+    do_ec_op(n_builtin_usages=n_ec_op);
 
-    // // Call keccak builtin.
-    // do_keccak(n_builtin_usages=n_keccak);
+    // Call keccak builtin.
+    do_keccak(n_builtin_usages=n_keccak);
 
-    // // Call poseidon builtin.
-    // do_poseidon(n_builtin_usages=n_poseidon);
+    // Call poseidon builtin.
+    do_poseidon(n_builtin_usages=n_poseidon);
 
-    // // Call range_check96 builtin.
-    // do_range_check96(n_builtin_usages=n_range_check96);
+    // Call range_check96 builtin.
+    do_range_check96(n_builtin_usages=n_range_check96);
 
-    // // Call add_mod builtin.
-    // do_add_mod(n_builtin_usages=n_add_mod);
+    // Call add_mod builtin.
+    do_add_mod(n_builtin_usages=n_add_mod);
 
-    // // Call mul_mod builtin.
-    // do_mul_mod(n_builtin_usages=n_mul_mod);
+    // Call mul_mod builtin.
+    do_mul_mod(n_builtin_usages=n_mul_mod);
 
-    // // Create memory holes.
-    // [ap] = 1, ap++;
-    // ap += n_memory_holes;
-    // [ap] = 1, ap++;
+    // Create memory holes.
+    [ap] = 1, ap++;
+    ap += n_memory_holes;
+    [ap] = 1, ap++;
 
     return ();
 }

@@ -57,7 +57,7 @@ impl PreProcessedTrace {
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
     /// programs that do not use `Pedersen` hash, e.g. the recursive verifier.
     pub fn canonical_without_pedersen() -> Self {
-        let seq = (2..=MAX_SEQUENCE_LOG_SIZE)
+        let seq = (LOG_N_LANES..=MAX_SEQUENCE_LOG_SIZE)
             .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
         let bitwise_xor = XOR_N_BITS
             .map(|n_bits| {
@@ -130,6 +130,8 @@ impl PreProcessedTrace {
 }
 
 fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
+    // RangeCheck_2.
+    let range_check_2_col_0 = RangeCheck::new([2], 0);
     // RangeCheck_4_3.
     let range_check_4_3_col_0 = RangeCheck::new([4, 3], 0);
     let range_check_4_3_col_1 = RangeCheck::new([4, 3], 1);
@@ -164,6 +166,7 @@ fn gen_range_check_columns() -> Vec<Box<dyn PreProcessedColumn>> {
     let range_check_3_3_3_3_3_col_4 = RangeCheck::new([3, 3, 3, 3, 3], 4);
 
     vec![
+        Box::new(range_check_2_col_0),
         Box::new(range_check_4_3_col_0),
         Box::new(range_check_4_3_col_1),
         Box::new(range_check_4_4_col_0),
@@ -244,15 +247,15 @@ pub fn partition_into_bit_segments<const N: usize>(
 
 /// Generates the map from 0..2^(sum_bits) to the corresponding value's partition segments.
 pub fn generate_partitioned_enumeration<const N: usize>(
-    n_bits_per_segmants: [u32; N],
+    n_bits_per_segments: [u32; N],
 ) -> [Vec<PackedM31>; N] {
-    let sum_bits = n_bits_per_segmants.iter().sum::<u32>();
+    let sum_bits = std::cmp::max(n_bits_per_segments.iter().sum::<u32>(), LOG_N_LANES);
     assert!(sum_bits < MODULUS_BITS);
 
     let mut res = std::array::from_fn(|_| vec![]);
     for vec_row in 0..1 << (sum_bits - LOG_N_LANES) {
         let value = SIMD_ENUMERATION_0 + Simd::splat(vec_row * N_LANES as u32);
-        let segments = partition_into_bit_segments(value, n_bits_per_segmants);
+        let segments = partition_into_bit_segments(value, n_bits_per_segments);
         for i in 0..N {
             res[i].push(unsafe { PackedM31::from_simd_unchecked(segments[i]) });
         }
@@ -273,7 +276,7 @@ impl<const N: usize> RangeCheck<N> {
 }
 impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     fn log_size(&self) -> u32 {
-        self.ranges.iter().sum()
+        std::cmp::max(self.ranges.iter().sum(), LOG_N_LANES)
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {

@@ -61,7 +61,6 @@ where
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
     let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(preprocessed_trace.gen_trace());
-    println!("---------------------PREPROCESSED TRACE PROVE--------------------------------");
     tree_builder.commit(channel);
 
     // Run Cairo.
@@ -72,29 +71,7 @@ where
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     span.exit();
 
-    // DEBUG: Print log_sizes structure
-    let log_sizes = claim.log_sizes();
-    eprintln!("\n=== PROVER log_sizes structure ===");
-    for (tree_idx, tree) in log_sizes.as_ref().iter().enumerate() {
-        eprintln!("Tree {}: {} columns", tree_idx, tree.len());
-    }
-
-    // DEBUG: Print SHA256 context claim details
-    eprintln!(
-        "\nSHA256 context has_claim: {}",
-        claim.sha256_context.claim.is_some()
-    );
-    if let Some(ref sha256_claim) = claim.sha256_context.claim {
-        let sha256_log_sizes = sha256_claim.log_sizes();
-        eprintln!("SHA256 internal log_sizes:");
-        for (tree_idx, tree) in sha256_log_sizes.as_ref().iter().enumerate() {
-            eprintln!("  SHA256 Tree {}: {} columns", tree_idx, tree.len());
-        }
-    }
-    eprintln!("====================================\n");
-
     claim.mix_into(channel);
-    println!("---------------------BASE TRACE PROVE--------------------------------");
     tree_builder.commit(channel);
 
     // Draw interaction elements.
@@ -120,7 +97,6 @@ where
     );
 
     interaction_claim.mix_into(channel);
-    println!("---------------------INTERACTION TRACE PROVE--------------------------------");
     tree_builder.commit(channel);
 
     // Component provers.
@@ -141,7 +117,6 @@ where
             &claim.public_data,
         );
         tracing::info!("Relations summary: {:?}", summary);
-        std::fs::write("relations_summary.txt", format!("{:?}", summary)).unwrap();
     }
 
     let components = component_builder.provers();
@@ -386,9 +361,10 @@ pub mod tests {
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
             let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
-                if *n_instances > 0 {
-                    println!("{opcode} is used in E2E full-Cairo opcode test");
-                }
+                assert!(
+                    *n_instances > 0,
+                    "{opcode} isn't used in E2E full-Cairo opcode test"
+                );
             }
             let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(

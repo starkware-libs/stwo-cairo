@@ -330,11 +330,9 @@ impl CairoClaimGenerator {
         let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
             .verify_bitwise_xor_9_trace_generator
             .write_trace(tree_builder);
-        println!("CairoClaimGenerator: Writing verify_bitwise_and_8 trace");
         let (verify_bitwise_and_8_claim, verify_bitwise_and_8_interaction_gen) = self
             .verify_bitwise_and_8_trace_generator
             .write_trace(tree_builder);
-        println!("CairoClaimGenerator: verify_bitwise_and_8_claim:");
         span.exit();
         (
             CairoClaim {
