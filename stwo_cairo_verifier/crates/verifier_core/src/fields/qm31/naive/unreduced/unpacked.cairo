@@ -88,7 +88,6 @@ fn mul_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
     }
 }
 
-
 #[inline]
 pub fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
     let mut mul_res = mul_unreduced(a, b);
