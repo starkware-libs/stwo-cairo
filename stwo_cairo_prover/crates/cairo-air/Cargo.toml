@@ -5,7 +5,7 @@ edition.workspace = true
 
 [features]
 default = ["std"]
-std = ["stwo-cairo-adapter/std", "stwo/std", "stwo-constraint-framework/std"]
+std = ["stwo/std", "stwo-constraint-framework/std"]
 slow-tests = []
 
 [dependencies]

@@ -1,5 +1,6 @@
 use std::fmt::Display;
 
+use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
 use crypto_bigint::U256;
 use rayon::iter::ParallelIterator;
 use rayon::slice::ParallelSlice;
@@ -11,7 +12,6 @@ use tracing::{span, Level};
 
 use super::decode::{Instruction, OpcodeExtension};
 use super::memory::{MemoryBuilder, MemoryValue};
-use super::vm_import::RelocatedTraceEntry;
 
 // TODO (Stav): Ensure it stays synced with that opcdode AIR's list.
 /// This struct holds the components used to prove the opcodes in a Cairo program,
@@ -46,7 +46,7 @@ impl CasmStatesByOpcode {
     ) -> Self {
         let mut res = CasmStatesByOpcode::default();
         for entry in iter {
-            res.push_instr(memory, entry.into());
+            res.push_instr(memory, into_casm_state(&entry));
         }
         res
     }
@@ -590,13 +590,11 @@ impl Display for CasmStatesByOpcode {
     }
 }
 
-impl From<RelocatedTraceEntry> for CasmState {
-    fn from(entry: RelocatedTraceEntry) -> Self {
-        Self {
-            pc: M31(entry.pc as u32),
-            ap: M31(entry.ap as u32),
-            fp: M31(entry.fp as u32),
-        }
+fn into_casm_state(entry: &RelocatedTraceEntry) -> CasmState {
+    CasmState {
+        pc: M31(entry.pc as u32),
+        ap: M31(entry.ap as u32),
+        fp: M31(entry.fp as u32),
     }
 }
 
@@ -643,11 +641,11 @@ impl StateTransitions {
         let _span = span!(Level::INFO, "StateTransitions::from_iter").entered();
         let mut iter = iter.peekable();
 
-        let initial_state = (*iter.peek().expect("Must have an initial state.")).into();
+        let initial_state = into_casm_state(iter.peek().expect("Must have an initial state."));
         assert_state_in_address_space(initial_state);
 
         // Assuming the last instruction is jrl0, no need to push it.
-        let final_state = iter.next_back().unwrap().into();
+        let final_state = into_casm_state(&iter.next_back().expect("Must have a final state."));
         assert_state_in_address_space(final_state);
 
         let states = CasmStatesByOpcode::from_iter(iter, memory);
@@ -661,11 +659,11 @@ impl StateTransitions {
 
     pub fn from_slice_parallel(trace: &[RelocatedTraceEntry], memory: &MemoryBuilder) -> Self {
         let _span = span!(Level::INFO, "StateTransitions::from_slice_parallel").entered();
-        let initial_state = trace.first().copied().unwrap().into();
+        let initial_state = into_casm_state(trace.first().unwrap());
         assert_state_in_address_space(initial_state);
 
         // Assuming the last instruction is jrl0, no need to push it.
-        let final_state = trace.last().copied().unwrap().into();
+        let final_state = into_casm_state(trace.last().unwrap());
         assert_state_in_address_space(final_state);
 
         let trace = &trace[..trace.len() - 1];
@@ -674,7 +672,7 @@ impl StateTransitions {
         let chunk_size = trace.len().div_ceil(n_workers);
         let casm_states_by_opcode = trace
             .par_chunks(chunk_size)
-            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().copied(), memory))
+            .map(|chunk| CasmStatesByOpcode::from_iter(chunk.iter().cloned(), memory))
             .reduce(Default::default, |mut acc, chunk| {
                 acc.merge(&chunk);
                 acc
@@ -744,17 +742,17 @@ mod mappings_tests {
     use cairo_vm::types::layout_name::LayoutName;
     use cairo_vm::types::relocatable::{MaybeRelocatable, Relocatable};
     use cairo_vm::vm::runners::cairo_runner::CairoRunner;
+    use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
     use stwo::core::fields::m31::M31;
     use stwo_cairo_common::prover_types::cpu::CasmState;
 
-    use crate::adapter::adapter;
+    use crate::adapter::adapt;
     use crate::decode::{Instruction, OpcodeExtension};
     use crate::memory::*;
     use crate::opcodes::{is_small_add, CasmStatesByOpcode, StateTransitions};
     use crate::relocator::relocator_tests::get_test_relocatble_trace;
     use crate::relocator::Relocator;
     use crate::test_utils::program_from_casm;
-    use crate::vm_import::RelocatedTraceEntry;
     use crate::{casm_state, relocated_trace_entry, ProverInput};
 
     /// Translates a plain casm into a ProverInput by running the program and extracting the memory
@@ -773,7 +771,7 @@ mod mappings_tests {
             )
             .expect("Run failed");
 
-        adapter(&runner)
+        adapt(&runner).expect("Adapter failed")
     }
 
     #[test]
@@ -1315,7 +1313,8 @@ mod mappings_tests {
     #[test]
     #[should_panic(expected = "AP out of address range: 536870912")]
     fn test_ap_out_of_range_from_slice() {
-        let mut reloctated_trace = [relocated_trace_entry!(2, 1, 1); 80];
+        let mut reloctated_trace: [RelocatedTraceEntry; 80] =
+            std::array::from_fn(|_| relocated_trace_entry!(2, 1, 1));
         reloctated_trace[68] = relocated_trace_entry!(2usize.pow(29), 1, 1);
 
         let encoded_blake_finalize_inst =

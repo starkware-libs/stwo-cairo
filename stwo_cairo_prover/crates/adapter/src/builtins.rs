@@ -55,44 +55,6 @@ pub struct BuiltinSegments {
 }
 
 impl BuiltinSegments {
-    /// Creates a new `BuiltinSegments` struct from a map of memory segment names to addresses.
-    /// TODO(Stav): remove after using 'get_builtins_segment'.
-    pub fn from_memory_segments(memory_segments: &HashMap<&str, MemorySegmentAddresses>) -> Self {
-        let mut res = BuiltinSegments::default();
-        for (name, value) in memory_segments.iter() {
-            if let Some(builtin_name) = BuiltinName::from_str(name) {
-                // Filter empty segments.
-                let segment = if value.begin_addr == value.stop_ptr {
-                    None
-                } else {
-                    assert!(
-                        value.begin_addr < value.stop_ptr,
-                        "Invalid segment addresses: '{}'-'{}' for builtin '{name}'",
-                        value.begin_addr,
-                        value.stop_ptr,
-                    );
-                    Some(*value)
-                };
-                match builtin_name {
-                    BuiltinName::range_check => res.range_check_bits_128 = segment,
-                    BuiltinName::pedersen => res.pedersen = segment,
-                    BuiltinName::bitwise => res.bitwise = segment,
-                    BuiltinName::poseidon => res.poseidon = segment,
-                    BuiltinName::range_check96 => res.range_check_bits_96 = segment,
-                    BuiltinName::add_mod => res.add_mod = segment,
-                    BuiltinName::mul_mod => res.mul_mod = segment,
-                    BuiltinName::output => res.output = segment,
-                    BuiltinName::ec_op | BuiltinName::keccak | BuiltinName::ecdsa => {
-                        assert!(segment.is_none(), "{name} builtin is not supported");
-                    }
-                    // Not builtins.
-                    BuiltinName::segment_arena => {}
-                }
-            };
-        }
-        res
-    }
-
     /// Returns the number of instances for each builtin.
     pub fn get_counts(&self) -> HashMap<BuiltinName, usize> {
         let mut counts = HashMap::new();
@@ -258,43 +220,6 @@ impl BuiltinSegments {
             );
         }
     }
-
-    /// Fills memory cells in builtin segments with the appropriate values according to the builtin.
-    ///
-    /// The memory provided by the runner only contains values that were accessed during program
-    /// execution. However, the builtin AIR applies constraints on it's entire range, including
-    /// addresses that were not accessed.
-    // TODO(Stav): remove when this is fixed by the runner.
-    pub fn fill_memory_holes(&self, memory: &mut MemoryBuilder) {
-        self.resize_memory_to_cover_holes(memory);
-        // bitwise.
-        if let Some(segment) = &self.bitwise {
-            builtin_padding::bitwise(segment, memory)
-        };
-    }
-
-    // If the final segment in a builtin segment, and the final entry has a hole, the memory must be
-    // resized to include the hole.
-    // TODO (Stav): remove when the new adapter is used.
-    fn resize_memory_to_cover_holes(&self, memory: &mut MemoryBuilder) {
-        let max_stop_ptr = [
-            self.add_mod.as_ref(),
-            self.bitwise.as_ref(),
-            self.mul_mod.as_ref(),
-            self.pedersen.as_ref(),
-            self.poseidon.as_ref(),
-            self.range_check_bits_96.as_ref(),
-            self.range_check_bits_128.as_ref(),
-        ]
-        .iter()
-        .filter_map(|segment| segment.map(|s| s.stop_ptr))
-        .max()
-        .unwrap_or(0);
-        let len = memory.address_to_id.len();
-        memory
-            .address_to_id
-            .resize(std::cmp::max(len, max_stop_ptr), Default::default());
-    }
 }
 
 /// The minimum number of instances in a builtin segment supported by the prover. This must be a
@@ -357,52 +282,13 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
     segment.stop_ptr - segment.begin_addr
 }
 
-mod builtin_padding {
-    use itertools::Itertools;
-
-    use super::MemorySegmentAddresses;
-    use crate::builtins::BITWISE_MEMORY_CELLS;
-    use crate::memory::{value_from_felt252, MemoryBuilder, MemoryValueId};
-
-    pub fn bitwise(segment: &MemorySegmentAddresses, memory: &mut MemoryBuilder) {
-        let range = segment.begin_addr as u32..segment.stop_ptr as u32;
-        assert!(range.len().is_multiple_of(BITWISE_MEMORY_CELLS));
-        for (op0_addr, op1_addr, and_addr, xor_addr, or_addr) in range.tuples() {
-            let op0 = memory.get(op0_addr).as_u256();
-            let op1 = memory.get(op1_addr).as_u256();
-
-            if let MemoryValueId::Empty = memory.address_to_id[and_addr as usize].decode() {
-                let and_res = value_from_felt252(std::array::from_fn(|i| op0[i] & op1[i]));
-                memory.set(and_addr, and_res);
-            }
-
-            if let MemoryValueId::Empty = memory.address_to_id[xor_addr as usize].decode() {
-                let xor_res = value_from_felt252(std::array::from_fn(|i| op0[i] ^ op1[i]));
-                memory.set(xor_addr, xor_res);
-            }
-
-            if let MemoryValueId::Empty = memory.address_to_id[or_addr as usize].decode() {
-                let or_res = value_from_felt252(std::array::from_fn(|i| op0[i] | op1[i]));
-                memory.set(or_addr, or_res);
-            }
-        }
-    }
-}
-
 #[cfg(test)]
 mod test_builtin_segments {
-    use std::path::PathBuf;
-
-    use cairo_vm::air_public_input::PublicInput;
-    use rand::rngs::SmallRng;
-    use rand::{Rng, SeedableRng};
     use test_case::test_case;
 
     use super::*;
     use crate::builtins::BITWISE_MEMORY_CELLS;
-    use crate::memory::{
-        u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryEntry, MemoryValue,
-    };
+    use crate::memory::{u128_to_4_limbs, Memory, MemoryBuilder, MemoryConfig, MemoryValue};
 
     /// Asserts that the values at addresses start_addr1 to start_addr1 + segment_length - 1
     /// are equal to values at the addresses start_addr2 to start_addr2 + segment_length - 1.
@@ -415,43 +301,6 @@ mod test_builtin_segments {
         for i in 0..segment_length {
             assert_eq!(memory.get(start_addr1 + i), memory.get(start_addr2 + i));
         }
-    }
-
-    #[test]
-    fn test_builtin_segments() {
-        let path = PathBuf::from(env!("CARGO_MANIFEST_DIR"))
-            .join("../../test_data/test_builtins_segments/test_public_input.json");
-        let pub_data_string = std::fs::read_to_string(&path)
-            .unwrap_or_else(|_| panic!("Unable to read file: {}", path.display()));
-        let pub_data: PublicInput<'_> =
-            serde_json::from_str(&pub_data_string).expect("Unable to parse JSON");
-
-        let builtin_segments = BuiltinSegments::from_memory_segments(
-            &pub_data
-                .memory_segments
-                .into_iter()
-                .map(|(k, v)| (k, v.into()))
-                .collect(),
-        );
-        assert_eq!(builtin_segments.add_mod, None);
-        assert_eq!(
-            builtin_segments.bitwise,
-            Some(MemorySegmentAddresses {
-                begin_addr: 23581,
-                stop_ptr: 23901
-            })
-        );
-        assert_eq!(builtin_segments.mul_mod, None);
-        assert_eq!(builtin_segments.pedersen, None);
-        assert_eq!(builtin_segments.poseidon, None);
-        assert_eq!(builtin_segments.range_check_bits_96, None);
-        assert_eq!(
-            builtin_segments.range_check_bits_128,
-            Some(MemorySegmentAddresses {
-                begin_addr: 7069,
-                stop_ptr: 7187
-            })
-        );
     }
 
     /// Initializes a memory builder with the given u128 values.
@@ -523,69 +372,6 @@ mod test_builtin_segments {
             );
             instance_to_verify_start += cells_per_instance as u32;
         }
-    }
-
-    #[test]
-    fn test_bitwise_hole_filling() {
-        let mut small_rng = SmallRng::seed_from_u64(0);
-        let op0 = small_rng.gen::<[u32; 8]>();
-        let op1 = small_rng.gen::<[u32; 8]>();
-        let entries = [
-            MemoryEntry {
-                address: 0,
-                value: op0,
-            },
-            MemoryEntry {
-                address: 1,
-                value: op1,
-            },
-        ];
-        let mut memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries);
-        let builtin_segments = BuiltinSegments {
-            bitwise: Some(MemorySegmentAddresses {
-                begin_addr: 0,
-                stop_ptr: 5,
-            }),
-            ..Default::default()
-        };
-        let expected_and = std::array::from_fn(|i| op0[i] & op1[i]);
-        let expected_xor = std::array::from_fn(|i| op0[i] ^ op1[i]);
-        let expected_or = std::array::from_fn(|i| op0[i] | op1[i]);
-        builtin_segments.fill_memory_holes(&mut memory);
-        let (memory, ..) = memory.build();
-
-        let and_res = memory.get(2).as_u256();
-        let xor_res = memory.get(3).as_u256();
-        let or_res = memory.get(4).as_u256();
-
-        assert_eq!(and_res, expected_and);
-        assert_eq!(xor_res, expected_xor);
-        assert_eq!(or_res, expected_or);
-    }
-
-    #[test]
-    fn test_resize_memory_to_cover_holes() {
-        let entries = [
-            MemoryEntry {
-                address: 0,
-                value: [0; 8],
-            },
-            MemoryEntry {
-                address: 1,
-                value: [1; 8],
-            },
-        ];
-        let mut memory = MemoryBuilder::from_iter(MemoryConfig::default(), entries);
-        let builtin_segments = BuiltinSegments {
-            bitwise: Some(MemorySegmentAddresses {
-                begin_addr: 0,
-                stop_ptr: 5,
-            }),
-            ..Default::default()
-        };
-        assert_eq!(memory.address_to_id.len(), 2);
-        builtin_segments.resize_memory_to_cover_holes(&mut memory);
-        assert_eq!(memory.address_to_id.len(), 5);
     }
 
     #[test]

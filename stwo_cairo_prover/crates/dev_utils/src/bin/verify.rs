@@ -73,7 +73,6 @@ fn main() -> Result<()> {
     tracing_subscriber::fmt()
         .with_span_events(FmtSpan::ENTER | FmtSpan::CLOSE)
         .init();
-
     let _span = span!(Level::INFO, "verify").entered();
 
     log::info!("Verifying a {:?} proof", args.channel_hash);
@@ -91,5 +90,6 @@ fn main() -> Result<()> {
         Ok(_) => log::info!("✅ Proof verified successfully!"),
         Err(ref e) => log::error!("❌ Proof verification failed: {e:?}"),
     }
+
     result
 }

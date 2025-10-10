@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "crates/adapted_prover",
     "crates/adapter",
     "crates/prover",
     "crates/cairo-serialize",
