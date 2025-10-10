@@ -247,6 +247,7 @@ pub fn lookup_sum(
         verify_bitwise_xor_4,
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
     } = interaction_claim;
 
@@ -262,6 +263,7 @@ pub fn lookup_sum(
     sum += *verify_bitwise_xor_4.claimed_sum;
     sum += *verify_bitwise_xor_7.claimed_sum;
     sum += *verify_bitwise_xor_8.claimed_sum;
+    sum += *verify_bitwise_xor_8_b.claimed_sum;
     sum += *verify_bitwise_xor_9.claimed_sum;
     sum
 }
