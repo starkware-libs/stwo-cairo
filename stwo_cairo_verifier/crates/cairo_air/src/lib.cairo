@@ -103,6 +103,9 @@ use poseidon::PoseidonContextInteractionClaimImpl;
 pub mod blake;
 use blake::BlakeContextInteractionClaimImpl;
 
+pub mod sha256;
+use sha256::Sha256ContextInteractionClaimImpl;
+
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
 
@@ -242,6 +245,7 @@ pub fn lookup_sum(
         builtins,
         pedersen_context,
         poseidon_context,
+        sha256_context,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -249,6 +253,7 @@ pub fn lookup_sum(
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        verify_bitwise_and_8,
     } = interaction_claim;
 
     sum += opcodes.sum();
@@ -257,6 +262,7 @@ pub fn lookup_sum(
     sum += builtins.sum();
     sum += pedersen_context.sum();
     sum += poseidon_context.sum();
+    sum += sha256_context.sum();
     sum += *memory_address_to_id.claimed_sum;
     sum += memory_id_to_value.sum();
     sum += range_checks.sum();
@@ -264,6 +270,7 @@ pub fn lookup_sum(
     sum += *verify_bitwise_xor_7.claimed_sum;
     sum += *verify_bitwise_xor_8.claimed_sum;
     sum += *verify_bitwise_xor_9.claimed_sum;
+    sum += *verify_bitwise_and_8.claimed_sum;
     sum
 }
 

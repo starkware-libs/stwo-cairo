@@ -28,6 +28,7 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();
         let multiplicity_column = BaseColumn::from_simd(mults.clone());
+
         let domain = CanonicCoset::new(LOG_SIZE).circle_domain();
         let trace = [multiplicity_column]
             .map(|col| CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(domain, col));
