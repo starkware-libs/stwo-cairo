@@ -46,7 +46,8 @@ use stwo_cairo_air::range_checks::{
     RangeChecksInteractionElementsImpl,
 };
 use stwo_cairo_air::sha256::{
-    Sha256ContextClaim, Sha256ContextInteractionClaim, Sha256ContextInteractionClaimImpl, Sha256ContextComponents, Sha256ContextComponentsImpl,
+    Sha256ContextClaim, Sha256ContextComponents, Sha256ContextComponentsImpl,
+    Sha256ContextInteractionClaim, Sha256ContextInteractionClaimImpl,
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{

@@ -47,10 +47,9 @@ impl PreProcessedTrace {
         let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
             .map(|x| Box::new(PedersenPoints::new(x)) as Box<dyn PreProcessedColumn>);
 
-        let columns = chain!(canonical_without_pedersen, pedersen_points)
+        let columns: Vec<_> = chain!(canonical_without_pedersen, pedersen_points)
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect();
-
         Self { columns }
     }
 

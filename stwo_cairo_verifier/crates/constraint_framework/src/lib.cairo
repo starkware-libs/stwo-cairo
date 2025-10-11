@@ -148,12 +148,9 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
         preprocessed_columns: Span<PreprocessedColumn>,
     ) -> PreprocessedMaskValues {
         let mut values: Felt252Dict<Nullable<QM31>> = Default::default();
-        println!("preprocessed_columns: {:?}", preprocessed_columns.len());
-        println!("preprocessed_mask_values: {:?}", preprocessed_mask_values.len());
 
         for preprocessed_column in preprocessed_columns {
             let mut column_mask_values = *preprocessed_mask_values.pop_front().unwrap();
-            println!("preprocessed_column: {:?}, column_mask_values: {:?}", preprocessed_column, column_mask_values.len());
 
             if let Some(mask_value) = column_mask_values.pop_front() {
                 values
@@ -166,7 +163,6 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
                 assert!(column_mask_values.is_empty());
             }
         }
-        println!("after everything: {:?}", preprocessed_mask_values.len());
 
         assert!(preprocessed_mask_values.is_empty());
 
@@ -258,7 +254,8 @@ pub fn range_check_size<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32
     for n_bits in IntoSpan::span(n_bits_vec) {
         total = total + *n_bits;
     }
-    total
+    // max between col and simd min lane
+    core::cmp::max(total, 4)
 }
 
 /// An encoding of a [`PreprocessedColumn`] to index into [`Felt252Dict`].
