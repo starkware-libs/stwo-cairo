@@ -46,7 +46,7 @@ use stwo_cairo_air::range_checks::{
     RangeChecksInteractionElementsImpl,
 };
 use stwo_cairo_air::sha256::{
-    Sha256ContextClaim, Sha256ContextInteractionClaim, Sha256ContextInteractionClaimImpl,
+    Sha256ContextClaim, Sha256ContextInteractionClaim, Sha256ContextInteractionClaimImpl, Sha256ContextComponents, Sha256ContextComponentsImpl,
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
@@ -333,15 +333,6 @@ pub struct CairoInteractionElements {
     pub cube_252: Cube252Elements,
     pub poseidon_round_keys: PoseidonRoundKeysElements,
     pub range_check_felt_252_width_27: RangeCheckFelt252Width27Elements,
-    pub memory_address_to_id: MemoryAddressToIdElements,
-    pub memory_id_to_value: MemoryIdToBigElements,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: VerifyBitwiseXor_4Elements,
-    pub verify_bitwise_xor_7: VerifyBitwiseXor_7Elements,
-    pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
-    pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
-    pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
-    pub verify_bitwise_and_8: VerifyBitwiseAnd_8Elements,
     pub sha_256_round: Sha256RoundElements,
     pub sha_256_big_sigma_0: Sha256BigSigma0Elements,
     pub sha_256_big_sigma_1: Sha256BigSigma1Elements,
@@ -357,6 +348,15 @@ pub struct CairoInteractionElements {
     pub sha_256_small_sigma_1_o_0: Sha256SmallSigma1O0Elements,
     pub sha_256_small_sigma_1_o_1: Sha256SmallSigma1O1Elements,
     pub sha_256_k_table: Sha256KTableElements,
+    pub memory_address_to_id: MemoryAddressToIdElements,
+    pub memory_id_to_value: MemoryIdToBigElements,
+    pub range_checks: RangeChecksInteractionElements,
+    pub verify_bitwise_xor_4: VerifyBitwiseXor_4Elements,
+    pub verify_bitwise_xor_7: VerifyBitwiseXor_7Elements,
+    pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
+    pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
+    pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
+    pub verify_bitwise_and_8: VerifyBitwiseAnd_8Elements,
 }
 
 #[generate_trait]
@@ -376,15 +376,6 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             range_check_felt_252_width_27: LookupElementsImpl::draw(ref channel),
             partial_ec_mul: LookupElementsImpl::draw(ref channel),
             pedersen_points_table: LookupElementsImpl::draw(ref channel),
-            memory_address_to_id: LookupElementsImpl::draw(ref channel),
-            memory_id_to_value: LookupElementsImpl::draw(ref channel),
-            range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),
-            verify_bitwise_xor_4: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_7: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_and_8: LookupElementsImpl::draw(ref channel),
             sha_256_round: LookupElementsImpl::draw(ref channel),
             sha_256_big_sigma_0: LookupElementsImpl::draw(ref channel),
             sha_256_big_sigma_1: LookupElementsImpl::draw(ref channel),
@@ -400,6 +391,15 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             sha_256_small_sigma_1_o_0: LookupElementsImpl::draw(ref channel),
             sha_256_small_sigma_1_o_1: LookupElementsImpl::draw(ref channel),
             sha_256_k_table: LookupElementsImpl::draw(ref channel),
+            memory_address_to_id: LookupElementsImpl::draw(ref channel),
+            memory_id_to_value: LookupElementsImpl::draw(ref channel),
+            range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),
+            verify_bitwise_xor_4: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_xor_7: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_and_8: LookupElementsImpl::draw(ref channel),
         }
     }
 }

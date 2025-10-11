@@ -29,9 +29,9 @@ pub struct BuiltinsClaim {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Claim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
+    pub sha256_builtin: Option<components::sha_256_builtin::Claim>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Claim>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Claim>,
-    pub sha256_builtin: Option<components::sha_256_builtin::Claim>,
 }
 
 pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
@@ -42,9 +42,9 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
         if let Some(claim) = add_mod_builtin {
             claim.mix_into(ref channel);
@@ -61,13 +61,13 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
         if let Some(claim) = poseidon_builtin {
             claim.mix_into(ref channel);
         }
+        if let Some(claim) = sha256_builtin {
+            claim.mix_into(ref channel);
+        }
         if let Some(claim) = range_check_96_builtin {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = range_check_128_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = sha256_builtin {
             claim.mix_into(ref channel);
         }
     }
@@ -79,9 +79,9 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
         let mut log_sizes = array![];
 
@@ -105,15 +105,15 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             log_sizes.append(claim.log_sizes());
         }
 
+        if let Some(claim) = sha256_builtin {
+            log_sizes.append(claim.log_sizes());
+        }
+
         if let Some(claim) = range_check_96_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
         if let Some(claim) = range_check_128_builtin {
-            log_sizes.append(claim.log_sizes());
-        }
-
-        if let Some(claim) = sha256_builtin {
             log_sizes.append(claim.log_sizes());
         }
 
@@ -127,9 +127,9 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
 
         if let Some(claim) = add_mod_builtin {
@@ -147,13 +147,13 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
         if let Some(claim) = poseidon_builtin {
             claim.accumulate_relation_uses(ref relation_uses);
         }
+        if let Some(claim) = sha256_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
         if let Some(claim) = range_check_96_builtin {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = range_check_128_builtin {
-            claim.accumulate_relation_uses(ref relation_uses);
-        }
-        if let Some(claim) = sha256_builtin {
             claim.accumulate_relation_uses(ref relation_uses);
         }
     }
@@ -166,9 +166,9 @@ pub struct BuiltinsInteractionClaim {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::InteractionClaim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
+    pub sha256_builtin: Option<components::sha_256_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::InteractionClaim>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::InteractionClaim>,
-    pub sha256_builtin: Option<components::sha_256_builtin::InteractionClaim>,
 }
 
 #[generate_trait]
@@ -180,9 +180,9 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
 
         if let Some(claim) = add_mod_builtin {
@@ -200,13 +200,13 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
         if let Some(claim) = poseidon_builtin {
             claim.mix_into(ref channel);
         }
+        if let Some(claim) = sha256_builtin {
+            claim.mix_into(ref channel);
+        }
         if let Some(claim) = range_check_96_builtin {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = range_check_128_builtin {
-            claim.mix_into(ref channel);
-        }
-        if let Some(claim) = sha256_builtin {
             claim.mix_into(ref channel);
         }
     }
@@ -218,9 +218,9 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
         let mut sum = Zero::zero();
 
@@ -244,15 +244,15 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             sum += *claim.claimed_sum;
         }
 
+        if let Some(claim) = sha256_builtin {
+            sum += *claim.claimed_sum;
+        }
+
         if let Some(claim) = range_check_96_builtin {
             sum += *claim.claimed_sum;
         }
 
         if let Some(claim) = range_check_128_builtin {
-            sum += *claim.claimed_sum;
-        }
-
-        if let Some(claim) = sha256_builtin {
             sum += *claim.claimed_sum;
         }
 
@@ -269,9 +269,9 @@ pub struct BuiltinComponents {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
+    pub sha256_builtin: Option<components::sha_256_builtin::Component>,
     pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
-    pub sha256_builtin: Option<components::sha_256_builtin::Component>,
 }
 
 #[derive(Drop)]
@@ -349,6 +349,16 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ),
                 );
         }
+        
+        let mut sha256_builtin_component = Option::None;
+        if let Option::Some(claim) = sha256_builtin {
+            sha256_builtin_component =
+                Option::Some(
+                    components::sha_256_builtin::NewComponentImpl::new(
+                        claim, @interaction_claim.sha256_builtin.unwrap(), interaction_elements,
+                    ),
+                );
+        }
 
         let mut range_check_96_builtin_component = Option::None;
         if let Option::Some(claim) = range_check_96_builtin {
@@ -360,7 +370,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                         interaction_elements,
                     ),
                 );
-        }
+            }
 
         let mut range_check_128_builtin_component = Option::None;
         if let Option::Some(claim) = range_check_128_builtin {
@@ -374,25 +384,15 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
-        let mut sha256_builtin_component = Option::None;
-        if let Option::Some(claim) = sha256_builtin {
-            sha256_builtin_component =
-                Option::Some(
-                    components::sha_256_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.sha256_builtin.unwrap(), interaction_elements,
-                    ),
-                );
-        }
-
         BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
             mul_mod_builtin: mul_mod_builtin_component,
             pedersen_builtin: pedersen_builtin_component,
             poseidon_builtin: poseidon_builtin_component,
+            sha256_builtin: sha256_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
-            sha256_builtin: sha256_builtin_component,
         }
     }
 
@@ -409,9 +409,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
 
         if let Option::Some(component) = add_mod_builtin.as_snap() {
@@ -462,6 +462,16 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     ref interaction_trace_mask_points,
                     point,
                 );
+            }
+
+        if let Option::Some(component) = sha256_builtin.as_snap() {
+            component
+                .mask_points(
+                    ref preprocessed_column_set,
+                    ref trace_mask_points,
+                    ref interaction_trace_mask_points,
+                    point,
+                );
         }
 
         if let Option::Some(component) = range_check_96_builtin.as_snap() {
@@ -483,16 +493,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     point,
                 );
         }
-
-        if let Option::Some(component) = sha256_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
     }
 
     fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
@@ -502,9 +502,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
         let mut max_degree = 0;
 
@@ -528,15 +528,15 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
+        if let Option::Some(component) = sha256_builtin.as_snap() {
+            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
+        }
+
         if let Option::Some(component) = range_check_96_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
         if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = sha256_builtin.as_snap() {
             max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
         }
 
@@ -559,9 +559,9 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             mul_mod_builtin,
             pedersen_builtin,
             poseidon_builtin,
+            sha256_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
-            sha256_builtin,
         } = self;
 
         if let Option::Some(component) = add_mod_builtin.as_snap() {
@@ -624,6 +624,18 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
 
+        if let Option::Some(component) = sha256_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
         if let Option::Some(component) = range_check_96_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
@@ -637,18 +649,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            component
-                .evaluate_constraints_at_point(
-                    ref sum,
-                    ref preprocessed_mask_values,
-                    ref trace_mask_values,
-                    ref interaction_trace_mask_values,
-                    random_coeff,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = sha256_builtin.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,

@@ -1,7 +1,9 @@
 // AIR version 52ac7695-dirty
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((2));
+use stwo_constraint_framework::PreprocessedColumn;
+
+pub const N_TRACE_COLUMNS: usize = 1;const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck1(([2], 0));
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -68,7 +70,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let log_size = SOME_COLUMN.log_size();
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        preprocessed_column_set.insert(PreprocessedColumn::RangeCheck1(([2], 0)));trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -93,7 +95,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_2_sum_0: QM31 = Zero::zero();let seq
-            = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
+            = preprocessed_mask_values.get(PreprocessedColumn::RangeCheck1(([2], 0)));
         
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

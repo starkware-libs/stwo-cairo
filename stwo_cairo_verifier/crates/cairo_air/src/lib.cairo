@@ -233,6 +233,7 @@ pub fn lookup_sum(
     interaction_claim: @CairoInteractionClaim,
 ) -> QM31 {
     let mut sum = claim.public_data.logup_sum(elements);
+    println!("cairo logup_sum: {:?}", claim.public_data.logup_sum(elements));
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
@@ -257,20 +258,35 @@ pub fn lookup_sum(
     } = interaction_claim;
 
     sum += opcodes.sum();
+    println!("cairo opcodes sum: {:?}", opcodes.sum());
     sum += *verify_instruction.claimed_sum;
+    println!("cairo verify_instruction sum: {:?}", verify_instruction.claimed_sum);
     sum += blake_context.sum();
+    println!("cairo blake_context sum: {:?}", blake_context.sum());
     sum += builtins.sum();
+    println!("cairo builtins sum: {:?}", builtins.sum());
     sum += pedersen_context.sum();
+    println!("cairo pedersen_context sum: {:?}", pedersen_context.sum());
     sum += poseidon_context.sum();
+    println!("cairo poseidon_context sum: {:?}", poseidon_context.sum());
     sum += sha256_context.sum();
+    println!("cairo sha256_context sum: {:?}", sha256_context.sum());
     sum += *memory_address_to_id.claimed_sum;
+    println!("cairo memory_address_to_id sum: {:?}", memory_address_to_id.claimed_sum);
     sum += memory_id_to_value.sum();
+    println!("cairo memory_id_to_value sum: {:?}", memory_id_to_value.sum());
     sum += range_checks.sum();
+    println!("cairo range_checks sum: {:?}", range_checks.sum());
     sum += *verify_bitwise_xor_4.claimed_sum;
+    println!("cairo verify_bitwise_xor_4 sum: {:?}", verify_bitwise_xor_4.claimed_sum);
     sum += *verify_bitwise_xor_7.claimed_sum;
+    println!("cairo verify_bitwise_xor_7 sum: {:?}", verify_bitwise_xor_7.claimed_sum);
     sum += *verify_bitwise_xor_8.claimed_sum;
+    println!("cairo verify_bitwise_xor_8 sum: {:?}", verify_bitwise_xor_8.claimed_sum);
     sum += *verify_bitwise_xor_9.claimed_sum;
+    println!("cairo verify_bitwise_xor_9 sum: {:?}", verify_bitwise_xor_9.claimed_sum);
     sum += *verify_bitwise_and_8.claimed_sum;
+    println!("cairo verify_bitwise_and_8 sum: {:?}", verify_bitwise_and_8.claimed_sum);
     sum
 }
 

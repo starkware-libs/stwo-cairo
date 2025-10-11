@@ -46,8 +46,21 @@ fn test_canonical_preprocessed_root_regression() {
     use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
 
     let log_blowup_factor = 1;
+    (1..6).for_each(|i| {
+        println!("log_blowup_factor: {}", i);
+        let cannonical_root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+            i,
+            PreProcessedTraceVariant::Canonical,
+        );
+        println!("cannonical_root: {:?}", cannonical_root.0.array_chunks::<4>().map(|&bytes| format!("{:#010x}", u32::from_be_bytes(bytes))).collect::<Vec<_>>().join(", "));
+        let cannonical_root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+            i,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen,
+        );
+        println!("no pedersen: {:x?}", cannonical_root);
+    });
     let expected = Blake2sHash::from(
-        hex::decode("36719f88e028e47d4ac333a96fa52dc2766d9c668d190e15ef2f2ab8b98c5b15")
+        hex::decode("624694144d437d26d82fd305ad88d3b4e4bb2bd3578504745ebe3372c9abba41")
             .expect("Invalid hex string"),
     );
 

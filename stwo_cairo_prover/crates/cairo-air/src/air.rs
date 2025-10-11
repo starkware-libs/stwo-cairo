@@ -712,24 +712,40 @@ pub fn lookup_sum(
 ) -> SecureField {
     let mut sum = QM31::zero();
     sum += claim.public_data.logup_sum(elements);
+    println!("rust logup_sum: {:?}", claim.public_data.logup_sum(elements));
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     sum += interaction_claim.opcodes.sum();
+    println!("rust opcodes sum: {:?}", interaction_claim.opcodes.sum());
     sum += interaction_claim.verify_instruction.claimed_sum;
+    println!("rust verify_instruction sum: {:?}", interaction_claim.verify_instruction.claimed_sum);
     sum += interaction_claim.blake_context.sum();
+    println!("rust blake_context sum: {:?}", interaction_claim.blake_context.sum());
     sum += interaction_claim.builtins.sum();
+    println!("rust builtins sum: {:?}", interaction_claim.builtins.sum());
     sum += interaction_claim.pedersen_context.sum();
+    println!("rust pedersen_context sum: {:?}", interaction_claim.pedersen_context.sum());
     sum += interaction_claim.poseidon_context.sum();
+    println!("rust poseidon_context sum: {:?}", interaction_claim.poseidon_context.sum());
     sum += interaction_claim.sha256_context.sum();
+    println!("rust sha256_context sum: {:?}", interaction_claim.sha256_context.sum());
     sum += interaction_claim.memory_address_to_id.claimed_sum;
+    println!("rust memory_address_to_id sum: {:?}", interaction_claim.memory_address_to_id.claimed_sum);
     sum += interaction_claim.memory_id_to_value.claimed_sum();
+    println!("rust memory_id_to_value sum: {:?}", interaction_claim.memory_id_to_value.claimed_sum());
     sum += interaction_claim.range_checks.sum();
+    println!("rust range_checks sum: {:?}", interaction_claim.range_checks.sum());
     sum += interaction_claim.verify_bitwise_xor_4.claimed_sum;
+    println!("rust verify_bitwise_xor_4 sum: {:?}", interaction_claim.verify_bitwise_xor_4.claimed_sum);
     sum += interaction_claim.verify_bitwise_xor_7.claimed_sum;
+    println!("rust verify_bitwise_xor_7 sum: {:?}", interaction_claim.verify_bitwise_xor_7.claimed_sum);
     sum += interaction_claim.verify_bitwise_xor_8.claimed_sum;
+    println!("rust verify_bitwise_xor_8 sum: {:?}", interaction_claim.verify_bitwise_xor_8.claimed_sum);
     sum += interaction_claim.verify_bitwise_xor_9.claimed_sum;
+    println!("rust verify_bitwise_xor_9 sum: {:?}", interaction_claim.verify_bitwise_xor_9.claimed_sum);
     sum += interaction_claim.verify_bitwise_and_8.claimed_sum;
+    println!("rust verify_bitwise_and_8 sum: {:?}", interaction_claim.verify_bitwise_and_8.claimed_sum);
 
     sum
 }

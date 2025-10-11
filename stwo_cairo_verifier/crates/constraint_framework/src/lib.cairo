@@ -148,9 +148,12 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
         preprocessed_columns: Span<PreprocessedColumn>,
     ) -> PreprocessedMaskValues {
         let mut values: Felt252Dict<Nullable<QM31>> = Default::default();
+        println!("preprocessed_columns: {:?}", preprocessed_columns.len());
+        println!("preprocessed_mask_values: {:?}", preprocessed_mask_values.len());
 
         for preprocessed_column in preprocessed_columns {
             let mut column_mask_values = *preprocessed_mask_values.pop_front().unwrap();
+            println!("preprocessed_column: {:?}, column_mask_values: {:?}", preprocessed_column, column_mask_values.len());
 
             if let Some(mask_value) = column_mask_values.pop_front() {
                 values
@@ -163,6 +166,7 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
                 assert!(column_mask_values.is_empty());
             }
         }
+        println!("after everything: {:?}", preprocessed_mask_values.len());
 
         assert!(preprocessed_mask_values.is_empty());
 
@@ -200,6 +204,7 @@ pub enum PreprocessedColumn {
     RangeCheck4: ([u32; 4], usize),
     RangeCheck3: ([u32; 3], usize),
     RangeCheck2: ([u32; 2], usize),
+    RangeCheck1: ([u32; 1], usize),
     /// Poseidon round keys of the form `(column_index)`.
     PoseidonRoundKeys: usize,
     /// Blake2s sigma column.
@@ -236,6 +241,7 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
             PreprocessedColumn::RangeCheck4((values, _)) => range_check_size(values),
             PreprocessedColumn::RangeCheck3((values, _)) => range_check_size(values),
             PreprocessedColumn::RangeCheck2((values, _)) => range_check_size(values),
+            PreprocessedColumn::RangeCheck1((values, _)) => range_check_size(values),
             PreprocessedColumn::PoseidonRoundKeys(_) => 6,
             PreprocessedColumn::BlakeSigma(_) => 4,
             PreprocessedColumn::PedersenPoints(_) => 23,
@@ -265,15 +271,16 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         const AND_DISCRIMINANT: felt252 = 1;
         const NOT_DISCRIMINANT: felt252 = 2;
         const SEQ_TABLE_DISCRIMINANT: felt252 = 3;
-        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 4;
-        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 5;
-        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 6;
-        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 7;
-        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 8;
-        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 9;
-        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 10;
-        const SHA256_SIGMA_TABLE_DISCRIMINANT: felt252 = 11;
-        const SHA256_K_DISCRIMINANT: felt252 = 12;
+        const RANGE_CHECK_1_DISCRIMINANT: felt252 = 4;
+        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 5;
+        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 6;
+        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 7;
+        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 8;
+        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 9;
+        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 10;
+        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 11;
+        const SHA256_SIGMA_TABLE_DISCRIMINANT: felt252 = 12;
+        const SHA256_K_DISCRIMINANT: felt252 = 13;
 
         match key {
             PreprocessedColumn::BitwiseXor((
@@ -317,6 +324,9 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
             PreprocessedColumn::RangeCheck2((
                 values, column_index,
             )) => range_check_encode(values, *column_index, RANGE_CHECK_2_DISCRIMINANT),
+            PreprocessedColumn::RangeCheck1((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_1_DISCRIMINANT),
             PreprocessedColumn::PoseidonRoundKeys(column_index) => {
                 let mut res = (*column_index).into();
                 res = res * FELT252_2_POW_32 + POSEIDON_ROUND_KEYS_DISCRIMINANT;

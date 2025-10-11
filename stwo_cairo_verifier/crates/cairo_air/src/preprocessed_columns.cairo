@@ -1,3 +1,4 @@
+use stwo_constraint_framework::Sha256SigmaType;
 use core::box::BoxImpl;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl, PreprocessedColumnKey,
@@ -9,7 +10,7 @@ use stwo_verifier_core::Hash;
 // https://github.com/starkware-libs/stwo-cairo/blame/175026d/stwo_cairo_prover/crates/cairo-air/src/preprocessed.rs#L42
 #[cairofmt::skip]
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
+pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 205] = [
     PreprocessedColumn::Seq(25),
     PreprocessedColumn::Seq(24),
     PreprocessedColumn::Seq(23),
@@ -75,6 +76,12 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
     PreprocessedColumn::BitwiseXor((10, 0)),
     PreprocessedColumn::BitwiseXor((10, 1)),
     PreprocessedColumn::BitwiseXor((10, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 5)),
     PreprocessedColumn::Seq(19),
     PreprocessedColumn::Seq(18),
     PreprocessedColumn::BitwiseXor((9, 0)),
@@ -91,10 +98,37 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
     PreprocessedColumn::BitwiseXor((8, 0)),
     PreprocessedColumn::BitwiseXor((8, 1)),
     PreprocessedColumn::BitwiseXor((8, 2)),
+    PreprocessedColumn::BitwiseAnd((8, 0)),
+    PreprocessedColumn::BitwiseAnd((8, 1)),
+    PreprocessedColumn::BitwiseAnd((8, 2)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 5)),
     PreprocessedColumn::Seq(15),
     PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)),
     PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)),
@@ -110,6 +144,12 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
     PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)),
     PreprocessedColumn::Seq(13),
     PreprocessedColumn::Seq(12),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 5)),
     PreprocessedColumn::Seq(11),
     PreprocessedColumn::Seq(10),
     PreprocessedColumn::Seq(9),
@@ -155,8 +195,11 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 163] = [
     PreprocessedColumn::PoseidonRoundKeys(27),
     PreprocessedColumn::PoseidonRoundKeys(28),
     PreprocessedColumn::PoseidonRoundKeys(29),
+    PreprocessedColumn::Sha256K(0),
+    PreprocessedColumn::Sha256K(1),
     PreprocessedColumn::Seq(5),
     PreprocessedColumn::Seq(4),
+    PreprocessedColumn::RangeCheck1(([2], 0)),
     PreprocessedColumn::BlakeSigma(0),
     PreprocessedColumn::BlakeSigma(1),
     PreprocessedColumn::BlakeSigma(2),
@@ -189,6 +232,12 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 107] = [
     PreprocessedColumn::BitwiseXor((10, 0)),
     PreprocessedColumn::BitwiseXor((10, 1)),
     PreprocessedColumn::BitwiseXor((10, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O1, 5)),
     PreprocessedColumn::Seq(19),
     PreprocessedColumn::Seq(18),
     PreprocessedColumn::BitwiseXor((9, 0)),
@@ -205,10 +254,37 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 107] = [
     PreprocessedColumn::BitwiseXor((8, 0)),
     PreprocessedColumn::BitwiseXor((8, 1)),
     PreprocessedColumn::BitwiseXor((8, 2)),
+    PreprocessedColumn::BitwiseAnd((8, 0)),
+    PreprocessedColumn::BitwiseAnd((8, 1)),
+    PreprocessedColumn::BitwiseAnd((8, 2)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)),
     PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O0, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma0O1, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O0, 5)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::BigSigma1O1, 5)),
     PreprocessedColumn::Seq(15),
     PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 0)),
     PreprocessedColumn::RangeCheck5(([3, 3, 3, 3, 3], 1)),
@@ -224,6 +300,12 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 107] = [
     PreprocessedColumn::RangeCheck3(([7, 2, 5], 2)),
     PreprocessedColumn::Seq(13),
     PreprocessedColumn::Seq(12),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 0)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 1)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 2)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 3)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 4)),
+    PreprocessedColumn::Sha256SigmaTable((Sha256SigmaType::SmallSigma1O0, 5)),
     PreprocessedColumn::Seq(11),
     PreprocessedColumn::Seq(10),
     PreprocessedColumn::Seq(9),
@@ -269,8 +351,11 @@ pub const PREPROCESSED_COLUMNS: [PreprocessedColumn; 107] = [
     PreprocessedColumn::PoseidonRoundKeys(27),
     PreprocessedColumn::PoseidonRoundKeys(28),
     PreprocessedColumn::PoseidonRoundKeys(29),
+    PreprocessedColumn::Sha256K(0),
+    PreprocessedColumn::Sha256K(1),
     PreprocessedColumn::Seq(5),
     PreprocessedColumn::Seq(4),
+    PreprocessedColumn::RangeCheck1(([2], 0)),
     PreprocessedColumn::BlakeSigma(0),
     PreprocessedColumn::BlakeSigma(1),
     PreprocessedColumn::BlakeSigma(2),
@@ -297,35 +382,33 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x2dfd14ec, 0x7c48b36c, 0x4f5dae20, 0x17a6a4f0, 0x4e22f1d4, 0x78b9e538,
-                    0x9663ec6e, 0x44897b38,
+                    0x14944662, 0x267d434d, 0x05d32fd8, 0xb4d388ad, 0xd32bbbe4, 0x74048557, 0x7233be5e, 0x41baabc9
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x9863e682, 0x05b66874, 0xf593e42b, 0x4664128b, 0x1862908a, 0x3591e696,
-                    0x72e6f558, 0x57666308,
+                    0x66891113, 0x12739252, 0x9c6ca755, 0x01cd8045, 0xb055251b, 0x075979e3, 0x6bdc12dc, 0x037677a6
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xffdf2d46, 0xf44eb263, 0x9fc5d93f, 0xb09a4636, 0x2625c85a, 0x99829bae,
-                    0x95a17f33, 0x3ef3a82a,
+                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af, 0x6edb7ed1, 0x22fe3052
                 ],
             ),
         },
         3 => Hash {
+            // TODO: update that
             hash: BoxImpl::new(
                 [
-                    0x353a220f, 0xc20b3627, 0xbb2d9cf6, 0xc9d11911, 0x4ad93a63, 0x57e6f3d0,
-                    0x31fc9cc0, 0x7de243e1,
+                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af, 0x6edb7ed1, 0x22fe3052
                 ],
             ),
         },
+        // TODO: update that
         4 => Hash {
             hash: BoxImpl::new(
                 [
@@ -342,10 +425,10 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
 #[cfg(feature: "poseidon252_verifier")]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x29c5f6e13459cfe5f189b6ff5b9d9da1de7c781dec033772673cb41a647c719,
-        1 => 0x68a80becb400ab6d6b49e2e65bf88f1819eab888f3b664203c7de6be2db1d35,
-        2 => 0xee62e9ae477f02e3c90017f4cafb07f072218bffcff4a8d7ab3e2805778ea8,
-        3 => 0x1658485ba36b85580fe2f79c5b2a755503fcf55e19e81567fc7d5405616423f,
+        0 => 0x1e4d273e41f78f2b04ce2f5150cc7ffb5f7737b7314d15962296d396cb3c4c49,
+        1 => 0xe422c4f5b2859d8db4709ecd7b3210f31ac9bcf725b54a12929a3e2b09981c68,
+        2 => 0x14b2d62bbd217807ef2d3ee832f3edcd9ea446f30e1ef47e1d711249d3004cdd,
+        3 => 0x42f891eba0321f3cafebcad660e0cd2e9142c99a457a4fc4c5927ef46433e2b3,
         4 => 0x40012feeab5b2d2eb7588681987838792e44f34b4ed2db755ec4fbe47795a1c,
         _ => panic!("invalid blowup factor"),
     }
