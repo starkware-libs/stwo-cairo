@@ -1,3 +1,4 @@
+use Sha256SigmaType::SmallSigma0O0;
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use core::num::traits::One;
@@ -241,7 +242,20 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
             PreprocessedColumn::PoseidonRoundKeys(_) => 6,
             PreprocessedColumn::BlakeSigma(_) => 4,
             PreprocessedColumn::PedersenPoints(_) => 23,
-            PreprocessedColumn::Sha256SigmaTable(_) => 21,
+            PreprocessedColumn::Sha256SigmaTable((
+                sigma_type, _,
+            )) => {
+                match sigma_type {
+                    Sha256SigmaType::SmallSigma0O0 => 16,
+                    Sha256SigmaType::SmallSigma0O1 => 16,
+                    Sha256SigmaType::SmallSigma1O0 => 12,
+                    Sha256SigmaType::SmallSigma1O1 => 20,
+                    Sha256SigmaType::BigSigma0O0 => 16,
+                    Sha256SigmaType::BigSigma0O1 => 16,
+                    Sha256SigmaType::BigSigma1O0 => 16,
+                    Sha256SigmaType::BigSigma1O1 => 16,
+                }
+            },
             PreprocessedColumn::Sha256K(_) => 6,
         }
     }

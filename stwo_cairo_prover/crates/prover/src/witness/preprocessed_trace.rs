@@ -52,12 +52,20 @@ fn test_canonical_preprocessed_root_regression() {
             i,
             PreProcessedTraceVariant::Canonical,
         );
-        println!("cannonical_root: {:?}", cannonical_root.0.array_chunks::<4>().map(|&bytes| format!("{:#010x}", u32::from_be_bytes(bytes))).collect::<Vec<_>>().join(", "));
-        let cannonical_root = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
+        println!(
+            "cannonical_root: {:?}",
+            cannonical_root
+                .0
+                .array_chunks::<4>()
+                .map(|&bytes| format!("0x{:x}", u32::from_le_bytes(bytes)))
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+        let no_pedersen = generate_preprocessed_commitment_root::<Blake2sMerkleChannel>(
             i,
             PreProcessedTraceVariant::CanonicalWithoutPedersen,
         );
-        println!("no pedersen: {:x?}", cannonical_root);
+        println!("0x{:?}", hex::encode(no_pedersen.0));
     });
     let expected = Blake2sHash::from(
         hex::decode("624694144d437d26d82fd305ad88d3b4e4bb2bd3578504745ebe3372c9abba41")

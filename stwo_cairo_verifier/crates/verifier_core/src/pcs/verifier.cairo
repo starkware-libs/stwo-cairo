@@ -141,7 +141,6 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             // The Merkle implementation pops values from the query position dict so it has to
             // be duplicated.
             let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
-            println!("decommitment {:?}", decommitment);
 
             tree.verify(query_positions, *queried_values, decommitment);
         }
