@@ -1,8 +1,7 @@
-use stwo_constraint_framework::Sha256SigmaType;
 use core::box::BoxImpl;
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedColumn, PreprocessedColumnImpl, PreprocessedColumnKey,
-    PreprocessedMaskValuesImpl,
+    PreprocessedMaskValuesImpl, Sha256SigmaType,
 };
 use stwo_verifier_core::Hash;
 // IMPORTANT: This function must exactly match the output and ordering of the prover preprocessed
@@ -406,33 +405,35 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x14944662, 0x267d434d, 0x5d32fd8, 0xb4d388ad, 0xd32bbbe4, 0x74048557, 0x7233be5e, 0x41baabc9,
+                    0x14944662, 0x267d434d, 0x5d32fd8, 0xb4d388ad, 0xd32bbbe4, 0x74048557,
+                    0x7233be5e, 0x41baabc9,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                   0x66891113, 0x12739252, 0x9c6ca755, 0x1cd8045, 0xb055251b, 0x75979e3, 0x6bdc12dc, 0x37677a6,
+                    0x66891113, 0x12739252, 0x9c6ca755, 0x1cd8045, 0xb055251b, 0x75979e3,
+                    0x6bdc12dc, 0x37677a6,
                 ],
             ),
         },
         2 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af, 0x6edb7ed1, 0x22fe3052
+                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af,
+                    0x6edb7ed1, 0x22fe3052,
                 ],
             ),
         },
         3 => Hash {
-            // TODO: update that
             hash: BoxImpl::new(
                 [
-                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af, 0x6edb7ed1, 0x22fe3052
+                    0x87098c3b, 0xefe18c1c, 0xc8708f51, 0x7fdae3e6, 0xd03b9fe9, 0xcb5ad0af,
+                    0x6edb7ed1, 0x22fe3052,
                 ],
             ),
         },
-        // TODO: update that
         4 => Hash {
             hash: BoxImpl::new(
                 [
@@ -449,10 +450,10 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
 #[cfg(feature: "poseidon252_verifier")]
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x1e4d273e41f78f2b04ce2f5150cc7ffb5f7737b7314d15962296d396cb3c4c49,
-        1 => 0xe422c4f5b2859d8db4709ecd7b3210f31ac9bcf725b54a12929a3e2b09981c68,
-        2 => 0x14b2d62bbd217807ef2d3ee832f3edcd9ea446f30e1ef47e1d711249d3004cdd,
-        3 => 0x42f891eba0321f3cafebcad660e0cd2e9142c99a457a4fc4c5927ef46433e2b3,
+        0 => 0xe422c4f5b2859d8db4709ecd7b3210f31ac9bcf725b54a12929a3e2b09981c68,
+        1 => 0x14b2d62bbd217807ef2d3ee832f3edcd9ea446f30e1ef47e1d711249d3004cdd,
+        2 => 0x42f891eba0321f3cafebcad660e0cd2e9142c99a457a4fc4c5927ef46433e2b3,
+        3 => 0x40012feeab5b2d2eb7588681987838792e44f34b4ed2db755ec4fbe47795a1c,
         4 => 0x40012feeab5b2d2eb7588681987838792e44f34b4ed2db755ec4fbe47795a1c,
         _ => panic!("invalid blowup factor"),
     }

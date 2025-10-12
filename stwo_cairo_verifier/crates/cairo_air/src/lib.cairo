@@ -584,10 +584,10 @@ pub struct PublicSegmentRanges {
     pub ec_op: SegmentRange,
     pub keccak: SegmentRange,
     pub poseidon: SegmentRange,
+    pub sha256: SegmentRange,
     pub range_check_96: SegmentRange,
     pub add_mod: SegmentRange,
     pub mul_mod: SegmentRange,
-    pub sha256: SegmentRange,
 }
 
 #[generate_trait]

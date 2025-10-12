@@ -1,7 +1,7 @@
 // AIR version 52ac7695-dirty
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((64));
+pub const N_TRACE_COLUMNS: usize = 1;const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((6));
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -129,8 +129,6 @@ sha256k_1
 }
 
 
-
-
 fn lookup_constraints(
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
@@ -148,7 +146,6 @@ fn lookup_constraints(
 let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
 let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
 let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
-
 
     core::internal::revoke_ap_tracking();
 

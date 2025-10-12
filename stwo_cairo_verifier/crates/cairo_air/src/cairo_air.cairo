@@ -164,10 +164,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
                 self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
                 self.blake_context.log_sizes(), self.builtins.log_sizes(),
                 self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
-                self.verify_bitwise_xor_9.log_sizes(), self.verify_bitwise_and_8.log_sizes(),
+                self.sha256_context.log_sizes(), self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(), self.range_checks.log_sizes(),
+                self.verify_bitwise_xor_4.log_sizes(), self.verify_bitwise_xor_7.log_sizes(),
+                self.verify_bitwise_xor_8.log_sizes(), self.verify_bitwise_xor_9.log_sizes(),
+                self.verify_bitwise_and_8.log_sizes(),
             ],
         );
 
