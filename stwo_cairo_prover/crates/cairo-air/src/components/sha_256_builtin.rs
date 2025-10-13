@@ -1,4 +1,4 @@
-// AIR version ffcad354-dirty
+// AIR version 96541c91-dirty
 use crate::components::prelude::*;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
@@ -100,6 +100,7 @@ impl FrameworkEval for Eval {
         let M31_3 = E::F::from(M31::from(3));
         let M31_30 = E::F::from(M31::from(30));
         let M31_31 = E::F::from(M31::from(31));
+        let M31_32 = E::F::from(M31::from(32));
         let M31_4 = E::F::from(M31::from(4));
         let M31_5 = E::F::from(M31::from(5));
         let M31_6 = E::F::from(M31::from(6));
@@ -113,145 +114,145 @@ impl FrameworkEval for Eval {
         let low_7_ms_bits_col2 = eval.next_trace_mask();
         let high_14_ms_bits_col3 = eval.next_trace_mask();
         let high_5_ms_bits_col4 = eval.next_trace_mask();
-        let input_0_id_col5 = eval.next_trace_mask();
+        let state_0_id_col5 = eval.next_trace_mask();
         let low_16_bits_col6 = eval.next_trace_mask();
         let high_16_bits_col7 = eval.next_trace_mask();
         let low_7_ms_bits_col8 = eval.next_trace_mask();
         let high_14_ms_bits_col9 = eval.next_trace_mask();
         let high_5_ms_bits_col10 = eval.next_trace_mask();
-        let input_1_id_col11 = eval.next_trace_mask();
+        let state_1_id_col11 = eval.next_trace_mask();
         let low_16_bits_col12 = eval.next_trace_mask();
         let high_16_bits_col13 = eval.next_trace_mask();
         let low_7_ms_bits_col14 = eval.next_trace_mask();
         let high_14_ms_bits_col15 = eval.next_trace_mask();
         let high_5_ms_bits_col16 = eval.next_trace_mask();
-        let input_2_id_col17 = eval.next_trace_mask();
+        let state_2_id_col17 = eval.next_trace_mask();
         let low_16_bits_col18 = eval.next_trace_mask();
         let high_16_bits_col19 = eval.next_trace_mask();
         let low_7_ms_bits_col20 = eval.next_trace_mask();
         let high_14_ms_bits_col21 = eval.next_trace_mask();
         let high_5_ms_bits_col22 = eval.next_trace_mask();
-        let input_3_id_col23 = eval.next_trace_mask();
+        let state_3_id_col23 = eval.next_trace_mask();
         let low_16_bits_col24 = eval.next_trace_mask();
         let high_16_bits_col25 = eval.next_trace_mask();
         let low_7_ms_bits_col26 = eval.next_trace_mask();
         let high_14_ms_bits_col27 = eval.next_trace_mask();
         let high_5_ms_bits_col28 = eval.next_trace_mask();
-        let input_4_id_col29 = eval.next_trace_mask();
+        let state_4_id_col29 = eval.next_trace_mask();
         let low_16_bits_col30 = eval.next_trace_mask();
         let high_16_bits_col31 = eval.next_trace_mask();
         let low_7_ms_bits_col32 = eval.next_trace_mask();
         let high_14_ms_bits_col33 = eval.next_trace_mask();
         let high_5_ms_bits_col34 = eval.next_trace_mask();
-        let input_5_id_col35 = eval.next_trace_mask();
+        let state_5_id_col35 = eval.next_trace_mask();
         let low_16_bits_col36 = eval.next_trace_mask();
         let high_16_bits_col37 = eval.next_trace_mask();
         let low_7_ms_bits_col38 = eval.next_trace_mask();
         let high_14_ms_bits_col39 = eval.next_trace_mask();
         let high_5_ms_bits_col40 = eval.next_trace_mask();
-        let input_6_id_col41 = eval.next_trace_mask();
+        let state_6_id_col41 = eval.next_trace_mask();
         let low_16_bits_col42 = eval.next_trace_mask();
         let high_16_bits_col43 = eval.next_trace_mask();
         let low_7_ms_bits_col44 = eval.next_trace_mask();
         let high_14_ms_bits_col45 = eval.next_trace_mask();
         let high_5_ms_bits_col46 = eval.next_trace_mask();
-        let input_7_id_col47 = eval.next_trace_mask();
+        let state_7_id_col47 = eval.next_trace_mask();
         let low_16_bits_col48 = eval.next_trace_mask();
         let high_16_bits_col49 = eval.next_trace_mask();
         let low_7_ms_bits_col50 = eval.next_trace_mask();
         let high_14_ms_bits_col51 = eval.next_trace_mask();
         let high_5_ms_bits_col52 = eval.next_trace_mask();
-        let input_0_id_col53 = eval.next_trace_mask();
+        let block_0_id_col53 = eval.next_trace_mask();
         let low_16_bits_col54 = eval.next_trace_mask();
         let high_16_bits_col55 = eval.next_trace_mask();
         let low_7_ms_bits_col56 = eval.next_trace_mask();
         let high_14_ms_bits_col57 = eval.next_trace_mask();
         let high_5_ms_bits_col58 = eval.next_trace_mask();
-        let input_1_id_col59 = eval.next_trace_mask();
+        let block_1_id_col59 = eval.next_trace_mask();
         let low_16_bits_col60 = eval.next_trace_mask();
         let high_16_bits_col61 = eval.next_trace_mask();
         let low_7_ms_bits_col62 = eval.next_trace_mask();
         let high_14_ms_bits_col63 = eval.next_trace_mask();
         let high_5_ms_bits_col64 = eval.next_trace_mask();
-        let input_2_id_col65 = eval.next_trace_mask();
+        let block_2_id_col65 = eval.next_trace_mask();
         let low_16_bits_col66 = eval.next_trace_mask();
         let high_16_bits_col67 = eval.next_trace_mask();
         let low_7_ms_bits_col68 = eval.next_trace_mask();
         let high_14_ms_bits_col69 = eval.next_trace_mask();
         let high_5_ms_bits_col70 = eval.next_trace_mask();
-        let input_3_id_col71 = eval.next_trace_mask();
+        let block_3_id_col71 = eval.next_trace_mask();
         let low_16_bits_col72 = eval.next_trace_mask();
         let high_16_bits_col73 = eval.next_trace_mask();
         let low_7_ms_bits_col74 = eval.next_trace_mask();
         let high_14_ms_bits_col75 = eval.next_trace_mask();
         let high_5_ms_bits_col76 = eval.next_trace_mask();
-        let input_4_id_col77 = eval.next_trace_mask();
+        let block_4_id_col77 = eval.next_trace_mask();
         let low_16_bits_col78 = eval.next_trace_mask();
         let high_16_bits_col79 = eval.next_trace_mask();
         let low_7_ms_bits_col80 = eval.next_trace_mask();
         let high_14_ms_bits_col81 = eval.next_trace_mask();
         let high_5_ms_bits_col82 = eval.next_trace_mask();
-        let input_5_id_col83 = eval.next_trace_mask();
+        let block_5_id_col83 = eval.next_trace_mask();
         let low_16_bits_col84 = eval.next_trace_mask();
         let high_16_bits_col85 = eval.next_trace_mask();
         let low_7_ms_bits_col86 = eval.next_trace_mask();
         let high_14_ms_bits_col87 = eval.next_trace_mask();
         let high_5_ms_bits_col88 = eval.next_trace_mask();
-        let input_6_id_col89 = eval.next_trace_mask();
+        let block_6_id_col89 = eval.next_trace_mask();
         let low_16_bits_col90 = eval.next_trace_mask();
         let high_16_bits_col91 = eval.next_trace_mask();
         let low_7_ms_bits_col92 = eval.next_trace_mask();
         let high_14_ms_bits_col93 = eval.next_trace_mask();
         let high_5_ms_bits_col94 = eval.next_trace_mask();
-        let input_7_id_col95 = eval.next_trace_mask();
+        let block_7_id_col95 = eval.next_trace_mask();
         let low_16_bits_col96 = eval.next_trace_mask();
         let high_16_bits_col97 = eval.next_trace_mask();
         let low_7_ms_bits_col98 = eval.next_trace_mask();
         let high_14_ms_bits_col99 = eval.next_trace_mask();
         let high_5_ms_bits_col100 = eval.next_trace_mask();
-        let input_8_id_col101 = eval.next_trace_mask();
+        let block_8_id_col101 = eval.next_trace_mask();
         let low_16_bits_col102 = eval.next_trace_mask();
         let high_16_bits_col103 = eval.next_trace_mask();
         let low_7_ms_bits_col104 = eval.next_trace_mask();
         let high_14_ms_bits_col105 = eval.next_trace_mask();
         let high_5_ms_bits_col106 = eval.next_trace_mask();
-        let input_9_id_col107 = eval.next_trace_mask();
+        let block_9_id_col107 = eval.next_trace_mask();
         let low_16_bits_col108 = eval.next_trace_mask();
         let high_16_bits_col109 = eval.next_trace_mask();
         let low_7_ms_bits_col110 = eval.next_trace_mask();
         let high_14_ms_bits_col111 = eval.next_trace_mask();
         let high_5_ms_bits_col112 = eval.next_trace_mask();
-        let input_10_id_col113 = eval.next_trace_mask();
+        let block_10_id_col113 = eval.next_trace_mask();
         let low_16_bits_col114 = eval.next_trace_mask();
         let high_16_bits_col115 = eval.next_trace_mask();
         let low_7_ms_bits_col116 = eval.next_trace_mask();
         let high_14_ms_bits_col117 = eval.next_trace_mask();
         let high_5_ms_bits_col118 = eval.next_trace_mask();
-        let input_11_id_col119 = eval.next_trace_mask();
+        let block_11_id_col119 = eval.next_trace_mask();
         let low_16_bits_col120 = eval.next_trace_mask();
         let high_16_bits_col121 = eval.next_trace_mask();
         let low_7_ms_bits_col122 = eval.next_trace_mask();
         let high_14_ms_bits_col123 = eval.next_trace_mask();
         let high_5_ms_bits_col124 = eval.next_trace_mask();
-        let input_12_id_col125 = eval.next_trace_mask();
+        let block_12_id_col125 = eval.next_trace_mask();
         let low_16_bits_col126 = eval.next_trace_mask();
         let high_16_bits_col127 = eval.next_trace_mask();
         let low_7_ms_bits_col128 = eval.next_trace_mask();
         let high_14_ms_bits_col129 = eval.next_trace_mask();
         let high_5_ms_bits_col130 = eval.next_trace_mask();
-        let input_13_id_col131 = eval.next_trace_mask();
+        let block_13_id_col131 = eval.next_trace_mask();
         let low_16_bits_col132 = eval.next_trace_mask();
         let high_16_bits_col133 = eval.next_trace_mask();
         let low_7_ms_bits_col134 = eval.next_trace_mask();
         let high_14_ms_bits_col135 = eval.next_trace_mask();
         let high_5_ms_bits_col136 = eval.next_trace_mask();
-        let input_14_id_col137 = eval.next_trace_mask();
+        let block_14_id_col137 = eval.next_trace_mask();
         let low_16_bits_col138 = eval.next_trace_mask();
         let high_16_bits_col139 = eval.next_trace_mask();
         let low_7_ms_bits_col140 = eval.next_trace_mask();
         let high_14_ms_bits_col141 = eval.next_trace_mask();
         let high_5_ms_bits_col142 = eval.next_trace_mask();
-        let input_15_id_col143 = eval.next_trace_mask();
+        let block_15_id_col143 = eval.next_trace_mask();
         let sha_256_round_output_limb_0_col144 = eval.next_trace_mask();
         let sha_256_round_output_limb_1_col145 = eval.next_trace_mask();
         let sha_256_round_output_limb_2_col146 = eval.next_trace_mask();
@@ -336,14 +337,14 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 (E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone())),
+                    + (seq.clone() * M31_32.clone())),
             ],
             low_16_bits_col0.clone(),
             high_16_bits_col1.clone(),
             low_7_ms_bits_col2.clone(),
             high_14_ms_bits_col3.clone(),
             high_5_ms_bits_col4.clone(),
-            input_0_id_col5.clone(),
+            state_0_id_col5.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -352,7 +353,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_1.clone()),
             ],
             low_16_bits_col6.clone(),
@@ -360,7 +361,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col8.clone(),
             high_14_ms_bits_col9.clone(),
             high_5_ms_bits_col10.clone(),
-            input_1_id_col11.clone(),
+            state_1_id_col11.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -369,7 +370,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_2.clone()),
             ],
             low_16_bits_col12.clone(),
@@ -377,7 +378,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col14.clone(),
             high_14_ms_bits_col15.clone(),
             high_5_ms_bits_col16.clone(),
-            input_2_id_col17.clone(),
+            state_2_id_col17.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -386,7 +387,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_3.clone()),
             ],
             low_16_bits_col18.clone(),
@@ -394,7 +395,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col20.clone(),
             high_14_ms_bits_col21.clone(),
             high_5_ms_bits_col22.clone(),
-            input_3_id_col23.clone(),
+            state_3_id_col23.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -403,7 +404,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_4.clone()),
             ],
             low_16_bits_col24.clone(),
@@ -411,7 +412,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col26.clone(),
             high_14_ms_bits_col27.clone(),
             high_5_ms_bits_col28.clone(),
-            input_4_id_col29.clone(),
+            state_4_id_col29.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -420,7 +421,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_5.clone()),
             ],
             low_16_bits_col30.clone(),
@@ -428,7 +429,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col32.clone(),
             high_14_ms_bits_col33.clone(),
             high_5_ms_bits_col34.clone(),
-            input_5_id_col35.clone(),
+            state_5_id_col35.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -437,7 +438,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_6.clone()),
             ],
             low_16_bits_col36.clone(),
@@ -445,7 +446,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col38.clone(),
             high_14_ms_bits_col39.clone(),
             high_5_ms_bits_col40.clone(),
-            input_6_id_col41.clone(),
+            state_6_id_col41.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -454,7 +455,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_7.clone()),
             ],
             low_16_bits_col42.clone(),
@@ -462,7 +463,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col44.clone(),
             high_14_ms_bits_col45.clone(),
             high_5_ms_bits_col46.clone(),
-            input_7_id_col47.clone(),
+            state_7_id_col47.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -471,7 +472,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_8.clone()),
             ],
             low_16_bits_col48.clone(),
@@ -479,7 +480,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col50.clone(),
             high_14_ms_bits_col51.clone(),
             high_5_ms_bits_col52.clone(),
-            input_0_id_col53.clone(),
+            block_0_id_col53.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -488,7 +489,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_9.clone()),
             ],
             low_16_bits_col54.clone(),
@@ -496,7 +497,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col56.clone(),
             high_14_ms_bits_col57.clone(),
             high_5_ms_bits_col58.clone(),
-            input_1_id_col59.clone(),
+            block_1_id_col59.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -505,7 +506,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_10.clone()),
             ],
             low_16_bits_col60.clone(),
@@ -513,7 +514,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col62.clone(),
             high_14_ms_bits_col63.clone(),
             high_5_ms_bits_col64.clone(),
-            input_2_id_col65.clone(),
+            block_2_id_col65.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -522,7 +523,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_11.clone()),
             ],
             low_16_bits_col66.clone(),
@@ -530,7 +531,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col68.clone(),
             high_14_ms_bits_col69.clone(),
             high_5_ms_bits_col70.clone(),
-            input_3_id_col71.clone(),
+            block_3_id_col71.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -539,7 +540,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_12.clone()),
             ],
             low_16_bits_col72.clone(),
@@ -547,7 +548,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col74.clone(),
             high_14_ms_bits_col75.clone(),
             high_5_ms_bits_col76.clone(),
-            input_4_id_col77.clone(),
+            block_4_id_col77.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -556,7 +557,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_13.clone()),
             ],
             low_16_bits_col78.clone(),
@@ -564,7 +565,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col80.clone(),
             high_14_ms_bits_col81.clone(),
             high_5_ms_bits_col82.clone(),
-            input_5_id_col83.clone(),
+            block_5_id_col83.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -573,7 +574,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_14.clone()),
             ],
             low_16_bits_col84.clone(),
@@ -581,7 +582,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col86.clone(),
             high_14_ms_bits_col87.clone(),
             high_5_ms_bits_col88.clone(),
-            input_6_id_col89.clone(),
+            block_6_id_col89.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -590,7 +591,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_15.clone()),
             ],
             low_16_bits_col90.clone(),
@@ -598,7 +599,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col92.clone(),
             high_14_ms_bits_col93.clone(),
             high_5_ms_bits_col94.clone(),
-            input_7_id_col95.clone(),
+            block_7_id_col95.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -607,7 +608,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_16.clone()),
             ],
             low_16_bits_col96.clone(),
@@ -615,7 +616,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col98.clone(),
             high_14_ms_bits_col99.clone(),
             high_5_ms_bits_col100.clone(),
-            input_8_id_col101.clone(),
+            block_8_id_col101.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -624,7 +625,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_17.clone()),
             ],
             low_16_bits_col102.clone(),
@@ -632,7 +633,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col104.clone(),
             high_14_ms_bits_col105.clone(),
             high_5_ms_bits_col106.clone(),
-            input_9_id_col107.clone(),
+            block_9_id_col107.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -641,7 +642,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_18.clone()),
             ],
             low_16_bits_col108.clone(),
@@ -649,7 +650,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col110.clone(),
             high_14_ms_bits_col111.clone(),
             high_5_ms_bits_col112.clone(),
-            input_10_id_col113.clone(),
+            block_10_id_col113.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -658,7 +659,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_19.clone()),
             ],
             low_16_bits_col114.clone(),
@@ -666,7 +667,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col116.clone(),
             high_14_ms_bits_col117.clone(),
             high_5_ms_bits_col118.clone(),
-            input_11_id_col119.clone(),
+            block_11_id_col119.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -675,7 +676,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_20.clone()),
             ],
             low_16_bits_col120.clone(),
@@ -683,7 +684,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col122.clone(),
             high_14_ms_bits_col123.clone(),
             high_5_ms_bits_col124.clone(),
-            input_12_id_col125.clone(),
+            block_12_id_col125.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -692,7 +693,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_21.clone()),
             ],
             low_16_bits_col126.clone(),
@@ -700,7 +701,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col128.clone(),
             high_14_ms_bits_col129.clone(),
             high_5_ms_bits_col130.clone(),
-            input_13_id_col131.clone(),
+            block_13_id_col131.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -709,7 +710,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_22.clone()),
             ],
             low_16_bits_col132.clone(),
@@ -717,7 +718,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col134.clone(),
             high_14_ms_bits_col135.clone(),
             high_5_ms_bits_col136.clone(),
-            input_14_id_col137.clone(),
+            block_14_id_col137.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -726,7 +727,7 @@ impl FrameworkEval for Eval {
         ReadBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_23.clone()),
             ],
             low_16_bits_col138.clone(),
@@ -734,7 +735,7 @@ impl FrameworkEval for Eval {
             low_7_ms_bits_col140.clone(),
             high_14_ms_bits_col141.clone(),
             high_5_ms_bits_col142.clone(),
-            input_15_id_col143.clone(),
+            block_15_id_col143.clone(),
             &self.range_check_7_2_5_lookup_elements,
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
@@ -857,7 +858,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_24.clone()),
                 sha_256_round_output_limb_0_col144.clone(),
                 sha_256_round_output_limb_1_col145.clone(),
@@ -874,7 +875,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_25.clone()),
                 sha_256_round_output_limb_2_col146.clone(),
                 sha_256_round_output_limb_3_col147.clone(),
@@ -891,7 +892,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_26.clone()),
                 sha_256_round_output_limb_4_col148.clone(),
                 sha_256_round_output_limb_5_col149.clone(),
@@ -908,7 +909,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_27.clone()),
                 sha_256_round_output_limb_6_col150.clone(),
                 sha_256_round_output_limb_7_col151.clone(),
@@ -925,7 +926,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_28.clone()),
                 sha_256_round_output_limb_8_col152.clone(),
                 sha_256_round_output_limb_9_col153.clone(),
@@ -942,7 +943,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_29.clone()),
                 sha_256_round_output_limb_10_col154.clone(),
                 sha_256_round_output_limb_11_col155.clone(),
@@ -959,7 +960,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_30.clone()),
                 sha_256_round_output_limb_12_col156.clone(),
                 sha_256_round_output_limb_13_col157.clone(),
@@ -976,7 +977,7 @@ impl FrameworkEval for Eval {
         VerifyBlakeWord::evaluate(
             [
                 ((E::F::from(M31::from(self.claim.sha256_builtin_segment_start))
-                    + (seq.clone() * M31_24.clone()))
+                    + (seq.clone() * M31_32.clone()))
                     + M31_31.clone()),
                 sha_256_round_output_limb_14_col158.clone(),
                 sha_256_round_output_limb_15_col159.clone(),

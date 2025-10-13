@@ -1,4 +1,4 @@
-// AIR version ffcad354-dirty
+// AIR version 96541c91-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
@@ -200,7 +200,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_0 = memory_address_to_id_state
                     .deduce_output(
                         ((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24))),
+                            + ((seq) * (M31_32))),
                     );
                 let memory_id_to_big_value_tmp_d65f0_1 =
                     memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_d65f0_0);
@@ -250,22 +250,22 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_7 = memory_address_to_id_state
                     .deduce_output(
                         ((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24))),
+                            + ((seq) * (M31_32))),
                     );
-                let input_0_id_col5 = memory_address_to_id_value_tmp_d65f0_7;
-                *row[5] = input_0_id_col5;
+                let state_0_id_col5 = memory_address_to_id_value_tmp_d65f0_7;
+                *row[5] = state_0_id_col5;
                 *sub_component_inputs.memory_address_to_id[0] =
                     ((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)));
+                        + ((seq) * (M31_32)));
                 *lookup_data.memory_address_to_id_0 = [
                     ((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24))),
-                    input_0_id_col5,
+                        + ((seq) * (M31_32))),
+                    state_0_id_col5,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[0] = input_0_id_col5;
+                *sub_component_inputs.memory_id_to_big[0] = state_0_id_col5;
                 *lookup_data.memory_id_to_big_0 = [
-                    input_0_id_col5,
+                    state_0_id_col5,
                     ((low_16_bits_col0) - ((low_7_ms_bits_col2) * (M31_512))),
                     ((low_7_ms_bits_col2)
                         + (((high_16_bits_col1) - ((high_14_ms_bits_col3) * (M31_4))) * (M31_128))),
@@ -304,7 +304,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_10 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_1)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_11 =
@@ -355,25 +355,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_17 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_1)),
                     );
-                let input_1_id_col11 = memory_address_to_id_value_tmp_d65f0_17;
-                *row[11] = input_1_id_col11;
+                let state_1_id_col11 = memory_address_to_id_value_tmp_d65f0_17;
+                *row[11] = state_1_id_col11;
                 *sub_component_inputs.memory_address_to_id[1] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_1));
                 *lookup_data.memory_address_to_id_1 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_1)),
-                    input_1_id_col11,
+                    state_1_id_col11,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[1] = input_1_id_col11;
+                *sub_component_inputs.memory_id_to_big[1] = state_1_id_col11;
                 *lookup_data.memory_id_to_big_1 = [
-                    input_1_id_col11,
+                    state_1_id_col11,
                     ((low_16_bits_col6) - ((low_7_ms_bits_col8) * (M31_512))),
                     ((low_7_ms_bits_col8)
                         + (((high_16_bits_col7) - ((high_14_ms_bits_col9) * (M31_4))) * (M31_128))),
@@ -412,7 +412,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_20 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_2)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_21 =
@@ -463,25 +463,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_27 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_2)),
                     );
-                let input_2_id_col17 = memory_address_to_id_value_tmp_d65f0_27;
-                *row[17] = input_2_id_col17;
+                let state_2_id_col17 = memory_address_to_id_value_tmp_d65f0_27;
+                *row[17] = state_2_id_col17;
                 *sub_component_inputs.memory_address_to_id[2] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_2));
                 *lookup_data.memory_address_to_id_2 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_2)),
-                    input_2_id_col17,
+                    state_2_id_col17,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[2] = input_2_id_col17;
+                *sub_component_inputs.memory_id_to_big[2] = state_2_id_col17;
                 *lookup_data.memory_id_to_big_2 = [
-                    input_2_id_col17,
+                    state_2_id_col17,
                     ((low_16_bits_col12) - ((low_7_ms_bits_col14) * (M31_512))),
                     ((low_7_ms_bits_col14)
                         + (((high_16_bits_col13) - ((high_14_ms_bits_col15) * (M31_4)))
@@ -521,7 +521,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_30 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_3)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_31 =
@@ -572,25 +572,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_37 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_3)),
                     );
-                let input_3_id_col23 = memory_address_to_id_value_tmp_d65f0_37;
-                *row[23] = input_3_id_col23;
+                let state_3_id_col23 = memory_address_to_id_value_tmp_d65f0_37;
+                *row[23] = state_3_id_col23;
                 *sub_component_inputs.memory_address_to_id[3] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_3));
                 *lookup_data.memory_address_to_id_3 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_3)),
-                    input_3_id_col23,
+                    state_3_id_col23,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[3] = input_3_id_col23;
+                *sub_component_inputs.memory_id_to_big[3] = state_3_id_col23;
                 *lookup_data.memory_id_to_big_3 = [
-                    input_3_id_col23,
+                    state_3_id_col23,
                     ((low_16_bits_col18) - ((low_7_ms_bits_col20) * (M31_512))),
                     ((low_7_ms_bits_col20)
                         + (((high_16_bits_col19) - ((high_14_ms_bits_col21) * (M31_4)))
@@ -630,7 +630,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_40 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_4)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_41 =
@@ -681,25 +681,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_47 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_4)),
                     );
-                let input_4_id_col29 = memory_address_to_id_value_tmp_d65f0_47;
-                *row[29] = input_4_id_col29;
+                let state_4_id_col29 = memory_address_to_id_value_tmp_d65f0_47;
+                *row[29] = state_4_id_col29;
                 *sub_component_inputs.memory_address_to_id[4] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_4));
                 *lookup_data.memory_address_to_id_4 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_4)),
-                    input_4_id_col29,
+                    state_4_id_col29,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[4] = input_4_id_col29;
+                *sub_component_inputs.memory_id_to_big[4] = state_4_id_col29;
                 *lookup_data.memory_id_to_big_4 = [
-                    input_4_id_col29,
+                    state_4_id_col29,
                     ((low_16_bits_col24) - ((low_7_ms_bits_col26) * (M31_512))),
                     ((low_7_ms_bits_col26)
                         + (((high_16_bits_col25) - ((high_14_ms_bits_col27) * (M31_4)))
@@ -739,7 +739,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_50 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_5)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_51 =
@@ -790,25 +790,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_57 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_5)),
                     );
-                let input_5_id_col35 = memory_address_to_id_value_tmp_d65f0_57;
-                *row[35] = input_5_id_col35;
+                let state_5_id_col35 = memory_address_to_id_value_tmp_d65f0_57;
+                *row[35] = state_5_id_col35;
                 *sub_component_inputs.memory_address_to_id[5] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_5));
                 *lookup_data.memory_address_to_id_5 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_5)),
-                    input_5_id_col35,
+                    state_5_id_col35,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[5] = input_5_id_col35;
+                *sub_component_inputs.memory_id_to_big[5] = state_5_id_col35;
                 *lookup_data.memory_id_to_big_5 = [
-                    input_5_id_col35,
+                    state_5_id_col35,
                     ((low_16_bits_col30) - ((low_7_ms_bits_col32) * (M31_512))),
                     ((low_7_ms_bits_col32)
                         + (((high_16_bits_col31) - ((high_14_ms_bits_col33) * (M31_4)))
@@ -848,7 +848,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_60 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_6)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_61 =
@@ -899,25 +899,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_67 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_6)),
                     );
-                let input_6_id_col41 = memory_address_to_id_value_tmp_d65f0_67;
-                *row[41] = input_6_id_col41;
+                let state_6_id_col41 = memory_address_to_id_value_tmp_d65f0_67;
+                *row[41] = state_6_id_col41;
                 *sub_component_inputs.memory_address_to_id[6] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_6));
                 *lookup_data.memory_address_to_id_6 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_6)),
-                    input_6_id_col41,
+                    state_6_id_col41,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[6] = input_6_id_col41;
+                *sub_component_inputs.memory_id_to_big[6] = state_6_id_col41;
                 *lookup_data.memory_id_to_big_6 = [
-                    input_6_id_col41,
+                    state_6_id_col41,
                     ((low_16_bits_col36) - ((low_7_ms_bits_col38) * (M31_512))),
                     ((low_7_ms_bits_col38)
                         + (((high_16_bits_col37) - ((high_14_ms_bits_col39) * (M31_4)))
@@ -957,7 +957,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_70 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_7)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_71 =
@@ -1008,25 +1008,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_77 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_7)),
                     );
-                let input_7_id_col47 = memory_address_to_id_value_tmp_d65f0_77;
-                *row[47] = input_7_id_col47;
+                let state_7_id_col47 = memory_address_to_id_value_tmp_d65f0_77;
+                *row[47] = state_7_id_col47;
                 *sub_component_inputs.memory_address_to_id[7] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_7));
                 *lookup_data.memory_address_to_id_7 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_7)),
-                    input_7_id_col47,
+                    state_7_id_col47,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[7] = input_7_id_col47;
+                *sub_component_inputs.memory_id_to_big[7] = state_7_id_col47;
                 *lookup_data.memory_id_to_big_7 = [
-                    input_7_id_col47,
+                    state_7_id_col47,
                     ((low_16_bits_col42) - ((low_7_ms_bits_col44) * (M31_512))),
                     ((low_7_ms_bits_col44)
                         + (((high_16_bits_col43) - ((high_14_ms_bits_col45) * (M31_4)))
@@ -1066,7 +1066,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_80 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_8)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_81 =
@@ -1117,25 +1117,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_87 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_8)),
                     );
-                let input_0_id_col53 = memory_address_to_id_value_tmp_d65f0_87;
-                *row[53] = input_0_id_col53;
+                let block_0_id_col53 = memory_address_to_id_value_tmp_d65f0_87;
+                *row[53] = block_0_id_col53;
                 *sub_component_inputs.memory_address_to_id[8] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_8));
                 *lookup_data.memory_address_to_id_8 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_8)),
-                    input_0_id_col53,
+                    block_0_id_col53,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[8] = input_0_id_col53;
+                *sub_component_inputs.memory_id_to_big[8] = block_0_id_col53;
                 *lookup_data.memory_id_to_big_8 = [
-                    input_0_id_col53,
+                    block_0_id_col53,
                     ((low_16_bits_col48) - ((low_7_ms_bits_col50) * (M31_512))),
                     ((low_7_ms_bits_col50)
                         + (((high_16_bits_col49) - ((high_14_ms_bits_col51) * (M31_4)))
@@ -1175,7 +1175,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_90 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_9)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_91 =
@@ -1226,25 +1226,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_97 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_9)),
                     );
-                let input_1_id_col59 = memory_address_to_id_value_tmp_d65f0_97;
-                *row[59] = input_1_id_col59;
+                let block_1_id_col59 = memory_address_to_id_value_tmp_d65f0_97;
+                *row[59] = block_1_id_col59;
                 *sub_component_inputs.memory_address_to_id[9] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_9));
                 *lookup_data.memory_address_to_id_9 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_9)),
-                    input_1_id_col59,
+                    block_1_id_col59,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[9] = input_1_id_col59;
+                *sub_component_inputs.memory_id_to_big[9] = block_1_id_col59;
                 *lookup_data.memory_id_to_big_9 = [
-                    input_1_id_col59,
+                    block_1_id_col59,
                     ((low_16_bits_col54) - ((low_7_ms_bits_col56) * (M31_512))),
                     ((low_7_ms_bits_col56)
                         + (((high_16_bits_col55) - ((high_14_ms_bits_col57) * (M31_4)))
@@ -1284,7 +1284,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_100 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_10)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_101 =
@@ -1336,25 +1336,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_107 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_10)),
                     );
-                let input_2_id_col65 = memory_address_to_id_value_tmp_d65f0_107;
-                *row[65] = input_2_id_col65;
+                let block_2_id_col65 = memory_address_to_id_value_tmp_d65f0_107;
+                *row[65] = block_2_id_col65;
                 *sub_component_inputs.memory_address_to_id[10] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_10));
                 *lookup_data.memory_address_to_id_10 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_10)),
-                    input_2_id_col65,
+                    block_2_id_col65,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[10] = input_2_id_col65;
+                *sub_component_inputs.memory_id_to_big[10] = block_2_id_col65;
                 *lookup_data.memory_id_to_big_10 = [
-                    input_2_id_col65,
+                    block_2_id_col65,
                     ((low_16_bits_col60) - ((low_7_ms_bits_col62) * (M31_512))),
                     ((low_7_ms_bits_col62)
                         + (((high_16_bits_col61) - ((high_14_ms_bits_col63) * (M31_4)))
@@ -1394,7 +1394,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_110 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_11)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_111 =
@@ -1446,25 +1446,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_117 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_11)),
                     );
-                let input_3_id_col71 = memory_address_to_id_value_tmp_d65f0_117;
-                *row[71] = input_3_id_col71;
+                let block_3_id_col71 = memory_address_to_id_value_tmp_d65f0_117;
+                *row[71] = block_3_id_col71;
                 *sub_component_inputs.memory_address_to_id[11] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_11));
                 *lookup_data.memory_address_to_id_11 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_11)),
-                    input_3_id_col71,
+                    block_3_id_col71,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[11] = input_3_id_col71;
+                *sub_component_inputs.memory_id_to_big[11] = block_3_id_col71;
                 *lookup_data.memory_id_to_big_11 = [
-                    input_3_id_col71,
+                    block_3_id_col71,
                     ((low_16_bits_col66) - ((low_7_ms_bits_col68) * (M31_512))),
                     ((low_7_ms_bits_col68)
                         + (((high_16_bits_col67) - ((high_14_ms_bits_col69) * (M31_4)))
@@ -1504,7 +1504,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_120 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_12)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_121 =
@@ -1556,25 +1556,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_127 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_12)),
                     );
-                let input_4_id_col77 = memory_address_to_id_value_tmp_d65f0_127;
-                *row[77] = input_4_id_col77;
+                let block_4_id_col77 = memory_address_to_id_value_tmp_d65f0_127;
+                *row[77] = block_4_id_col77;
                 *sub_component_inputs.memory_address_to_id[12] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_12));
                 *lookup_data.memory_address_to_id_12 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_12)),
-                    input_4_id_col77,
+                    block_4_id_col77,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[12] = input_4_id_col77;
+                *sub_component_inputs.memory_id_to_big[12] = block_4_id_col77;
                 *lookup_data.memory_id_to_big_12 = [
-                    input_4_id_col77,
+                    block_4_id_col77,
                     ((low_16_bits_col72) - ((low_7_ms_bits_col74) * (M31_512))),
                     ((low_7_ms_bits_col74)
                         + (((high_16_bits_col73) - ((high_14_ms_bits_col75) * (M31_4)))
@@ -1614,7 +1614,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_130 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_13)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_131 =
@@ -1666,25 +1666,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_137 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_13)),
                     );
-                let input_5_id_col83 = memory_address_to_id_value_tmp_d65f0_137;
-                *row[83] = input_5_id_col83;
+                let block_5_id_col83 = memory_address_to_id_value_tmp_d65f0_137;
+                *row[83] = block_5_id_col83;
                 *sub_component_inputs.memory_address_to_id[13] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_13));
                 *lookup_data.memory_address_to_id_13 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_13)),
-                    input_5_id_col83,
+                    block_5_id_col83,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[13] = input_5_id_col83;
+                *sub_component_inputs.memory_id_to_big[13] = block_5_id_col83;
                 *lookup_data.memory_id_to_big_13 = [
-                    input_5_id_col83,
+                    block_5_id_col83,
                     ((low_16_bits_col78) - ((low_7_ms_bits_col80) * (M31_512))),
                     ((low_7_ms_bits_col80)
                         + (((high_16_bits_col79) - ((high_14_ms_bits_col81) * (M31_4)))
@@ -1724,7 +1724,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_140 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_14)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_141 =
@@ -1776,25 +1776,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_147 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_14)),
                     );
-                let input_6_id_col89 = memory_address_to_id_value_tmp_d65f0_147;
-                *row[89] = input_6_id_col89;
+                let block_6_id_col89 = memory_address_to_id_value_tmp_d65f0_147;
+                *row[89] = block_6_id_col89;
                 *sub_component_inputs.memory_address_to_id[14] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_14));
                 *lookup_data.memory_address_to_id_14 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_14)),
-                    input_6_id_col89,
+                    block_6_id_col89,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[14] = input_6_id_col89;
+                *sub_component_inputs.memory_id_to_big[14] = block_6_id_col89;
                 *lookup_data.memory_id_to_big_14 = [
-                    input_6_id_col89,
+                    block_6_id_col89,
                     ((low_16_bits_col84) - ((low_7_ms_bits_col86) * (M31_512))),
                     ((low_7_ms_bits_col86)
                         + (((high_16_bits_col85) - ((high_14_ms_bits_col87) * (M31_4)))
@@ -1834,7 +1834,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_150 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_15)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_151 =
@@ -1886,25 +1886,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_157 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_15)),
                     );
-                let input_7_id_col95 = memory_address_to_id_value_tmp_d65f0_157;
-                *row[95] = input_7_id_col95;
+                let block_7_id_col95 = memory_address_to_id_value_tmp_d65f0_157;
+                *row[95] = block_7_id_col95;
                 *sub_component_inputs.memory_address_to_id[15] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_15));
                 *lookup_data.memory_address_to_id_15 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_15)),
-                    input_7_id_col95,
+                    block_7_id_col95,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[15] = input_7_id_col95;
+                *sub_component_inputs.memory_id_to_big[15] = block_7_id_col95;
                 *lookup_data.memory_id_to_big_15 = [
-                    input_7_id_col95,
+                    block_7_id_col95,
                     ((low_16_bits_col90) - ((low_7_ms_bits_col92) * (M31_512))),
                     ((low_7_ms_bits_col92)
                         + (((high_16_bits_col91) - ((high_14_ms_bits_col93) * (M31_4)))
@@ -1944,7 +1944,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_160 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_16)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_161 =
@@ -1996,25 +1996,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_167 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_16)),
                     );
-                let input_8_id_col101 = memory_address_to_id_value_tmp_d65f0_167;
-                *row[101] = input_8_id_col101;
+                let block_8_id_col101 = memory_address_to_id_value_tmp_d65f0_167;
+                *row[101] = block_8_id_col101;
                 *sub_component_inputs.memory_address_to_id[16] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_16));
                 *lookup_data.memory_address_to_id_16 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_16)),
-                    input_8_id_col101,
+                    block_8_id_col101,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[16] = input_8_id_col101;
+                *sub_component_inputs.memory_id_to_big[16] = block_8_id_col101;
                 *lookup_data.memory_id_to_big_16 = [
-                    input_8_id_col101,
+                    block_8_id_col101,
                     ((low_16_bits_col96) - ((low_7_ms_bits_col98) * (M31_512))),
                     ((low_7_ms_bits_col98)
                         + (((high_16_bits_col97) - ((high_14_ms_bits_col99) * (M31_4)))
@@ -2054,7 +2054,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_170 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_17)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_171 =
@@ -2106,25 +2106,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_177 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_17)),
                     );
-                let input_9_id_col107 = memory_address_to_id_value_tmp_d65f0_177;
-                *row[107] = input_9_id_col107;
+                let block_9_id_col107 = memory_address_to_id_value_tmp_d65f0_177;
+                *row[107] = block_9_id_col107;
                 *sub_component_inputs.memory_address_to_id[17] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_17));
                 *lookup_data.memory_address_to_id_17 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_17)),
-                    input_9_id_col107,
+                    block_9_id_col107,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[17] = input_9_id_col107;
+                *sub_component_inputs.memory_id_to_big[17] = block_9_id_col107;
                 *lookup_data.memory_id_to_big_17 = [
-                    input_9_id_col107,
+                    block_9_id_col107,
                     ((low_16_bits_col102) - ((low_7_ms_bits_col104) * (M31_512))),
                     ((low_7_ms_bits_col104)
                         + (((high_16_bits_col103) - ((high_14_ms_bits_col105) * (M31_4)))
@@ -2164,7 +2164,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_180 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_18)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_181 =
@@ -2216,25 +2216,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_187 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_18)),
                     );
-                let input_10_id_col113 = memory_address_to_id_value_tmp_d65f0_187;
-                *row[113] = input_10_id_col113;
+                let block_10_id_col113 = memory_address_to_id_value_tmp_d65f0_187;
+                *row[113] = block_10_id_col113;
                 *sub_component_inputs.memory_address_to_id[18] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_18));
                 *lookup_data.memory_address_to_id_18 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_18)),
-                    input_10_id_col113,
+                    block_10_id_col113,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[18] = input_10_id_col113;
+                *sub_component_inputs.memory_id_to_big[18] = block_10_id_col113;
                 *lookup_data.memory_id_to_big_18 = [
-                    input_10_id_col113,
+                    block_10_id_col113,
                     ((low_16_bits_col108) - ((low_7_ms_bits_col110) * (M31_512))),
                     ((low_7_ms_bits_col110)
                         + (((high_16_bits_col109) - ((high_14_ms_bits_col111) * (M31_4)))
@@ -2274,7 +2274,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_190 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_19)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_191 =
@@ -2326,25 +2326,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_197 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_19)),
                     );
-                let input_11_id_col119 = memory_address_to_id_value_tmp_d65f0_197;
-                *row[119] = input_11_id_col119;
+                let block_11_id_col119 = memory_address_to_id_value_tmp_d65f0_197;
+                *row[119] = block_11_id_col119;
                 *sub_component_inputs.memory_address_to_id[19] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_19));
                 *lookup_data.memory_address_to_id_19 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_19)),
-                    input_11_id_col119,
+                    block_11_id_col119,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[19] = input_11_id_col119;
+                *sub_component_inputs.memory_id_to_big[19] = block_11_id_col119;
                 *lookup_data.memory_id_to_big_19 = [
-                    input_11_id_col119,
+                    block_11_id_col119,
                     ((low_16_bits_col114) - ((low_7_ms_bits_col116) * (M31_512))),
                     ((low_7_ms_bits_col116)
                         + (((high_16_bits_col115) - ((high_14_ms_bits_col117) * (M31_4)))
@@ -2384,7 +2384,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_200 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_20)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_201 =
@@ -2436,25 +2436,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_207 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_20)),
                     );
-                let input_12_id_col125 = memory_address_to_id_value_tmp_d65f0_207;
-                *row[125] = input_12_id_col125;
+                let block_12_id_col125 = memory_address_to_id_value_tmp_d65f0_207;
+                *row[125] = block_12_id_col125;
                 *sub_component_inputs.memory_address_to_id[20] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_20));
                 *lookup_data.memory_address_to_id_20 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_20)),
-                    input_12_id_col125,
+                    block_12_id_col125,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[20] = input_12_id_col125;
+                *sub_component_inputs.memory_id_to_big[20] = block_12_id_col125;
                 *lookup_data.memory_id_to_big_20 = [
-                    input_12_id_col125,
+                    block_12_id_col125,
                     ((low_16_bits_col120) - ((low_7_ms_bits_col122) * (M31_512))),
                     ((low_7_ms_bits_col122)
                         + (((high_16_bits_col121) - ((high_14_ms_bits_col123) * (M31_4)))
@@ -2494,7 +2494,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_210 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_21)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_211 =
@@ -2546,25 +2546,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_217 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_21)),
                     );
-                let input_13_id_col131 = memory_address_to_id_value_tmp_d65f0_217;
-                *row[131] = input_13_id_col131;
+                let block_13_id_col131 = memory_address_to_id_value_tmp_d65f0_217;
+                *row[131] = block_13_id_col131;
                 *sub_component_inputs.memory_address_to_id[21] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_21));
                 *lookup_data.memory_address_to_id_21 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_21)),
-                    input_13_id_col131,
+                    block_13_id_col131,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[21] = input_13_id_col131;
+                *sub_component_inputs.memory_id_to_big[21] = block_13_id_col131;
                 *lookup_data.memory_id_to_big_21 = [
-                    input_13_id_col131,
+                    block_13_id_col131,
                     ((low_16_bits_col126) - ((low_7_ms_bits_col128) * (M31_512))),
                     ((low_7_ms_bits_col128)
                         + (((high_16_bits_col127) - ((high_14_ms_bits_col129) * (M31_4)))
@@ -2604,7 +2604,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_220 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_22)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_221 =
@@ -2656,25 +2656,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_227 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_22)),
                     );
-                let input_14_id_col137 = memory_address_to_id_value_tmp_d65f0_227;
-                *row[137] = input_14_id_col137;
+                let block_14_id_col137 = memory_address_to_id_value_tmp_d65f0_227;
+                *row[137] = block_14_id_col137;
                 *sub_component_inputs.memory_address_to_id[22] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_22));
                 *lookup_data.memory_address_to_id_22 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_22)),
-                    input_14_id_col137,
+                    block_14_id_col137,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[22] = input_14_id_col137;
+                *sub_component_inputs.memory_id_to_big[22] = block_14_id_col137;
                 *lookup_data.memory_id_to_big_22 = [
-                    input_14_id_col137,
+                    block_14_id_col137,
                     ((low_16_bits_col132) - ((low_7_ms_bits_col134) * (M31_512))),
                     ((low_7_ms_bits_col134)
                         + (((high_16_bits_col133) - ((high_14_ms_bits_col135) * (M31_4)))
@@ -2714,7 +2714,7 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_230 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_23)),
                     );
                 let memory_id_to_big_value_tmp_d65f0_231 =
@@ -2766,25 +2766,25 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_237 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_23)),
                     );
-                let input_15_id_col143 = memory_address_to_id_value_tmp_d65f0_237;
-                *row[143] = input_15_id_col143;
+                let block_15_id_col143 = memory_address_to_id_value_tmp_d65f0_237;
+                *row[143] = block_15_id_col143;
                 *sub_component_inputs.memory_address_to_id[23] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_23));
                 *lookup_data.memory_address_to_id_23 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_23)),
-                    input_15_id_col143,
+                    block_15_id_col143,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[23] = input_15_id_col143;
+                *sub_component_inputs.memory_id_to_big[23] = block_15_id_col143;
                 *lookup_data.memory_id_to_big_23 = [
-                    input_15_id_col143,
+                    block_15_id_col143,
                     ((low_16_bits_col138) - ((low_7_ms_bits_col140) * (M31_512))),
                     ((low_7_ms_bits_col140)
                         + (((high_16_bits_col139) - ((high_14_ms_bits_col141) * (M31_4)))
@@ -7611,18 +7611,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_308 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_24)),
                     );
                 let output_0_id_col195 = memory_address_to_id_value_tmp_d65f0_308;
                 *row[195] = output_0_id_col195;
                 *sub_component_inputs.memory_address_to_id[24] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_24));
                 *lookup_data.memory_address_to_id_24 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_24)),
                     output_0_id_col195,
                 ];
@@ -7694,18 +7694,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_313 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_25)),
                     );
                 let output_1_id_col199 = memory_address_to_id_value_tmp_d65f0_313;
                 *row[199] = output_1_id_col199;
                 *sub_component_inputs.memory_address_to_id[25] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_25));
                 *lookup_data.memory_address_to_id_25 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_25)),
                     output_1_id_col199,
                 ];
@@ -7777,18 +7777,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_318 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_26)),
                     );
                 let output_2_id_col203 = memory_address_to_id_value_tmp_d65f0_318;
                 *row[203] = output_2_id_col203;
                 *sub_component_inputs.memory_address_to_id[26] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_26));
                 *lookup_data.memory_address_to_id_26 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_26)),
                     output_2_id_col203,
                 ];
@@ -7860,18 +7860,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_323 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_27)),
                     );
                 let output_3_id_col207 = memory_address_to_id_value_tmp_d65f0_323;
                 *row[207] = output_3_id_col207;
                 *sub_component_inputs.memory_address_to_id[27] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_27));
                 *lookup_data.memory_address_to_id_27 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_27)),
                     output_3_id_col207,
                 ];
@@ -7943,18 +7943,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_328 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_28)),
                     );
                 let output_4_id_col211 = memory_address_to_id_value_tmp_d65f0_328;
                 *row[211] = output_4_id_col211;
                 *sub_component_inputs.memory_address_to_id[28] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_28));
                 *lookup_data.memory_address_to_id_28 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_28)),
                     output_4_id_col211,
                 ];
@@ -8026,18 +8026,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_333 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_29)),
                     );
                 let output_5_id_col215 = memory_address_to_id_value_tmp_d65f0_333;
                 *row[215] = output_5_id_col215;
                 *sub_component_inputs.memory_address_to_id[29] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_29));
                 *lookup_data.memory_address_to_id_29 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_29)),
                     output_5_id_col215,
                 ];
@@ -8109,18 +8109,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_338 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_30)),
                     );
                 let output_6_id_col219 = memory_address_to_id_value_tmp_d65f0_338;
                 *row[219] = output_6_id_col219;
                 *sub_component_inputs.memory_address_to_id[30] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_30));
                 *lookup_data.memory_address_to_id_30 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_30)),
                     output_6_id_col219,
                 ];
@@ -8192,18 +8192,18 @@ fn write_trace_simd(
                 let memory_address_to_id_value_tmp_d65f0_343 = memory_address_to_id_state
                     .deduce_output(
                         (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                            + ((seq) * (M31_24)))
+                            + ((seq) * (M31_32)))
                             + (M31_31)),
                     );
                 let output_7_id_col223 = memory_address_to_id_value_tmp_d65f0_343;
                 *row[223] = output_7_id_col223;
                 *sub_component_inputs.memory_address_to_id[31] =
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_31));
                 *lookup_data.memory_address_to_id_31 = [
                     (((PackedM31::broadcast(M31::from(sha256_builtin_segment_start)))
-                        + ((seq) * (M31_24)))
+                        + ((seq) * (M31_32)))
                         + (M31_31)),
                     output_7_id_col223,
                 ];
