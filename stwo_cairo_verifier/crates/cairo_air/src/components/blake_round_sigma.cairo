@@ -1,7 +1,8 @@
-// AIR version 52ac7695-dirty
+// AIR version bc48deaa
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((4));
+pub const N_TRACE_COLUMNS: usize = 1;
+const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((4));
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
@@ -68,7 +69,25 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let log_size = SOME_COLUMN.log_size();
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((0)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((1)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((2)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((3)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((4)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((5)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((6)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((7)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((8)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((9)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((10)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((11)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((12)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((13)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((14)));preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((15)));trace_mask_points.append(array![point]);interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((0)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((1)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((2)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((3)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((4)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((5)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((6)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((7)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((8)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((9)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((10)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((11)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((12)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((13)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((14)));
+        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((15)));
+        trace_mask_points.append(array![point]);
+        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -92,70 +111,40 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut blake_round_sigma_sum_0: QM31 = Zero::zero();let seq
-            = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
-        let blakesigma_0
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((0)));
-        let blakesigma_1
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((1)));
-        let blakesigma_2
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((2)));
-        let blakesigma_3
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((3)));
-        let blakesigma_4
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((4)));
-        let blakesigma_5
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((5)));
-        let blakesigma_6
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((6)));
-        let blakesigma_7
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((7)));
-        let blakesigma_8
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((8)));
-        let blakesigma_9
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((9)));
-        let blakesigma_10
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((10)));
-        let blakesigma_11
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((11)));
-        let blakesigma_12
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((12)));
-        let blakesigma_13
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((13)));
-        let blakesigma_14
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((14)));
-        let blakesigma_15
-            = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((15)));
-        
+        let mut blake_round_sigma_sum_0: QM31 = Zero::zero();
+        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
+        let blakesigma_0 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((0)));
+        let blakesigma_1 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((1)));
+        let blakesigma_2 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((2)));
+        let blakesigma_3 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((3)));
+        let blakesigma_4 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((4)));
+        let blakesigma_5 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((5)));
+        let blakesigma_6 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((6)));
+        let blakesigma_7 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((7)));
+        let blakesigma_8 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((8)));
+        let blakesigma_9 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((9)));
+        let blakesigma_10 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((10)));
+        let blakesigma_11 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((11)));
+        let blakesigma_12 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((12)));
+        let blakesigma_13 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((13)));
+        let blakesigma_14 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((14)));
+        let blakesigma_15 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((15)));
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
-
+        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
+        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        
-
-        blake_round_sigma_sum_0 = self.blake_round_sigma_lookup_elements.combine_qm31(
-            [
-                seq,
-blakesigma_0,
-blakesigma_1,
-blakesigma_2,
-blakesigma_3,
-blakesigma_4,
-blakesigma_5,
-blakesigma_6,
-blakesigma_7,
-blakesigma_8,
-blakesigma_9,
-blakesigma_10,
-blakesigma_11,
-blakesigma_12,
-blakesigma_13,
-blakesigma_14,
-blakesigma_15
-            ],
-        );
+        blake_round_sigma_sum_0 = self
+            .blake_round_sigma_lookup_elements
+            .combine_qm31(
+                [
+                    seq, blakesigma_0, blakesigma_1, blakesigma_2, blakesigma_3, blakesigma_4,
+                    blakesigma_5, blakesigma_6, blakesigma_7, blakesigma_8, blakesigma_9,
+                    blakesigma_10, blakesigma_11, blakesigma_12, blakesigma_13, blakesigma_14,
+                    blakesigma_15,
+                ],
+            );
 
         lookup_constraints(
             ref sum,
@@ -165,12 +154,10 @@ blakesigma_15
             enabler,
             column_size,
             ref interaction_trace_mask_values,
-            blake_round_sigma_sum_0
+            blake_round_sigma_sum_0,
         );
     }
 }
-
-
 
 
 fn lookup_constraints(
@@ -181,29 +168,30 @@ fn lookup_constraints(
     enabler: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    blake_round_sigma_sum_0: QM31
+    blake_round_sigma_sum_0: QM31,
 ) {
-    let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4]
-        = (*interaction_trace_mask_values.multi_pop_front().unwrap()).unbox();
+    let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
+        (*interaction_trace_mask_values
+        .multi_pop_front()
+        .unwrap())
+        .unbox();
 
     let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0.try_into().unwrap()).unbox();
-let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
-let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
-let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
-
+    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
+    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
+    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
 
     core::internal::revoke_ap_tracking();
 
-    
-let constraint_quotient = (
-        (
-            (
-                QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]) 
-                - QM31Impl::from_partial_evals([trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1])
-                + (claimed_sum * (column_size.inverse().into()))
-            ) * blake_round_sigma_sum_0
-        ) + enabler
-    ) * domain_vanishing_eval_inv;
-sum = sum * random_coeff + constraint_quotient;
-
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
+        )
+        + (claimed_sum * (column_size.inverse().into())))
+        * blake_round_sigma_sum_0)
+        + enabler)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
 }
