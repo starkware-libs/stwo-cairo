@@ -391,18 +391,17 @@ pub mod tests {
                 preprocessed_trace,
             )
             .unwrap();
-        
-        
-        let mut proof_file = NamedTempFile::new().unwrap();
-        let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-        CairoSerialize::serialize(&cairo_proof, &mut serialized);
-        let proof_hex: Vec<String> = serialized
-        .into_iter()
-        .map(|felt| format!("0x{felt:x}"))
-        .collect();
-    proof_file
-    .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
-    .unwrap();
+
+            let mut proof_file = NamedTempFile::new().unwrap();
+            let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            let proof_hex: Vec<String> = serialized
+                .into_iter()
+                .map(|felt| format!("0x{felt:x}"))
+                .collect();
+            proof_file
+                .write_all(sonic_rs::to_string_pretty(&proof_hex).unwrap().as_bytes())
+                .unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
 
             let expected_proof_file =
@@ -430,7 +429,9 @@ pub mod tests {
                     --arguments-file {} --output standard --target standalone \
                     --features qm31_opcode
                     )",
-                    get_proof_file_path("test_prove_verify_all_opcode_components").to_str().unwrap()
+                    get_proof_file_path("test_prove_verify_all_opcode_components")
+                        .to_str()
+                        .unwrap()
                 ))
                 .current_dir(env!("CARGO_MANIFEST_DIR"))
                 .status()
@@ -509,21 +510,6 @@ pub mod tests {
                 .unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
             }
-            #[test]
-            fn test_prove_verify_sha256_builtin() {
-                let compiled_program =
-                    get_compiled_cairo_program_path("test_prove_verify_sha256_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                // assert_all_builtins_in_input(&input);
-                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                    input,
-                    PcsConfig::default(),
-                    preprocessed_trace,
-                )
-                .unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
-            }
 
             #[test]
             fn test_add_mod_builtin_constraints() {
@@ -536,7 +522,7 @@ pub mod tests {
             fn test_sha256_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_sha256_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
             }
 

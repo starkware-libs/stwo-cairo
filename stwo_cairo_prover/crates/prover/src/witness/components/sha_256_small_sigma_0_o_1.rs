@@ -1,9 +1,8 @@
-// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_small_sigma_0_o_1::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
-use cairo_air::sha256::const_columns::SMALL_SIGMA0_1_COLUMNS;
+use stwo_cairo_common::preprocessed_columns::sha256::SMALL_SIGMA0_1_COLUMNS;
 
 use crate::witness::prelude::*;
 

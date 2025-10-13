@@ -1,7 +1,7 @@
 use num_traits::One;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
-use stwo_cairo_common::preprocessed_consts::sha256::K;
+use stwo_cairo_common::preprocessed_columns::sha256::K;
 use stwo_cairo_common::prover_types::cpu::{UInt32, M31};
 use stwo_cairo_common::prover_types::simd::PackedUInt32;
 

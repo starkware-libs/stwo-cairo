@@ -4,14 +4,17 @@ pub use stwo::core::channel::Channel;
 pub use stwo::core::fields::m31::M31;
 pub use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 pub use stwo::core::pcs::TreeVec;
+pub use stwo_cairo_common::preprocessed_columns::bitwise_and::BitwiseAnd;
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
 pub use stwo_cairo_common::preprocessed_columns::blake::BlakeSigma;
 pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
 pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
+pub use stwo_cairo_common::preprocessed_columns::sha256::{
+    Sha256K, Sha256SigmaTable, Sha256SigmaType,
+};
 pub use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 pub use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
 pub use crate::relations;
-pub use crate::sha256::*;
 pub use crate::verifier::RelationUse;

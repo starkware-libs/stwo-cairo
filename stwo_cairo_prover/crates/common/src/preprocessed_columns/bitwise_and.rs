@@ -1,3 +1,18 @@
+use std::simd::{u32x16, Simd};
+
+use stwo::core::fields::m31::BaseField;
+use stwo::core::poly::circle::CanonicCoset;
+use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::m31::PackedM31;
+use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::poly::circle::CircleEvaluation;
+use stwo::prover::poly::BitReversedOrder;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
+
+use crate::preprocessed_columns::preprocessed_trace::PreProcessedColumn;
+use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
+use crate::prover_types::simd::{LOG_N_LANES, N_LANES};
+
 /// A table of a,b,c, where a,b,c are integers and a & b = c.
 ///
 /// # Attributes

@@ -2,7 +2,6 @@ pub use std::iter::zip;
 pub use std::simd::Simd;
 
 pub(crate) use cairo_air::relations;
-pub use cairo_air::sha256::const_columns::{Sha256K, Sha256SigmaTable, Sha256SigmaType};
 pub use num_traits::{One, Zero};
 pub use rayon::prelude::*;
 pub use stwo::core::fields::m31::M31;
@@ -18,10 +17,14 @@ pub use stwo::prover::poly::circle::CircleEvaluation;
 pub use stwo::prover::poly::BitReversedOrder;
 pub use stwo_air_utils::trace::component_trace::ComponentTrace;
 pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
+pub use stwo_cairo_common::preprocessed_columns::bitwise_and::BitwiseAnd;
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
 pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
 pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
+pub use stwo_cairo_common::preprocessed_columns::sha256::{
+    Sha256K, Sha256SigmaTable, Sha256SigmaType,
+};
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
 pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};

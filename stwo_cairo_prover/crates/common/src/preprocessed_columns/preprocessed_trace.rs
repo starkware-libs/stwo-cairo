@@ -12,6 +12,7 @@ use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
+use super::bitwise_and::BitwiseAnd;
 use super::bitwise_xor::BitwiseXor;
 use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
 use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};

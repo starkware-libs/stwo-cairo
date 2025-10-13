@@ -610,7 +610,7 @@ dependencies = [
  "serde_json",
  "sonic-rs",
  "starknet-ff",
- "starknet-types-core 0.1.9",
+ "starknet-types-core 0.1.7",
  "stwo",
  "stwo-cairo-common",
  "stwo-cairo-serialize",
@@ -623,8 +623,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-casm"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16ffaa93d5b1b77c60ba014139c95a04aeb4fa61f622fec685c7d4a5d94bc475"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-utils",
  "indoc",
@@ -637,8 +636,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-compiler"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0fdd36e49d1cfcc70522b7007d6c01447b84acfecb58ae761486dfe391b1e9f4"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "anyhow",
  "cairo-lang-defs",
@@ -664,8 +662,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-debug"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3fbee157ae5234a4f8b0d9137585d903cb5db0eed458d6b0be062166a120ec46"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-utils",
 ]
@@ -673,8 +670,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-defs"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aceec9d41e7c1a06a251c7e9a0b1f501b611f8f6c217491f02b81eff194a9ba9"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "bincode 2.0.1",
  "cairo-lang-debug",
@@ -694,8 +690,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-diagnostics"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "30c6c508e5fae7f97169e4680724421a208846c16474c79f4d951fb856621183"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "cairo-lang-filesystem",
@@ -706,8 +701,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-eq-solver"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42bbb44a8acd86b721f47e15c805d271444abe2332f7bc34170268ee25b6b116"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-utils",
  "good_lp",
@@ -716,8 +710,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-executable"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "46f1a9246858980dc35c38381c9002e4f0d2febcd68d46b882c2788e2a59cbe0"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "anyhow",
  "cairo-lang-casm",
@@ -742,8 +735,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-filesystem"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d73e61ee073e6390a9ef4f5dfc12b608d05e2430c795a3761e255bef4246da82"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "cairo-lang-utils",
@@ -758,8 +750,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-formatter"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "16503982a7337041ee3f1099cbbc6d42a650dc691ad2171b23b8918b990b8ffe"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "anyhow",
  "cairo-lang-diagnostics",
@@ -777,8 +768,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-lowering"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "544af316429038b2d25c0de6d71146a9d3795d265bbcad715ee82c5aa846032a"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "assert_matches",
  "bincode 2.0.1",
@@ -804,8 +794,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-parser"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c247b6bfc96f2e99e652e5da43f9c196d5668f5d453d7c7b98a2d8d9fee0b55"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-diagnostics",
  "cairo-lang-filesystem",
@@ -825,8 +814,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-plugins"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a15f8aaeb9ff677e3b47591fa12850804623eb0278f9b389f8b778e440f9f8e"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-defs",
  "cairo-lang-diagnostics",
@@ -850,8 +838,7 @@ checksum = "123ac0ecadf31bacae77436d72b88fa9caef2b8e92c89ce63a125ae911a12fae"
 [[package]]
 name = "cairo-lang-proc-macros"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c67a1d41548007ea99a1d3f22f39b51a0ad4e51aa6b3495419ee18bc6e732d4"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "quote",
@@ -861,8 +848,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-project"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9a5a2bdd8240d6363a0899b43d1b47400eaa33be3d705e35f69483b6c27f9812"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-filesystem",
  "cairo-lang-utils",
@@ -874,8 +860,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-runnable-utils"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b835131ef6fa7d3c686e1f51875ab43e9fbc27eabc1a36d3ced3f8dd5440e7c"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-casm",
  "cairo-lang-sierra",
@@ -892,8 +877,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-runner"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5777d2e0f400abd85b932f127644069dbb0f4aacb8e3d3b22619b964919ec793"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "ark-ff 0.5.0",
  "ark-secp256k1",
@@ -922,8 +906,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-semantic"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d44765d99208808cc3592f967b985180fd44083ce1fdb4df87a37ed2aea3d750"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "cairo-lang-defs",
@@ -949,8 +932,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2210c1c185a95dd97e01f5112778aa40dac12312fa653a6a720c10d3a23b519f"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "anyhow",
  "cairo-lang-utils",
@@ -976,8 +958,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra-ap-change"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4366d0340de56071fe45ba69fbe54393134ccb1cf85d9fdad4125dce001dfb7d"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-eq-solver",
  "cairo-lang-sierra",
@@ -992,8 +973,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra-gas"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "399d56ee555972137d5444775f0c6001da7d0d22cc183efe02cbb2edc9eed476"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-eq-solver",
  "cairo-lang-sierra",
@@ -1008,8 +988,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra-generator"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cdf5f9330bea4ce7edd102397813dc0af84089332319ab882d2e62f4b95572c5"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "cairo-lang-defs",
@@ -1032,8 +1011,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra-to-casm"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "36df7b570fe5c2cf5063679c6027090bcfb195513a1fb8801e3d39962778593c"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "assert_matches",
  "cairo-lang-casm",
@@ -1053,8 +1031,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-sierra-type-size"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5b90048f3291e50cb72c479b65cbc3810ca93a8ccd3e596d806a89ce6e80f6d3"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-sierra",
  "cairo-lang-utils",
@@ -1063,8 +1040,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-starknet"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fcef5e7f63810d04f34e6cb68a5bd187ebeebdd0fe7bcc878f1a61e41b51ba52"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "anyhow",
  "cairo-lang-compiler",
@@ -1095,8 +1071,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-starknet-classes"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d3e3c319d24e239c075d546df085e577e9bb63dd8878b610b4e1681f844c5c75"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-casm",
  "cairo-lang-sierra",
@@ -1118,8 +1093,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-syntax"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5f89c9ba3013a4b4f32373895e076f96bbd37531752dd3e0d538dc4c6914224c"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-debug",
  "cairo-lang-filesystem",
@@ -1136,8 +1110,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-syntax-codegen"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3a7e5bef02f192e1f5bddcbdccfabac6168d9bb135f02f56f1f62be5437deb2b"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "genco",
  "xshell",
@@ -1146,8 +1119,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-test-utils"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "949a7ee604c41e5a6bfe405f26c1acd2edbc03691e0626196bd48af7b98b2a77"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "cairo-lang-formatter",
  "cairo-lang-utils",
@@ -1159,8 +1131,7 @@ dependencies = [
 [[package]]
 name = "cairo-lang-utils"
 version = "2.12.4-dev.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d40373deba5872449e71932afa9273faa3e44ab02767d5cf0ef49eb53aeed548"
+source = "git+https://github.com/m-kus/cairo.git?branch=sha256-compress-libfunc#070f7f01f72168983e3110eb2f04b72c4582b1c7"
 dependencies = [
  "hashbrown 0.15.5",
  "indexmap 2.11.4",
@@ -1175,12 +1146,12 @@ dependencies = [
 [[package]]
 name = "cairo-vm"
 version = "3.0.0-rc.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c96021ea68138094428e3d8dab21a504b23adc084363c89caaa7f6bda51dc251"
+source = "git+https://github.com/m-kus/cairo-vm.git?branch=sha256#c50e0daa12c0eac1bde8c0a7a4154b99b4c40529"
 dependencies = [
  "anyhow",
  "bincode 2.0.1",
  "bitvec",
+ "clap",
  "generic-array",
  "hashbrown 0.15.5",
  "indoc",
@@ -3113,12 +3084,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "56199f7ddabf13fe5074ce809e7d3f42b42ae711800501b5b16ea82ad029c39d"
 
 [[package]]
-name = "size-of"
-version = "0.1.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c4e36eca171fddeda53901b0a436573b3f2391eaa9189d439b2bd8ea8cebd7e3"
-
-[[package]]
 name = "smallvec"
 version = "1.15.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3261,7 +3226,7 @@ version = "0.5.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bcde6bd74269b8161948190ace6cf069ef20ac6e79cd2ba09b320efa7500b6de"
 dependencies = [
- "starknet-types-core 0.1.9",
+ "starknet-types-core 0.1.7",
 ]
 
 [[package]]
@@ -3289,9 +3254,9 @@ dependencies = [
 
 [[package]]
 name = "starknet-types-core"
-version = "0.1.9"
+version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87af771d7f577931913089f9ca9a9f85d8a6238d59b2977f4c383d133c8abd3b"
+checksum = "fa1b9e01ccb217ab6d475c5cda05dbb22c30029f7bb52b192a010a00d77a3d74"
 dependencies = [
  "lambdaworks-crypto 0.10.0",
  "lambdaworks-math 0.10.0",
@@ -3299,8 +3264,6 @@ dependencies = [
  "num-integer",
  "num-traits",
  "serde",
- "size-of",
- "zeroize",
 ]
 
 [[package]]
@@ -3443,7 +3406,7 @@ dependencies = [
  "serde_arrays",
  "starknet-curve 0.5.1",
  "starknet-ff",
- "starknet-types-core 0.1.9",
+ "starknet-types-core 0.1.7",
  "stwo",
  "stwo-cairo-serialize",
  "stwo-constraint-framework",
@@ -3502,7 +3465,7 @@ dependencies = [
  "sonic-rs",
  "starknet-curve 0.5.1",
  "starknet-ff",
- "starknet-types-core 0.1.9",
+ "starknet-types-core 0.1.7",
  "stwo",
  "stwo-air-utils",
  "stwo-air-utils-derive",
