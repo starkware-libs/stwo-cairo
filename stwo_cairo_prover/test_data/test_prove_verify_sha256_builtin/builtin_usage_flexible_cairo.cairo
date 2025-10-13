@@ -10,6 +10,7 @@ func do_sha256{sha256_ptr: Sha256Builtin*}(n_builtin_usages: felt) {
         return ();
     }
 
+    assert sha256_ptr.state = Sha256State(s0=0x6a09e667, s1=0xbb67ae85, s2=0x3c6ef372, s3=0xa54ff53a, s4=0x510e527f, s5=0x9b05688c, s6=0x1f83d9ab, s7=0x5be0cd19);
     assert sha256_ptr.input = Sha256Input(s0=1214606444, s1=1870659584, s2=0, s3=0, s4=0, s5=0, s6=0, s7=0, s8=0, s9=0, s10=0, s11=0, s12=0, s13=0, s14=0, s15=40);
     assert sha256_ptr.output = Sha256State(
         s0=2924848972,

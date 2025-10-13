@@ -2,6 +2,7 @@
 use cairo_air::components::sha_256_big_sigma_1_o_1::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
+use stwo_cairo_common::preprocessed_columns::sha256::BIG_SIGMA1_1_COLUMNS;
 
 use crate::witness::prelude::*;
 
