@@ -1,3 +1,4 @@
+// AIR version ffcad354-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_small_sigma_1_o_1::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
