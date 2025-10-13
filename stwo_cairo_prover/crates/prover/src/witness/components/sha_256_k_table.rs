@@ -1,4 +1,3 @@
-// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::sha_256_k_table::{Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS};
 

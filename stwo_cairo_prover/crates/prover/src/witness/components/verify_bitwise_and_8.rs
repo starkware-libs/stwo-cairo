@@ -1,4 +1,3 @@
-// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::verify_bitwise_and_8::{
     Claim, InteractionClaim, LOG_SIZE, N_BITS, N_TRACE_COLUMNS,
