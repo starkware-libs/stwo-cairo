@@ -197,7 +197,6 @@ impl BuiltinSegments {
                 original_segment_len.is_multiple_of(cells_per_instance),
                 "builtin segment: {builtin_name} size is {original_segment_len}, which is not divisble by {cells_per_instance}"
             );
-            println!("{:?}", current_builtin_segment);
 
             if !current_builtin_segment.iter().all(|x| x.is_some()) {
                 panic!(

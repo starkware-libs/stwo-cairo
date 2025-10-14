@@ -117,6 +117,7 @@ where
             &claim.public_data,
         );
         tracing::info!("Relations summary: {:?}", summary);
+        std::fs::write("relations-summary.txt", format!("{summary:?}")).unwrap();
     }
 
     let components = component_builder.provers();
@@ -501,6 +502,21 @@ pub mod tests {
                     get_compiled_cairo_program_path("test_prove_verify_all_builtins");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_all_builtins_in_input(&input);
+                let preprocessed_trace = PreProcessedTraceVariant::Canonical;
+                let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
+                    input,
+                    PcsConfig::default(),
+                    preprocessed_trace,
+                )
+                .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, preprocessed_trace).unwrap();
+            }
+            #[test]
+            fn test_prove_verify_sha256() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_sha256_builtin");
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+                // assert_all_builtins_in_input(&input);
                 let preprocessed_trace = PreProcessedTraceVariant::Canonical;
                 let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
                     input,
