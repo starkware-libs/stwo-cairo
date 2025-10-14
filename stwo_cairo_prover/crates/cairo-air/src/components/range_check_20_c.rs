@@ -1,13 +1,13 @@
-// AIR version 54d95c0d
+// AIR version bce485f0
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 19;
+pub const LOG_SIZE: u32 = 20;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_19_c_lookup_elements: relations::RangeCheck_19_C,
+    pub range_check_20_c_lookup_elements: relations::RangeCheck_20_C,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -51,7 +51,7 @@ impl FrameworkEval for Eval {
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_19_c_lookup_elements,
+            &self.range_check_20_c_lookup_elements,
             -E::EF::from(multiplicity),
             std::slice::from_ref(&seq),
         ));
@@ -70,14 +70,14 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::RANGE_CHECK_19_C;
+    use crate::components::constraints_regression_test_values::RANGE_CHECK_20_C;
 
     #[test]
-    fn range_check_19_c_constraints_regression() {
+    fn range_check_20_c_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_19_c_lookup_elements: relations::RangeCheck_19_C::dummy(),
+            range_check_20_c_lookup_elements: relations::RangeCheck_20_C::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -87,6 +87,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, RANGE_CHECK_19_C);
+        assert_eq!(sum, RANGE_CHECK_20_C);
     }
 }

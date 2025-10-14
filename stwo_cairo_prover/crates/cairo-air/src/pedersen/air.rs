@@ -162,14 +162,14 @@ impl Components {
                 pedersen_points_table_lookup_elements: interaction_elements
                     .pedersen_points_table
                     .clone(),
-                range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-                range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-                range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-                range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-                range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-                range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-                range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
-                range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
+                range_check_20_lookup_elements: interaction_elements.range_checks.rc_20.clone(),
+                range_check_20_b_lookup_elements: interaction_elements.range_checks.rc_20_b.clone(),
+                range_check_20_c_lookup_elements: interaction_elements.range_checks.rc_20_c.clone(),
+                range_check_20_d_lookup_elements: interaction_elements.range_checks.rc_20_d.clone(),
+                range_check_20_e_lookup_elements: interaction_elements.range_checks.rc_20_e.clone(),
+                range_check_20_f_lookup_elements: interaction_elements.range_checks.rc_20_f.clone(),
+                range_check_20_g_lookup_elements: interaction_elements.range_checks.rc_20_g.clone(),
+                range_check_20_h_lookup_elements: interaction_elements.range_checks.rc_20_h.clone(),
                 range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
                 range_check_9_9_b_lookup_elements: interaction_elements
                     .range_checks
