@@ -1,4 +1,4 @@
-// AIR version 54d95c0d
+// AIR version 2b6cb268
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_3_partial_rounds_chain::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
@@ -687,37 +687,37 @@ fn write_trace_simd(
                     + ((M31_2) * (combination_limb_8_col90)))
                     - (combination_limb_8_col101))
                     * (M31_16));
-                let linear_combination_n_1_coefs_2_output_tmp_44f04_35 = combination_tmp_44f04_14;
+                let linear_combination_n_1_coefs_2_output_tmp_44f04_34 = combination_tmp_44f04_14;
 
-                let poseidon_partial_round_output_tmp_44f04_36 = [
+                let poseidon_partial_round_output_tmp_44f04_35 = [
                     cube_252_output_tmp_44f04_1,
-                    linear_combination_n_1_coefs_2_output_tmp_44f04_35,
+                    linear_combination_n_1_coefs_2_output_tmp_44f04_34,
                 ];
 
                 // Poseidon Partial Round.
 
-                *sub_component_inputs.cube_252[1] = poseidon_partial_round_output_tmp_44f04_36[1];
-                let cube_252_output_tmp_44f04_37 =
-                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_36[1]);
-                let cube_252_output_limb_0_col104 = cube_252_output_tmp_44f04_37.get_m31(0);
+                *sub_component_inputs.cube_252[1] = poseidon_partial_round_output_tmp_44f04_35[1];
+                let cube_252_output_tmp_44f04_36 =
+                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_35[1]);
+                let cube_252_output_limb_0_col104 = cube_252_output_tmp_44f04_36.get_m31(0);
                 *row[104] = cube_252_output_limb_0_col104;
-                let cube_252_output_limb_1_col105 = cube_252_output_tmp_44f04_37.get_m31(1);
+                let cube_252_output_limb_1_col105 = cube_252_output_tmp_44f04_36.get_m31(1);
                 *row[105] = cube_252_output_limb_1_col105;
-                let cube_252_output_limb_2_col106 = cube_252_output_tmp_44f04_37.get_m31(2);
+                let cube_252_output_limb_2_col106 = cube_252_output_tmp_44f04_36.get_m31(2);
                 *row[106] = cube_252_output_limb_2_col106;
-                let cube_252_output_limb_3_col107 = cube_252_output_tmp_44f04_37.get_m31(3);
+                let cube_252_output_limb_3_col107 = cube_252_output_tmp_44f04_36.get_m31(3);
                 *row[107] = cube_252_output_limb_3_col107;
-                let cube_252_output_limb_4_col108 = cube_252_output_tmp_44f04_37.get_m31(4);
+                let cube_252_output_limb_4_col108 = cube_252_output_tmp_44f04_36.get_m31(4);
                 *row[108] = cube_252_output_limb_4_col108;
-                let cube_252_output_limb_5_col109 = cube_252_output_tmp_44f04_37.get_m31(5);
+                let cube_252_output_limb_5_col109 = cube_252_output_tmp_44f04_36.get_m31(5);
                 *row[109] = cube_252_output_limb_5_col109;
-                let cube_252_output_limb_6_col110 = cube_252_output_tmp_44f04_37.get_m31(6);
+                let cube_252_output_limb_6_col110 = cube_252_output_tmp_44f04_36.get_m31(6);
                 *row[110] = cube_252_output_limb_6_col110;
-                let cube_252_output_limb_7_col111 = cube_252_output_tmp_44f04_37.get_m31(7);
+                let cube_252_output_limb_7_col111 = cube_252_output_tmp_44f04_36.get_m31(7);
                 *row[111] = cube_252_output_limb_7_col111;
-                let cube_252_output_limb_8_col112 = cube_252_output_tmp_44f04_37.get_m31(8);
+                let cube_252_output_limb_8_col112 = cube_252_output_tmp_44f04_36.get_m31(8);
                 *row[112] = cube_252_output_limb_8_col112;
-                let cube_252_output_limb_9_col113 = cube_252_output_tmp_44f04_37.get_m31(9);
+                let cube_252_output_limb_9_col113 = cube_252_output_tmp_44f04_36.get_m31(9);
                 *row[113] = cube_252_output_limb_9_col113;
                 *lookup_data.cube_252_1 = [
                     combination_limb_0_col93,
@@ -744,7 +744,7 @@ fn write_trace_simd(
 
                 // Linear Combination N 6 Coefs 4 2 3 1 M 1 1.
 
-                let combination_tmp_44f04_38 = PackedFelt252Width27::from_packed_felt252(
+                let combination_tmp_44f04_37 = PackedFelt252Width27::from_packed_felt252(
                     (((((((Felt252_0_0_0_0)
                         + ((Felt252_4_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
@@ -756,42 +756,42 @@ fn write_trace_simd(
                             ))))
                         + ((Felt252_3_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[0],
+                                poseidon_partial_round_output_tmp_44f04_35[0],
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[1],
+                                poseidon_partial_round_output_tmp_44f04_35[1],
                             ))))
                         - ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                cube_252_output_tmp_44f04_37,
+                                cube_252_output_tmp_44f04_36,
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
                                 poseidon_round_keys_output_tmp_44f04_0[1],
                             )))),
                 );
-                let combination_limb_0_col114 = combination_tmp_44f04_38.get_m31(0);
+                let combination_limb_0_col114 = combination_tmp_44f04_37.get_m31(0);
                 *row[114] = combination_limb_0_col114;
-                let combination_limb_1_col115 = combination_tmp_44f04_38.get_m31(1);
+                let combination_limb_1_col115 = combination_tmp_44f04_37.get_m31(1);
                 *row[115] = combination_limb_1_col115;
-                let combination_limb_2_col116 = combination_tmp_44f04_38.get_m31(2);
+                let combination_limb_2_col116 = combination_tmp_44f04_37.get_m31(2);
                 *row[116] = combination_limb_2_col116;
-                let combination_limb_3_col117 = combination_tmp_44f04_38.get_m31(3);
+                let combination_limb_3_col117 = combination_tmp_44f04_37.get_m31(3);
                 *row[117] = combination_limb_3_col117;
-                let combination_limb_4_col118 = combination_tmp_44f04_38.get_m31(4);
+                let combination_limb_4_col118 = combination_tmp_44f04_37.get_m31(4);
                 *row[118] = combination_limb_4_col118;
-                let combination_limb_5_col119 = combination_tmp_44f04_38.get_m31(5);
+                let combination_limb_5_col119 = combination_tmp_44f04_37.get_m31(5);
                 *row[119] = combination_limb_5_col119;
-                let combination_limb_6_col120 = combination_tmp_44f04_38.get_m31(6);
+                let combination_limb_6_col120 = combination_tmp_44f04_37.get_m31(6);
                 *row[120] = combination_limb_6_col120;
-                let combination_limb_7_col121 = combination_tmp_44f04_38.get_m31(7);
+                let combination_limb_7_col121 = combination_tmp_44f04_37.get_m31(7);
                 *row[121] = combination_limb_7_col121;
-                let combination_limb_8_col122 = combination_tmp_44f04_38.get_m31(8);
+                let combination_limb_8_col122 = combination_tmp_44f04_37.get_m31(8);
                 *row[122] = combination_limb_8_col122;
-                let combination_limb_9_col123 = combination_tmp_44f04_38.get_m31(9);
+                let combination_limb_9_col123 = combination_tmp_44f04_37.get_m31(9);
                 *row[123] = combination_limb_9_col123;
-                let biased_limb_accumulator_u32_tmp_44f04_39 = PackedUInt32::from_m31(
+                let biased_limb_accumulator_u32_tmp_44f04_38 = PackedUInt32::from_m31(
                     (((((((((M31_4) * (input_limb_22_col22))
                         + ((M31_2) * (input_limb_32_col32)))
                         + ((M31_3) * (cube_252_output_limb_0_col72)))
@@ -802,9 +802,9 @@ fn write_trace_simd(
                         + (M31_268435458)),
                 );
                 let p_coef_col124 =
-                    ((biased_limb_accumulator_u32_tmp_44f04_39.low().as_m31()) - (M31_2));
+                    ((biased_limb_accumulator_u32_tmp_44f04_38.low().as_m31()) - (M31_2));
                 *row[124] = p_coef_col124;
-                let carry_0_tmp_44f04_40 = ((((((((((M31_4) * (input_limb_22_col22))
+                let carry_0_tmp_44f04_39 = ((((((((((M31_4) * (input_limb_22_col22))
                     + ((M31_2) * (input_limb_32_col32)))
                     + ((M31_3) * (cube_252_output_limb_0_col72)))
                     + (combination_limb_0_col93))
@@ -813,7 +813,7 @@ fn write_trace_simd(
                     - (combination_limb_0_col114))
                     - (p_coef_col124))
                     * (M31_16));
-                let carry_1_tmp_44f04_41 = (((((((((carry_0_tmp_44f04_40)
+                let carry_1_tmp_44f04_40 = (((((((((carry_0_tmp_44f04_39)
                     + ((M31_4) * (input_limb_23_col23)))
                     + ((M31_2) * (input_limb_33_col33)))
                     + ((M31_3) * (cube_252_output_limb_1_col73)))
@@ -822,7 +822,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_11_col53))
                     - (combination_limb_1_col115))
                     * (M31_16));
-                let carry_2_tmp_44f04_42 = (((((((((carry_1_tmp_44f04_41)
+                let carry_2_tmp_44f04_41 = (((((((((carry_1_tmp_44f04_40)
                     + ((M31_4) * (input_limb_24_col24)))
                     + ((M31_2) * (input_limb_34_col34)))
                     + ((M31_3) * (cube_252_output_limb_2_col74)))
@@ -831,7 +831,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_12_col54))
                     - (combination_limb_2_col116))
                     * (M31_16));
-                let carry_3_tmp_44f04_43 = (((((((((carry_2_tmp_44f04_42)
+                let carry_3_tmp_44f04_42 = (((((((((carry_2_tmp_44f04_41)
                     + ((M31_4) * (input_limb_25_col25)))
                     + ((M31_2) * (input_limb_35_col35)))
                     + ((M31_3) * (cube_252_output_limb_3_col75)))
@@ -840,7 +840,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_13_col55))
                     - (combination_limb_3_col117))
                     * (M31_16));
-                let carry_4_tmp_44f04_44 = (((((((((carry_3_tmp_44f04_43)
+                let carry_4_tmp_44f04_43 = (((((((((carry_3_tmp_44f04_42)
                     + ((M31_4) * (input_limb_26_col26)))
                     + ((M31_2) * (input_limb_36_col36)))
                     + ((M31_3) * (cube_252_output_limb_4_col76)))
@@ -849,7 +849,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_14_col56))
                     - (combination_limb_4_col118))
                     * (M31_16));
-                let carry_5_tmp_44f04_45 = (((((((((carry_4_tmp_44f04_44)
+                let carry_5_tmp_44f04_44 = (((((((((carry_4_tmp_44f04_43)
                     + ((M31_4) * (input_limb_27_col27)))
                     + ((M31_2) * (input_limb_37_col37)))
                     + ((M31_3) * (cube_252_output_limb_5_col77)))
@@ -858,7 +858,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_15_col57))
                     - (combination_limb_5_col119))
                     * (M31_16));
-                let carry_6_tmp_44f04_46 = (((((((((carry_5_tmp_44f04_45)
+                let carry_6_tmp_44f04_45 = (((((((((carry_5_tmp_44f04_44)
                     + ((M31_4) * (input_limb_28_col28)))
                     + ((M31_2) * (input_limb_38_col38)))
                     + ((M31_3) * (cube_252_output_limb_6_col78)))
@@ -867,7 +867,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_16_col58))
                     - (combination_limb_6_col120))
                     * (M31_16));
-                let carry_7_tmp_44f04_47 = ((((((((((carry_6_tmp_44f04_46)
+                let carry_7_tmp_44f04_46 = ((((((((((carry_6_tmp_44f04_45)
                     + ((M31_4) * (input_limb_29_col29)))
                     + ((M31_2) * (input_limb_39_col39)))
                     + ((M31_3) * (cube_252_output_limb_7_col79)))
@@ -877,7 +877,7 @@ fn write_trace_simd(
                     - (combination_limb_7_col121))
                     - ((p_coef_col124) * (M31_136)))
                     * (M31_16));
-                let carry_8_tmp_44f04_48 = (((((((((carry_7_tmp_44f04_47)
+                let carry_8_tmp_44f04_47 = (((((((((carry_7_tmp_44f04_46)
                     + ((M31_4) * (input_limb_30_col30)))
                     + ((M31_2) * (input_limb_40_col40)))
                     + ((M31_3) * (cube_252_output_limb_8_col80)))
@@ -888,41 +888,41 @@ fn write_trace_simd(
                     * (M31_16));
                 *sub_component_inputs.range_check_4_4_4_4[2] = [
                     ((p_coef_col124) + (M31_2)),
-                    ((carry_0_tmp_44f04_40) + (M31_2)),
-                    ((carry_1_tmp_44f04_41) + (M31_2)),
-                    ((carry_2_tmp_44f04_42) + (M31_2)),
+                    ((carry_0_tmp_44f04_39) + (M31_2)),
+                    ((carry_1_tmp_44f04_40) + (M31_2)),
+                    ((carry_2_tmp_44f04_41) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_4_4_2 = [
                     ((p_coef_col124) + (M31_2)),
-                    ((carry_0_tmp_44f04_40) + (M31_2)),
-                    ((carry_1_tmp_44f04_41) + (M31_2)),
-                    ((carry_2_tmp_44f04_42) + (M31_2)),
+                    ((carry_0_tmp_44f04_39) + (M31_2)),
+                    ((carry_1_tmp_44f04_40) + (M31_2)),
+                    ((carry_2_tmp_44f04_41) + (M31_2)),
                 ];
                 *sub_component_inputs.range_check_4_4_4_4[3] = [
-                    ((carry_3_tmp_44f04_43) + (M31_2)),
-                    ((carry_4_tmp_44f04_44) + (M31_2)),
-                    ((carry_5_tmp_44f04_45) + (M31_2)),
-                    ((carry_6_tmp_44f04_46) + (M31_2)),
+                    ((carry_3_tmp_44f04_42) + (M31_2)),
+                    ((carry_4_tmp_44f04_43) + (M31_2)),
+                    ((carry_5_tmp_44f04_44) + (M31_2)),
+                    ((carry_6_tmp_44f04_45) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_4_4_3 = [
-                    ((carry_3_tmp_44f04_43) + (M31_2)),
-                    ((carry_4_tmp_44f04_44) + (M31_2)),
-                    ((carry_5_tmp_44f04_45) + (M31_2)),
-                    ((carry_6_tmp_44f04_46) + (M31_2)),
+                    ((carry_3_tmp_44f04_42) + (M31_2)),
+                    ((carry_4_tmp_44f04_43) + (M31_2)),
+                    ((carry_5_tmp_44f04_44) + (M31_2)),
+                    ((carry_6_tmp_44f04_45) + (M31_2)),
                 ];
                 *sub_component_inputs.range_check_4_4[1] = [
-                    ((carry_7_tmp_44f04_47) + (M31_2)),
-                    ((carry_8_tmp_44f04_48) + (M31_2)),
+                    ((carry_7_tmp_44f04_46) + (M31_2)),
+                    ((carry_8_tmp_44f04_47) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_1 = [
-                    ((carry_7_tmp_44f04_47) + (M31_2)),
-                    ((carry_8_tmp_44f04_48) + (M31_2)),
+                    ((carry_7_tmp_44f04_46) + (M31_2)),
+                    ((carry_8_tmp_44f04_47) + (M31_2)),
                 ];
-                let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_49 =
-                    combination_tmp_44f04_38;
+                let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_48 =
+                    combination_tmp_44f04_37;
 
                 *sub_component_inputs.range_check_felt_252_width_27[1] =
-                    linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_49;
+                    linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_48;
                 *lookup_data.range_check_felt_252_width_27_1 = [
                     combination_limb_0_col114,
                     combination_limb_1_col115,
@@ -938,108 +938,108 @@ fn write_trace_simd(
 
                 // Linear Combination N 1 Coefs 2.
 
-                let combination_tmp_44f04_50 = PackedFelt252Width27::from_packed_felt252(
+                let combination_tmp_44f04_49 = PackedFelt252Width27::from_packed_felt252(
                     ((Felt252_0_0_0_0)
                         + ((Felt252_2_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_49,
+                                linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_48,
                             )))),
                 );
-                let combination_limb_0_col125 = combination_tmp_44f04_50.get_m31(0);
+                let combination_limb_0_col125 = combination_tmp_44f04_49.get_m31(0);
                 *row[125] = combination_limb_0_col125;
-                let combination_limb_1_col126 = combination_tmp_44f04_50.get_m31(1);
+                let combination_limb_1_col126 = combination_tmp_44f04_49.get_m31(1);
                 *row[126] = combination_limb_1_col126;
-                let combination_limb_2_col127 = combination_tmp_44f04_50.get_m31(2);
+                let combination_limb_2_col127 = combination_tmp_44f04_49.get_m31(2);
                 *row[127] = combination_limb_2_col127;
-                let combination_limb_3_col128 = combination_tmp_44f04_50.get_m31(3);
+                let combination_limb_3_col128 = combination_tmp_44f04_49.get_m31(3);
                 *row[128] = combination_limb_3_col128;
-                let combination_limb_4_col129 = combination_tmp_44f04_50.get_m31(4);
+                let combination_limb_4_col129 = combination_tmp_44f04_49.get_m31(4);
                 *row[129] = combination_limb_4_col129;
-                let combination_limb_5_col130 = combination_tmp_44f04_50.get_m31(5);
+                let combination_limb_5_col130 = combination_tmp_44f04_49.get_m31(5);
                 *row[130] = combination_limb_5_col130;
-                let combination_limb_6_col131 = combination_tmp_44f04_50.get_m31(6);
+                let combination_limb_6_col131 = combination_tmp_44f04_49.get_m31(6);
                 *row[131] = combination_limb_6_col131;
-                let combination_limb_7_col132 = combination_tmp_44f04_50.get_m31(7);
+                let combination_limb_7_col132 = combination_tmp_44f04_49.get_m31(7);
                 *row[132] = combination_limb_7_col132;
-                let combination_limb_8_col133 = combination_tmp_44f04_50.get_m31(8);
+                let combination_limb_8_col133 = combination_tmp_44f04_49.get_m31(8);
                 *row[133] = combination_limb_8_col133;
-                let combination_limb_9_col134 = combination_tmp_44f04_50.get_m31(9);
+                let combination_limb_9_col134 = combination_tmp_44f04_49.get_m31(9);
                 *row[134] = combination_limb_9_col134;
-                let biased_limb_accumulator_u32_tmp_44f04_51 = PackedUInt32::from_m31(
+                let biased_limb_accumulator_u32_tmp_44f04_50 = PackedUInt32::from_m31(
                     ((((M31_2) * (combination_limb_0_col114)) - (combination_limb_0_col125))
                         + (M31_134217729)),
                 );
                 let p_coef_col135 =
-                    ((biased_limb_accumulator_u32_tmp_44f04_51.low().as_m31()) - (M31_1));
+                    ((biased_limb_accumulator_u32_tmp_44f04_50.low().as_m31()) - (M31_1));
                 *row[135] = p_coef_col135;
-                let carry_0_tmp_44f04_52 = (((((M31_2) * (combination_limb_0_col114))
+                let carry_0_tmp_44f04_51 = (((((M31_2) * (combination_limb_0_col114))
                     - (combination_limb_0_col125))
                     - (p_coef_col135))
                     * (M31_16));
-                let carry_1_tmp_44f04_53 = ((((carry_0_tmp_44f04_52)
+                let carry_1_tmp_44f04_52 = ((((carry_0_tmp_44f04_51)
                     + ((M31_2) * (combination_limb_1_col115)))
                     - (combination_limb_1_col126))
                     * (M31_16));
-                let carry_2_tmp_44f04_54 = ((((carry_1_tmp_44f04_53)
+                let carry_2_tmp_44f04_53 = ((((carry_1_tmp_44f04_52)
                     + ((M31_2) * (combination_limb_2_col116)))
                     - (combination_limb_2_col127))
                     * (M31_16));
-                let carry_3_tmp_44f04_55 = ((((carry_2_tmp_44f04_54)
+                let carry_3_tmp_44f04_54 = ((((carry_2_tmp_44f04_53)
                     + ((M31_2) * (combination_limb_3_col117)))
                     - (combination_limb_3_col128))
                     * (M31_16));
-                let carry_4_tmp_44f04_56 = ((((carry_3_tmp_44f04_55)
+                let carry_4_tmp_44f04_55 = ((((carry_3_tmp_44f04_54)
                     + ((M31_2) * (combination_limb_4_col118)))
                     - (combination_limb_4_col129))
                     * (M31_16));
-                let carry_5_tmp_44f04_57 = ((((carry_4_tmp_44f04_56)
+                let carry_5_tmp_44f04_56 = ((((carry_4_tmp_44f04_55)
                     + ((M31_2) * (combination_limb_5_col119)))
                     - (combination_limb_5_col130))
                     * (M31_16));
-                let carry_6_tmp_44f04_58 = ((((carry_5_tmp_44f04_57)
+                let carry_6_tmp_44f04_57 = ((((carry_5_tmp_44f04_56)
                     + ((M31_2) * (combination_limb_6_col120)))
                     - (combination_limb_6_col131))
                     * (M31_16));
-                let carry_7_tmp_44f04_59 = (((((carry_6_tmp_44f04_58)
+                let carry_7_tmp_44f04_58 = (((((carry_6_tmp_44f04_57)
                     + ((M31_2) * (combination_limb_7_col121)))
                     - (combination_limb_7_col132))
                     - ((p_coef_col135) * (M31_136)))
                     * (M31_16));
-                let carry_8_tmp_44f04_60 = ((((carry_7_tmp_44f04_59)
+                let carry_8_tmp_44f04_59 = ((((carry_7_tmp_44f04_58)
                     + ((M31_2) * (combination_limb_8_col122)))
                     - (combination_limb_8_col133))
                     * (M31_16));
-                let linear_combination_n_1_coefs_2_output_tmp_44f04_71 = combination_tmp_44f04_50;
+                let linear_combination_n_1_coefs_2_output_tmp_44f04_69 = combination_tmp_44f04_49;
 
-                let poseidon_partial_round_output_tmp_44f04_72 = [
-                    cube_252_output_tmp_44f04_37,
-                    linear_combination_n_1_coefs_2_output_tmp_44f04_71,
+                let poseidon_partial_round_output_tmp_44f04_70 = [
+                    cube_252_output_tmp_44f04_36,
+                    linear_combination_n_1_coefs_2_output_tmp_44f04_69,
                 ];
 
                 // Poseidon Partial Round.
 
-                *sub_component_inputs.cube_252[2] = poseidon_partial_round_output_tmp_44f04_72[1];
-                let cube_252_output_tmp_44f04_73 =
-                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_72[1]);
-                let cube_252_output_limb_0_col136 = cube_252_output_tmp_44f04_73.get_m31(0);
+                *sub_component_inputs.cube_252[2] = poseidon_partial_round_output_tmp_44f04_70[1];
+                let cube_252_output_tmp_44f04_71 =
+                    PackedCube252::deduce_output(poseidon_partial_round_output_tmp_44f04_70[1]);
+                let cube_252_output_limb_0_col136 = cube_252_output_tmp_44f04_71.get_m31(0);
                 *row[136] = cube_252_output_limb_0_col136;
-                let cube_252_output_limb_1_col137 = cube_252_output_tmp_44f04_73.get_m31(1);
+                let cube_252_output_limb_1_col137 = cube_252_output_tmp_44f04_71.get_m31(1);
                 *row[137] = cube_252_output_limb_1_col137;
-                let cube_252_output_limb_2_col138 = cube_252_output_tmp_44f04_73.get_m31(2);
+                let cube_252_output_limb_2_col138 = cube_252_output_tmp_44f04_71.get_m31(2);
                 *row[138] = cube_252_output_limb_2_col138;
-                let cube_252_output_limb_3_col139 = cube_252_output_tmp_44f04_73.get_m31(3);
+                let cube_252_output_limb_3_col139 = cube_252_output_tmp_44f04_71.get_m31(3);
                 *row[139] = cube_252_output_limb_3_col139;
-                let cube_252_output_limb_4_col140 = cube_252_output_tmp_44f04_73.get_m31(4);
+                let cube_252_output_limb_4_col140 = cube_252_output_tmp_44f04_71.get_m31(4);
                 *row[140] = cube_252_output_limb_4_col140;
-                let cube_252_output_limb_5_col141 = cube_252_output_tmp_44f04_73.get_m31(5);
+                let cube_252_output_limb_5_col141 = cube_252_output_tmp_44f04_71.get_m31(5);
                 *row[141] = cube_252_output_limb_5_col141;
-                let cube_252_output_limb_6_col142 = cube_252_output_tmp_44f04_73.get_m31(6);
+                let cube_252_output_limb_6_col142 = cube_252_output_tmp_44f04_71.get_m31(6);
                 *row[142] = cube_252_output_limb_6_col142;
-                let cube_252_output_limb_7_col143 = cube_252_output_tmp_44f04_73.get_m31(7);
+                let cube_252_output_limb_7_col143 = cube_252_output_tmp_44f04_71.get_m31(7);
                 *row[143] = cube_252_output_limb_7_col143;
-                let cube_252_output_limb_8_col144 = cube_252_output_tmp_44f04_73.get_m31(8);
+                let cube_252_output_limb_8_col144 = cube_252_output_tmp_44f04_71.get_m31(8);
                 *row[144] = cube_252_output_limb_8_col144;
-                let cube_252_output_limb_9_col145 = cube_252_output_tmp_44f04_73.get_m31(9);
+                let cube_252_output_limb_9_col145 = cube_252_output_tmp_44f04_71.get_m31(9);
                 *row[145] = cube_252_output_limb_9_col145;
                 *lookup_data.cube_252_2 = [
                     combination_limb_0_col125,
@@ -1066,54 +1066,54 @@ fn write_trace_simd(
 
                 // Linear Combination N 6 Coefs 4 2 3 1 M 1 1.
 
-                let combination_tmp_44f04_74 = PackedFelt252Width27::from_packed_felt252(
+                let combination_tmp_44f04_72 = PackedFelt252Width27::from_packed_felt252(
                     (((((((Felt252_0_0_0_0)
                         + ((Felt252_4_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[0],
+                                poseidon_partial_round_output_tmp_44f04_35[0],
                             ))))
                         + ((Felt252_2_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_36[1],
+                                poseidon_partial_round_output_tmp_44f04_35[1],
                             ))))
                         + ((Felt252_3_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[0],
+                                poseidon_partial_round_output_tmp_44f04_70[0],
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                poseidon_partial_round_output_tmp_44f04_72[1],
+                                poseidon_partial_round_output_tmp_44f04_70[1],
                             ))))
                         - ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                cube_252_output_tmp_44f04_73,
+                                cube_252_output_tmp_44f04_71,
                             ))))
                         + ((Felt252_1_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
                                 poseidon_round_keys_output_tmp_44f04_0[2],
                             )))),
                 );
-                let combination_limb_0_col146 = combination_tmp_44f04_74.get_m31(0);
+                let combination_limb_0_col146 = combination_tmp_44f04_72.get_m31(0);
                 *row[146] = combination_limb_0_col146;
-                let combination_limb_1_col147 = combination_tmp_44f04_74.get_m31(1);
+                let combination_limb_1_col147 = combination_tmp_44f04_72.get_m31(1);
                 *row[147] = combination_limb_1_col147;
-                let combination_limb_2_col148 = combination_tmp_44f04_74.get_m31(2);
+                let combination_limb_2_col148 = combination_tmp_44f04_72.get_m31(2);
                 *row[148] = combination_limb_2_col148;
-                let combination_limb_3_col149 = combination_tmp_44f04_74.get_m31(3);
+                let combination_limb_3_col149 = combination_tmp_44f04_72.get_m31(3);
                 *row[149] = combination_limb_3_col149;
-                let combination_limb_4_col150 = combination_tmp_44f04_74.get_m31(4);
+                let combination_limb_4_col150 = combination_tmp_44f04_72.get_m31(4);
                 *row[150] = combination_limb_4_col150;
-                let combination_limb_5_col151 = combination_tmp_44f04_74.get_m31(5);
+                let combination_limb_5_col151 = combination_tmp_44f04_72.get_m31(5);
                 *row[151] = combination_limb_5_col151;
-                let combination_limb_6_col152 = combination_tmp_44f04_74.get_m31(6);
+                let combination_limb_6_col152 = combination_tmp_44f04_72.get_m31(6);
                 *row[152] = combination_limb_6_col152;
-                let combination_limb_7_col153 = combination_tmp_44f04_74.get_m31(7);
+                let combination_limb_7_col153 = combination_tmp_44f04_72.get_m31(7);
                 *row[153] = combination_limb_7_col153;
-                let combination_limb_8_col154 = combination_tmp_44f04_74.get_m31(8);
+                let combination_limb_8_col154 = combination_tmp_44f04_72.get_m31(8);
                 *row[154] = combination_limb_8_col154;
-                let combination_limb_9_col155 = combination_tmp_44f04_74.get_m31(9);
+                let combination_limb_9_col155 = combination_tmp_44f04_72.get_m31(9);
                 *row[155] = combination_limb_9_col155;
-                let biased_limb_accumulator_u32_tmp_44f04_75 = PackedUInt32::from_m31(
+                let biased_limb_accumulator_u32_tmp_44f04_73 = PackedUInt32::from_m31(
                     (((((((((M31_4) * (cube_252_output_limb_0_col72))
                         + ((M31_2) * (combination_limb_0_col93)))
                         + ((M31_3) * (cube_252_output_limb_0_col104)))
@@ -1124,9 +1124,9 @@ fn write_trace_simd(
                         + (M31_268435458)),
                 );
                 let p_coef_col156 =
-                    ((biased_limb_accumulator_u32_tmp_44f04_75.low().as_m31()) - (M31_2));
+                    ((biased_limb_accumulator_u32_tmp_44f04_73.low().as_m31()) - (M31_2));
                 *row[156] = p_coef_col156;
-                let carry_0_tmp_44f04_76 = ((((((((((M31_4)
+                let carry_0_tmp_44f04_74 = ((((((((((M31_4)
                     * (cube_252_output_limb_0_col72))
                     + ((M31_2) * (combination_limb_0_col93)))
                     + ((M31_3) * (cube_252_output_limb_0_col104)))
@@ -1136,7 +1136,7 @@ fn write_trace_simd(
                     - (combination_limb_0_col146))
                     - (p_coef_col156))
                     * (M31_16));
-                let carry_1_tmp_44f04_77 = (((((((((carry_0_tmp_44f04_76)
+                let carry_1_tmp_44f04_75 = (((((((((carry_0_tmp_44f04_74)
                     + ((M31_4) * (cube_252_output_limb_1_col73)))
                     + ((M31_2) * (combination_limb_1_col94)))
                     + ((M31_3) * (cube_252_output_limb_1_col105)))
@@ -1145,7 +1145,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_21_col63))
                     - (combination_limb_1_col147))
                     * (M31_16));
-                let carry_2_tmp_44f04_78 = (((((((((carry_1_tmp_44f04_77)
+                let carry_2_tmp_44f04_76 = (((((((((carry_1_tmp_44f04_75)
                     + ((M31_4) * (cube_252_output_limb_2_col74)))
                     + ((M31_2) * (combination_limb_2_col95)))
                     + ((M31_3) * (cube_252_output_limb_2_col106)))
@@ -1154,7 +1154,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_22_col64))
                     - (combination_limb_2_col148))
                     * (M31_16));
-                let carry_3_tmp_44f04_79 = (((((((((carry_2_tmp_44f04_78)
+                let carry_3_tmp_44f04_77 = (((((((((carry_2_tmp_44f04_76)
                     + ((M31_4) * (cube_252_output_limb_3_col75)))
                     + ((M31_2) * (combination_limb_3_col96)))
                     + ((M31_3) * (cube_252_output_limb_3_col107)))
@@ -1163,7 +1163,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_23_col65))
                     - (combination_limb_3_col149))
                     * (M31_16));
-                let carry_4_tmp_44f04_80 = (((((((((carry_3_tmp_44f04_79)
+                let carry_4_tmp_44f04_78 = (((((((((carry_3_tmp_44f04_77)
                     + ((M31_4) * (cube_252_output_limb_4_col76)))
                     + ((M31_2) * (combination_limb_4_col97)))
                     + ((M31_3) * (cube_252_output_limb_4_col108)))
@@ -1172,7 +1172,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_24_col66))
                     - (combination_limb_4_col150))
                     * (M31_16));
-                let carry_5_tmp_44f04_81 = (((((((((carry_4_tmp_44f04_80)
+                let carry_5_tmp_44f04_79 = (((((((((carry_4_tmp_44f04_78)
                     + ((M31_4) * (cube_252_output_limb_5_col77)))
                     + ((M31_2) * (combination_limb_5_col98)))
                     + ((M31_3) * (cube_252_output_limb_5_col109)))
@@ -1181,7 +1181,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_25_col67))
                     - (combination_limb_5_col151))
                     * (M31_16));
-                let carry_6_tmp_44f04_82 = (((((((((carry_5_tmp_44f04_81)
+                let carry_6_tmp_44f04_80 = (((((((((carry_5_tmp_44f04_79)
                     + ((M31_4) * (cube_252_output_limb_6_col78)))
                     + ((M31_2) * (combination_limb_6_col99)))
                     + ((M31_3) * (cube_252_output_limb_6_col110)))
@@ -1190,7 +1190,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_26_col68))
                     - (combination_limb_6_col152))
                     * (M31_16));
-                let carry_7_tmp_44f04_83 = ((((((((((carry_6_tmp_44f04_82)
+                let carry_7_tmp_44f04_81 = ((((((((((carry_6_tmp_44f04_80)
                     + ((M31_4) * (cube_252_output_limb_7_col79)))
                     + ((M31_2) * (combination_limb_7_col100)))
                     + ((M31_3) * (cube_252_output_limb_7_col111)))
@@ -1200,7 +1200,7 @@ fn write_trace_simd(
                     - (combination_limb_7_col153))
                     - ((p_coef_col156) * (M31_136)))
                     * (M31_16));
-                let carry_8_tmp_44f04_84 = (((((((((carry_7_tmp_44f04_83)
+                let carry_8_tmp_44f04_82 = (((((((((carry_7_tmp_44f04_81)
                     + ((M31_4) * (cube_252_output_limb_8_col80)))
                     + ((M31_2) * (combination_limb_8_col101)))
                     + ((M31_3) * (cube_252_output_limb_8_col112)))
@@ -1211,41 +1211,41 @@ fn write_trace_simd(
                     * (M31_16));
                 *sub_component_inputs.range_check_4_4_4_4[4] = [
                     ((p_coef_col156) + (M31_2)),
-                    ((carry_0_tmp_44f04_76) + (M31_2)),
-                    ((carry_1_tmp_44f04_77) + (M31_2)),
-                    ((carry_2_tmp_44f04_78) + (M31_2)),
+                    ((carry_0_tmp_44f04_74) + (M31_2)),
+                    ((carry_1_tmp_44f04_75) + (M31_2)),
+                    ((carry_2_tmp_44f04_76) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_4_4_4 = [
                     ((p_coef_col156) + (M31_2)),
-                    ((carry_0_tmp_44f04_76) + (M31_2)),
-                    ((carry_1_tmp_44f04_77) + (M31_2)),
-                    ((carry_2_tmp_44f04_78) + (M31_2)),
+                    ((carry_0_tmp_44f04_74) + (M31_2)),
+                    ((carry_1_tmp_44f04_75) + (M31_2)),
+                    ((carry_2_tmp_44f04_76) + (M31_2)),
                 ];
                 *sub_component_inputs.range_check_4_4_4_4[5] = [
-                    ((carry_3_tmp_44f04_79) + (M31_2)),
-                    ((carry_4_tmp_44f04_80) + (M31_2)),
-                    ((carry_5_tmp_44f04_81) + (M31_2)),
-                    ((carry_6_tmp_44f04_82) + (M31_2)),
+                    ((carry_3_tmp_44f04_77) + (M31_2)),
+                    ((carry_4_tmp_44f04_78) + (M31_2)),
+                    ((carry_5_tmp_44f04_79) + (M31_2)),
+                    ((carry_6_tmp_44f04_80) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_4_4_5 = [
-                    ((carry_3_tmp_44f04_79) + (M31_2)),
-                    ((carry_4_tmp_44f04_80) + (M31_2)),
-                    ((carry_5_tmp_44f04_81) + (M31_2)),
-                    ((carry_6_tmp_44f04_82) + (M31_2)),
+                    ((carry_3_tmp_44f04_77) + (M31_2)),
+                    ((carry_4_tmp_44f04_78) + (M31_2)),
+                    ((carry_5_tmp_44f04_79) + (M31_2)),
+                    ((carry_6_tmp_44f04_80) + (M31_2)),
                 ];
                 *sub_component_inputs.range_check_4_4[2] = [
-                    ((carry_7_tmp_44f04_83) + (M31_2)),
-                    ((carry_8_tmp_44f04_84) + (M31_2)),
+                    ((carry_7_tmp_44f04_81) + (M31_2)),
+                    ((carry_8_tmp_44f04_82) + (M31_2)),
                 ];
                 *lookup_data.range_check_4_4_2 = [
-                    ((carry_7_tmp_44f04_83) + (M31_2)),
-                    ((carry_8_tmp_44f04_84) + (M31_2)),
+                    ((carry_7_tmp_44f04_81) + (M31_2)),
+                    ((carry_8_tmp_44f04_82) + (M31_2)),
                 ];
-                let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_85 =
-                    combination_tmp_44f04_74;
+                let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_83 =
+                    combination_tmp_44f04_72;
 
                 *sub_component_inputs.range_check_felt_252_width_27[2] =
-                    linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_85;
+                    linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_83;
                 *lookup_data.range_check_felt_252_width_27_2 = [
                     combination_limb_0_col146,
                     combination_limb_1_col147,
@@ -1261,82 +1261,82 @@ fn write_trace_simd(
 
                 // Linear Combination N 1 Coefs 2.
 
-                let combination_tmp_44f04_86 = PackedFelt252Width27::from_packed_felt252(
+                let combination_tmp_44f04_84 = PackedFelt252Width27::from_packed_felt252(
                     ((Felt252_0_0_0_0)
                         + ((Felt252_2_0_0_0)
                             * (PackedFelt252::from_packed_felt252width27(
-                                linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_85,
+                                linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_83,
                             )))),
                 );
-                let combination_limb_0_col157 = combination_tmp_44f04_86.get_m31(0);
+                let combination_limb_0_col157 = combination_tmp_44f04_84.get_m31(0);
                 *row[157] = combination_limb_0_col157;
-                let combination_limb_1_col158 = combination_tmp_44f04_86.get_m31(1);
+                let combination_limb_1_col158 = combination_tmp_44f04_84.get_m31(1);
                 *row[158] = combination_limb_1_col158;
-                let combination_limb_2_col159 = combination_tmp_44f04_86.get_m31(2);
+                let combination_limb_2_col159 = combination_tmp_44f04_84.get_m31(2);
                 *row[159] = combination_limb_2_col159;
-                let combination_limb_3_col160 = combination_tmp_44f04_86.get_m31(3);
+                let combination_limb_3_col160 = combination_tmp_44f04_84.get_m31(3);
                 *row[160] = combination_limb_3_col160;
-                let combination_limb_4_col161 = combination_tmp_44f04_86.get_m31(4);
+                let combination_limb_4_col161 = combination_tmp_44f04_84.get_m31(4);
                 *row[161] = combination_limb_4_col161;
-                let combination_limb_5_col162 = combination_tmp_44f04_86.get_m31(5);
+                let combination_limb_5_col162 = combination_tmp_44f04_84.get_m31(5);
                 *row[162] = combination_limb_5_col162;
-                let combination_limb_6_col163 = combination_tmp_44f04_86.get_m31(6);
+                let combination_limb_6_col163 = combination_tmp_44f04_84.get_m31(6);
                 *row[163] = combination_limb_6_col163;
-                let combination_limb_7_col164 = combination_tmp_44f04_86.get_m31(7);
+                let combination_limb_7_col164 = combination_tmp_44f04_84.get_m31(7);
                 *row[164] = combination_limb_7_col164;
-                let combination_limb_8_col165 = combination_tmp_44f04_86.get_m31(8);
+                let combination_limb_8_col165 = combination_tmp_44f04_84.get_m31(8);
                 *row[165] = combination_limb_8_col165;
-                let combination_limb_9_col166 = combination_tmp_44f04_86.get_m31(9);
+                let combination_limb_9_col166 = combination_tmp_44f04_84.get_m31(9);
                 *row[166] = combination_limb_9_col166;
-                let biased_limb_accumulator_u32_tmp_44f04_87 = PackedUInt32::from_m31(
+                let biased_limb_accumulator_u32_tmp_44f04_85 = PackedUInt32::from_m31(
                     ((((M31_2) * (combination_limb_0_col146)) - (combination_limb_0_col157))
                         + (M31_134217729)),
                 );
                 let p_coef_col167 =
-                    ((biased_limb_accumulator_u32_tmp_44f04_87.low().as_m31()) - (M31_1));
+                    ((biased_limb_accumulator_u32_tmp_44f04_85.low().as_m31()) - (M31_1));
                 *row[167] = p_coef_col167;
-                let carry_0_tmp_44f04_88 = (((((M31_2) * (combination_limb_0_col146))
+                let carry_0_tmp_44f04_86 = (((((M31_2) * (combination_limb_0_col146))
                     - (combination_limb_0_col157))
                     - (p_coef_col167))
                     * (M31_16));
-                let carry_1_tmp_44f04_89 = ((((carry_0_tmp_44f04_88)
+                let carry_1_tmp_44f04_87 = ((((carry_0_tmp_44f04_86)
                     + ((M31_2) * (combination_limb_1_col147)))
                     - (combination_limb_1_col158))
                     * (M31_16));
-                let carry_2_tmp_44f04_90 = ((((carry_1_tmp_44f04_89)
+                let carry_2_tmp_44f04_88 = ((((carry_1_tmp_44f04_87)
                     + ((M31_2) * (combination_limb_2_col148)))
                     - (combination_limb_2_col159))
                     * (M31_16));
-                let carry_3_tmp_44f04_91 = ((((carry_2_tmp_44f04_90)
+                let carry_3_tmp_44f04_89 = ((((carry_2_tmp_44f04_88)
                     + ((M31_2) * (combination_limb_3_col149)))
                     - (combination_limb_3_col160))
                     * (M31_16));
-                let carry_4_tmp_44f04_92 = ((((carry_3_tmp_44f04_91)
+                let carry_4_tmp_44f04_90 = ((((carry_3_tmp_44f04_89)
                     + ((M31_2) * (combination_limb_4_col150)))
                     - (combination_limb_4_col161))
                     * (M31_16));
-                let carry_5_tmp_44f04_93 = ((((carry_4_tmp_44f04_92)
+                let carry_5_tmp_44f04_91 = ((((carry_4_tmp_44f04_90)
                     + ((M31_2) * (combination_limb_5_col151)))
                     - (combination_limb_5_col162))
                     * (M31_16));
-                let carry_6_tmp_44f04_94 = ((((carry_5_tmp_44f04_93)
+                let carry_6_tmp_44f04_92 = ((((carry_5_tmp_44f04_91)
                     + ((M31_2) * (combination_limb_6_col152)))
                     - (combination_limb_6_col163))
                     * (M31_16));
-                let carry_7_tmp_44f04_95 = (((((carry_6_tmp_44f04_94)
+                let carry_7_tmp_44f04_93 = (((((carry_6_tmp_44f04_92)
                     + ((M31_2) * (combination_limb_7_col153)))
                     - (combination_limb_7_col164))
                     - ((p_coef_col167) * (M31_136)))
                     * (M31_16));
-                let carry_8_tmp_44f04_96 = ((((carry_7_tmp_44f04_95)
+                let carry_8_tmp_44f04_94 = ((((carry_7_tmp_44f04_93)
                     + ((M31_2) * (combination_limb_8_col154)))
                     - (combination_limb_8_col165))
                     * (M31_16));
-                let linear_combination_n_1_coefs_2_output_tmp_44f04_107 = combination_tmp_44f04_86;
+                let linear_combination_n_1_coefs_2_output_tmp_44f04_104 = combination_tmp_44f04_84;
 
-                let poseidon_partial_round_output_tmp_44f04_108 = [
-                    cube_252_output_tmp_44f04_73,
-                    linear_combination_n_1_coefs_2_output_tmp_44f04_107,
+                let poseidon_partial_round_output_tmp_44f04_105 = [
+                    cube_252_output_tmp_44f04_71,
+                    linear_combination_n_1_coefs_2_output_tmp_44f04_104,
                 ];
 
                 *lookup_data.poseidon_3_partial_rounds_chain_0 = [

@@ -1,4 +1,4 @@
-// AIR version 54d95c0d
+// AIR version 2b6cb268
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -26,7 +26,6 @@ impl LinearCombinationN1Coefs2 {
         p_coef_col10: E::F,
         eval: &mut E,
     ) -> [E::F; 0] {
-        let M31_1 = E::F::from(M31::from(1));
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));
         let M31_2 = E::F::from(M31::from(2));
@@ -94,85 +93,73 @@ impl LinearCombinationN1Coefs2 {
                 - combination_limb_9_col9.clone())
                 - (p_coef_col10.clone() * M31_256.clone())),
         );
-        let biased_carry_0_tmp_13179_11 =
-            eval.add_intermediate(((p_coef_col10.clone() + M31_1.clone()) - M31_1.clone()));
         // carry constraint 0.
         eval.add_constraint(
-            (((biased_carry_0_tmp_13179_11.clone() * biased_carry_0_tmp_13179_11.clone())
-                * biased_carry_0_tmp_13179_11.clone())
-                - biased_carry_0_tmp_13179_11.clone()),
+            (((p_coef_col10.clone() * p_coef_col10.clone()) * p_coef_col10.clone())
+                - p_coef_col10.clone()),
         );
-        let biased_carry_1_tmp_13179_12 =
-            eval.add_intermediate(((carry_0_tmp_13179_2.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_1_tmp_13179_11 = eval.add_intermediate(carry_0_tmp_13179_2.clone());
         // carry constraint 1.
         eval.add_constraint(
-            (((biased_carry_1_tmp_13179_12.clone() * biased_carry_1_tmp_13179_12.clone())
-                * biased_carry_1_tmp_13179_12.clone())
-                - biased_carry_1_tmp_13179_12.clone()),
+            (((biased_carry_1_tmp_13179_11.clone() * biased_carry_1_tmp_13179_11.clone())
+                * biased_carry_1_tmp_13179_11.clone())
+                - biased_carry_1_tmp_13179_11.clone()),
         );
-        let biased_carry_2_tmp_13179_13 =
-            eval.add_intermediate(((carry_1_tmp_13179_3.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_2_tmp_13179_12 = eval.add_intermediate(carry_1_tmp_13179_3.clone());
         // carry constraint 2.
         eval.add_constraint(
-            (((biased_carry_2_tmp_13179_13.clone() * biased_carry_2_tmp_13179_13.clone())
-                * biased_carry_2_tmp_13179_13.clone())
-                - biased_carry_2_tmp_13179_13.clone()),
+            (((biased_carry_2_tmp_13179_12.clone() * biased_carry_2_tmp_13179_12.clone())
+                * biased_carry_2_tmp_13179_12.clone())
+                - biased_carry_2_tmp_13179_12.clone()),
         );
-        let biased_carry_3_tmp_13179_14 =
-            eval.add_intermediate(((carry_2_tmp_13179_4.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_3_tmp_13179_13 = eval.add_intermediate(carry_2_tmp_13179_4.clone());
         // carry constraint 3.
         eval.add_constraint(
-            (((biased_carry_3_tmp_13179_14.clone() * biased_carry_3_tmp_13179_14.clone())
-                * biased_carry_3_tmp_13179_14.clone())
-                - biased_carry_3_tmp_13179_14.clone()),
+            (((biased_carry_3_tmp_13179_13.clone() * biased_carry_3_tmp_13179_13.clone())
+                * biased_carry_3_tmp_13179_13.clone())
+                - biased_carry_3_tmp_13179_13.clone()),
         );
-        let biased_carry_4_tmp_13179_15 =
-            eval.add_intermediate(((carry_3_tmp_13179_5.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_4_tmp_13179_14 = eval.add_intermediate(carry_3_tmp_13179_5.clone());
         // carry constraint 4.
         eval.add_constraint(
-            (((biased_carry_4_tmp_13179_15.clone() * biased_carry_4_tmp_13179_15.clone())
-                * biased_carry_4_tmp_13179_15.clone())
-                - biased_carry_4_tmp_13179_15.clone()),
+            (((biased_carry_4_tmp_13179_14.clone() * biased_carry_4_tmp_13179_14.clone())
+                * biased_carry_4_tmp_13179_14.clone())
+                - biased_carry_4_tmp_13179_14.clone()),
         );
-        let biased_carry_5_tmp_13179_16 =
-            eval.add_intermediate(((carry_4_tmp_13179_6.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_5_tmp_13179_15 = eval.add_intermediate(carry_4_tmp_13179_6.clone());
         // carry constraint 5.
         eval.add_constraint(
-            (((biased_carry_5_tmp_13179_16.clone() * biased_carry_5_tmp_13179_16.clone())
-                * biased_carry_5_tmp_13179_16.clone())
-                - biased_carry_5_tmp_13179_16.clone()),
+            (((biased_carry_5_tmp_13179_15.clone() * biased_carry_5_tmp_13179_15.clone())
+                * biased_carry_5_tmp_13179_15.clone())
+                - biased_carry_5_tmp_13179_15.clone()),
         );
-        let biased_carry_6_tmp_13179_17 =
-            eval.add_intermediate(((carry_5_tmp_13179_7.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_6_tmp_13179_16 = eval.add_intermediate(carry_5_tmp_13179_7.clone());
         // carry constraint 6.
         eval.add_constraint(
-            (((biased_carry_6_tmp_13179_17.clone() * biased_carry_6_tmp_13179_17.clone())
-                * biased_carry_6_tmp_13179_17.clone())
-                - biased_carry_6_tmp_13179_17.clone()),
+            (((biased_carry_6_tmp_13179_16.clone() * biased_carry_6_tmp_13179_16.clone())
+                * biased_carry_6_tmp_13179_16.clone())
+                - biased_carry_6_tmp_13179_16.clone()),
         );
-        let biased_carry_7_tmp_13179_18 =
-            eval.add_intermediate(((carry_6_tmp_13179_8.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_7_tmp_13179_17 = eval.add_intermediate(carry_6_tmp_13179_8.clone());
         // carry constraint 7.
         eval.add_constraint(
-            (((biased_carry_7_tmp_13179_18.clone() * biased_carry_7_tmp_13179_18.clone())
-                * biased_carry_7_tmp_13179_18.clone())
-                - biased_carry_7_tmp_13179_18.clone()),
+            (((biased_carry_7_tmp_13179_17.clone() * biased_carry_7_tmp_13179_17.clone())
+                * biased_carry_7_tmp_13179_17.clone())
+                - biased_carry_7_tmp_13179_17.clone()),
         );
-        let biased_carry_8_tmp_13179_19 =
-            eval.add_intermediate(((carry_7_tmp_13179_9.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_8_tmp_13179_18 = eval.add_intermediate(carry_7_tmp_13179_9.clone());
         // carry constraint 8.
         eval.add_constraint(
-            (((biased_carry_8_tmp_13179_19.clone() * biased_carry_8_tmp_13179_19.clone())
-                * biased_carry_8_tmp_13179_19.clone())
-                - biased_carry_8_tmp_13179_19.clone()),
+            (((biased_carry_8_tmp_13179_18.clone() * biased_carry_8_tmp_13179_18.clone())
+                * biased_carry_8_tmp_13179_18.clone())
+                - biased_carry_8_tmp_13179_18.clone()),
         );
-        let biased_carry_9_tmp_13179_20 =
-            eval.add_intermediate(((carry_8_tmp_13179_10.clone() + M31_1.clone()) - M31_1.clone()));
+        let biased_carry_9_tmp_13179_19 = eval.add_intermediate(carry_8_tmp_13179_10.clone());
         // carry constraint 9.
         eval.add_constraint(
-            (((biased_carry_9_tmp_13179_20.clone() * biased_carry_9_tmp_13179_20.clone())
-                * biased_carry_9_tmp_13179_20.clone())
-                - biased_carry_9_tmp_13179_20.clone()),
+            (((biased_carry_9_tmp_13179_19.clone() * biased_carry_9_tmp_13179_19.clone())
+                * biased_carry_9_tmp_13179_19.clone())
+                - biased_carry_9_tmp_13179_19.clone()),
         );
         []
     }
