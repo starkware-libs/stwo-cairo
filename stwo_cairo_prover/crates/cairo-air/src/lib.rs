@@ -11,6 +11,7 @@ pub mod pedersen;
 pub mod poseidon;
 pub mod range_checks_air;
 pub mod relations;
+pub mod sha256;
 pub mod utils;
 
 // TODO(Ohad): verifier crate.

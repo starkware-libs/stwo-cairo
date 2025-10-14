@@ -1,4 +1,4 @@
-// AIR version c574c96b
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

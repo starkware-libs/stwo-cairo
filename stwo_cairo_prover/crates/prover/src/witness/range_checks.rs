@@ -6,7 +6,7 @@ use stwo::prover::backend::simd::SimdBackend;
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_19,
     range_check_19_b, range_check_19_c, range_check_19_d, range_check_19_e, range_check_19_f,
-    range_check_19_g, range_check_19_h, range_check_3_3_3_3_3, range_check_3_6_6_3,
+    range_check_19_g, range_check_19_h, range_check_2, range_check_3_3_3_3_3, range_check_3_6_6_3,
     range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
     range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
     range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
@@ -14,6 +14,7 @@ use crate::witness::components::{
 use crate::witness::utils::TreeBuilder;
 
 pub struct RangeChecksClaimGenerator {
+    pub rc_2_trace_generator: range_check_2::ClaimGenerator,
     pub rc_6_trace_generator: range_check_6::ClaimGenerator,
     pub rc_8_trace_generator: range_check_8::ClaimGenerator,
     pub rc_11_trace_generator: range_check_11::ClaimGenerator,
@@ -53,6 +54,7 @@ impl Default for RangeChecksClaimGenerator {
 impl RangeChecksClaimGenerator {
     pub fn new() -> Self {
         Self {
+            rc_2_trace_generator: range_check_2::ClaimGenerator::new(),
             rc_6_trace_generator: range_check_6::ClaimGenerator::new(),
             rc_8_trace_generator: range_check_8::ClaimGenerator::new(),
             rc_11_trace_generator: range_check_11::ClaimGenerator::new(),
@@ -88,6 +90,8 @@ impl RangeChecksClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (RangeChecksClaim, RangeChecksInteractionClaimGenerator) {
+        let (rc_2_claim, rc_2_interaction_gen) =
+            self.rc_2_trace_generator.write_trace(tree_builder);
         let (rc_6_claim, rc_6_interaction_gen) =
             self.rc_6_trace_generator.write_trace(tree_builder);
         let (rc_8_claim, rc_8_interaction_gen) =
@@ -148,6 +152,7 @@ impl RangeChecksClaimGenerator {
             self.rc_3_3_3_3_3_trace_generator.write_trace(tree_builder);
         (
             RangeChecksClaim {
+                rc_2: rc_2_claim,
                 rc_6: rc_6_claim,
                 rc_8: rc_8_claim,
                 rc_11: rc_11_claim,
@@ -179,6 +184,7 @@ impl RangeChecksClaimGenerator {
                 rc_3_3_3_3_3: rc_3_3_3_3_3_claim,
             },
             RangeChecksInteractionClaimGenerator {
+                rc_2_interaction_gen,
                 rc_6_interaction_gen,
                 rc_8_interaction_gen,
                 rc_11_interaction_gen,
@@ -214,6 +220,7 @@ impl RangeChecksClaimGenerator {
 }
 
 pub struct RangeChecksInteractionClaimGenerator {
+    rc_2_interaction_gen: range_check_2::InteractionClaimGenerator,
     rc_6_interaction_gen: range_check_6::InteractionClaimGenerator,
     rc_8_interaction_gen: range_check_8::InteractionClaimGenerator,
     rc_11_interaction_gen: range_check_11::InteractionClaimGenerator,
@@ -250,6 +257,9 @@ impl RangeChecksInteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &RangeChecksInteractionElements,
     ) -> RangeChecksInteractionClaim {
+        let rc_2_interaction_claim = self
+            .rc_2_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_2);
         let rc_6_interaction_claim = self
             .rc_6_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_6);
@@ -338,6 +348,7 @@ impl RangeChecksInteractionClaimGenerator {
             .rc_3_3_3_3_3_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_3_3_3_3_3);
         RangeChecksInteractionClaim {
+            rc_2: rc_2_interaction_claim,
             rc_6: rc_6_interaction_claim,
             rc_8: rc_8_interaction_claim,
             rc_11: rc_11_interaction_claim,

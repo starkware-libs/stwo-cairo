@@ -1,4 +1,4 @@
-// AIR version bc48deaa
+// AIR version 52ac7695-dirty
 #![allow(unused_parens)]
 use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
