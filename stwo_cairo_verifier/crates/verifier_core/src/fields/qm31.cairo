@@ -66,6 +66,8 @@ pub trait PackedUnreducedQM31Trait {
     fn large_zero() -> PackedUnreducedQM31;
 
     fn reduce(self: PackedUnreducedQM31) -> QM31;
+
+    fn packed_fused_mul_add(a: PackedUnreducedQM31, b: QM31, c: PackedUnreducedQM31) -> QM31;
 }
 
 impl QM31Display of core::fmt::Display<QM31> {
