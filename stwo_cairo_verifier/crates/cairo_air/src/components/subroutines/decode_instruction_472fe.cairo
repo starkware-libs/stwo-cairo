@@ -1,4 +1,8 @@
+<<<<<<< HEAD:stwo_cairo_verifier/crates/cairo_air/src/components/subroutines/decode_instruction_472fe.cairo
 // AIR version c574c96b
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7:stwo_cairo_verifier/crates/cairo_air/src/components/subroutines/decode_instruction_64420.cairo
 use crate::prelude::*;
 
 

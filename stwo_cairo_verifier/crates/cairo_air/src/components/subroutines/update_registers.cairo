@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
 use crate::components::subroutines::cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate;
 use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;

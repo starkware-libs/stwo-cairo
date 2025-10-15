@@ -45,6 +45,8 @@ pub struct CairoProof<H: MerkleHasher> {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
 }
 
 impl<H: MerkleHasher> CairoSerialize for CairoProof<H>
@@ -57,11 +59,13 @@ where
             interaction_pow,
             interaction_claim,
             stark_proof,
+            channel_salt,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
+        CairoSerialize::serialize(channel_salt, output);
     }
 }
 
@@ -74,12 +78,13 @@ where
         let interaction_pow = CairoDeserialize::deserialize(data);
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
-
+        let channel_salt = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
+            channel_salt,
         }
     }
 }
@@ -550,14 +555,18 @@ impl PublicMemory {
             safe_call_ids,
         } = self;
 
-        // Program is the bootloader and doesn't need to be mixed into the channel.
-        let _ = program;
+        // Mix program memory section. All the ids are mixed first, then all the values, each of
+        // them in the order it appears in the section.
+        channel.mix_u32s(&program.iter().map(|(id, _)| *id).collect_vec());
+        channel.mix_u32s(&program.iter().flat_map(|(_, value)| *value).collect_vec());
 
         // Mix public segments.
         public_segments.mix_into(channel);
 
-        // Mix output memory section.
-        channel.mix_u32s(&output.iter().flat_map(|(_, felt)| *felt).collect_vec());
+        // Mix output memory section. All the ids are mixed first, then all the values, each of them
+        // in the order it appears in the section.
+        channel.mix_u32s(&output.iter().map(|(id, _)| *id).collect_vec());
+        channel.mix_u32s(&output.iter().flat_map(|(_, value)| *value).collect_vec());
 
         // Mix safe_ids memory section.
         for id in safe_call_ids {
@@ -712,7 +721,7 @@ impl CairoComponents {
         preprocessed_column_ids: &[PreProcessedColumnId],
     ) -> Self {
         let tree_span_provider =
-            &mut TraceLocationAllocator::new_with_preproccessed_columns(preprocessed_column_ids);
+            &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
 
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 #![allow(unused_parens)]
 use cairo_air::components::mul_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

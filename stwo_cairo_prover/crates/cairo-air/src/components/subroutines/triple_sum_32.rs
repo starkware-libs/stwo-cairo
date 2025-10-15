@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]

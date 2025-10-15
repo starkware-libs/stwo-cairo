@@ -274,6 +274,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         interaction_pow,
         interaction_claim,
         stark_proof,
+        channel_salt,
     }: CairoProof<MC::H>,
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> Result<(), CairoVerificationError> {
@@ -287,6 +288,9 @@ pub fn verify_cairo<MC: MerkleChannel>(
     verify_claim(&claim);
 
     let channel = &mut MC::C::default();
+    if let Some(salt) = channel_salt {
+        channel.mix_u64(salt);
+    }
     let pcs_config = stark_proof.config;
     pcs_config.mix_into(channel);
     let commitment_scheme_verifier = &mut CommitmentSchemeVerifier::<MC>::new(pcs_config);
@@ -301,11 +305,10 @@ pub fn verify_cairo<MC: MerkleChannel>(
     commitment_scheme_verifier.commit(stark_proof.commitments[1], &log_sizes[1], channel);
 
     // Proof of work.
-    channel.mix_u64(interaction_pow);
-    if channel.trailing_zeros() < INTERACTION_POW_BITS {
+    if !channel.verify_pow_nonce(INTERACTION_POW_BITS, interaction_pow) {
         return Err(CairoVerificationError::ProofOfWork);
     }
-
+    channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
     // Verify lookup argument.

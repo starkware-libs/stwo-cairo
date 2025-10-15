@@ -18,7 +18,12 @@ pub impl M31InvertibleImpl of Invertible<M31> {
     }
 }
 
-pub impl M31BatchInvertibleImpl of BatchInvertible<M31> {}
+pub impl M31BatchInvertibleImpl of BatchInvertible<M31> {
+    /// Computes all `1/arr[i]` using one inversion per element.
+    fn batch_inverse(values: Array<M31>) -> Array<M31> {
+        values.span().into_iter().map(|v| v.inverse()).collect()
+    }
+}
 
 pub impl M31Add of core::traits::Add<M31> {
     #[inline(always)]

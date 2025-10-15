@@ -16,4 +16,4 @@ cairo-lint.workspace = true
 stwo_verifier_core = { path = "../verifier_core" }
 
 [dev-dependencies]
-cairo_test = "2.12.0"
+cairo_test = "2.12.2"

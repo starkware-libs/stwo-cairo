@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 use crate::components::subroutines::range_check_mem_value_n_28::range_check_mem_value_n_28_evaluate;
 use crate::prelude::*;
 

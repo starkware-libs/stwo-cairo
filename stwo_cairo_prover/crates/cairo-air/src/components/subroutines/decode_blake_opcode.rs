@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version c574c96b
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_472fe::DecodeInstruction472Fe;
 use crate::components::subroutines::read_blake_word::ReadBlakeWord;

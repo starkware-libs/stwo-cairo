@@ -656,41 +656,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             );
     }
 
-    fn max_constraint_log_degree_bound(self: @RangeChecksComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree = core::cmp::max(max_degree, self.rc_6.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_8.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_11.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_12.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_18.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_18_b.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_b.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_c.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_d.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_e.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_f.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_g.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_19_h.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_4_3.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_4_4.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_5_4.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_b.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_c.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_d.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_e.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_f.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_g.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_9_9_h.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_7_2_5.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_3_6_6_3.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.rc_4_4_4_4.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.rc_3_3_3_3_3.max_constraint_log_degree_bound());
-        max_degree
-    }
-
     fn evaluate_constraints_at_point(
         self: @RangeChecksComponents,
         ref sum: QM31,

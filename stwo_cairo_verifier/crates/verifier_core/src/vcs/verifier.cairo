@@ -4,7 +4,7 @@ use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::BaseField;
-use crate::utils::SpanExTrait;
+use crate::utils::{ColumnsIndicesByDegreeBound, SpanExTrait};
 use crate::vcs::hasher::MerkleHasher;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
@@ -57,9 +57,19 @@ impl MerkleDecommitmentSerde<
 }
 
 pub struct MerkleVerifier<impl H: MerkleHasher> {
+    /// The root of the Merkle tree being verified
     pub root: H::Hash,
-    pub column_log_sizes: Array<u32>,
-    pub columns_by_log_size: Span<Span<usize>>,
+    // The height of the Merkle tree.
+    //
+    // The height can be computed as log_blowup_factor + column_indices_by_deg_bound.len() - 1.
+    pub tree_height: u32,
+    /// Indices of columns, grouped by their associated degree bound.
+    ///
+    /// While the MerkleVerifier itself only needs to know the number of columns for each degree
+    /// bound, we store the full list of indices here because the Polynomial Commitment Scheme (PCS)
+    /// verifier requires access to the actual indices. Keeping this information here avoids the
+    /// need to save us computing 'n_column_by_deg_bound' when creating the MerkleVerifier.
+    pub column_indices_by_deg_bound: ColumnsIndicesByDegreeBound,
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
@@ -85,7 +95,7 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
     /// * The computed root does not match the expected root.
     fn verify(
         self: @MerkleVerifier<H>,
-        queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        ref queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     );
@@ -94,32 +104,42 @@ pub trait MerkleVerifierTrait<impl H: MerkleHasher> {
 impl MerkleVerifierImpl<
     impl H: MerkleHasher, +Clone<H::Hash>, +Drop<H::Hash>, +PartialEq<H::Hash>,
 > of MerkleVerifierTrait<H> {
+    /// Verifies openings of a Merkle commitment at positions given by `queries_per_log_size`.
+    ///
+    /// The current implementation only supports verification of query positions such that
+    /// the set of query indices in a given column contains at least all the foldings of
+    /// query indices in longer columns.
+    /// This assumption implies that the `column_witness` in `decommitment` is empty.
     fn verify(
         self: @MerkleVerifier<H>,
-        mut queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
+        ref queries_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
         mut queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let mut columns_by_log_size = *self.columns_by_log_size;
-        let mut layer_log_size: felt252 = columns_by_log_size.len().into() - 1;
+        let mut column_indices_by_deg_bound = *self.column_indices_by_deg_bound;
+        let mut layer_log_size: felt252 = (*self.tree_height).into();
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
-        if let Some(layer_cols) = columns_by_log_size.pop_back() {
-            let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
+        let layer_cols = column_indices_by_deg_bound.pop_back().unwrap();
+        let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
 
-            let n_columns_in_layer = layer_cols.len();
-            for current_query in layer_column_queries {
-                let column_values = queried_values.pop_front_n(n_columns_in_layer);
+        let n_columns_in_layer = layer_cols.len();
+        assert!(n_columns_in_layer != 0);
+        for current_query in layer_column_queries {
+            let column_values = queried_values.pop_front_n(n_columns_in_layer);
 
-                prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
-            }
+            prev_layer_hashes.append((*current_query, H::hash_node(None, column_values)));
         }
 
-        while let Some(layer_cols) = columns_by_log_size.pop_back() {
-            let n_columns_in_layer = layer_cols.len();
+        while layer_log_size != 0 {
             layer_log_size -= 1;
+            // `None` happens only in the last `log_blowup_factor` layers.
+            let n_columns_in_layer = match column_indices_by_deg_bound.pop_back() {
+                Some(layer_cols) => layer_cols.len(),
+                None => 0,
+            };
 
             // Prepare write buffer for queries to the current layer. This will propagate to the
             // next layer.
@@ -135,25 +155,20 @@ impl MerkleVerifierImpl<
             // Merge previous layer queries and column queries.
             while let Some(current_query) =
                 next_decommitment_node(layer_column_queries, prev_layer_hashes.span()) {
-                let witness_too_short_error = || panic!(
-                    "{}", MerkleVerificationError::WitnessTooShort,
-                );
                 let left_child_index = current_query * 2;
                 let left_hash = fetch_prev_node_hash(
                     ref prev_layer_hashes, ref hash_witness, left_child_index,
-                )
-                    .unwrap_or_else(witness_too_short_error);
+                );
                 let right_hash = fetch_prev_node_hash(
                     ref prev_layer_hashes, ref hash_witness, left_child_index + 1,
-                )
-                    .unwrap_or_else(witness_too_short_error);
+                );
                 let node_hashes = Some((left_hash.clone(), right_hash.clone()));
 
-                // If the column values were queried, read them from `queried_value`.
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
-                    column_witness.pop_front_n(n_columns_in_layer)
+                    assert!(n_columns_in_layer == 0);
+                    array![].span()
                 };
 
                 layer_total_queries
@@ -166,23 +181,19 @@ impl MerkleVerifierImpl<
         // Check that all witnesses and values have been consumed.
         assert!(hash_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
         assert!(column_witness.is_empty(), "{}", MerkleVerificationError::WitnessTooLong);
-
         let (_, computed_root) = prev_layer_hashes.pop_front().unwrap();
+        assert!(prev_layer_hashes.is_empty());
+        assert!(queried_values.is_empty());
 
-        if @computed_root != self.root {
-            panic!("{}", MerkleVerificationError::RootMismatch);
-        }
+        assert!(@computed_root == self.root, "{}", MerkleVerificationError::RootMismatch);
     }
 }
 
 fn next_decommitment_node<H>(
     layer_queries: Span<u32>, prev_queries: Span<(u32, H)>,
 ) -> Option<usize> {
-    let desnap = |v| {
-        *v
-    };
     let Some((prev_query, _)) = prev_queries.first() else {
-        return layer_queries.first().map(desnap);
+        return layer_queries.first().map(|v| *v);
     };
 
     let next_query = *prev_query / 2;
@@ -199,20 +210,25 @@ fn next_decommitment_node<H>(
 
 /// Fetches the hash of the next node from the previous layer in the Merkle tree.
 /// The hash is fetched either from the computed values or from the witness.
+///
+/// # Panics
+///
+/// Panics if the required hash should be fetched from `hash_witness` but `hash_witness`
+/// is empty.
 #[inline]
 fn fetch_prev_node_hash<H, +Clone<H>, +Drop<H>>(
     ref prev_layer_hashes: Array<(u32, H)>, ref hash_witness: Span<H>, expected_query: u32,
-) -> Option<@H> {
+) -> @H {
     // If the child was computed, use that value.
-    let mut prev_layer_hashes_span = prev_layer_hashes.span();
-    if let Some((q, h)) = prev_layer_hashes_span.pop_front() {
-        if *q == expected_query {
-            let _ = prev_layer_hashes.pop_front();
-            return Some(h);
-        }
+    if let Some((q, h)) = prev_layer_hashes.span().first() && *q == expected_query {
+        let _ = prev_layer_hashes.pop_front();
+        return h;
     }
-    // If the child was not computed, read it from the witness.
-    hash_witness.pop_front()
+    // If the child was not computed, read it from the witness. Panics if the witness
+    // is already empty.
+    hash_witness
+        .pop_front()
+        .unwrap_or_else(|| panic!("{}", MerkleVerificationError::WitnessTooShort))
 }
 
 #[derive(Drop, Debug)]

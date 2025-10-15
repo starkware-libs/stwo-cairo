@@ -47,3 +47,6 @@ dependencies = [
 [[package]]
 name = "stwo_verifier_utils"
 version = "0.1.0"
+dependencies = [
+ "bounded_int",
+]

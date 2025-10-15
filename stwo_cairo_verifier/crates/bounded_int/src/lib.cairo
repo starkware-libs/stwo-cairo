@@ -50,6 +50,21 @@ pub mod impls {
         type RemT = U8_BOUNDED_INT;
     }
 
+    pub impl DivRemU128ByU32Shift of DivRemHelper<u128, ConstValue<U32_SHIFT>> {
+        type DivT = U96_BOUNDED_INT;
+        type RemT = U32_BOUNDED_INT;
+    }
+
+    pub impl DivRemBoundedU96ByU32Shift of DivRemHelper<U96_BOUNDED_INT, ConstValue<U32_SHIFT>> {
+        type DivT = U64_BOUNDED_INT;
+        type RemT = U32_BOUNDED_INT;
+    }
+
+    pub impl DivRemBoundedU64ByU32Shift of DivRemHelper<U64_BOUNDED_INT, ConstValue<U32_SHIFT>> {
+        type DivT = U32_BOUNDED_INT;
+        type RemT = U32_BOUNDED_INT;
+    }
+
     pub impl DivRemU64ByU32Shift of DivRemHelper<u64, ConstValue<U32_SHIFT>> {
         type DivT = BoundedInt<0, { U32_SHIFT - 1 }>;
         type RemT = BoundedInt<0, { U32_SHIFT - 1 }>;

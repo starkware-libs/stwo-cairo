@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
+=======
+// AIR version c4472dc1
+>>>>>>> origin/sharp7
 use crate::components::subroutines::verify_blake_word::verify_blake_word_evaluate;
 use crate::prelude::*;
 

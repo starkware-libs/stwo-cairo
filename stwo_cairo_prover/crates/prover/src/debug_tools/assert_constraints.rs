@@ -25,7 +25,7 @@ pub fn assert_component<E: FrameworkEval + Sync>(
         .sub_tree(component.trace_locations())
         .map(|tree| tree.into_iter().cloned().collect_vec());
     component_trace[PREPROCESSED_TRACE_IDX] = component
-        .preproccessed_column_indices()
+        .preprocessed_column_indices()
         .iter()
         .map(|idx| trace[PREPROCESSED_TRACE_IDX][*idx])
         .collect();

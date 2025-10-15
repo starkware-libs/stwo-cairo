@@ -1,16 +1,10 @@
-<<<<<<< HEAD
-// AIR version 54d95c0d
-=======
 // AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
-use crate::components::subroutines::read_id::ReadId;
-use crate::components::subroutines::read_positive_known_id_num_bits_36::ReadPositiveKnownIdNumBits36;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct ReadPositiveNumBits36 {}
+pub struct ReadPositiveNumBits27 {}
 
-impl ReadPositiveNumBits36 {
+impl ReadPositiveNumBits27 {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -18,31 +12,32 @@ impl ReadPositiveNumBits36 {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [read_positive_num_bits_36_input]: [E::F; 1],
+        [read_positive_num_bits_27_input]: [E::F; 1],
         id_col0: E::F,
         value_limb_0_col1: E::F,
         value_limb_1_col2: E::F,
         value_limb_2_col3: E::F,
-        value_limb_3_col4: E::F,
         memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 0] {
-        ReadId::evaluate(
-            [read_positive_num_bits_36_input.clone()],
-            id_col0.clone(),
+        eval.add_to_relation(RelationEntry::new(
             memory_address_to_id_lookup_elements,
-            eval,
-        );
-        ReadPositiveKnownIdNumBits36::evaluate(
-            [id_col0.clone()],
-            value_limb_0_col1.clone(),
-            value_limb_1_col2.clone(),
-            value_limb_2_col3.clone(),
-            value_limb_3_col4.clone(),
+            E::EF::one(),
+            &[read_positive_num_bits_27_input.clone(), id_col0.clone()],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
             memory_id_to_big_lookup_elements,
-            eval,
-        );
+            E::EF::one(),
+            &[
+                id_col0.clone(),
+                value_limb_0_col1.clone(),
+                value_limb_1_col2.clone(),
+                value_limb_2_col3.clone(),
+            ],
+        ));
+
         []
     }
 }

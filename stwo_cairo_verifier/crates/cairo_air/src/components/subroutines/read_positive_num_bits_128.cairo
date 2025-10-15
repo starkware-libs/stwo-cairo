@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 // AIR version 54d95c0d
 use crate::components::subroutines::read_id::read_id_evaluate;
 use crate::components::subroutines::read_positive_known_id_num_bits_128::read_positive_known_id_num_bits_128_evaluate;
+=======
+// AIR version c4472dc1
+use crate::components::subroutines::range_check_last_limb_bits_in_ms_limb_2::range_check_last_limb_bits_in_ms_limb_2_evaluate;
+>>>>>>> origin/sharp7
 use crate::prelude::*;
 
 
