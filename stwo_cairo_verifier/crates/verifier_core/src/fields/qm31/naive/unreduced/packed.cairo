@@ -152,6 +152,21 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
         let WM31 { a: b, c: d } = self.bd.reduce();
         QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
     }
+
+    #[inline]
+    fn packed_fused_mul_add(a: PackedUnreducedQM31, b: QM31, c: PackedUnreducedQM31) -> QM31 {
+        let a_b_low = a.mul_cm31(b.a);
+        let a_b_high = a.mul_cm31(b.b);
+
+        let [x, y, z, w] = unpack(a_b_low + c + Self::large_zero());
+        let [a, b, c, d] = unpack(a_b_high + Self::large_zero());
+        let (ar, br, cr, dr) = (c + c - d, d + d + c, a, b);
+
+        QM31 {
+            a: CM31 { a: M31Trait::reduce_u128(x + ar), b: M31Trait::reduce_u128(y + br) },
+            b: CM31 { a: M31Trait::reduce_u128(z + cr), b: M31Trait::reduce_u128(w + dr) },
+        }
+    }
 }
 
 pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
@@ -188,4 +203,11 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
         let ((a, b), (c, d)) = ((self.a.a, self.a.b), (self.b.a, self.b.b));
         PackedUnreducedQM31 { ac: WM31 { a: a, c: c }.into(), bd: WM31 { a: b, c: d }.into() }
     }
+}
+
+#[inline]
+fn unpack(self: PackedUnreducedQM31) -> [u128; 4] {
+    let u256 { low: a, high: c } = self.ac.inner.into();
+    let u256 { low: b, high: d } = self.bd.inner.into();
+    [a, b, c, d]
 }
