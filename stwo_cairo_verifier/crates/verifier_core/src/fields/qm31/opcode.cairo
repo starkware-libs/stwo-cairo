@@ -189,6 +189,11 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
     fn reduce(self: PackedUnreducedQM31) -> QM31 {
         self
     }
+
+    #[inline]
+    fn packed_fused_mul_add(a: PackedUnreducedQM31, b: QM31, c: PackedUnreducedQM31) -> QM31 {
+        QM31Trait::fused_mul_add(a, b, c)
+    }
 }
 
 impl QM31Debug of core::fmt::Debug<QM31> {

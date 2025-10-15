@@ -5,7 +5,9 @@ use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
-use crate::fields::qm31::{QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE};
+use crate::fields::qm31::{
+    PackedUnreducedQM31Trait, QM31, QM31Serde, QM31Trait, QM31_EXTENSION_DEGREE,
+};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::ibutterfly;
@@ -582,7 +584,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
             let values: Box<[QM31; FOLD_FACTOR]> = *subset_eval.span().try_into().unwrap();
             let [f_at_x, f_at_neg_x] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_x, f_at_neg_x, *x_inv);
-            res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
+            res.append(PackedUnreducedQM31Trait::packed_fused_mul_add(f1, fold_alpha, f0));
         }
 
         res
@@ -609,7 +611,7 @@ impl SparseEvaluationImpl of SparseEvaluationTrait {
                 .unwrap();
             let [f_at_p, f_at_neg_p] = values.unbox();
             let (f0, f1) = ibutterfly(f_at_p, f_at_neg_p, *y_inv);
-            res.append(QM31Trait::fused_mul_add(fold_alpha, f1, f0));
+            res.append(PackedUnreducedQM31Trait::packed_fused_mul_add(f1, fold_alpha, f0));
         }
 
         res
