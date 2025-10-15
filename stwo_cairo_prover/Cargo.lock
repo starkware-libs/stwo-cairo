@@ -1471,6 +1471,7 @@ dependencies = [
  "cairo-air",
  "cairo-vm",
  "clap",
+ "itertools 0.12.1",
  "log",
  "num-bigint",
  "regex",

@@ -8,8 +8,6 @@ use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::CommitmentTreeProver;
 
 /// Generates the root of the preprocessed trace commitment tree for a given `log_blowup_factor`.
-// TODO(Shahars): remove allow.
-#[allow(unused)]
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
@@ -17,8 +15,9 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
 where
     SimdBackend: BackendForChannel<MC>,
 {
+    println!("Generating preprocessed trace root for log blowup factor: {}", log_blowup_factor);
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
-
+    println!("Computing twiddles");
     // Precompute twiddles for the commitment scheme.
     let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
     let twiddles = SimdBackend::precompute_twiddles(
@@ -26,7 +25,7 @@ where
             .circle_domain()
             .half_coset,
     );
-
+    println!("Generating commitment tree");
     // Generate the commitment tree.
     let polys = SimdBackend::interpolate_columns(preprocessed_trace.gen_trace(), &twiddles);
     let commitment_scheme = CommitmentTreeProver::<SimdBackend, MC>::new(
