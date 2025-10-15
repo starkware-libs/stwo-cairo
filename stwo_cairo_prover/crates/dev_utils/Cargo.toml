@@ -7,6 +7,9 @@ edition.workspace = true
 name = "extract_mem_trace"
 required-features = ["stwo-cairo-adapter/extract-mem-trace"]
 
+[[bin]]
+name = "export_preprocessed_roots"
+
 [dependencies]
 anyhow.workspace = true
 cairo-air.workspace = true
@@ -25,6 +28,7 @@ log.workspace = true
 regex = "1.11.1"
 num-bigint = "0.4.6"
 bincode = "1.3.3"
+itertools.workspace = true
 
 serde_json.workspace = true
 cairo-vm.workspace = true
