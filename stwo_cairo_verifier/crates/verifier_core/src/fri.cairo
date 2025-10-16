@@ -1,11 +1,7 @@
 use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
-<<<<<<< HEAD
-use core::num::traits::{CheckedSub, Zero};
-=======
 use stwo_verifier_utils::zip_eq::zip_eq;
->>>>>>> origin/sharp7
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;

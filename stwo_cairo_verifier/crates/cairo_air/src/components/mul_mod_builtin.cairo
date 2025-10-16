@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version 54d95c0d
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::double_karatsuba_n_8_limb_max_bound_4095_evaluate;
 use crate::components::subroutines::mod_utils::mod_utils_evaluate;
 use crate::components::subroutines::mod_words_to_12_bit_array::mod_words_to_12_bit_array_evaluate;
@@ -901,6 +897,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
+    }
+
+    fn max_constraint_log_degree_bound(self: @Component) -> u32 {
+        *(self.claim.log_size) + 1
     }
 
     fn evaluate_constraints_at_point(
