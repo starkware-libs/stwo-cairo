@@ -115,6 +115,7 @@ impl Relocator {
                 }
                 // Not builtins.
                 BuiltinName::segment_arena => {}
+                BuiltinName::system => {},
             };
         }
         res

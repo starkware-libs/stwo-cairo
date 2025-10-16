@@ -52,6 +52,7 @@ pub struct BuiltinSegments {
     pub poseidon: Option<MemorySegmentAddresses>,
     pub range_check_bits_96: Option<MemorySegmentAddresses>,
     pub range_check_bits_128: Option<MemorySegmentAddresses>,
+    pub system: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -86,7 +87,8 @@ impl BuiltinSegments {
                         assert!(segment.is_none(), "{name} builtin is not supported");
                     }
                     // Not builtins.
-                    BuiltinName::segment_arena => {}
+                    BuiltinName::segment_arena => {},
+                    BuiltinName::system => {},
                 }
             };
         }
