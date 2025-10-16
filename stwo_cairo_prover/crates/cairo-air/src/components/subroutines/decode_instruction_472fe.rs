@@ -1,8 +1,4 @@
-<<<<<<< HEAD:stwo_cairo_prover/crates/cairo-air/src/components/subroutines/decode_instruction_472fe.rs
 // AIR version c574c96b
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7:stwo_cairo_prover/crates/cairo-air/src/components/subroutines/decode_instruction_64420.rs
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version 54d95c0d
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_3b105::DecodeInstruction3B105;
 use crate::components::subroutines::read_small::ReadSmall;

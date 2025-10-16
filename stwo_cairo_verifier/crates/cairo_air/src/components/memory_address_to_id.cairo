@@ -106,6 +106,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
     }
 
+    fn max_constraint_log_degree_bound(self: @Component) -> u32 {
+        *self.claim.log_size + 1
+    }
+
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,
