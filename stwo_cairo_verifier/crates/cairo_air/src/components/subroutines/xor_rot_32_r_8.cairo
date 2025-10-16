@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version e654733
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
 use crate::components::subroutines::bitwise_xor_num_bits_8_b::bitwise_xor_num_bits_8_b_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;

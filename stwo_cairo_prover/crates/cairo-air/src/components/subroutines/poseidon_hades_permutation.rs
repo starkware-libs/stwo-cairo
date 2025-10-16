@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version 54d95c0d
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::linear_combination_n_2_coefs_1_1::LinearCombinationN2Coefs11;
 use crate::components::subroutines::linear_combination_n_4_coefs_1_1_m2_1::LinearCombinationN4Coefs11M21;
