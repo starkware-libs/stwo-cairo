@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version c574c96b
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
 use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;

@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-// AIR version e654733
-=======
 // AIR version c4472dc1
->>>>>>> origin/sharp7
 #![allow(unused_parens)]
 use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

@@ -1,8 +1,4 @@
-<<<<<<< HEAD:stwo_cairo_verifier/crates/cairo_air/src/components/subroutines/read_positive_known_id_num_bits_36.cairo
 // AIR version 54d95c0d
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7:stwo_cairo_verifier/crates/cairo_air/src/components/subroutines/read_positive_num_bits_27.cairo
 use crate::prelude::*;
 
 
