@@ -146,7 +146,7 @@ where
 /// Note: This function is very slow and is intended for generating the preprocessed roots when
 /// needed.
 pub fn export_preprocessed_roots() {
-    let max_log_blowup_factor = 5;
+    let max_log_blowup_factor = 2;
 
     // Blake2s roots.
     let blake_roots = get_preprocessed_roots::<Blake2sMerkleChannel>(
@@ -163,7 +163,6 @@ pub fn export_preprocessed_roots() {
 
         println!("log_blowup_factor: {}, blake root: [{}]", i + 1, u32s_hex);
     });
-
     // Poseidon252 roots.
     get_preprocessed_roots::<Poseidon252MerkleChannel>(
         max_log_blowup_factor,

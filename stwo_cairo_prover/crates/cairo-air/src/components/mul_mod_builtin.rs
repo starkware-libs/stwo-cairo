@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version 54d95c0d
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::double_karatsuba_n_8_limb_max_bound_4095::DoubleKaratsubaN8LimbMaxBound4095;
 use crate::components::subroutines::mod_utils::ModUtils;

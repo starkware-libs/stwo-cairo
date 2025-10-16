@@ -43,6 +43,7 @@ pub fn run_program(
         trace_enabled: true,
         relocate_trace: false,
         layout: LayoutName::all_cairo_stwo,
+        fill_holes: true,
         proof_mode: true,
         disable_trace_padding: true,
         ..Default::default()

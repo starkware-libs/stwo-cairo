@@ -189,6 +189,10 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
         );
     }
 
+    fn max_constraint_log_degree_bound(self: @BigComponent) -> u32 {
+        *self.log_n_rows + 1
+    }
+
     fn evaluate_constraints_at_point(
         self: @BigComponent,
         ref sum: QM31,
@@ -404,6 +408,10 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
             trace_gen,
             log_size,
         );
+    }
+
+    fn max_constraint_log_degree_bound(self: @SmallComponent) -> u32 {
+        *self.log_n_rows + 1
     }
 
     fn evaluate_constraints_at_point(

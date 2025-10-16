@@ -204,8 +204,7 @@ pub fn default_prod_prover_parameters() -> ProverParameters {
 /// Verifies the proof in case the respective flag is set.
 fn create_and_serialize_generic_proof<MC: MerkleChannel>(
     input: ProverInput,
-    pcs_config: PcsConfig,
-    preprocessed_trace: PreProcessedTraceVariant,
+    prover_params: ProverParameters,
     verify: bool,
     proof_path: PathBuf,
     proof_format: ProofFormat,
@@ -215,12 +214,12 @@ where
     MC::H: Serialize,
     <MC::H as MerkleHasher>::Hash: CairoSerialize,
 {
-    let proof = prove_cairo::<MC>(input, pcs_config, preprocessed_trace)?;
+    let proof = prove_cairo::<MC>(input, prover_params)?;
 
     serialize_proof_to_file::<MC::H>(&proof, &proof_path, proof_format)?;
 
     if verify {
-        verify_cairo::<MC>(proof, preprocessed_trace)?;
+        verify_cairo::<MC>(proof, prover_params.preprocessed_trace)?;
     }
 
     Ok(())
@@ -233,35 +232,23 @@ pub fn create_and_serialize_proof(
     proof_format: ProofFormat,
     proof_params_json: Option<PathBuf>,
 ) -> Result<()> {
-    let ProverParameters {
-        channel_hash,
-        pcs_config,
-        preprocessed_trace,
-    } = match proof_params_json {
+    let prover_params = match proof_params_json {
         Some(path) => sonic_rs::from_str(&std::fs::read_to_string(&path)?)?,
         None => default_prod_prover_parameters(),
     };
 
     let create_and_serialize_generic_proof: fn(
         ProverInput,
-        PcsConfig,
-        PreProcessedTraceVariant,
+        ProverParameters,
         bool,
         PathBuf,
         ProofFormat,
-    ) -> Result<()> = match channel_hash {
+    ) -> Result<()> = match prover_params.channel_hash {
         ChannelHash::Blake2s => create_and_serialize_generic_proof::<Blake2sMerkleChannel>,
         ChannelHash::Poseidon252 => create_and_serialize_generic_proof::<Poseidon252MerkleChannel>,
     };
 
-    create_and_serialize_generic_proof(
-        input,
-        pcs_config,
-        preprocessed_trace,
-        verify,
-        proof_path,
-        proof_format,
-    )?;
+    create_and_serialize_generic_proof(input, prover_params, verify, proof_path, proof_format)?;
 
     Ok(())
 }
@@ -303,22 +290,12 @@ pub mod tests {
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
-<<<<<<< HEAD
             let compiled_program = get_compiled_cairo_program_path("test_prove_verify_ret_opcode");
             let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-            let preprocessed_trace = PreProcessedTraceVariant::CanonicalWithoutPedersen;
-            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(
-                input,
-                PcsConfig {
-                    pow_bits: 6,
-=======
-            let compiled_program = get_test_program("test_prove_verify_ret_opcode");
-            let input = run_program_and_adapter(&compiled_program, None);
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Poseidon252,
                 pcs_config: PcsConfig {
                     pow_bits: 20,
->>>>>>> origin/sharp7
                     fri_config: FriConfig::new(0, 1, 90),
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
@@ -429,21 +406,12 @@ pub mod tests {
 
         #[test]
         fn test_e2e_prove_cairo_verify_all_opcode_components() {
-<<<<<<< HEAD
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
             let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-            let preprocessed_trace = PreProcessedTraceVariant::Canonical;
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(
-                input,
-                PcsConfig {
-=======
-            let compiled_program = get_test_program("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, None);
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig {
->>>>>>> origin/sharp7
                     pow_bits: 26,
                     fri_config: FriConfig::new(0, 1, 70),
                 },
@@ -498,20 +466,14 @@ pub mod tests {
         }
 
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
-<<<<<<< HEAD
             let compiled_program = get_compiled_cairo_program_path(path);
             let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-
-=======
-            let compiled_program = get_test_program(path);
-            let input = run_program_and_adapter(&compiled_program, None);
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: None,
             };
->>>>>>> origin/sharp7
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
                     sonic_rs::to_string(
@@ -536,13 +498,8 @@ pub mod tests {
 
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
-<<<<<<< HEAD
-            use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
-            use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
-=======
-            use dev_utils::utils::run_program_and_adapter;
             use stwo::core::pcs::PcsConfig;
->>>>>>> origin/sharp7
+            use stwo_cairo_adapter::utils::run_program_and_adapter;
             use test_log::test;
 
             use super::*;

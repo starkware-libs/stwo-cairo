@@ -1,10 +1,6 @@
-<<<<<<< HEAD
 // AIR version 54d95c0d
 use crate::components::subroutines::read_id::read_id_evaluate;
 use crate::components::subroutines::read_positive_known_id_num_bits_36::read_positive_known_id_num_bits_36_evaluate;
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::prelude::*;
 
 

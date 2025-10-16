@@ -45,11 +45,8 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
 /// Every mix should call `update_digest` as final step, and every draw should
 /// increment the `n_draws` counter. In the current implementation, every draw method
 /// invokes `draw_random_words` internally, which increments the `n_draws` by one.
-<<<<<<< HEAD
-=======
 // TODO(Gali): Consider simplifying the implementation of the mixing methods by hashing the current
 // digest at the end.
->>>>>>> origin/sharp7
 pub impl Blake2sChannelImpl of ChannelTrait {
     fn mix_commitment(ref self: Blake2sChannel, commitment: Blake2sHash) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
@@ -212,12 +209,8 @@ fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
     let counter = channel.n_draws;
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
     channel.n_draws += 1;
-<<<<<<< HEAD
-    Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 36, msg) }
-=======
 
     // Append a zero byte for domain separation between generating randomness and mixing a
     // single u32.
     Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 37, msg) }
->>>>>>> origin/sharp7
 }

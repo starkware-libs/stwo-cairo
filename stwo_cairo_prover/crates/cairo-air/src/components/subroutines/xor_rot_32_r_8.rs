@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 // AIR version e654733
-=======
-// AIR version c4472dc1
->>>>>>> origin/sharp7
 use crate::components::prelude::*;
 use crate::components::subroutines::bitwise_xor_num_bits_8::BitwiseXorNumBits8;
 use crate::components::subroutines::bitwise_xor_num_bits_8_b::BitwiseXorNumBits8B;

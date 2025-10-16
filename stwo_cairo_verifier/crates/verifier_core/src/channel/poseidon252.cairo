@@ -7,11 +7,7 @@ use stwo_verifier_utils::{MemorySection, deconstruct_f252, hash_u32s_with_state}
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-<<<<<<< HEAD
-use crate::utils::{pack4, pow2_u64};
-=======
 use crate::utils::{pack_qm31, pow2_u64};
->>>>>>> origin/sharp7
 use super::ChannelTrait;
 
 #[cfg(test)]
@@ -22,22 +18,6 @@ pub const FELTS_PER_HASH: usize = 8;
 
 pub const BYTES_PER_HASH: usize = 31;
 
-<<<<<<< HEAD
-/// Constructs a `felt252` from 7 u32 big-endian limbs.
-pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
-    let [l0, l1, l2, l3, l4, l5, l6] = x.unbox();
-    let offset = 0x100000000;
-    let result: felt252 = l0.into();
-    let result = result * offset + l1.into();
-    let result = result * offset + l2.into();
-    let result = result * offset + l3.into();
-    let result = result * offset + l4.into();
-    let result = result * offset + l5.into();
-    result * offset + l6.into()
-}
-
-=======
->>>>>>> origin/sharp7
 /// A channel with Poseidon252 hash as the non-interactive random oracle.
 /// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
 /// to zero. Every draw of one `felt252` increments `n_draws` by one.
@@ -80,18 +60,12 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
             res.append(pack_qm31(cur, y));
         }
 
-<<<<<<< HEAD
-        let next_digest = poseidon_hash_span(res.span());
-
-        // TODO(spapini): do we need length padding?
-=======
         if let Some(x) = felts.pop_front() {
             res.append(pack_qm31(1, *x));
         }
 
         let next_digest = poseidon_hash_span(res.span());
 
->>>>>>> origin/sharp7
         update_digest(ref self, next_digest);
     }
 
@@ -99,35 +73,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.mix_felt252(nonce.into());
     }
 
-<<<<<<< HEAD
-    fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
-        let mut res = array![self.digest];
-
-        let mut data = data;
-
-        while let Some(chunk) = data.multi_pop_front::<7>() {
-            res.append(construct_f252_be(*chunk));
-        }
-
-        if !data.is_empty() {
-            let mut chunk: Array<u32> = array![];
-            chunk.append_span(data);
-            for _ in data.len()..7 {
-                chunk.append(0);
-            }
-            res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
-        }
-
-        let next_digest = poseidon_hash_span(res.span());
-
-        // TODO(spapini): do we need length padding?
-        update_digest(ref self, next_digest);
-    }
-
-    fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
-=======
     fn mix_memory_section(ref self: Poseidon252Channel, section: MemorySection) {
->>>>>>> origin/sharp7
         // TODO(Gali): Make this more efficient, use hash_memory_section.
         let mut ids = array![];
         let mut flat_values = array![];
@@ -211,13 +157,9 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     let counter: felt252 = channel.n_draws.into();
-<<<<<<< HEAD
-    let (res, _, _) = hades_permutation(channel.digest, counter, 2);
-=======
     // Use 3 as the capacity for domain separation between mix and draw operations.
     // In all mix functions, the capacity is set to 0 or 2.
     let (res, _, _) = hades_permutation(channel.digest, counter, 3);
->>>>>>> origin/sharp7
     channel.n_draws += 1;
     res
 }
