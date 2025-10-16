@@ -31,7 +31,7 @@ pub struct ProverInput {
     pub public_segment_context: PublicSegmentContext,
 }
 
-const N_PUBLIC_SEGMENTS: usize = 11;
+const N_PUBLIC_SEGMENTS: usize = 12;
 
 /// Represents the pointer arguments of the `main` function.
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -56,7 +56,8 @@ impl PublicSegmentContext {
                 BuiltinName::mul_mod => present[10] = true,
                 BuiltinName::segment_arena => {
                     // Do nothing.
-                }
+                },
+                BuiltinName::system => present[11] = true,
             }
         }
         Self { present }
