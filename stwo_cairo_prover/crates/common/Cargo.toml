@@ -14,7 +14,7 @@ stwo-cairo-serialize = { path = "../cairo-serialize" }
 stwo.workspace = true
 stwo-constraint-framework.workspace = true
 serde_arrays.workspace = true
-starknet-curve = "0.5.1"
+starknet-curve.workspace = true
 rayon.workspace = true
 
 [dev-dependencies]

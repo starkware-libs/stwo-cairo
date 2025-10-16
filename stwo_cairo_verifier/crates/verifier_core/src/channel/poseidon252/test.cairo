@@ -24,11 +24,7 @@ fn test_channel_draws() {
     channel.draw_secure_felts(9);
     assert_eq!(channel.n_draws, 6);
 
-<<<<<<< HEAD
-    channel.mix_root(0);
-=======
     channel.mix_commitment(0);
->>>>>>> origin/sharp7
     assert_eq!(channel.n_draws, 0);
 
     channel.draw_secure_felt();

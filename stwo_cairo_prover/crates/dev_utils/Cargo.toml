@@ -25,15 +25,12 @@ log.workspace = true
 regex = "1.11.1"
 num-bigint = "0.4.6"
 bincode = "1.3.3"
+cairo-lang-runner.workspace = true
+cairo-lang-executable.workspace = true
+cairo-lang-utils.workspace = true
 
 serde_json.workspace = true
 cairo-vm.workspace = true
-<<<<<<< HEAD
 
 [dev-dependencies]
 tempfile = "3.8.0"
-=======
-cairo-lang-runner = { version = "2.12.4-dev.0" }
-cairo-lang-executable = { version = "2.12.4-dev.0" }
-cairo-lang-utils = { version = "2.12.4-dev.0" }
->>>>>>> origin/sharp7

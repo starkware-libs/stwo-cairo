@@ -494,57 +494,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-<<<<<<< HEAD
-        let CairoAir {
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
-            verify_bitwise_xor_9,
-        } = self;
-
-        let mut max_degree = opcodes.max_constraint_log_degree_bound();
-        max_degree =
-            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, pedersen_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, poseidon_context.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
-        max_degree =
-            core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8_b.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
-        max_degree
-=======
         *self.composition_log_degree_bound
->>>>>>> origin/sharp7
     }
 
     fn mask_points(
@@ -1019,53 +969,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(feature: "poseidon252_verifier")]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-<<<<<<< HEAD
-        let CairoAir {
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
-            verify_bitwise_xor_9,
-        } = self;
-
-        let mut max_degree = opcodes.max_constraint_log_degree_bound();
-        max_degree =
-            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
-        max_degree =
-            core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8_b.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
-        max_degree
-=======
         *self.composition_log_degree_bound
->>>>>>> origin/sharp7
     }
 
     fn mask_points(
