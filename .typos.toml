@@ -1,5 +1,2 @@
 [default]
-extend-ignore-re = [
-  '0x[0-9a-fA-F]{4,}',
-  'ba',
-]
+extend-ignore-re = ['0x[0-9a-fA-F]{4,}', 'ba', 'Ba']
