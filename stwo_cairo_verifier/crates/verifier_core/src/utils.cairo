@@ -4,7 +4,10 @@ use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedF
 use core::nullable::{FromNullableResult, NullableTrait, match_nullable};
 use core::num::traits::BitSize;
 use core::traits::{DivRem, PanicDestruct};
-use crate::fields::m31::{M31, M31_SHIFT};
+use crate::fields::SecureField;
+use crate::fields::m31::M31_SHIFT;
+use crate::fields::qm31::QM31Trait;
+use crate::{ColumnSpan, TreeSpan};
 
 /// Returns `2^n`, n in range [0, 32).
 /// Will panic (with index out of bounds) if n >= 32.
@@ -129,6 +132,7 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
         self.pop_back()
     }
 
+    /// Panics if self.len() < n.
     fn pop_front_n(ref self: Span<T>, n: usize) -> Span<T> {
         let (res, remainder) = self.split_at(n);
         self = remainder;
@@ -142,11 +146,9 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
 
     fn next_if_eq<+PartialEq<T>>(ref self: Span<T>, other: @T) -> Option<@T> {
         let mut self_copy = self;
-        if let Some(value) = self_copy.pop_front() {
-            if value == other {
-                self = self_copy;
-                return Some(other);
-            }
+        if let Some(value) = self_copy.pop_front() && value == other {
+            self = self_copy;
+            return Some(other);
         }
         None
     }
@@ -162,10 +164,11 @@ pub impl SpanImpl<T> of SpanExTrait<T> {
     }
 }
 
-// Packs 4 BaseField values and "append" to a felt252.
+// Packs a SecureField value into a felt252, injecting `cur` into
+// the most significant bits.
 // The resulting felt252 is: cur || x0 || x1 || x2 || x3.
-pub fn pack4(cur: felt252, values: [M31; 4]) -> felt252 {
-    let [x0, x1, x2, x3] = values;
+pub fn pack_qm31(cur: felt252, secure_felt: SecureField) -> felt252 {
+    let [x0, x1, x2, x3] = secure_felt.to_fixed_array();
     (((cur * M31_SHIFT + x0.into()) * M31_SHIFT + x1.into()) * M31_SHIFT + x2.into()) * M31_SHIFT
         + x3.into()
 }
@@ -185,40 +188,109 @@ pub fn bit_reverse_index(mut index: usize, mut n_bits: u32) -> usize {
     result
 }
 
-/// Given a span of column log sizes, Return a span of the column indices grouped by their log
-/// size.
+/// A span in which each element relates (by index) to the log 2 of a degree bound.
+pub type LogDegreeBoundSpan<T> = Span<T>;
+
+/// Holds the columns indices by log degree bound.
+///
+/// column_indices_by_degree_bound[log_degree_bound] is a span of the columns indices with degree
+/// bound `degree_bound`.
+/// The indices in each tree are 0-based.
+///
+pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
+
+/// Given a span of column log degree bounds, Return a span of the column indices grouped by their
+/// log degree bound.
 ///
 /// # Arguments
 ///
-/// * `column_log_sizes`: The log sizes of the columns.
+/// * `log_degree_bound_by_column`: The degree bounds of the columns.
 ///
 /// # Returns
 ///
-/// * `columns_by_log_size`: A span where the i'th element is a span of the column indices of size
-/// 2**i.
-pub fn group_columns_by_log_size(column_log_sizes: Span<u32>) -> Span<Span<usize>> {
-    let mut columns_by_log_size = Default::default();
+/// * `columns_by_log_degree_bound`: A span where the i'th element is a span of the column indices
+/// of size 2**i.
+pub fn group_columns_by_degree_bound(
+    log_degree_bound_by_column: ColumnSpan<u32>,
+) -> ColumnsIndicesByDegreeBound {
+    let mut column_by_degree_bound: Felt252Dict<Nullable<Array<u32>>> = Default::default();
     let mut col_index = 0_usize;
-    for col_size in column_log_sizes {
-        let (columns_by_log_size_entry, value) = columns_by_log_size.entry((*col_size).into());
-        let mut columns_of_size = match match_nullable(value) {
+    for column_log_degree_bound in log_degree_bound_by_column {
+        let (column_by_degree_bound_entry, value) = column_by_degree_bound
+            .entry((*column_log_degree_bound).into());
+        let mut column_indices = match match_nullable(value) {
             FromNullableResult::Null => array![],
             FromNullableResult::NotNull(value) => value.unbox(),
         };
-        columns_of_size.append(col_index);
-        columns_by_log_size = columns_by_log_size_entry
-            .finalize(NullableTrait::new(columns_of_size));
+        column_indices.append(col_index);
+        column_by_degree_bound = column_by_degree_bound_entry
+            .finalize(NullableTrait::new(column_indices));
         col_index += 1;
     }
 
     let mut res = array![];
-    let empty_span = array![].span();
-    for (columns_log_size, _, columns) in columns_by_log_size.squash().into_entries() {
-        /// Add empty spans for missing log sizes.
-        while res.len().into() != columns_log_size {
-            res.append(empty_span);
+    for (column_degree_bound, _, column_indices) in column_by_degree_bound.squash().into_entries() {
+        /// Add empty spans for missing degree bounds.
+        while res.len().into() != column_degree_bound {
+            res.append(array![].span());
         }
-        res.append(columns.deref().span());
+        res.append(column_indices.deref().span());
     }
     res.span()
+}
+
+/// Holds the columns indices per tree by degree bound.
+///
+/// columns_indices_per_tree_by_log_degree_bound[log_degree_bound][tree] is a span of the columns
+/// indices with degree bound `log_degree_bound` in the tree `tree`.
+/// The indices in each tree are 0-based.
+///
+pub type ColumnsIndicesPerTreeByLogDegreeBound = LogDegreeBoundSpan<TreeSpan<Span<usize>>>;
+
+/// Pads all the trees in `columns_by_log_degree_bound_per_tree` to the length of the longest tree
+/// and transposes the arrays from [tree][log_degree_bound][column] to
+/// [log_degree_bound][tree][column].
+///
+/// # Arguments
+///
+/// * `columns_by_log_degree_bound_per_tree`: The columns by log size per tree.
+///
+/// # Returns
+///
+/// * `columns_per_tree_by_log_degree_bound`: The columns per tree by log degree bound.
+pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
+    mut columns_by_deg_bound_per_tree: TreeSpan<ColumnsIndicesByDegreeBound>,
+) -> ColumnsIndicesPerTreeByLogDegreeBound {
+    let mut columns_per_tree_by_log_deg_bound = array![];
+
+    loop {
+        // In each iteration we pop the the columns corresponding to `log_degree_bound` from each
+        // tree, so we need to prepare `next_columns_by_deg_bound_per_tree` for the next iteration.
+        let mut next_columns_by_deg_bound_per_tree = array![];
+
+        let mut done = true;
+        let mut columns_per_tree = array![];
+        for columns_by_deg_bound in columns_by_deg_bound_per_tree {
+            let mut columns_by_deg_bound = *columns_by_deg_bound;
+            let column_indices = match columns_by_deg_bound.pop_front() {
+                Some(column_indices) => {
+                    done = false;
+                    *column_indices
+                },
+                None => array![].span(),
+            };
+            columns_per_tree.append(column_indices);
+
+            next_columns_by_deg_bound_per_tree.append(columns_by_deg_bound);
+        }
+
+        if done {
+            break;
+        }
+
+        columns_by_deg_bound_per_tree = next_columns_by_deg_bound_per_tree.span();
+        columns_per_tree_by_log_deg_bound.append(columns_per_tree.span());
+    }
+
+    columns_per_tree_by_log_deg_bound.span()
 }

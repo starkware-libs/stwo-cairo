@@ -3,6 +3,17 @@ mod test;
 pub mod zip_eq;
 #[cfg(test)]
 mod zip_eq_test;
+use bounded_int::impls::*;
+use bounded_int::{NZ_U32_SHIFT, div_rem, upcast};
+
+/// Equals `2^31`.
+pub const M31_SHIFT: felt252 = 0x80000000; // 2**31.
+
+/// Equals `(2^31)^4`.
+pub const M31_SHIFT_POW_4: felt252 = M31_SHIFT * M31_SHIFT * M31_SHIFT * M31_SHIFT;
+
+// Equals `(2^31)^8`
+pub const M31_SHIFT_POW_8: felt252 = M31_SHIFT_POW_4 * M31_SHIFT_POW_4;
 
 // TODO(alonf): Change this into a struct. Remove Pub prefix.
 // (id, value)
@@ -84,25 +95,40 @@ pub fn construct_f252(x: Box<[u32; 8]>) -> felt252 {
     result * offset + l0.into()
 }
 
+
 /// Deconstructs a `felt252` to 8 u32 little-endian limbs.
 pub fn deconstruct_f252(x: felt252) -> Box<[u32; 8]> {
-    let offset = 0x100000000;
-    let cur: u256 = x.into();
-    let (cur, l0) = DivRem::div_rem(cur, offset);
-    let (cur, l1) = DivRem::div_rem(cur, offset);
-    let (cur, l2) = DivRem::div_rem(cur, offset);
-    let (cur, l3) = DivRem::div_rem(cur, offset);
-    let (cur, l4) = DivRem::div_rem(cur, offset);
-    let (cur, l5) = DivRem::div_rem(cur, offset);
-    let (cur, l6) = DivRem::div_rem(cur, offset);
-    let (_, l7) = DivRem::div_rem(cur, offset);
+    let u256 { low, high } = x.into();
+
+    // Deconstruct the low 128 bits.
+    let (q, r0) = div_rem(low, NZ_U32_SHIFT);
+    let (q, r1) = div_rem(q, NZ_U32_SHIFT);
+    let (r3, r2) = div_rem(q, NZ_U32_SHIFT);
+
+    // Deconstruct the high 128 bits.
+    let (q, r4) = div_rem(high, NZ_U32_SHIFT);
+    let (q, r5) = div_rem(q, NZ_U32_SHIFT);
+    let (r7, r6) = div_rem(q, NZ_U32_SHIFT);
+
     BoxTrait::new(
         [
-            l0.try_into().unwrap(), l1.try_into().unwrap(), l2.try_into().unwrap(),
-            l3.try_into().unwrap(), l4.try_into().unwrap(), l5.try_into().unwrap(),
-            l6.try_into().unwrap(), l7.try_into().unwrap(),
+            upcast(r0), upcast(r1), upcast(r2), upcast(r3), upcast(r4), upcast(r5), upcast(r6),
+            upcast(r7),
         ],
     )
+}
+
+/// A utility function used to modify the most significant bits of a felt252.
+/// Provided that `n_packed_elements` < 8 and `word` < 2^248, the functions injects
+/// `n_packed_elements` into the bits at indices [248, 251) of `word`.
+///
+/// Typically, `word` is a packing of u32s or M31s, `n_packed_elements` is the number
+/// of packed elements, and the resulting felt252 is fed into a hash.
+/// The purpose of this function in this case is to avoid hash collisions between different-length
+/// lists of u32s or M31s that would lead to the same packing.
+#[inline(always)]
+pub fn add_length_padding(word: felt252, n_packed_elements: usize) -> felt252 {
+    word + n_packed_elements.into() * M31_SHIFT_POW_8
 }
 
 #[cfg(test)]

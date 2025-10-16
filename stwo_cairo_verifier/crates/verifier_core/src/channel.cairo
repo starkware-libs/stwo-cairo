@@ -20,28 +20,31 @@ mod feature_dependent_uses {
 
 pub use feature_dependent_uses::*;
 
+/// An interface for performing the Fiat-Shamir transformation on an interactive protocol.
+/// The methods `mix_*` take a part of the protocol transcript and mix it into the state
+/// of the pseudo-random oracle, so that subsequent queries are dependent on the transcript.
+/// The methods `draw_*` simulate the random queries of the verifier.
 pub trait ChannelTrait {
     fn mix_felts(ref self: Channel, felts: Span<SecureField>);
 
     fn mix_u64(ref self: Channel, nonce: u64);
 
-    fn mix_u32s(ref self: Channel, data: Span<u32>);
+    /// Mixes a memory section (id-value pairs) into the channel.
+    /// All the ids are mixed first, then all the values, each of them in the order it appears in
+    /// the section.
+    fn mix_memory_section(ref self: Channel, section: MemorySection);
 
-    /// Mixes the values of a memory section (id-value pairs) into the channel.
-    fn mix_memory_section(ref self: Channel, data: MemorySection);
+    /// Mixes a commitment (typically the root of a Merkle tree) into the channel.
+    fn mix_commitment(ref self: Channel, commitment: Hash);
 
     fn draw_secure_felt(ref self: Channel) -> SecureField;
 
     /// Generates a uniform random vector of SecureField elements.
     fn draw_secure_felts(ref self: Channel, n_felts: usize) -> Array<SecureField>;
 
-    /// Returns a vector of random bytes of length `BYTES_PER_HASH`.
-    fn draw_random_bytes(ref self: Channel) -> Array<u8>;
+    fn draw_u32s(ref self: Channel) -> Span<u32>;
 
-    fn mix_root(ref self: Channel, root: Hash);
-
-    /// Mixes a nonce into the channel and checks a proof-of-work (PoW) on it.
-    /// Returns false if the nonce fails to meet the PoW requirement.
+    /// Verifies the proof of work nonce.
     ///
     /// `n_bits` is the number of leading zero bits that must be in the target
     /// PoW hash. `nonce` is the value used to generate the target PoW hash
@@ -49,5 +52,5 @@ pub trait ChannelTrait {
     ///
     /// This interface allows the channel to use different hash function for the
     /// PoW than the one used by the channel.
-    fn mix_and_check_pow_nonce(ref self: Channel, n_bits: u32, nonce: u64) -> bool;
+    fn verify_pow_nonce(self: @Channel, n_bits: u32, nonce: u64) -> bool;
 }

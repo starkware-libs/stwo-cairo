@@ -1,5 +1,5 @@
 use crate::channel::poseidon252::{
-    ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_proof_of_work,
+    ChannelTrait, Poseidon252Channel, Poseidon252ChannelImpl, check_leading_zeros,
 };
 use crate::fields::qm31::qm31_const;
 
@@ -24,7 +24,7 @@ fn test_channel_draws() {
     channel.draw_secure_felts(9);
     assert_eq!(channel.n_draws, 6);
 
-    channel.mix_root(0);
+    channel.mix_commitment(0);
     assert_eq!(channel.n_draws, 0);
 
     channel.draw_secure_felt();
@@ -57,7 +57,7 @@ pub fn test_draw_secure_felts() {
 }
 
 #[test]
-pub fn test_mix_root() {
+pub fn test_mix_commitment() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
 
@@ -66,7 +66,7 @@ pub fn test_mix_root() {
     }
 
     let prev_digest = channel.digest;
-    channel.mix_root(0);
+    channel.mix_commitment(0);
     assert_ne!(prev_digest, channel.digest);
 }
 
@@ -88,16 +88,6 @@ pub fn test_mix_felts() {
 }
 
 #[test]
-pub fn test_mix_u32s() {
-    let initial_digest = 0;
-    let mut channel = new_channel(initial_digest);
-
-    channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
-
-    assert_eq!(channel.digest, 0x078f5cf6a2e7362b75fc1f94daeae7ebddd64e6b2db771717519af7193dfa80b);
-}
-
-#[test]
 pub fn test_mix_u64() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
@@ -108,35 +98,37 @@ pub fn test_mix_u64() {
 }
 
 #[test]
-pub fn test_draw_random_bytes_1() {
+pub fn test_draw_u32s_1() {
     let initial_digest = 0;
     let mut channel = new_channel(initial_digest);
-    let result = channel.draw_random_bytes();
+    let result = channel.draw_u32s();
+    // The expected result is computed from the Rust stwo code.
     let expected_result = array![
-        197, 20, 139, 143, 49, 135, 207, 202, 93, 167, 20, 244, 184, 186, 20, 136, 204, 43, 46, 147,
-        213, 253, 175, 170, 13, 64, 15, 168, 232, 211, 147,
-    ];
+        886766026, 477679824, 3218540027, 1381728512, 24873733, 2344250857, 2336456258,
+    ]
+        .span();
     assert_eq!(expected_result, result);
 }
 
 #[test]
-pub fn test_draw_random_bytes_2() {
+pub fn test_draw_u32s_2() {
     let initial_digest = 0xdeadbeef;
     let mut channel = new_channel(initial_digest);
-    let result = channel.draw_random_bytes();
+    let result = channel.draw_u32s();
+    // The expected result is computed from the Rust stwo code.
     let expected_result = array![
-        168, 175, 85, 209, 218, 65, 155, 212, 165, 88, 130, 167, 44, 242, 17, 127, 75, 251, 142,
-        180, 157, 176, 27, 167, 179, 247, 27, 113, 149, 41, 12,
-    ];
+        2109664634, 1571772607, 2663772549, 3445588239, 2724310011, 1181437731, 926214439,
+    ]
+        .span();
     assert_eq!(expected_result, result);
 }
 
 #[test]
-pub fn test_draw_random_bytes_3() {
+pub fn test_draw_u32s_3() {
     let initial_digest = 0xcafecafe;
     let mut channel = new_channel(initial_digest);
-    let first_result = channel.draw_random_bytes();
-    let second_result = channel.draw_random_bytes();
+    let first_result = channel.draw_u32s();
+    let second_result = channel.draw_u32s();
     assert_ne!(first_result, second_result);
 }
 
@@ -144,7 +136,7 @@ pub fn test_draw_random_bytes_3() {
 fn test_check_proof_of_work() {
     let digest = 0b1000;
 
-    let res = check_proof_of_work(digest, 3);
+    let res = check_leading_zeros(digest, 3);
 
     assert!(res);
 }
@@ -153,7 +145,7 @@ fn test_check_proof_of_work() {
 fn test_check_proof_of_work_with_invalid_n_bits() {
     let digest = 0b1000;
 
-    let res = check_proof_of_work(digest, 4);
+    let res = check_leading_zeros(digest, 4);
 
     assert!(!res);
 }

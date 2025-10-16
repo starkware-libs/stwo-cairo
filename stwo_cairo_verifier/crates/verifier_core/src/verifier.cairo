@@ -7,7 +7,7 @@ use crate::pcs::verifier::{
 };
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
-use crate::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
 
 /// Arithmetic Intermediate Representation (AIR).
 ///
@@ -40,8 +40,8 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     proof: StarkProof,
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
+    composition_commitment: Hash,
 ) {
-    let random_coeff = channel.draw_secure_felt();
     let StarkProof { commitment_scheme_proof } = proof;
 
     // Check that there are enough security bits.
@@ -51,12 +51,17 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         VerificationError::SecurityBitsTooLow,
     );
 
+    // Draw a random coefficient from the channel to be used in the composition polynomial.
+    // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
+    let composition_random_coeff = channel.draw_secure_felt();
+
     // Read composition polynomial commitment.
     commitment_scheme
         .commit(
-            *commitment_scheme_proof.commitments.last().unwrap(),
+            composition_commitment,
             [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
             ref channel,
+            commitment_scheme_proof.config.fri_config.log_blowup_factor,
         );
 
     // Draw OOD point.
@@ -69,15 +74,17 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
-    let composition_oods_eval = match extract_composition_eval(sampled_oods_values) {
-        Ok(composition_oods_eval) => composition_oods_eval,
-        Err(_) => panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
-    };
+    let composition_oods_eval = try_extract_composition_eval(sampled_oods_values)
+        .unwrap_or_else(
+            || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
+        );
 
     // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
     assert!(
         composition_oods_eval == air
-            .eval_composition_polynomial_at_point(ood_point, sampled_oods_values, random_coeff),
+            .eval_composition_polynomial_at_point(
+                ood_point, sampled_oods_values, composition_random_coeff,
+            ),
         "{}",
         VerificationError::OodsNotMatching,
     );
@@ -85,22 +92,17 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel);
 }
 
-/// Extracts the composition trace evaluation from the mask.
-fn extract_composition_eval(
-    mask: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> Result<QM31, InvalidOodsSampleStructure> {
-    let cols = *mask.last().ok_or(InvalidOodsSampleStructure {})?;
-    let [c0, c1, c2, c3] = (*cols.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v0] = (*c0.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v1] = (*c1.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v2] = (*c2.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    let [v3] = (*c3.try_into().ok_or(InvalidOodsSampleStructure {})?).unbox();
-    Ok(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
+/// Attempts to extract the composition trace evaluation from the mask.
+/// Returns `None` if the mask does not match the expected structure.
+fn try_extract_composition_eval(mask: TreeSpan<ColumnSpan<Span<QM31>>>) -> Option<QM31> {
+    let cols = *mask.last()?;
+    let [c0, c1, c2, c3] = (*cols.try_into()?).unbox();
+    let [v0] = (*c0.try_into()?).unbox();
+    let [v1] = (*c1.try_into()?).unbox();
+    let [v2] = (*c2.try_into()?).unbox();
+    let [v3] = (*c3.try_into()?).unbox();
+    Some(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
 }
-
-/// Error when the sampled values have an invalid structure.
-#[derive(Clone, Copy, Debug, Drop)]
-pub struct InvalidOodsSampleStructure {}
 
 #[derive(Drop, Serde)]
 pub struct StarkProof {

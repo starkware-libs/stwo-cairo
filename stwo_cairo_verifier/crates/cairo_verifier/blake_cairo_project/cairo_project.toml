@@ -165,3 +165,6 @@ version = "0.1.0"
 
 [config.override."stwo_cairo_verifier_mock".dependencies.stwo_cairo_air]
 discriminator = "stwo_cairo_air"
+
+[config.override."stwo_verifier_utils".dependencies.bounded_int]
+discriminator = "bounded_int"

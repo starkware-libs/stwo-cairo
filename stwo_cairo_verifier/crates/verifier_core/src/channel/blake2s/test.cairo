@@ -1,5 +1,5 @@
 use core::box::BoxImpl;
-use crate::channel::blake2s::{Blake2sChannel, ChannelTrait, check_proof_of_work};
+use crate::channel::blake2s::{Blake2sChannel, ChannelTrait, check_leading_zeros};
 use crate::fields::qm31::qm31_const;
 use crate::vcs::blake2s_hasher::Blake2sHash;
 
@@ -125,27 +125,10 @@ fn test_mix_u64() {
 }
 
 #[test]
-pub fn test_mix_u32s() {
-    let mut channel: Blake2sChannel = Default::default();
-
-    channel.mix_u32s(array![1, 2, 3, 4, 5, 6, 7, 8, 9].span());
-
-    // Tested against values produced from Rust code.
-    // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-    assert_eq!(
-        channel.digest.hash.unbox(),
-        [
-            0x83769170, 0xb31bbb57, 0xb6da6f34, 0xfad757b3, 0xe3fbb846, 0x24432e2c, 0x94c2ffa0,
-            0xc7a1f9cb,
-        ],
-    );
-}
-
-#[test]
 fn test_check_proof_of_work() {
     let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-    let res = check_proof_of_work(digest, 3);
+    let res = check_leading_zeros(digest, 3);
 
     assert!(res);
 }
@@ -154,25 +137,25 @@ fn test_check_proof_of_work() {
 fn test_check_proof_of_work_with_invalid_n_bits() {
     let digest = Blake2sHash { hash: BoxImpl::new([0b1000, 0, 0, 0, 0, 0, 0, 0]) };
 
-    let res = check_proof_of_work(digest, 4);
+    let res = check_leading_zeros(digest, 4);
 
     assert!(!res);
 }
 
 #[test]
-fn test_blake_bytes() {
+fn test_blake_u32s() {
     let mut channel: Blake2sChannel = Default::default();
 
-    let result = channel.draw_random_bytes();
-
-    // Tested against velue produced from Rust code.
+    let result = channel.draw_u32s();
+    // Tested against values produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
     assert_eq!(
         result,
         array![
-            156, 137, 99, 196, 121, 250, 173, 216, 202, 203, 240, 138, 54, 169, 61, 23, 148, 101,
-            254, 213, 244, 221, 254, 46, 66, 230, 44, 151, 161, 215, 171, 242,
-        ],
+            1508103417, 49928118, 1851109195, 649450964, 1514800545, 4236765031, 523819246,
+            4066564620,
+        ]
+            .span(),
     );
 }
 
@@ -184,7 +167,7 @@ fn test_draw_secure_felt() {
 
     // Tested against values produced from Rust code.
     // https://github.com/starkware-libs/stwo/blob/dev/crates/prover/src/core/channel/blake2s.rs
-    assert_eq!(felt, qm31_const::<1147373981, 1487796858, 183552971, 389916982>());
+    assert_eq!(felt, qm31_const::<1508103417, 49928118, 1851109195, 649450964>());
 }
 
 #[test]
@@ -198,14 +181,14 @@ fn test_draw_secure_felts() {
     assert_eq!(
         felts,
         array![
-            qm31_const::<1147373981, 1487796858, 183552971, 389916982>(),
-            qm31_const::<1442735509, 788454900, 388818499, 1923864482>(),
-            qm31_const::<19235923, 1604041799, 1672672341, 594853474>(),
-            qm31_const::<1723766014, 1300042830, 1903376519, 769478617>(),
-            qm31_const::<1376899002, 1487153195, 1466950560, 174298319>(),
-            qm31_const::<1807903912, 1308541718, 1538267614, 1849293059>(),
-            qm31_const::<1505865733, 1283830469, 1224489433, 1359265092>(),
-            qm31_const::<397197545, 498545251, 1437879563, 333198485>(),
+            qm31_const::<1508103417, 49928118, 1851109195, 649450964>(),
+            qm31_const::<1514800545, 2089281384, 523819246, 1919080973>(),
+            qm31_const::<1769619091, 1335149496, 2007506569, 1426464368>(),
+            qm31_const::<853727757, 1673676888, 635879929, 1327640380>(),
+            qm31_const::<1751831125, 1559795173, 442209472, 1280396692>(),
+            qm31_const::<1528893536, 644814910, 503157674, 286565543>(),
+            qm31_const::<1839261536, 1778992654, 807858428, 143171319>(),
+            qm31_const::<128590986, 1618375851, 213276683, 76892197>(),
         ],
     );
 }

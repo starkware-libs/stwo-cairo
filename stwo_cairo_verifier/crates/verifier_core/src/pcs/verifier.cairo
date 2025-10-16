@@ -1,17 +1,22 @@
-use core::dict::Felt252Dict;
-use core::iter::{IntoIterator, Iterator};
+use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde};
-use crate::fri::{FriProof, FriVerifierImpl};
+use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::{PointSample, fri_answers};
-use crate::utils::{ArrayImpl, DictImpl, group_columns_by_log_size};
+use crate::utils::{
+    ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, group_columns_by_degree_bound,
+    pad_and_transpose_columns_by_log_deg_bound_per_tree,
+};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::VerificationError;
-use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
+
+/// Sanity check that the proof of work is not negligible.
+pub const MIN_POW_BITS: u32 = 20;
 
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
@@ -26,62 +31,68 @@ pub struct CommitmentSchemeProof {
     pub fri_proof: FriProof,
 }
 
-
 /// The verifier side of a FRI polynomial commitment scheme. See [super].
 #[derive(Drop)]
 pub struct CommitmentSchemeVerifier {
-    pub trees: Array<MerkleVerifier<MerkleHasher>>,
-    pub config: PcsConfig,
+    pub trees: TreeArray<MerkleVerifier<MerkleHasher>>,
 }
 
 #[generate_trait]
 pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
-    fn new(config: PcsConfig) -> CommitmentSchemeVerifier {
-        CommitmentSchemeVerifier { trees: array![], config }
+    fn new() -> CommitmentSchemeVerifier {
+        CommitmentSchemeVerifier { trees: array![] }
     }
 
-    /// Returns the log sizes of each column in each commitment tree.
-    fn column_log_sizes(self: @CommitmentSchemeVerifier) -> TreeArray<@Array<u32>> {
-        let mut res = array![];
+    /// Returns the column indices grouped by log degree bound (outer), then by tree (inner).
+    fn column_indices_per_tree_by_degree_bound(
+        self: @CommitmentSchemeVerifier,
+    ) -> ColumnsIndicesPerTreeByLogDegreeBound {
+        let mut columns_by_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
-            res.append(tree.column_log_sizes);
+            columns_by_deg_bound_per_tree.append(*tree.column_indices_by_deg_bound);
         }
-        res
+
+        pad_and_transpose_columns_by_log_deg_bound_per_tree(columns_by_deg_bound_per_tree.span())
     }
 
-
-    /// Returns the log sizes of each column in each commitment tree.
-    fn columns_by_log_sizes(self: @CommitmentSchemeVerifier) -> TreeSpan<Span<Span<usize>>> {
-        let mut res = array![];
-        for tree in self.trees.span() {
-            res.append(*tree.columns_by_log_size);
-        }
-        res.span()
-    }
-
-    /// Reads a commitment from the prover.
+    /// Reads a Merkle root commitment for a set of columns from the prover and registers it with
+    /// the verifier.
+    ///
+    /// This function mixes the commitment root into the Fiat-Shamir channel and appends a new
+    /// MerkleVerifier for this commitment to the verifier's state.
+    ///
+    /// # Arguments
+    /// * `commitment` - The Merkle root of the committed columns.
+    /// * `degree_bound_by_column` - The log degree bounds for each column in the commitment.
+    /// * `channel` - The Fiat-Shamir channel used for mixing and randomness.
     fn commit(
         ref self: CommitmentSchemeVerifier,
         commitment: Hash,
-        log_sizes: Span<u32>,
+        degree_bound_by_column: ColumnSpan<u32>,
         ref channel: Channel,
+        log_blowup_factor: u32,
     ) {
-        channel.mix_root(commitment);
-        let mut extended_log_sizes = array![];
-        for log_size in log_sizes {
-            extended_log_sizes.append(*log_size + self.config.fri_config.log_blowup_factor);
-        }
+        // Mix the commitment root into the Fiat-Shamir channel.
+        channel.mix_commitment(commitment);
 
-        let columns_by_log_size = group_columns_by_log_size(extended_log_sizes.span());
+        let column_indices_by_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
         self
             .trees
             .append(
                 MerkleVerifier {
-                    root: commitment, column_log_sizes: extended_log_sizes, columns_by_log_size,
+                    root: commitment,
+                    tree_height: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
+                    column_indices_by_deg_bound,
                 },
             );
     }
 
+    /// Verifies that `proof.sampled_values` corresponds to the evaluations
+    /// of the committed polynomials at `sampled_points`.
+    ///
+    /// For each column of the trace, `sampled_points` contains translations
+    /// of the OOD point by a multiple of the coset step corresponding
+    /// to that column.
     fn verify_values(
         self: CommitmentSchemeVerifier,
         sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
@@ -89,131 +100,145 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         ref channel: Channel,
     ) {
         let CommitmentSchemeProof {
-            config: _,
+            config,
             commitments: _,
             sampled_values,
             decommitments,
-            queried_values,
+            queried_values: queried_values_per_tree,
             proof_of_work_nonce,
             fri_proof,
         } = proof;
 
-        let mut flattened_sampled_values = array![];
-
-        for sampled_values in sampled_values {
-            for column_sampled_values in *sampled_values {
-                for sampled_value in *column_sampled_values {
-                    flattened_sampled_values.append(*sampled_value);
-                };
-            };
-        }
-
-        channel.mix_felts(flattened_sampled_values.span());
+        mix_sampled_values(sampled_values, ref channel);
 
         let random_coeff = channel.draw_secure_felt();
-        let column_log_sizes = self.column_log_sizes();
-        let fri_config = self.config.fri_config;
-        let log_blowup_factor = fri_config.log_blowup_factor;
-        let column_log_bounds = get_column_log_bounds(@column_log_sizes, log_blowup_factor).span();
+        let fri_config = config.fri_config;
+
+        let column_indices_per_tree_by_degree_bound = self
+            .column_indices_per_tree_by_degree_bound();
+
+        let column_log_degree_bounds = get_column_log_degree_bounds(
+            column_indices_per_tree_by_degree_bound,
+        )
+            .span();
 
         // FRI commitment phase on OODS quotients.
-        let mut fri_verifier = FriVerifierImpl::commit(
-            ref channel, fri_config, fri_proof, column_log_bounds,
+        let mut fri_verifier = FriVerifierTrait::commit(
+            ref channel, fri_config, fri_proof, column_log_degree_bounds,
         );
 
         // Verify proof of work.
+        assert!(config.pow_bits >= MIN_POW_BITS);
         assert!(
-            channel.mix_and_check_pow_nonce(self.config.pow_bits, proof_of_work_nonce),
+            channel.verify_pow_nonce(config.pow_bits, proof_of_work_nonce),
             "{}",
             VerificationError::QueriesProofOfWork,
         );
+        channel.mix_u64(proof_of_work_nonce);
 
         // Get FRI query positions.
-        let (unique_column_log_sizes, mut query_positions_by_log_size) = fri_verifier
+        let (mut query_positions_by_log_size, queries) = fri_verifier
             .sample_query_positions(ref channel);
 
         // Verify Merkle decommitments.
-        let mut decommitments = decommitments.into_iter();
-
-        for (tree, queried_values) in self.trees.span().into_iter().zip(queried_values.span()) {
-            let decommitment = decommitments.next().unwrap();
-
-            // The Merkle implementation pops values from the query position dict so it has to
-            // be duplicated.
-            let query_positions = query_positions_by_log_size.clone_subset(unique_column_log_sizes);
-
-            tree.verify(query_positions, *queried_values, decommitment);
+        for (tree, (queried_values, decommitment)) in zip_eq(
+            self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
+        ) {
+            tree.verify(ref query_positions_by_log_size, *queried_values, decommitment);
         }
 
-        // Check iterators have been fully consumed.
-        assert!(decommitments.next().is_none());
-
         // Answer FRI queries.
-        let samples = get_flattened_samples(sampled_points, sampled_values);
+        let samples = zip_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
-            self.columns_by_log_sizes(),
+            column_indices_per_tree_by_degree_bound,
+            fri_config.log_blowup_factor,
             samples,
             random_coeff,
             query_positions_by_log_size,
-            queried_values,
+            queried_values_per_tree.span(),
         );
 
-        fri_verifier.decommit(fri_answers);
+        fri_verifier.decommit(fri_answers, queries);
     }
 }
 
-/// Returns all column log bounds deduped and sorted in ascending order.
 #[inline]
-fn get_column_log_bounds(
-    column_log_sizes: @TreeArray<@ColumnArray<u32>>, log_blowup_factor: u32,
-) -> Array<u32> {
-    // The max column degree bound.
-    const MAX_LOG_BOUND: u32 = 29;
+fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref channel: Channel) {
+    let mut flattened_sampled_values = array![];
 
-    let mut bounds_set: Felt252Dict<bool> = Default::default();
-
-    for tree_column_log_sizes in column_log_sizes.span() {
-        for column_log_size in (*tree_column_log_sizes).span() {
-            let column_log_bound = *column_log_size - log_blowup_factor;
-            assert!(column_log_bound <= MAX_LOG_BOUND);
-            bounds_set.insert(column_log_bound.into(), true);
+    for sampled_values in sampled_values {
+        for column_sampled_values in *sampled_values {
+            for sampled_value in *column_sampled_values {
+                flattened_sampled_values.append(*sampled_value);
+            };
         };
     }
 
-    let mut bounds = array![];
-
-    let mut i = MAX_LOG_BOUND;
-    while i != 0 {
-        if bounds_set.get(i.into()) {
-            bounds.append(i);
-        }
-        i -= 1;
-    }
-
-    bounds
+    channel.mix_felts(flattened_sampled_values.span());
 }
 
-#[inline]
-fn get_flattened_samples(
-    sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-    mut sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> TreeSpan<ColumnSpan<Array<PointSample>>> {
-    let mut res = array![];
-    assert!(sampled_points.len() == sampled_values.len());
-    for (tree_points, tree_values) in sampled_points.span().into_iter().zip(sampled_values) {
-        let mut tree_samples = array![];
-        assert!(tree_points.len() == tree_values.len());
-        for (column_points, column_values) in tree_points.into_iter().zip(tree_values) {
-            let mut column_samples = array![];
-            assert!(column_points.len() == column_values.len());
-            for (point, value) in column_points.into_iter().zip(column_values) {
-                column_samples.append(PointSample { point: *point, value: *value });
-            }
+/// Retrieves the trace LDE log size from the commitment scheme’s tree array.
+///
+/// Marked with `#[inline(never)]` to avoid a const-folding bug in the compiler.
+#[inline(never)]
+pub fn get_trace_lde_log_size(
+    commitment_scheme_trees: @TreeArray<MerkleVerifier<MerkleHasher>>,
+) -> u32 {
+    let trace_lde_log_size = *commitment_scheme_trees[1].tree_height;
+    assert!(trace_lde_log_size == *commitment_scheme_trees[2].tree_height);
+    trace_lde_log_size
+}
 
-            tree_samples.append(column_samples);
+/// Returns all column log bounds sorted in descending order.
+#[inline]
+fn get_column_log_degree_bounds(
+    mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
+) -> Array<u32> {
+    let mut degree_bounds = array![];
+    let mut degree_bound = column_indices_per_tree_by_degree_bound.len();
+    while let Some(columns_of_degree_bound_per_tree) = column_indices_per_tree_by_degree_bound
+        .pop_back() {
+        degree_bound -= 1;
+        for columns_of_degree_bound_in_tree in columns_of_degree_bound_per_tree {
+            if !(*columns_of_degree_bound_in_tree).is_empty() {
+                degree_bounds.append(degree_bound);
+                break;
+            }
         }
-        res.append(tree_samples.span());
     }
-    res.span()
+
+    degree_bounds
+}
+
+
+/// Given sampled points and values by column per tree, zips them into samples by column per tree.
+#[inline]
+fn zip_samples(
+    sampled_points_by_column_per_tree: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
+    sampled_values_by_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+) -> TreeSpan<ColumnSpan<Span<PointSample>>> {
+    let mut samples_by_column_per_tree = array![];
+    for (points_by_column, values_by_column) in zip_eq(
+        sampled_points_by_column_per_tree, sampled_values_by_column_per_tree,
+    ) {
+        let mut samples_by_column: Array<Span<PointSample>> = array![];
+        for (points, values) in zip_eq(points_by_column, *values_by_column) {
+            samples_by_column
+                .append(
+                    zip_eq(points, *values)
+                        .map(
+                            |tuple: (CirclePoint<QM31>, @QM31)| {
+                                let (point, value) = tuple;
+                                PointSample { point, value: *value }
+                            },
+                        )
+                        .collect::<Array<PointSample>>()
+                        .span(),
+                );
+        }
+        samples_by_column_per_tree.append(samples_by_column.span());
+    }
+
+    samples_by_column_per_tree.span()
 }

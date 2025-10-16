@@ -1,13 +1,13 @@
+use bounded_int::M31_SHIFT_NZ_U256;
 use bounded_int::impls::*;
-use bounded_int::{M31_SHIFT_NZ_U256, NZ_U8_SHIFT, div_rem, upcast};
 use core::array::SpanTrait;
 use core::poseidon::{hades_permutation, poseidon_hash_span};
 use core::traits::DivRem;
-use stwo_verifier_utils::MemorySection;
+use stwo_verifier_utils::{MemorySection, deconstruct_f252, hash_u32s_with_state};
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::{pack4, pow2_u64};
+use crate::utils::{pack_qm31, pow2_u64};
 use super::ChannelTrait;
 
 #[cfg(test)]
@@ -17,19 +17,6 @@ mod test;
 pub const FELTS_PER_HASH: usize = 8;
 
 pub const BYTES_PER_HASH: usize = 31;
-
-/// Constructs a `felt252` from 7 u32 big-endian limbs.
-pub fn construct_f252_be(x: Box<[u32; 7]>) -> felt252 {
-    let [l0, l1, l2, l3, l4, l5, l6] = x.unbox();
-    let offset = 0x100000000;
-    let result: felt252 = l0.into();
-    let result = result * offset + l1.into();
-    let result = result * offset + l2.into();
-    let result = result * offset + l3.into();
-    let result = result * offset + l4.into();
-    let result = result * offset + l5.into();
-    result * offset + l6.into()
-}
 
 /// A channel with Poseidon252 hash as the non-interactive random oracle.
 /// By convention, at the end of every `mix_*` function we reset the number of draws `n_draws`
@@ -55,32 +42,30 @@ impl Posidon252ChannelHelperImpl of Poseidon252ChannelHelper {
 /// increment the `n_draws` counter. In the current implementation, every draw method
 /// invokes `draw_secure_felt252` internally, which increments `n_draws` by one.
 pub impl Poseidon252ChannelImpl of ChannelTrait {
-    fn mix_root(ref self: Poseidon252Channel, root: felt252) {
-        self.mix_felt252(root);
+    fn mix_commitment(ref self: Poseidon252Channel, commitment: felt252) {
+        self.mix_felt252(commitment);
     }
 
     fn mix_felts(ref self: Poseidon252Channel, mut felts: Span<SecureField>) {
         let mut res = array![self.digest];
-        loop {
-            match felts.multi_pop_front::<2>() {
-                Option::Some(pair) => {
-                    let [x, y] = (*pair).unbox();
-                    let cur = pack4(1, x.to_fixed_array());
-                    res.append(pack4(cur, y.to_fixed_array()));
-                },
-                Option::None => {
-                    if !felts.is_empty() {
-                        let x = felts.pop_front().unwrap();
-                        res.append(pack4(1, (*x).to_fixed_array()));
-                    }
-                    break;
-                },
-            };
+        while let Some(pair) = felts.multi_pop_front::<2>() {
+            let [x, y] = (*pair).unbox();
+            // The first argument of `pack_qm31` is 1 so that the felt252 that
+            // we will append to `res` can separate the case of a pair (x, y) of QM31
+            // with x = 0 from a singleton y (which would enter the other match arm).
+            // For any pair, the msb of the resulting felt252 is 2^248, while for
+            // any singleton, the msb of the resulting felt252 is 2^124.
+            // This also implies that we never overflow the 252-bit prime.
+            let cur = pack_qm31(1, x);
+            res.append(pack_qm31(cur, y));
+        }
+
+        if let Some(x) = felts.pop_front() {
+            res.append(pack_qm31(1, *x));
         }
 
         let next_digest = poseidon_hash_span(res.span());
 
-        // TODO(spapini): do we need length padding?
         update_digest(ref self, next_digest);
     }
 
@@ -88,38 +73,19 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         self.mix_felt252(nonce.into());
     }
 
-    fn mix_u32s(ref self: Poseidon252Channel, data: Span<u32>) {
-        let mut res = array![self.digest];
-
-        let mut data = data;
-
-        while let Some(chunk) = data.multi_pop_front::<7>() {
-            res.append(construct_f252_be(*chunk));
-        }
-
-        if !data.is_empty() {
-            let mut chunk: Array<u32> = array![];
-            chunk.append_span(data);
-            for _ in data.len()..7 {
-                chunk.append(0);
-            }
-            res.append(construct_f252_be(*chunk.span().try_into().unwrap()));
-        }
-
-        let next_digest = poseidon_hash_span(res.span());
-
-        // TODO(spapini): do we need length padding?
-        update_digest(ref self, next_digest);
-    }
-
-    fn mix_memory_section(ref self: Poseidon252Channel, data: MemorySection) {
+    fn mix_memory_section(ref self: Poseidon252Channel, section: MemorySection) {
         // TODO(Gali): Make this more efficient, use hash_memory_section.
-        let mut flat_data = array![];
-        for entry in data {
-            let (_, val) = entry;
-            flat_data.append_span((*val).span());
+        let mut ids = array![];
+        let mut flat_values = array![];
+        for entry in section {
+            let (id, val) = entry;
+            ids.append(*id);
+            flat_values.append_span((*val).span());
         }
-        self.mix_u32s(flat_data.span());
+        let ids_hash = hash_u32s_with_state(self.digest, ids.span());
+        let values_hash = hash_u32s_with_state(ids_hash, flat_values.span());
+
+        update_digest(ref self, values_hash);
     }
 
     fn draw_secure_felt(ref self: Poseidon252Channel) -> SecureField {
@@ -143,102 +109,40 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
         res
     }
 
-    /// Returns 31 random bytes computed as the first 31 bytes of the representative of
-    /// `self.draw_secure_felt252()` in little endian.
-    /// The distribution for each byte is epsilon close to uniform with epsilon bounded by 2^(-60).
-    fn draw_random_bytes(ref self: Poseidon252Channel) -> Array<u8> {
-        let u256 { low, high } = draw_secure_felt252(ref self).into();
-
-        let mut bytes = array![];
-
-        // Extract the 16 bytes from the low 128 bits of the felt 252.
-        let (q, r) = div_rem(low, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        bytes.append(upcast(q));
-
-        // Extract the first 15 bytes from the high 128 bits of the felt 252.
-        let (q, r) = div_rem(high, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (q, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-        let (_, r) = div_rem(q, NZ_U8_SHIFT);
-        bytes.append(upcast(r));
-
-        bytes
+    /// Draws 7 random u32s, constructed from the first 224 bytes
+    /// of a random felt252 in little endian.
+    fn draw_u32s(ref self: Poseidon252Channel) -> Span<u32> {
+        let secure_felt = draw_secure_felt252(ref self).into();
+        let x = deconstruct_f252(secure_felt);
+        let mut res = x.span();
+        // The top limb's 4 most significant bits are zero,
+        // hence we discard it since it's not uniformly random.
+        let _ = res.pop_back();
+        res
     }
 
-    fn mix_and_check_pow_nonce(ref self: Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
-        // TODO(andrew): Use blake for proof of work.
-        self.mix_u64(nonce);
-        check_proof_of_work(self.digest, n_bits)
+    /// Check that `H(H(POW_PREFIX, digest, n_bits), nonce)` has `n_bits` starting zeros.
+    fn verify_pow_nonce(self: @Poseidon252Channel, n_bits: u32, nonce: u64) -> bool {
+        const POW_PREFIX: u32 = 0x012345678;
+        let prefix_hash = poseidon_hash_span(
+            [POW_PREFIX.into(), *self.digest, n_bits.into()].span(),
+        );
+        let (hash, _, _) = hades_permutation(prefix_hash, nonce.into(), 2);
+        check_leading_zeros(hash, n_bits)
     }
 }
 
 /// Checks that the last `n_bits` bits of the digest are zero.
-/// `n_bits` is in range [0, 64].
-fn check_proof_of_work(digest: felt252, n_bits: u32) -> bool {
+/// `n_bits` is in range [0, 63].
+///
+/// # Panics
+///
+/// Panics if `n_bits` >= 64.
+fn check_leading_zeros(digest: felt252, n_bits: u32) -> bool {
     let u256 { low, .. } = digest.into();
-    let divisor = if n_bits == 64 {
-        // Handle the special case of 64 bits.
-        0x10000000000000000 // 2^64
-    } else {
-        // If n_bits > 64 pow2_u64 will panic with index out of bounds.
-        let u128_2_pow_n_bits: u128 = pow2_u64(n_bits).into();
-        u128_2_pow_n_bits.try_into().unwrap()
-    };
-    let (_, r) = DivRem::div_rem(low, divisor);
+    let two_pow_n_bits: u128 = pow2_u64(n_bits).into();
+    let nonzero_divisor: NonZero<u128> = two_pow_n_bits.try_into().unwrap();
+    let (_, r) = DivRem::div_rem(low, nonzero_divisor);
     r == 0
 }
 
@@ -253,7 +157,9 @@ fn draw_base_felts(ref channel: Poseidon252Channel) -> [M31; FELTS_PER_HASH] {
 
 fn draw_secure_felt252(ref channel: Poseidon252Channel) -> felt252 {
     let counter: felt252 = channel.n_draws.into();
-    let (res, _, _) = hades_permutation(channel.digest, counter, 2);
+    // Use 3 as the capacity for domain separation between mix and draw operations.
+    // In all mix functions, the capacity is set to 0 or 2.
+    let (res, _, _) = hades_permutation(channel.digest, counter, 3);
     channel.n_draws += 1;
     res
 }

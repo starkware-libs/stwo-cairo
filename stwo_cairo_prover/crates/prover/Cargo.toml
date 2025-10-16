@@ -27,7 +27,7 @@ serde.workspace = true
 serde_json.workspace = true
 sonic-rs.workspace = true
 anyhow.workspace = true
-starknet-curve = "0.5.1"
+starknet-curve.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
@@ -38,7 +38,11 @@ tracing.workspace = true
 
 [dev-dependencies]
 dev-utils.workspace = true
-cairo-vm = { workspace = true, default-features = true }
+cairo-vm = { workspace = true, features = [
+    "extensive_hints",
+    "mod_builtin",
+    "clap",
+], default-features = true }
 tempfile = "3.19.1"
 test-log = { version = "0.2.17", features = ["trace"] }
 tracing-subscriber.workspace = true

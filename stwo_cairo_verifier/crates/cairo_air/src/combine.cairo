@@ -79,7 +79,13 @@ pub fn combine_felt252(value: [u32; 8], alpha: QM31) -> QM31 {
 
     // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
-    let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    let (l28, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+
+    // `value` is intended to represent a felt252, so its upper 4 bits must be zero.
+    // This ensures uniqueness modulo the felt252 prime.
+    // Note, however, that the 252-bit [u32; 8] representation is not unique;
+    // for example, 0 can be represented both as 0 and as the felt252 prime.
+    assert!(l28 == 0);
 
     let mut sum: QM31 = M31Trait::new(upcast(l27)).into();
     horner_step(ref sum, l26, alpha);
@@ -187,9 +193,15 @@ pub fn combine_felt252(
         .unbox();
     let [v0, v1, v2, v3, v4, v5, v6, v7] = value;
 
-    // Since the value is felt252, we ignore the 4 most significant bits.
     // Take 4 + 27 + 1 bits from v7
-    let (_, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+    let (l28, l27, l26, l25, l24_high) = split_u32_to_5_chunks(v7, 0x2);
+
+    // `value` is intended to represent a felt252, so its upper 4 bits must be zero.
+    // This ensures uniqueness modulo the felt252 prime.
+    // Note, however, that the 252-bit [u32; 8] representation is not unique;
+    // for example, 0 can be represented both as 0 and as the felt252 prime.
+    assert!(l28 == 0);
+
     let mut sum = a28.mul_m31(M31Trait::new(upcast(l27)));
     sum += a27.mul_m31(M31Trait::new(upcast(l26)));
     sum += a26.mul_m31(M31Trait::new(upcast(l25)));

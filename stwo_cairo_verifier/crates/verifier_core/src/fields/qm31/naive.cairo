@@ -11,7 +11,9 @@ use super::{QM31Trait, QM31_EXTENSION_DEGREE};
 
 mod unreduced;
 
-pub use unreduced::{PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl};
+pub use unreduced::{
+    PackedQM31byM31Impl, PackedUnreducedQM31, PackedUnreducedQM31Impl, mul_cm_using_unreduced,
+};
 
 // Represents a + u*b.
 #[derive(Copy, Drop, Debug, PartialEq)]
@@ -26,7 +28,7 @@ impl QM31InvertibleImpl of Invertible<QM31> {
         let ib2 = CM31 { a: -b2.b, b: b2.a };
         let denom = self.a * self.a - (b2 + b2 + ib2);
         let denom_inverse = denom.inverse();
-        QM31 { a: self.a * denom_inverse, b: -self.b * denom_inverse }
+        QM31 { a: self.a, b: -self.b }.mul_cm31(denom_inverse)
     }
 }
 
@@ -68,12 +70,13 @@ pub impl QM31Impl of QM31Trait {
         unreduced::fused_mul_sub(a, b, c)
     }
 
+    #[inline]
+    fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31 {
+        unreduced::fused_quotient_denominator(px, py, dx, dy)
+    }
+
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31 {
-        let [e0, e1, e2, e3] = evals;
-        e0
-            + e1 * qm31_const::<0, 1, 0, 0>()
-            + e2 * qm31_const::<0, 0, 1, 0>()
-            + e3 * qm31_const::<0, 0, 0, 1>()
+        unreduced::from_partial_evals(evals)
     }
 }
 
@@ -94,8 +97,7 @@ pub impl QM31Sub of core::traits::Sub<QM31> {
 pub impl QM31Mul of core::traits::Mul<QM31> {
     #[inline(never)]
     fn mul(lhs: QM31, rhs: QM31) -> QM31 {
-        // (a + bu) * (c + du) = (ac + rbd) + (ad + bc)u.
-        QM31 { a: lhs.a * rhs.a + mul_by_r(lhs.b) * rhs.b, b: lhs.a * rhs.b + lhs.b * rhs.a }
+        unreduced::mul_qm_using_unreduced(lhs, rhs)
     }
 }
 
@@ -185,14 +187,4 @@ pub fn qm31_const<
         a: CM31 { a: M31 { inner: W0 }, b: M31 { inner: W1 } },
         b: CM31 { a: M31 { inner: W2 }, b: M31 { inner: W3 } },
     }
-}
-
-/// Returns `v * R` where `R = 2 + i = u^2`.
-#[inline(always)]
-fn mul_by_r(v: CM31) -> CM31 {
-    // = v * R
-    // = (a + bi) * (2 + i)
-    // = (2a - b) + (a + 2b)i
-    let CM31 { a, b } = v;
-    CM31 { a: a + a - b, b: a + b + b }
 }

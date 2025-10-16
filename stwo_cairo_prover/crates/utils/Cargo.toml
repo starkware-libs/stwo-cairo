@@ -4,7 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-cairo-vm = { workspace = true, default_features = true }
+cairo-vm = { workspace = true, features = [
+    "extensive_hints",
+    "mod_builtin",
+    "clap",
+], default_features = true }
 clap.workspace = true
 env_logger.workspace = true
 log.workspace = true

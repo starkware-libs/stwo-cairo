@@ -354,6 +354,8 @@ pub struct CairoAir {
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    /// The degree bound of the cairo air.
+    composition_log_degree_bound: u32,
 }
 
 #[generate_trait]
@@ -363,6 +365,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         cairo_claim: @CairoClaim,
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @CairoInteractionClaim,
+        composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
@@ -483,6 +486,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_8_b: verify_bitwise_xor_8_b_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            composition_log_degree_bound,
         }
     }
 }
@@ -490,53 +494,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        let CairoAir {
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            pedersen_context,
-            poseidon_context,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
-            verify_bitwise_xor_9,
-        } = self;
-
-        let mut max_degree = opcodes.max_constraint_log_degree_bound();
-        max_degree =
-            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, pedersen_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, poseidon_context.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
-        max_degree =
-            core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8_b.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
-        max_degree
+        *self.composition_log_degree_bound
     }
 
     fn mask_points(
@@ -560,6 +518,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_8,
             verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -716,6 +675,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_8,
             verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -879,6 +839,8 @@ pub struct CairoAir {
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    /// The degree bound of the cairo air.
+    composition_log_degree_bound: u32,
 }
 
 #[generate_trait]
@@ -888,6 +850,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         cairo_claim: @CairoClaim,
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @CairoInteractionClaim,
+        composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
             cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
@@ -998,6 +961,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_8_b: verify_bitwise_xor_8_b_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            composition_log_degree_bound,
         }
     }
 }
@@ -1005,49 +969,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
 #[cfg(feature: "poseidon252_verifier")]
 pub impl CairoAirImpl of Air<CairoAir> {
     fn composition_log_degree_bound(self: @CairoAir) -> u32 {
-        let CairoAir {
-            opcodes,
-            verify_instruction,
-            blake_context,
-            builtins,
-            memory_address_to_id,
-            memory_id_to_value,
-            range_checks,
-            verify_bitwise_xor_4,
-            verify_bitwise_xor_7,
-            verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
-            verify_bitwise_xor_9,
-        } = self;
-
-        let mut max_degree = opcodes.max_constraint_log_degree_bound();
-        max_degree =
-            core::cmp::max(max_degree, verify_instruction.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, blake_context.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
-        let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
-        for memory_id_to_value_big_component in memory_id_to_value_big.span() {
-            max_degree =
-                core::cmp::max(
-                    max_degree, memory_id_to_value_big_component.max_constraint_log_degree_bound(),
-                );
-        }
-        max_degree =
-            core::cmp::max(max_degree, memory_id_to_value_small.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, range_checks.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_4.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_7.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_8_b.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
-        max_degree
+        *self.composition_log_degree_bound
     }
 
     fn mask_points(
@@ -1069,6 +991,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_8,
             verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes
@@ -1210,6 +1133,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_8,
             verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
+            composition_log_degree_bound: _,
         } = self;
 
         opcodes

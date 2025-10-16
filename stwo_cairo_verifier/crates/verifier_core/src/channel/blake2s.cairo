@@ -1,14 +1,14 @@
 use bounded_int::impls::*;
-use bounded_int::{NZ_U32_SHIFT, NZ_U8_SHIFT, div_rem, upcast};
+use bounded_int::{NZ_U32_SHIFT, div_rem, upcast};
 use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use stwo_verifier_utils::{
-    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_with_digest,
+    BLAKE2S_256_INITIAL_STATE, MemorySection, hash_memory_section_ids, hash_memory_section_values,
 };
 use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
-use crate::utils::pow2_u64;
+use crate::utils::{ArrayImpl, pow2_u64};
 use crate::vcs::blake2s_hasher::Blake2sHash;
 use super::ChannelTrait;
 
@@ -45,10 +45,12 @@ impl Blake2sChannelDefault of Default<Blake2sChannel> {
 /// Every mix should call `update_digest` as final step, and every draw should
 /// increment the `n_draws` counter. In the current implementation, every draw method
 /// invokes `draw_random_words` internally, which increments the `n_draws` by one.
+// TODO(Gali): Consider simplifying the implementation of the mixing methods by hashing the current
+// digest at the end.
 pub impl Blake2sChannelImpl of ChannelTrait {
-    fn mix_root(ref self: Blake2sChannel, root: Blake2sHash) {
+    fn mix_commitment(ref self: Blake2sChannel, commitment: Blake2sHash) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
-        let [r0, r1, r2, r3, r4, r5, r6, r7] = root.hash.unbox();
+        let [r0, r1, r2, r3, r4, r5, r6, r7] = commitment.hash.unbox();
         let msg = [d0, d1, d2, d3, d4, d5, d6, d7, r0, r1, r2, r3, r4, r5, r6, r7];
         let res = blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, BoxImpl::new(msg));
         update_digest(ref self, Blake2sHash { hash: res });
@@ -88,54 +90,29 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let (q, r) = div_rem(nonce, NZ_U32_SHIFT);
         let nonce_hi = upcast(q);
         let nonce_lo = upcast(r);
-        self.mix_u32s(array![nonce_lo, nonce_hi].span());
-    }
 
-    fn mix_u32s(ref self: Blake2sChannel, data: Span<u32>) {
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         let mut state = BoxImpl::new(BLAKE2S_256_INITIAL_STATE);
+        let mut buffer = [d0, d1, d2, d3, d4, d5, d6, d7, nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0];
+        let mut byte_count = 40;
 
-        let mut buffer = array![d0, d1, d2, d3, d4, d5, d6, d7];
-        let mut byte_count = 32;
-
-        let mut data = data;
-
-        while let Some(head) = data.multi_pop_front::<8>() {
-            // Compress whenever the buffer reaches capacity.
-            if let Some(msg) = buffer.span().try_into() {
-                state = blake2s_compress(state, byte_count, *msg);
-                buffer = array![];
-            }
-
-            buffer.append_span(head.unbox().span());
-            byte_count += 32;
-        }
-
-        // Compress again if buffer is full but there is more data for finalize.
-        if !data.is_empty() {
-            if let Some(msg) = buffer.span().try_into() {
-                state = blake2s_compress(state, byte_count, *msg);
-                buffer = array![];
-            }
-        }
-
-        buffer.append_span(data);
-        byte_count += data.len() * 4;
-        for _ in buffer.len()..16 {
-            buffer.append(0);
-        }
-
-        let res = blake2s_finalize(state, byte_count, *buffer.span().try_into().unwrap());
+        let res = blake2s_finalize(state, byte_count, BoxImpl::new(buffer));
         update_digest(ref self, Blake2sHash { hash: res });
     }
 
-    fn mix_memory_section(ref self: Blake2sChannel, data: MemorySection) {
-        let res = hash_memory_section_with_digest(data, self.digest.hash);
-        update_digest(ref self, Blake2sHash { hash: res });
+    fn mix_memory_section(ref self: Blake2sChannel, section: MemorySection) {
+        let digest = self.digest.hash.unbox();
+
+        // Mix ids hash
+        let ids_hash = hash_memory_section_ids(section, digest);
+
+        // Mix values hash
+        let values_hash = hash_memory_section_values(section, ids_hash.unbox());
+        update_digest(ref self, Blake2sHash { hash: values_hash });
     }
 
     fn draw_secure_felt(ref self: Blake2sChannel) -> SecureField {
-        let [r0, r1, r2, r3, _, _, _, _] = draw_random_base_felts(ref self).unbox();
+        let [r0, r1, r2, r3, _, _, _, _] = draw_base_felts(ref self).unbox();
         QM31Trait::from_fixed_array([r0, r1, r2, r3])
     }
 
@@ -143,7 +120,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         let mut res = array![];
 
         while n_felts != 0 {
-            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_random_base_felts(ref self).unbox();
+            let [r0, r1, r2, r3, r4, r5, r6, r7] = draw_base_felts(ref self).unbox();
             res.append(QM31Trait::from_fixed_array([r0, r1, r2, r3]));
             if n_felts == 1 {
                 break;
@@ -155,42 +132,51 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         res
     }
 
-    fn draw_random_bytes(ref self: Blake2sChannel) -> Array<u8> {
-        let words = draw_random_words(ref self).hash.unbox();
-        let mut bytes = array![];
-
-        for word in words.span() {
-            let (q, r) = div_rem(*word, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            let (q, r) = div_rem(q, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            let (q, r) = div_rem(q, NZ_U8_SHIFT);
-            bytes.append(upcast(r));
-            bytes.append(upcast(q));
-        }
-
-        bytes
+    /// Draws 8 random u32s.
+    fn draw_u32s(ref self: Blake2sChannel) -> Span<u32> {
+        draw_random_words(ref self).hash.span()
     }
 
-    fn mix_and_check_pow_nonce(ref self: Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
-        self.mix_u64(nonce);
-        check_proof_of_work(self.digest, n_bits)
+    /// Check that `H(H(POW_PREFIX || digest || n_bits) || nonce)` has `n_bits` starting zeros.
+    fn verify_pow_nonce(self: @Blake2sChannel, n_bits: u32, nonce: u64) -> bool {
+        const POW_PREFIX: u32 = 0x12345678;
+        let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
+        // Compute `POW_PREFIX || zeros  || digest || n_bits`.
+        //          1 u32      || 6 u32s || 8 u32  || 1 u32.
+        let msg = BoxImpl::new(
+            [POW_PREFIX, 0, 0, 0, 0, 0, 0, d0, d1, d2, d3, d4, d5, d6, d7, n_bits],
+        );
+        let [q0, q1, q2, q3, q4, q5, q6, q7] = blake2s_finalize(
+            BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 64, msg,
+        )
+            .unbox();
+
+        let (q, r) = div_rem(nonce, NZ_U32_SHIFT);
+        let nonce_hi = upcast(q);
+        let nonce_lo = upcast(r);
+        let msg = BoxImpl::new(
+            [q0, q1, q2, q3, q4, q5, q6, q7, nonce_lo, nonce_hi, 0, 0, 0, 0, 0, 0],
+        );
+        let digest = Blake2sHash {
+            hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 40, msg),
+        };
+        check_leading_zeros(digest, n_bits)
     }
 }
 
-/// Checks that the last `n_bits` bits of the digest are zero.
-/// `n_bits` is in range [0, 64].
-fn check_proof_of_work(digest: Blake2sHash, n_bits: u32) -> bool {
+/// Checks that the leading `n_bits` bits of the digest are zero.
+/// `n_bits` is in range [0, 63].
+///
+/// # Panics
+///
+/// Panics if `n_bits` >= 64.
+fn check_leading_zeros(digest: Blake2sHash, n_bits: u32) -> bool {
     const U64_2_POW_32: u64 = 0x100000000;
     let [d0, d1, _, _, _, _, _, _] = digest.hash.unbox();
     let v = d1.into() * U64_2_POW_32 + d0.into();
-    // Handle the special case of 64 bits.
-    if n_bits == 64 {
-        return v == 0;
-    }
-    // If n_bits > 64 pow2_u64 will panic with index out of bounds.
-    let divisor = pow2_u64(n_bits).try_into().unwrap();
-    let (_, r) = DivRem::div_rem(v, divisor);
+
+    let nonzero_divisor: NonZero<u64> = pow2_u64(n_bits).try_into().unwrap();
+    let (_, r) = DivRem::div_rem(v, nonzero_divisor);
     r == 0
 }
 
@@ -200,7 +186,7 @@ fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
 }
 
 // TODO: Consider just returning secure felts.
-fn draw_random_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
+fn draw_base_felts(ref channel: Blake2sChannel) -> Box<[M31; 8]> {
     loop {
         let [w0, w1, w2, w3, w4, w5, w6, w7] = draw_random_words(ref channel).hash.unbox();
 
@@ -223,5 +209,8 @@ fn draw_random_words(ref channel: Blake2sChannel) -> Blake2sHash {
     let counter = channel.n_draws;
     let msg = BoxImpl::new([d0, d1, d2, d3, d4, d5, d6, d7, counter, 0, 0, 0, 0, 0, 0, 0]);
     channel.n_draws += 1;
-    Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 36, msg) }
+
+    // Append a zero byte for domain separation between generating randomness and mixing a
+    // single u32.
+    Blake2sHash { hash: blake2s_finalize(BoxImpl::new(BLAKE2S_256_INITIAL_STATE), 37, msg) }
 }
