@@ -9,6 +9,7 @@ slow-tests = []
 extract-mem-trace = []
 
 [dependencies]
+anyhow.workspace = true
 bytemuck.workspace = true
 cairo-lang-casm.workspace = true
 cairo-vm.workspace = true
@@ -27,7 +28,6 @@ dashmap = "6.1.0"
 rayon.workspace = true
 clap.workspace = true
 crypto-bigint = "0.5.1"
-anyhow.workspace = true
 
 [dev-dependencies]
 stwo_cairo_utils.workspace = true
