@@ -4,9 +4,9 @@ use cairo_air::range_checks_air::{
 use stwo::prover::backend::simd::SimdBackend;
 
 use crate::witness::components::{
-    range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_19,
-    range_check_19_b, range_check_19_c, range_check_19_d, range_check_19_e, range_check_19_f,
-    range_check_19_g, range_check_19_h, range_check_3_3_3_3_3, range_check_3_6_6_3,
+    range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_20,
+    range_check_20_b, range_check_20_c, range_check_20_d, range_check_20_e, range_check_20_f,
+    range_check_20_g, range_check_20_h, range_check_3_3_3_3_3, range_check_3_6_6_3,
     range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
     range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
     range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
@@ -20,14 +20,14 @@ pub struct RangeChecksClaimGenerator {
     pub rc_12_trace_generator: range_check_12::ClaimGenerator,
     pub rc_18_trace_generator: range_check_18::ClaimGenerator,
     pub rc_18_b_trace_generator: range_check_18_b::ClaimGenerator,
-    pub rc_19_trace_generator: range_check_19::ClaimGenerator,
-    pub rc_19_b_trace_generator: range_check_19_b::ClaimGenerator,
-    pub rc_19_c_trace_generator: range_check_19_c::ClaimGenerator,
-    pub rc_19_d_trace_generator: range_check_19_d::ClaimGenerator,
-    pub rc_19_e_trace_generator: range_check_19_e::ClaimGenerator,
-    pub rc_19_f_trace_generator: range_check_19_f::ClaimGenerator,
-    pub rc_19_g_trace_generator: range_check_19_g::ClaimGenerator,
-    pub rc_19_h_trace_generator: range_check_19_h::ClaimGenerator,
+    pub rc_20_trace_generator: range_check_20::ClaimGenerator,
+    pub rc_20_b_trace_generator: range_check_20_b::ClaimGenerator,
+    pub rc_20_c_trace_generator: range_check_20_c::ClaimGenerator,
+    pub rc_20_d_trace_generator: range_check_20_d::ClaimGenerator,
+    pub rc_20_e_trace_generator: range_check_20_e::ClaimGenerator,
+    pub rc_20_f_trace_generator: range_check_20_f::ClaimGenerator,
+    pub rc_20_g_trace_generator: range_check_20_g::ClaimGenerator,
+    pub rc_20_h_trace_generator: range_check_20_h::ClaimGenerator,
     pub rc_4_3_trace_generator: range_check_4_3::ClaimGenerator,
     pub rc_4_4_trace_generator: range_check_4_4::ClaimGenerator,
     pub rc_5_4_trace_generator: range_check_5_4::ClaimGenerator,
@@ -59,14 +59,14 @@ impl RangeChecksClaimGenerator {
             rc_12_trace_generator: range_check_12::ClaimGenerator::new(),
             rc_18_trace_generator: range_check_18::ClaimGenerator::new(),
             rc_18_b_trace_generator: range_check_18_b::ClaimGenerator::new(),
-            rc_19_trace_generator: range_check_19::ClaimGenerator::new(),
-            rc_19_b_trace_generator: range_check_19_b::ClaimGenerator::new(),
-            rc_19_c_trace_generator: range_check_19_c::ClaimGenerator::new(),
-            rc_19_d_trace_generator: range_check_19_d::ClaimGenerator::new(),
-            rc_19_e_trace_generator: range_check_19_e::ClaimGenerator::new(),
-            rc_19_f_trace_generator: range_check_19_f::ClaimGenerator::new(),
-            rc_19_g_trace_generator: range_check_19_g::ClaimGenerator::new(),
-            rc_19_h_trace_generator: range_check_19_h::ClaimGenerator::new(),
+            rc_20_trace_generator: range_check_20::ClaimGenerator::new(),
+            rc_20_b_trace_generator: range_check_20_b::ClaimGenerator::new(),
+            rc_20_c_trace_generator: range_check_20_c::ClaimGenerator::new(),
+            rc_20_d_trace_generator: range_check_20_d::ClaimGenerator::new(),
+            rc_20_e_trace_generator: range_check_20_e::ClaimGenerator::new(),
+            rc_20_f_trace_generator: range_check_20_f::ClaimGenerator::new(),
+            rc_20_g_trace_generator: range_check_20_g::ClaimGenerator::new(),
+            rc_20_h_trace_generator: range_check_20_h::ClaimGenerator::new(),
             rc_4_3_trace_generator: range_check_4_3::ClaimGenerator::new(),
             rc_4_4_trace_generator: range_check_4_4::ClaimGenerator::new(),
             rc_5_4_trace_generator: range_check_5_4::ClaimGenerator::new(),
@@ -100,22 +100,22 @@ impl RangeChecksClaimGenerator {
             self.rc_18_trace_generator.write_trace(tree_builder);
         let (rc_18_b_claim, rc_18_b_interaction_gen) =
             self.rc_18_b_trace_generator.write_trace(tree_builder);
-        let (rc_19_claim, rc_19_interaction_gen) =
-            self.rc_19_trace_generator.write_trace(tree_builder);
-        let (rc_19_b_claim, rc_19_b_interaction_gen) =
-            self.rc_19_b_trace_generator.write_trace(tree_builder);
-        let (rc_19_c_claim, rc_19_c_interaction_gen) =
-            self.rc_19_c_trace_generator.write_trace(tree_builder);
-        let (rc_19_d_claim, rc_19_d_interaction_gen) =
-            self.rc_19_d_trace_generator.write_trace(tree_builder);
-        let (rc_19_e_claim, rc_19_e_interaction_gen) =
-            self.rc_19_e_trace_generator.write_trace(tree_builder);
-        let (rc_19_f_claim, rc_19_f_interaction_gen) =
-            self.rc_19_f_trace_generator.write_trace(tree_builder);
-        let (rc_19_g_claim, rc_19_g_interaction_gen) =
-            self.rc_19_g_trace_generator.write_trace(tree_builder);
-        let (rc_19_h_claim, rc_19_h_interaction_gen) =
-            self.rc_19_h_trace_generator.write_trace(tree_builder);
+        let (rc_20_claim, rc_20_interaction_gen) =
+            self.rc_20_trace_generator.write_trace(tree_builder);
+        let (rc_20_b_claim, rc_20_b_interaction_gen) =
+            self.rc_20_b_trace_generator.write_trace(tree_builder);
+        let (rc_20_c_claim, rc_20_c_interaction_gen) =
+            self.rc_20_c_trace_generator.write_trace(tree_builder);
+        let (rc_20_d_claim, rc_20_d_interaction_gen) =
+            self.rc_20_d_trace_generator.write_trace(tree_builder);
+        let (rc_20_e_claim, rc_20_e_interaction_gen) =
+            self.rc_20_e_trace_generator.write_trace(tree_builder);
+        let (rc_20_f_claim, rc_20_f_interaction_gen) =
+            self.rc_20_f_trace_generator.write_trace(tree_builder);
+        let (rc_20_g_claim, rc_20_g_interaction_gen) =
+            self.rc_20_g_trace_generator.write_trace(tree_builder);
+        let (rc_20_h_claim, rc_20_h_interaction_gen) =
+            self.rc_20_h_trace_generator.write_trace(tree_builder);
         let (rc_4_3_claim, rc_4_3_interaction_gen) =
             self.rc_4_3_trace_generator.write_trace(tree_builder);
         let (rc_4_4_claim, rc_4_4_interaction_gen) =
@@ -154,14 +154,14 @@ impl RangeChecksClaimGenerator {
                 rc_12: rc_12_claim,
                 rc_18: rc_18_claim,
                 rc_18_b: rc_18_b_claim,
-                rc_19: rc_19_claim,
-                rc_19_b: rc_19_b_claim,
-                rc_19_c: rc_19_c_claim,
-                rc_19_d: rc_19_d_claim,
-                rc_19_e: rc_19_e_claim,
-                rc_19_f: rc_19_f_claim,
-                rc_19_g: rc_19_g_claim,
-                rc_19_h: rc_19_h_claim,
+                rc_20: rc_20_claim,
+                rc_20_b: rc_20_b_claim,
+                rc_20_c: rc_20_c_claim,
+                rc_20_d: rc_20_d_claim,
+                rc_20_e: rc_20_e_claim,
+                rc_20_f: rc_20_f_claim,
+                rc_20_g: rc_20_g_claim,
+                rc_20_h: rc_20_h_claim,
                 rc_4_3: rc_4_3_claim,
                 rc_4_4: rc_4_4_claim,
                 rc_5_4: rc_5_4_claim,
@@ -185,14 +185,14 @@ impl RangeChecksClaimGenerator {
                 rc_12_interaction_gen,
                 rc_18_interaction_gen,
                 rc_18_b_interaction_gen,
-                rc_19_interaction_gen,
-                rc_19_b_interaction_gen,
-                rc_19_c_interaction_gen,
-                rc_19_d_interaction_gen,
-                rc_19_e_interaction_gen,
-                rc_19_f_interaction_gen,
-                rc_19_g_interaction_gen,
-                rc_19_h_interaction_gen,
+                rc_20_interaction_gen,
+                rc_20_b_interaction_gen,
+                rc_20_c_interaction_gen,
+                rc_20_d_interaction_gen,
+                rc_20_e_interaction_gen,
+                rc_20_f_interaction_gen,
+                rc_20_g_interaction_gen,
+                rc_20_h_interaction_gen,
                 rc_4_3_interaction_gen,
                 rc_4_4_interaction_gen,
                 rc_5_4_interaction_gen,
@@ -220,14 +220,14 @@ pub struct RangeChecksInteractionClaimGenerator {
     rc_12_interaction_gen: range_check_12::InteractionClaimGenerator,
     rc_18_interaction_gen: range_check_18::InteractionClaimGenerator,
     rc_18_b_interaction_gen: range_check_18_b::InteractionClaimGenerator,
-    rc_19_interaction_gen: range_check_19::InteractionClaimGenerator,
-    rc_19_b_interaction_gen: range_check_19_b::InteractionClaimGenerator,
-    rc_19_c_interaction_gen: range_check_19_c::InteractionClaimGenerator,
-    rc_19_d_interaction_gen: range_check_19_d::InteractionClaimGenerator,
-    rc_19_e_interaction_gen: range_check_19_e::InteractionClaimGenerator,
-    rc_19_f_interaction_gen: range_check_19_f::InteractionClaimGenerator,
-    rc_19_g_interaction_gen: range_check_19_g::InteractionClaimGenerator,
-    rc_19_h_interaction_gen: range_check_19_h::InteractionClaimGenerator,
+    rc_20_interaction_gen: range_check_20::InteractionClaimGenerator,
+    rc_20_b_interaction_gen: range_check_20_b::InteractionClaimGenerator,
+    rc_20_c_interaction_gen: range_check_20_c::InteractionClaimGenerator,
+    rc_20_d_interaction_gen: range_check_20_d::InteractionClaimGenerator,
+    rc_20_e_interaction_gen: range_check_20_e::InteractionClaimGenerator,
+    rc_20_f_interaction_gen: range_check_20_f::InteractionClaimGenerator,
+    rc_20_g_interaction_gen: range_check_20_g::InteractionClaimGenerator,
+    rc_20_h_interaction_gen: range_check_20_h::InteractionClaimGenerator,
     rc_4_3_interaction_gen: range_check_4_3::InteractionClaimGenerator,
     rc_4_4_interaction_gen: range_check_4_4::InteractionClaimGenerator,
     rc_5_4_interaction_gen: range_check_5_4::InteractionClaimGenerator,
@@ -268,30 +268,30 @@ impl RangeChecksInteractionClaimGenerator {
         let rc_18_b_interaction_claim = self
             .rc_18_b_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_18_b);
-        let rc_19_interaction_claim = self
-            .rc_19_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19);
-        let rc_19_b_interaction_claim = self
-            .rc_19_b_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_b);
-        let rc_19_c_interaction_claim = self
-            .rc_19_c_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_c);
-        let rc_19_d_interaction_claim = self
-            .rc_19_d_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_d);
-        let rc_19_e_interaction_claim = self
-            .rc_19_e_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_e);
-        let rc_19_f_interaction_claim = self
-            .rc_19_f_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_f);
-        let rc_19_g_interaction_claim = self
-            .rc_19_g_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_g);
-        let rc_19_h_interaction_claim = self
-            .rc_19_h_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_19_h);
+        let rc_20_interaction_claim = self
+            .rc_20_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20);
+        let rc_20_b_interaction_claim = self
+            .rc_20_b_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_b);
+        let rc_20_c_interaction_claim = self
+            .rc_20_c_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_c);
+        let rc_20_d_interaction_claim = self
+            .rc_20_d_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_d);
+        let rc_20_e_interaction_claim = self
+            .rc_20_e_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_e);
+        let rc_20_f_interaction_claim = self
+            .rc_20_f_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_f);
+        let rc_20_g_interaction_claim = self
+            .rc_20_g_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_g);
+        let rc_20_h_interaction_claim = self
+            .rc_20_h_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_h);
         let rc_4_3_interaction_claim = self
             .rc_4_3_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_4_3);
@@ -344,14 +344,14 @@ impl RangeChecksInteractionClaimGenerator {
             rc_12: rc_12_interaction_claim,
             rc_18: rc_18_interaction_claim,
             rc_18_b: rc_18_b_interaction_claim,
-            rc_19: rc_19_interaction_claim,
-            rc_19_b: rc_19_b_interaction_claim,
-            rc_19_c: rc_19_c_interaction_claim,
-            rc_19_d: rc_19_d_interaction_claim,
-            rc_19_e: rc_19_e_interaction_claim,
-            rc_19_f: rc_19_f_interaction_claim,
-            rc_19_g: rc_19_g_interaction_claim,
-            rc_19_h: rc_19_h_interaction_claim,
+            rc_20: rc_20_interaction_claim,
+            rc_20_b: rc_20_b_interaction_claim,
+            rc_20_c: rc_20_c_interaction_claim,
+            rc_20_d: rc_20_d_interaction_claim,
+            rc_20_e: rc_20_e_interaction_claim,
+            rc_20_f: rc_20_f_interaction_claim,
+            rc_20_g: rc_20_g_interaction_claim,
+            rc_20_h: rc_20_h_interaction_claim,
             rc_4_3: rc_4_3_interaction_claim,
             rc_4_4: rc_4_4_interaction_claim,
             rc_5_4: rc_5_4_interaction_claim,

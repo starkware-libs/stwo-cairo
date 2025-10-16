@@ -95,14 +95,14 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_12,
         rc_18,
         rc_18_b,
-        rc_19,
-        rc_19_b,
-        rc_19_c,
-        rc_19_d,
-        rc_19_e,
-        rc_19_f,
-        rc_19_g,
-        rc_19_h,
+        rc_20,
+        rc_20_b,
+        rc_20_c,
+        rc_20_d,
+        rc_20_e,
+        rc_20_f,
+        rc_20_g,
+        rc_20_h,
         rc_4_3,
         rc_4_4,
         rc_5_4,
@@ -147,14 +147,14 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(rc_12, &trace);
     assert_component(rc_18, &trace);
     assert_component(rc_18_b, &trace);
-    assert_component(rc_19, &trace);
-    assert_component(rc_19_b, &trace);
-    assert_component(rc_19_c, &trace);
-    assert_component(rc_19_d, &trace);
-    assert_component(rc_19_e, &trace);
-    assert_component(rc_19_f, &trace);
-    assert_component(rc_19_g, &trace);
-    assert_component(rc_19_h, &trace);
+    assert_component(rc_20, &trace);
+    assert_component(rc_20_b, &trace);
+    assert_component(rc_20_c, &trace);
+    assert_component(rc_20_d, &trace);
+    assert_component(rc_20_e, &trace);
+    assert_component(rc_20_f, &trace);
+    assert_component(rc_20_g, &trace);
+    assert_component(rc_20_h, &trace);
     assert_component(rc_4_3, &trace);
     assert_component(rc_4_4, &trace);
     assert_component(rc_5_4, &trace);

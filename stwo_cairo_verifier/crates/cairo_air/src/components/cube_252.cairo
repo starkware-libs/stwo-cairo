@@ -1,4 +1,3 @@
-// AIR version d1591e2a
 use crate::components::subroutines::felt_252_unpack_from_27_range_check_output::felt_252_unpack_from_27_range_check_output_evaluate;
 use crate::components::subroutines::mul_252::mul_252_evaluate;
 use crate::prelude::*;
@@ -7,9 +6,9 @@ pub const N_TRACE_COLUMNS: usize = 141;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 16] = [
     ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6), ('RangeCheck_9_9_C', 6),
     ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6), ('RangeCheck_9_9_F', 6),
-    ('RangeCheck_9_9_G', 3), ('RangeCheck_9_9_H', 3), ('RangeCheck_19_H', 8), ('RangeCheck_19', 8),
-    ('RangeCheck_19_B', 8), ('RangeCheck_19_C', 8), ('RangeCheck_19_D', 6), ('RangeCheck_19_E', 6),
-    ('RangeCheck_19_F', 6), ('RangeCheck_19_G', 6),
+    ('RangeCheck_9_9_G', 3), ('RangeCheck_9_9_H', 3), ('RangeCheck_20', 8), ('RangeCheck_20_B', 8),
+    ('RangeCheck_20_C', 8), ('RangeCheck_20_D', 8), ('RangeCheck_20_E', 6), ('RangeCheck_20_F', 6),
+    ('RangeCheck_20_G', 6), ('RangeCheck_20_H', 6),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -60,14 +59,14 @@ pub struct Component {
     pub range_check_9_9_f_lookup_elements: crate::RangeCheck_9_9_FElements,
     pub range_check_9_9_g_lookup_elements: crate::RangeCheck_9_9_GElements,
     pub range_check_9_9_h_lookup_elements: crate::RangeCheck_9_9_HElements,
-    pub range_check_19_h_lookup_elements: crate::RangeCheck_19_HElements,
-    pub range_check_19_lookup_elements: crate::RangeCheck_19Elements,
-    pub range_check_19_b_lookup_elements: crate::RangeCheck_19_BElements,
-    pub range_check_19_c_lookup_elements: crate::RangeCheck_19_CElements,
-    pub range_check_19_d_lookup_elements: crate::RangeCheck_19_DElements,
-    pub range_check_19_e_lookup_elements: crate::RangeCheck_19_EElements,
-    pub range_check_19_f_lookup_elements: crate::RangeCheck_19_FElements,
-    pub range_check_19_g_lookup_elements: crate::RangeCheck_19_GElements,
+    pub range_check_20_lookup_elements: crate::RangeCheck_20Elements,
+    pub range_check_20_b_lookup_elements: crate::RangeCheck_20_BElements,
+    pub range_check_20_c_lookup_elements: crate::RangeCheck_20_CElements,
+    pub range_check_20_d_lookup_elements: crate::RangeCheck_20_DElements,
+    pub range_check_20_e_lookup_elements: crate::RangeCheck_20_EElements,
+    pub range_check_20_f_lookup_elements: crate::RangeCheck_20_FElements,
+    pub range_check_20_g_lookup_elements: crate::RangeCheck_20_GElements,
+    pub range_check_20_h_lookup_elements: crate::RangeCheck_20_HElements,
     pub cube_252_lookup_elements: crate::Cube252Elements,
 }
 
@@ -91,14 +90,14 @@ pub impl NewComponentImpl of NewComponent<Component> {
             range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
             range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
             range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
-            range_check_19_h_lookup_elements: interaction_elements.range_checks.rc_19_h.clone(),
-            range_check_19_lookup_elements: interaction_elements.range_checks.rc_19.clone(),
-            range_check_19_b_lookup_elements: interaction_elements.range_checks.rc_19_b.clone(),
-            range_check_19_c_lookup_elements: interaction_elements.range_checks.rc_19_c.clone(),
-            range_check_19_d_lookup_elements: interaction_elements.range_checks.rc_19_d.clone(),
-            range_check_19_e_lookup_elements: interaction_elements.range_checks.rc_19_e.clone(),
-            range_check_19_f_lookup_elements: interaction_elements.range_checks.rc_19_f.clone(),
-            range_check_19_g_lookup_elements: interaction_elements.range_checks.rc_19_g.clone(),
+            range_check_20_lookup_elements: interaction_elements.range_checks.rc_20.clone(),
+            range_check_20_b_lookup_elements: interaction_elements.range_checks.rc_20_b.clone(),
+            range_check_20_c_lookup_elements: interaction_elements.range_checks.rc_20_c.clone(),
+            range_check_20_d_lookup_elements: interaction_elements.range_checks.rc_20_d.clone(),
+            range_check_20_e_lookup_elements: interaction_elements.range_checks.rc_20_e.clone(),
+            range_check_20_f_lookup_elements: interaction_elements.range_checks.rc_20_f.clone(),
+            range_check_20_g_lookup_elements: interaction_elements.range_checks.rc_20_g.clone(),
+            range_check_20_h_lookup_elements: interaction_elements.range_checks.rc_20_h.clone(),
             cube_252_lookup_elements: interaction_elements.cube_252.clone(),
         }
     }
@@ -504,34 +503,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_9_9_d_sum_25: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_26: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_27: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_28: QM31 = Zero::zero();
-        let mut range_check_19_sum_29: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_30: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_31: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_32: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_33: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_34: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_35: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_36: QM31 = Zero::zero();
-        let mut range_check_19_sum_37: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_38: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_39: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_40: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_41: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_42: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_43: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_44: QM31 = Zero::zero();
-        let mut range_check_19_sum_45: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_46: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_47: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_48: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_49: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_50: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_51: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_52: QM31 = Zero::zero();
-        let mut range_check_19_sum_53: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_54: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_55: QM31 = Zero::zero();
+        let mut range_check_20_sum_28: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_29: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_30: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_31: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_32: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_33: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_34: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_35: QM31 = Zero::zero();
+        let mut range_check_20_sum_36: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_37: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_38: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_39: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_40: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_41: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_42: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_43: QM31 = Zero::zero();
+        let mut range_check_20_sum_44: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_45: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_46: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_47: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_48: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_49: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_50: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_51: QM31 = Zero::zero();
+        let mut range_check_20_sum_52: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_53: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_54: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_55: QM31 = Zero::zero();
         let mut range_check_9_9_sum_56: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_57: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_58: QM31 = Zero::zero();
@@ -546,34 +545,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_9_9_d_sum_67: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_68: QM31 = Zero::zero();
         let mut range_check_9_9_f_sum_69: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_70: QM31 = Zero::zero();
-        let mut range_check_19_sum_71: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_72: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_73: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_74: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_75: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_76: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_77: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_78: QM31 = Zero::zero();
-        let mut range_check_19_sum_79: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_80: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_81: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_82: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_83: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_84: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_85: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_86: QM31 = Zero::zero();
-        let mut range_check_19_sum_87: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_88: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_89: QM31 = Zero::zero();
-        let mut range_check_19_d_sum_90: QM31 = Zero::zero();
-        let mut range_check_19_e_sum_91: QM31 = Zero::zero();
-        let mut range_check_19_f_sum_92: QM31 = Zero::zero();
-        let mut range_check_19_g_sum_93: QM31 = Zero::zero();
-        let mut range_check_19_h_sum_94: QM31 = Zero::zero();
-        let mut range_check_19_sum_95: QM31 = Zero::zero();
-        let mut range_check_19_b_sum_96: QM31 = Zero::zero();
-        let mut range_check_19_c_sum_97: QM31 = Zero::zero();
+        let mut range_check_20_sum_70: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_71: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_72: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_73: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_74: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_75: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_76: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_77: QM31 = Zero::zero();
+        let mut range_check_20_sum_78: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_79: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_80: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_81: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_82: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_83: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_84: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_85: QM31 = Zero::zero();
+        let mut range_check_20_sum_86: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_87: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_88: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_89: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_90: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_91: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_92: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_93: QM31 = Zero::zero();
+        let mut range_check_20_sum_94: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_95: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_96: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_97: QM31 = Zero::zero();
         let mut cube_252_sum_98: QM31 = Zero::zero();
 
         let [
@@ -1089,14 +1088,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.range_check_9_9_f_lookup_elements,
             self.range_check_9_9_g_lookup_elements,
             self.range_check_9_9_h_lookup_elements,
-            self.range_check_19_h_lookup_elements,
-            self.range_check_19_lookup_elements,
-            self.range_check_19_b_lookup_elements,
-            self.range_check_19_c_lookup_elements,
-            self.range_check_19_d_lookup_elements,
-            self.range_check_19_e_lookup_elements,
-            self.range_check_19_f_lookup_elements,
-            self.range_check_19_g_lookup_elements,
+            self.range_check_20_lookup_elements,
+            self.range_check_20_b_lookup_elements,
+            self.range_check_20_c_lookup_elements,
+            self.range_check_20_d_lookup_elements,
+            self.range_check_20_e_lookup_elements,
+            self.range_check_20_f_lookup_elements,
+            self.range_check_20_g_lookup_elements,
+            self.range_check_20_h_lookup_elements,
             ref range_check_9_9_sum_14,
             ref range_check_9_9_b_sum_15,
             ref range_check_9_9_c_sum_16,
@@ -1111,34 +1110,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_9_9_d_sum_25,
             ref range_check_9_9_e_sum_26,
             ref range_check_9_9_f_sum_27,
-            ref range_check_19_h_sum_28,
-            ref range_check_19_sum_29,
-            ref range_check_19_b_sum_30,
-            ref range_check_19_c_sum_31,
-            ref range_check_19_d_sum_32,
-            ref range_check_19_e_sum_33,
-            ref range_check_19_f_sum_34,
-            ref range_check_19_g_sum_35,
-            ref range_check_19_h_sum_36,
-            ref range_check_19_sum_37,
-            ref range_check_19_b_sum_38,
-            ref range_check_19_c_sum_39,
-            ref range_check_19_d_sum_40,
-            ref range_check_19_e_sum_41,
-            ref range_check_19_f_sum_42,
-            ref range_check_19_g_sum_43,
-            ref range_check_19_h_sum_44,
-            ref range_check_19_sum_45,
-            ref range_check_19_b_sum_46,
-            ref range_check_19_c_sum_47,
-            ref range_check_19_d_sum_48,
-            ref range_check_19_e_sum_49,
-            ref range_check_19_f_sum_50,
-            ref range_check_19_g_sum_51,
-            ref range_check_19_h_sum_52,
-            ref range_check_19_sum_53,
-            ref range_check_19_b_sum_54,
-            ref range_check_19_c_sum_55,
+            ref range_check_20_sum_28,
+            ref range_check_20_b_sum_29,
+            ref range_check_20_c_sum_30,
+            ref range_check_20_d_sum_31,
+            ref range_check_20_e_sum_32,
+            ref range_check_20_f_sum_33,
+            ref range_check_20_g_sum_34,
+            ref range_check_20_h_sum_35,
+            ref range_check_20_sum_36,
+            ref range_check_20_b_sum_37,
+            ref range_check_20_c_sum_38,
+            ref range_check_20_d_sum_39,
+            ref range_check_20_e_sum_40,
+            ref range_check_20_f_sum_41,
+            ref range_check_20_g_sum_42,
+            ref range_check_20_h_sum_43,
+            ref range_check_20_sum_44,
+            ref range_check_20_b_sum_45,
+            ref range_check_20_c_sum_46,
+            ref range_check_20_d_sum_47,
+            ref range_check_20_e_sum_48,
+            ref range_check_20_f_sum_49,
+            ref range_check_20_g_sum_50,
+            ref range_check_20_h_sum_51,
+            ref range_check_20_sum_52,
+            ref range_check_20_b_sum_53,
+            ref range_check_20_c_sum_54,
+            ref range_check_20_d_sum_55,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1238,14 +1237,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.range_check_9_9_f_lookup_elements,
             self.range_check_9_9_g_lookup_elements,
             self.range_check_9_9_h_lookup_elements,
-            self.range_check_19_h_lookup_elements,
-            self.range_check_19_lookup_elements,
-            self.range_check_19_b_lookup_elements,
-            self.range_check_19_c_lookup_elements,
-            self.range_check_19_d_lookup_elements,
-            self.range_check_19_e_lookup_elements,
-            self.range_check_19_f_lookup_elements,
-            self.range_check_19_g_lookup_elements,
+            self.range_check_20_lookup_elements,
+            self.range_check_20_b_lookup_elements,
+            self.range_check_20_c_lookup_elements,
+            self.range_check_20_d_lookup_elements,
+            self.range_check_20_e_lookup_elements,
+            self.range_check_20_f_lookup_elements,
+            self.range_check_20_g_lookup_elements,
+            self.range_check_20_h_lookup_elements,
             ref range_check_9_9_sum_56,
             ref range_check_9_9_b_sum_57,
             ref range_check_9_9_c_sum_58,
@@ -1260,34 +1259,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_9_9_d_sum_67,
             ref range_check_9_9_e_sum_68,
             ref range_check_9_9_f_sum_69,
-            ref range_check_19_h_sum_70,
-            ref range_check_19_sum_71,
-            ref range_check_19_b_sum_72,
-            ref range_check_19_c_sum_73,
-            ref range_check_19_d_sum_74,
-            ref range_check_19_e_sum_75,
-            ref range_check_19_f_sum_76,
-            ref range_check_19_g_sum_77,
-            ref range_check_19_h_sum_78,
-            ref range_check_19_sum_79,
-            ref range_check_19_b_sum_80,
-            ref range_check_19_c_sum_81,
-            ref range_check_19_d_sum_82,
-            ref range_check_19_e_sum_83,
-            ref range_check_19_f_sum_84,
-            ref range_check_19_g_sum_85,
-            ref range_check_19_h_sum_86,
-            ref range_check_19_sum_87,
-            ref range_check_19_b_sum_88,
-            ref range_check_19_c_sum_89,
-            ref range_check_19_d_sum_90,
-            ref range_check_19_e_sum_91,
-            ref range_check_19_f_sum_92,
-            ref range_check_19_g_sum_93,
-            ref range_check_19_h_sum_94,
-            ref range_check_19_sum_95,
-            ref range_check_19_b_sum_96,
-            ref range_check_19_c_sum_97,
+            ref range_check_20_sum_70,
+            ref range_check_20_b_sum_71,
+            ref range_check_20_c_sum_72,
+            ref range_check_20_d_sum_73,
+            ref range_check_20_e_sum_74,
+            ref range_check_20_f_sum_75,
+            ref range_check_20_g_sum_76,
+            ref range_check_20_h_sum_77,
+            ref range_check_20_sum_78,
+            ref range_check_20_b_sum_79,
+            ref range_check_20_c_sum_80,
+            ref range_check_20_d_sum_81,
+            ref range_check_20_e_sum_82,
+            ref range_check_20_f_sum_83,
+            ref range_check_20_g_sum_84,
+            ref range_check_20_h_sum_85,
+            ref range_check_20_sum_86,
+            ref range_check_20_b_sum_87,
+            ref range_check_20_c_sum_88,
+            ref range_check_20_d_sum_89,
+            ref range_check_20_e_sum_90,
+            ref range_check_20_f_sum_91,
+            ref range_check_20_g_sum_92,
+            ref range_check_20_h_sum_93,
+            ref range_check_20_sum_94,
+            ref range_check_20_b_sum_95,
+            ref range_check_20_c_sum_96,
+            ref range_check_20_d_sum_97,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1363,34 +1362,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_9_9_d_sum_25,
             range_check_9_9_e_sum_26,
             range_check_9_9_f_sum_27,
-            range_check_19_h_sum_28,
-            range_check_19_sum_29,
-            range_check_19_b_sum_30,
-            range_check_19_c_sum_31,
-            range_check_19_d_sum_32,
-            range_check_19_e_sum_33,
-            range_check_19_f_sum_34,
-            range_check_19_g_sum_35,
-            range_check_19_h_sum_36,
-            range_check_19_sum_37,
-            range_check_19_b_sum_38,
-            range_check_19_c_sum_39,
-            range_check_19_d_sum_40,
-            range_check_19_e_sum_41,
-            range_check_19_f_sum_42,
-            range_check_19_g_sum_43,
-            range_check_19_h_sum_44,
-            range_check_19_sum_45,
-            range_check_19_b_sum_46,
-            range_check_19_c_sum_47,
-            range_check_19_d_sum_48,
-            range_check_19_e_sum_49,
-            range_check_19_f_sum_50,
-            range_check_19_g_sum_51,
-            range_check_19_h_sum_52,
-            range_check_19_sum_53,
-            range_check_19_b_sum_54,
-            range_check_19_c_sum_55,
+            range_check_20_sum_28,
+            range_check_20_b_sum_29,
+            range_check_20_c_sum_30,
+            range_check_20_d_sum_31,
+            range_check_20_e_sum_32,
+            range_check_20_f_sum_33,
+            range_check_20_g_sum_34,
+            range_check_20_h_sum_35,
+            range_check_20_sum_36,
+            range_check_20_b_sum_37,
+            range_check_20_c_sum_38,
+            range_check_20_d_sum_39,
+            range_check_20_e_sum_40,
+            range_check_20_f_sum_41,
+            range_check_20_g_sum_42,
+            range_check_20_h_sum_43,
+            range_check_20_sum_44,
+            range_check_20_b_sum_45,
+            range_check_20_c_sum_46,
+            range_check_20_d_sum_47,
+            range_check_20_e_sum_48,
+            range_check_20_f_sum_49,
+            range_check_20_g_sum_50,
+            range_check_20_h_sum_51,
+            range_check_20_sum_52,
+            range_check_20_b_sum_53,
+            range_check_20_c_sum_54,
+            range_check_20_d_sum_55,
             range_check_9_9_sum_56,
             range_check_9_9_b_sum_57,
             range_check_9_9_c_sum_58,
@@ -1405,34 +1404,34 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_9_9_d_sum_67,
             range_check_9_9_e_sum_68,
             range_check_9_9_f_sum_69,
-            range_check_19_h_sum_70,
-            range_check_19_sum_71,
-            range_check_19_b_sum_72,
-            range_check_19_c_sum_73,
-            range_check_19_d_sum_74,
-            range_check_19_e_sum_75,
-            range_check_19_f_sum_76,
-            range_check_19_g_sum_77,
-            range_check_19_h_sum_78,
-            range_check_19_sum_79,
-            range_check_19_b_sum_80,
-            range_check_19_c_sum_81,
-            range_check_19_d_sum_82,
-            range_check_19_e_sum_83,
-            range_check_19_f_sum_84,
-            range_check_19_g_sum_85,
-            range_check_19_h_sum_86,
-            range_check_19_sum_87,
-            range_check_19_b_sum_88,
-            range_check_19_c_sum_89,
-            range_check_19_d_sum_90,
-            range_check_19_e_sum_91,
-            range_check_19_f_sum_92,
-            range_check_19_g_sum_93,
-            range_check_19_h_sum_94,
-            range_check_19_sum_95,
-            range_check_19_b_sum_96,
-            range_check_19_c_sum_97,
+            range_check_20_sum_70,
+            range_check_20_b_sum_71,
+            range_check_20_c_sum_72,
+            range_check_20_d_sum_73,
+            range_check_20_e_sum_74,
+            range_check_20_f_sum_75,
+            range_check_20_g_sum_76,
+            range_check_20_h_sum_77,
+            range_check_20_sum_78,
+            range_check_20_b_sum_79,
+            range_check_20_c_sum_80,
+            range_check_20_d_sum_81,
+            range_check_20_e_sum_82,
+            range_check_20_f_sum_83,
+            range_check_20_g_sum_84,
+            range_check_20_h_sum_85,
+            range_check_20_sum_86,
+            range_check_20_b_sum_87,
+            range_check_20_c_sum_88,
+            range_check_20_d_sum_89,
+            range_check_20_e_sum_90,
+            range_check_20_f_sum_91,
+            range_check_20_g_sum_92,
+            range_check_20_h_sum_93,
+            range_check_20_sum_94,
+            range_check_20_b_sum_95,
+            range_check_20_c_sum_96,
+            range_check_20_d_sum_97,
             cube_252_sum_98,
         );
     }
@@ -1475,34 +1474,34 @@ fn lookup_constraints(
     range_check_9_9_d_sum_25: QM31,
     range_check_9_9_e_sum_26: QM31,
     range_check_9_9_f_sum_27: QM31,
-    range_check_19_h_sum_28: QM31,
-    range_check_19_sum_29: QM31,
-    range_check_19_b_sum_30: QM31,
-    range_check_19_c_sum_31: QM31,
-    range_check_19_d_sum_32: QM31,
-    range_check_19_e_sum_33: QM31,
-    range_check_19_f_sum_34: QM31,
-    range_check_19_g_sum_35: QM31,
-    range_check_19_h_sum_36: QM31,
-    range_check_19_sum_37: QM31,
-    range_check_19_b_sum_38: QM31,
-    range_check_19_c_sum_39: QM31,
-    range_check_19_d_sum_40: QM31,
-    range_check_19_e_sum_41: QM31,
-    range_check_19_f_sum_42: QM31,
-    range_check_19_g_sum_43: QM31,
-    range_check_19_h_sum_44: QM31,
-    range_check_19_sum_45: QM31,
-    range_check_19_b_sum_46: QM31,
-    range_check_19_c_sum_47: QM31,
-    range_check_19_d_sum_48: QM31,
-    range_check_19_e_sum_49: QM31,
-    range_check_19_f_sum_50: QM31,
-    range_check_19_g_sum_51: QM31,
-    range_check_19_h_sum_52: QM31,
-    range_check_19_sum_53: QM31,
-    range_check_19_b_sum_54: QM31,
-    range_check_19_c_sum_55: QM31,
+    range_check_20_sum_28: QM31,
+    range_check_20_b_sum_29: QM31,
+    range_check_20_c_sum_30: QM31,
+    range_check_20_d_sum_31: QM31,
+    range_check_20_e_sum_32: QM31,
+    range_check_20_f_sum_33: QM31,
+    range_check_20_g_sum_34: QM31,
+    range_check_20_h_sum_35: QM31,
+    range_check_20_sum_36: QM31,
+    range_check_20_b_sum_37: QM31,
+    range_check_20_c_sum_38: QM31,
+    range_check_20_d_sum_39: QM31,
+    range_check_20_e_sum_40: QM31,
+    range_check_20_f_sum_41: QM31,
+    range_check_20_g_sum_42: QM31,
+    range_check_20_h_sum_43: QM31,
+    range_check_20_sum_44: QM31,
+    range_check_20_b_sum_45: QM31,
+    range_check_20_c_sum_46: QM31,
+    range_check_20_d_sum_47: QM31,
+    range_check_20_e_sum_48: QM31,
+    range_check_20_f_sum_49: QM31,
+    range_check_20_g_sum_50: QM31,
+    range_check_20_h_sum_51: QM31,
+    range_check_20_sum_52: QM31,
+    range_check_20_b_sum_53: QM31,
+    range_check_20_c_sum_54: QM31,
+    range_check_20_d_sum_55: QM31,
     range_check_9_9_sum_56: QM31,
     range_check_9_9_b_sum_57: QM31,
     range_check_9_9_c_sum_58: QM31,
@@ -1517,34 +1516,34 @@ fn lookup_constraints(
     range_check_9_9_d_sum_67: QM31,
     range_check_9_9_e_sum_68: QM31,
     range_check_9_9_f_sum_69: QM31,
-    range_check_19_h_sum_70: QM31,
-    range_check_19_sum_71: QM31,
-    range_check_19_b_sum_72: QM31,
-    range_check_19_c_sum_73: QM31,
-    range_check_19_d_sum_74: QM31,
-    range_check_19_e_sum_75: QM31,
-    range_check_19_f_sum_76: QM31,
-    range_check_19_g_sum_77: QM31,
-    range_check_19_h_sum_78: QM31,
-    range_check_19_sum_79: QM31,
-    range_check_19_b_sum_80: QM31,
-    range_check_19_c_sum_81: QM31,
-    range_check_19_d_sum_82: QM31,
-    range_check_19_e_sum_83: QM31,
-    range_check_19_f_sum_84: QM31,
-    range_check_19_g_sum_85: QM31,
-    range_check_19_h_sum_86: QM31,
-    range_check_19_sum_87: QM31,
-    range_check_19_b_sum_88: QM31,
-    range_check_19_c_sum_89: QM31,
-    range_check_19_d_sum_90: QM31,
-    range_check_19_e_sum_91: QM31,
-    range_check_19_f_sum_92: QM31,
-    range_check_19_g_sum_93: QM31,
-    range_check_19_h_sum_94: QM31,
-    range_check_19_sum_95: QM31,
-    range_check_19_b_sum_96: QM31,
-    range_check_19_c_sum_97: QM31,
+    range_check_20_sum_70: QM31,
+    range_check_20_b_sum_71: QM31,
+    range_check_20_c_sum_72: QM31,
+    range_check_20_d_sum_73: QM31,
+    range_check_20_e_sum_74: QM31,
+    range_check_20_f_sum_75: QM31,
+    range_check_20_g_sum_76: QM31,
+    range_check_20_h_sum_77: QM31,
+    range_check_20_sum_78: QM31,
+    range_check_20_b_sum_79: QM31,
+    range_check_20_c_sum_80: QM31,
+    range_check_20_d_sum_81: QM31,
+    range_check_20_e_sum_82: QM31,
+    range_check_20_f_sum_83: QM31,
+    range_check_20_g_sum_84: QM31,
+    range_check_20_h_sum_85: QM31,
+    range_check_20_sum_86: QM31,
+    range_check_20_b_sum_87: QM31,
+    range_check_20_c_sum_88: QM31,
+    range_check_20_d_sum_89: QM31,
+    range_check_20_e_sum_90: QM31,
+    range_check_20_f_sum_91: QM31,
+    range_check_20_g_sum_92: QM31,
+    range_check_20_h_sum_93: QM31,
+    range_check_20_sum_94: QM31,
+    range_check_20_b_sum_95: QM31,
+    range_check_20_c_sum_96: QM31,
+    range_check_20_d_sum_97: QM31,
     cube_252_sum_98: QM31,
 ) {
     let [
@@ -2140,10 +2139,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col52, trace_2_col53, trace_2_col54, trace_2_col55],
         ))
-        * range_check_19_h_sum_28
-        * range_check_19_sum_29)
-        - range_check_19_h_sum_28
-        - range_check_19_sum_29)
+        * range_check_20_sum_28
+        * range_check_20_b_sum_29)
+        - range_check_20_sum_28
+        - range_check_20_b_sum_29)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2153,10 +2152,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59],
         ))
-        * range_check_19_b_sum_30
-        * range_check_19_c_sum_31)
-        - range_check_19_b_sum_30
-        - range_check_19_c_sum_31)
+        * range_check_20_c_sum_30
+        * range_check_20_d_sum_31)
+        - range_check_20_c_sum_30
+        - range_check_20_d_sum_31)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2166,10 +2165,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col60, trace_2_col61, trace_2_col62, trace_2_col63],
         ))
-        * range_check_19_d_sum_32
-        * range_check_19_e_sum_33)
-        - range_check_19_d_sum_32
-        - range_check_19_e_sum_33)
+        * range_check_20_e_sum_32
+        * range_check_20_f_sum_33)
+        - range_check_20_e_sum_32
+        - range_check_20_f_sum_33)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2179,10 +2178,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col64, trace_2_col65, trace_2_col66, trace_2_col67],
         ))
-        * range_check_19_f_sum_34
-        * range_check_19_g_sum_35)
-        - range_check_19_f_sum_34
-        - range_check_19_g_sum_35)
+        * range_check_20_g_sum_34
+        * range_check_20_h_sum_35)
+        - range_check_20_g_sum_34
+        - range_check_20_h_sum_35)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2192,10 +2191,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col68, trace_2_col69, trace_2_col70, trace_2_col71],
         ))
-        * range_check_19_h_sum_36
-        * range_check_19_sum_37)
-        - range_check_19_h_sum_36
-        - range_check_19_sum_37)
+        * range_check_20_sum_36
+        * range_check_20_b_sum_37)
+        - range_check_20_sum_36
+        - range_check_20_b_sum_37)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2205,10 +2204,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col72, trace_2_col73, trace_2_col74, trace_2_col75],
         ))
-        * range_check_19_b_sum_38
-        * range_check_19_c_sum_39)
-        - range_check_19_b_sum_38
-        - range_check_19_c_sum_39)
+        * range_check_20_c_sum_38
+        * range_check_20_d_sum_39)
+        - range_check_20_c_sum_38
+        - range_check_20_d_sum_39)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2218,10 +2217,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col76, trace_2_col77, trace_2_col78, trace_2_col79],
         ))
-        * range_check_19_d_sum_40
-        * range_check_19_e_sum_41)
-        - range_check_19_d_sum_40
-        - range_check_19_e_sum_41)
+        * range_check_20_e_sum_40
+        * range_check_20_f_sum_41)
+        - range_check_20_e_sum_40
+        - range_check_20_f_sum_41)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2231,10 +2230,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col80, trace_2_col81, trace_2_col82, trace_2_col83],
         ))
-        * range_check_19_f_sum_42
-        * range_check_19_g_sum_43)
-        - range_check_19_f_sum_42
-        - range_check_19_g_sum_43)
+        * range_check_20_g_sum_42
+        * range_check_20_h_sum_43)
+        - range_check_20_g_sum_42
+        - range_check_20_h_sum_43)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2244,10 +2243,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col84, trace_2_col85, trace_2_col86, trace_2_col87],
         ))
-        * range_check_19_h_sum_44
-        * range_check_19_sum_45)
-        - range_check_19_h_sum_44
-        - range_check_19_sum_45)
+        * range_check_20_sum_44
+        * range_check_20_b_sum_45)
+        - range_check_20_sum_44
+        - range_check_20_b_sum_45)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2257,10 +2256,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col88, trace_2_col89, trace_2_col90, trace_2_col91],
         ))
-        * range_check_19_b_sum_46
-        * range_check_19_c_sum_47)
-        - range_check_19_b_sum_46
-        - range_check_19_c_sum_47)
+        * range_check_20_c_sum_46
+        * range_check_20_d_sum_47)
+        - range_check_20_c_sum_46
+        - range_check_20_d_sum_47)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2270,10 +2269,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col92, trace_2_col93, trace_2_col94, trace_2_col95],
         ))
-        * range_check_19_d_sum_48
-        * range_check_19_e_sum_49)
-        - range_check_19_d_sum_48
-        - range_check_19_e_sum_49)
+        * range_check_20_e_sum_48
+        * range_check_20_f_sum_49)
+        - range_check_20_e_sum_48
+        - range_check_20_f_sum_49)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2283,10 +2282,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col96, trace_2_col97, trace_2_col98, trace_2_col99],
         ))
-        * range_check_19_f_sum_50
-        * range_check_19_g_sum_51)
-        - range_check_19_f_sum_50
-        - range_check_19_g_sum_51)
+        * range_check_20_g_sum_50
+        * range_check_20_h_sum_51)
+        - range_check_20_g_sum_50
+        - range_check_20_h_sum_51)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2296,10 +2295,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col100, trace_2_col101, trace_2_col102, trace_2_col103],
         ))
-        * range_check_19_h_sum_52
-        * range_check_19_sum_53)
-        - range_check_19_h_sum_52
-        - range_check_19_sum_53)
+        * range_check_20_sum_52
+        * range_check_20_b_sum_53)
+        - range_check_20_sum_52
+        - range_check_20_b_sum_53)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2309,10 +2308,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col104, trace_2_col105, trace_2_col106, trace_2_col107],
         ))
-        * range_check_19_b_sum_54
-        * range_check_19_c_sum_55)
-        - range_check_19_b_sum_54
-        - range_check_19_c_sum_55)
+        * range_check_20_c_sum_54
+        * range_check_20_d_sum_55)
+        - range_check_20_c_sum_54
+        - range_check_20_d_sum_55)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2413,10 +2412,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col136, trace_2_col137, trace_2_col138, trace_2_col139],
         ))
-        * range_check_19_h_sum_70
-        * range_check_19_sum_71)
-        - range_check_19_h_sum_70
-        - range_check_19_sum_71)
+        * range_check_20_sum_70
+        * range_check_20_b_sum_71)
+        - range_check_20_sum_70
+        - range_check_20_b_sum_71)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2426,10 +2425,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col140, trace_2_col141, trace_2_col142, trace_2_col143],
         ))
-        * range_check_19_b_sum_72
-        * range_check_19_c_sum_73)
-        - range_check_19_b_sum_72
-        - range_check_19_c_sum_73)
+        * range_check_20_c_sum_72
+        * range_check_20_d_sum_73)
+        - range_check_20_c_sum_72
+        - range_check_20_d_sum_73)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2439,10 +2438,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col144, trace_2_col145, trace_2_col146, trace_2_col147],
         ))
-        * range_check_19_d_sum_74
-        * range_check_19_e_sum_75)
-        - range_check_19_d_sum_74
-        - range_check_19_e_sum_75)
+        * range_check_20_e_sum_74
+        * range_check_20_f_sum_75)
+        - range_check_20_e_sum_74
+        - range_check_20_f_sum_75)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2452,10 +2451,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col148, trace_2_col149, trace_2_col150, trace_2_col151],
         ))
-        * range_check_19_f_sum_76
-        * range_check_19_g_sum_77)
-        - range_check_19_f_sum_76
-        - range_check_19_g_sum_77)
+        * range_check_20_g_sum_76
+        * range_check_20_h_sum_77)
+        - range_check_20_g_sum_76
+        - range_check_20_h_sum_77)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2465,10 +2464,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col152, trace_2_col153, trace_2_col154, trace_2_col155],
         ))
-        * range_check_19_h_sum_78
-        * range_check_19_sum_79)
-        - range_check_19_h_sum_78
-        - range_check_19_sum_79)
+        * range_check_20_sum_78
+        * range_check_20_b_sum_79)
+        - range_check_20_sum_78
+        - range_check_20_b_sum_79)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2478,10 +2477,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col156, trace_2_col157, trace_2_col158, trace_2_col159],
         ))
-        * range_check_19_b_sum_80
-        * range_check_19_c_sum_81)
-        - range_check_19_b_sum_80
-        - range_check_19_c_sum_81)
+        * range_check_20_c_sum_80
+        * range_check_20_d_sum_81)
+        - range_check_20_c_sum_80
+        - range_check_20_d_sum_81)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2491,10 +2490,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col160, trace_2_col161, trace_2_col162, trace_2_col163],
         ))
-        * range_check_19_d_sum_82
-        * range_check_19_e_sum_83)
-        - range_check_19_d_sum_82
-        - range_check_19_e_sum_83)
+        * range_check_20_e_sum_82
+        * range_check_20_f_sum_83)
+        - range_check_20_e_sum_82
+        - range_check_20_f_sum_83)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2504,10 +2503,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col164, trace_2_col165, trace_2_col166, trace_2_col167],
         ))
-        * range_check_19_f_sum_84
-        * range_check_19_g_sum_85)
-        - range_check_19_f_sum_84
-        - range_check_19_g_sum_85)
+        * range_check_20_g_sum_84
+        * range_check_20_h_sum_85)
+        - range_check_20_g_sum_84
+        - range_check_20_h_sum_85)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2517,10 +2516,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col168, trace_2_col169, trace_2_col170, trace_2_col171],
         ))
-        * range_check_19_h_sum_86
-        * range_check_19_sum_87)
-        - range_check_19_h_sum_86
-        - range_check_19_sum_87)
+        * range_check_20_sum_86
+        * range_check_20_b_sum_87)
+        - range_check_20_sum_86
+        - range_check_20_b_sum_87)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2530,10 +2529,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col172, trace_2_col173, trace_2_col174, trace_2_col175],
         ))
-        * range_check_19_b_sum_88
-        * range_check_19_c_sum_89)
-        - range_check_19_b_sum_88
-        - range_check_19_c_sum_89)
+        * range_check_20_c_sum_88
+        * range_check_20_d_sum_89)
+        - range_check_20_c_sum_88
+        - range_check_20_d_sum_89)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2543,10 +2542,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col176, trace_2_col177, trace_2_col178, trace_2_col179],
         ))
-        * range_check_19_d_sum_90
-        * range_check_19_e_sum_91)
-        - range_check_19_d_sum_90
-        - range_check_19_e_sum_91)
+        * range_check_20_e_sum_90
+        * range_check_20_f_sum_91)
+        - range_check_20_e_sum_90
+        - range_check_20_f_sum_91)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2556,10 +2555,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col180, trace_2_col181, trace_2_col182, trace_2_col183],
         ))
-        * range_check_19_f_sum_92
-        * range_check_19_g_sum_93)
-        - range_check_19_f_sum_92
-        - range_check_19_g_sum_93)
+        * range_check_20_g_sum_92
+        * range_check_20_h_sum_93)
+        - range_check_20_g_sum_92
+        - range_check_20_h_sum_93)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2569,10 +2568,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col184, trace_2_col185, trace_2_col186, trace_2_col187],
         ))
-        * range_check_19_h_sum_94
-        * range_check_19_sum_95)
-        - range_check_19_h_sum_94
-        - range_check_19_sum_95)
+        * range_check_20_sum_94
+        * range_check_20_b_sum_95)
+        - range_check_20_sum_94
+        - range_check_20_b_sum_95)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2582,10 +2581,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col188, trace_2_col189, trace_2_col190, trace_2_col191],
         ))
-        * range_check_19_b_sum_96
-        * range_check_19_c_sum_97)
-        - range_check_19_b_sum_96
-        - range_check_19_c_sum_97)
+        * range_check_20_c_sum_96
+        * range_check_20_d_sum_97)
+        - range_check_20_c_sum_96
+        - range_check_20_d_sum_97)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 

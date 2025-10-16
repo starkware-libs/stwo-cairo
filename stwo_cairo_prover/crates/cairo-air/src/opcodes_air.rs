@@ -547,37 +547,37 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements
+                        range_check_20_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19
+                            .rc_20
                             .clone(),
-                        range_check_19_b_lookup_elements: interaction_elements
+                        range_check_20_b_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_b
+                            .rc_20_b
                             .clone(),
-                        range_check_19_c_lookup_elements: interaction_elements
+                        range_check_20_c_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_c
+                            .rc_20_c
                             .clone(),
-                        range_check_19_d_lookup_elements: interaction_elements
+                        range_check_20_d_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_d
+                            .rc_20_d
                             .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
+                        range_check_20_e_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_e
+                            .rc_20_e
                             .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
+                        range_check_20_f_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_f
+                            .rc_20_f
                             .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
+                        range_check_20_g_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_g
+                            .rc_20_g
                             .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
+                        range_check_20_h_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_h
+                            .rc_20_h
                             .clone(),
                         range_check_9_9_lookup_elements: interaction_elements
                             .range_checks
@@ -787,37 +787,37 @@ impl OpcodeComponents {
                             .memory_id_to_value
                             .clone(),
                         opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_19_lookup_elements: interaction_elements
+                        range_check_20_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19
+                            .rc_20
                             .clone(),
-                        range_check_19_b_lookup_elements: interaction_elements
+                        range_check_20_b_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_b
+                            .rc_20_b
                             .clone(),
-                        range_check_19_c_lookup_elements: interaction_elements
+                        range_check_20_c_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_c
+                            .rc_20_c
                             .clone(),
-                        range_check_19_d_lookup_elements: interaction_elements
+                        range_check_20_d_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_d
+                            .rc_20_d
                             .clone(),
-                        range_check_19_e_lookup_elements: interaction_elements
+                        range_check_20_e_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_e
+                            .rc_20_e
                             .clone(),
-                        range_check_19_f_lookup_elements: interaction_elements
+                        range_check_20_f_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_f
+                            .rc_20_f
                             .clone(),
-                        range_check_19_g_lookup_elements: interaction_elements
+                        range_check_20_g_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_g
+                            .rc_20_g
                             .clone(),
-                        range_check_19_h_lookup_elements: interaction_elements
+                        range_check_20_h_lookup_elements: interaction_elements
                             .range_checks
-                            .rc_19_h
+                            .rc_20_h
                             .clone(),
                         verify_instruction_lookup_elements: interaction_elements
                             .verify_instruction
