@@ -1,3 +1,4 @@
+use Sha256SigmaType::SmallSigma0O0;
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use core::num::traits::One;
@@ -186,6 +187,12 @@ pub enum PreprocessedColumn {
     /// Symbolic representation of xor lookup table column of the form: `(n_term_bits, term)`.
     /// Where term is `{ 0 = left operand, 1 = right operand, 2 = xor result }`.
     BitwiseXor: (u32, usize),
+    /// Symbolic representation of and lookup table column of the form: `(n_term_bits, term)`.
+    /// Where term is `{ 0 = left operand, 1 = right operand, 2 = and result }`.
+    BitwiseAnd: (u32, usize),
+    /// Symbolic representation of not lookup table column of the form: `(n_term_bits, term)`.
+    /// Where term is `{ 0 = operand, 1 = not result }`.
+    BitwiseNot: (u32, usize),
     /// A column with the numbers [0..2^log_size-1].
     Seq: u32,
     /// Symbolic representation of range check column.
@@ -194,12 +201,29 @@ pub enum PreprocessedColumn {
     RangeCheck4: ([u32; 4], usize),
     RangeCheck3: ([u32; 3], usize),
     RangeCheck2: ([u32; 2], usize),
+    RangeCheck1: ([u32; 1], usize),
     /// Poseidon round keys of the form `(column_index)`.
     PoseidonRoundKeys: usize,
     /// Blake2s sigma column.
     BlakeSigma: usize,
     /// Pedersen points of the form `(column_index)`.
     PedersenPoints: usize,
+    /// Sha256 sigma table of the form `(sigma_type, column_index)`.
+    Sha256SigmaTable: (Sha256SigmaType, usize),
+    /// Sha256 k table of the form `(column_index)`.
+    Sha256K: usize,
+}
+
+#[derive(Drop, Debug, Copy, PartialEq, Serde)]
+pub enum Sha256SigmaType {
+    BigSigma0O0,
+    BigSigma0O1,
+    BigSigma1O0,
+    BigSigma1O1,
+    SmallSigma0O0,
+    SmallSigma0O1,
+    SmallSigma1O0,
+    SmallSigma1O1,
 }
 
 #[generate_trait]
@@ -207,14 +231,32 @@ pub impl PreprocessedColumnImpl of PreprocessedColumnTrait {
     fn log_size(self: @PreprocessedColumn) -> u32 {
         match self {
             PreprocessedColumn::BitwiseXor((n_term_bits, _)) => *n_term_bits * 2,
+            PreprocessedColumn::BitwiseAnd((n_term_bits, _)) => *n_term_bits * 2,
+            PreprocessedColumn::BitwiseNot((n_term_bits, _)) => *n_term_bits,
             PreprocessedColumn::Seq(log_size) => *log_size,
             PreprocessedColumn::RangeCheck5((values, _)) => range_check_size(values),
             PreprocessedColumn::RangeCheck4((values, _)) => range_check_size(values),
             PreprocessedColumn::RangeCheck3((values, _)) => range_check_size(values),
             PreprocessedColumn::RangeCheck2((values, _)) => range_check_size(values),
+            PreprocessedColumn::RangeCheck1((values, _)) => range_check_size(values),
             PreprocessedColumn::PoseidonRoundKeys(_) => 6,
             PreprocessedColumn::BlakeSigma(_) => 4,
             PreprocessedColumn::PedersenPoints(_) => 23,
+            PreprocessedColumn::Sha256SigmaTable((
+                sigma_type, _,
+            )) => {
+                match sigma_type {
+                    Sha256SigmaType::SmallSigma0O0 => 16,
+                    Sha256SigmaType::SmallSigma0O1 => 16,
+                    Sha256SigmaType::SmallSigma1O0 => 12,
+                    Sha256SigmaType::SmallSigma1O1 => 20,
+                    Sha256SigmaType::BigSigma0O0 => 16,
+                    Sha256SigmaType::BigSigma0O1 => 16,
+                    Sha256SigmaType::BigSigma1O0 => 16,
+                    Sha256SigmaType::BigSigma1O1 => 16,
+                }
+            },
+            PreprocessedColumn::Sha256K(_) => 6,
         }
     }
 }
@@ -226,7 +268,8 @@ pub fn range_check_size<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32
     for n_bits in IntoSpan::span(n_bits_vec) {
         total = total + *n_bits;
     }
-    total
+    // max between col and simd min lane
+    core::cmp::max(total, 4)
 }
 
 /// An encoding of a [`PreprocessedColumn`] to index into [`Felt252Dict`].
@@ -236,14 +279,19 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
         const FELT252_2_POW_32: felt252 = 0x100000000;
 
         const XOR_DISCRIMINANT: felt252 = 0;
-        const SEQ_TABLE_DISCRIMINANT: felt252 = 1;
-        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 2;
-        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 3;
-        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 4;
-        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 5;
-        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 6;
-        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 7;
-        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 8;
+        const AND_DISCRIMINANT: felt252 = 1;
+        const NOT_DISCRIMINANT: felt252 = 2;
+        const SEQ_TABLE_DISCRIMINANT: felt252 = 3;
+        const RANGE_CHECK_1_DISCRIMINANT: felt252 = 4;
+        const RANGE_CHECK_2_DISCRIMINANT: felt252 = 5;
+        const RANGE_CHECK_3_DISCRIMINANT: felt252 = 6;
+        const RANGE_CHECK_4_DISCRIMINANT: felt252 = 7;
+        const RANGE_CHECK_5_DISCRIMINANT: felt252 = 8;
+        const POSEIDON_ROUND_KEYS_DISCRIMINANT: felt252 = 9;
+        const BLAKE_SIGMA_DISCRIMINANT: felt252 = 10;
+        const PEDERSEN_POINTS_DISCRIMINANT: felt252 = 11;
+        const SHA256_SIGMA_TABLE_DISCRIMINANT: felt252 = 12;
+        const SHA256_K_DISCRIMINANT: felt252 = 13;
 
         match key {
             PreprocessedColumn::BitwiseXor((
@@ -252,6 +300,22 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 let mut res = (*term).into();
                 res = res * FELT252_2_POW_32 + (*n_term_bits).into();
                 res = res * FELT252_2_POW_32 + XOR_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::BitwiseAnd((
+                n_term_bits, term,
+            )) => {
+                let mut res = (*term).into();
+                res = res * FELT252_2_POW_32 + (*n_term_bits).into();
+                res = res * FELT252_2_POW_32 + AND_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::BitwiseNot((
+                n_term_bits, term,
+            )) => {
+                let mut res = (*term).into();
+                res = res * FELT252_2_POW_32 + (*n_term_bits).into();
+                res = res * FELT252_2_POW_32 + NOT_DISCRIMINANT;
                 res
             },
             PreprocessedColumn::Seq(log_size) => {
@@ -271,6 +335,9 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
             PreprocessedColumn::RangeCheck2((
                 values, column_index,
             )) => range_check_encode(values, *column_index, RANGE_CHECK_2_DISCRIMINANT),
+            PreprocessedColumn::RangeCheck1((
+                values, column_index,
+            )) => range_check_encode(values, *column_index, RANGE_CHECK_1_DISCRIMINANT),
             PreprocessedColumn::PoseidonRoundKeys(column_index) => {
                 let mut res = (*column_index).into();
                 res = res * FELT252_2_POW_32 + POSEIDON_ROUND_KEYS_DISCRIMINANT;
@@ -286,10 +353,24 @@ pub impl PreprocessedColumnKey of PreprocessedColumnKeyTrait {
                 res = res * FELT252_2_POW_32 + PEDERSEN_POINTS_DISCRIMINANT;
                 res
             },
+            PreprocessedColumn::Sha256SigmaTable((
+                sigma_type, column_index,
+            )) => {
+                let mut res = (*column_index).into();
+                let mut sigma_type_array = array![];
+                sigma_type.serialize(ref sigma_type_array);
+                res = res * FELT252_2_POW_32 + *sigma_type_array[0];
+                res = res * FELT252_2_POW_32 + SHA256_SIGMA_TABLE_DISCRIMINANT;
+                res
+            },
+            PreprocessedColumn::Sha256K(column_index) => {
+                let mut res = (*column_index).into();
+                res = res * FELT252_2_POW_32 + SHA256_K_DISCRIMINANT;
+                res
+            },
         }
     }
 }
-
 pub fn range_check_encode<const N: usize, impl IntoSpan: ToSpanTrait<[u32; N], u32>>(
     n_bits_vec: @[u32; N], column_index: usize, discriminant: felt252,
 ) -> felt252 {

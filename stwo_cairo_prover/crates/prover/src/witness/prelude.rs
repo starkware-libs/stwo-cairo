@@ -17,10 +17,14 @@ pub use stwo::prover::poly::circle::CircleEvaluation;
 pub use stwo::prover::poly::BitReversedOrder;
 pub use stwo_air_utils::trace::component_trace::ComponentTrace;
 pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
+pub use stwo_cairo_common::preprocessed_columns::bitwise_and::BitwiseAnd;
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
 pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
 pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
+pub use stwo_cairo_common::preprocessed_columns::sha256::{
+    Sha256K, Sha256SigmaTable, Sha256SigmaType,
+};
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
 pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
@@ -32,5 +36,9 @@ pub use crate::witness::fast_deduction::pedersen::{PackedPartialEcMul, PackedPed
 pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,
+};
+pub use crate::witness::fast_deduction::sha256::{
+    PackedSha256BigSigma0, PackedSha256BigSigma1, PackedSha256KTable, PackedSha256Round,
+    PackedSha256Schedule, PackedSha256SmallSigma0, PackedSha256SmallSigma1,
 };
 pub use crate::witness::utils::*;

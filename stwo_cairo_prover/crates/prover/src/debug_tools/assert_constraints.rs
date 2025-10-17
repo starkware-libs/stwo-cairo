@@ -57,6 +57,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         builtins,
         pedersen_context,
         poseidon_context,
+        sha256_context,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -64,6 +65,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
+        verify_bitwise_and_8,
     } = cairo_components;
     let OpcodeComponents {
         add,
@@ -88,6 +90,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         ret,
     } = opcodes;
     let RangeChecksComponents {
+        rc_2,
         rc_6,
         rc_8,
         rc_11,
@@ -140,6 +143,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_many(ret, &trace);
 
     assert_component(verify_instruction, &trace);
+    assert_component(rc_2, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
     assert_component(rc_11, &trace);
@@ -173,6 +177,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_bitwise_xor_7, &trace);
     assert_component(verify_bitwise_xor_8, &trace);
     assert_component(verify_bitwise_xor_9, &trace);
+    assert_component(verify_bitwise_and_8, &trace);
     assert_component(memory_address_to_id, &trace);
     for component in &memory_id_to_value.0 {
         assert_component(component, &trace);
@@ -199,6 +204,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         bitwise_builtin,
         pedersen_builtin,
         poseidon_builtin,
+        sha256_builtin,
         mul_mod_builtin,
         range_check_96_builtin,
         range_check_128_builtin,
@@ -217,6 +223,9 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     }
     if let Some(poseidon) = poseidon_builtin {
         assert_component(poseidon, &trace);
+    }
+    if let Some(sha256) = sha256_builtin {
+        assert_component(sha256, &trace);
     }
     if let Some(rc_96) = range_check_96_builtin {
         assert_component(rc_96, &trace);
@@ -245,6 +254,40 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         assert_component(cube_252, &trace);
         assert_component(poseidon_round_keys, &trace);
         assert_component(range_check_felt_252_width_27, &trace);
+    }
+    if let Some(cairo_air::sha256::air::Components {
+        sha_256_round,
+        sha_256_big_sigma_0,
+        sha_256_big_sigma_1,
+        sha_256_schedule,
+        sha_256_small_sigma_0,
+        sha_256_small_sigma_1,
+        sha_256_big_sigma_0_o_0,
+        sha_256_big_sigma_0_o_1,
+        sha_256_big_sigma_1_o_0,
+        sha_256_big_sigma_1_o_1,
+        sha_256_small_sigma_0_o_0,
+        sha_256_small_sigma_0_o_1,
+        sha_256_small_sigma_1_o_0,
+        sha_256_small_sigma_1_o_1,
+        sha_256_k_table,
+    }) = &sha256_context.components
+    {
+        assert_component(sha_256_round, &trace);
+        assert_component(sha_256_big_sigma_0, &trace);
+        assert_component(sha_256_big_sigma_1, &trace);
+        assert_component(sha_256_schedule, &trace);
+        assert_component(sha_256_small_sigma_0, &trace);
+        assert_component(sha_256_small_sigma_1, &trace);
+        assert_component(sha_256_big_sigma_0_o_0, &trace);
+        assert_component(sha_256_big_sigma_0_o_1, &trace);
+        assert_component(sha_256_big_sigma_1_o_0, &trace);
+        assert_component(sha_256_big_sigma_1_o_1, &trace);
+        assert_component(sha_256_small_sigma_0_o_0, &trace);
+        assert_component(sha_256_small_sigma_0_o_1, &trace);
+        assert_component(sha_256_small_sigma_1_o_0, &trace);
+        assert_component(sha_256_small_sigma_1_o_1, &trace);
+        assert_component(sha_256_k_table, &trace);
     }
 }
 

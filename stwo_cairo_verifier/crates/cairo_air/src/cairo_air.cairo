@@ -3,6 +3,7 @@ use components::memory_id_to_big::{
     InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl, LARGE_MEMORY_VALUE_ID_BASE,
 };
 use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
+use components::verify_bitwise_and_8::InteractionClaimImpl as VerifyBitwiseAnd8InteractionClaimImpl;
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
 use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
 use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
@@ -43,6 +44,10 @@ use stwo_cairo_air::range_checks::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
     RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
     RangeChecksInteractionElementsImpl,
+};
+use stwo_cairo_air::sha256::{
+    Sha256ContextClaim, Sha256ContextComponents, Sha256ContextComponentsImpl,
+    Sha256ContextInteractionClaim, Sha256ContextInteractionClaimImpl,
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
@@ -98,6 +103,38 @@ pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+pub type VerifyBitwiseAnd_8Elements = LookupElements<3>;
+
+pub type Sha256ScheduleElements = LookupElements<34>;
+
+pub type Sha256KTableElements = LookupElements<3>;
+
+pub type Sha256RoundElements = LookupElements<50>;
+
+pub type Sha256BigSigma0O0Elements = LookupElements<6>;
+
+pub type Sha256BigSigma0O1Elements = LookupElements<6>;
+
+pub type Sha256BigSigma0Elements = LookupElements<4>;
+
+pub type Sha256BigSigma1O0Elements = LookupElements<6>;
+
+pub type Sha256BigSigma1O1Elements = LookupElements<6>;
+
+pub type Sha256BigSigma1Elements = LookupElements<4>;
+
+pub type Sha256SmallSigma0O0Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma0O1Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma0Elements = LookupElements<4>;
+
+pub type Sha256SmallSigma1O0Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma1O1Elements = LookupElements<6>;
+
+pub type Sha256SmallSigma1Elements = LookupElements<4>;
+
 
 #[derive(Drop, Serde)]
 pub struct CairoClaim {
@@ -108,6 +145,7 @@ pub struct CairoClaim {
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
+    pub sha256_context: Sha256ContextClaim,
     pub memory_address_to_id: components::memory_address_to_id::Claim,
     pub memory_id_to_value: components::memory_id_to_big::Claim,
     pub range_checks: RangeChecksClaim,
@@ -115,6 +153,7 @@ pub struct CairoClaim {
     pub verify_bitwise_xor_7: components::verify_bitwise_xor_7::Claim,
     pub verify_bitwise_xor_8: components::verify_bitwise_xor_8::Claim,
     pub verify_bitwise_xor_9: components::verify_bitwise_xor_9::Claim,
+    pub verify_bitwise_and_8: components::verify_bitwise_and_8::Claim,
     // ...
 }
 
@@ -125,10 +164,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
                 self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
                 self.blake_context.log_sizes(), self.builtins.log_sizes(),
                 self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
-                self.verify_bitwise_xor_9.log_sizes(),
+                self.sha256_context.log_sizes(), self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(), self.range_checks.log_sizes(),
+                self.verify_bitwise_xor_4.log_sizes(), self.verify_bitwise_xor_7.log_sizes(),
+                self.verify_bitwise_xor_8.log_sizes(), self.verify_bitwise_xor_9.log_sizes(),
+                self.verify_bitwise_and_8.log_sizes(),
             ],
         );
 
@@ -157,6 +197,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -164,6 +205,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         public_data.mix_into(ref channel);
@@ -173,6 +215,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
+        sha256_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
         range_checks.mix_into(ref channel);
@@ -180,6 +223,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         verify_bitwise_xor_7.mix_into(ref channel);
         verify_bitwise_xor_8.mix_into(ref channel);
         verify_bitwise_xor_9.mix_into(ref channel);
+        verify_bitwise_and_8.mix_into(ref channel);
     }
 
     fn accumulate_relation_uses(self: @CairoClaim, ref relation_uses: RelationUsesDict) {
@@ -191,6 +235,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id: _,
             memory_id_to_value,
             range_checks: _,
@@ -198,6 +243,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_7: _,
             verify_bitwise_xor_8: _,
             verify_bitwise_xor_9: _,
+            verify_bitwise_and_8: _,
         } = self;
         // NOTE: The following components do not USE relations:
         // - range_checks
@@ -209,6 +255,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
         poseidon_context.accumulate_relation_uses(ref relation_uses);
+        sha256_context.accumulate_relation_uses(ref relation_uses);
         verify_instruction.accumulate_relation_uses(ref relation_uses);
         memory_id_to_value.accumulate_relation_uses(ref relation_uses);
     }
@@ -223,6 +270,7 @@ pub struct CairoInteractionClaim {
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
+    pub sha256_context: Sha256ContextInteractionClaim,
     pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: components::memory_id_to_big::InteractionClaim,
     pub range_checks: RangeChecksInteractionClaim,
@@ -230,6 +278,7 @@ pub struct CairoInteractionClaim {
     pub verify_bitwise_xor_7: components::verify_bitwise_xor_7::InteractionClaim,
     pub verify_bitwise_xor_8: components::verify_bitwise_xor_8::InteractionClaim,
     pub verify_bitwise_xor_9: components::verify_bitwise_xor_9::InteractionClaim,
+    pub verify_bitwise_and_8: components::verify_bitwise_and_8::InteractionClaim,
 }
 
 #[generate_trait]
@@ -242,6 +291,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -249,6 +299,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         opcodes.mix_into(ref channel);
@@ -257,6 +308,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
+        sha256_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
         range_checks.mix_into(ref channel);
@@ -264,6 +316,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         verify_bitwise_xor_7.mix_into(ref channel);
         verify_bitwise_xor_8.mix_into(ref channel);
         verify_bitwise_xor_9.mix_into(ref channel);
+        verify_bitwise_and_8.mix_into(ref channel);
     }
 }
 
@@ -282,6 +335,21 @@ pub struct CairoInteractionElements {
     pub cube_252: Cube252Elements,
     pub poseidon_round_keys: PoseidonRoundKeysElements,
     pub range_check_felt_252_width_27: RangeCheckFelt252Width27Elements,
+    pub sha_256_round: Sha256RoundElements,
+    pub sha_256_big_sigma_0: Sha256BigSigma0Elements,
+    pub sha_256_big_sigma_1: Sha256BigSigma1Elements,
+    pub sha_256_schedule: Sha256ScheduleElements,
+    pub sha_256_small_sigma_0: Sha256SmallSigma0Elements,
+    pub sha_256_small_sigma_1: Sha256SmallSigma1Elements,
+    pub sha_256_big_sigma_0_o_0: Sha256BigSigma0O0Elements,
+    pub sha_256_big_sigma_0_o_1: Sha256BigSigma0O1Elements,
+    pub sha_256_big_sigma_1_o_0: Sha256BigSigma1O0Elements,
+    pub sha_256_big_sigma_1_o_1: Sha256BigSigma1O1Elements,
+    pub sha_256_small_sigma_0_o_0: Sha256SmallSigma0O0Elements,
+    pub sha_256_small_sigma_0_o_1: Sha256SmallSigma0O1Elements,
+    pub sha_256_small_sigma_1_o_0: Sha256SmallSigma1O0Elements,
+    pub sha_256_small_sigma_1_o_1: Sha256SmallSigma1O1Elements,
+    pub sha_256_k_table: Sha256KTableElements,
     pub memory_address_to_id: MemoryAddressToIdElements,
     pub memory_id_to_value: MemoryIdToBigElements,
     pub range_checks: RangeChecksInteractionElements,
@@ -290,6 +358,7 @@ pub struct CairoInteractionElements {
     pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
     pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
     pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
+    pub verify_bitwise_and_8: VerifyBitwiseAnd_8Elements,
 }
 
 #[generate_trait]
@@ -309,6 +378,21 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             range_check_felt_252_width_27: LookupElementsImpl::draw(ref channel),
             partial_ec_mul: LookupElementsImpl::draw(ref channel),
             pedersen_points_table: LookupElementsImpl::draw(ref channel),
+            sha_256_round: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1: LookupElementsImpl::draw(ref channel),
+            sha_256_schedule: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_0_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_big_sigma_1_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_0_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1_o_0: LookupElementsImpl::draw(ref channel),
+            sha_256_small_sigma_1_o_1: LookupElementsImpl::draw(ref channel),
+            sha_256_k_table: LookupElementsImpl::draw(ref channel),
             memory_address_to_id: LookupElementsImpl::draw(ref channel),
             memory_id_to_value: LookupElementsImpl::draw(ref channel),
             range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),
@@ -317,6 +401,7 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
             verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
+            verify_bitwise_and_8: LookupElementsImpl::draw(ref channel),
         }
     }
 }
@@ -331,6 +416,7 @@ pub struct CairoAir {
     builtins: BuiltinComponents,
     pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
+    sha256_context: Sha256ContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
         Array<components::memory_id_to_big::BigComponent>,
@@ -341,6 +427,7 @@ pub struct CairoAir {
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    verify_bitwise_and_8: components::verify_bitwise_and_8::Component,
 }
 
 #[generate_trait]
@@ -370,6 +457,9 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
             cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
         );
+        let sha256_context_components = Sha256ContextComponentsImpl::new(
+            cairo_claim.sha256_context, interaction_elements, interaction_claim.sha256_context,
+        );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
@@ -447,6 +537,12 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             interaction_claim.verify_bitwise_xor_9,
             interaction_elements,
         );
+        let verify_bitwise_and_8_component =
+            components::verify_bitwise_and_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_and_8,
+            interaction_claim.verify_bitwise_and_8,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,
@@ -455,6 +551,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             builtins: builtins_components,
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
+            sha256_context: sha256_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
@@ -462,6 +559,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            verify_bitwise_and_8: verify_bitwise_and_8_component,
         }
     }
 }
@@ -476,6 +574,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -483,6 +582,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         let mut max_degree = opcodes.max_constraint_log_degree_bound();
@@ -492,6 +592,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
         max_degree = core::cmp::max(max_degree, builtins.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, pedersen_context.max_constraint_log_degree_bound());
         max_degree = core::cmp::max(max_degree, poseidon_context.max_constraint_log_degree_bound());
+        max_degree = core::cmp::max(max_degree, sha256_context.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, memory_address_to_id.max_constraint_log_degree_bound());
         let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
@@ -512,6 +613,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, verify_bitwise_and_8.max_constraint_log_degree_bound());
         max_degree
     }
 
@@ -528,6 +631,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -535,6 +639,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         opcodes
@@ -573,6 +678,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         poseidon_context
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
+        sha256_context
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -639,7 +751,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_points,
                 point,
             );
-
+        verify_bitwise_and_8
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         let preprocessed_trace_mask_points = preprocessed_trace_mask_points(
             preprocessed_column_set, point,
         );
@@ -676,6 +794,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             builtins,
             pedersen_context,
             poseidon_context,
+            sha256_context,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -683,6 +802,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         opcodes
@@ -731,6 +851,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         poseidon_context
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        sha256_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -815,6 +944,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+        verify_bitwise_and_8
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
         sum
     }
 }
@@ -836,6 +974,7 @@ pub struct CairoAir {
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
+    verify_bitwise_and_8: components::verify_bitwise_and_8::Component,
 }
 
 #[generate_trait]
@@ -934,6 +1073,12 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             interaction_claim.verify_bitwise_xor_9,
             interaction_elements,
         );
+        let verify_bitwise_and_8_component =
+            components::verify_bitwise_and_8::NewComponentImpl::new(
+            cairo_claim.verify_bitwise_and_8,
+            interaction_claim.verify_bitwise_and_8,
+            interaction_elements,
+        );
 
         CairoAir {
             opcodes: opcode_components,
@@ -947,6 +1092,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
+            verify_bitwise_and_8: verify_bitwise_and_8_component,
         }
     }
 }
@@ -966,6 +1112,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         let mut max_degree = opcodes.max_constraint_log_degree_bound();
@@ -993,6 +1140,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             core::cmp::max(max_degree, verify_bitwise_xor_8.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(max_degree, verify_bitwise_xor_9.max_constraint_log_degree_bound());
+        max_degree =
+            core::cmp::max(max_degree, verify_bitwise_and_8.max_constraint_log_degree_bound());
         max_degree
     }
 
@@ -1014,6 +1163,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         opcodes
@@ -1104,7 +1254,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref interaction_trace_mask_points,
                 point,
             );
-
+        verify_bitwise_and_8
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         let preprocessed_trace_mask_points = preprocessed_trace_mask_points(
             preprocessed_column_set, point,
         );
@@ -1147,6 +1303,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
             verify_bitwise_xor_9,
+            verify_bitwise_and_8,
         } = self;
 
         opcodes
@@ -1252,6 +1409,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         verify_bitwise_xor_9
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        verify_bitwise_and_8
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
