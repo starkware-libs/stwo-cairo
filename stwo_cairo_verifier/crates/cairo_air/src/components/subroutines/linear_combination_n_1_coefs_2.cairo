@@ -1,4 +1,4 @@
-// AIR version 54d95c0d
+// AIR version 2b6cb268
 use crate::prelude::*;
 
 
@@ -78,94 +78,81 @@ pub fn linear_combination_n_1_coefs_2_evaluate(
         - (p_coef_col10 * qm31_const::<256, 0, 0, 0>())))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_0_tmp_13179_11: QM31 = ((p_coef_col10 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
 
     // Constraint - carry constraint 0
-    let constraint_quotient = ((((biased_carry_0_tmp_13179_11 * biased_carry_0_tmp_13179_11)
-        * biased_carry_0_tmp_13179_11)
-        - biased_carry_0_tmp_13179_11))
+    let constraint_quotient = ((((p_coef_col10 * p_coef_col10) * p_coef_col10) - p_coef_col10))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_1_tmp_13179_12: QM31 = ((carry_0_tmp_13179_2 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_1_tmp_13179_11: QM31 = carry_0_tmp_13179_2;
 
     // Constraint - carry constraint 1
-    let constraint_quotient = ((((biased_carry_1_tmp_13179_12 * biased_carry_1_tmp_13179_12)
-        * biased_carry_1_tmp_13179_12)
-        - biased_carry_1_tmp_13179_12))
+    let constraint_quotient = ((((biased_carry_1_tmp_13179_11 * biased_carry_1_tmp_13179_11)
+        * biased_carry_1_tmp_13179_11)
+        - biased_carry_1_tmp_13179_11))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_2_tmp_13179_13: QM31 = ((carry_1_tmp_13179_3 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_2_tmp_13179_12: QM31 = carry_1_tmp_13179_3;
 
     // Constraint - carry constraint 2
-    let constraint_quotient = ((((biased_carry_2_tmp_13179_13 * biased_carry_2_tmp_13179_13)
-        * biased_carry_2_tmp_13179_13)
-        - biased_carry_2_tmp_13179_13))
+    let constraint_quotient = ((((biased_carry_2_tmp_13179_12 * biased_carry_2_tmp_13179_12)
+        * biased_carry_2_tmp_13179_12)
+        - biased_carry_2_tmp_13179_12))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_3_tmp_13179_14: QM31 = ((carry_2_tmp_13179_4 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_3_tmp_13179_13: QM31 = carry_2_tmp_13179_4;
 
     // Constraint - carry constraint 3
-    let constraint_quotient = ((((biased_carry_3_tmp_13179_14 * biased_carry_3_tmp_13179_14)
-        * biased_carry_3_tmp_13179_14)
-        - biased_carry_3_tmp_13179_14))
+    let constraint_quotient = ((((biased_carry_3_tmp_13179_13 * biased_carry_3_tmp_13179_13)
+        * biased_carry_3_tmp_13179_13)
+        - biased_carry_3_tmp_13179_13))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_4_tmp_13179_15: QM31 = ((carry_3_tmp_13179_5 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_4_tmp_13179_14: QM31 = carry_3_tmp_13179_5;
 
     // Constraint - carry constraint 4
-    let constraint_quotient = ((((biased_carry_4_tmp_13179_15 * biased_carry_4_tmp_13179_15)
-        * biased_carry_4_tmp_13179_15)
-        - biased_carry_4_tmp_13179_15))
+    let constraint_quotient = ((((biased_carry_4_tmp_13179_14 * biased_carry_4_tmp_13179_14)
+        * biased_carry_4_tmp_13179_14)
+        - biased_carry_4_tmp_13179_14))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_5_tmp_13179_16: QM31 = ((carry_4_tmp_13179_6 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_5_tmp_13179_15: QM31 = carry_4_tmp_13179_6;
 
     // Constraint - carry constraint 5
-    let constraint_quotient = ((((biased_carry_5_tmp_13179_16 * biased_carry_5_tmp_13179_16)
-        * biased_carry_5_tmp_13179_16)
-        - biased_carry_5_tmp_13179_16))
+    let constraint_quotient = ((((biased_carry_5_tmp_13179_15 * biased_carry_5_tmp_13179_15)
+        * biased_carry_5_tmp_13179_15)
+        - biased_carry_5_tmp_13179_15))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_6_tmp_13179_17: QM31 = ((carry_5_tmp_13179_7 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_6_tmp_13179_16: QM31 = carry_5_tmp_13179_7;
 
     // Constraint - carry constraint 6
-    let constraint_quotient = ((((biased_carry_6_tmp_13179_17 * biased_carry_6_tmp_13179_17)
-        * biased_carry_6_tmp_13179_17)
-        - biased_carry_6_tmp_13179_17))
+    let constraint_quotient = ((((biased_carry_6_tmp_13179_16 * biased_carry_6_tmp_13179_16)
+        * biased_carry_6_tmp_13179_16)
+        - biased_carry_6_tmp_13179_16))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_7_tmp_13179_18: QM31 = ((carry_6_tmp_13179_8 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_7_tmp_13179_17: QM31 = carry_6_tmp_13179_8;
 
     // Constraint - carry constraint 7
-    let constraint_quotient = ((((biased_carry_7_tmp_13179_18 * biased_carry_7_tmp_13179_18)
-        * biased_carry_7_tmp_13179_18)
-        - biased_carry_7_tmp_13179_18))
+    let constraint_quotient = ((((biased_carry_7_tmp_13179_17 * biased_carry_7_tmp_13179_17)
+        * biased_carry_7_tmp_13179_17)
+        - biased_carry_7_tmp_13179_17))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_8_tmp_13179_19: QM31 = ((carry_7_tmp_13179_9 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_8_tmp_13179_18: QM31 = carry_7_tmp_13179_9;
 
     // Constraint - carry constraint 8
-    let constraint_quotient = ((((biased_carry_8_tmp_13179_19 * biased_carry_8_tmp_13179_19)
-        * biased_carry_8_tmp_13179_19)
-        - biased_carry_8_tmp_13179_19))
+    let constraint_quotient = ((((biased_carry_8_tmp_13179_18 * biased_carry_8_tmp_13179_18)
+        * biased_carry_8_tmp_13179_18)
+        - biased_carry_8_tmp_13179_18))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    let biased_carry_9_tmp_13179_20: QM31 = ((carry_8_tmp_13179_10 + qm31_const::<1, 0, 0, 0>())
-        - qm31_const::<1, 0, 0, 0>());
+    let biased_carry_9_tmp_13179_19: QM31 = carry_8_tmp_13179_10;
 
     // Constraint - carry constraint 9
-    let constraint_quotient = ((((biased_carry_9_tmp_13179_20 * biased_carry_9_tmp_13179_20)
-        * biased_carry_9_tmp_13179_20)
-        - biased_carry_9_tmp_13179_20))
+    let constraint_quotient = ((((biased_carry_9_tmp_13179_19 * biased_carry_9_tmp_13179_19)
+        * biased_carry_9_tmp_13179_19)
+        - biased_carry_9_tmp_13179_19))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
