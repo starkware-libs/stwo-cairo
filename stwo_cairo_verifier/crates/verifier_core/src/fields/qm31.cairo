@@ -41,8 +41,8 @@ pub trait QM31Trait {
     /// Equivalently, this is the imaginary part of (py - dy) * conj(px - dx).
     fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31;
 
-    /// Returns the combined value, given the values of its composing base field polynomials at that
-    /// point.
+    /// Combines the elements as coefficients in the basis `{1, i, u, iu}` to
+    /// form a single element.
     fn from_partial_evals(evals: [QM31; QM31_EXTENSION_DEGREE]) -> QM31;
 }
 
