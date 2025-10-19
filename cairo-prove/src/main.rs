@@ -52,7 +52,7 @@ fn handle_prove(target: &Path, proof: &Path, proof_format: ProofFormat, args: Pr
     );
     let elapsed = start.elapsed();
 
-    serialize_proof_to_file::<Blake2sMerkleChannel>(&cairo_proof, proof.into(), proof_format)
+    serialize_proof_to_file(&cairo_proof, proof.into(), proof_format)
         .expect("Failed to serialize proof");
 
     info!("Proof saved to: {:?}", proof);
