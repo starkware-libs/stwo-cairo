@@ -1,4 +1,4 @@
-// AIR version c68bb12a
+// AIR version fb65c13c
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -65,8 +65,8 @@ pub const GENERIC_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 103487787 },
 ];
 pub const JNZ_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1307586336 }, M31 { inner: 1514613276 }, M31 { inner: 1482112142 },
-    M31 { inner: 1247059415 },
+    M31 { inner: 2039885140 }, M31 { inner: 1642475917 }, M31 { inner: 1072188601 },
+    M31 { inner: 1506963271 },
 ];
 pub const JNZ_OPCODE_TAKEN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1943949627 }, M31 { inner: 1086690627 }, M31 { inner: 1292938804 },

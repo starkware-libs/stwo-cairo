@@ -1,10 +1,10 @@
 // This file was created by the AIR team.
 
 use crate::components::subroutines::decode_instruction_de75a::decode_instruction_de75a_evaluate;
-use crate::components::subroutines::read_positive_num_bits_252::read_positive_num_bits_252_evaluate;
+use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 37;
+pub const N_TRACE_COLUMNS: usize = 9;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 4] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 1), ('MemoryIdToBig', 1), ('Opcodes', 1),
 ];
@@ -95,34 +95,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
-        trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point]);
@@ -170,36 +142,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ap_update_add_1_col5,
             mem_dst_base_col6,
             dst_id_col7,
-            dst_limb_0_col8,
-            dst_limb_1_col9,
-            dst_limb_2_col10,
-            dst_limb_3_col11,
-            dst_limb_4_col12,
-            dst_limb_5_col13,
-            dst_limb_6_col14,
-            dst_limb_7_col15,
-            dst_limb_8_col16,
-            dst_limb_9_col17,
-            dst_limb_10_col18,
-            dst_limb_11_col19,
-            dst_limb_12_col20,
-            dst_limb_13_col21,
-            dst_limb_14_col22,
-            dst_limb_15_col23,
-            dst_limb_16_col24,
-            dst_limb_17_col25,
-            dst_limb_18_col26,
-            dst_limb_19_col27,
-            dst_limb_20_col28,
-            dst_limb_21_col29,
-            dst_limb_22_col30,
-            dst_limb_23_col31,
-            dst_limb_24_col32,
-            dst_limb_25_col33,
-            dst_limb_26_col34,
-            dst_limb_27_col35,
             enabler,
-        ]: [Span<QM31>; 37] =
+        ]: [Span<QM31>; 9] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -212,34 +156,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [ap_update_add_1_col5]: [QM31; 1] = (*ap_update_add_1_col5.try_into().unwrap()).unbox();
         let [mem_dst_base_col6]: [QM31; 1] = (*mem_dst_base_col6.try_into().unwrap()).unbox();
         let [dst_id_col7]: [QM31; 1] = (*dst_id_col7.try_into().unwrap()).unbox();
-        let [dst_limb_0_col8]: [QM31; 1] = (*dst_limb_0_col8.try_into().unwrap()).unbox();
-        let [dst_limb_1_col9]: [QM31; 1] = (*dst_limb_1_col9.try_into().unwrap()).unbox();
-        let [dst_limb_2_col10]: [QM31; 1] = (*dst_limb_2_col10.try_into().unwrap()).unbox();
-        let [dst_limb_3_col11]: [QM31; 1] = (*dst_limb_3_col11.try_into().unwrap()).unbox();
-        let [dst_limb_4_col12]: [QM31; 1] = (*dst_limb_4_col12.try_into().unwrap()).unbox();
-        let [dst_limb_5_col13]: [QM31; 1] = (*dst_limb_5_col13.try_into().unwrap()).unbox();
-        let [dst_limb_6_col14]: [QM31; 1] = (*dst_limb_6_col14.try_into().unwrap()).unbox();
-        let [dst_limb_7_col15]: [QM31; 1] = (*dst_limb_7_col15.try_into().unwrap()).unbox();
-        let [dst_limb_8_col16]: [QM31; 1] = (*dst_limb_8_col16.try_into().unwrap()).unbox();
-        let [dst_limb_9_col17]: [QM31; 1] = (*dst_limb_9_col17.try_into().unwrap()).unbox();
-        let [dst_limb_10_col18]: [QM31; 1] = (*dst_limb_10_col18.try_into().unwrap()).unbox();
-        let [dst_limb_11_col19]: [QM31; 1] = (*dst_limb_11_col19.try_into().unwrap()).unbox();
-        let [dst_limb_12_col20]: [QM31; 1] = (*dst_limb_12_col20.try_into().unwrap()).unbox();
-        let [dst_limb_13_col21]: [QM31; 1] = (*dst_limb_13_col21.try_into().unwrap()).unbox();
-        let [dst_limb_14_col22]: [QM31; 1] = (*dst_limb_14_col22.try_into().unwrap()).unbox();
-        let [dst_limb_15_col23]: [QM31; 1] = (*dst_limb_15_col23.try_into().unwrap()).unbox();
-        let [dst_limb_16_col24]: [QM31; 1] = (*dst_limb_16_col24.try_into().unwrap()).unbox();
-        let [dst_limb_17_col25]: [QM31; 1] = (*dst_limb_17_col25.try_into().unwrap()).unbox();
-        let [dst_limb_18_col26]: [QM31; 1] = (*dst_limb_18_col26.try_into().unwrap()).unbox();
-        let [dst_limb_19_col27]: [QM31; 1] = (*dst_limb_19_col27.try_into().unwrap()).unbox();
-        let [dst_limb_20_col28]: [QM31; 1] = (*dst_limb_20_col28.try_into().unwrap()).unbox();
-        let [dst_limb_21_col29]: [QM31; 1] = (*dst_limb_21_col29.try_into().unwrap()).unbox();
-        let [dst_limb_22_col30]: [QM31; 1] = (*dst_limb_22_col30.try_into().unwrap()).unbox();
-        let [dst_limb_23_col31]: [QM31; 1] = (*dst_limb_23_col31.try_into().unwrap()).unbox();
-        let [dst_limb_24_col32]: [QM31; 1] = (*dst_limb_24_col32.try_into().unwrap()).unbox();
-        let [dst_limb_25_col33]: [QM31; 1] = (*dst_limb_25_col33.try_into().unwrap()).unbox();
-        let [dst_limb_26_col34]: [QM31; 1] = (*dst_limb_26_col34.try_into().unwrap()).unbox();
-        let [dst_limb_27_col35]: [QM31; 1] = (*dst_limb_27_col35.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -265,37 +181,21 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col4) * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        read_positive_num_bits_252_evaluate(
-            (mem_dst_base_col6 + decode_instruction_de75a_output_tmp_e1597_5_offset0),
+        mem_verify_evaluate(
+            [
+                (mem_dst_base_col6 + decode_instruction_de75a_output_tmp_e1597_5_offset0),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
+                qm31_const::<0, 0, 0, 0>(),
+            ],
             dst_id_col7,
-            dst_limb_0_col8,
-            dst_limb_1_col9,
-            dst_limb_2_col10,
-            dst_limb_3_col11,
-            dst_limb_4_col12,
-            dst_limb_5_col13,
-            dst_limb_6_col14,
-            dst_limb_7_col15,
-            dst_limb_8_col16,
-            dst_limb_9_col17,
-            dst_limb_10_col18,
-            dst_limb_11_col19,
-            dst_limb_12_col20,
-            dst_limb_13_col21,
-            dst_limb_14_col22,
-            dst_limb_15_col23,
-            dst_limb_16_col24,
-            dst_limb_17_col25,
-            dst_limb_18_col26,
-            dst_limb_19_col27,
-            dst_limb_20_col28,
-            dst_limb_21_col29,
-            dst_limb_22_col30,
-            dst_limb_23_col31,
-            dst_limb_24_col32,
-            dst_limb_25_col33,
-            dst_limb_26_col34,
-            dst_limb_27_col35,
             self.memory_address_to_id_lookup_elements,
             self.memory_id_to_big_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -304,37 +204,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-
-        // Constraint - dst equals 0
-        let constraint_quotient = ((((((((((((((((((((((((((((dst_limb_0_col8 + dst_limb_1_col9)
-            + dst_limb_2_col10)
-            + dst_limb_3_col11)
-            + dst_limb_4_col12)
-            + dst_limb_5_col13)
-            + dst_limb_6_col14)
-            + dst_limb_7_col15)
-            + dst_limb_8_col16)
-            + dst_limb_9_col17)
-            + dst_limb_10_col18)
-            + dst_limb_11_col19)
-            + dst_limb_12_col20)
-            + dst_limb_13_col21)
-            + dst_limb_14_col22)
-            + dst_limb_15_col23)
-            + dst_limb_16_col24)
-            + dst_limb_17_col25)
-            + dst_limb_18_col26)
-            + dst_limb_19_col27)
-            + dst_limb_20_col28)
-            + dst_limb_21_col29)
-            + dst_limb_22_col30)
-            + dst_limb_23_col31)
-            + dst_limb_24_col32)
-            + dst_limb_25_col33)
-            + dst_limb_26_col34)
-            + dst_limb_27_col35))
-            * domain_vanishing_eval_inv;
-        sum = sum * random_coeff + constraint_quotient;
 
         opcodes_sum_3 = self
             .opcodes_lookup_elements

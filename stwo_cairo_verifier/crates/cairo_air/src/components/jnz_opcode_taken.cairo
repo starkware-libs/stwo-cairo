@@ -215,8 +215,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             dst_limb_25_col33,
             dst_limb_26_col34,
             dst_limb_27_col35,
-            res_col36,
-            res_squares_col37,
+            dst_sum_inv_col36,
+            dst_sum_squares_inv_col37,
             next_pc_id_col38,
             msb_col39,
             mid_limbs_set_col40,
@@ -267,8 +267,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [dst_limb_25_col33]: [QM31; 1] = (*dst_limb_25_col33.try_into().unwrap()).unbox();
         let [dst_limb_26_col34]: [QM31; 1] = (*dst_limb_26_col34.try_into().unwrap()).unbox();
         let [dst_limb_27_col35]: [QM31; 1] = (*dst_limb_27_col35.try_into().unwrap()).unbox();
-        let [res_col36]: [QM31; 1] = (*res_col36.try_into().unwrap()).unbox();
-        let [res_squares_col37]: [QM31; 1] = (*res_squares_col37.try_into().unwrap()).unbox();
+        let [dst_sum_inv_col36]: [QM31; 1] = (*dst_sum_inv_col36.try_into().unwrap()).unbox();
+        let [dst_sum_squares_inv_col37]: [QM31; 1] = (*dst_sum_squares_inv_col37
+            .try_into()
+            .unwrap())
+            .unbox();
         let [next_pc_id_col38]: [QM31; 1] = (*next_pc_id_col38.try_into().unwrap()).unbox();
         let [msb_col39]: [QM31; 1] = (*msb_col39.try_into().unwrap()).unbox();
         let [mid_limbs_set_col40]: [QM31; 1] = (*mid_limbs_set_col40.try_into().unwrap()).unbox();
@@ -342,78 +345,53 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
+        let dst_sum_p_zero_tmp_f51a9_11: QM31 = ((((((((((((((((((((((((dst_limb_1_col9
+            + dst_limb_2_col10)
+            + dst_limb_3_col11)
+            + dst_limb_4_col12)
+            + dst_limb_5_col13)
+            + dst_limb_6_col14)
+            + dst_limb_7_col15)
+            + dst_limb_8_col16)
+            + dst_limb_9_col17)
+            + dst_limb_10_col18)
+            + dst_limb_11_col19)
+            + dst_limb_12_col20)
+            + dst_limb_13_col21)
+            + dst_limb_14_col22)
+            + dst_limb_15_col23)
+            + dst_limb_16_col24)
+            + dst_limb_17_col25)
+            + dst_limb_18_col26)
+            + dst_limb_19_col27)
+            + dst_limb_20_col28)
+            + dst_limb_22_col30)
+            + dst_limb_23_col31)
+            + dst_limb_24_col32)
+            + dst_limb_25_col33)
+            + dst_limb_26_col34);
 
         // Constraint - dst doesn't equal 0
-        let constraint_quotient = ((((((((((((((((((((((((((((((dst_limb_0_col8 + dst_limb_1_col9)
-            + dst_limb_2_col10)
-            + dst_limb_3_col11)
-            + dst_limb_4_col12)
-            + dst_limb_5_col13)
-            + dst_limb_6_col14)
-            + dst_limb_7_col15)
-            + dst_limb_8_col16)
-            + dst_limb_9_col17)
-            + dst_limb_10_col18)
-            + dst_limb_11_col19)
-            + dst_limb_12_col20)
-            + dst_limb_13_col21)
-            + dst_limb_14_col22)
-            + dst_limb_15_col23)
-            + dst_limb_16_col24)
-            + dst_limb_17_col25)
-            + dst_limb_18_col26)
-            + dst_limb_19_col27)
-            + dst_limb_20_col28)
-            + dst_limb_21_col29)
-            + dst_limb_22_col30)
-            + dst_limb_23_col31)
-            + dst_limb_24_col32)
-            + dst_limb_25_col33)
-            + dst_limb_26_col34)
-            + dst_limb_27_col35)
-            * res_col36)
+        let constraint_quotient = ((((dst_sum_p_zero_tmp_f51a9_11
+            + ((dst_limb_0_col8 + dst_limb_21_col29) + dst_limb_27_col35))
+            * dst_sum_inv_col36)
             - qm31_const::<1, 0, 0, 0>()))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let diff_from_p_tmp_f51a9_11: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
-        let diff_from_p_tmp_f51a9_12: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
-        let diff_from_p_tmp_f51a9_13: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_12: QM31 = (dst_limb_0_col8 - qm31_const::<1, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_13: QM31 = (dst_limb_21_col29 - qm31_const::<136, 0, 0, 0>());
+        let diff_from_p_tmp_f51a9_14: QM31 = (dst_limb_27_col35 - qm31_const::<256, 0, 0, 0>());
 
         // Constraint - dst doesn't equal P
-        let constraint_quotient = (((((((((((((((((((((((((((((((diff_from_p_tmp_f51a9_11
-            * diff_from_p_tmp_f51a9_11)
-            + dst_limb_1_col9)
-            + dst_limb_2_col10)
-            + dst_limb_3_col11)
-            + dst_limb_4_col12)
-            + dst_limb_5_col13)
-            + dst_limb_6_col14)
-            + dst_limb_7_col15)
-            + dst_limb_8_col16)
-            + dst_limb_9_col17)
-            + dst_limb_10_col18)
-            + dst_limb_11_col19)
-            + dst_limb_12_col20)
-            + dst_limb_13_col21)
-            + dst_limb_14_col22)
-            + dst_limb_15_col23)
-            + dst_limb_16_col24)
-            + dst_limb_17_col25)
-            + dst_limb_18_col26)
-            + dst_limb_19_col27)
-            + dst_limb_20_col28)
-            + (diff_from_p_tmp_f51a9_12 * diff_from_p_tmp_f51a9_12))
-            + dst_limb_22_col30)
-            + dst_limb_23_col31)
-            + dst_limb_24_col32)
-            + dst_limb_25_col33)
-            + dst_limb_26_col34)
-            + (diff_from_p_tmp_f51a9_13 * diff_from_p_tmp_f51a9_13))
-            * res_squares_col37)
+        let constraint_quotient = ((((dst_sum_p_zero_tmp_f51a9_11
+            + (((diff_from_p_tmp_f51a9_12 * diff_from_p_tmp_f51a9_12)
+                + (diff_from_p_tmp_f51a9_13 * diff_from_p_tmp_f51a9_13))
+                + (diff_from_p_tmp_f51a9_14 * diff_from_p_tmp_f51a9_14)))
+            * dst_sum_squares_inv_col37)
             - qm31_const::<1, 0, 0, 0>()))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_f51a9_23_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_f51a9_24_limb_0: QM31 = read_small_evaluate(
             (input_pc_col0 + qm31_const::<1, 0, 0, 0>()),
             next_pc_id_col38,
             msb_col39,
@@ -440,7 +418,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    (input_pc_col0 + read_small_output_tmp_f51a9_23_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_f51a9_24_limb_0),
                     (input_ap_col1 + ap_update_add_1_col5), input_fp_col2,
                 ],
             );
