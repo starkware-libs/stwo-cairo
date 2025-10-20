@@ -1,4 +1,4 @@
-// AIR version e84b1ee2
+// AIR version 5fe104f0
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -65,12 +65,12 @@ pub const GENERIC_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 2125195073 },
 ];
 pub const JNZ_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1307586336 }, M31 { inner: 1514613276 }, M31 { inner: 1482112142 },
-    M31 { inner: 1247059415 },
+    M31 { inner: 2039885140 }, M31 { inner: 1642475917 }, M31 { inner: 1072188601 },
+    M31 { inner: 1506963271 },
 ];
 pub const JNZ_OPCODE_TAKEN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1943949627 }, M31 { inner: 1086690627 }, M31 { inner: 1292938804 },
-    M31 { inner: 1143272483 },
+    M31 { inner: 1968457830 }, M31 { inner: 1213072239 }, M31 { inner: 764077747 },
+    M31 { inner: 25018422 },
 ];
 pub const JUMP_OPCODE_DOUBLE_DEREF_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1725291636 }, M31 { inner: 1161581210 }, M31 { inner: 2117560901 },

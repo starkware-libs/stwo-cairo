@@ -1,5 +1,5 @@
 {
-  "air_version": "e84b1ee2",
+  "air_version": "5fe104f0",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -1609,7 +1609,7 @@
     },
     "jnz_opcode": {
       "trace_type": "Opcode",
-      "num_state_cols": 36,
+      "num_state_cols": 8,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
         "MemoryAddressToId": 1,
@@ -1625,8 +1625,8 @@
         "memory_id_to_big": 1
       },
       "padding_type": "Enabler",
-      "total_num_trace_cols": 49,
-      "trace_cells_upper_bound": 49,
+      "total_num_trace_cols": 21,
+      "trace_cells_upper_bound": 21,
       "uses_upper_bound": {
         "range_check_7_2_5": 1,
         "range_check_4_3": 1,
