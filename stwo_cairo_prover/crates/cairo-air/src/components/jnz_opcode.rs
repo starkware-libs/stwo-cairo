@@ -2,9 +2,9 @@
 
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_de75a::DecodeInstructionDe75A;
-use crate::components::subroutines::read_positive_num_bits_252::ReadPositiveNumBits252;
+use crate::components::subroutines::mem_verify::MemVerify;
 
-pub const N_TRACE_COLUMNS: usize = 37;
+pub const N_TRACE_COLUMNS: usize = 9;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -73,6 +73,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_2 = E::F::from(M31::from(2));
         let input_pc_col0 = eval.next_trace_mask();
@@ -83,34 +84,6 @@ impl FrameworkEval for Eval {
         let ap_update_add_1_col5 = eval.next_trace_mask();
         let mem_dst_base_col6 = eval.next_trace_mask();
         let dst_id_col7 = eval.next_trace_mask();
-        let dst_limb_0_col8 = eval.next_trace_mask();
-        let dst_limb_1_col9 = eval.next_trace_mask();
-        let dst_limb_2_col10 = eval.next_trace_mask();
-        let dst_limb_3_col11 = eval.next_trace_mask();
-        let dst_limb_4_col12 = eval.next_trace_mask();
-        let dst_limb_5_col13 = eval.next_trace_mask();
-        let dst_limb_6_col14 = eval.next_trace_mask();
-        let dst_limb_7_col15 = eval.next_trace_mask();
-        let dst_limb_8_col16 = eval.next_trace_mask();
-        let dst_limb_9_col17 = eval.next_trace_mask();
-        let dst_limb_10_col18 = eval.next_trace_mask();
-        let dst_limb_11_col19 = eval.next_trace_mask();
-        let dst_limb_12_col20 = eval.next_trace_mask();
-        let dst_limb_13_col21 = eval.next_trace_mask();
-        let dst_limb_14_col22 = eval.next_trace_mask();
-        let dst_limb_15_col23 = eval.next_trace_mask();
-        let dst_limb_16_col24 = eval.next_trace_mask();
-        let dst_limb_17_col25 = eval.next_trace_mask();
-        let dst_limb_18_col26 = eval.next_trace_mask();
-        let dst_limb_19_col27 = eval.next_trace_mask();
-        let dst_limb_20_col28 = eval.next_trace_mask();
-        let dst_limb_21_col29 = eval.next_trace_mask();
-        let dst_limb_22_col30 = eval.next_trace_mask();
-        let dst_limb_23_col31 = eval.next_trace_mask();
-        let dst_limb_24_col32 = eval.next_trace_mask();
-        let dst_limb_25_col33 = eval.next_trace_mask();
-        let dst_limb_26_col34 = eval.next_trace_mask();
-        let dst_limb_27_col35 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -132,72 +105,43 @@ impl FrameworkEval for Eval {
                 - ((dst_base_fp_col4.clone() * input_fp_col2.clone())
                     + ((M31_1.clone() - dst_base_fp_col4.clone()) * input_ap_col1.clone()))),
         );
-        ReadPositiveNumBits252::evaluate(
-            [(mem_dst_base_col6.clone()
-                + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone())],
+        MemVerify::evaluate(
+            [
+                (mem_dst_base_col6.clone()
+                    + decode_instruction_de75a_output_tmp_e1597_5_offset0.clone()),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+                M31_0.clone(),
+            ],
             dst_id_col7.clone(),
-            dst_limb_0_col8.clone(),
-            dst_limb_1_col9.clone(),
-            dst_limb_2_col10.clone(),
-            dst_limb_3_col11.clone(),
-            dst_limb_4_col12.clone(),
-            dst_limb_5_col13.clone(),
-            dst_limb_6_col14.clone(),
-            dst_limb_7_col15.clone(),
-            dst_limb_8_col16.clone(),
-            dst_limb_9_col17.clone(),
-            dst_limb_10_col18.clone(),
-            dst_limb_11_col19.clone(),
-            dst_limb_12_col20.clone(),
-            dst_limb_13_col21.clone(),
-            dst_limb_14_col22.clone(),
-            dst_limb_15_col23.clone(),
-            dst_limb_16_col24.clone(),
-            dst_limb_17_col25.clone(),
-            dst_limb_18_col26.clone(),
-            dst_limb_19_col27.clone(),
-            dst_limb_20_col28.clone(),
-            dst_limb_21_col29.clone(),
-            dst_limb_22_col30.clone(),
-            dst_limb_23_col31.clone(),
-            dst_limb_24_col32.clone(),
-            dst_limb_25_col33.clone(),
-            dst_limb_26_col34.clone(),
-            dst_limb_27_col35.clone(),
             &self.memory_address_to_id_lookup_elements,
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
-        );
-        // dst equals 0.
-        eval.add_constraint(
-            (((((((((((((((((((((((((((dst_limb_0_col8.clone()
-                + dst_limb_1_col9.clone())
-                + dst_limb_2_col10.clone())
-                + dst_limb_3_col11.clone())
-                + dst_limb_4_col12.clone())
-                + dst_limb_5_col13.clone())
-                + dst_limb_6_col14.clone())
-                + dst_limb_7_col15.clone())
-                + dst_limb_8_col16.clone())
-                + dst_limb_9_col17.clone())
-                + dst_limb_10_col18.clone())
-                + dst_limb_11_col19.clone())
-                + dst_limb_12_col20.clone())
-                + dst_limb_13_col21.clone())
-                + dst_limb_14_col22.clone())
-                + dst_limb_15_col23.clone())
-                + dst_limb_16_col24.clone())
-                + dst_limb_17_col25.clone())
-                + dst_limb_18_col26.clone())
-                + dst_limb_19_col27.clone())
-                + dst_limb_20_col28.clone())
-                + dst_limb_21_col29.clone())
-                + dst_limb_22_col30.clone())
-                + dst_limb_23_col31.clone())
-                + dst_limb_24_col32.clone())
-                + dst_limb_25_col33.clone())
-                + dst_limb_26_col34.clone())
-                + dst_limb_27_col35.clone()),
         );
         eval.add_to_relation(RelationEntry::new(
             &self.opcodes_lookup_elements,
