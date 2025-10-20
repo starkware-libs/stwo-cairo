@@ -1,4 +1,5 @@
-// AIR version e654733
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
 use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

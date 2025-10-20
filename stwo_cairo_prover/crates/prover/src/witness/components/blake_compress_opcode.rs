@@ -1,4 +1,5 @@
-// AIR version c574c96b
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
 use cairo_air::components::blake_compress_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

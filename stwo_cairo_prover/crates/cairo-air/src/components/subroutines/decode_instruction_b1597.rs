@@ -1,4 +1,5 @@
-// AIR version 6f0d999b
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]

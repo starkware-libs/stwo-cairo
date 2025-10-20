@@ -1,4 +1,5 @@
-// AIR version 6f0d999b
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
 use cairo_air::components::jump_opcode_rel::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

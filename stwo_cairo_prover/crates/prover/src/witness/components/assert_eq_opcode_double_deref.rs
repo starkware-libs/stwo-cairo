@@ -1,4 +1,5 @@
-// AIR version 54d95c0d
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
 use cairo_air::components::assert_eq_opcode_double_deref::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,

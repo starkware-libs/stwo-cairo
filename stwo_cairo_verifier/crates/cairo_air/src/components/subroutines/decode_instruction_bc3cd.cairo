@@ -1,4 +1,5 @@
-// AIR version 54d95c0d
+// This file was created by the AIR team.
+
 use crate::prelude::*;
 
 
@@ -39,11 +40,12 @@ pub fn decode_instruction_bc3cd_evaluate(
     let constraint_quotient = ((op1_base_fp_col6 * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col6)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+    let op1_base_ap_tmp_bc3cd_9: QM31 = ((qm31_const::<1, 0, 0, 0>() - op1_imm_col5)
+        - op1_base_fp_col6);
 
     // Constraint - Flag op1_base_ap is a bit
-    let constraint_quotient = ((((qm31_const::<1, 0, 0, 0>() - op1_imm_col5) - op1_base_fp_col6)
-        * (qm31_const::<1, 0, 0, 0>()
-            - ((qm31_const::<1, 0, 0, 0>() - op1_imm_col5) - op1_base_fp_col6))))
+    let constraint_quotient = ((op1_base_ap_tmp_bc3cd_9
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_ap_tmp_bc3cd_9)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -61,8 +63,7 @@ pub fn decode_instruction_bc3cd_evaluate(
                     + (op0_base_fp_col4 * qm31_const::<16, 0, 0, 0>()))
                     + (op1_imm_col5 * qm31_const::<32, 0, 0, 0>()))
                     + (op1_base_fp_col6 * qm31_const::<64, 0, 0, 0>()))
-                    + (((qm31_const::<1, 0, 0, 0>() - op1_imm_col5) - op1_base_fp_col6)
-                        * qm31_const::<128, 0, 0, 0>()))
+                    + (op1_base_ap_tmp_bc3cd_9 * qm31_const::<128, 0, 0, 0>()))
                     + qm31_const::<256, 0, 0, 0>()),
                 ((ap_update_add_1_col7 * qm31_const::<32, 0, 0, 0>())
                     + qm31_const::<256, 0, 0, 0>()),
@@ -73,7 +74,6 @@ pub fn decode_instruction_bc3cd_evaluate(
     [
         (offset0_col0 - qm31_const::<32768, 0, 0, 0>()),
         (offset1_col1 - qm31_const::<32768, 0, 0, 0>()),
-        (offset2_col2 - qm31_const::<32768, 0, 0, 0>()),
-        ((qm31_const::<1, 0, 0, 0>() - op1_imm_col5) - op1_base_fp_col6),
+        (offset2_col2 - qm31_const::<32768, 0, 0, 0>()), op1_base_ap_tmp_bc3cd_9,
     ]
 }

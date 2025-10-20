@@ -1,4 +1,5 @@
-// AIR version 54d95c0d
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 20;

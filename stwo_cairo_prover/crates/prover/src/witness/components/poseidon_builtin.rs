@@ -1,4 +1,5 @@
-// AIR version 2b6cb268
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
 use cairo_air::components::poseidon_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 

@@ -66,6 +66,7 @@ pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
 pub mod range_check_felt_252_width_27;
 pub mod ret_opcode;
+pub mod sample_evaluations;
 pub mod subroutines;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;

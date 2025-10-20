@@ -1,4 +1,5 @@
-// AIR version 54d95c0d
+// This file was created by the AIR team.
+
 use crate::prelude::*;
 
 
@@ -24,11 +25,12 @@ pub fn decode_instruction_d2a10_evaluate(
     let constraint_quotient = ((op1_base_fp_col2 * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col2)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
+    let op1_base_ap_tmp_d2a10_5: QM31 = ((qm31_const::<1, 0, 0, 0>() - op1_imm_col1)
+        - op1_base_fp_col2);
 
     // Constraint - Flag op1_base_ap is a bit
-    let constraint_quotient = ((((qm31_const::<1, 0, 0, 0>() - op1_imm_col1) - op1_base_fp_col2)
-        * (qm31_const::<1, 0, 0, 0>()
-            - ((qm31_const::<1, 0, 0, 0>() - op1_imm_col1) - op1_base_fp_col2))))
+    let constraint_quotient = ((op1_base_ap_tmp_d2a10_5
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_ap_tmp_d2a10_5)))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -39,14 +41,10 @@ pub fn decode_instruction_d2a10_evaluate(
                 qm31_const::<32767, 0, 0, 0>(), offset2_col0,
                 (((qm31_const::<24, 0, 0, 0>() + (op1_imm_col1 * qm31_const::<32, 0, 0, 0>()))
                     + (op1_base_fp_col2 * qm31_const::<64, 0, 0, 0>()))
-                    + (((qm31_const::<1, 0, 0, 0>() - op1_imm_col1) - op1_base_fp_col2)
-                        * qm31_const::<128, 0, 0, 0>())),
+                    + (op1_base_ap_tmp_d2a10_5 * qm31_const::<128, 0, 0, 0>())),
                 qm31_const::<16, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             ],
         );
 
-    [
-        (offset2_col0 - qm31_const::<32768, 0, 0, 0>()),
-        ((qm31_const::<1, 0, 0, 0>() - op1_imm_col1) - op1_base_fp_col2),
-    ]
+    [(offset2_col0 - qm31_const::<32768, 0, 0, 0>()), op1_base_ap_tmp_d2a10_5]
 }
