@@ -1,4 +1,5 @@
-// AIR version 54d95c0d
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -49,11 +50,11 @@ impl DecodeInstruction3802D {
         eval.add_constraint(
             (op1_base_fp_col6.clone() * (M31_1.clone() - op1_base_fp_col6.clone())),
         );
+        let op1_base_ap_tmp_3802d_9 = eval
+            .add_intermediate(((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone()));
         // Flag op1_base_ap is a bit.
         eval.add_constraint(
-            (((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone())
-                * (M31_1.clone()
-                    - ((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone()))),
+            (op1_base_ap_tmp_3802d_9.clone() * (M31_1.clone() - op1_base_ap_tmp_3802d_9.clone())),
         );
         // Flag res_add is a bit.
         eval.add_constraint((res_add_col7.clone() * (M31_1.clone() - res_add_col7.clone())));
@@ -73,8 +74,7 @@ impl DecodeInstruction3802D {
                     + (op0_base_fp_col4.clone() * M31_16.clone()))
                     + (op1_imm_col5.clone() * M31_32.clone()))
                     + (op1_base_fp_col6.clone() * M31_64.clone()))
-                    + (((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone())
-                        * M31_128.clone()))
+                    + (op1_base_ap_tmp_3802d_9.clone() * M31_128.clone()))
                     + (res_add_col7.clone() * M31_256.clone())),
                 (((M31_1.clone() - res_add_col7.clone())
                     + (ap_update_add_1_col8.clone() * M31_32.clone()))
@@ -87,7 +87,7 @@ impl DecodeInstruction3802D {
             (offset0_col0.clone() - M31_32768.clone()),
             (offset1_col1.clone() - M31_32768.clone()),
             (offset2_col2.clone() - M31_32768.clone()),
-            ((M31_1.clone() - op1_imm_col5.clone()) - op1_base_fp_col6.clone()),
+            op1_base_ap_tmp_3802d_9.clone(),
             (M31_1.clone() - res_add_col7.clone()),
         ]
     }

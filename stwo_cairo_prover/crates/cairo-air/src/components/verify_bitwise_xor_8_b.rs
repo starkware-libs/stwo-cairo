@@ -1,4 +1,5 @@
-// AIR version e654733
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
@@ -47,18 +48,18 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let bitwisexor_8_b_0 = eval.get_preprocessed_column((BitwiseXor::new(8, 0)).id());
-        let bitwisexor_8_b_1 = eval.get_preprocessed_column((BitwiseXor::new(8, 1)).id());
-        let bitwisexor_8_b_2 = eval.get_preprocessed_column((BitwiseXor::new(8, 2)).id());
+        let bitwisexor_8_0 = eval.get_preprocessed_column((BitwiseXor::new(8, 0)).id());
+        let bitwisexor_8_1 = eval.get_preprocessed_column((BitwiseXor::new(8, 1)).id());
+        let bitwisexor_8_2 = eval.get_preprocessed_column((BitwiseXor::new(8, 2)).id());
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.verify_bitwise_xor_8_b_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                bitwisexor_8_b_0.clone(),
-                bitwisexor_8_b_1.clone(),
-                bitwisexor_8_b_2.clone(),
+                bitwisexor_8_0.clone(),
+                bitwisexor_8_1.clone(),
+                bitwisexor_8_2.clone(),
             ],
         ));
 

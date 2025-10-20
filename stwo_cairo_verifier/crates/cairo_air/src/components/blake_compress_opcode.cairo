@@ -1,4 +1,5 @@
-// AIR version c574c96b
+// This file was created by the AIR team.
+
 use crate::components::subroutines::create_blake_output::create_blake_output_evaluate;
 use crate::components::subroutines::create_blake_round_input::create_blake_round_input_evaluate;
 use crate::components::subroutines::decode_blake_opcode::decode_blake_opcode_evaluate;

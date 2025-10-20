@@ -1,4 +1,5 @@
-// AIR version c574c96b
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
 use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;
