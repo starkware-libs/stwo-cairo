@@ -10,8 +10,8 @@ use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_18_b,
-    range_check_19, range_check_19_b, range_check_19_c, range_check_19_d, range_check_19_e,
-    range_check_19_f, range_check_19_g, range_check_19_h, range_check_3_3_3_3_3,
+    range_check_20, range_check_20_b, range_check_20_c, range_check_20_d, range_check_20_e,
+    range_check_20_f, range_check_20_g, range_check_20_h, range_check_3_3_3_3_3,
     range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4,
     range_check_6, range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b,
     range_check_9_9_c, range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g,
@@ -27,14 +27,14 @@ pub struct RangeChecksClaim {
     pub rc_12: range_check_12::Claim,
     pub rc_18: range_check_18::Claim,
     pub rc_18_b: range_check_18_b::Claim,
-    pub rc_19: range_check_19::Claim,
-    pub rc_19_b: range_check_19_b::Claim,
-    pub rc_19_c: range_check_19_c::Claim,
-    pub rc_19_d: range_check_19_d::Claim,
-    pub rc_19_e: range_check_19_e::Claim,
-    pub rc_19_f: range_check_19_f::Claim,
-    pub rc_19_g: range_check_19_g::Claim,
-    pub rc_19_h: range_check_19_h::Claim,
+    pub rc_20: range_check_20::Claim,
+    pub rc_20_b: range_check_20_b::Claim,
+    pub rc_20_c: range_check_20_c::Claim,
+    pub rc_20_d: range_check_20_d::Claim,
+    pub rc_20_e: range_check_20_e::Claim,
+    pub rc_20_f: range_check_20_f::Claim,
+    pub rc_20_g: range_check_20_g::Claim,
+    pub rc_20_h: range_check_20_h::Claim,
     pub rc_4_3: range_check_4_3::Claim,
     pub rc_4_4: range_check_4_4::Claim,
     pub rc_5_4: range_check_5_4::Claim,
@@ -59,14 +59,14 @@ impl RangeChecksClaim {
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
         self.rc_18_b.mix_into(channel);
-        self.rc_19.mix_into(channel);
-        self.rc_19_b.mix_into(channel);
-        self.rc_19_c.mix_into(channel);
-        self.rc_19_d.mix_into(channel);
-        self.rc_19_e.mix_into(channel);
-        self.rc_19_f.mix_into(channel);
-        self.rc_19_g.mix_into(channel);
-        self.rc_19_h.mix_into(channel);
+        self.rc_20.mix_into(channel);
+        self.rc_20_b.mix_into(channel);
+        self.rc_20_c.mix_into(channel);
+        self.rc_20_d.mix_into(channel);
+        self.rc_20_e.mix_into(channel);
+        self.rc_20_f.mix_into(channel);
+        self.rc_20_g.mix_into(channel);
+        self.rc_20_h.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
         self.rc_5_4.mix_into(channel);
@@ -93,14 +93,14 @@ impl RangeChecksClaim {
                 self.rc_12.log_sizes(),
                 self.rc_18.log_sizes(),
                 self.rc_18_b.log_sizes(),
-                self.rc_19.log_sizes(),
-                self.rc_19_b.log_sizes(),
-                self.rc_19_c.log_sizes(),
-                self.rc_19_d.log_sizes(),
-                self.rc_19_e.log_sizes(),
-                self.rc_19_f.log_sizes(),
-                self.rc_19_g.log_sizes(),
-                self.rc_19_h.log_sizes(),
+                self.rc_20.log_sizes(),
+                self.rc_20_b.log_sizes(),
+                self.rc_20_c.log_sizes(),
+                self.rc_20_d.log_sizes(),
+                self.rc_20_e.log_sizes(),
+                self.rc_20_f.log_sizes(),
+                self.rc_20_g.log_sizes(),
+                self.rc_20_h.log_sizes(),
                 self.rc_4_3.log_sizes(),
                 self.rc_4_4.log_sizes(),
                 self.rc_5_4.log_sizes(),
@@ -130,14 +130,14 @@ pub struct RangeChecksInteractionClaim {
     pub rc_12: range_check_12::InteractionClaim,
     pub rc_18: range_check_18::InteractionClaim,
     pub rc_18_b: range_check_18_b::InteractionClaim,
-    pub rc_19: range_check_19::InteractionClaim,
-    pub rc_19_b: range_check_19_b::InteractionClaim,
-    pub rc_19_c: range_check_19_c::InteractionClaim,
-    pub rc_19_d: range_check_19_d::InteractionClaim,
-    pub rc_19_e: range_check_19_e::InteractionClaim,
-    pub rc_19_f: range_check_19_f::InteractionClaim,
-    pub rc_19_g: range_check_19_g::InteractionClaim,
-    pub rc_19_h: range_check_19_h::InteractionClaim,
+    pub rc_20: range_check_20::InteractionClaim,
+    pub rc_20_b: range_check_20_b::InteractionClaim,
+    pub rc_20_c: range_check_20_c::InteractionClaim,
+    pub rc_20_d: range_check_20_d::InteractionClaim,
+    pub rc_20_e: range_check_20_e::InteractionClaim,
+    pub rc_20_f: range_check_20_f::InteractionClaim,
+    pub rc_20_g: range_check_20_g::InteractionClaim,
+    pub rc_20_h: range_check_20_h::InteractionClaim,
     pub rc_4_3: range_check_4_3::InteractionClaim,
     pub rc_4_4: range_check_4_4::InteractionClaim,
     pub rc_5_4: range_check_5_4::InteractionClaim,
@@ -162,14 +162,14 @@ impl RangeChecksInteractionClaim {
         self.rc_12.mix_into(channel);
         self.rc_18.mix_into(channel);
         self.rc_18_b.mix_into(channel);
-        self.rc_19.mix_into(channel);
-        self.rc_19_b.mix_into(channel);
-        self.rc_19_c.mix_into(channel);
-        self.rc_19_d.mix_into(channel);
-        self.rc_19_e.mix_into(channel);
-        self.rc_19_f.mix_into(channel);
-        self.rc_19_g.mix_into(channel);
-        self.rc_19_h.mix_into(channel);
+        self.rc_20.mix_into(channel);
+        self.rc_20_b.mix_into(channel);
+        self.rc_20_c.mix_into(channel);
+        self.rc_20_d.mix_into(channel);
+        self.rc_20_e.mix_into(channel);
+        self.rc_20_f.mix_into(channel);
+        self.rc_20_g.mix_into(channel);
+        self.rc_20_h.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
         self.rc_5_4.mix_into(channel);
@@ -195,14 +195,14 @@ impl RangeChecksInteractionClaim {
         sum += self.rc_12.claimed_sum;
         sum += self.rc_18.claimed_sum;
         sum += self.rc_18_b.claimed_sum;
-        sum += self.rc_19.claimed_sum;
-        sum += self.rc_19_b.claimed_sum;
-        sum += self.rc_19_c.claimed_sum;
-        sum += self.rc_19_d.claimed_sum;
-        sum += self.rc_19_e.claimed_sum;
-        sum += self.rc_19_f.claimed_sum;
-        sum += self.rc_19_g.claimed_sum;
-        sum += self.rc_19_h.claimed_sum;
+        sum += self.rc_20.claimed_sum;
+        sum += self.rc_20_b.claimed_sum;
+        sum += self.rc_20_c.claimed_sum;
+        sum += self.rc_20_d.claimed_sum;
+        sum += self.rc_20_e.claimed_sum;
+        sum += self.rc_20_f.claimed_sum;
+        sum += self.rc_20_g.claimed_sum;
+        sum += self.rc_20_h.claimed_sum;
         sum += self.rc_4_3.claimed_sum;
         sum += self.rc_4_4.claimed_sum;
         sum += self.rc_5_4.claimed_sum;
@@ -229,14 +229,14 @@ pub struct RangeChecksInteractionElements {
     pub rc_12: relations::RangeCheck_12,
     pub rc_18: relations::RangeCheck_18,
     pub rc_18_b: relations::RangeCheck_18_B,
-    pub rc_19: relations::RangeCheck_19,
-    pub rc_19_b: relations::RangeCheck_19_B,
-    pub rc_19_c: relations::RangeCheck_19_C,
-    pub rc_19_d: relations::RangeCheck_19_D,
-    pub rc_19_e: relations::RangeCheck_19_E,
-    pub rc_19_f: relations::RangeCheck_19_F,
-    pub rc_19_g: relations::RangeCheck_19_G,
-    pub rc_19_h: relations::RangeCheck_19_H,
+    pub rc_20: relations::RangeCheck_20,
+    pub rc_20_b: relations::RangeCheck_20_B,
+    pub rc_20_c: relations::RangeCheck_20_C,
+    pub rc_20_d: relations::RangeCheck_20_D,
+    pub rc_20_e: relations::RangeCheck_20_E,
+    pub rc_20_f: relations::RangeCheck_20_F,
+    pub rc_20_g: relations::RangeCheck_20_G,
+    pub rc_20_h: relations::RangeCheck_20_H,
     pub rc_4_3: relations::RangeCheck_4_3,
     pub rc_4_4: relations::RangeCheck_4_4,
     pub rc_5_4: relations::RangeCheck_5_4,
@@ -263,14 +263,14 @@ impl RangeChecksInteractionElements {
             rc_12: relations::RangeCheck_12::draw(channel),
             rc_18: relations::RangeCheck_18::draw(channel),
             rc_18_b: relations::RangeCheck_18_B::draw(channel),
-            rc_19: relations::RangeCheck_19::draw(channel),
-            rc_19_b: relations::RangeCheck_19_B::draw(channel),
-            rc_19_c: relations::RangeCheck_19_C::draw(channel),
-            rc_19_d: relations::RangeCheck_19_D::draw(channel),
-            rc_19_e: relations::RangeCheck_19_E::draw(channel),
-            rc_19_f: relations::RangeCheck_19_F::draw(channel),
-            rc_19_g: relations::RangeCheck_19_G::draw(channel),
-            rc_19_h: relations::RangeCheck_19_H::draw(channel),
+            rc_20: relations::RangeCheck_20::draw(channel),
+            rc_20_b: relations::RangeCheck_20_B::draw(channel),
+            rc_20_c: relations::RangeCheck_20_C::draw(channel),
+            rc_20_d: relations::RangeCheck_20_D::draw(channel),
+            rc_20_e: relations::RangeCheck_20_E::draw(channel),
+            rc_20_f: relations::RangeCheck_20_F::draw(channel),
+            rc_20_g: relations::RangeCheck_20_G::draw(channel),
+            rc_20_h: relations::RangeCheck_20_H::draw(channel),
             rc_4_3: relations::RangeCheck_4_3::draw(channel),
             rc_4_4: relations::RangeCheck_4_4::draw(channel),
             rc_5_4: relations::RangeCheck_5_4::draw(channel),
@@ -297,14 +297,14 @@ pub struct RangeChecksComponents {
     pub rc_12: range_check_12::Component,
     pub rc_18: range_check_18::Component,
     pub rc_18_b: range_check_18_b::Component,
-    pub rc_19: range_check_19::Component,
-    pub rc_19_b: range_check_19_b::Component,
-    pub rc_19_c: range_check_19_c::Component,
-    pub rc_19_d: range_check_19_d::Component,
-    pub rc_19_e: range_check_19_e::Component,
-    pub rc_19_f: range_check_19_f::Component,
-    pub rc_19_g: range_check_19_g::Component,
-    pub rc_19_h: range_check_19_h::Component,
+    pub rc_20: range_check_20::Component,
+    pub rc_20_b: range_check_20_b::Component,
+    pub rc_20_c: range_check_20_c::Component,
+    pub rc_20_d: range_check_20_d::Component,
+    pub rc_20_e: range_check_20_e::Component,
+    pub rc_20_f: range_check_20_f::Component,
+    pub rc_20_g: range_check_20_g::Component,
+    pub rc_20_h: range_check_20_h::Component,
     pub rc_4_3: range_check_4_3::Component,
     pub rc_4_4: range_check_4_4::Component,
     pub rc_5_4: range_check_5_4::Component,
@@ -375,69 +375,69 @@ impl RangeChecksComponents {
             },
             interaction_claim.rc_18_b.claimed_sum,
         );
-        let rc_19_component = range_check_19::Component::new(
+        let rc_20_component = range_check_20::Component::new(
             tree_span_provider,
-            range_check_19::Eval {
-                claim: range_check_19::Claim {},
-                range_check_19_lookup_elements: interaction_elements.rc_19.clone(),
+            range_check_20::Eval {
+                claim: range_check_20::Claim {},
+                range_check_20_lookup_elements: interaction_elements.rc_20.clone(),
             },
-            interaction_claim.rc_19.claimed_sum,
+            interaction_claim.rc_20.claimed_sum,
         );
-        let rc_19_b_component = range_check_19_b::Component::new(
+        let rc_20_b_component = range_check_20_b::Component::new(
             tree_span_provider,
-            range_check_19_b::Eval {
-                claim: range_check_19_b::Claim {},
-                range_check_19_b_lookup_elements: interaction_elements.rc_19_b.clone(),
+            range_check_20_b::Eval {
+                claim: range_check_20_b::Claim {},
+                range_check_20_b_lookup_elements: interaction_elements.rc_20_b.clone(),
             },
-            interaction_claim.rc_19_b.claimed_sum,
+            interaction_claim.rc_20_b.claimed_sum,
         );
-        let rc_19_c_component = range_check_19_c::Component::new(
+        let rc_20_c_component = range_check_20_c::Component::new(
             tree_span_provider,
-            range_check_19_c::Eval {
-                claim: range_check_19_c::Claim {},
-                range_check_19_c_lookup_elements: interaction_elements.rc_19_c.clone(),
+            range_check_20_c::Eval {
+                claim: range_check_20_c::Claim {},
+                range_check_20_c_lookup_elements: interaction_elements.rc_20_c.clone(),
             },
-            interaction_claim.rc_19_c.claimed_sum,
+            interaction_claim.rc_20_c.claimed_sum,
         );
-        let rc_19_d_component = range_check_19_d::Component::new(
+        let rc_20_d_component = range_check_20_d::Component::new(
             tree_span_provider,
-            range_check_19_d::Eval {
-                claim: range_check_19_d::Claim {},
-                range_check_19_d_lookup_elements: interaction_elements.rc_19_d.clone(),
+            range_check_20_d::Eval {
+                claim: range_check_20_d::Claim {},
+                range_check_20_d_lookup_elements: interaction_elements.rc_20_d.clone(),
             },
-            interaction_claim.rc_19_d.claimed_sum,
+            interaction_claim.rc_20_d.claimed_sum,
         );
-        let rc_19_e_component = range_check_19_e::Component::new(
+        let rc_20_e_component = range_check_20_e::Component::new(
             tree_span_provider,
-            range_check_19_e::Eval {
-                claim: range_check_19_e::Claim {},
-                range_check_19_e_lookup_elements: interaction_elements.rc_19_e.clone(),
+            range_check_20_e::Eval {
+                claim: range_check_20_e::Claim {},
+                range_check_20_e_lookup_elements: interaction_elements.rc_20_e.clone(),
             },
-            interaction_claim.rc_19_e.claimed_sum,
+            interaction_claim.rc_20_e.claimed_sum,
         );
-        let rc_19_f_component = range_check_19_f::Component::new(
+        let rc_20_f_component = range_check_20_f::Component::new(
             tree_span_provider,
-            range_check_19_f::Eval {
-                claim: range_check_19_f::Claim {},
-                range_check_19_f_lookup_elements: interaction_elements.rc_19_f.clone(),
+            range_check_20_f::Eval {
+                claim: range_check_20_f::Claim {},
+                range_check_20_f_lookup_elements: interaction_elements.rc_20_f.clone(),
             },
-            interaction_claim.rc_19_f.claimed_sum,
+            interaction_claim.rc_20_f.claimed_sum,
         );
-        let rc_19_g_component = range_check_19_g::Component::new(
+        let rc_20_g_component = range_check_20_g::Component::new(
             tree_span_provider,
-            range_check_19_g::Eval {
-                claim: range_check_19_g::Claim {},
-                range_check_19_g_lookup_elements: interaction_elements.rc_19_g.clone(),
+            range_check_20_g::Eval {
+                claim: range_check_20_g::Claim {},
+                range_check_20_g_lookup_elements: interaction_elements.rc_20_g.clone(),
             },
-            interaction_claim.rc_19_g.claimed_sum,
+            interaction_claim.rc_20_g.claimed_sum,
         );
-        let rc_19_h_component = range_check_19_h::Component::new(
+        let rc_20_h_component = range_check_20_h::Component::new(
             tree_span_provider,
-            range_check_19_h::Eval {
-                claim: range_check_19_h::Claim {},
-                range_check_19_h_lookup_elements: interaction_elements.rc_19_h.clone(),
+            range_check_20_h::Eval {
+                claim: range_check_20_h::Claim {},
+                range_check_20_h_lookup_elements: interaction_elements.rc_20_h.clone(),
             },
-            interaction_claim.rc_19_h.claimed_sum,
+            interaction_claim.rc_20_h.claimed_sum,
         );
         let rc_4_3_component = range_check_4_3::Component::new(
             tree_span_provider,
@@ -566,14 +566,14 @@ impl RangeChecksComponents {
             rc_12: rc_12_component,
             rc_18: rc_18_component,
             rc_18_b: rc_18_b_component,
-            rc_19: rc_19_component,
-            rc_19_b: rc_19_b_component,
-            rc_19_c: rc_19_c_component,
-            rc_19_d: rc_19_d_component,
-            rc_19_e: rc_19_e_component,
-            rc_19_f: rc_19_f_component,
-            rc_19_g: rc_19_g_component,
-            rc_19_h: rc_19_h_component,
+            rc_20: rc_20_component,
+            rc_20_b: rc_20_b_component,
+            rc_20_c: rc_20_c_component,
+            rc_20_d: rc_20_d_component,
+            rc_20_e: rc_20_e_component,
+            rc_20_f: rc_20_f_component,
+            rc_20_g: rc_20_g_component,
+            rc_20_h: rc_20_h_component,
             rc_4_3: rc_4_3_component,
             rc_4_4: rc_4_4_component,
             rc_5_4: rc_5_4_component,
@@ -600,14 +600,14 @@ impl RangeChecksComponents {
             &self.rc_12 as &dyn ComponentProver<SimdBackend>,
             &self.rc_18 as &dyn ComponentProver<SimdBackend>,
             &self.rc_18_b as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_b as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_c as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_d as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_e as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_f as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_g as &dyn ComponentProver<SimdBackend>,
-            &self.rc_19_h as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20 as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_b as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_c as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_d as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_e as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_f as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_g as &dyn ComponentProver<SimdBackend>,
+            &self.rc_20_h as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_3 as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_4 as &dyn ComponentProver<SimdBackend>,
             &self.rc_5_4 as &dyn ComponentProver<SimdBackend>,
@@ -653,43 +653,43 @@ impl std::fmt::Display for RangeChecksComponents {
         )?;
         writeln!(
             f,
-            "RangeCheck19: {}",
-            indented_component_display(&self.rc_19)
+            "RangeCheck20: {}",
+            indented_component_display(&self.rc_20)
         )?;
         writeln!(
             f,
-            "RangeCheck19_B: {}",
-            indented_component_display(&self.rc_19_b)
+            "RangeCheck20_B: {}",
+            indented_component_display(&self.rc_20_b)
         )?;
         writeln!(
             f,
-            "RangeCheck19_C: {}",
-            indented_component_display(&self.rc_19_c)
+            "RangeCheck20_C: {}",
+            indented_component_display(&self.rc_20_c)
         )?;
         writeln!(
             f,
-            "RangeCheck19_D: {}",
-            indented_component_display(&self.rc_19_d)
+            "RangeCheck20_D: {}",
+            indented_component_display(&self.rc_20_d)
         )?;
         writeln!(
             f,
-            "RangeCheck19_E: {}",
-            indented_component_display(&self.rc_19_e)
+            "RangeCheck20_E: {}",
+            indented_component_display(&self.rc_20_e)
         )?;
         writeln!(
             f,
-            "RangeCheck19_F: {}",
-            indented_component_display(&self.rc_19_f)
+            "RangeCheck20_F: {}",
+            indented_component_display(&self.rc_20_f)
         )?;
         writeln!(
             f,
-            "RangeCheck19_G: {}",
-            indented_component_display(&self.rc_19_g)
+            "RangeCheck20_G: {}",
+            indented_component_display(&self.rc_20_g)
         )?;
         writeln!(
             f,
-            "RangeCheck19_H: {}",
-            indented_component_display(&self.rc_19_h)
+            "RangeCheck20_H: {}",
+            indented_component_display(&self.rc_20_h)
         )?;
         writeln!(
             f,

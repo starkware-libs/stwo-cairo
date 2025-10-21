@@ -551,7 +551,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_bitwise_builtin");
                 let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
+                assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
             #[test]
@@ -559,7 +559,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_mul_mod_builtin");
                 let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
+                assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
             #[test]
@@ -575,7 +575,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
                 let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
+                assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
             #[test]
@@ -584,7 +584,7 @@ pub mod tests {
                     "test_prove_verify_range_check_bits_96_builtin",
                 );
                 let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
+                assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
             #[test]
@@ -593,7 +593,7 @@ pub mod tests {
                     "test_prove_verify_range_check_bits_128_builtin",
                 );
                 let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
-                assert_cairo_constraints(input, testing_preprocessed_tree(19));
+                assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
         }
     }
