@@ -1,3 +1,4 @@
+use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use anyhow::Result;
@@ -7,23 +8,22 @@ use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use sonic_rs::from_str;
 use stwo::core::channel::{Channel, MerkleChannel};
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
-use stwo_cairo_serialize::CairoSerialize;
 use tracing::{event, span, Level};
 
-use crate::stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use crate::stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
 use crate::witness::cairo::CairoClaimGenerator;
 use crate::witness::utils::witness_trace_cells;
 
@@ -140,12 +140,6 @@ where
     })
 }
 
-#[derive(Default)]
-pub struct ProverConfig {
-    /// Display components' metadata.
-    pub display_components: bool,
-}
-
 /// Concrete parameters of the proving system.
 /// Used both for producing and verifying proofs.
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
@@ -176,55 +170,9 @@ pub enum ChannelHash {
     Poseidon252,
 }
 
-/// The default prover parameters for prod use (96 bits of security).
-/// The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
-pub fn default_prod_prover_parameters() -> ProverParameters {
-    ProverParameters {
-        channel_hash: ChannelHash::Blake2s,
-        channel_salt: None,
-        pcs_config: PcsConfig {
-            // Stay within 500ms on M3.
-            pow_bits: 26,
-            fri_config: FriConfig {
-                log_last_layer_degree_bound: 0,
-                // Blowup factor > 1 significantly degrades proving speed.
-                // Can be in range [1, 16].
-                log_blowup_factor: 1,
-                // The more FRI queries, the larger the proof.
-                // Proving time is not affected much by increasing this value.
-                n_queries: 70,
-            },
-        },
-        preprocessed_trace: PreProcessedTraceVariant::Canonical,
-    }
-}
-
 /// Generates proof given the Cairo VM output and prover config/parameters.
 /// Serializes the proof as JSON and write to the output path.
 /// Verifies the proof in case the respective flag is set.
-fn create_and_serialize_generic_proof<MC: MerkleChannel>(
-    input: ProverInput,
-    prover_params: ProverParameters,
-    verify: bool,
-    proof_path: PathBuf,
-    proof_format: ProofFormat,
-) -> Result<()>
-where
-    SimdBackend: BackendForChannel<MC>,
-    MC::H: Serialize,
-    <MC::H as MerkleHasher>::Hash: CairoSerialize,
-{
-    let proof = prove_cairo::<MC>(input, prover_params)?;
-
-    serialize_proof_to_file::<MC::H>(&proof, &proof_path, proof_format)?;
-
-    if verify {
-        verify_cairo::<MC>(proof, prover_params.preprocessed_trace)?;
-    }
-
-    Ok(())
-}
-
 pub fn create_and_serialize_proof(
     input: ProverInput,
     verify: bool,
@@ -232,23 +180,47 @@ pub fn create_and_serialize_proof(
     proof_format: ProofFormat,
     proof_params_json: Option<PathBuf>,
 ) -> Result<()> {
-    let prover_params = match proof_params_json {
-        Some(path) => sonic_rs::from_str(&std::fs::read_to_string(&path)?)?,
-        None => default_prod_prover_parameters(),
+    let proof_params = if let Some(proof_params_json) = proof_params_json {
+        from_str(&read_to_string(&proof_params_json)?)?
+    } else {
+        // The default prover parameters for prod use (96 bits of security).
+        // The formula is `security_bits = pow_bits + log_blowup_factor * n_queries`.
+        ProverParameters {
+            channel_hash: ChannelHash::Blake2s,
+            channel_salt: None,
+            pcs_config: PcsConfig {
+                // Stay within 500ms on M3.
+                pow_bits: 26,
+                fri_config: FriConfig {
+                    log_last_layer_degree_bound: 0,
+                    // Blowup factor > 1 significantly degrades proving speed.
+                    // Can be in range [1, 16].
+                    log_blowup_factor: 1,
+                    // The more FRI queries, the larger the proof.
+                    // Proving time is not affected much by increasing this value.
+                    n_queries: 70,
+                },
+            },
+            preprocessed_trace: PreProcessedTraceVariant::Canonical,
+        }
     };
 
-    let create_and_serialize_generic_proof: fn(
-        ProverInput,
-        ProverParameters,
-        bool,
-        PathBuf,
-        ProofFormat,
-    ) -> Result<()> = match prover_params.channel_hash {
-        ChannelHash::Blake2s => create_and_serialize_generic_proof::<Blake2sMerkleChannel>,
-        ChannelHash::Poseidon252 => create_and_serialize_generic_proof::<Poseidon252MerkleChannel>,
+    match proof_params.channel_hash {
+        ChannelHash::Blake2s => {
+            let proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
+            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            if verify {
+                verify_cairo::<Blake2sMerkleChannel>(proof, proof_params.preprocessed_trace)?;
+            }
+        }
+        ChannelHash::Poseidon252 => {
+            let proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
+            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            if verify {
+                verify_cairo::<Poseidon252MerkleChannel>(proof, proof_params.preprocessed_trace)?;
+            }
+        }
     };
-
-    create_and_serialize_generic_proof(input, prover_params, verify, proof_path, proof_format)?;
 
     Ok(())
 }
@@ -256,7 +228,7 @@ pub fn create_and_serialize_proof(
 #[cfg(test)]
 pub mod tests {
     use dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
+    use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
@@ -264,7 +236,7 @@ pub mod tests {
     fn test_all_cairo_constraints() {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-        let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+        let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
         let pp_tree = testing_preprocessed_tree(20);
         assert_cairo_constraints(input, pp_tree);
     }
@@ -280,7 +252,7 @@ pub mod tests {
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
         use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
-        use stwo_cairo_adapter::utils::{run_program_and_adapter, ProgramType};
+        use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
         use test_log::test;
@@ -291,7 +263,7 @@ pub mod tests {
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
             let compiled_program = get_compiled_cairo_program_path("test_prove_verify_ret_opcode");
-            let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Poseidon252,
                 pcs_config: PcsConfig {
@@ -378,7 +350,7 @@ pub mod tests {
         fn test_cairo_constraints() {
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
         }
 
@@ -386,7 +358,7 @@ pub mod tests {
         fn test_prove_verify_all_opcode_components() {
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             for (opcode, n_instances) in &input.state_transitions.casm_states_by_opcode.counts() {
                 assert!(
                     *n_instances > 0,
@@ -408,7 +380,7 @@ pub mod tests {
         fn test_e2e_prove_cairo_verify_all_opcode_components() {
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
-            let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig {
@@ -467,7 +439,7 @@ pub mod tests {
 
         fn test_proof_stability(path: &str, n_proofs_to_compare: usize) {
             let compiled_program = get_compiled_cairo_program_path(path);
-            let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+            let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
             let prover_params = ProverParameters {
                 channel_hash: ChannelHash::Blake2s,
                 pcs_config: PcsConfig::default(),
@@ -499,7 +471,8 @@ pub mod tests {
         /// These tests' inputs were generated using cairo-vm with 50 instances of each builtin.
         pub mod builtin_tests {
             use stwo::core::pcs::PcsConfig;
-            use stwo_cairo_adapter::utils::run_program_and_adapter;
+            use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
+            use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
             use test_log::test;
 
             use super::*;
@@ -524,7 +497,7 @@ pub mod tests {
             fn test_prove_verify_all_builtins() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_all_builtins");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_all_builtins_in_input(&input);
                 let prover_params = ProverParameters {
                     channel_hash: ChannelHash::Blake2s,
@@ -542,7 +515,7 @@ pub mod tests {
             fn test_add_mod_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_add_mod_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
             }
 
@@ -550,7 +523,7 @@ pub mod tests {
             fn test_bitwise_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_bitwise_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
@@ -558,7 +531,7 @@ pub mod tests {
             fn test_mul_mod_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_mul_mod_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
@@ -566,7 +539,7 @@ pub mod tests {
             fn test_pedersen_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, PreProcessedTrace::canonical());
             }
 
@@ -574,7 +547,7 @@ pub mod tests {
             fn test_poseidon_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
@@ -583,7 +556,7 @@ pub mod tests {
                 let compiled_program = get_compiled_cairo_program_path(
                     "test_prove_verify_range_check_bits_96_builtin",
                 );
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
 
@@ -592,7 +565,7 @@ pub mod tests {
                 let compiled_program = get_compiled_cairo_program_path(
                     "test_prove_verify_range_check_bits_128_builtin",
                 );
-                let input = run_program_and_adapter(&compiled_program, ProgramType::Json, None);
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
         }
