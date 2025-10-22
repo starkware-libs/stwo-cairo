@@ -6,8 +6,7 @@ use cairo_air::components::poseidon_3_partial_rounds_chain::{
 };
 
 use crate::witness::components::{
-    cube_252, poseidon_round_keys, range_check_4_4, range_check_4_4_4_4,
-    range_check_felt_252_width_27,
+    cube_252, poseidon_round_keys, range_check_252_width_27, range_check_4_4, range_check_4_4_4_4,
 };
 use crate::witness::prelude::*;
 
@@ -33,9 +32,9 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         cube_252_state: &mut cube_252::ClaimGenerator,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
+        range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-        range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -50,9 +49,9 @@ impl ClaimGenerator {
             n_rows,
             cube_252_state,
             poseidon_round_keys_state,
+            range_check_252_width_27_state,
             range_check_4_4_state,
             range_check_4_4_4_4_state,
-            range_check_felt_252_width_27_state,
         );
         sub_component_inputs
             .poseidon_round_keys
@@ -76,10 +75,10 @@ impl ClaimGenerator {
                 range_check_4_4_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
-            .range_check_felt_252_width_27
+            .range_check_252_width_27
             .iter()
             .for_each(|inputs| {
-                range_check_felt_252_width_27_state.add_packed_inputs(inputs);
+                range_check_252_width_27_state.add_packed_inputs(inputs);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -104,7 +103,7 @@ struct SubComponentInputs {
     cube_252: [Vec<cube_252::PackedInputType>; 3],
     range_check_4_4_4_4: [Vec<range_check_4_4_4_4::PackedInputType>; 6],
     range_check_4_4: [Vec<range_check_4_4::PackedInputType>; 3],
-    range_check_felt_252_width_27: [Vec<range_check_felt_252_width_27::PackedInputType>; 3],
+    range_check_252_width_27: [Vec<range_check_252_width_27::PackedInputType>; 3],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -116,9 +115,9 @@ fn write_trace_simd(
     n_rows: usize,
     cube_252_state: &mut cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
+    range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -600,9 +599,9 @@ fn write_trace_simd(
                 let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_13 =
                     combination_tmp_44f04_2;
 
-                *sub_component_inputs.range_check_felt_252_width_27[0] =
+                *sub_component_inputs.range_check_252_width_27[0] =
                     linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_13;
-                *lookup_data.range_check_felt_252_width_27_0 = [
+                *lookup_data.range_check_252_width_27_0 = [
                     combination_limb_0_col82,
                     combination_limb_1_col83,
                     combination_limb_2_col84,
@@ -922,9 +921,9 @@ fn write_trace_simd(
                 let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_48 =
                     combination_tmp_44f04_37;
 
-                *sub_component_inputs.range_check_felt_252_width_27[1] =
+                *sub_component_inputs.range_check_252_width_27[1] =
                     linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_48;
-                *lookup_data.range_check_felt_252_width_27_1 = [
+                *lookup_data.range_check_252_width_27_1 = [
                     combination_limb_0_col114,
                     combination_limb_1_col115,
                     combination_limb_2_col116,
@@ -1245,9 +1244,9 @@ fn write_trace_simd(
                 let linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_83 =
                     combination_tmp_44f04_72;
 
-                *sub_component_inputs.range_check_felt_252_width_27[2] =
+                *sub_component_inputs.range_check_252_width_27[2] =
                     linear_combination_n_6_coefs_4_2_3_1_m1_1_output_tmp_44f04_83;
-                *lookup_data.range_check_felt_252_width_27_2 = [
+                *lookup_data.range_check_252_width_27_2 = [
                     combination_limb_0_col146,
                     combination_limb_1_col147,
                     combination_limb_2_col148,
@@ -1443,9 +1442,9 @@ struct LookupData {
     poseidon_3_partial_rounds_chain_0: Vec<[PackedM31; 42]>,
     poseidon_3_partial_rounds_chain_1: Vec<[PackedM31; 42]>,
     poseidon_round_keys_0: Vec<[PackedM31; 31]>,
-    range_check_felt_252_width_27_0: Vec<[PackedM31; 10]>,
-    range_check_felt_252_width_27_1: Vec<[PackedM31; 10]>,
-    range_check_felt_252_width_27_2: Vec<[PackedM31; 10]>,
+    range_check_252_width_27_0: Vec<[PackedM31; 10]>,
+    range_check_252_width_27_1: Vec<[PackedM31; 10]>,
+    range_check_252_width_27_2: Vec<[PackedM31; 10]>,
     range_check_4_4_0: Vec<[PackedM31; 2]>,
     range_check_4_4_1: Vec<[PackedM31; 2]>,
     range_check_4_4_2: Vec<[PackedM31; 2]>,
@@ -1470,7 +1469,7 @@ impl InteractionClaimGenerator {
         cube_252: &relations::Cube252,
         range_check_4_4_4_4: &relations::RangeCheck_4_4_4_4,
         range_check_4_4: &relations::RangeCheck_4_4,
-        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
+        range_check_252_width_27: &relations::RangeCheck252Width27,
         poseidon_3_partial_rounds_chain: &relations::Poseidon3PartialRoundsChain,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
@@ -1509,12 +1508,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_4_4_0,
-            &self.lookup_data.range_check_felt_252_width_27_0,
+            &self.lookup_data.range_check_252_width_27_0,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = range_check_4_4.combine(values0);
-                let denom1: PackedQM31 = range_check_felt_252_width_27.combine(values1);
+                let denom1: PackedQM31 = range_check_252_width_27.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -1550,12 +1549,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_felt_252_width_27_1,
+            &self.lookup_data.range_check_252_width_27_1,
             &self.lookup_data.cube_252_2,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_felt_252_width_27.combine(values0);
+                let denom0: PackedQM31 = range_check_252_width_27.combine(values0);
                 let denom1: PackedQM31 = cube_252.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
@@ -1579,12 +1578,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.range_check_4_4_2,
-            &self.lookup_data.range_check_felt_252_width_27_2,
+            &self.lookup_data.range_check_252_width_27_2,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = range_check_4_4.combine(values0);
-                let denom1: PackedQM31 = range_check_felt_252_width_27.combine(values1);
+                let denom1: PackedQM31 = range_check_252_width_27.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

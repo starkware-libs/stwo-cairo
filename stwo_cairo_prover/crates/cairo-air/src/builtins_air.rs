@@ -294,8 +294,8 @@ impl BuiltinComponents {
                         .range_checks
                         .rc_4_4_4_4
                         .clone(),
-                    range_check_felt_252_width_27_lookup_elements: interaction_elements
-                        .range_check_felt_252_width_27
+                    range_check_252_width_27_lookup_elements: interaction_elements
+                        .range_check_252_width_27
                         .clone(),
                 },
                 interaction_claim.poseidon_builtin.unwrap().claimed_sum,

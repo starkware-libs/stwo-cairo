@@ -239,14 +239,14 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         poseidon_full_round_chain,
         cube_252,
         poseidon_round_keys,
-        range_check_felt_252_width_27,
+        range_check_252_width_27,
     }) = &poseidon_context.components
     {
         assert_component(poseidon_3_partial_rounds_chain, &trace);
         assert_component(poseidon_full_round_chain, &trace);
         assert_component(cube_252, &trace);
         assert_component(poseidon_round_keys, &trace);
-        assert_component(range_check_felt_252_width_27, &trace);
+        assert_component(range_check_252_width_27, &trace);
     }
 }
 

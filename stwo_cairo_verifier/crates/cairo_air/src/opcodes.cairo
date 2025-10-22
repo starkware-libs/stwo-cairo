@@ -5,12 +5,12 @@ use components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteract
 use components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
 use components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
 use components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
-use components::call_opcode::InteractionClaimImpl as CallOpcodeInteractionClaimImpl;
+use components::call_opcode_abs::InteractionClaimImpl as CallOpcodeInteractionClaimImpl;
 use components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelInteractionClaimImpl;
 use components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
-use components::jnz_opcode::InteractionClaimImpl as JnzOpcodeInteractionClaimImpl;
+use components::jnz_opcode_non_taken::InteractionClaimImpl as JnzOpcodeInteractionClaimImpl;
 use components::jnz_opcode_taken::InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl;
-use components::jump_opcode::InteractionClaimImpl as JumpOpcodeInteractionClaimImpl;
+use components::jump_opcode_abs::InteractionClaimImpl as JumpOpcodeInteractionClaimImpl;
 use components::jump_opcode_double_deref::InteractionClaimImpl as JumpOpcodeDoubleDerefInteractionClaimImpl;
 use components::jump_opcode_rel::InteractionClaimImpl as JumpOpcodeRelInteractionClaimImpl;
 use components::jump_opcode_rel_imm::InteractionClaimImpl as JumpOpcodeRelImmInteractionClaimImpl;
@@ -45,12 +45,12 @@ pub struct OpcodeInteractionClaim {
     assert_eq_imm: Array<components::assert_eq_opcode_imm::InteractionClaim>,
     assert_eq_double_deref: Array<components::assert_eq_opcode_double_deref::InteractionClaim>,
     blake: Array<components::blake_compress_opcode::InteractionClaim>,
-    call: Array<components::call_opcode::InteractionClaim>,
+    call: Array<components::call_opcode_abs::InteractionClaim>,
     call_rel_imm: Array<components::call_opcode_rel_imm::InteractionClaim>,
     generic: Array<components::generic_opcode::InteractionClaim>,
-    jnz: Array<components::jnz_opcode::InteractionClaim>,
+    jnz: Array<components::jnz_opcode_non_taken::InteractionClaim>,
     jnz_taken: Array<components::jnz_opcode_taken::InteractionClaim>,
-    jump: Array<components::jump_opcode::InteractionClaim>,
+    jump: Array<components::jump_opcode_abs::InteractionClaim>,
     jump_double_deref: Array<components::jump_opcode_double_deref::InteractionClaim>,
     jump_rel: Array<components::jump_opcode_rel::InteractionClaim>,
     jump_rel_imm: Array<components::jump_opcode_rel_imm::InteractionClaim>,
@@ -240,12 +240,12 @@ pub struct OpcodeClaim {
     pub assert_eq_imm: Array<components::assert_eq_opcode_imm::Claim>,
     pub assert_eq_double_deref: Array<components::assert_eq_opcode_double_deref::Claim>,
     pub blake: Array<components::blake_compress_opcode::Claim>,
-    pub call: Array<components::call_opcode::Claim>,
+    pub call: Array<components::call_opcode_abs::Claim>,
     pub call_rel_imm: Array<components::call_opcode_rel_imm::Claim>,
     pub generic: Array<components::generic_opcode::Claim>,
-    pub jnz: Array<components::jnz_opcode::Claim>,
+    pub jnz: Array<components::jnz_opcode_non_taken::Claim>,
     pub jnz_taken: Array<components::jnz_opcode_taken::Claim>,
-    pub jump: Array<components::jump_opcode::Claim>,
+    pub jump: Array<components::jump_opcode_abs::Claim>,
     pub jump_double_deref: Array<components::jump_opcode_double_deref::Claim>,
     pub jump_rel: Array<components::jump_opcode_rel::Claim>,
     pub jump_rel_imm: Array<components::jump_opcode_rel_imm::Claim>,
@@ -559,12 +559,12 @@ pub struct OpcodeComponents {
     assert_eq_imm: Array<components::assert_eq_opcode_imm::Component>,
     assert_eq_double_deref: Array<components::assert_eq_opcode_double_deref::Component>,
     blake: Array<components::blake_compress_opcode::Component>,
-    call: Array<components::call_opcode::Component>,
+    call: Array<components::call_opcode_abs::Component>,
     call_rel_imm: Array<components::call_opcode_rel_imm::Component>,
     generic: Array<components::generic_opcode::Component>,
-    jnz: Array<components::jnz_opcode::Component>,
+    jnz: Array<components::jnz_opcode_non_taken::Component>,
     jnz_taken: Array<components::jnz_opcode_taken::Component>,
-    jump: Array<components::jump_opcode::Component>,
+    jump: Array<components::jump_opcode_abs::Component>,
     jump_double_deref: Array<components::jump_opcode_double_deref::Component>,
     jump_rel: Array<components::jump_opcode_rel::Component>,
     jump_rel_imm: Array<components::jump_opcode_rel_imm::Component>,
@@ -584,11 +584,11 @@ pub struct OpcodeComponents {
     assert_eq_imm: Array<components::assert_eq_opcode_imm::Component>,
     assert_eq_double_deref: Array<components::assert_eq_opcode_double_deref::Component>,
     blake: Array<components::blake_compress_opcode::Component>,
-    call: Array<components::call_opcode::Component>,
+    call: Array<components::call_opcode_abs::Component>,
     call_rel_imm: Array<components::call_opcode_rel_imm::Component>,
-    jnz: Array<components::jnz_opcode::Component>,
+    jnz: Array<components::jnz_opcode_non_taken::Component>,
     jnz_taken: Array<components::jnz_opcode_taken::Component>,
-    jump: Array<components::jump_opcode::Component>,
+    jump: Array<components::jump_opcode_abs::Component>,
     jump_double_deref: Array<components::jump_opcode_double_deref::Component>,
     jump_rel: Array<components::jump_opcode_rel::Component>,
     jump_rel_imm: Array<components::jump_opcode_rel_imm::Component>,
@@ -747,7 +747,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ) {
             call_components
                 .append(
-                    components::call_opcode::NewComponentImpl::new(
+                    components::call_opcode_abs::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );
@@ -784,7 +784,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
             jnz_components
                 .append(
-                    components::jnz_opcode::NewComponentImpl::new(
+                    components::jnz_opcode_non_taken::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );
@@ -810,7 +810,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ) {
             jump_components
                 .append(
-                    components::jump_opcode::NewComponentImpl::new(
+                    components::jump_opcode_abs::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );
@@ -1534,7 +1534,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ) {
             call_components
                 .append(
-                    components::call_opcode::NewComponentImpl::new(
+                    components::call_opcode_abs::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );
@@ -1558,7 +1558,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
             jnz_components
                 .append(
-                    components::jnz_opcode::NewComponentImpl::new(
+                    components::jnz_opcode_non_taken::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );
@@ -1584,7 +1584,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ) {
             jump_components
                 .append(
-                    components::jump_opcode::NewComponentImpl::new(
+                    components::jump_opcode_abs::NewComponentImpl::new(
                         claim, interaction_claim, interaction_elements,
                     ),
                 );

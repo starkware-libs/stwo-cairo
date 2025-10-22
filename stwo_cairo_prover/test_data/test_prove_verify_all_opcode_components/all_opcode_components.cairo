@@ -57,7 +57,7 @@ func main{
     ap+=1;
     jump_abs_double_deref();
 
-    // jump_opcode
+    // jump_opcode_abs
     // call rel 2;
     // [ap] = [ap-1] + 3;
     // ap+=1;

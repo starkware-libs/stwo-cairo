@@ -43,7 +43,7 @@ pub struct Eval {
     pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
     pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
     pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
+    pub range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -236,7 +236,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_felt_252_width_27_lookup_elements,
+            &self.range_check_252_width_27_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
@@ -266,10 +266,10 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::RANGE_CHECK_FELT_252_WIDTH_27;
+    use crate::components::constraints_regression_test_values::RANGE_CHECK_252_WIDTH_27;
 
     #[test]
-    fn range_check_felt_252_width_27_constraints_regression() {
+    fn range_check_252_width_27_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
@@ -280,8 +280,7 @@ mod tests {
             range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
             range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
             range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_felt_252_width_27_lookup_elements:
-                relations::RangeCheckFelt252Width27::dummy(),
+            range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -291,6 +290,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, RANGE_CHECK_FELT_252_WIDTH_27);
+        assert_eq!(sum, RANGE_CHECK_252_WIDTH_27);
     }
 }

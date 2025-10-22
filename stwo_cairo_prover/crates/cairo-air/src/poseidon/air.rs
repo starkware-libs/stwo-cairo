@@ -8,7 +8,7 @@ use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUse
 use crate::components::prelude::*;
 use crate::components::{
     cube_252, indented_component_display, poseidon_3_partial_rounds_chain,
-    poseidon_full_round_chain, poseidon_round_keys, range_check_felt_252_width_27,
+    poseidon_full_round_chain, poseidon_round_keys, range_check_252_width_27,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -42,7 +42,7 @@ pub struct Claim {
     pub poseidon_full_round_chain: poseidon_full_round_chain::Claim,
     pub cube_252: cube_252::Claim,
     pub poseidon_round_keys: poseidon_round_keys::Claim,
-    pub range_check_felt_252_width_27: range_check_felt_252_width_27::Claim,
+    pub range_check_252_width_27: range_check_252_width_27::Claim,
 }
 impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -50,7 +50,7 @@ impl Claim {
         self.poseidon_full_round_chain.mix_into(channel);
         self.cube_252.mix_into(channel);
         self.poseidon_round_keys.mix_into(channel);
-        self.range_check_felt_252_width_27.mix_into(channel);
+        self.range_check_252_width_27.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
@@ -59,7 +59,7 @@ impl Claim {
             self.poseidon_full_round_chain.log_sizes(),
             self.cube_252.log_sizes(),
             self.poseidon_round_keys.log_sizes(),
-            self.range_check_felt_252_width_27.log_sizes(),
+            self.range_check_252_width_27.log_sizes(),
         ]
         .into_iter();
 
@@ -72,7 +72,7 @@ impl Claim {
             poseidon_full_round_chain,
             cube_252,
             poseidon_round_keys: _,
-            range_check_felt_252_width_27,
+            range_check_252_width_27,
         } = self;
 
         // NOTE: The following components do not USE relations:
@@ -95,8 +95,8 @@ impl Claim {
         );
         accumulate_relation_uses(
             relation_uses,
-            range_check_felt_252_width_27::RELATION_USES_PER_ROW,
-            range_check_felt_252_width_27.log_size,
+            range_check_252_width_27::RELATION_USES_PER_ROW,
+            range_check_252_width_27.log_size,
         );
     }
 }
@@ -126,7 +126,7 @@ pub struct InteractionClaim {
     pub poseidon_full_round_chain: poseidon_full_round_chain::InteractionClaim,
     pub cube_252: cube_252::InteractionClaim,
     pub poseidon_round_keys: poseidon_round_keys::InteractionClaim,
-    pub range_check_felt_252_width_27: range_check_felt_252_width_27::InteractionClaim,
+    pub range_check_252_width_27: range_check_252_width_27::InteractionClaim,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -134,7 +134,7 @@ impl InteractionClaim {
         self.poseidon_full_round_chain.mix_into(channel);
         self.cube_252.mix_into(channel);
         self.poseidon_round_keys.mix_into(channel);
-        self.range_check_felt_252_width_27.mix_into(channel);
+        self.range_check_252_width_27.mix_into(channel);
     }
 
     pub fn sum(&self) -> QM31 {
@@ -143,7 +143,7 @@ impl InteractionClaim {
         sum += self.poseidon_full_round_chain.claimed_sum;
         sum += self.cube_252.claimed_sum;
         sum += self.poseidon_round_keys.claimed_sum;
-        sum += self.range_check_felt_252_width_27.claimed_sum;
+        sum += self.range_check_252_width_27.claimed_sum;
         sum
     }
 }
@@ -187,7 +187,7 @@ pub struct Components {
     pub poseidon_full_round_chain: poseidon_full_round_chain::Component,
     pub cube_252: cube_252::Component,
     pub poseidon_round_keys: poseidon_round_keys::Component,
-    pub range_check_felt_252_width_27: range_check_felt_252_width_27::Component,
+    pub range_check_252_width_27: range_check_252_width_27::Component,
 }
 impl Components {
     fn new(
@@ -220,8 +220,8 @@ impl Components {
                         .range_checks
                         .rc_4_4_4_4
                         .clone(),
-                    range_check_felt_252_width_27_lookup_elements: interaction_elements
-                        .range_check_felt_252_width_27
+                    range_check_252_width_27_lookup_elements: interaction_elements
+                        .range_check_252_width_27
                         .clone(),
                 },
                 interaction_claim
@@ -301,12 +301,12 @@ impl Components {
             },
             interaction_claim.poseidon_round_keys.claimed_sum,
         );
-        let range_check_felt_252_width_27_component = range_check_felt_252_width_27::Component::new(
+        let range_check_felt_252_width_27_component = range_check_252_width_27::Component::new(
             tree_span_provider,
-            range_check_felt_252_width_27::Eval {
-                claim: claim.claim.as_ref().unwrap().range_check_felt_252_width_27,
-                range_check_felt_252_width_27_lookup_elements: (interaction_elements
-                    .range_check_felt_252_width_27
+            range_check_252_width_27::Eval {
+                claim: claim.claim.as_ref().unwrap().range_check_252_width_27,
+                range_check_252_width_27_lookup_elements: (interaction_elements
+                    .range_check_252_width_27
                     .clone()),
                 range_check_18_lookup_elements: (interaction_elements.range_checks.rc_18.clone()),
                 range_check_18_b_lookup_elements: (interaction_elements
@@ -331,14 +331,14 @@ impl Components {
                     .rc_9_9_e
                     .clone()),
             },
-            interaction_claim.range_check_felt_252_width_27.claimed_sum,
+            interaction_claim.range_check_252_width_27.claimed_sum,
         );
         Self {
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
             poseidon_full_round_chain: poseidon_full_round_chain_component,
             cube_252: cube_252_component,
             poseidon_round_keys: poseidon_round_keys_component,
-            range_check_felt_252_width_27: range_check_felt_252_width_27_component,
+            range_check_252_width_27: range_check_felt_252_width_27_component,
         }
     }
 
@@ -348,7 +348,7 @@ impl Components {
             &self.poseidon_full_round_chain,
             &self.cube_252,
             &self.poseidon_round_keys,
-            &self.range_check_felt_252_width_27,
+            &self.range_check_252_width_27,
         ]
     }
 }
@@ -373,8 +373,8 @@ impl std::fmt::Display for Components {
         )?;
         writeln!(
             f,
-            "RangeCheckFelt252Width27: {}",
-            indented_component_display(&self.range_check_felt_252_width_27)
+            "RangeCheck252Width27: {}",
+            indented_component_display(&self.range_check_252_width_27)
         )?;
 
         Ok(())

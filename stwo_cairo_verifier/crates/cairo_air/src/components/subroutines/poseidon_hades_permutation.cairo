@@ -207,7 +207,7 @@ pub fn poseidon_hades_permutation_evaluate(
     poseidon_full_round_chain_output_limb_28_col195: QM31,
     poseidon_full_round_chain_output_limb_29_col196: QM31,
     poseidon_full_round_chain_lookup_elements: @crate::PoseidonFullRoundChainElements,
-    range_check_felt_252_width_27_lookup_elements: @crate::RangeCheckFelt252Width27Elements,
+    range_check_252_width_27_lookup_elements: @crate::RangeCheck252Width27Elements,
     cube_252_lookup_elements: @crate::Cube252Elements,
     range_check_3_3_3_3_3_lookup_elements: @crate::RangeCheck_3_3_3_3_3Elements,
     range_check_4_4_4_4_lookup_elements: @crate::RangeCheck_4_4_4_4Elements,
@@ -216,8 +216,8 @@ pub fn poseidon_hades_permutation_evaluate(
     seq: QM31,
     ref poseidon_full_round_chain_sum_0: QM31,
     ref poseidon_full_round_chain_sum_1: QM31,
-    ref range_check_felt_252_width_27_sum_2: QM31,
-    ref range_check_felt_252_width_27_sum_3: QM31,
+    ref range_check_252_width_27_sum_2: QM31,
+    ref range_check_252_width_27_sum_3: QM31,
     ref cube_252_sum_4: QM31,
     ref range_check_3_3_3_3_3_sum_5: QM31,
     ref range_check_3_3_3_3_3_sum_6: QM31,
@@ -412,7 +412,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ],
         );
 
-    range_check_felt_252_width_27_sum_2 = range_check_felt_252_width_27_lookup_elements
+    range_check_252_width_27_sum_2 = range_check_252_width_27_lookup_elements
         .combine_qm31(
             [
                 poseidon_full_round_chain_output_limb_0_col33,
@@ -428,7 +428,7 @@ pub fn poseidon_hades_permutation_evaluate(
             ],
         );
 
-    range_check_felt_252_width_27_sum_3 = range_check_felt_252_width_27_lookup_elements
+    range_check_252_width_27_sum_3 = range_check_252_width_27_lookup_elements
         .combine_qm31(
             [
                 poseidon_full_round_chain_output_limb_10_col43,

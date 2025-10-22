@@ -216,7 +216,7 @@ impl PoseidonHadesPermutation {
         poseidon_full_round_chain_output_limb_28_col195: E::F,
         poseidon_full_round_chain_output_limb_29_col196: E::F,
         poseidon_full_round_chain_lookup_elements: &relations::PoseidonFullRoundChain,
-        range_check_felt_252_width_27_lookup_elements: &relations::RangeCheckFelt252Width27,
+        range_check_252_width_27_lookup_elements: &relations::RangeCheck252Width27,
         cube_252_lookup_elements: &relations::Cube252,
         range_check_3_3_3_3_3_lookup_elements: &relations::RangeCheck_3_3_3_3_3,
         range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
@@ -491,7 +491,7 @@ impl PoseidonHadesPermutation {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_felt_252_width_27_lookup_elements,
+            range_check_252_width_27_lookup_elements,
             E::EF::one(),
             &[
                 poseidon_full_round_chain_output_limb_0_col33.clone(),
@@ -508,7 +508,7 @@ impl PoseidonHadesPermutation {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_felt_252_width_27_lookup_elements,
+            range_check_252_width_27_lookup_elements,
             E::EF::one(),
             &[
                 poseidon_full_round_chain_output_limb_10_col43.clone(),

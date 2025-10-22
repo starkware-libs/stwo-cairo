@@ -209,11 +209,10 @@ impl BuiltinsClaimGenerator {
                     &mut poseidon_context_trace_generator
                         .poseidon_3_partial_rounds_chain_trace_generator,
                     &mut poseidon_context_trace_generator.poseidon_full_round_chain_trace_generator,
+                    &mut poseidon_context_trace_generator.range_check_252_width_27_trace_generator,
                     range_check_3_3_3_3_3_trace_generator,
                     range_check_4_4_trace_generator,
                     range_check_4_4_4_4_trace_generator,
-                    &mut poseidon_context_trace_generator
-                        .range_check_felt_252_width_27_trace_generator,
                 )
             })
             .unzip();
@@ -332,7 +331,7 @@ impl BuiltinsInteractionClaimGenerator {
                         &interaction_elements.memory_address_to_id,
                         &interaction_elements.memory_id_to_value,
                         &interaction_elements.poseidon_full_round_chain,
-                        &interaction_elements.range_check_felt_252_width_27,
+                        &interaction_elements.range_check_252_width_27,
                         &interaction_elements.cube_252,
                         &interaction_elements.range_checks.rc_3_3_3_3_3,
                         &interaction_elements.range_checks.rc_4_4_4_4,

@@ -5,8 +5,8 @@ use cairo_air::components::poseidon_builtin::{Claim, InteractionClaim, N_TRACE_C
 
 use crate::witness::components::{
     cube_252, memory_address_to_id, memory_id_to_big, poseidon_3_partial_rounds_chain,
-    poseidon_full_round_chain, range_check_3_3_3_3_3, range_check_4_4, range_check_4_4_4_4,
-    range_check_felt_252_width_27,
+    poseidon_full_round_chain, range_check_252_width_27, range_check_3_3_3_3_3, range_check_4_4,
+    range_check_4_4_4_4,
 };
 use crate::witness::prelude::*;
 
@@ -32,10 +32,10 @@ impl ClaimGenerator {
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
         poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
+        range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
         range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-        range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
@@ -47,10 +47,10 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             poseidon_3_partial_rounds_chain_state,
             poseidon_full_round_chain_state,
+            range_check_252_width_27_state,
             range_check_3_3_3_3_3_state,
             range_check_4_4_state,
             range_check_4_4_4_4_state,
-            range_check_felt_252_width_27_state,
         );
         sub_component_inputs
             .memory_address_to_id
@@ -71,10 +71,10 @@ impl ClaimGenerator {
                 poseidon_full_round_chain_state.add_packed_inputs(inputs);
             });
         sub_component_inputs
-            .range_check_felt_252_width_27
+            .range_check_252_width_27
             .iter()
             .for_each(|inputs| {
-                range_check_felt_252_width_27_state.add_packed_inputs(inputs);
+                range_check_252_width_27_state.add_packed_inputs(inputs);
             });
         sub_component_inputs.cube_252.iter().for_each(|inputs| {
             cube_252_state.add_packed_inputs(inputs);
@@ -123,7 +123,7 @@ struct SubComponentInputs {
     memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 6],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 6],
     poseidon_full_round_chain: [Vec<poseidon_full_round_chain::PackedInputType>; 8],
-    range_check_felt_252_width_27: [Vec<range_check_felt_252_width_27::PackedInputType>; 2],
+    range_check_252_width_27: [Vec<range_check_252_width_27::PackedInputType>; 2],
     cube_252: [Vec<cube_252::PackedInputType>; 2],
     range_check_3_3_3_3_3: [Vec<range_check_3_3_3_3_3::PackedInputType>; 2],
     range_check_4_4_4_4: [Vec<range_check_4_4_4_4::PackedInputType>; 6],
@@ -143,10 +143,10 @@ fn write_trace_simd(
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
     poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
+    range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
     range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
-    range_check_felt_252_width_27_state: &mut range_check_felt_252_width_27::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -555,11 +555,11 @@ fn write_trace_simd(
             *row[146] = poseidon_full_round_chain_output_limb_26_col146;let poseidon_full_round_chain_output_limb_27_col147 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(7);
             *row[147] = poseidon_full_round_chain_output_limb_27_col147;let poseidon_full_round_chain_output_limb_28_col148 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(8);
             *row[148] = poseidon_full_round_chain_output_limb_28_col148;let poseidon_full_round_chain_output_limb_29_col149 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(9);
-            *row[149] = poseidon_full_round_chain_output_limb_29_col149;*lookup_data.poseidon_full_round_chain_1 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_4, poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129, poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139, poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149];*sub_component_inputs.range_check_felt_252_width_27[0] =
+            *row[149] = poseidon_full_round_chain_output_limb_29_col149;*lookup_data.poseidon_full_round_chain_1 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_4, poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129, poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139, poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149];*sub_component_inputs.range_check_252_width_27[0] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[0];
-            *lookup_data.range_check_felt_252_width_27_0 = [poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129];*sub_component_inputs.range_check_felt_252_width_27[1] =
+            *lookup_data.range_check_252_width_27_0 = [poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129];*sub_component_inputs.range_check_252_width_27[1] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[1];
-            *lookup_data.range_check_felt_252_width_27_1 = [poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139];*sub_component_inputs.cube_252[0] =
+            *lookup_data.range_check_252_width_27_1 = [poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139];*sub_component_inputs.cube_252[0] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2];
             let cube_252_output_tmp_51986_86 = PackedCube252::deduce_output(poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2]);let cube_252_output_limb_0_col150 = cube_252_output_tmp_51986_86.get_m31(0);
             *row[150] = cube_252_output_limb_0_col150;let cube_252_output_limb_1_col151 = cube_252_output_tmp_51986_86.get_m31(1);
@@ -936,8 +936,8 @@ struct LookupData {
     poseidon_full_round_chain_1: Vec<[PackedM31; 32]>,
     poseidon_full_round_chain_2: Vec<[PackedM31; 32]>,
     poseidon_full_round_chain_3: Vec<[PackedM31; 32]>,
-    range_check_felt_252_width_27_0: Vec<[PackedM31; 10]>,
-    range_check_felt_252_width_27_1: Vec<[PackedM31; 10]>,
+    range_check_252_width_27_0: Vec<[PackedM31; 10]>,
+    range_check_252_width_27_1: Vec<[PackedM31; 10]>,
     range_check_3_3_3_3_3_0: Vec<[PackedM31; 5]>,
     range_check_3_3_3_3_3_1: Vec<[PackedM31; 5]>,
     range_check_4_4_0: Vec<[PackedM31; 2]>,
@@ -962,7 +962,7 @@ impl InteractionClaimGenerator {
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
         poseidon_full_round_chain: &relations::PoseidonFullRoundChain,
-        range_check_felt_252_width_27: &relations::RangeCheckFelt252Width27,
+        range_check_252_width_27: &relations::RangeCheck252Width27,
         cube_252: &relations::Cube252,
         range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
         range_check_4_4_4_4: &relations::RangeCheck_4_4_4_4,
@@ -1031,13 +1031,13 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_felt_252_width_27_0,
-            &self.lookup_data.range_check_felt_252_width_27_1,
+            &self.lookup_data.range_check_252_width_27_0,
+            &self.lookup_data.range_check_252_width_27_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_felt_252_width_27.combine(values0);
-                let denom1: PackedQM31 = range_check_felt_252_width_27.combine(values1);
+                let denom0: PackedQM31 = range_check_252_width_27.combine(values0);
+                let denom1: PackedQM31 = range_check_252_width_27.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

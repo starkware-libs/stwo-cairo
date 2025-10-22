@@ -55,7 +55,7 @@ pub struct Component {
     pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
     pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
     pub range_check_9_9_e_lookup_elements: crate::RangeCheck_9_9_EElements,
-    pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
+    pub range_check_252_width_27_lookup_elements: crate::RangeCheck252Width27Elements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -77,8 +77,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
             range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
             range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
             range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_felt_252_width_27_lookup_elements: interaction_elements
-                .range_check_felt_252_width_27
+            range_check_252_width_27_lookup_elements: interaction_elements
+                .range_check_252_width_27
                 .clone(),
         }
     }
@@ -181,7 +181,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_18_sum_11: QM31 = Zero::zero();
         let mut range_check_9_9_e_sum_12: QM31 = Zero::zero();
         let mut range_check_18_sum_13: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_14: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_14: QM31 = Zero::zero();
 
         let [
             input_limb_0_col0,
@@ -318,8 +318,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 [(input_limb_8_col8 - (limb_8_high_part_col18 * qm31_const::<262144, 0, 0, 0>()))],
             );
 
-        range_check_felt_252_width_27_sum_14 = self
-            .range_check_felt_252_width_27_lookup_elements
+        range_check_252_width_27_sum_14 = self
+            .range_check_252_width_27_lookup_elements
             .combine_qm31(
                 [
                     input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
@@ -350,7 +350,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_18_sum_11,
             range_check_9_9_e_sum_12,
             range_check_18_sum_13,
-            range_check_felt_252_width_27_sum_14,
+            range_check_252_width_27_sum_14,
         );
     }
 }
@@ -378,7 +378,7 @@ fn lookup_constraints(
     range_check_18_sum_11: QM31,
     range_check_9_9_e_sum_12: QM31,
     range_check_18_sum_13: QM31,
-    range_check_felt_252_width_27_sum_14: QM31,
+    range_check_252_width_27_sum_14: QM31,
 ) {
     let [
         trace_2_col0,
@@ -548,7 +548,7 @@ fn lookup_constraints(
             [trace_2_col28_neg1, trace_2_col29_neg1, trace_2_col30_neg1, trace_2_col31_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * range_check_felt_252_width_27_sum_14)
+        * range_check_252_width_27_sum_14)
         + enabler)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
