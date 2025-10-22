@@ -29,7 +29,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 9] = [
         uses: 2,
     },
     RelationUse {
-        relation_id: "RangeCheckFelt252Width27",
+        relation_id: "RangeCheck252Width27",
         uses: 2,
     },
     RelationUse {
@@ -51,7 +51,7 @@ pub struct Eval {
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
     pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
     pub poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain,
-    pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
+    pub range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27,
     pub cube_252_lookup_elements: relations::Cube252,
     pub range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3,
     pub range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4,
@@ -935,7 +935,7 @@ impl FrameworkEval for Eval {
             poseidon_full_round_chain_output_limb_28_col282.clone(),
             poseidon_full_round_chain_output_limb_29_col283.clone(),
             &self.poseidon_full_round_chain_lookup_elements,
-            &self.range_check_felt_252_width_27_lookup_elements,
+            &self.range_check_252_width_27_lookup_elements,
             &self.cube_252_lookup_elements,
             &self.range_check_3_3_3_3_3_lookup_elements,
             &self.range_check_4_4_4_4_lookup_elements,
@@ -1196,8 +1196,7 @@ mod tests {
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
             memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
             poseidon_full_round_chain_lookup_elements: relations::PoseidonFullRoundChain::dummy(),
-            range_check_felt_252_width_27_lookup_elements:
-                relations::RangeCheckFelt252Width27::dummy(),
+            range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27::dummy(),
             cube_252_lookup_elements: relations::Cube252::dummy(),
             range_check_3_3_3_3_3_lookup_elements: relations::RangeCheck_3_3_3_3_3::dummy(),
             range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),

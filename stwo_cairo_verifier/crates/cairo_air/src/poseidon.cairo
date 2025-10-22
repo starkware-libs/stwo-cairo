@@ -4,7 +4,7 @@ use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseido
 use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
 use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
 use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
-use components::range_check_felt_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
+use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -34,7 +34,7 @@ pub struct PoseidonClaim {
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::Claim,
     pub cube_252: components::cube_252::Claim,
     pub poseidon_round_keys: components::poseidon_round_keys::Claim,
-    pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Claim,
+    pub range_check_252_width_27: components::range_check_252_width_27::Claim,
 }
 
 pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
@@ -43,7 +43,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
         self.poseidon_full_round_chain.mix_into(ref channel);
         self.cube_252.mix_into(ref channel);
         self.poseidon_round_keys.mix_into(ref channel);
-        self.range_check_felt_252_width_27.mix_into(ref channel);
+        self.range_check_252_width_27.mix_into(ref channel);
     }
 
     fn log_sizes(self: @PoseidonClaim) -> TreeArray<Span<u32>> {
@@ -51,8 +51,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
             array![
                 self.poseidon_3_partial_rounds_chain.log_sizes(),
                 self.poseidon_full_round_chain.log_sizes(), self.cube_252.log_sizes(),
-                self.poseidon_round_keys.log_sizes(),
-                self.range_check_felt_252_width_27.log_sizes(),
+                self.poseidon_round_keys.log_sizes(), self.range_check_252_width_27.log_sizes(),
             ],
         )
     }
@@ -63,7 +62,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
             poseidon_full_round_chain,
             cube_252,
             poseidon_round_keys: _,
-            range_check_felt_252_width_27,
+            range_check_252_width_27,
         } = self;
 
         // NOTE: The following components do not USE relations:
@@ -71,7 +70,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
         poseidon_3_partial_rounds_chain.accumulate_relation_uses(ref relation_uses);
         poseidon_full_round_chain.accumulate_relation_uses(ref relation_uses);
         cube_252.accumulate_relation_uses(ref relation_uses);
-        range_check_felt_252_width_27.accumulate_relation_uses(ref relation_uses);
+        range_check_252_width_27.accumulate_relation_uses(ref relation_uses);
     }
 }
 
@@ -81,7 +80,7 @@ pub struct PoseidonInteractionClaim {
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::InteractionClaim,
     pub cube_252: components::cube_252::InteractionClaim,
     pub poseidon_round_keys: components::poseidon_round_keys::InteractionClaim,
-    pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::InteractionClaim,
+    pub range_check_252_width_27: components::range_check_252_width_27::InteractionClaim,
 }
 
 #[generate_trait]
@@ -91,7 +90,7 @@ pub impl PoseidonInteractionClaimImpl of PoseidonInteractionClaimTrait {
         self.poseidon_full_round_chain.mix_into(ref channel);
         self.cube_252.mix_into(ref channel);
         self.poseidon_round_keys.mix_into(ref channel);
-        self.range_check_felt_252_width_27.mix_into(ref channel);
+        self.range_check_252_width_27.mix_into(ref channel);
     }
 
     fn sum(self: @PoseidonInteractionClaim) -> QM31 {
@@ -100,7 +99,7 @@ pub impl PoseidonInteractionClaimImpl of PoseidonInteractionClaimTrait {
         sum += *self.poseidon_full_round_chain.claimed_sum;
         sum += *self.cube_252.claimed_sum;
         sum += *self.poseidon_round_keys.claimed_sum;
-        sum += *self.range_check_felt_252_width_27.claimed_sum;
+        sum += *self.range_check_252_width_27.claimed_sum;
         sum
     }
 }
@@ -240,7 +239,7 @@ pub struct PoseidonComponents {
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::Component,
     pub cube_252: components::cube_252::Component,
     pub poseidon_round_keys: components::poseidon_round_keys::Component,
-    pub range_check_felt_252_width_27: components::range_check_felt_252_width_27::Component,
+    pub range_check_252_width_27: components::range_check_252_width_27::Component,
 }
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -274,9 +273,9 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         );
 
         let range_check_felt_252_width_27_component =
-            components::range_check_felt_252_width_27::NewComponentImpl::new(
-            claim.range_check_felt_252_width_27,
-            interaction_claim.range_check_felt_252_width_27,
+            components::range_check_252_width_27::NewComponentImpl::new(
+            claim.range_check_252_width_27,
+            interaction_claim.range_check_252_width_27,
             interaction_elements,
         );
 
@@ -285,7 +284,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             poseidon_full_round_chain: poseidon_full_round_chain_component,
             cube_252: cube_252_component,
             poseidon_round_keys: poseidon_round_keys_component,
-            range_check_felt_252_width_27: range_check_felt_252_width_27_component,
+            range_check_252_width_27: range_check_felt_252_width_27_component,
         }
     }
 
@@ -329,7 +328,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 point,
             );
         self
-            .range_check_felt_252_width_27
+            .range_check_252_width_27
             .mask_points(
                 ref preprocessed_column_set,
                 ref trace_mask_points,
@@ -388,7 +387,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 point,
             );
         self
-            .range_check_felt_252_width_27
+            .range_check_252_width_27
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
@@ -414,7 +413,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             core::cmp::max(max_degree, self.poseidon_round_keys.max_constraint_log_degree_bound());
         max_degree =
             core::cmp::max(
-                max_degree, self.range_check_felt_252_width_27.max_constraint_log_degree_bound(),
+                max_degree, self.range_check_252_width_27.max_constraint_log_degree_bound(),
             );
         max_degree
     }

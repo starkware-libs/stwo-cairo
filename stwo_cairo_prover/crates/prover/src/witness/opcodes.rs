@@ -7,10 +7,11 @@ use super::blake_context::BlakeContextClaimGenerator;
 use super::range_checks::RangeChecksClaimGenerator;
 use crate::witness::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_rel_imm, generic_opcode,
-    jnz_opcode, jnz_opcode_taken, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
-    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_small,
-    qm_31_add_mul_opcode, ret_opcode, verify_bitwise_xor_8, verify_instruction,
+    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
+    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
+    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
+    memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
+    verify_bitwise_xor_8, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -22,12 +23,12 @@ pub struct OpcodesClaimGenerator {
     assert_eq_imm: Vec<assert_eq_opcode_imm::ClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::ClaimGenerator>,
     blake: Vec<blake_compress_opcode::ClaimGenerator>,
-    call: Vec<call_opcode::ClaimGenerator>,
+    call: Vec<call_opcode_abs::ClaimGenerator>,
     call_rel_imm: Vec<call_opcode_rel_imm::ClaimGenerator>,
     generic: Vec<generic_opcode::ClaimGenerator>,
-    jnz: Vec<jnz_opcode::ClaimGenerator>,
+    jnz: Vec<jnz_opcode_non_taken::ClaimGenerator>,
     jnz_taken: Vec<jnz_opcode_taken::ClaimGenerator>,
-    jump: Vec<jump_opcode::ClaimGenerator>,
+    jump: Vec<jump_opcode_abs::ClaimGenerator>,
     jump_double_deref: Vec<jump_opcode_double_deref::ClaimGenerator>,
     jump_rel: Vec<jump_opcode_rel::ClaimGenerator>,
     jump_rel_imm: Vec<jump_opcode_rel_imm::ClaimGenerator>,
@@ -98,9 +99,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.blake_compress_opcode,
             ));
         }
-        if !input.casm_states_by_opcode.call_opcode.is_empty() {
-            call.push(call_opcode::ClaimGenerator::new(
-                input.casm_states_by_opcode.call_opcode,
+        if !input.casm_states_by_opcode.call_opcode_abs.is_empty() {
+            call.push(call_opcode_abs::ClaimGenerator::new(
+                input.casm_states_by_opcode.call_opcode_abs,
             ));
         }
         if !input.casm_states_by_opcode.call_opcode_rel_imm.is_empty() {
@@ -113,9 +114,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.generic_opcode,
             ));
         }
-        if !input.casm_states_by_opcode.jnz_opcode.is_empty() {
-            jnz.push(jnz_opcode::ClaimGenerator::new(
-                input.casm_states_by_opcode.jnz_opcode,
+        if !input.casm_states_by_opcode.jnz_opcode_non_taken.is_empty() {
+            jnz.push(jnz_opcode_non_taken::ClaimGenerator::new(
+                input.casm_states_by_opcode.jnz_opcode_non_taken,
             ));
         }
         if !input.casm_states_by_opcode.jnz_opcode_taken.is_empty() {
@@ -123,9 +124,9 @@ impl OpcodesClaimGenerator {
                 input.casm_states_by_opcode.jnz_opcode_taken,
             ));
         }
-        if !input.casm_states_by_opcode.jump_opcode.is_empty() {
-            jump.push(jump_opcode::ClaimGenerator::new(
-                input.casm_states_by_opcode.jump_opcode,
+        if !input.casm_states_by_opcode.jump_opcode_abs.is_empty() {
+            jump.push(jump_opcode_abs::ClaimGenerator::new(
+                input.casm_states_by_opcode.jump_opcode_abs,
             ));
         }
         if !input
@@ -533,12 +534,12 @@ pub struct OpcodesInteractionClaimGenerator {
     assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
     assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
     blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
-    call: Vec<call_opcode::InteractionClaimGenerator>,
+    call: Vec<call_opcode_abs::InteractionClaimGenerator>,
     call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaimGenerator>,
     generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
-    jnz: Vec<jnz_opcode::InteractionClaimGenerator>,
+    jnz: Vec<jnz_opcode_non_taken::InteractionClaimGenerator>,
     jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
-    jump: Vec<jump_opcode::InteractionClaimGenerator>,
+    jump: Vec<jump_opcode_abs::InteractionClaimGenerator>,
     jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
     jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
     jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
