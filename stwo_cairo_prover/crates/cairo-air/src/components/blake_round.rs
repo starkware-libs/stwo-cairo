@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::read_blake_word::ReadBlakeWord;
+use crate::components::subroutines::read_u_32::ReadU32;
 
 pub const N_TRACE_COLUMNS: usize = 212;
 pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
@@ -322,7 +322,7 @@ impl FrameworkEval for Eval {
             ],
         ));
 
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_0_col35.clone())],
             low_16_bits_col51.clone(),
             high_16_bits_col52.clone(),
@@ -335,7 +335,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_1_col36.clone())],
             low_16_bits_col57.clone(),
             high_16_bits_col58.clone(),
@@ -348,7 +348,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_2_col37.clone())],
             low_16_bits_col63.clone(),
             high_16_bits_col64.clone(),
@@ -361,7 +361,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_3_col38.clone())],
             low_16_bits_col69.clone(),
             high_16_bits_col70.clone(),
@@ -374,7 +374,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_4_col39.clone())],
             low_16_bits_col75.clone(),
             high_16_bits_col76.clone(),
@@ -387,7 +387,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_5_col40.clone())],
             low_16_bits_col81.clone(),
             high_16_bits_col82.clone(),
@@ -400,7 +400,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_6_col41.clone())],
             low_16_bits_col87.clone(),
             high_16_bits_col88.clone(),
@@ -413,7 +413,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_7_col42.clone())],
             low_16_bits_col93.clone(),
             high_16_bits_col94.clone(),
@@ -426,7 +426,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_8_col43.clone())],
             low_16_bits_col99.clone(),
             high_16_bits_col100.clone(),
@@ -439,7 +439,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_9_col44.clone())],
             low_16_bits_col105.clone(),
             high_16_bits_col106.clone(),
@@ -452,7 +452,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_10_col45.clone())],
             low_16_bits_col111.clone(),
             high_16_bits_col112.clone(),
@@ -465,7 +465,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_11_col46.clone())],
             low_16_bits_col117.clone(),
             high_16_bits_col118.clone(),
@@ -478,7 +478,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_12_col47.clone())],
             low_16_bits_col123.clone(),
             high_16_bits_col124.clone(),
@@ -491,7 +491,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_13_col48.clone())],
             low_16_bits_col129.clone(),
             high_16_bits_col130.clone(),
@@ -504,7 +504,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_14_col49.clone())],
             low_16_bits_col135.clone(),
             high_16_bits_col136.clone(),
@@ -517,7 +517,7 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(input_limb_34_col34.clone() + blake_round_sigma_output_limb_15_col50.clone())],
             low_16_bits_col141.clone(),
             high_16_bits_col142.clone(),

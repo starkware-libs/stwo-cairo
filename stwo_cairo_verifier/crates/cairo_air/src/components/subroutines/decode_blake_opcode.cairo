@@ -1,8 +1,8 @@
 // This file was created by the AIR team.
 
 use crate::components::subroutines::decode_instruction_472fe::decode_instruction_472fe_evaluate;
-use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
 use crate::components::subroutines::read_positive_num_bits_29::read_positive_num_bits_29_evaluate;
+use crate::components::subroutines::read_u_32::read_u_32_evaluate;
 use crate::prelude::*;
 
 
@@ -161,7 +161,7 @@ pub fn decode_blake_opcode_evaluate(
             + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3) * decode_blake_opcode_input_ap))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (mem_dst_base_col28 + decode_instruction_472fe_output_tmp_47e62_9_offset0),
         low_16_bits_col29,
         high_16_bits_col30,
