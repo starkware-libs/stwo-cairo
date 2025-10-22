@@ -6,7 +6,7 @@ use tracing::{span, Level};
 
 use crate::witness::components::{
     cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
-    range_check_felt_252_width_27,
+    range_check_252_width_27,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
@@ -18,8 +18,7 @@ pub struct PoseidonContextClaimGenerator {
     pub poseidon_full_round_chain_trace_generator: poseidon_full_round_chain::ClaimGenerator,
     pub cube_252_trace_generator: cube_252::ClaimGenerator,
     pub poseidon_round_keys_trace_generator: poseidon_round_keys::ClaimGenerator,
-    pub range_check_felt_252_width_27_trace_generator:
-        range_check_felt_252_width_27::ClaimGenerator,
+    pub range_check_252_width_27_trace_generator: range_check_252_width_27::ClaimGenerator,
 }
 impl Default for PoseidonContextClaimGenerator {
     fn default() -> Self {
@@ -35,15 +34,15 @@ impl PoseidonContextClaimGenerator {
             poseidon_full_round_chain::ClaimGenerator::new();
         let cube_252_trace_generator = cube_252::ClaimGenerator::new();
         let poseidon_round_keys_trace_generator = poseidon_round_keys::ClaimGenerator::new();
-        let range_check_felt_252_width_27_trace_generator =
-            range_check_felt_252_width_27::ClaimGenerator::new();
+        let range_check_252_width_27_trace_generator =
+            range_check_252_width_27::ClaimGenerator::new();
 
         Self {
             poseidon_3_partial_rounds_chain_trace_generator,
             poseidon_full_round_chain_trace_generator,
             cube_252_trace_generator,
             poseidon_round_keys_trace_generator,
-            range_check_felt_252_width_27_trace_generator,
+            range_check_252_width_27_trace_generator,
         }
     }
 
@@ -74,9 +73,9 @@ impl PoseidonContextClaimGenerator {
                 tree_builder,
                 &mut self.cube_252_trace_generator,
                 &self.poseidon_round_keys_trace_generator,
+                &mut self.range_check_252_width_27_trace_generator,
                 &range_checks_trace_generator.rc_4_4_trace_generator,
                 &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
-                &mut self.range_check_felt_252_width_27_trace_generator,
             );
         let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) =
             self.poseidon_full_round_chain_trace_generator.write_trace(
@@ -108,17 +107,16 @@ impl PoseidonContextClaimGenerator {
             .poseidon_round_keys_trace_generator
             .write_trace(tree_builder);
         let (range_check_felt_252_width_27_claim, range_check_felt_252_width_27_interaction_gen) =
-            self.range_check_felt_252_width_27_trace_generator
-                .write_trace(
-                    tree_builder,
-                    &range_checks_trace_generator.rc_18_trace_generator,
-                    &range_checks_trace_generator.rc_18_b_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_b_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_c_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_d_trace_generator,
-                    &range_checks_trace_generator.rc_9_9_e_trace_generator,
-                );
+            self.range_check_252_width_27_trace_generator.write_trace(
+                tree_builder,
+                &range_checks_trace_generator.rc_18_trace_generator,
+                &range_checks_trace_generator.rc_18_b_trace_generator,
+                &range_checks_trace_generator.rc_9_9_trace_generator,
+                &range_checks_trace_generator.rc_9_9_b_trace_generator,
+                &range_checks_trace_generator.rc_9_9_c_trace_generator,
+                &range_checks_trace_generator.rc_9_9_d_trace_generator,
+                &range_checks_trace_generator.rc_9_9_e_trace_generator,
+            );
         span.exit();
 
         let claim = Some(Claim {
@@ -126,7 +124,7 @@ impl PoseidonContextClaimGenerator {
             poseidon_full_round_chain: poseidon_full_round_chain_claim,
             cube_252: cube_252_claim,
             poseidon_round_keys: poseidon_round_keys_claim,
-            range_check_felt_252_width_27: range_check_felt_252_width_27_claim,
+            range_check_252_width_27: range_check_felt_252_width_27_claim,
         });
         let gen = Some(InteractionClaimGenerator {
             poseidon_3_partial_rounds_chain_interaction_gen,
@@ -166,7 +164,7 @@ struct InteractionClaimGenerator {
     cube_252_interaction_gen: cube_252::InteractionClaimGenerator,
     poseidon_round_keys_interaction_gen: poseidon_round_keys::InteractionClaimGenerator,
     range_check_felt_252_width_27_interaction_gen:
-        range_check_felt_252_width_27::InteractionClaimGenerator,
+        range_check_252_width_27::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
@@ -182,7 +180,7 @@ impl InteractionClaimGenerator {
                 &interaction_elements.cube_252,
                 &interaction_elements.range_checks.rc_4_4_4_4,
                 &interaction_elements.range_checks.rc_4_4,
-                &interaction_elements.range_check_felt_252_width_27,
+                &interaction_elements.range_check_252_width_27,
                 &interaction_elements.poseidon_3_partial_rounds_chain,
             );
         let poseidon_full_round_chain_interaction_claim = self
@@ -228,7 +226,7 @@ impl InteractionClaimGenerator {
                 &interaction_elements.range_checks.rc_9_9_c,
                 &interaction_elements.range_checks.rc_9_9_d,
                 &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_check_felt_252_width_27,
+                &interaction_elements.range_check_252_width_27,
             );
 
         InteractionClaim {
@@ -236,7 +234,7 @@ impl InteractionClaimGenerator {
             poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
             cube_252: cube_252_interaction_claim,
             poseidon_round_keys: poseidon_round_keys_interaction_claim,
-            range_check_felt_252_width_27: range_check_felt_252_width_27_interaction_claim,
+            range_check_252_width_27: range_check_felt_252_width_27_interaction_claim,
         }
     }
 }

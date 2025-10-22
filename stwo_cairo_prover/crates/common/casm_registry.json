@@ -1,5 +1,5 @@
 {
-  "air_version": "fb65c13c",
+  "air_version": "ad63661b",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -741,7 +741,7 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_felt_252_width_27": {
+    "range_check_252_width_27": {
       "trace_type": "Component",
       "num_state_cols": 19,
       "use_lookup_cols": {
@@ -754,7 +754,7 @@
         "RangeCheck_9_9_E": 1
       },
       "yield_lookup_cols": {
-        "RangeCheckFelt252Width27": 1
+        "RangeCheck252Width27": 1
       },
       "lookup_rows": {
         "range_check_9_9": 1,
@@ -821,7 +821,7 @@
         "Cube252": 3,
         "RangeCheck_4_4_4_4": 6,
         "RangeCheck_4_4": 3,
-        "RangeCheckFelt252Width27": 3,
+        "RangeCheck252Width27": 3,
         "Poseidon3PartialRoundsChain": 1
       },
       "yield_lookup_cols": {
@@ -832,7 +832,7 @@
         "cube_252": 3,
         "range_check_4_4_4_4": 6,
         "range_check_4_4": 3,
-        "range_check_felt_252_width_27": 3
+        "range_check_252_width_27": 3
       },
       "padding_type": "Enabler",
       "total_num_trace_cols": 205,
@@ -862,7 +862,7 @@
       },
       "rows_upper_bound": {
         "cube_252": 3,
-        "range_check_felt_252_width_27": 3
+        "range_check_252_width_27": 3
       },
       "max_instances_uses_limit": 67108863,
       "max_instances_rows_limit": 67108864
@@ -874,7 +874,7 @@
         "MemoryAddressToId": 6,
         "MemoryIdToBig": 6,
         "PoseidonFullRoundChain": 2,
-        "RangeCheckFelt252Width27": 2,
+        "RangeCheck252Width27": 2,
         "Cube252": 2,
         "RangeCheck_3_3_3_3_3": 2,
         "RangeCheck_4_4_4_4": 6,
@@ -889,7 +889,7 @@
         "memory_address_to_id": 6,
         "memory_id_to_big": 6,
         "poseidon_full_round_chain": 8,
-        "range_check_felt_252_width_27": 2,
+        "range_check_252_width_27": 2,
         "cube_252": 2,
         "range_check_3_3_3_3_3": 2,
         "range_check_4_4_4_4": 6,
@@ -927,7 +927,7 @@
       "rows_upper_bound": {
         "poseidon_full_round_chain": 8,
         "cube_252": 122,
-        "range_check_felt_252_width_27": 98,
+        "range_check_252_width_27": 98,
         "poseidon_3_partial_rounds_chain": 27
       },
       "max_instances_uses_limit": 1657008,
@@ -1496,7 +1496,7 @@
       "max_instances_uses_limit": 715827882,
       "max_instances_rows_limit": 268435456
     },
-    "call_opcode": {
+    "call_opcode_abs": {
       "trace_type": "Opcode",
       "num_state_cols": 24,
       "use_lookup_cols": {
@@ -1607,7 +1607,7 @@
       "max_instances_uses_limit": 357913941,
       "max_instances_rows_limit": 268435456
     },
-    "jnz_opcode": {
+    "jnz_opcode_non_taken": {
       "trace_type": "Opcode",
       "num_state_cols": 8,
       "use_lookup_cols": {
@@ -1755,7 +1755,7 @@
       "max_instances_uses_limit": 357913941,
       "max_instances_rows_limit": 268435456
     },
-    "jump_opcode": {
+    "jump_opcode_abs": {
       "trace_type": "Opcode",
       "num_state_cols": 13,
       "use_lookup_cols": {

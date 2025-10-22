@@ -10,6 +10,7 @@ use components::range_check_20_e::InteractionClaimImpl as RangeCheck_20EInteract
 use components::range_check_20_f::InteractionClaimImpl as RangeCheck_20FInteractionClaimImpl;
 use components::range_check_20_g::InteractionClaimImpl as RangeCheck_20GInteractionClaimImpl;
 use components::range_check_20_h::InteractionClaimImpl as RangeCheck_20HInteractionClaimImpl;
+use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 use components::range_check_3_3_3_3_3::InteractionClaimImpl as RangeCheck_3_3_3_3_3InteractionClaimImpl;
 use components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck_3_6_6_3InteractionClaimImpl;
 use components::range_check_4_3::InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl;
@@ -29,7 +30,6 @@ use components::range_check_9_9_g::InteractionClaimImpl as RangeCheck_9_9GIntera
 use components::range_check_9_9_h::InteractionClaimImpl as RangeCheck_9_9HInteractionClaimImpl;
 use components::range_check_builtin_bits_128::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
 use components::range_check_builtin_bits_96::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
-use components::range_check_felt_252_width_27::InteractionClaimImpl as RangeCheckFelt252Width27InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;

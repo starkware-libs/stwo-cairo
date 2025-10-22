@@ -18,7 +18,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
         uses: 1,
     },
     RelationUse {
-        relation_id: "RangeCheckFelt252Width27",
+        relation_id: "RangeCheck252Width27",
         uses: 3,
     },
     RelationUse {
@@ -37,7 +37,7 @@ pub struct Eval {
     pub cube_252_lookup_elements: relations::Cube252,
     pub range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4,
     pub range_check_4_4_lookup_elements: relations::RangeCheck_4_4,
-    pub range_check_felt_252_width_27_lookup_elements: relations::RangeCheckFelt252Width27,
+    pub range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27,
     pub poseidon_3_partial_rounds_chain_lookup_elements: relations::Poseidon3PartialRoundsChain,
 }
 
@@ -381,7 +381,7 @@ impl FrameworkEval for Eval {
             &self.cube_252_lookup_elements,
             &self.range_check_4_4_4_4_lookup_elements,
             &self.range_check_4_4_lookup_elements,
-            &self.range_check_felt_252_width_27_lookup_elements,
+            &self.range_check_252_width_27_lookup_elements,
             &mut eval,
         );
         PoseidonPartialRound::evaluate(
@@ -472,7 +472,7 @@ impl FrameworkEval for Eval {
             &self.cube_252_lookup_elements,
             &self.range_check_4_4_4_4_lookup_elements,
             &self.range_check_4_4_lookup_elements,
-            &self.range_check_felt_252_width_27_lookup_elements,
+            &self.range_check_252_width_27_lookup_elements,
             &mut eval,
         );
         PoseidonPartialRound::evaluate(
@@ -563,7 +563,7 @@ impl FrameworkEval for Eval {
             &self.cube_252_lookup_elements,
             &self.range_check_4_4_4_4_lookup_elements,
             &self.range_check_4_4_lookup_elements,
-            &self.range_check_felt_252_width_27_lookup_elements,
+            &self.range_check_252_width_27_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
@@ -689,8 +689,7 @@ mod tests {
             cube_252_lookup_elements: relations::Cube252::dummy(),
             range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
             range_check_4_4_lookup_elements: relations::RangeCheck_4_4::dummy(),
-            range_check_felt_252_width_27_lookup_elements:
-                relations::RangeCheckFelt252Width27::dummy(),
+            range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27::dummy(),
             poseidon_3_partial_rounds_chain_lookup_elements:
                 relations::Poseidon3PartialRoundsChain::dummy(),
         };
