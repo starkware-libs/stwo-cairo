@@ -6,7 +6,7 @@ use crate::prelude::*;
 pub const N_TRACE_COLUMNS: usize = 169;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 6] = [
     ('PoseidonRoundKeys', 1), ('Cube252', 3), ('RangeCheck_4_4_4_4', 6), ('RangeCheck_4_4', 3),
-    ('RangeCheckFelt252Width27', 3), ('Poseidon3PartialRoundsChain', 1),
+    ('RangeCheck252Width27', 3), ('Poseidon3PartialRoundsChain', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -53,7 +53,7 @@ pub struct Component {
     pub cube_252_lookup_elements: crate::Cube252Elements,
     pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
     pub range_check_4_4_lookup_elements: crate::RangeCheck_4_4Elements,
-    pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
+    pub range_check_252_width_27_lookup_elements: crate::RangeCheck252Width27Elements,
     pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
 }
 
@@ -76,8 +76,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
                 .rc_4_4_4_4
                 .clone(),
             range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
-            range_check_felt_252_width_27_lookup_elements: interaction_elements
-                .range_check_felt_252_width_27
+            range_check_252_width_27_lookup_elements: interaction_elements
+                .range_check_252_width_27
                 .clone(),
             poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
                 .poseidon_3_partial_rounds_chain
@@ -327,17 +327,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_4_4_4_4_sum_2: QM31 = Zero::zero();
         let mut range_check_4_4_4_4_sum_3: QM31 = Zero::zero();
         let mut range_check_4_4_sum_4: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_5: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_5: QM31 = Zero::zero();
         let mut cube_252_sum_6: QM31 = Zero::zero();
         let mut range_check_4_4_4_4_sum_7: QM31 = Zero::zero();
         let mut range_check_4_4_4_4_sum_8: QM31 = Zero::zero();
         let mut range_check_4_4_sum_9: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_10: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_10: QM31 = Zero::zero();
         let mut cube_252_sum_11: QM31 = Zero::zero();
         let mut range_check_4_4_4_4_sum_12: QM31 = Zero::zero();
         let mut range_check_4_4_4_4_sum_13: QM31 = Zero::zero();
         let mut range_check_4_4_sum_14: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_15: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_15: QM31 = Zero::zero();
         let mut poseidon_3_partial_rounds_chain_sum_16: QM31 = Zero::zero();
         let mut poseidon_3_partial_rounds_chain_sum_17: QM31 = Zero::zero();
 
@@ -1136,12 +1136,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.cube_252_lookup_elements,
             self.range_check_4_4_4_4_lookup_elements,
             self.range_check_4_4_lookup_elements,
-            self.range_check_felt_252_width_27_lookup_elements,
+            self.range_check_252_width_27_lookup_elements,
             ref cube_252_sum_1,
             ref range_check_4_4_4_4_sum_2,
             ref range_check_4_4_4_4_sum_3,
             ref range_check_4_4_sum_4,
-            ref range_check_felt_252_width_27_sum_5,
+            ref range_check_252_width_27_sum_5,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1203,12 +1203,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.cube_252_lookup_elements,
             self.range_check_4_4_4_4_lookup_elements,
             self.range_check_4_4_lookup_elements,
-            self.range_check_felt_252_width_27_lookup_elements,
+            self.range_check_252_width_27_lookup_elements,
             ref cube_252_sum_6,
             ref range_check_4_4_4_4_sum_7,
             ref range_check_4_4_4_4_sum_8,
             ref range_check_4_4_sum_9,
-            ref range_check_felt_252_width_27_sum_10,
+            ref range_check_252_width_27_sum_10,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1273,12 +1273,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.cube_252_lookup_elements,
             self.range_check_4_4_4_4_lookup_elements,
             self.range_check_4_4_lookup_elements,
-            self.range_check_felt_252_width_27_lookup_elements,
+            self.range_check_252_width_27_lookup_elements,
             ref cube_252_sum_11,
             ref range_check_4_4_4_4_sum_12,
             ref range_check_4_4_4_4_sum_13,
             ref range_check_4_4_sum_14,
-            ref range_check_felt_252_width_27_sum_15,
+            ref range_check_252_width_27_sum_15,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -1342,17 +1342,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_4_4_4_4_sum_2,
             range_check_4_4_4_4_sum_3,
             range_check_4_4_sum_4,
-            range_check_felt_252_width_27_sum_5,
+            range_check_252_width_27_sum_5,
             cube_252_sum_6,
             range_check_4_4_4_4_sum_7,
             range_check_4_4_4_4_sum_8,
             range_check_4_4_sum_9,
-            range_check_felt_252_width_27_sum_10,
+            range_check_252_width_27_sum_10,
             cube_252_sum_11,
             range_check_4_4_4_4_sum_12,
             range_check_4_4_4_4_sum_13,
             range_check_4_4_sum_14,
-            range_check_felt_252_width_27_sum_15,
+            range_check_252_width_27_sum_15,
             poseidon_3_partial_rounds_chain_sum_16,
             poseidon_3_partial_rounds_chain_sum_17,
         );
@@ -1373,17 +1373,17 @@ fn lookup_constraints(
     range_check_4_4_4_4_sum_2: QM31,
     range_check_4_4_4_4_sum_3: QM31,
     range_check_4_4_sum_4: QM31,
-    range_check_felt_252_width_27_sum_5: QM31,
+    range_check_252_width_27_sum_5: QM31,
     cube_252_sum_6: QM31,
     range_check_4_4_4_4_sum_7: QM31,
     range_check_4_4_4_4_sum_8: QM31,
     range_check_4_4_sum_9: QM31,
-    range_check_felt_252_width_27_sum_10: QM31,
+    range_check_252_width_27_sum_10: QM31,
     cube_252_sum_11: QM31,
     range_check_4_4_4_4_sum_12: QM31,
     range_check_4_4_4_4_sum_13: QM31,
     range_check_4_4_sum_14: QM31,
-    range_check_felt_252_width_27_sum_15: QM31,
+    range_check_252_width_27_sum_15: QM31,
     poseidon_3_partial_rounds_chain_sum_16: QM31,
     poseidon_3_partial_rounds_chain_sum_17: QM31,
 ) {
@@ -1499,9 +1499,9 @@ fn lookup_constraints(
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
         * range_check_4_4_sum_4
-        * range_check_felt_252_width_27_sum_5)
+        * range_check_252_width_27_sum_5)
         - range_check_4_4_sum_4
-        - range_check_felt_252_width_27_sum_5)
+        - range_check_252_width_27_sum_5)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -1535,9 +1535,9 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
         ))
-        * range_check_felt_252_width_27_sum_10
+        * range_check_252_width_27_sum_10
         * cube_252_sum_11)
-        - range_check_felt_252_width_27_sum_10
+        - range_check_252_width_27_sum_10
         - cube_252_sum_11)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -1562,9 +1562,9 @@ fn lookup_constraints(
             [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
         ))
         * range_check_4_4_sum_14
-        * range_check_felt_252_width_27_sum_15)
+        * range_check_252_width_27_sum_15)
         - range_check_4_4_sum_14
-        - range_check_felt_252_width_27_sum_15)
+        - range_check_252_width_27_sum_15)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 

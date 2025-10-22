@@ -42,12 +42,12 @@ pub fn poseidon_partial_round_evaluate(
     cube_252_lookup_elements: @crate::Cube252Elements,
     range_check_4_4_4_4_lookup_elements: @crate::RangeCheck_4_4_4_4Elements,
     range_check_4_4_lookup_elements: @crate::RangeCheck_4_4Elements,
-    range_check_felt_252_width_27_lookup_elements: @crate::RangeCheckFelt252Width27Elements,
+    range_check_252_width_27_lookup_elements: @crate::RangeCheck252Width27Elements,
     ref cube_252_sum_0: QM31,
     ref range_check_4_4_4_4_sum_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
     ref range_check_4_4_sum_3: QM31,
-    ref range_check_felt_252_width_27_sum_4: QM31,
+    ref range_check_252_width_27_sum_4: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -178,7 +178,7 @@ pub fn poseidon_partial_round_evaluate(
         random_coeff,
     );
 
-    range_check_felt_252_width_27_sum_4 = range_check_felt_252_width_27_lookup_elements
+    range_check_252_width_27_sum_4 = range_check_252_width_27_lookup_elements
         .combine_qm31(
             [
                 combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,
