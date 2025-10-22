@@ -32,16 +32,15 @@ impl VerifyMulSmall {
         // carry 1 definition.
         eval.add_constraint(
             ((carry_1_col0.clone() * M31_262144.clone())
-                - (((((verify_mul_small_input_a_limb_0.clone()
+                - (((verify_mul_small_input_a_limb_0.clone()
                     * verify_mul_small_input_b_limb_0.clone())
                     - verify_mul_small_input_c_limb_0.clone())
-                    + ((verify_mul_small_input_a_limb_0.clone()
+                    + ((((verify_mul_small_input_a_limb_0.clone()
                         * verify_mul_small_input_b_limb_1.clone())
-                        * M31_512.clone()))
-                    + ((verify_mul_small_input_a_limb_1.clone()
-                        * verify_mul_small_input_b_limb_0.clone())
-                        * M31_512.clone()))
-                    - (verify_mul_small_input_c_limb_1.clone() * M31_512.clone()))),
+                        + (verify_mul_small_input_a_limb_1.clone()
+                            * verify_mul_small_input_b_limb_0.clone()))
+                        - verify_mul_small_input_c_limb_1.clone())
+                        * M31_512.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
@@ -52,27 +51,24 @@ impl VerifyMulSmall {
         // carry 3 definition.
         eval.add_constraint(
             ((carry_3_col1.clone() * M31_262144.clone())
-                - (((((((((carry_1_col0.clone()
-                    + (verify_mul_small_input_a_limb_0.clone()
-                        * verify_mul_small_input_b_limb_2.clone()))
-                    + (verify_mul_small_input_a_limb_1.clone()
-                        * verify_mul_small_input_b_limb_1.clone()))
-                    + (verify_mul_small_input_a_limb_2.clone()
-                        * verify_mul_small_input_b_limb_0.clone()))
-                    - verify_mul_small_input_c_limb_2.clone())
-                    + ((verify_mul_small_input_a_limb_0.clone()
-                        * verify_mul_small_input_b_limb_3.clone())
-                        * M31_512.clone()))
-                    + ((verify_mul_small_input_a_limb_1.clone()
+                - ((carry_1_col0.clone()
+                    + ((((verify_mul_small_input_a_limb_0.clone()
                         * verify_mul_small_input_b_limb_2.clone())
-                        * M31_512.clone()))
-                    + ((verify_mul_small_input_a_limb_2.clone()
-                        * verify_mul_small_input_b_limb_1.clone())
-                        * M31_512.clone()))
-                    + ((verify_mul_small_input_a_limb_3.clone()
-                        * verify_mul_small_input_b_limb_0.clone())
-                        * M31_512.clone()))
-                    - (verify_mul_small_input_c_limb_3.clone() * M31_512.clone()))),
+                        + (verify_mul_small_input_a_limb_1.clone()
+                            * verify_mul_small_input_b_limb_1.clone()))
+                        + (verify_mul_small_input_a_limb_2.clone()
+                            * verify_mul_small_input_b_limb_0.clone()))
+                        - verify_mul_small_input_c_limb_2.clone()))
+                    + ((((((verify_mul_small_input_a_limb_0.clone()
+                        * verify_mul_small_input_b_limb_3.clone())
+                        + (verify_mul_small_input_a_limb_1.clone()
+                            * verify_mul_small_input_b_limb_2.clone()))
+                        + (verify_mul_small_input_a_limb_2.clone()
+                            * verify_mul_small_input_b_limb_1.clone()))
+                        + (verify_mul_small_input_a_limb_3.clone()
+                            * verify_mul_small_input_b_limb_0.clone()))
+                        - verify_mul_small_input_c_limb_3.clone())
+                        * M31_512.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
@@ -83,21 +79,20 @@ impl VerifyMulSmall {
         // carry 5 definition.
         eval.add_constraint(
             ((carry_5_col2.clone() * M31_262144.clone())
-                - (((((((carry_3_col1.clone()
-                    + (verify_mul_small_input_a_limb_1.clone()
-                        * verify_mul_small_input_b_limb_3.clone()))
-                    + (verify_mul_small_input_a_limb_2.clone()
-                        * verify_mul_small_input_b_limb_2.clone()))
-                    + (verify_mul_small_input_a_limb_3.clone()
-                        * verify_mul_small_input_b_limb_1.clone()))
-                    - verify_mul_small_input_c_limb_4.clone())
-                    + ((verify_mul_small_input_a_limb_2.clone()
+                - ((carry_3_col1.clone()
+                    + ((((verify_mul_small_input_a_limb_1.clone()
                         * verify_mul_small_input_b_limb_3.clone())
-                        * M31_512.clone()))
-                    + ((verify_mul_small_input_a_limb_3.clone()
-                        * verify_mul_small_input_b_limb_2.clone())
-                        * M31_512.clone()))
-                    - (verify_mul_small_input_c_limb_5.clone() * M31_512.clone()))),
+                        + (verify_mul_small_input_a_limb_2.clone()
+                            * verify_mul_small_input_b_limb_2.clone()))
+                        + (verify_mul_small_input_a_limb_3.clone()
+                            * verify_mul_small_input_b_limb_1.clone()))
+                        - verify_mul_small_input_c_limb_4.clone()))
+                    + ((((verify_mul_small_input_a_limb_2.clone()
+                        * verify_mul_small_input_b_limb_3.clone())
+                        + (verify_mul_small_input_a_limb_3.clone()
+                            * verify_mul_small_input_b_limb_2.clone()))
+                        - verify_mul_small_input_c_limb_5.clone())
+                        * M31_512.clone()))),
         );
         // final limb constraint.
         eval.add_constraint(
