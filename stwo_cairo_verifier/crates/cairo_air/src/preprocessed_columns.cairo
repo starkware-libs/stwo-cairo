@@ -297,16 +297,16 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xf9732e16, 0xc1939fd2, 0x9600624b, 0x54027597, 0x147cf8eb, 0xa6e086e0,
-                    0x213f3f6c, 0x80ed895c,
+                    0xa7e4ed57, 0xdfae42b4, 0xa669cd01, 0x094a86f8, 0x91f39aaa, 0x20ad98e3,
+                    0xa82ebfed, 0xc771c404,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0x49552fad, 0xf58fc1b8, 0xb91475d6, 0x253d8dc2, 0x8d45ea26, 0x6171432b,
-                    0xfa2e2acd, 0xd29221e0,
+                    0xf6889ffd, 0x695f7abc, 0xd498d674, 0x522bb6d6, 0x52dd6e27, 0x1edfbacb,
+                    0x34e72017, 0x1990f2fa,
                 ],
             ),
         },
