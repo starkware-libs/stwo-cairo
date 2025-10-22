@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::jnz_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use cairo_air::components::jnz_opcode_non_taken::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::witness::prelude::*;
@@ -130,12 +130,15 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, jnz_opcode_input))| {
-                let input_pc_col0 = jnz_opcode_input.pc;
+            |(
+                row_index,
+                (mut row, lookup_data, sub_component_inputs, jnz_opcode_non_taken_input),
+            )| {
+                let input_pc_col0 = jnz_opcode_non_taken_input.pc;
                 *row[0] = input_pc_col0;
-                let input_ap_col1 = jnz_opcode_input.ap;
+                let input_ap_col1 = jnz_opcode_non_taken_input.ap;
                 *row[1] = input_ap_col1;
-                let input_fp_col2 = jnz_opcode_input.fp;
+                let input_fp_col2 = jnz_opcode_non_taken_input.fp;
                 *row[2] = input_fp_col2;
 
                 // Decode Instruction.

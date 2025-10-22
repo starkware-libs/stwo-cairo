@@ -10,13 +10,10 @@ pub mod blake_compress_opcode;
 pub mod blake_g;
 pub mod blake_round;
 pub mod blake_round_sigma;
-pub mod call_opcode;
 pub mod call_opcode_rel_imm;
 pub mod cube_252;
 pub mod generic_opcode;
-pub mod jnz_opcode;
 pub mod jnz_opcode_taken;
-pub mod jump_opcode;
 pub mod jump_opcode_double_deref;
 pub mod jump_opcode_rel;
 pub mod jump_opcode_rel_imm;
@@ -64,7 +61,6 @@ pub mod range_check_9_9_g;
 pub mod range_check_9_9_h;
 pub mod range_check_builtin_bits_128;
 pub mod range_check_builtin_bits_96;
-pub mod range_check_felt_252_width_27;
 pub mod ret_opcode;
 pub mod triple_xor_32;
 pub mod verify_bitwise_xor_12;
@@ -101,3 +97,7 @@ pub(crate) fn display_components<E: FrameworkEval>(components: &[FrameworkCompon
         .map(|component| indented_component_display(component))
         .join("\n")
 }
+pub mod call_opcode_abs;
+pub mod jnz_opcode_non_taken;
+pub mod jump_opcode_abs;
+pub mod range_check_252_width_27;
