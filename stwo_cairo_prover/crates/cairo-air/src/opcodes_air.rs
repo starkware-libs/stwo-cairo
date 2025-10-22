@@ -14,9 +14,10 @@ use super::components::display_components;
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode, call_opcode_rel_imm, generic_opcode,
-    jnz_opcode, jnz_opcode_taken, jump_opcode, jump_opcode_double_deref, jump_opcode_rel,
-    jump_opcode_rel_imm, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
+    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
+    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
+    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode, mul_opcode_small,
+    qm_31_add_mul_opcode, ret_opcode,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -28,12 +29,12 @@ pub struct OpcodeClaim {
     pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
     pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
     pub blake: Vec<blake_compress_opcode::Claim>,
-    pub call: Vec<call_opcode::Claim>,
+    pub call: Vec<call_opcode_abs::Claim>,
     pub call_rel_imm: Vec<call_opcode_rel_imm::Claim>,
     pub generic: Vec<generic_opcode::Claim>,
-    pub jnz: Vec<jnz_opcode::Claim>,
+    pub jnz: Vec<jnz_opcode_non_taken::Claim>,
     pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
-    pub jump: Vec<jump_opcode::Claim>,
+    pub jump: Vec<jump_opcode_abs::Claim>,
     pub jump_double_deref: Vec<jump_opcode_double_deref::Claim>,
     pub jump_rel: Vec<jump_opcode_rel::Claim>,
     pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
@@ -142,12 +143,12 @@ impl OpcodeClaim {
         relation_uses!(assert_eq_imm, assert_eq_opcode_imm);
         relation_uses!(assert_eq_double_deref, assert_eq_opcode_double_deref);
         relation_uses!(blake, blake_compress_opcode);
-        relation_uses!(call, call_opcode);
+        relation_uses!(call, call_opcode_abs);
         relation_uses!(call_rel_imm, call_opcode_rel_imm);
         relation_uses!(generic, generic_opcode);
-        relation_uses!(jnz, jnz_opcode);
+        relation_uses!(jnz, jnz_opcode_non_taken);
         relation_uses!(jnz_taken, jnz_opcode_taken);
-        relation_uses!(jump, jump_opcode);
+        relation_uses!(jump, jump_opcode_abs);
         relation_uses!(jump_double_deref, jump_opcode_double_deref);
         relation_uses!(jump_rel, jump_opcode_rel);
         relation_uses!(jump_rel_imm, jump_opcode_rel_imm);
@@ -167,12 +168,12 @@ pub struct OpcodeInteractionClaim {
     pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
     pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
     pub blake: Vec<blake_compress_opcode::InteractionClaim>,
-    pub call: Vec<call_opcode::InteractionClaim>,
+    pub call: Vec<call_opcode_abs::InteractionClaim>,
     pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaim>,
     pub generic: Vec<generic_opcode::InteractionClaim>,
-    pub jnz: Vec<jnz_opcode::InteractionClaim>,
+    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaim>,
     pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
-    pub jump: Vec<jump_opcode::InteractionClaim>,
+    pub jump: Vec<jump_opcode_abs::InteractionClaim>,
     pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaim>,
     pub jump_rel: Vec<jump_opcode_rel::InteractionClaim>,
     pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
@@ -283,12 +284,12 @@ pub struct OpcodeComponents {
     pub assert_eq_imm: Vec<assert_eq_opcode_imm::Component>,
     pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Component>,
     pub blake: Vec<blake_compress_opcode::Component>,
-    pub call: Vec<call_opcode::Component>,
+    pub call: Vec<call_opcode_abs::Component>,
     pub call_rel_imm: Vec<call_opcode_rel_imm::Component>,
     pub generic: Vec<generic_opcode::Component>,
-    pub jnz: Vec<jnz_opcode::Component>,
+    pub jnz: Vec<jnz_opcode_non_taken::Component>,
     pub jnz_taken: Vec<jnz_opcode_taken::Component>,
-    pub jump: Vec<jump_opcode::Component>,
+    pub jump: Vec<jump_opcode_abs::Component>,
     pub jump_double_deref: Vec<jump_opcode_double_deref::Component>,
     pub jump_rel: Vec<jump_opcode_rel::Component>,
     pub jump_rel_imm: Vec<jump_opcode_rel_imm::Component>,
@@ -488,9 +489,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.call.iter())
             .map(|(&claim, &interaction_claim)| {
-                call_opcode::Component::new(
+                call_opcode_abs::Component::new(
                     tree_span_provider,
-                    call_opcode::Eval {
+                    call_opcode_abs::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -632,9 +633,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jnz.iter())
             .map(|(&claim, &interaction_claim)| {
-                jnz_opcode::Component::new(
+                jnz_opcode_non_taken::Component::new(
                     tree_span_provider,
-                    jnz_opcode::Eval {
+                    jnz_opcode_non_taken::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -680,9 +681,9 @@ impl OpcodeComponents {
             .iter()
             .zip(interaction_claim.jump.iter())
             .map(|(&claim, &interaction_claim)| {
-                jump_opcode::Component::new(
+                jump_opcode_abs::Component::new(
                     tree_span_provider,
-                    jump_opcode::Eval {
+                    jump_opcode_abs::Eval {
                         claim,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
