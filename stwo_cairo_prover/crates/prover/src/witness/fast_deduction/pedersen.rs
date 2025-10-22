@@ -84,7 +84,7 @@ mod tests {
     use starknet_curve::curve_params::{PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
     use starknet_types_core::curve::ProjectivePoint;
     use starknet_types_core::felt::Felt;
-    use stwo_cairo_common::preprocessed_columns::pedersen::{BITS_PER_WINDOW, P2_SECTION_START};
+    use stwo_cairo_common::preprocessed_columns::pedersen::BITS_PER_WINDOW;
     use stwo_cairo_common::prover_types::cpu::M31;
 
     use super::PartialEcMul;

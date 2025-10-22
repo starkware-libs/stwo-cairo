@@ -30,11 +30,10 @@ pub const BITS_PER_WINDOW: usize = 18;
 pub const NUM_WINDOWS: usize = 252usize.div_ceil(BITS_PER_WINDOW);
 pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
 
-pub const P0_SECTION_START: usize = 0;
-pub const P1_SECTION_START: usize = P0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const P2_SECTION_START: usize = P1_SECTION_START + 16;
-pub const P3_SECTION_START: usize = P2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const PEDERSEN_TABLE_N_ROWS: usize = P3_SECTION_START + 16;
+pub const P_0_SECTION_START: usize = 0;
+pub const P_2_SECTION_START: usize = P_0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub const P_13_SECTION_START: usize = P_2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub const PEDERSEN_TABLE_N_ROWS: usize = P_13_SECTION_START + 16 * 16;
 
 // We don't use starknet_types_core::curve::AffinePoint because, as of 10/2025,
 // its .x() and .y() getters are slow.
@@ -120,7 +119,6 @@ fn create_block(
     base_point: &ProjectivePoint,
     n_rows: usize,
 ) -> Vec<SimpleAffinePoint> {
-    // Initialize the accumulator to -SHIFT_POINT
     let mut p = start_point.clone();
 
     // Compute the points in projective representation
