@@ -639,259 +639,229 @@ impl EvalOperands {
             range_check_20_h_lookup_elements,
             eval,
         );
-        let res_constrained_tmp_3172c_54 =
-            eval.add_intermediate((M31_1.clone() - eval_operands_input_pc_update_jnz.clone()));
+        // constrain limb 0 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_0_col176.clone() - op1_limb_0_col63.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_0_col176.clone() - add_res_limb_0_col91.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_0_col176.clone() - mul_res_limb_0_col120.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_0_col91.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_0_col120.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_0_col63.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_0_col176.clone())),
         );
+        // constrain limb 1 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_1_col177.clone() - op1_limb_1_col64.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_1_col177.clone() - add_res_limb_1_col92.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_1_col177.clone() - mul_res_limb_1_col121.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_1_col92.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_1_col121.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_1_col64.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_1_col177.clone())),
         );
+        // constrain limb 2 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_2_col178.clone() - op1_limb_2_col65.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_2_col178.clone() - add_res_limb_2_col93.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_2_col178.clone() - mul_res_limb_2_col122.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_2_col93.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_2_col122.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_2_col65.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_2_col178.clone())),
         );
+        // constrain limb 3 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_3_col179.clone() - op1_limb_3_col66.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_3_col179.clone() - add_res_limb_3_col94.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_3_col179.clone() - mul_res_limb_3_col123.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_3_col94.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_3_col123.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_3_col66.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_3_col179.clone())),
         );
+        // constrain limb 4 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_4_col180.clone() - op1_limb_4_col67.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_4_col180.clone() - add_res_limb_4_col95.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_4_col180.clone() - mul_res_limb_4_col124.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_4_col95.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_4_col124.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_4_col67.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_4_col180.clone())),
         );
+        // constrain limb 5 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_5_col181.clone() - op1_limb_5_col68.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_5_col181.clone() - add_res_limb_5_col96.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_5_col181.clone() - mul_res_limb_5_col125.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_5_col96.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_5_col125.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_5_col68.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_5_col181.clone())),
         );
+        // constrain limb 6 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_6_col182.clone() - op1_limb_6_col69.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_6_col182.clone() - add_res_limb_6_col97.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_6_col182.clone() - mul_res_limb_6_col126.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_6_col97.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_6_col126.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_6_col69.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_6_col182.clone())),
         );
+        // constrain limb 7 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_7_col183.clone() - op1_limb_7_col70.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_7_col183.clone() - add_res_limb_7_col98.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_7_col183.clone() - mul_res_limb_7_col127.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_7_col98.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_7_col127.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_7_col70.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_7_col183.clone())),
         );
+        // constrain limb 8 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_8_col184.clone() - op1_limb_8_col71.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_8_col184.clone() - add_res_limb_8_col99.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_8_col184.clone() - mul_res_limb_8_col128.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_8_col99.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_8_col128.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_8_col71.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_8_col184.clone())),
         );
+        // constrain limb 9 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_9_col185.clone() - op1_limb_9_col72.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_9_col185.clone() - add_res_limb_9_col100.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_9_col185.clone() - mul_res_limb_9_col129.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_9_col100.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_9_col129.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_9_col72.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_9_col185.clone())),
         );
+        // constrain limb 10 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_10_col186.clone() - op1_limb_10_col73.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_10_col186.clone() - add_res_limb_10_col101.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_10_col186.clone() - mul_res_limb_10_col130.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_10_col101.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_10_col130.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_10_col73.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_10_col186.clone())),
         );
+        // constrain limb 11 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_11_col187.clone() - op1_limb_11_col74.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_11_col187.clone() - add_res_limb_11_col102.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_11_col187.clone() - mul_res_limb_11_col131.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_11_col102.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_11_col131.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_11_col74.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_11_col187.clone())),
         );
+        // constrain limb 12 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_12_col188.clone() - op1_limb_12_col75.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_12_col188.clone() - add_res_limb_12_col103.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_12_col188.clone() - mul_res_limb_12_col132.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_12_col103.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_12_col132.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_12_col75.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_12_col188.clone())),
         );
+        // constrain limb 13 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_13_col189.clone() - op1_limb_13_col76.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_13_col189.clone() - add_res_limb_13_col104.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_13_col189.clone() - mul_res_limb_13_col133.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_13_col104.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_13_col133.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_13_col76.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_13_col189.clone())),
         );
+        // constrain limb 14 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_14_col190.clone() - op1_limb_14_col77.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_14_col190.clone() - add_res_limb_14_col105.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_14_col190.clone() - mul_res_limb_14_col134.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_14_col105.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_14_col134.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_14_col77.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_14_col190.clone())),
         );
+        // constrain limb 15 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_15_col191.clone() - op1_limb_15_col78.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_15_col191.clone() - add_res_limb_15_col106.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_15_col191.clone() - mul_res_limb_15_col135.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_15_col106.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_15_col135.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_15_col78.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_15_col191.clone())),
         );
+        // constrain limb 16 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_16_col192.clone() - op1_limb_16_col79.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_16_col192.clone() - add_res_limb_16_col107.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_16_col192.clone() - mul_res_limb_16_col136.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_16_col107.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_16_col136.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_16_col79.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_16_col192.clone())),
         );
+        // constrain limb 17 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_17_col193.clone() - op1_limb_17_col80.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_17_col193.clone() - add_res_limb_17_col108.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_17_col193.clone() - mul_res_limb_17_col137.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_17_col108.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_17_col137.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_17_col80.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_17_col193.clone())),
         );
+        // constrain limb 18 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_18_col194.clone() - op1_limb_18_col81.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_18_col194.clone() - add_res_limb_18_col109.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_18_col194.clone() - mul_res_limb_18_col138.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_18_col109.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_18_col138.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_18_col81.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_18_col194.clone())),
         );
+        // constrain limb 19 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_19_col195.clone() - op1_limb_19_col82.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_19_col195.clone() - add_res_limb_19_col110.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_19_col195.clone() - mul_res_limb_19_col139.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_19_col110.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_19_col139.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_19_col82.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_19_col195.clone())),
         );
+        // constrain limb 20 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_20_col196.clone() - op1_limb_20_col83.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_20_col196.clone() - add_res_limb_20_col111.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_20_col196.clone() - mul_res_limb_20_col140.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_20_col111.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_20_col140.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_20_col83.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_20_col196.clone())),
         );
+        // constrain limb 21 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_21_col197.clone() - op1_limb_21_col84.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_21_col197.clone() - add_res_limb_21_col112.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_21_col197.clone() - mul_res_limb_21_col141.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_21_col112.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_21_col141.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_21_col84.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_21_col197.clone())),
         );
+        // constrain limb 22 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_22_col198.clone() - op1_limb_22_col85.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_22_col198.clone() - add_res_limb_22_col113.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_22_col198.clone() - mul_res_limb_22_col142.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_22_col113.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_22_col142.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_22_col85.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_22_col198.clone())),
         );
+        // constrain limb 23 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_23_col199.clone() - op1_limb_23_col86.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_23_col199.clone() - add_res_limb_23_col114.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_23_col199.clone() - mul_res_limb_23_col143.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_23_col114.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_23_col143.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_23_col86.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_23_col199.clone())),
         );
+        // constrain limb 24 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_24_col200.clone() - op1_limb_24_col87.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_24_col200.clone() - add_res_limb_24_col115.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_24_col200.clone() - mul_res_limb_24_col144.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_24_col115.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_24_col144.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_24_col87.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_24_col200.clone())),
         );
+        // constrain limb 25 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_25_col201.clone() - op1_limb_25_col88.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_25_col201.clone() - add_res_limb_25_col116.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_25_col201.clone() - mul_res_limb_25_col145.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_25_col116.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_25_col145.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_25_col88.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_25_col201.clone())),
         );
+        // constrain limb 26 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_26_col202.clone() - op1_limb_26_col89.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_26_col202.clone() - add_res_limb_26_col117.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_26_col202.clone() - mul_res_limb_26_col146.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_26_col117.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_26_col146.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_26_col89.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_26_col202.clone())),
         );
+        // constrain limb 27 of res.
         eval.add_constraint(
-            (res_constrained_tmp_3172c_54.clone()
-                * (((eval_operands_input_res_op1.clone()
-                    * (res_limb_27_col203.clone() - op1_limb_27_col90.clone()))
-                    + (eval_operands_input_res_add.clone()
-                        * (res_limb_27_col203.clone() - add_res_limb_27_col118.clone())))
-                    + (eval_operands_input_res_mul.clone()
-                        * (res_limb_27_col203.clone() - mul_res_limb_27_col147.clone())))),
+            ((((eval_operands_input_res_add.clone() * add_res_limb_27_col118.clone())
+                + (eval_operands_input_res_mul.clone() * mul_res_limb_27_col147.clone()))
+                + (eval_operands_input_res_op1.clone() * op1_limb_27_col90.clone()))
+                - ((M31_1.clone() - eval_operands_input_pc_update_jnz.clone())
+                    * res_limb_27_col203.clone())),
         );
         []
     }
