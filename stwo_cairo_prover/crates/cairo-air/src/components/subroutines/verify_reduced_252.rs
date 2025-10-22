@@ -42,23 +42,12 @@ impl VerifyReduced252 {
 
         // If the MS limb is max, high limbs should be 0.
         eval.add_constraint(
-            (ms_limb_is_max_col0.clone() * verify_reduced_252_input_limb_22.clone()),
-        );
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint(
-            (ms_limb_is_max_col0.clone() * verify_reduced_252_input_limb_23.clone()),
-        );
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint(
-            (ms_limb_is_max_col0.clone() * verify_reduced_252_input_limb_24.clone()),
-        );
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint(
-            (ms_limb_is_max_col0.clone() * verify_reduced_252_input_limb_25.clone()),
-        );
-        // If the MS limb is max, high limbs should be 0.
-        eval.add_constraint(
-            (ms_limb_is_max_col0.clone() * verify_reduced_252_input_limb_26.clone()),
+            (ms_limb_is_max_col0.clone()
+                * ((((verify_reduced_252_input_limb_22.clone()
+                    + verify_reduced_252_input_limb_23.clone())
+                    + verify_reduced_252_input_limb_24.clone())
+                    + verify_reduced_252_input_limb_25.clone())
+                    + verify_reduced_252_input_limb_26.clone())),
         );
         // rc_input.
         eval.add_constraint(
@@ -75,87 +64,28 @@ impl VerifyReduced252 {
 
         // If the MS and mid limbs are max, low limbs should be 0.
         eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_0.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_1.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_2.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_3.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_4.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_5.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_6.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_7.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_8.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_9.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_10.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_11.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_12.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_13.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_14.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_15.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_16.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_17.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_18.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_19.clone()),
-        );
-        // If the MS and mid limbs are max, low limbs should be 0.
-        eval.add_constraint(
-            (ms_and_mid_limbs_are_max_col1.clone() * verify_reduced_252_input_limb_20.clone()),
+            (ms_and_mid_limbs_are_max_col1.clone()
+                * ((((((((((((((((((((verify_reduced_252_input_limb_0.clone()
+                    + verify_reduced_252_input_limb_1.clone())
+                    + verify_reduced_252_input_limb_2.clone())
+                    + verify_reduced_252_input_limb_3.clone())
+                    + verify_reduced_252_input_limb_4.clone())
+                    + verify_reduced_252_input_limb_5.clone())
+                    + verify_reduced_252_input_limb_6.clone())
+                    + verify_reduced_252_input_limb_7.clone())
+                    + verify_reduced_252_input_limb_8.clone())
+                    + verify_reduced_252_input_limb_9.clone())
+                    + verify_reduced_252_input_limb_10.clone())
+                    + verify_reduced_252_input_limb_11.clone())
+                    + verify_reduced_252_input_limb_12.clone())
+                    + verify_reduced_252_input_limb_13.clone())
+                    + verify_reduced_252_input_limb_14.clone())
+                    + verify_reduced_252_input_limb_15.clone())
+                    + verify_reduced_252_input_limb_16.clone())
+                    + verify_reduced_252_input_limb_17.clone())
+                    + verify_reduced_252_input_limb_18.clone())
+                    + verify_reduced_252_input_limb_19.clone())
+                    + verify_reduced_252_input_limb_20.clone())),
         );
         []
     }
