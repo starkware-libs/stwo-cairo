@@ -6,10 +6,10 @@ use itertools::{chain, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
-use stwo_cairo_adapter::memory::{
-    u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId, LARGE_MEMORY_VALUE_ID_BASE,
+use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
+use stwo_cairo_common::memory::{
+    LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
 };
-use stwo_cairo_common::memory::{N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
