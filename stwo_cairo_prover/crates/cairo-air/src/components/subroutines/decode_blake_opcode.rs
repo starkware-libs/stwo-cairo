@@ -2,8 +2,8 @@
 
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_472fe::DecodeInstruction472Fe;
-use crate::components::subroutines::read_blake_word::ReadBlakeWord;
 use crate::components::subroutines::read_positive_num_bits_29::ReadPositiveNumBits29;
+use crate::components::subroutines::read_u_32::ReadU32;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct DecodeBlakeOpcode {}
@@ -142,7 +142,7 @@ impl DecodeBlakeOpcode {
                     + ((M31_1.clone() - dst_base_fp_col3.clone())
                         * decode_blake_opcode_input_ap.clone()))),
         );
-        ReadBlakeWord::evaluate(
+        ReadU32::evaluate(
             [(mem_dst_base_col28.clone()
                 + decode_instruction_472fe_output_tmp_47e62_9_offset0.clone())],
             low_16_bits_col29.clone(),

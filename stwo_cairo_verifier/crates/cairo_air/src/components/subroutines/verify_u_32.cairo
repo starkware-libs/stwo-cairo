@@ -4,7 +4,7 @@ use crate::components::subroutines::mem_verify::mem_verify_evaluate;
 use crate::prelude::*;
 
 
-pub fn verify_blake_word_evaluate(
+pub fn verify_u_32_evaluate(
     input: [QM31; 3],
     low_7_ms_bits_col0: QM31,
     high_14_ms_bits_col1: QM31,
@@ -20,30 +20,17 @@ pub fn verify_blake_word_evaluate(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
-    let [
-        verify_blake_word_input_limb_0,
-        verify_blake_word_input_limb_1,
-        verify_blake_word_input_limb_2,
-    ] =
-        input;
+    let [verify_u_32_input_limb_0, verify_u_32_input_limb_1, verify_u_32_input_limb_2] = input;
+    let high_2_ls_bits_tmp_c4bc0_2: QM31 = (verify_u_32_input_limb_2
+        - (high_14_ms_bits_col1 * qm31_const::<4, 0, 0, 0>()));
 
     range_check_7_2_5_sum_0 = range_check_7_2_5_lookup_elements
-        .combine_qm31(
-            [
-                low_7_ms_bits_col0,
-                (verify_blake_word_input_limb_2
-                    - (high_14_ms_bits_col1 * qm31_const::<4, 0, 0, 0>())),
-                high_5_ms_bits_col2,
-            ],
-        );
+        .combine_qm31([low_7_ms_bits_col0, high_2_ls_bits_tmp_c4bc0_2, high_5_ms_bits_col2]);
     mem_verify_evaluate(
         [
-            verify_blake_word_input_limb_0,
-            (verify_blake_word_input_limb_1 - (low_7_ms_bits_col0 * qm31_const::<512, 0, 0, 0>())),
-            (low_7_ms_bits_col0
-                + ((verify_blake_word_input_limb_2
-                    - (high_14_ms_bits_col1 * qm31_const::<4, 0, 0, 0>()))
-                    * qm31_const::<128, 0, 0, 0>())),
+            verify_u_32_input_limb_0,
+            (verify_u_32_input_limb_1 - (low_7_ms_bits_col0 * qm31_const::<512, 0, 0, 0>())),
+            (low_7_ms_bits_col0 + (high_2_ls_bits_tmp_c4bc0_2 * qm31_const::<128, 0, 0, 0>())),
             (high_14_ms_bits_col1 - (high_5_ms_bits_col2 * qm31_const::<512, 0, 0, 0>())),
             high_5_ms_bits_col2, qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),

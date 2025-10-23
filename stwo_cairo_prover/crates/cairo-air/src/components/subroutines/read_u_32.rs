@@ -1,12 +1,12 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
+use crate::components::subroutines::verify_u_32::VerifyU32;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct ReadBlakeWord {}
+pub struct ReadU32 {}
 
-impl ReadBlakeWord {
+impl ReadU32 {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -14,7 +14,7 @@ impl ReadBlakeWord {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [read_blake_word_input]: [E::F; 1],
+        [read_u_32_input]: [E::F; 1],
         low_16_bits_col0: E::F,
         high_16_bits_col1: E::F,
         low_7_ms_bits_col2: E::F,
@@ -26,9 +26,9 @@ impl ReadBlakeWord {
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 0] {
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                read_blake_word_input.clone(),
+                read_u_32_input.clone(),
                 low_16_bits_col0.clone(),
                 high_16_bits_col1.clone(),
             ],

@@ -4,7 +4,7 @@ use crate::components::prelude::*;
 use crate::components::subroutines::create_blake_output::CreateBlakeOutput;
 use crate::components::subroutines::create_blake_round_input::CreateBlakeRoundInput;
 use crate::components::subroutines::decode_blake_opcode::DecodeBlakeOpcode;
-use crate::components::subroutines::verify_blake_word::VerifyBlakeWord;
+use crate::components::subroutines::verify_u_32::VerifyU32;
 
 pub const N_TRACE_COLUMNS: usize = 174;
 pub const RELATION_USES_PER_ROW: [RelationUse; 8] = [
@@ -296,7 +296,7 @@ impl FrameworkEval for Eval {
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [decode_blake_opcode_output_tmp_53f39_41_limb_0, decode_blake_opcode_output_tmp_53f39_41_limb_1, decode_blake_opcode_output_tmp_53f39_41_limb_2, decode_blake_opcode_output_tmp_53f39_41_limb_6] =
+        let [decode_blake_opcode_output_tmp_53f39_42_limb_0, decode_blake_opcode_output_tmp_53f39_42_limb_1, decode_blake_opcode_output_tmp_53f39_42_limb_2, decode_blake_opcode_output_tmp_53f39_42_limb_6] =
             DecodeBlakeOpcode::evaluate(
                 [
                     input_pc_col0.clone(),
@@ -346,13 +346,13 @@ impl FrameworkEval for Eval {
             );
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
-        let [create_blake_round_input_output_tmp_53f39_134_limb_24, create_blake_round_input_output_tmp_53f39_134_limb_25, create_blake_round_input_output_tmp_53f39_134_limb_28, create_blake_round_input_output_tmp_53f39_134_limb_29] =
+        let [create_blake_round_input_output_tmp_53f39_143_limb_24, create_blake_round_input_output_tmp_53f39_143_limb_25, create_blake_round_input_output_tmp_53f39_143_limb_28, create_blake_round_input_output_tmp_53f39_143_limb_29] =
             CreateBlakeRoundInput::evaluate(
                 [
-                    decode_blake_opcode_output_tmp_53f39_41_limb_0.clone(),
+                    decode_blake_opcode_output_tmp_53f39_42_limb_0.clone(),
                     low_16_bits_col32.clone(),
                     high_16_bits_col33.clone(),
-                    decode_blake_opcode_output_tmp_53f39_41_limb_6.clone(),
+                    decode_blake_opcode_output_tmp_53f39_42_limb_6.clone(),
                 ],
                 low_16_bits_col38.clone(),
                 high_16_bits_col39.clone(),
@@ -444,15 +444,15 @@ impl FrameworkEval for Eval {
                 M31_15470.clone(),
                 M31_62778.clone(),
                 M31_42319.clone(),
-                create_blake_round_input_output_tmp_53f39_134_limb_24.clone(),
-                create_blake_round_input_output_tmp_53f39_134_limb_25.clone(),
+                create_blake_round_input_output_tmp_53f39_143_limb_24.clone(),
+                create_blake_round_input_output_tmp_53f39_143_limb_25.clone(),
                 M31_26764.clone(),
                 M31_39685.clone(),
-                create_blake_round_input_output_tmp_53f39_134_limb_28.clone(),
-                create_blake_round_input_output_tmp_53f39_134_limb_29.clone(),
+                create_blake_round_input_output_tmp_53f39_143_limb_28.clone(),
+                create_blake_round_input_output_tmp_53f39_143_limb_29.clone(),
                 M31_52505.clone(),
                 M31_23520.clone(),
-                decode_blake_opcode_output_tmp_53f39_41_limb_1.clone(),
+                decode_blake_opcode_output_tmp_53f39_42_limb_1.clone(),
             ],
         ));
 
@@ -568,9 +568,9 @@ impl FrameworkEval for Eval {
             &self.triple_xor_32_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                decode_blake_opcode_output_tmp_53f39_41_limb_2.clone(),
+                decode_blake_opcode_output_tmp_53f39_42_limb_2.clone(),
                 triple_xor_32_output_limb_0_col125.clone(),
                 triple_xor_32_output_limb_1_col126.clone(),
             ],
@@ -583,9 +583,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_1.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_1.clone()),
                 triple_xor_32_output_limb_0_col127.clone(),
                 triple_xor_32_output_limb_1_col128.clone(),
             ],
@@ -598,9 +598,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_2.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_2.clone()),
                 triple_xor_32_output_limb_0_col129.clone(),
                 triple_xor_32_output_limb_1_col130.clone(),
             ],
@@ -613,9 +613,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_3.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_3.clone()),
                 triple_xor_32_output_limb_0_col131.clone(),
                 triple_xor_32_output_limb_1_col132.clone(),
             ],
@@ -628,9 +628,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_4.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_4.clone()),
                 triple_xor_32_output_limb_0_col133.clone(),
                 triple_xor_32_output_limb_1_col134.clone(),
             ],
@@ -643,9 +643,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_5.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_5.clone()),
                 triple_xor_32_output_limb_0_col135.clone(),
                 triple_xor_32_output_limb_1_col136.clone(),
             ],
@@ -658,9 +658,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_6.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_6.clone()),
                 triple_xor_32_output_limb_0_col137.clone(),
                 triple_xor_32_output_limb_1_col138.clone(),
             ],
@@ -673,9 +673,9 @@ impl FrameworkEval for Eval {
             &self.memory_id_to_big_lookup_elements,
             &mut eval,
         );
-        VerifyBlakeWord::evaluate(
+        VerifyU32::evaluate(
             [
-                (decode_blake_opcode_output_tmp_53f39_41_limb_2.clone() + M31_7.clone()),
+                (decode_blake_opcode_output_tmp_53f39_42_limb_2.clone() + M31_7.clone()),
                 triple_xor_32_output_limb_0_col139.clone(),
                 triple_xor_32_output_limb_1_col140.clone(),
             ],

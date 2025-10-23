@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::subroutines::bitwise_xor_num_bits_8::bitwise_xor_num_bits_8_evaluate;
-use crate::components::subroutines::read_blake_word::read_blake_word_evaluate;
+use crate::components::subroutines::read_u_32::read_u_32_evaluate;
 use crate::components::subroutines::split_16_low_part_size_8::split_16_low_part_size_8_evaluate;
 use crate::prelude::*;
 
@@ -105,7 +105,7 @@ pub fn create_blake_round_input_evaluate(
         create_blake_round_input_input_limb_3,
     ] =
         input;
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         create_blake_round_input_input_limb_0,
         low_16_bits_col0,
         high_16_bits_col1,
@@ -123,7 +123,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<1, 0, 0, 0>()),
         low_16_bits_col6,
         high_16_bits_col7,
@@ -141,7 +141,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<2, 0, 0, 0>()),
         low_16_bits_col12,
         high_16_bits_col13,
@@ -159,7 +159,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<3, 0, 0, 0>()),
         low_16_bits_col18,
         high_16_bits_col19,
@@ -177,7 +177,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<4, 0, 0, 0>()),
         low_16_bits_col24,
         high_16_bits_col25,
@@ -195,7 +195,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<5, 0, 0, 0>()),
         low_16_bits_col30,
         high_16_bits_col31,
@@ -213,7 +213,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<6, 0, 0, 0>()),
         low_16_bits_col36,
         high_16_bits_col37,
@@ -231,7 +231,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    read_blake_word_evaluate(
+    read_u_32_evaluate(
         (create_blake_round_input_input_limb_0 + qm31_const::<7, 0, 0, 0>()),
         low_16_bits_col42,
         high_16_bits_col43,
@@ -249,7 +249,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let split_16_low_part_size_8_output_tmp_f95c3_81_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_f95c3_89_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         create_blake_round_input_input_limb_1,
         ms_8_bits_col48,
@@ -257,7 +257,7 @@ pub fn create_blake_round_input_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let split_16_low_part_size_8_output_tmp_f95c3_83_limb_0: QM31 =
+    let split_16_low_part_size_8_output_tmp_f95c3_91_limb_0: QM31 =
         split_16_low_part_size_8_evaluate(
         create_blake_round_input_input_limb_2,
         ms_8_bits_col49,
@@ -266,7 +266,7 @@ pub fn create_blake_round_input_evaluate(
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
-        [split_16_low_part_size_8_output_tmp_f95c3_81_limb_0, qm31_const::<127, 0, 0, 0>()],
+        [split_16_low_part_size_8_output_tmp_f95c3_89_limb_0, qm31_const::<127, 0, 0, 0>()],
         xor_col50,
         verify_bitwise_xor_8_lookup_elements,
         ref verify_bitwise_xor_8_sum_24,
@@ -284,7 +284,7 @@ pub fn create_blake_round_input_evaluate(
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
-        [split_16_low_part_size_8_output_tmp_f95c3_83_limb_0, qm31_const::<14, 0, 0, 0>()],
+        [split_16_low_part_size_8_output_tmp_f95c3_91_limb_0, qm31_const::<14, 0, 0, 0>()],
         xor_col52,
         verify_bitwise_xor_8_lookup_elements,
         ref verify_bitwise_xor_8_sum_26,

@@ -291,7 +291,7 @@ fn write_trace_simd(
                     blake_round_sigma_output_limb_15_col50,
                 ];
 
-                // Read Blake Word.
+                // Read U 32.
 
                 let memory_address_to_id_value_tmp_92ff8_1 = memory_address_to_id_state
                     .deduce_output(
@@ -315,7 +315,7 @@ fn write_trace_simd(
                 let expected_word_tmp_92ff8_4 =
                     PackedUInt32::from_limbs([low_16_bits_col51, high_16_bits_col52]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
                 let low_7_ms_bits_tmp_92ff8_5 = ((expected_word_tmp_92ff8_4.low()) >> (UInt16_9));
                 let low_7_ms_bits_col53 = low_7_ms_bits_tmp_92ff8_5.as_m31();
@@ -324,17 +324,19 @@ fn write_trace_simd(
                     ((expected_word_tmp_92ff8_4.high()) >> (UInt16_2));
                 let high_14_ms_bits_col54 = high_14_ms_bits_tmp_92ff8_6.as_m31();
                 *row[54] = high_14_ms_bits_col54;
-                let high_5_ms_bits_tmp_92ff8_7 = ((high_14_ms_bits_tmp_92ff8_6) >> (UInt16_9));
-                let high_5_ms_bits_col55 = high_5_ms_bits_tmp_92ff8_7.as_m31();
+                let high_2_ls_bits_tmp_92ff8_7 =
+                    ((high_16_bits_col52) - ((high_14_ms_bits_col54) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_8 = ((high_14_ms_bits_tmp_92ff8_6) >> (UInt16_9));
+                let high_5_ms_bits_col55 = high_5_ms_bits_tmp_92ff8_8.as_m31();
                 *row[55] = high_5_ms_bits_col55;
                 *sub_component_inputs.range_check_7_2_5[0] = [
                     low_7_ms_bits_col53,
-                    ((high_16_bits_col52) - ((high_14_ms_bits_col54) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_7,
                     high_5_ms_bits_col55,
                 ];
                 *lookup_data.range_check_7_2_5_0 = [
                     low_7_ms_bits_col53,
-                    ((high_16_bits_col52) - ((high_14_ms_bits_col54) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_7,
                     high_5_ms_bits_col55,
                 ];
 
@@ -342,11 +344,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_8 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_9 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_0_col35)),
                     );
-                let message_word_0_id_col56 = memory_address_to_id_value_tmp_92ff8_8;
+                let message_word_0_id_col56 = memory_address_to_id_value_tmp_92ff8_9;
                 *row[56] = message_word_0_id_col56;
                 *sub_component_inputs.memory_address_to_id[0] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_0_col35));
@@ -359,9 +361,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_0 = [
                     message_word_0_id_col56,
                     ((low_16_bits_col51) - ((low_7_ms_bits_col53) * (M31_512))),
-                    ((low_7_ms_bits_col53)
-                        + (((high_16_bits_col52) - ((high_14_ms_bits_col54) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col53) + ((high_2_ls_bits_tmp_92ff8_7) * (M31_128))),
                     ((high_14_ms_bits_col54) - ((high_5_ms_bits_col55) * (M31_512))),
                     high_5_ms_bits_col55,
                     M31_0,
@@ -390,52 +390,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_10 = expected_word_tmp_92ff8_4;
+                let read_u_32_output_tmp_92ff8_11 = expected_word_tmp_92ff8_4;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_11 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_12 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_1_col36)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_12 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_11);
-                let tmp_92ff8_13 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_12.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_13 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_12);
+                let tmp_92ff8_14 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_13.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col57 = ((((memory_id_to_big_value_tmp_92ff8_12.get_m31(1))
-                    - ((tmp_92ff8_13.as_m31()) * (M31_128)))
+                let low_16_bits_col57 = ((((memory_id_to_big_value_tmp_92ff8_13.get_m31(1))
+                    - ((tmp_92ff8_14.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_12.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_13.get_m31(0)));
                 *row[57] = low_16_bits_col57;
-                let high_16_bits_col58 = ((((memory_id_to_big_value_tmp_92ff8_12.get_m31(3))
+                let high_16_bits_col58 = ((((memory_id_to_big_value_tmp_92ff8_13.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_12.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_13.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_13.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_14.as_m31()));
                 *row[58] = high_16_bits_col58;
-                let expected_word_tmp_92ff8_14 =
+                let expected_word_tmp_92ff8_15 =
                     PackedUInt32::from_limbs([low_16_bits_col57, high_16_bits_col58]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_15 = ((expected_word_tmp_92ff8_14.low()) >> (UInt16_9));
-                let low_7_ms_bits_col59 = low_7_ms_bits_tmp_92ff8_15.as_m31();
+                let low_7_ms_bits_tmp_92ff8_16 = ((expected_word_tmp_92ff8_15.low()) >> (UInt16_9));
+                let low_7_ms_bits_col59 = low_7_ms_bits_tmp_92ff8_16.as_m31();
                 *row[59] = low_7_ms_bits_col59;
-                let high_14_ms_bits_tmp_92ff8_16 =
-                    ((expected_word_tmp_92ff8_14.high()) >> (UInt16_2));
-                let high_14_ms_bits_col60 = high_14_ms_bits_tmp_92ff8_16.as_m31();
+                let high_14_ms_bits_tmp_92ff8_17 =
+                    ((expected_word_tmp_92ff8_15.high()) >> (UInt16_2));
+                let high_14_ms_bits_col60 = high_14_ms_bits_tmp_92ff8_17.as_m31();
                 *row[60] = high_14_ms_bits_col60;
-                let high_5_ms_bits_tmp_92ff8_17 = ((high_14_ms_bits_tmp_92ff8_16) >> (UInt16_9));
-                let high_5_ms_bits_col61 = high_5_ms_bits_tmp_92ff8_17.as_m31();
+                let high_2_ls_bits_tmp_92ff8_18 =
+                    ((high_16_bits_col58) - ((high_14_ms_bits_col60) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_19 = ((high_14_ms_bits_tmp_92ff8_17) >> (UInt16_9));
+                let high_5_ms_bits_col61 = high_5_ms_bits_tmp_92ff8_19.as_m31();
                 *row[61] = high_5_ms_bits_col61;
                 *sub_component_inputs.range_check_7_2_5[1] = [
                     low_7_ms_bits_col59,
-                    ((high_16_bits_col58) - ((high_14_ms_bits_col60) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_18,
                     high_5_ms_bits_col61,
                 ];
                 *lookup_data.range_check_7_2_5_1 = [
                     low_7_ms_bits_col59,
-                    ((high_16_bits_col58) - ((high_14_ms_bits_col60) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_18,
                     high_5_ms_bits_col61,
                 ];
 
@@ -443,11 +445,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_18 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_20 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_1_col36)),
                     );
-                let message_word_1_id_col62 = memory_address_to_id_value_tmp_92ff8_18;
+                let message_word_1_id_col62 = memory_address_to_id_value_tmp_92ff8_20;
                 *row[62] = message_word_1_id_col62;
                 *sub_component_inputs.memory_address_to_id[1] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_1_col36));
@@ -460,9 +462,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_1 = [
                     message_word_1_id_col62,
                     ((low_16_bits_col57) - ((low_7_ms_bits_col59) * (M31_512))),
-                    ((low_7_ms_bits_col59)
-                        + (((high_16_bits_col58) - ((high_14_ms_bits_col60) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col59) + ((high_2_ls_bits_tmp_92ff8_18) * (M31_128))),
                     ((high_14_ms_bits_col60) - ((high_5_ms_bits_col61) * (M31_512))),
                     high_5_ms_bits_col61,
                     M31_0,
@@ -491,52 +491,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_20 = expected_word_tmp_92ff8_14;
+                let read_u_32_output_tmp_92ff8_22 = expected_word_tmp_92ff8_15;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_21 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_23 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_2_col37)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_22 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_21);
-                let tmp_92ff8_23 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_22.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_24 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_23);
+                let tmp_92ff8_25 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_24.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col63 = ((((memory_id_to_big_value_tmp_92ff8_22.get_m31(1))
-                    - ((tmp_92ff8_23.as_m31()) * (M31_128)))
+                let low_16_bits_col63 = ((((memory_id_to_big_value_tmp_92ff8_24.get_m31(1))
+                    - ((tmp_92ff8_25.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_22.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_24.get_m31(0)));
                 *row[63] = low_16_bits_col63;
-                let high_16_bits_col64 = ((((memory_id_to_big_value_tmp_92ff8_22.get_m31(3))
+                let high_16_bits_col64 = ((((memory_id_to_big_value_tmp_92ff8_24.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_22.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_23.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_24.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_25.as_m31()));
                 *row[64] = high_16_bits_col64;
-                let expected_word_tmp_92ff8_24 =
+                let expected_word_tmp_92ff8_26 =
                     PackedUInt32::from_limbs([low_16_bits_col63, high_16_bits_col64]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_25 = ((expected_word_tmp_92ff8_24.low()) >> (UInt16_9));
-                let low_7_ms_bits_col65 = low_7_ms_bits_tmp_92ff8_25.as_m31();
+                let low_7_ms_bits_tmp_92ff8_27 = ((expected_word_tmp_92ff8_26.low()) >> (UInt16_9));
+                let low_7_ms_bits_col65 = low_7_ms_bits_tmp_92ff8_27.as_m31();
                 *row[65] = low_7_ms_bits_col65;
-                let high_14_ms_bits_tmp_92ff8_26 =
-                    ((expected_word_tmp_92ff8_24.high()) >> (UInt16_2));
-                let high_14_ms_bits_col66 = high_14_ms_bits_tmp_92ff8_26.as_m31();
+                let high_14_ms_bits_tmp_92ff8_28 =
+                    ((expected_word_tmp_92ff8_26.high()) >> (UInt16_2));
+                let high_14_ms_bits_col66 = high_14_ms_bits_tmp_92ff8_28.as_m31();
                 *row[66] = high_14_ms_bits_col66;
-                let high_5_ms_bits_tmp_92ff8_27 = ((high_14_ms_bits_tmp_92ff8_26) >> (UInt16_9));
-                let high_5_ms_bits_col67 = high_5_ms_bits_tmp_92ff8_27.as_m31();
+                let high_2_ls_bits_tmp_92ff8_29 =
+                    ((high_16_bits_col64) - ((high_14_ms_bits_col66) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_30 = ((high_14_ms_bits_tmp_92ff8_28) >> (UInt16_9));
+                let high_5_ms_bits_col67 = high_5_ms_bits_tmp_92ff8_30.as_m31();
                 *row[67] = high_5_ms_bits_col67;
                 *sub_component_inputs.range_check_7_2_5[2] = [
                     low_7_ms_bits_col65,
-                    ((high_16_bits_col64) - ((high_14_ms_bits_col66) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_29,
                     high_5_ms_bits_col67,
                 ];
                 *lookup_data.range_check_7_2_5_2 = [
                     low_7_ms_bits_col65,
-                    ((high_16_bits_col64) - ((high_14_ms_bits_col66) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_29,
                     high_5_ms_bits_col67,
                 ];
 
@@ -544,11 +546,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_28 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_31 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_2_col37)),
                     );
-                let message_word_2_id_col68 = memory_address_to_id_value_tmp_92ff8_28;
+                let message_word_2_id_col68 = memory_address_to_id_value_tmp_92ff8_31;
                 *row[68] = message_word_2_id_col68;
                 *sub_component_inputs.memory_address_to_id[2] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_2_col37));
@@ -561,9 +563,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_2 = [
                     message_word_2_id_col68,
                     ((low_16_bits_col63) - ((low_7_ms_bits_col65) * (M31_512))),
-                    ((low_7_ms_bits_col65)
-                        + (((high_16_bits_col64) - ((high_14_ms_bits_col66) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col65) + ((high_2_ls_bits_tmp_92ff8_29) * (M31_128))),
                     ((high_14_ms_bits_col66) - ((high_5_ms_bits_col67) * (M31_512))),
                     high_5_ms_bits_col67,
                     M31_0,
@@ -592,52 +592,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_30 = expected_word_tmp_92ff8_24;
+                let read_u_32_output_tmp_92ff8_33 = expected_word_tmp_92ff8_26;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_31 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_34 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_3_col38)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_32 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_31);
-                let tmp_92ff8_33 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_32.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_35 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_34);
+                let tmp_92ff8_36 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_35.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col69 = ((((memory_id_to_big_value_tmp_92ff8_32.get_m31(1))
-                    - ((tmp_92ff8_33.as_m31()) * (M31_128)))
+                let low_16_bits_col69 = ((((memory_id_to_big_value_tmp_92ff8_35.get_m31(1))
+                    - ((tmp_92ff8_36.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_32.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_35.get_m31(0)));
                 *row[69] = low_16_bits_col69;
-                let high_16_bits_col70 = ((((memory_id_to_big_value_tmp_92ff8_32.get_m31(3))
+                let high_16_bits_col70 = ((((memory_id_to_big_value_tmp_92ff8_35.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_32.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_33.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_35.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_36.as_m31()));
                 *row[70] = high_16_bits_col70;
-                let expected_word_tmp_92ff8_34 =
+                let expected_word_tmp_92ff8_37 =
                     PackedUInt32::from_limbs([low_16_bits_col69, high_16_bits_col70]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_35 = ((expected_word_tmp_92ff8_34.low()) >> (UInt16_9));
-                let low_7_ms_bits_col71 = low_7_ms_bits_tmp_92ff8_35.as_m31();
+                let low_7_ms_bits_tmp_92ff8_38 = ((expected_word_tmp_92ff8_37.low()) >> (UInt16_9));
+                let low_7_ms_bits_col71 = low_7_ms_bits_tmp_92ff8_38.as_m31();
                 *row[71] = low_7_ms_bits_col71;
-                let high_14_ms_bits_tmp_92ff8_36 =
-                    ((expected_word_tmp_92ff8_34.high()) >> (UInt16_2));
-                let high_14_ms_bits_col72 = high_14_ms_bits_tmp_92ff8_36.as_m31();
+                let high_14_ms_bits_tmp_92ff8_39 =
+                    ((expected_word_tmp_92ff8_37.high()) >> (UInt16_2));
+                let high_14_ms_bits_col72 = high_14_ms_bits_tmp_92ff8_39.as_m31();
                 *row[72] = high_14_ms_bits_col72;
-                let high_5_ms_bits_tmp_92ff8_37 = ((high_14_ms_bits_tmp_92ff8_36) >> (UInt16_9));
-                let high_5_ms_bits_col73 = high_5_ms_bits_tmp_92ff8_37.as_m31();
+                let high_2_ls_bits_tmp_92ff8_40 =
+                    ((high_16_bits_col70) - ((high_14_ms_bits_col72) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_41 = ((high_14_ms_bits_tmp_92ff8_39) >> (UInt16_9));
+                let high_5_ms_bits_col73 = high_5_ms_bits_tmp_92ff8_41.as_m31();
                 *row[73] = high_5_ms_bits_col73;
                 *sub_component_inputs.range_check_7_2_5[3] = [
                     low_7_ms_bits_col71,
-                    ((high_16_bits_col70) - ((high_14_ms_bits_col72) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_40,
                     high_5_ms_bits_col73,
                 ];
                 *lookup_data.range_check_7_2_5_3 = [
                     low_7_ms_bits_col71,
-                    ((high_16_bits_col70) - ((high_14_ms_bits_col72) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_40,
                     high_5_ms_bits_col73,
                 ];
 
@@ -645,11 +647,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_38 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_42 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_3_col38)),
                     );
-                let message_word_3_id_col74 = memory_address_to_id_value_tmp_92ff8_38;
+                let message_word_3_id_col74 = memory_address_to_id_value_tmp_92ff8_42;
                 *row[74] = message_word_3_id_col74;
                 *sub_component_inputs.memory_address_to_id[3] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_3_col38));
@@ -662,9 +664,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_3 = [
                     message_word_3_id_col74,
                     ((low_16_bits_col69) - ((low_7_ms_bits_col71) * (M31_512))),
-                    ((low_7_ms_bits_col71)
-                        + (((high_16_bits_col70) - ((high_14_ms_bits_col72) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col71) + ((high_2_ls_bits_tmp_92ff8_40) * (M31_128))),
                     ((high_14_ms_bits_col72) - ((high_5_ms_bits_col73) * (M31_512))),
                     high_5_ms_bits_col73,
                     M31_0,
@@ -693,52 +693,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_40 = expected_word_tmp_92ff8_34;
+                let read_u_32_output_tmp_92ff8_44 = expected_word_tmp_92ff8_37;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_41 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_45 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_4_col39)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_42 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_41);
-                let tmp_92ff8_43 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_42.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_46 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_45);
+                let tmp_92ff8_47 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_46.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col75 = ((((memory_id_to_big_value_tmp_92ff8_42.get_m31(1))
-                    - ((tmp_92ff8_43.as_m31()) * (M31_128)))
+                let low_16_bits_col75 = ((((memory_id_to_big_value_tmp_92ff8_46.get_m31(1))
+                    - ((tmp_92ff8_47.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_42.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_46.get_m31(0)));
                 *row[75] = low_16_bits_col75;
-                let high_16_bits_col76 = ((((memory_id_to_big_value_tmp_92ff8_42.get_m31(3))
+                let high_16_bits_col76 = ((((memory_id_to_big_value_tmp_92ff8_46.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_42.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_43.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_46.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_47.as_m31()));
                 *row[76] = high_16_bits_col76;
-                let expected_word_tmp_92ff8_44 =
+                let expected_word_tmp_92ff8_48 =
                     PackedUInt32::from_limbs([low_16_bits_col75, high_16_bits_col76]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_45 = ((expected_word_tmp_92ff8_44.low()) >> (UInt16_9));
-                let low_7_ms_bits_col77 = low_7_ms_bits_tmp_92ff8_45.as_m31();
+                let low_7_ms_bits_tmp_92ff8_49 = ((expected_word_tmp_92ff8_48.low()) >> (UInt16_9));
+                let low_7_ms_bits_col77 = low_7_ms_bits_tmp_92ff8_49.as_m31();
                 *row[77] = low_7_ms_bits_col77;
-                let high_14_ms_bits_tmp_92ff8_46 =
-                    ((expected_word_tmp_92ff8_44.high()) >> (UInt16_2));
-                let high_14_ms_bits_col78 = high_14_ms_bits_tmp_92ff8_46.as_m31();
+                let high_14_ms_bits_tmp_92ff8_50 =
+                    ((expected_word_tmp_92ff8_48.high()) >> (UInt16_2));
+                let high_14_ms_bits_col78 = high_14_ms_bits_tmp_92ff8_50.as_m31();
                 *row[78] = high_14_ms_bits_col78;
-                let high_5_ms_bits_tmp_92ff8_47 = ((high_14_ms_bits_tmp_92ff8_46) >> (UInt16_9));
-                let high_5_ms_bits_col79 = high_5_ms_bits_tmp_92ff8_47.as_m31();
+                let high_2_ls_bits_tmp_92ff8_51 =
+                    ((high_16_bits_col76) - ((high_14_ms_bits_col78) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_52 = ((high_14_ms_bits_tmp_92ff8_50) >> (UInt16_9));
+                let high_5_ms_bits_col79 = high_5_ms_bits_tmp_92ff8_52.as_m31();
                 *row[79] = high_5_ms_bits_col79;
                 *sub_component_inputs.range_check_7_2_5[4] = [
                     low_7_ms_bits_col77,
-                    ((high_16_bits_col76) - ((high_14_ms_bits_col78) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_51,
                     high_5_ms_bits_col79,
                 ];
                 *lookup_data.range_check_7_2_5_4 = [
                     low_7_ms_bits_col77,
-                    ((high_16_bits_col76) - ((high_14_ms_bits_col78) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_51,
                     high_5_ms_bits_col79,
                 ];
 
@@ -746,11 +748,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_48 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_53 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_4_col39)),
                     );
-                let message_word_4_id_col80 = memory_address_to_id_value_tmp_92ff8_48;
+                let message_word_4_id_col80 = memory_address_to_id_value_tmp_92ff8_53;
                 *row[80] = message_word_4_id_col80;
                 *sub_component_inputs.memory_address_to_id[4] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_4_col39));
@@ -763,9 +765,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_4 = [
                     message_word_4_id_col80,
                     ((low_16_bits_col75) - ((low_7_ms_bits_col77) * (M31_512))),
-                    ((low_7_ms_bits_col77)
-                        + (((high_16_bits_col76) - ((high_14_ms_bits_col78) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col77) + ((high_2_ls_bits_tmp_92ff8_51) * (M31_128))),
                     ((high_14_ms_bits_col78) - ((high_5_ms_bits_col79) * (M31_512))),
                     high_5_ms_bits_col79,
                     M31_0,
@@ -794,52 +794,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_50 = expected_word_tmp_92ff8_44;
+                let read_u_32_output_tmp_92ff8_55 = expected_word_tmp_92ff8_48;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_51 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_56 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_5_col40)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_52 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_51);
-                let tmp_92ff8_53 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_52.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_57 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_56);
+                let tmp_92ff8_58 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_57.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col81 = ((((memory_id_to_big_value_tmp_92ff8_52.get_m31(1))
-                    - ((tmp_92ff8_53.as_m31()) * (M31_128)))
+                let low_16_bits_col81 = ((((memory_id_to_big_value_tmp_92ff8_57.get_m31(1))
+                    - ((tmp_92ff8_58.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_52.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_57.get_m31(0)));
                 *row[81] = low_16_bits_col81;
-                let high_16_bits_col82 = ((((memory_id_to_big_value_tmp_92ff8_52.get_m31(3))
+                let high_16_bits_col82 = ((((memory_id_to_big_value_tmp_92ff8_57.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_52.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_53.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_57.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_58.as_m31()));
                 *row[82] = high_16_bits_col82;
-                let expected_word_tmp_92ff8_54 =
+                let expected_word_tmp_92ff8_59 =
                     PackedUInt32::from_limbs([low_16_bits_col81, high_16_bits_col82]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_55 = ((expected_word_tmp_92ff8_54.low()) >> (UInt16_9));
-                let low_7_ms_bits_col83 = low_7_ms_bits_tmp_92ff8_55.as_m31();
+                let low_7_ms_bits_tmp_92ff8_60 = ((expected_word_tmp_92ff8_59.low()) >> (UInt16_9));
+                let low_7_ms_bits_col83 = low_7_ms_bits_tmp_92ff8_60.as_m31();
                 *row[83] = low_7_ms_bits_col83;
-                let high_14_ms_bits_tmp_92ff8_56 =
-                    ((expected_word_tmp_92ff8_54.high()) >> (UInt16_2));
-                let high_14_ms_bits_col84 = high_14_ms_bits_tmp_92ff8_56.as_m31();
+                let high_14_ms_bits_tmp_92ff8_61 =
+                    ((expected_word_tmp_92ff8_59.high()) >> (UInt16_2));
+                let high_14_ms_bits_col84 = high_14_ms_bits_tmp_92ff8_61.as_m31();
                 *row[84] = high_14_ms_bits_col84;
-                let high_5_ms_bits_tmp_92ff8_57 = ((high_14_ms_bits_tmp_92ff8_56) >> (UInt16_9));
-                let high_5_ms_bits_col85 = high_5_ms_bits_tmp_92ff8_57.as_m31();
+                let high_2_ls_bits_tmp_92ff8_62 =
+                    ((high_16_bits_col82) - ((high_14_ms_bits_col84) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_63 = ((high_14_ms_bits_tmp_92ff8_61) >> (UInt16_9));
+                let high_5_ms_bits_col85 = high_5_ms_bits_tmp_92ff8_63.as_m31();
                 *row[85] = high_5_ms_bits_col85;
                 *sub_component_inputs.range_check_7_2_5[5] = [
                     low_7_ms_bits_col83,
-                    ((high_16_bits_col82) - ((high_14_ms_bits_col84) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_62,
                     high_5_ms_bits_col85,
                 ];
                 *lookup_data.range_check_7_2_5_5 = [
                     low_7_ms_bits_col83,
-                    ((high_16_bits_col82) - ((high_14_ms_bits_col84) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_62,
                     high_5_ms_bits_col85,
                 ];
 
@@ -847,11 +849,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_58 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_64 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_5_col40)),
                     );
-                let message_word_5_id_col86 = memory_address_to_id_value_tmp_92ff8_58;
+                let message_word_5_id_col86 = memory_address_to_id_value_tmp_92ff8_64;
                 *row[86] = message_word_5_id_col86;
                 *sub_component_inputs.memory_address_to_id[5] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_5_col40));
@@ -864,9 +866,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_5 = [
                     message_word_5_id_col86,
                     ((low_16_bits_col81) - ((low_7_ms_bits_col83) * (M31_512))),
-                    ((low_7_ms_bits_col83)
-                        + (((high_16_bits_col82) - ((high_14_ms_bits_col84) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col83) + ((high_2_ls_bits_tmp_92ff8_62) * (M31_128))),
                     ((high_14_ms_bits_col84) - ((high_5_ms_bits_col85) * (M31_512))),
                     high_5_ms_bits_col85,
                     M31_0,
@@ -895,52 +895,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_60 = expected_word_tmp_92ff8_54;
+                let read_u_32_output_tmp_92ff8_66 = expected_word_tmp_92ff8_59;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_61 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_67 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_6_col41)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_62 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_61);
-                let tmp_92ff8_63 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_62.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_68 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_67);
+                let tmp_92ff8_69 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_68.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col87 = ((((memory_id_to_big_value_tmp_92ff8_62.get_m31(1))
-                    - ((tmp_92ff8_63.as_m31()) * (M31_128)))
+                let low_16_bits_col87 = ((((memory_id_to_big_value_tmp_92ff8_68.get_m31(1))
+                    - ((tmp_92ff8_69.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_62.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_68.get_m31(0)));
                 *row[87] = low_16_bits_col87;
-                let high_16_bits_col88 = ((((memory_id_to_big_value_tmp_92ff8_62.get_m31(3))
+                let high_16_bits_col88 = ((((memory_id_to_big_value_tmp_92ff8_68.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_62.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_63.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_68.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_69.as_m31()));
                 *row[88] = high_16_bits_col88;
-                let expected_word_tmp_92ff8_64 =
+                let expected_word_tmp_92ff8_70 =
                     PackedUInt32::from_limbs([low_16_bits_col87, high_16_bits_col88]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_65 = ((expected_word_tmp_92ff8_64.low()) >> (UInt16_9));
-                let low_7_ms_bits_col89 = low_7_ms_bits_tmp_92ff8_65.as_m31();
+                let low_7_ms_bits_tmp_92ff8_71 = ((expected_word_tmp_92ff8_70.low()) >> (UInt16_9));
+                let low_7_ms_bits_col89 = low_7_ms_bits_tmp_92ff8_71.as_m31();
                 *row[89] = low_7_ms_bits_col89;
-                let high_14_ms_bits_tmp_92ff8_66 =
-                    ((expected_word_tmp_92ff8_64.high()) >> (UInt16_2));
-                let high_14_ms_bits_col90 = high_14_ms_bits_tmp_92ff8_66.as_m31();
+                let high_14_ms_bits_tmp_92ff8_72 =
+                    ((expected_word_tmp_92ff8_70.high()) >> (UInt16_2));
+                let high_14_ms_bits_col90 = high_14_ms_bits_tmp_92ff8_72.as_m31();
                 *row[90] = high_14_ms_bits_col90;
-                let high_5_ms_bits_tmp_92ff8_67 = ((high_14_ms_bits_tmp_92ff8_66) >> (UInt16_9));
-                let high_5_ms_bits_col91 = high_5_ms_bits_tmp_92ff8_67.as_m31();
+                let high_2_ls_bits_tmp_92ff8_73 =
+                    ((high_16_bits_col88) - ((high_14_ms_bits_col90) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_74 = ((high_14_ms_bits_tmp_92ff8_72) >> (UInt16_9));
+                let high_5_ms_bits_col91 = high_5_ms_bits_tmp_92ff8_74.as_m31();
                 *row[91] = high_5_ms_bits_col91;
                 *sub_component_inputs.range_check_7_2_5[6] = [
                     low_7_ms_bits_col89,
-                    ((high_16_bits_col88) - ((high_14_ms_bits_col90) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_73,
                     high_5_ms_bits_col91,
                 ];
                 *lookup_data.range_check_7_2_5_6 = [
                     low_7_ms_bits_col89,
-                    ((high_16_bits_col88) - ((high_14_ms_bits_col90) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_73,
                     high_5_ms_bits_col91,
                 ];
 
@@ -948,11 +950,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_68 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_75 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_6_col41)),
                     );
-                let message_word_6_id_col92 = memory_address_to_id_value_tmp_92ff8_68;
+                let message_word_6_id_col92 = memory_address_to_id_value_tmp_92ff8_75;
                 *row[92] = message_word_6_id_col92;
                 *sub_component_inputs.memory_address_to_id[6] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_6_col41));
@@ -965,9 +967,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_6 = [
                     message_word_6_id_col92,
                     ((low_16_bits_col87) - ((low_7_ms_bits_col89) * (M31_512))),
-                    ((low_7_ms_bits_col89)
-                        + (((high_16_bits_col88) - ((high_14_ms_bits_col90) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col89) + ((high_2_ls_bits_tmp_92ff8_73) * (M31_128))),
                     ((high_14_ms_bits_col90) - ((high_5_ms_bits_col91) * (M31_512))),
                     high_5_ms_bits_col91,
                     M31_0,
@@ -996,52 +996,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_70 = expected_word_tmp_92ff8_64;
+                let read_u_32_output_tmp_92ff8_77 = expected_word_tmp_92ff8_70;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_71 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_78 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_7_col42)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_72 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_71);
-                let tmp_92ff8_73 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_72.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_79 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_78);
+                let tmp_92ff8_80 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_79.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col93 = ((((memory_id_to_big_value_tmp_92ff8_72.get_m31(1))
-                    - ((tmp_92ff8_73.as_m31()) * (M31_128)))
+                let low_16_bits_col93 = ((((memory_id_to_big_value_tmp_92ff8_79.get_m31(1))
+                    - ((tmp_92ff8_80.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_72.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_79.get_m31(0)));
                 *row[93] = low_16_bits_col93;
-                let high_16_bits_col94 = ((((memory_id_to_big_value_tmp_92ff8_72.get_m31(3))
+                let high_16_bits_col94 = ((((memory_id_to_big_value_tmp_92ff8_79.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_72.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_73.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_79.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_80.as_m31()));
                 *row[94] = high_16_bits_col94;
-                let expected_word_tmp_92ff8_74 =
+                let expected_word_tmp_92ff8_81 =
                     PackedUInt32::from_limbs([low_16_bits_col93, high_16_bits_col94]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_75 = ((expected_word_tmp_92ff8_74.low()) >> (UInt16_9));
-                let low_7_ms_bits_col95 = low_7_ms_bits_tmp_92ff8_75.as_m31();
+                let low_7_ms_bits_tmp_92ff8_82 = ((expected_word_tmp_92ff8_81.low()) >> (UInt16_9));
+                let low_7_ms_bits_col95 = low_7_ms_bits_tmp_92ff8_82.as_m31();
                 *row[95] = low_7_ms_bits_col95;
-                let high_14_ms_bits_tmp_92ff8_76 =
-                    ((expected_word_tmp_92ff8_74.high()) >> (UInt16_2));
-                let high_14_ms_bits_col96 = high_14_ms_bits_tmp_92ff8_76.as_m31();
+                let high_14_ms_bits_tmp_92ff8_83 =
+                    ((expected_word_tmp_92ff8_81.high()) >> (UInt16_2));
+                let high_14_ms_bits_col96 = high_14_ms_bits_tmp_92ff8_83.as_m31();
                 *row[96] = high_14_ms_bits_col96;
-                let high_5_ms_bits_tmp_92ff8_77 = ((high_14_ms_bits_tmp_92ff8_76) >> (UInt16_9));
-                let high_5_ms_bits_col97 = high_5_ms_bits_tmp_92ff8_77.as_m31();
+                let high_2_ls_bits_tmp_92ff8_84 =
+                    ((high_16_bits_col94) - ((high_14_ms_bits_col96) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_85 = ((high_14_ms_bits_tmp_92ff8_83) >> (UInt16_9));
+                let high_5_ms_bits_col97 = high_5_ms_bits_tmp_92ff8_85.as_m31();
                 *row[97] = high_5_ms_bits_col97;
                 *sub_component_inputs.range_check_7_2_5[7] = [
                     low_7_ms_bits_col95,
-                    ((high_16_bits_col94) - ((high_14_ms_bits_col96) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_84,
                     high_5_ms_bits_col97,
                 ];
                 *lookup_data.range_check_7_2_5_7 = [
                     low_7_ms_bits_col95,
-                    ((high_16_bits_col94) - ((high_14_ms_bits_col96) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_84,
                     high_5_ms_bits_col97,
                 ];
 
@@ -1049,11 +1051,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_78 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_86 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_7_col42)),
                     );
-                let message_word_7_id_col98 = memory_address_to_id_value_tmp_92ff8_78;
+                let message_word_7_id_col98 = memory_address_to_id_value_tmp_92ff8_86;
                 *row[98] = message_word_7_id_col98;
                 *sub_component_inputs.memory_address_to_id[7] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_7_col42));
@@ -1066,9 +1068,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_7 = [
                     message_word_7_id_col98,
                     ((low_16_bits_col93) - ((low_7_ms_bits_col95) * (M31_512))),
-                    ((low_7_ms_bits_col95)
-                        + (((high_16_bits_col94) - ((high_14_ms_bits_col96) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col95) + ((high_2_ls_bits_tmp_92ff8_84) * (M31_128))),
                     ((high_14_ms_bits_col96) - ((high_5_ms_bits_col97) * (M31_512))),
                     high_5_ms_bits_col97,
                     M31_0,
@@ -1097,52 +1097,54 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_80 = expected_word_tmp_92ff8_74;
+                let read_u_32_output_tmp_92ff8_88 = expected_word_tmp_92ff8_81;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_81 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_89 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_8_col43)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_82 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_81);
-                let tmp_92ff8_83 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_82.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_90 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_89);
+                let tmp_92ff8_91 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_90.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col99 = ((((memory_id_to_big_value_tmp_92ff8_82.get_m31(1))
-                    - ((tmp_92ff8_83.as_m31()) * (M31_128)))
+                let low_16_bits_col99 = ((((memory_id_to_big_value_tmp_92ff8_90.get_m31(1))
+                    - ((tmp_92ff8_91.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_82.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_90.get_m31(0)));
                 *row[99] = low_16_bits_col99;
-                let high_16_bits_col100 = ((((memory_id_to_big_value_tmp_92ff8_82.get_m31(3))
+                let high_16_bits_col100 = ((((memory_id_to_big_value_tmp_92ff8_90.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_82.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_83.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_90.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_91.as_m31()));
                 *row[100] = high_16_bits_col100;
-                let expected_word_tmp_92ff8_84 =
+                let expected_word_tmp_92ff8_92 =
                     PackedUInt32::from_limbs([low_16_bits_col99, high_16_bits_col100]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_85 = ((expected_word_tmp_92ff8_84.low()) >> (UInt16_9));
-                let low_7_ms_bits_col101 = low_7_ms_bits_tmp_92ff8_85.as_m31();
+                let low_7_ms_bits_tmp_92ff8_93 = ((expected_word_tmp_92ff8_92.low()) >> (UInt16_9));
+                let low_7_ms_bits_col101 = low_7_ms_bits_tmp_92ff8_93.as_m31();
                 *row[101] = low_7_ms_bits_col101;
-                let high_14_ms_bits_tmp_92ff8_86 =
-                    ((expected_word_tmp_92ff8_84.high()) >> (UInt16_2));
-                let high_14_ms_bits_col102 = high_14_ms_bits_tmp_92ff8_86.as_m31();
+                let high_14_ms_bits_tmp_92ff8_94 =
+                    ((expected_word_tmp_92ff8_92.high()) >> (UInt16_2));
+                let high_14_ms_bits_col102 = high_14_ms_bits_tmp_92ff8_94.as_m31();
                 *row[102] = high_14_ms_bits_col102;
-                let high_5_ms_bits_tmp_92ff8_87 = ((high_14_ms_bits_tmp_92ff8_86) >> (UInt16_9));
-                let high_5_ms_bits_col103 = high_5_ms_bits_tmp_92ff8_87.as_m31();
+                let high_2_ls_bits_tmp_92ff8_95 =
+                    ((high_16_bits_col100) - ((high_14_ms_bits_col102) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_96 = ((high_14_ms_bits_tmp_92ff8_94) >> (UInt16_9));
+                let high_5_ms_bits_col103 = high_5_ms_bits_tmp_92ff8_96.as_m31();
                 *row[103] = high_5_ms_bits_col103;
                 *sub_component_inputs.range_check_7_2_5[8] = [
                     low_7_ms_bits_col101,
-                    ((high_16_bits_col100) - ((high_14_ms_bits_col102) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_95,
                     high_5_ms_bits_col103,
                 ];
                 *lookup_data.range_check_7_2_5_8 = [
                     low_7_ms_bits_col101,
-                    ((high_16_bits_col100) - ((high_14_ms_bits_col102) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_95,
                     high_5_ms_bits_col103,
                 ];
 
@@ -1150,11 +1152,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_88 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_97 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_8_col43)),
                     );
-                let message_word_8_id_col104 = memory_address_to_id_value_tmp_92ff8_88;
+                let message_word_8_id_col104 = memory_address_to_id_value_tmp_92ff8_97;
                 *row[104] = message_word_8_id_col104;
                 *sub_component_inputs.memory_address_to_id[8] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_8_col43));
@@ -1167,9 +1169,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_8 = [
                     message_word_8_id_col104,
                     ((low_16_bits_col99) - ((low_7_ms_bits_col101) * (M31_512))),
-                    ((low_7_ms_bits_col101)
-                        + (((high_16_bits_col100) - ((high_14_ms_bits_col102) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col101) + ((high_2_ls_bits_tmp_92ff8_95) * (M31_128))),
                     ((high_14_ms_bits_col102) - ((high_5_ms_bits_col103) * (M31_512))),
                     high_5_ms_bits_col103,
                     M31_0,
@@ -1198,52 +1198,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_90 = expected_word_tmp_92ff8_84;
+                let read_u_32_output_tmp_92ff8_99 = expected_word_tmp_92ff8_92;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_91 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_100 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_9_col44)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_92 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_91);
-                let tmp_92ff8_93 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_92.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_101 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_100);
+                let tmp_92ff8_102 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_101.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col105 = ((((memory_id_to_big_value_tmp_92ff8_92.get_m31(1))
-                    - ((tmp_92ff8_93.as_m31()) * (M31_128)))
+                let low_16_bits_col105 = ((((memory_id_to_big_value_tmp_92ff8_101.get_m31(1))
+                    - ((tmp_92ff8_102.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_92.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_101.get_m31(0)));
                 *row[105] = low_16_bits_col105;
-                let high_16_bits_col106 = ((((memory_id_to_big_value_tmp_92ff8_92.get_m31(3))
+                let high_16_bits_col106 = ((((memory_id_to_big_value_tmp_92ff8_101.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_92.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_93.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_101.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_102.as_m31()));
                 *row[106] = high_16_bits_col106;
-                let expected_word_tmp_92ff8_94 =
+                let expected_word_tmp_92ff8_103 =
                     PackedUInt32::from_limbs([low_16_bits_col105, high_16_bits_col106]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_95 = ((expected_word_tmp_92ff8_94.low()) >> (UInt16_9));
-                let low_7_ms_bits_col107 = low_7_ms_bits_tmp_92ff8_95.as_m31();
+                let low_7_ms_bits_tmp_92ff8_104 =
+                    ((expected_word_tmp_92ff8_103.low()) >> (UInt16_9));
+                let low_7_ms_bits_col107 = low_7_ms_bits_tmp_92ff8_104.as_m31();
                 *row[107] = low_7_ms_bits_col107;
-                let high_14_ms_bits_tmp_92ff8_96 =
-                    ((expected_word_tmp_92ff8_94.high()) >> (UInt16_2));
-                let high_14_ms_bits_col108 = high_14_ms_bits_tmp_92ff8_96.as_m31();
+                let high_14_ms_bits_tmp_92ff8_105 =
+                    ((expected_word_tmp_92ff8_103.high()) >> (UInt16_2));
+                let high_14_ms_bits_col108 = high_14_ms_bits_tmp_92ff8_105.as_m31();
                 *row[108] = high_14_ms_bits_col108;
-                let high_5_ms_bits_tmp_92ff8_97 = ((high_14_ms_bits_tmp_92ff8_96) >> (UInt16_9));
-                let high_5_ms_bits_col109 = high_5_ms_bits_tmp_92ff8_97.as_m31();
+                let high_2_ls_bits_tmp_92ff8_106 =
+                    ((high_16_bits_col106) - ((high_14_ms_bits_col108) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_107 = ((high_14_ms_bits_tmp_92ff8_105) >> (UInt16_9));
+                let high_5_ms_bits_col109 = high_5_ms_bits_tmp_92ff8_107.as_m31();
                 *row[109] = high_5_ms_bits_col109;
                 *sub_component_inputs.range_check_7_2_5[9] = [
                     low_7_ms_bits_col107,
-                    ((high_16_bits_col106) - ((high_14_ms_bits_col108) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_106,
                     high_5_ms_bits_col109,
                 ];
                 *lookup_data.range_check_7_2_5_9 = [
                     low_7_ms_bits_col107,
-                    ((high_16_bits_col106) - ((high_14_ms_bits_col108) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_106,
                     high_5_ms_bits_col109,
                 ];
 
@@ -1251,11 +1254,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_98 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_108 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_9_col44)),
                     );
-                let message_word_9_id_col110 = memory_address_to_id_value_tmp_92ff8_98;
+                let message_word_9_id_col110 = memory_address_to_id_value_tmp_92ff8_108;
                 *row[110] = message_word_9_id_col110;
                 *sub_component_inputs.memory_address_to_id[9] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_9_col44));
@@ -1268,9 +1271,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_9 = [
                     message_word_9_id_col110,
                     ((low_16_bits_col105) - ((low_7_ms_bits_col107) * (M31_512))),
-                    ((low_7_ms_bits_col107)
-                        + (((high_16_bits_col106) - ((high_14_ms_bits_col108) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col107) + ((high_2_ls_bits_tmp_92ff8_106) * (M31_128))),
                     ((high_14_ms_bits_col108) - ((high_5_ms_bits_col109) * (M31_512))),
                     high_5_ms_bits_col109,
                     M31_0,
@@ -1299,53 +1300,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_100 = expected_word_tmp_92ff8_94;
+                let read_u_32_output_tmp_92ff8_110 = expected_word_tmp_92ff8_103;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_101 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_111 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_10_col45)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_102 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_101);
-                let tmp_92ff8_103 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_102.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_112 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_111);
+                let tmp_92ff8_113 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_112.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col111 = ((((memory_id_to_big_value_tmp_92ff8_102.get_m31(1))
-                    - ((tmp_92ff8_103.as_m31()) * (M31_128)))
+                let low_16_bits_col111 = ((((memory_id_to_big_value_tmp_92ff8_112.get_m31(1))
+                    - ((tmp_92ff8_113.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_102.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_112.get_m31(0)));
                 *row[111] = low_16_bits_col111;
-                let high_16_bits_col112 = ((((memory_id_to_big_value_tmp_92ff8_102.get_m31(3))
+                let high_16_bits_col112 = ((((memory_id_to_big_value_tmp_92ff8_112.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_102.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_103.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_112.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_113.as_m31()));
                 *row[112] = high_16_bits_col112;
-                let expected_word_tmp_92ff8_104 =
+                let expected_word_tmp_92ff8_114 =
                     PackedUInt32::from_limbs([low_16_bits_col111, high_16_bits_col112]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_105 =
-                    ((expected_word_tmp_92ff8_104.low()) >> (UInt16_9));
-                let low_7_ms_bits_col113 = low_7_ms_bits_tmp_92ff8_105.as_m31();
+                let low_7_ms_bits_tmp_92ff8_115 =
+                    ((expected_word_tmp_92ff8_114.low()) >> (UInt16_9));
+                let low_7_ms_bits_col113 = low_7_ms_bits_tmp_92ff8_115.as_m31();
                 *row[113] = low_7_ms_bits_col113;
-                let high_14_ms_bits_tmp_92ff8_106 =
-                    ((expected_word_tmp_92ff8_104.high()) >> (UInt16_2));
-                let high_14_ms_bits_col114 = high_14_ms_bits_tmp_92ff8_106.as_m31();
+                let high_14_ms_bits_tmp_92ff8_116 =
+                    ((expected_word_tmp_92ff8_114.high()) >> (UInt16_2));
+                let high_14_ms_bits_col114 = high_14_ms_bits_tmp_92ff8_116.as_m31();
                 *row[114] = high_14_ms_bits_col114;
-                let high_5_ms_bits_tmp_92ff8_107 = ((high_14_ms_bits_tmp_92ff8_106) >> (UInt16_9));
-                let high_5_ms_bits_col115 = high_5_ms_bits_tmp_92ff8_107.as_m31();
+                let high_2_ls_bits_tmp_92ff8_117 =
+                    ((high_16_bits_col112) - ((high_14_ms_bits_col114) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_118 = ((high_14_ms_bits_tmp_92ff8_116) >> (UInt16_9));
+                let high_5_ms_bits_col115 = high_5_ms_bits_tmp_92ff8_118.as_m31();
                 *row[115] = high_5_ms_bits_col115;
                 *sub_component_inputs.range_check_7_2_5[10] = [
                     low_7_ms_bits_col113,
-                    ((high_16_bits_col112) - ((high_14_ms_bits_col114) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_117,
                     high_5_ms_bits_col115,
                 ];
                 *lookup_data.range_check_7_2_5_10 = [
                     low_7_ms_bits_col113,
-                    ((high_16_bits_col112) - ((high_14_ms_bits_col114) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_117,
                     high_5_ms_bits_col115,
                 ];
 
@@ -1353,11 +1356,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_108 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_119 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_10_col45)),
                     );
-                let message_word_10_id_col116 = memory_address_to_id_value_tmp_92ff8_108;
+                let message_word_10_id_col116 = memory_address_to_id_value_tmp_92ff8_119;
                 *row[116] = message_word_10_id_col116;
                 *sub_component_inputs.memory_address_to_id[10] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_10_col45));
@@ -1370,9 +1373,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_10 = [
                     message_word_10_id_col116,
                     ((low_16_bits_col111) - ((low_7_ms_bits_col113) * (M31_512))),
-                    ((low_7_ms_bits_col113)
-                        + (((high_16_bits_col112) - ((high_14_ms_bits_col114) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col113) + ((high_2_ls_bits_tmp_92ff8_117) * (M31_128))),
                     ((high_14_ms_bits_col114) - ((high_5_ms_bits_col115) * (M31_512))),
                     high_5_ms_bits_col115,
                     M31_0,
@@ -1401,53 +1402,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_110 = expected_word_tmp_92ff8_104;
+                let read_u_32_output_tmp_92ff8_121 = expected_word_tmp_92ff8_114;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_111 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_122 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_11_col46)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_112 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_111);
-                let tmp_92ff8_113 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_112.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_123 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_122);
+                let tmp_92ff8_124 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_123.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col117 = ((((memory_id_to_big_value_tmp_92ff8_112.get_m31(1))
-                    - ((tmp_92ff8_113.as_m31()) * (M31_128)))
+                let low_16_bits_col117 = ((((memory_id_to_big_value_tmp_92ff8_123.get_m31(1))
+                    - ((tmp_92ff8_124.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_112.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_123.get_m31(0)));
                 *row[117] = low_16_bits_col117;
-                let high_16_bits_col118 = ((((memory_id_to_big_value_tmp_92ff8_112.get_m31(3))
+                let high_16_bits_col118 = ((((memory_id_to_big_value_tmp_92ff8_123.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_112.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_113.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_123.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_124.as_m31()));
                 *row[118] = high_16_bits_col118;
-                let expected_word_tmp_92ff8_114 =
+                let expected_word_tmp_92ff8_125 =
                     PackedUInt32::from_limbs([low_16_bits_col117, high_16_bits_col118]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_115 =
-                    ((expected_word_tmp_92ff8_114.low()) >> (UInt16_9));
-                let low_7_ms_bits_col119 = low_7_ms_bits_tmp_92ff8_115.as_m31();
+                let low_7_ms_bits_tmp_92ff8_126 =
+                    ((expected_word_tmp_92ff8_125.low()) >> (UInt16_9));
+                let low_7_ms_bits_col119 = low_7_ms_bits_tmp_92ff8_126.as_m31();
                 *row[119] = low_7_ms_bits_col119;
-                let high_14_ms_bits_tmp_92ff8_116 =
-                    ((expected_word_tmp_92ff8_114.high()) >> (UInt16_2));
-                let high_14_ms_bits_col120 = high_14_ms_bits_tmp_92ff8_116.as_m31();
+                let high_14_ms_bits_tmp_92ff8_127 =
+                    ((expected_word_tmp_92ff8_125.high()) >> (UInt16_2));
+                let high_14_ms_bits_col120 = high_14_ms_bits_tmp_92ff8_127.as_m31();
                 *row[120] = high_14_ms_bits_col120;
-                let high_5_ms_bits_tmp_92ff8_117 = ((high_14_ms_bits_tmp_92ff8_116) >> (UInt16_9));
-                let high_5_ms_bits_col121 = high_5_ms_bits_tmp_92ff8_117.as_m31();
+                let high_2_ls_bits_tmp_92ff8_128 =
+                    ((high_16_bits_col118) - ((high_14_ms_bits_col120) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_129 = ((high_14_ms_bits_tmp_92ff8_127) >> (UInt16_9));
+                let high_5_ms_bits_col121 = high_5_ms_bits_tmp_92ff8_129.as_m31();
                 *row[121] = high_5_ms_bits_col121;
                 *sub_component_inputs.range_check_7_2_5[11] = [
                     low_7_ms_bits_col119,
-                    ((high_16_bits_col118) - ((high_14_ms_bits_col120) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_128,
                     high_5_ms_bits_col121,
                 ];
                 *lookup_data.range_check_7_2_5_11 = [
                     low_7_ms_bits_col119,
-                    ((high_16_bits_col118) - ((high_14_ms_bits_col120) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_128,
                     high_5_ms_bits_col121,
                 ];
 
@@ -1455,11 +1458,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_118 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_130 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_11_col46)),
                     );
-                let message_word_11_id_col122 = memory_address_to_id_value_tmp_92ff8_118;
+                let message_word_11_id_col122 = memory_address_to_id_value_tmp_92ff8_130;
                 *row[122] = message_word_11_id_col122;
                 *sub_component_inputs.memory_address_to_id[11] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_11_col46));
@@ -1472,9 +1475,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_11 = [
                     message_word_11_id_col122,
                     ((low_16_bits_col117) - ((low_7_ms_bits_col119) * (M31_512))),
-                    ((low_7_ms_bits_col119)
-                        + (((high_16_bits_col118) - ((high_14_ms_bits_col120) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col119) + ((high_2_ls_bits_tmp_92ff8_128) * (M31_128))),
                     ((high_14_ms_bits_col120) - ((high_5_ms_bits_col121) * (M31_512))),
                     high_5_ms_bits_col121,
                     M31_0,
@@ -1503,53 +1504,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_120 = expected_word_tmp_92ff8_114;
+                let read_u_32_output_tmp_92ff8_132 = expected_word_tmp_92ff8_125;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_121 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_133 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_12_col47)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_122 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_121);
-                let tmp_92ff8_123 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_122.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_134 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_133);
+                let tmp_92ff8_135 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_134.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col123 = ((((memory_id_to_big_value_tmp_92ff8_122.get_m31(1))
-                    - ((tmp_92ff8_123.as_m31()) * (M31_128)))
+                let low_16_bits_col123 = ((((memory_id_to_big_value_tmp_92ff8_134.get_m31(1))
+                    - ((tmp_92ff8_135.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_122.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_134.get_m31(0)));
                 *row[123] = low_16_bits_col123;
-                let high_16_bits_col124 = ((((memory_id_to_big_value_tmp_92ff8_122.get_m31(3))
+                let high_16_bits_col124 = ((((memory_id_to_big_value_tmp_92ff8_134.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_122.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_123.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_134.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_135.as_m31()));
                 *row[124] = high_16_bits_col124;
-                let expected_word_tmp_92ff8_124 =
+                let expected_word_tmp_92ff8_136 =
                     PackedUInt32::from_limbs([low_16_bits_col123, high_16_bits_col124]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_125 =
-                    ((expected_word_tmp_92ff8_124.low()) >> (UInt16_9));
-                let low_7_ms_bits_col125 = low_7_ms_bits_tmp_92ff8_125.as_m31();
+                let low_7_ms_bits_tmp_92ff8_137 =
+                    ((expected_word_tmp_92ff8_136.low()) >> (UInt16_9));
+                let low_7_ms_bits_col125 = low_7_ms_bits_tmp_92ff8_137.as_m31();
                 *row[125] = low_7_ms_bits_col125;
-                let high_14_ms_bits_tmp_92ff8_126 =
-                    ((expected_word_tmp_92ff8_124.high()) >> (UInt16_2));
-                let high_14_ms_bits_col126 = high_14_ms_bits_tmp_92ff8_126.as_m31();
+                let high_14_ms_bits_tmp_92ff8_138 =
+                    ((expected_word_tmp_92ff8_136.high()) >> (UInt16_2));
+                let high_14_ms_bits_col126 = high_14_ms_bits_tmp_92ff8_138.as_m31();
                 *row[126] = high_14_ms_bits_col126;
-                let high_5_ms_bits_tmp_92ff8_127 = ((high_14_ms_bits_tmp_92ff8_126) >> (UInt16_9));
-                let high_5_ms_bits_col127 = high_5_ms_bits_tmp_92ff8_127.as_m31();
+                let high_2_ls_bits_tmp_92ff8_139 =
+                    ((high_16_bits_col124) - ((high_14_ms_bits_col126) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_140 = ((high_14_ms_bits_tmp_92ff8_138) >> (UInt16_9));
+                let high_5_ms_bits_col127 = high_5_ms_bits_tmp_92ff8_140.as_m31();
                 *row[127] = high_5_ms_bits_col127;
                 *sub_component_inputs.range_check_7_2_5[12] = [
                     low_7_ms_bits_col125,
-                    ((high_16_bits_col124) - ((high_14_ms_bits_col126) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_139,
                     high_5_ms_bits_col127,
                 ];
                 *lookup_data.range_check_7_2_5_12 = [
                     low_7_ms_bits_col125,
-                    ((high_16_bits_col124) - ((high_14_ms_bits_col126) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_139,
                     high_5_ms_bits_col127,
                 ];
 
@@ -1557,11 +1560,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_128 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_141 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_12_col47)),
                     );
-                let message_word_12_id_col128 = memory_address_to_id_value_tmp_92ff8_128;
+                let message_word_12_id_col128 = memory_address_to_id_value_tmp_92ff8_141;
                 *row[128] = message_word_12_id_col128;
                 *sub_component_inputs.memory_address_to_id[12] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_12_col47));
@@ -1574,9 +1577,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_12 = [
                     message_word_12_id_col128,
                     ((low_16_bits_col123) - ((low_7_ms_bits_col125) * (M31_512))),
-                    ((low_7_ms_bits_col125)
-                        + (((high_16_bits_col124) - ((high_14_ms_bits_col126) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col125) + ((high_2_ls_bits_tmp_92ff8_139) * (M31_128))),
                     ((high_14_ms_bits_col126) - ((high_5_ms_bits_col127) * (M31_512))),
                     high_5_ms_bits_col127,
                     M31_0,
@@ -1605,53 +1606,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_130 = expected_word_tmp_92ff8_124;
+                let read_u_32_output_tmp_92ff8_143 = expected_word_tmp_92ff8_136;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_131 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_144 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_13_col48)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_132 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_131);
-                let tmp_92ff8_133 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_132.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_145 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_144);
+                let tmp_92ff8_146 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_145.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col129 = ((((memory_id_to_big_value_tmp_92ff8_132.get_m31(1))
-                    - ((tmp_92ff8_133.as_m31()) * (M31_128)))
+                let low_16_bits_col129 = ((((memory_id_to_big_value_tmp_92ff8_145.get_m31(1))
+                    - ((tmp_92ff8_146.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_132.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_145.get_m31(0)));
                 *row[129] = low_16_bits_col129;
-                let high_16_bits_col130 = ((((memory_id_to_big_value_tmp_92ff8_132.get_m31(3))
+                let high_16_bits_col130 = ((((memory_id_to_big_value_tmp_92ff8_145.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_132.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_133.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_145.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_146.as_m31()));
                 *row[130] = high_16_bits_col130;
-                let expected_word_tmp_92ff8_134 =
+                let expected_word_tmp_92ff8_147 =
                     PackedUInt32::from_limbs([low_16_bits_col129, high_16_bits_col130]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_135 =
-                    ((expected_word_tmp_92ff8_134.low()) >> (UInt16_9));
-                let low_7_ms_bits_col131 = low_7_ms_bits_tmp_92ff8_135.as_m31();
+                let low_7_ms_bits_tmp_92ff8_148 =
+                    ((expected_word_tmp_92ff8_147.low()) >> (UInt16_9));
+                let low_7_ms_bits_col131 = low_7_ms_bits_tmp_92ff8_148.as_m31();
                 *row[131] = low_7_ms_bits_col131;
-                let high_14_ms_bits_tmp_92ff8_136 =
-                    ((expected_word_tmp_92ff8_134.high()) >> (UInt16_2));
-                let high_14_ms_bits_col132 = high_14_ms_bits_tmp_92ff8_136.as_m31();
+                let high_14_ms_bits_tmp_92ff8_149 =
+                    ((expected_word_tmp_92ff8_147.high()) >> (UInt16_2));
+                let high_14_ms_bits_col132 = high_14_ms_bits_tmp_92ff8_149.as_m31();
                 *row[132] = high_14_ms_bits_col132;
-                let high_5_ms_bits_tmp_92ff8_137 = ((high_14_ms_bits_tmp_92ff8_136) >> (UInt16_9));
-                let high_5_ms_bits_col133 = high_5_ms_bits_tmp_92ff8_137.as_m31();
+                let high_2_ls_bits_tmp_92ff8_150 =
+                    ((high_16_bits_col130) - ((high_14_ms_bits_col132) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_151 = ((high_14_ms_bits_tmp_92ff8_149) >> (UInt16_9));
+                let high_5_ms_bits_col133 = high_5_ms_bits_tmp_92ff8_151.as_m31();
                 *row[133] = high_5_ms_bits_col133;
                 *sub_component_inputs.range_check_7_2_5[13] = [
                     low_7_ms_bits_col131,
-                    ((high_16_bits_col130) - ((high_14_ms_bits_col132) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_150,
                     high_5_ms_bits_col133,
                 ];
                 *lookup_data.range_check_7_2_5_13 = [
                     low_7_ms_bits_col131,
-                    ((high_16_bits_col130) - ((high_14_ms_bits_col132) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_150,
                     high_5_ms_bits_col133,
                 ];
 
@@ -1659,11 +1662,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_138 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_152 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_13_col48)),
                     );
-                let message_word_13_id_col134 = memory_address_to_id_value_tmp_92ff8_138;
+                let message_word_13_id_col134 = memory_address_to_id_value_tmp_92ff8_152;
                 *row[134] = message_word_13_id_col134;
                 *sub_component_inputs.memory_address_to_id[13] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_13_col48));
@@ -1676,9 +1679,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_13 = [
                     message_word_13_id_col134,
                     ((low_16_bits_col129) - ((low_7_ms_bits_col131) * (M31_512))),
-                    ((low_7_ms_bits_col131)
-                        + (((high_16_bits_col130) - ((high_14_ms_bits_col132) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col131) + ((high_2_ls_bits_tmp_92ff8_150) * (M31_128))),
                     ((high_14_ms_bits_col132) - ((high_5_ms_bits_col133) * (M31_512))),
                     high_5_ms_bits_col133,
                     M31_0,
@@ -1707,53 +1708,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_140 = expected_word_tmp_92ff8_134;
+                let read_u_32_output_tmp_92ff8_154 = expected_word_tmp_92ff8_147;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_141 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_155 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_14_col49)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_142 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_141);
-                let tmp_92ff8_143 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_142.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_156 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_155);
+                let tmp_92ff8_157 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_156.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col135 = ((((memory_id_to_big_value_tmp_92ff8_142.get_m31(1))
-                    - ((tmp_92ff8_143.as_m31()) * (M31_128)))
+                let low_16_bits_col135 = ((((memory_id_to_big_value_tmp_92ff8_156.get_m31(1))
+                    - ((tmp_92ff8_157.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_142.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_156.get_m31(0)));
                 *row[135] = low_16_bits_col135;
-                let high_16_bits_col136 = ((((memory_id_to_big_value_tmp_92ff8_142.get_m31(3))
+                let high_16_bits_col136 = ((((memory_id_to_big_value_tmp_92ff8_156.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_142.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_143.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_156.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_157.as_m31()));
                 *row[136] = high_16_bits_col136;
-                let expected_word_tmp_92ff8_144 =
+                let expected_word_tmp_92ff8_158 =
                     PackedUInt32::from_limbs([low_16_bits_col135, high_16_bits_col136]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_145 =
-                    ((expected_word_tmp_92ff8_144.low()) >> (UInt16_9));
-                let low_7_ms_bits_col137 = low_7_ms_bits_tmp_92ff8_145.as_m31();
+                let low_7_ms_bits_tmp_92ff8_159 =
+                    ((expected_word_tmp_92ff8_158.low()) >> (UInt16_9));
+                let low_7_ms_bits_col137 = low_7_ms_bits_tmp_92ff8_159.as_m31();
                 *row[137] = low_7_ms_bits_col137;
-                let high_14_ms_bits_tmp_92ff8_146 =
-                    ((expected_word_tmp_92ff8_144.high()) >> (UInt16_2));
-                let high_14_ms_bits_col138 = high_14_ms_bits_tmp_92ff8_146.as_m31();
+                let high_14_ms_bits_tmp_92ff8_160 =
+                    ((expected_word_tmp_92ff8_158.high()) >> (UInt16_2));
+                let high_14_ms_bits_col138 = high_14_ms_bits_tmp_92ff8_160.as_m31();
                 *row[138] = high_14_ms_bits_col138;
-                let high_5_ms_bits_tmp_92ff8_147 = ((high_14_ms_bits_tmp_92ff8_146) >> (UInt16_9));
-                let high_5_ms_bits_col139 = high_5_ms_bits_tmp_92ff8_147.as_m31();
+                let high_2_ls_bits_tmp_92ff8_161 =
+                    ((high_16_bits_col136) - ((high_14_ms_bits_col138) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_162 = ((high_14_ms_bits_tmp_92ff8_160) >> (UInt16_9));
+                let high_5_ms_bits_col139 = high_5_ms_bits_tmp_92ff8_162.as_m31();
                 *row[139] = high_5_ms_bits_col139;
                 *sub_component_inputs.range_check_7_2_5[14] = [
                     low_7_ms_bits_col137,
-                    ((high_16_bits_col136) - ((high_14_ms_bits_col138) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_161,
                     high_5_ms_bits_col139,
                 ];
                 *lookup_data.range_check_7_2_5_14 = [
                     low_7_ms_bits_col137,
-                    ((high_16_bits_col136) - ((high_14_ms_bits_col138) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_161,
                     high_5_ms_bits_col139,
                 ];
 
@@ -1761,11 +1764,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_148 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_163 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_14_col49)),
                     );
-                let message_word_14_id_col140 = memory_address_to_id_value_tmp_92ff8_148;
+                let message_word_14_id_col140 = memory_address_to_id_value_tmp_92ff8_163;
                 *row[140] = message_word_14_id_col140;
                 *sub_component_inputs.memory_address_to_id[14] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_14_col49));
@@ -1778,9 +1781,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_14 = [
                     message_word_14_id_col140,
                     ((low_16_bits_col135) - ((low_7_ms_bits_col137) * (M31_512))),
-                    ((low_7_ms_bits_col137)
-                        + (((high_16_bits_col136) - ((high_14_ms_bits_col138) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col137) + ((high_2_ls_bits_tmp_92ff8_161) * (M31_128))),
                     ((high_14_ms_bits_col138) - ((high_5_ms_bits_col139) * (M31_512))),
                     high_5_ms_bits_col139,
                     M31_0,
@@ -1809,53 +1810,55 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_150 = expected_word_tmp_92ff8_144;
+                let read_u_32_output_tmp_92ff8_165 = expected_word_tmp_92ff8_158;
 
-                // Read Blake Word.
+                // Read U 32.
 
-                let memory_address_to_id_value_tmp_92ff8_151 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_166 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_15_col50)),
                     );
-                let memory_id_to_big_value_tmp_92ff8_152 =
-                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_151);
-                let tmp_92ff8_153 =
-                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_152.get_m31(1)))
+                let memory_id_to_big_value_tmp_92ff8_167 =
+                    memory_id_to_big_state.deduce_output(memory_address_to_id_value_tmp_92ff8_166);
+                let tmp_92ff8_168 =
+                    ((PackedUInt16::from_m31(memory_id_to_big_value_tmp_92ff8_167.get_m31(1)))
                         >> (UInt16_7));
-                let low_16_bits_col141 = ((((memory_id_to_big_value_tmp_92ff8_152.get_m31(1))
-                    - ((tmp_92ff8_153.as_m31()) * (M31_128)))
+                let low_16_bits_col141 = ((((memory_id_to_big_value_tmp_92ff8_167.get_m31(1))
+                    - ((tmp_92ff8_168.as_m31()) * (M31_128)))
                     * (M31_512))
-                    + (memory_id_to_big_value_tmp_92ff8_152.get_m31(0)));
+                    + (memory_id_to_big_value_tmp_92ff8_167.get_m31(0)));
                 *row[141] = low_16_bits_col141;
-                let high_16_bits_col142 = ((((memory_id_to_big_value_tmp_92ff8_152.get_m31(3))
+                let high_16_bits_col142 = ((((memory_id_to_big_value_tmp_92ff8_167.get_m31(3))
                     * (M31_2048))
-                    + ((memory_id_to_big_value_tmp_92ff8_152.get_m31(2)) * (M31_4)))
-                    + (tmp_92ff8_153.as_m31()));
+                    + ((memory_id_to_big_value_tmp_92ff8_167.get_m31(2)) * (M31_4)))
+                    + (tmp_92ff8_168.as_m31()));
                 *row[142] = high_16_bits_col142;
-                let expected_word_tmp_92ff8_154 =
+                let expected_word_tmp_92ff8_169 =
                     PackedUInt32::from_limbs([low_16_bits_col141, high_16_bits_col142]);
 
-                // Verify Blake Word.
+                // Verify U 32.
 
-                let low_7_ms_bits_tmp_92ff8_155 =
-                    ((expected_word_tmp_92ff8_154.low()) >> (UInt16_9));
-                let low_7_ms_bits_col143 = low_7_ms_bits_tmp_92ff8_155.as_m31();
+                let low_7_ms_bits_tmp_92ff8_170 =
+                    ((expected_word_tmp_92ff8_169.low()) >> (UInt16_9));
+                let low_7_ms_bits_col143 = low_7_ms_bits_tmp_92ff8_170.as_m31();
                 *row[143] = low_7_ms_bits_col143;
-                let high_14_ms_bits_tmp_92ff8_156 =
-                    ((expected_word_tmp_92ff8_154.high()) >> (UInt16_2));
-                let high_14_ms_bits_col144 = high_14_ms_bits_tmp_92ff8_156.as_m31();
+                let high_14_ms_bits_tmp_92ff8_171 =
+                    ((expected_word_tmp_92ff8_169.high()) >> (UInt16_2));
+                let high_14_ms_bits_col144 = high_14_ms_bits_tmp_92ff8_171.as_m31();
                 *row[144] = high_14_ms_bits_col144;
-                let high_5_ms_bits_tmp_92ff8_157 = ((high_14_ms_bits_tmp_92ff8_156) >> (UInt16_9));
-                let high_5_ms_bits_col145 = high_5_ms_bits_tmp_92ff8_157.as_m31();
+                let high_2_ls_bits_tmp_92ff8_172 =
+                    ((high_16_bits_col142) - ((high_14_ms_bits_col144) * (M31_4)));
+                let high_5_ms_bits_tmp_92ff8_173 = ((high_14_ms_bits_tmp_92ff8_171) >> (UInt16_9));
+                let high_5_ms_bits_col145 = high_5_ms_bits_tmp_92ff8_173.as_m31();
                 *row[145] = high_5_ms_bits_col145;
                 *sub_component_inputs.range_check_7_2_5[15] = [
                     low_7_ms_bits_col143,
-                    ((high_16_bits_col142) - ((high_14_ms_bits_col144) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_172,
                     high_5_ms_bits_col145,
                 ];
                 *lookup_data.range_check_7_2_5_15 = [
                     low_7_ms_bits_col143,
-                    ((high_16_bits_col142) - ((high_14_ms_bits_col144) * (M31_4))),
+                    high_2_ls_bits_tmp_92ff8_172,
                     high_5_ms_bits_col145,
                 ];
 
@@ -1863,11 +1866,11 @@ fn write_trace_simd(
 
                 // Read Id.
 
-                let memory_address_to_id_value_tmp_92ff8_158 = memory_address_to_id_state
+                let memory_address_to_id_value_tmp_92ff8_174 = memory_address_to_id_state
                     .deduce_output(
                         ((input_limb_34_col34) + (blake_round_sigma_output_limb_15_col50)),
                     );
-                let message_word_15_id_col146 = memory_address_to_id_value_tmp_92ff8_158;
+                let message_word_15_id_col146 = memory_address_to_id_value_tmp_92ff8_174;
                 *row[146] = message_word_15_id_col146;
                 *sub_component_inputs.memory_address_to_id[15] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_15_col50));
@@ -1880,9 +1883,7 @@ fn write_trace_simd(
                 *lookup_data.memory_id_to_big_15 = [
                     message_word_15_id_col146,
                     ((low_16_bits_col141) - ((low_7_ms_bits_col143) * (M31_512))),
-                    ((low_7_ms_bits_col143)
-                        + (((high_16_bits_col142) - ((high_14_ms_bits_col144) * (M31_4)))
-                            * (M31_128))),
+                    ((low_7_ms_bits_col143) + ((high_2_ls_bits_tmp_92ff8_172) * (M31_128))),
                     ((high_14_ms_bits_col144) - ((high_5_ms_bits_col145) * (M31_512))),
                     high_5_ms_bits_col145,
                     M31_0,
@@ -1911,39 +1912,39 @@ fn write_trace_simd(
                     M31_0,
                 ];
 
-                let read_blake_word_output_tmp_92ff8_160 = expected_word_tmp_92ff8_154;
+                let read_u_32_output_tmp_92ff8_176 = expected_word_tmp_92ff8_169;
 
                 *sub_component_inputs.blake_g[0] = [
                     blake_round_input.2 .0[0],
                     blake_round_input.2 .0[4],
                     blake_round_input.2 .0[8],
                     blake_round_input.2 .0[12],
-                    read_blake_word_output_tmp_92ff8_10,
-                    read_blake_word_output_tmp_92ff8_20,
+                    read_u_32_output_tmp_92ff8_11,
+                    read_u_32_output_tmp_92ff8_22,
                 ];
-                let blake_g_output_tmp_92ff8_161 = PackedBlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_177 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[0],
                     blake_round_input.2 .0[4],
                     blake_round_input.2 .0[8],
                     blake_round_input.2 .0[12],
-                    read_blake_word_output_tmp_92ff8_10,
-                    read_blake_word_output_tmp_92ff8_20,
+                    read_u_32_output_tmp_92ff8_11,
+                    read_u_32_output_tmp_92ff8_22,
                 ]);
-                let blake_g_output_limb_0_col147 = blake_g_output_tmp_92ff8_161[0].low().as_m31();
+                let blake_g_output_limb_0_col147 = blake_g_output_tmp_92ff8_177[0].low().as_m31();
                 *row[147] = blake_g_output_limb_0_col147;
-                let blake_g_output_limb_1_col148 = blake_g_output_tmp_92ff8_161[0].high().as_m31();
+                let blake_g_output_limb_1_col148 = blake_g_output_tmp_92ff8_177[0].high().as_m31();
                 *row[148] = blake_g_output_limb_1_col148;
-                let blake_g_output_limb_2_col149 = blake_g_output_tmp_92ff8_161[1].low().as_m31();
+                let blake_g_output_limb_2_col149 = blake_g_output_tmp_92ff8_177[1].low().as_m31();
                 *row[149] = blake_g_output_limb_2_col149;
-                let blake_g_output_limb_3_col150 = blake_g_output_tmp_92ff8_161[1].high().as_m31();
+                let blake_g_output_limb_3_col150 = blake_g_output_tmp_92ff8_177[1].high().as_m31();
                 *row[150] = blake_g_output_limb_3_col150;
-                let blake_g_output_limb_4_col151 = blake_g_output_tmp_92ff8_161[2].low().as_m31();
+                let blake_g_output_limb_4_col151 = blake_g_output_tmp_92ff8_177[2].low().as_m31();
                 *row[151] = blake_g_output_limb_4_col151;
-                let blake_g_output_limb_5_col152 = blake_g_output_tmp_92ff8_161[2].high().as_m31();
+                let blake_g_output_limb_5_col152 = blake_g_output_tmp_92ff8_177[2].high().as_m31();
                 *row[152] = blake_g_output_limb_5_col152;
-                let blake_g_output_limb_6_col153 = blake_g_output_tmp_92ff8_161[3].low().as_m31();
+                let blake_g_output_limb_6_col153 = blake_g_output_tmp_92ff8_177[3].low().as_m31();
                 *row[153] = blake_g_output_limb_6_col153;
-                let blake_g_output_limb_7_col154 = blake_g_output_tmp_92ff8_161[3].high().as_m31();
+                let blake_g_output_limb_7_col154 = blake_g_output_tmp_92ff8_177[3].high().as_m31();
                 *row[154] = blake_g_output_limb_7_col154;
                 *lookup_data.blake_g_0 = [
                     input_limb_2_col2,
@@ -1972,32 +1973,32 @@ fn write_trace_simd(
                     blake_round_input.2 .0[5],
                     blake_round_input.2 .0[9],
                     blake_round_input.2 .0[13],
-                    read_blake_word_output_tmp_92ff8_30,
-                    read_blake_word_output_tmp_92ff8_40,
+                    read_u_32_output_tmp_92ff8_33,
+                    read_u_32_output_tmp_92ff8_44,
                 ];
-                let blake_g_output_tmp_92ff8_162 = PackedBlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_178 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[1],
                     blake_round_input.2 .0[5],
                     blake_round_input.2 .0[9],
                     blake_round_input.2 .0[13],
-                    read_blake_word_output_tmp_92ff8_30,
-                    read_blake_word_output_tmp_92ff8_40,
+                    read_u_32_output_tmp_92ff8_33,
+                    read_u_32_output_tmp_92ff8_44,
                 ]);
-                let blake_g_output_limb_0_col155 = blake_g_output_tmp_92ff8_162[0].low().as_m31();
+                let blake_g_output_limb_0_col155 = blake_g_output_tmp_92ff8_178[0].low().as_m31();
                 *row[155] = blake_g_output_limb_0_col155;
-                let blake_g_output_limb_1_col156 = blake_g_output_tmp_92ff8_162[0].high().as_m31();
+                let blake_g_output_limb_1_col156 = blake_g_output_tmp_92ff8_178[0].high().as_m31();
                 *row[156] = blake_g_output_limb_1_col156;
-                let blake_g_output_limb_2_col157 = blake_g_output_tmp_92ff8_162[1].low().as_m31();
+                let blake_g_output_limb_2_col157 = blake_g_output_tmp_92ff8_178[1].low().as_m31();
                 *row[157] = blake_g_output_limb_2_col157;
-                let blake_g_output_limb_3_col158 = blake_g_output_tmp_92ff8_162[1].high().as_m31();
+                let blake_g_output_limb_3_col158 = blake_g_output_tmp_92ff8_178[1].high().as_m31();
                 *row[158] = blake_g_output_limb_3_col158;
-                let blake_g_output_limb_4_col159 = blake_g_output_tmp_92ff8_162[2].low().as_m31();
+                let blake_g_output_limb_4_col159 = blake_g_output_tmp_92ff8_178[2].low().as_m31();
                 *row[159] = blake_g_output_limb_4_col159;
-                let blake_g_output_limb_5_col160 = blake_g_output_tmp_92ff8_162[2].high().as_m31();
+                let blake_g_output_limb_5_col160 = blake_g_output_tmp_92ff8_178[2].high().as_m31();
                 *row[160] = blake_g_output_limb_5_col160;
-                let blake_g_output_limb_6_col161 = blake_g_output_tmp_92ff8_162[3].low().as_m31();
+                let blake_g_output_limb_6_col161 = blake_g_output_tmp_92ff8_178[3].low().as_m31();
                 *row[161] = blake_g_output_limb_6_col161;
-                let blake_g_output_limb_7_col162 = blake_g_output_tmp_92ff8_162[3].high().as_m31();
+                let blake_g_output_limb_7_col162 = blake_g_output_tmp_92ff8_178[3].high().as_m31();
                 *row[162] = blake_g_output_limb_7_col162;
                 *lookup_data.blake_g_1 = [
                     input_limb_4_col4,
@@ -2026,32 +2027,32 @@ fn write_trace_simd(
                     blake_round_input.2 .0[6],
                     blake_round_input.2 .0[10],
                     blake_round_input.2 .0[14],
-                    read_blake_word_output_tmp_92ff8_50,
-                    read_blake_word_output_tmp_92ff8_60,
+                    read_u_32_output_tmp_92ff8_55,
+                    read_u_32_output_tmp_92ff8_66,
                 ];
-                let blake_g_output_tmp_92ff8_163 = PackedBlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_179 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[2],
                     blake_round_input.2 .0[6],
                     blake_round_input.2 .0[10],
                     blake_round_input.2 .0[14],
-                    read_blake_word_output_tmp_92ff8_50,
-                    read_blake_word_output_tmp_92ff8_60,
+                    read_u_32_output_tmp_92ff8_55,
+                    read_u_32_output_tmp_92ff8_66,
                 ]);
-                let blake_g_output_limb_0_col163 = blake_g_output_tmp_92ff8_163[0].low().as_m31();
+                let blake_g_output_limb_0_col163 = blake_g_output_tmp_92ff8_179[0].low().as_m31();
                 *row[163] = blake_g_output_limb_0_col163;
-                let blake_g_output_limb_1_col164 = blake_g_output_tmp_92ff8_163[0].high().as_m31();
+                let blake_g_output_limb_1_col164 = blake_g_output_tmp_92ff8_179[0].high().as_m31();
                 *row[164] = blake_g_output_limb_1_col164;
-                let blake_g_output_limb_2_col165 = blake_g_output_tmp_92ff8_163[1].low().as_m31();
+                let blake_g_output_limb_2_col165 = blake_g_output_tmp_92ff8_179[1].low().as_m31();
                 *row[165] = blake_g_output_limb_2_col165;
-                let blake_g_output_limb_3_col166 = blake_g_output_tmp_92ff8_163[1].high().as_m31();
+                let blake_g_output_limb_3_col166 = blake_g_output_tmp_92ff8_179[1].high().as_m31();
                 *row[166] = blake_g_output_limb_3_col166;
-                let blake_g_output_limb_4_col167 = blake_g_output_tmp_92ff8_163[2].low().as_m31();
+                let blake_g_output_limb_4_col167 = blake_g_output_tmp_92ff8_179[2].low().as_m31();
                 *row[167] = blake_g_output_limb_4_col167;
-                let blake_g_output_limb_5_col168 = blake_g_output_tmp_92ff8_163[2].high().as_m31();
+                let blake_g_output_limb_5_col168 = blake_g_output_tmp_92ff8_179[2].high().as_m31();
                 *row[168] = blake_g_output_limb_5_col168;
-                let blake_g_output_limb_6_col169 = blake_g_output_tmp_92ff8_163[3].low().as_m31();
+                let blake_g_output_limb_6_col169 = blake_g_output_tmp_92ff8_179[3].low().as_m31();
                 *row[169] = blake_g_output_limb_6_col169;
-                let blake_g_output_limb_7_col170 = blake_g_output_tmp_92ff8_163[3].high().as_m31();
+                let blake_g_output_limb_7_col170 = blake_g_output_tmp_92ff8_179[3].high().as_m31();
                 *row[170] = blake_g_output_limb_7_col170;
                 *lookup_data.blake_g_2 = [
                     input_limb_6_col6,
@@ -2080,32 +2081,32 @@ fn write_trace_simd(
                     blake_round_input.2 .0[7],
                     blake_round_input.2 .0[11],
                     blake_round_input.2 .0[15],
-                    read_blake_word_output_tmp_92ff8_70,
-                    read_blake_word_output_tmp_92ff8_80,
+                    read_u_32_output_tmp_92ff8_77,
+                    read_u_32_output_tmp_92ff8_88,
                 ];
-                let blake_g_output_tmp_92ff8_164 = PackedBlakeG::deduce_output([
+                let blake_g_output_tmp_92ff8_180 = PackedBlakeG::deduce_output([
                     blake_round_input.2 .0[3],
                     blake_round_input.2 .0[7],
                     blake_round_input.2 .0[11],
                     blake_round_input.2 .0[15],
-                    read_blake_word_output_tmp_92ff8_70,
-                    read_blake_word_output_tmp_92ff8_80,
+                    read_u_32_output_tmp_92ff8_77,
+                    read_u_32_output_tmp_92ff8_88,
                 ]);
-                let blake_g_output_limb_0_col171 = blake_g_output_tmp_92ff8_164[0].low().as_m31();
+                let blake_g_output_limb_0_col171 = blake_g_output_tmp_92ff8_180[0].low().as_m31();
                 *row[171] = blake_g_output_limb_0_col171;
-                let blake_g_output_limb_1_col172 = blake_g_output_tmp_92ff8_164[0].high().as_m31();
+                let blake_g_output_limb_1_col172 = blake_g_output_tmp_92ff8_180[0].high().as_m31();
                 *row[172] = blake_g_output_limb_1_col172;
-                let blake_g_output_limb_2_col173 = blake_g_output_tmp_92ff8_164[1].low().as_m31();
+                let blake_g_output_limb_2_col173 = blake_g_output_tmp_92ff8_180[1].low().as_m31();
                 *row[173] = blake_g_output_limb_2_col173;
-                let blake_g_output_limb_3_col174 = blake_g_output_tmp_92ff8_164[1].high().as_m31();
+                let blake_g_output_limb_3_col174 = blake_g_output_tmp_92ff8_180[1].high().as_m31();
                 *row[174] = blake_g_output_limb_3_col174;
-                let blake_g_output_limb_4_col175 = blake_g_output_tmp_92ff8_164[2].low().as_m31();
+                let blake_g_output_limb_4_col175 = blake_g_output_tmp_92ff8_180[2].low().as_m31();
                 *row[175] = blake_g_output_limb_4_col175;
-                let blake_g_output_limb_5_col176 = blake_g_output_tmp_92ff8_164[2].high().as_m31();
+                let blake_g_output_limb_5_col176 = blake_g_output_tmp_92ff8_180[2].high().as_m31();
                 *row[176] = blake_g_output_limb_5_col176;
-                let blake_g_output_limb_6_col177 = blake_g_output_tmp_92ff8_164[3].low().as_m31();
+                let blake_g_output_limb_6_col177 = blake_g_output_tmp_92ff8_180[3].low().as_m31();
                 *row[177] = blake_g_output_limb_6_col177;
-                let blake_g_output_limb_7_col178 = blake_g_output_tmp_92ff8_164[3].high().as_m31();
+                let blake_g_output_limb_7_col178 = blake_g_output_tmp_92ff8_180[3].high().as_m31();
                 *row[178] = blake_g_output_limb_7_col178;
                 *lookup_data.blake_g_3 = [
                     input_limb_8_col8,
@@ -2130,36 +2131,36 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col178,
                 ];
                 *sub_component_inputs.blake_g[4] = [
-                    blake_g_output_tmp_92ff8_161[0],
-                    blake_g_output_tmp_92ff8_162[1],
-                    blake_g_output_tmp_92ff8_163[2],
-                    blake_g_output_tmp_92ff8_164[3],
-                    read_blake_word_output_tmp_92ff8_90,
-                    read_blake_word_output_tmp_92ff8_100,
+                    blake_g_output_tmp_92ff8_177[0],
+                    blake_g_output_tmp_92ff8_178[1],
+                    blake_g_output_tmp_92ff8_179[2],
+                    blake_g_output_tmp_92ff8_180[3],
+                    read_u_32_output_tmp_92ff8_99,
+                    read_u_32_output_tmp_92ff8_110,
                 ];
-                let blake_g_output_tmp_92ff8_165 = PackedBlakeG::deduce_output([
-                    blake_g_output_tmp_92ff8_161[0],
-                    blake_g_output_tmp_92ff8_162[1],
-                    blake_g_output_tmp_92ff8_163[2],
-                    blake_g_output_tmp_92ff8_164[3],
-                    read_blake_word_output_tmp_92ff8_90,
-                    read_blake_word_output_tmp_92ff8_100,
+                let blake_g_output_tmp_92ff8_181 = PackedBlakeG::deduce_output([
+                    blake_g_output_tmp_92ff8_177[0],
+                    blake_g_output_tmp_92ff8_178[1],
+                    blake_g_output_tmp_92ff8_179[2],
+                    blake_g_output_tmp_92ff8_180[3],
+                    read_u_32_output_tmp_92ff8_99,
+                    read_u_32_output_tmp_92ff8_110,
                 ]);
-                let blake_g_output_limb_0_col179 = blake_g_output_tmp_92ff8_165[0].low().as_m31();
+                let blake_g_output_limb_0_col179 = blake_g_output_tmp_92ff8_181[0].low().as_m31();
                 *row[179] = blake_g_output_limb_0_col179;
-                let blake_g_output_limb_1_col180 = blake_g_output_tmp_92ff8_165[0].high().as_m31();
+                let blake_g_output_limb_1_col180 = blake_g_output_tmp_92ff8_181[0].high().as_m31();
                 *row[180] = blake_g_output_limb_1_col180;
-                let blake_g_output_limb_2_col181 = blake_g_output_tmp_92ff8_165[1].low().as_m31();
+                let blake_g_output_limb_2_col181 = blake_g_output_tmp_92ff8_181[1].low().as_m31();
                 *row[181] = blake_g_output_limb_2_col181;
-                let blake_g_output_limb_3_col182 = blake_g_output_tmp_92ff8_165[1].high().as_m31();
+                let blake_g_output_limb_3_col182 = blake_g_output_tmp_92ff8_181[1].high().as_m31();
                 *row[182] = blake_g_output_limb_3_col182;
-                let blake_g_output_limb_4_col183 = blake_g_output_tmp_92ff8_165[2].low().as_m31();
+                let blake_g_output_limb_4_col183 = blake_g_output_tmp_92ff8_181[2].low().as_m31();
                 *row[183] = blake_g_output_limb_4_col183;
-                let blake_g_output_limb_5_col184 = blake_g_output_tmp_92ff8_165[2].high().as_m31();
+                let blake_g_output_limb_5_col184 = blake_g_output_tmp_92ff8_181[2].high().as_m31();
                 *row[184] = blake_g_output_limb_5_col184;
-                let blake_g_output_limb_6_col185 = blake_g_output_tmp_92ff8_165[3].low().as_m31();
+                let blake_g_output_limb_6_col185 = blake_g_output_tmp_92ff8_181[3].low().as_m31();
                 *row[185] = blake_g_output_limb_6_col185;
-                let blake_g_output_limb_7_col186 = blake_g_output_tmp_92ff8_165[3].high().as_m31();
+                let blake_g_output_limb_7_col186 = blake_g_output_tmp_92ff8_181[3].high().as_m31();
                 *row[186] = blake_g_output_limb_7_col186;
                 *lookup_data.blake_g_4 = [
                     blake_g_output_limb_0_col147,
@@ -2184,36 +2185,36 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col186,
                 ];
                 *sub_component_inputs.blake_g[5] = [
-                    blake_g_output_tmp_92ff8_162[0],
-                    blake_g_output_tmp_92ff8_163[1],
-                    blake_g_output_tmp_92ff8_164[2],
-                    blake_g_output_tmp_92ff8_161[3],
-                    read_blake_word_output_tmp_92ff8_110,
-                    read_blake_word_output_tmp_92ff8_120,
+                    blake_g_output_tmp_92ff8_178[0],
+                    blake_g_output_tmp_92ff8_179[1],
+                    blake_g_output_tmp_92ff8_180[2],
+                    blake_g_output_tmp_92ff8_177[3],
+                    read_u_32_output_tmp_92ff8_121,
+                    read_u_32_output_tmp_92ff8_132,
                 ];
-                let blake_g_output_tmp_92ff8_166 = PackedBlakeG::deduce_output([
-                    blake_g_output_tmp_92ff8_162[0],
-                    blake_g_output_tmp_92ff8_163[1],
-                    blake_g_output_tmp_92ff8_164[2],
-                    blake_g_output_tmp_92ff8_161[3],
-                    read_blake_word_output_tmp_92ff8_110,
-                    read_blake_word_output_tmp_92ff8_120,
+                let blake_g_output_tmp_92ff8_182 = PackedBlakeG::deduce_output([
+                    blake_g_output_tmp_92ff8_178[0],
+                    blake_g_output_tmp_92ff8_179[1],
+                    blake_g_output_tmp_92ff8_180[2],
+                    blake_g_output_tmp_92ff8_177[3],
+                    read_u_32_output_tmp_92ff8_121,
+                    read_u_32_output_tmp_92ff8_132,
                 ]);
-                let blake_g_output_limb_0_col187 = blake_g_output_tmp_92ff8_166[0].low().as_m31();
+                let blake_g_output_limb_0_col187 = blake_g_output_tmp_92ff8_182[0].low().as_m31();
                 *row[187] = blake_g_output_limb_0_col187;
-                let blake_g_output_limb_1_col188 = blake_g_output_tmp_92ff8_166[0].high().as_m31();
+                let blake_g_output_limb_1_col188 = blake_g_output_tmp_92ff8_182[0].high().as_m31();
                 *row[188] = blake_g_output_limb_1_col188;
-                let blake_g_output_limb_2_col189 = blake_g_output_tmp_92ff8_166[1].low().as_m31();
+                let blake_g_output_limb_2_col189 = blake_g_output_tmp_92ff8_182[1].low().as_m31();
                 *row[189] = blake_g_output_limb_2_col189;
-                let blake_g_output_limb_3_col190 = blake_g_output_tmp_92ff8_166[1].high().as_m31();
+                let blake_g_output_limb_3_col190 = blake_g_output_tmp_92ff8_182[1].high().as_m31();
                 *row[190] = blake_g_output_limb_3_col190;
-                let blake_g_output_limb_4_col191 = blake_g_output_tmp_92ff8_166[2].low().as_m31();
+                let blake_g_output_limb_4_col191 = blake_g_output_tmp_92ff8_182[2].low().as_m31();
                 *row[191] = blake_g_output_limb_4_col191;
-                let blake_g_output_limb_5_col192 = blake_g_output_tmp_92ff8_166[2].high().as_m31();
+                let blake_g_output_limb_5_col192 = blake_g_output_tmp_92ff8_182[2].high().as_m31();
                 *row[192] = blake_g_output_limb_5_col192;
-                let blake_g_output_limb_6_col193 = blake_g_output_tmp_92ff8_166[3].low().as_m31();
+                let blake_g_output_limb_6_col193 = blake_g_output_tmp_92ff8_182[3].low().as_m31();
                 *row[193] = blake_g_output_limb_6_col193;
-                let blake_g_output_limb_7_col194 = blake_g_output_tmp_92ff8_166[3].high().as_m31();
+                let blake_g_output_limb_7_col194 = blake_g_output_tmp_92ff8_182[3].high().as_m31();
                 *row[194] = blake_g_output_limb_7_col194;
                 *lookup_data.blake_g_5 = [
                     blake_g_output_limb_0_col155,
@@ -2238,36 +2239,36 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col194,
                 ];
                 *sub_component_inputs.blake_g[6] = [
-                    blake_g_output_tmp_92ff8_163[0],
-                    blake_g_output_tmp_92ff8_164[1],
-                    blake_g_output_tmp_92ff8_161[2],
-                    blake_g_output_tmp_92ff8_162[3],
-                    read_blake_word_output_tmp_92ff8_130,
-                    read_blake_word_output_tmp_92ff8_140,
+                    blake_g_output_tmp_92ff8_179[0],
+                    blake_g_output_tmp_92ff8_180[1],
+                    blake_g_output_tmp_92ff8_177[2],
+                    blake_g_output_tmp_92ff8_178[3],
+                    read_u_32_output_tmp_92ff8_143,
+                    read_u_32_output_tmp_92ff8_154,
                 ];
-                let blake_g_output_tmp_92ff8_167 = PackedBlakeG::deduce_output([
-                    blake_g_output_tmp_92ff8_163[0],
-                    blake_g_output_tmp_92ff8_164[1],
-                    blake_g_output_tmp_92ff8_161[2],
-                    blake_g_output_tmp_92ff8_162[3],
-                    read_blake_word_output_tmp_92ff8_130,
-                    read_blake_word_output_tmp_92ff8_140,
+                let blake_g_output_tmp_92ff8_183 = PackedBlakeG::deduce_output([
+                    blake_g_output_tmp_92ff8_179[0],
+                    blake_g_output_tmp_92ff8_180[1],
+                    blake_g_output_tmp_92ff8_177[2],
+                    blake_g_output_tmp_92ff8_178[3],
+                    read_u_32_output_tmp_92ff8_143,
+                    read_u_32_output_tmp_92ff8_154,
                 ]);
-                let blake_g_output_limb_0_col195 = blake_g_output_tmp_92ff8_167[0].low().as_m31();
+                let blake_g_output_limb_0_col195 = blake_g_output_tmp_92ff8_183[0].low().as_m31();
                 *row[195] = blake_g_output_limb_0_col195;
-                let blake_g_output_limb_1_col196 = blake_g_output_tmp_92ff8_167[0].high().as_m31();
+                let blake_g_output_limb_1_col196 = blake_g_output_tmp_92ff8_183[0].high().as_m31();
                 *row[196] = blake_g_output_limb_1_col196;
-                let blake_g_output_limb_2_col197 = blake_g_output_tmp_92ff8_167[1].low().as_m31();
+                let blake_g_output_limb_2_col197 = blake_g_output_tmp_92ff8_183[1].low().as_m31();
                 *row[197] = blake_g_output_limb_2_col197;
-                let blake_g_output_limb_3_col198 = blake_g_output_tmp_92ff8_167[1].high().as_m31();
+                let blake_g_output_limb_3_col198 = blake_g_output_tmp_92ff8_183[1].high().as_m31();
                 *row[198] = blake_g_output_limb_3_col198;
-                let blake_g_output_limb_4_col199 = blake_g_output_tmp_92ff8_167[2].low().as_m31();
+                let blake_g_output_limb_4_col199 = blake_g_output_tmp_92ff8_183[2].low().as_m31();
                 *row[199] = blake_g_output_limb_4_col199;
-                let blake_g_output_limb_5_col200 = blake_g_output_tmp_92ff8_167[2].high().as_m31();
+                let blake_g_output_limb_5_col200 = blake_g_output_tmp_92ff8_183[2].high().as_m31();
                 *row[200] = blake_g_output_limb_5_col200;
-                let blake_g_output_limb_6_col201 = blake_g_output_tmp_92ff8_167[3].low().as_m31();
+                let blake_g_output_limb_6_col201 = blake_g_output_tmp_92ff8_183[3].low().as_m31();
                 *row[201] = blake_g_output_limb_6_col201;
-                let blake_g_output_limb_7_col202 = blake_g_output_tmp_92ff8_167[3].high().as_m31();
+                let blake_g_output_limb_7_col202 = blake_g_output_tmp_92ff8_183[3].high().as_m31();
                 *row[202] = blake_g_output_limb_7_col202;
                 *lookup_data.blake_g_6 = [
                     blake_g_output_limb_0_col163,
@@ -2292,36 +2293,36 @@ fn write_trace_simd(
                     blake_g_output_limb_7_col202,
                 ];
                 *sub_component_inputs.blake_g[7] = [
-                    blake_g_output_tmp_92ff8_164[0],
-                    blake_g_output_tmp_92ff8_161[1],
-                    blake_g_output_tmp_92ff8_162[2],
-                    blake_g_output_tmp_92ff8_163[3],
-                    read_blake_word_output_tmp_92ff8_150,
-                    read_blake_word_output_tmp_92ff8_160,
+                    blake_g_output_tmp_92ff8_180[0],
+                    blake_g_output_tmp_92ff8_177[1],
+                    blake_g_output_tmp_92ff8_178[2],
+                    blake_g_output_tmp_92ff8_179[3],
+                    read_u_32_output_tmp_92ff8_165,
+                    read_u_32_output_tmp_92ff8_176,
                 ];
-                let blake_g_output_tmp_92ff8_168 = PackedBlakeG::deduce_output([
-                    blake_g_output_tmp_92ff8_164[0],
-                    blake_g_output_tmp_92ff8_161[1],
-                    blake_g_output_tmp_92ff8_162[2],
-                    blake_g_output_tmp_92ff8_163[3],
-                    read_blake_word_output_tmp_92ff8_150,
-                    read_blake_word_output_tmp_92ff8_160,
+                let blake_g_output_tmp_92ff8_184 = PackedBlakeG::deduce_output([
+                    blake_g_output_tmp_92ff8_180[0],
+                    blake_g_output_tmp_92ff8_177[1],
+                    blake_g_output_tmp_92ff8_178[2],
+                    blake_g_output_tmp_92ff8_179[3],
+                    read_u_32_output_tmp_92ff8_165,
+                    read_u_32_output_tmp_92ff8_176,
                 ]);
-                let blake_g_output_limb_0_col203 = blake_g_output_tmp_92ff8_168[0].low().as_m31();
+                let blake_g_output_limb_0_col203 = blake_g_output_tmp_92ff8_184[0].low().as_m31();
                 *row[203] = blake_g_output_limb_0_col203;
-                let blake_g_output_limb_1_col204 = blake_g_output_tmp_92ff8_168[0].high().as_m31();
+                let blake_g_output_limb_1_col204 = blake_g_output_tmp_92ff8_184[0].high().as_m31();
                 *row[204] = blake_g_output_limb_1_col204;
-                let blake_g_output_limb_2_col205 = blake_g_output_tmp_92ff8_168[1].low().as_m31();
+                let blake_g_output_limb_2_col205 = blake_g_output_tmp_92ff8_184[1].low().as_m31();
                 *row[205] = blake_g_output_limb_2_col205;
-                let blake_g_output_limb_3_col206 = blake_g_output_tmp_92ff8_168[1].high().as_m31();
+                let blake_g_output_limb_3_col206 = blake_g_output_tmp_92ff8_184[1].high().as_m31();
                 *row[206] = blake_g_output_limb_3_col206;
-                let blake_g_output_limb_4_col207 = blake_g_output_tmp_92ff8_168[2].low().as_m31();
+                let blake_g_output_limb_4_col207 = blake_g_output_tmp_92ff8_184[2].low().as_m31();
                 *row[207] = blake_g_output_limb_4_col207;
-                let blake_g_output_limb_5_col208 = blake_g_output_tmp_92ff8_168[2].high().as_m31();
+                let blake_g_output_limb_5_col208 = blake_g_output_tmp_92ff8_184[2].high().as_m31();
                 *row[208] = blake_g_output_limb_5_col208;
-                let blake_g_output_limb_6_col209 = blake_g_output_tmp_92ff8_168[3].low().as_m31();
+                let blake_g_output_limb_6_col209 = blake_g_output_tmp_92ff8_184[3].low().as_m31();
                 *row[209] = blake_g_output_limb_6_col209;
-                let blake_g_output_limb_7_col210 = blake_g_output_tmp_92ff8_168[3].high().as_m31();
+                let blake_g_output_limb_7_col210 = blake_g_output_tmp_92ff8_184[3].high().as_m31();
                 *row[210] = blake_g_output_limb_7_col210;
                 *lookup_data.blake_g_7 = [
                     blake_g_output_limb_0_col171,
