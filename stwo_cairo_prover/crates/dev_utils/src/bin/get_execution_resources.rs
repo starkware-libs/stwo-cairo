@@ -13,8 +13,8 @@ use std::path::PathBuf;
 use anyhow::Result;
 use clap::Parser;
 use serde_json::to_string_pretty;
-use stwo_cairo_adapter::utils::{run_and_adapt, ProgramType};
 use stwo_cairo_adapter::ExecutionResources;
+use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 use tracing::{span, Level};
 use tracing_subscriber::fmt::format::FmtSpan;
 

@@ -3,7 +3,6 @@ name = "stwo-cairo-adapter"
 version = "0.1.0"
 edition = "2021"
 
-
 [features]
 default = []
 slow-tests = []
@@ -29,12 +28,10 @@ dashmap = "6.1.0"
 rayon.workspace = true
 clap.workspace = true
 crypto-bigint = "0.5.1"
-cairo-lang-executable.workspace = true
-cairo-lang-runner.workspace = true
-cairo-lang-utils.workspace = true
 anyhow.workspace = true
 
 [dev-dependencies]
+stwo_cairo_utils.workspace = true
 cairo-lang-casm.workspace = true
 rand.workspace = true
 test-case.workspace = true
