@@ -32,9 +32,8 @@ pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
 
 pub const P0_SECTION_START: usize = 0;
 pub const P1_SECTION_START: usize = P0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const P2_SECTION_START: usize = P1_SECTION_START + 16;
-pub const P3_SECTION_START: usize = P2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const PEDERSEN_TABLE_N_ROWS: usize = P3_SECTION_START + 16;
+pub const P2_SECTION_START: usize = P1_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub const PEDERSEN_TABLE_N_ROWS: usize = P2_SECTION_START + 16 * 16;
 
 #[derive(Debug)]
 pub struct PedersenPoints {
@@ -75,11 +74,10 @@ impl PreProcessedColumn for PedersenPoints {
 }
 
 // A table with 2**23 rows, each containing a point on the Stark curve.
-// The table is divided into 4 sections:
+// The table is divided into 3 sections:
 // 1. First 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_0
-// 2. Next 16 rows: Row k contains -P_shift + k * P_1
-// 3. Next 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
-// 4. Next 16 rows: Row k contains -P_shift + k * P_3
+// 2. Next 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
+// 3. Next 256 rows: Row k + (16 * l) contains 29 * P_shift + k * P_1 + l * P_3
 pub struct PedersenPointsTable {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
@@ -108,9 +106,12 @@ impl PedersenPointsTable {
     }
 }
 
-fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
-    // Initialize the accumulator to -SHIFT_POINT
-    let mut p = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
+fn create_block(
+    start_point: &ProjectivePoint,
+    base_point: &ProjectivePoint,
+    n_rows: usize,
+) -> Vec<AffinePoint> {
+    let mut p = start_point.clone();
 
     // Compute the points in projective representation
     let mut block_points_xs: Vec<Felt> = Vec::with_capacity(n_rows);
@@ -120,7 +121,7 @@ fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
         block_points_xs.push(p.x());
         block_points_ys.push(p.y());
         block_points_zs.push(p.z());
-        p += point.clone();
+        p += base_point.clone();
     }
 
     // Batch-inverse the Z coordinates
@@ -135,7 +136,27 @@ fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
         .collect()
 }
 
+fn create_p1_and_p3_section() -> Vec<AffinePoint> {
+    let first_start_point = &ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y())
+        .expect("SHIFT_POINT is on curve")
+        * (2 * NUM_WINDOWS + 1);
+    let p1 =
+        ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve");
+    let p3 =
+        ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve");
+    (0..16)
+        .into_par_iter()
+        .map(|window: u32| {
+            let start_point = first_start_point.clone() + (&p3 * window);
+            create_block(&start_point, &p1, 16)
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .concat()
+}
+
 fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<AffinePoint> {
+    let start_point = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
     (0..NUM_WINDOWS)
         .into_par_iter()
         .map(|window| {
@@ -143,7 +164,7 @@ fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<AffinePoint> {
             for _ in 0..(window * BITS_PER_WINDOW) {
                 base_point = base_point.double();
             }
-            create_block(&base_point, ROWS_PER_WINDOW)
+            create_block(&start_point, &base_point, ROWS_PER_WINDOW)
         })
         .collect::<Vec<_>>()
         .into_iter()
@@ -155,17 +176,10 @@ fn create_table_rows() -> Vec<AffinePoint> {
     rows.extend(create_p0_or_p2_section(
         &ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
     ));
-    rows.extend(create_block(
-        &ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve"),
-        16,
-    ));
     rows.extend(create_p0_or_p2_section(
         &ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).expect("P2 is on curve"),
     ));
-    rows.extend(create_block(
-        &ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve"),
-        16,
-    ));
+    rows.extend(create_p1_and_p3_section());
 
     let padded_size = rows.len().next_power_of_two();
     for _ in 0..(padded_size - rows.len()) {
