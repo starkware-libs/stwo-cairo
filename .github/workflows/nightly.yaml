@@ -13,9 +13,16 @@ jobs:
         working-directory: ./stwo_cairo_prover
     steps:
       - uses: actions/checkout@v4
-      - uses: dtolnay/rust-toolchain@master
+      - name: Install build dependencies
+        run: sudo apt-get update && sudo apt-get install -y build-essential
+      - name: Install Rust toolchain
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
           toolchain: nightly-2025-07-14
+      - name: Install Scarb
+        uses: software-mansion/setup-scarb@v1
+        with:
+          scarb-version: "2.12.2"
       - uses: Swatinem/rust-cache@v2
       - name: Run tests
-        run: cargo test --features="nightly"
+        run: cargo test --release --features="nightly"
