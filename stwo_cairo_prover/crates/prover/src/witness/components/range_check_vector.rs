@@ -230,7 +230,7 @@ mod tests {
         let config = PcsConfig::default();
         let commitment_scheme =
             &mut CommitmentSchemeProver::<SimdBackend, Blake2sMerkleChannel>::new(
-                config, &twiddles,
+                config, &twiddles, true,
             );
 
         // Preprocessed trace.
@@ -278,10 +278,12 @@ mod tests {
             interaction_claim.claimed_sum,
         );
 
-        let trace_polys = commitment_scheme
-            .trees
-            .as_ref()
-            .map(|t| t.polynomials.iter().cloned().collect_vec());
+        let trace_polys = commitment_scheme.trees.as_ref().map(|t| {
+            t.polynomials
+                .iter()
+                .map(|p| p.coeffs.clone().unwrap())
+                .collect_vec()
+        });
 
         let component_eval = component.deref();
         stwo_constraint_framework::assert_constraints_on_polys(
