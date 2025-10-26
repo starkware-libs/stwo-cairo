@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::cond_decode_small_sign::cond_decode_small_sign_evaluate;
 use crate::components::subroutines::cond_range_check_2::cond_range_check_2_evaluate;
+use crate::components::subroutines::decode_small_sign::decode_small_sign_evaluate;
 use crate::prelude::*;
 
 
@@ -46,13 +46,8 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
         cond_felt_252_as_rel_imm_input_limb_28,
     ] =
         input;
-    cond_decode_small_sign_evaluate(
-        cond_felt_252_as_rel_imm_input_limb_28,
-        msb_col0,
-        mid_limbs_set_col1,
-        ref sum,
-        domain_vanishing_eval_inv,
-        random_coeff,
+    decode_small_sign_evaluate(
+        [], msb_col0, mid_limbs_set_col1, ref sum, domain_vanishing_eval_inv, random_coeff,
     );
     let remainder_bits_tmp_1e9bf_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
         - (mid_limbs_set_col1 * qm31_const::<508, 0, 0, 0>()));
