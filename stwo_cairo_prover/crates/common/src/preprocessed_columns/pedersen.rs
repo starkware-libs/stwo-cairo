@@ -110,7 +110,7 @@ impl PedersenPointsTable {
 
 fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
     // Initialize the accumulator to -SHIFT_POINT
-    let mut p = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
+    let mut p = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).expect("Invalid point.").neg();
 
     // Compute the points in projective representation
     let mut block_points_xs: Vec<Felt> = Vec::with_capacity(n_rows);
