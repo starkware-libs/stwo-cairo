@@ -546,3 +546,123 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
+#[cfg(and(test, feature: "qm31_opcode"))]
+mod tests {
+    use core::array::ArrayImpl;
+    use core::num::traits::Zero;
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{
+        LookupElements, PreprocessedColumn, PreprocessedColumnKey, PreprocessedColumnTrait,
+        PreprocessedMaskValues,
+    };
+    use stwo_verifier_core::circle::CirclePoint;
+    use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
+    use crate::cairo_component::*;
+    use crate::components::sample_evaluations::*;
+    use crate::test_utils::{make_interaction_trace, make_lookup_elements};
+    use crate::utils::*;
+    use super::{Claim, Component, InteractionClaim};
+
+    #[test]
+    fn test_evaluation_result() {
+        let component = Component {
+            claim: Claim { log_size: 15 },
+            interaction_claim: InteractionClaim {
+                claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
+            },
+            memory_address_to_id_lookup_elements: make_lookup_elements(
+                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
+                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
+            ),
+            memory_id_to_big_lookup_elements: make_lookup_elements(
+                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
+                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
+            ),
+            opcodes_lookup_elements: make_lookup_elements(
+                qm31_const::<363325160, 1257307741, 344122312, 91897123>(),
+                qm31_const::<1778746199, 966657378, 28413448, 700868625>(),
+            ),
+            verify_instruction_lookup_elements: make_lookup_elements(
+                qm31_const::<1069488928, 1058545294, 340383544, 1219862120>(),
+                qm31_const::<1812811714, 1448895316, 1764436954, 1191872819>(),
+            ),
+        };
+        let mut sum: QM31 = Zero::zero();
+        let point = CirclePoint {
+            x: qm31_const::<461666434, 38651694, 1083586041, 510305943>(),
+            y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
+        };
+
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+
+        let mut trace_columns = [
+            [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
+            [qm31_const::<1591990121, 771341002, 584090809, 1375009625>()].span(),
+            [qm31_const::<1793317658, 1173994186, 785417401, 1375009625>()].span(),
+            [qm31_const::<1726208479, 1039776458, 718308537, 1375009625>()].span(),
+            [qm31_const::<1390662584, 368687818, 382764217, 1375009625>()].span(),
+            [qm31_const::<1323553405, 234470090, 315655353, 1375009625>()].span(),
+            [qm31_const::<1524880942, 637123274, 516981945, 1375009625>()].span(),
+            [qm31_const::<1457771763, 502905546, 449873081, 1375009625>()].span(),
+            [qm31_const::<48489085, 1979300555, 1188070585, 1375009625>()].span(),
+            [qm31_const::<2128863553, 1845082826, 1120961721, 1375009625>()].span(),
+            [qm31_const::<1852335767, 645078115, 2059236183, 343880121>()].span(),
+            [qm31_const::<1919444946, 779295843, 2126345047, 343880121>()].span(),
+            [qm31_const::<1986554125, 913513571, 45970264, 343880122>()].span(),
+            [qm31_const::<2053663304, 1047731299, 113079128, 343880122>()].span(),
+            [qm31_const::<1583899051, 108207203, 1790800727, 343880121>()].span(),
+            [qm31_const::<1651008230, 242424931, 1857909591, 343880121>()].span(),
+            [qm31_const::<1718117409, 376642659, 1925018455, 343880121>()].span(),
+            [qm31_const::<1785226588, 510860387, 1992127319, 343880121>()].span(),
+            [qm31_const::<1315462335, 1718819938, 1522365270, 343880121>()].span(),
+            [qm31_const::<1382571514, 1853037666, 1589474134, 343880121>()].span(),
+            [qm31_const::<1986820986, 913513739, 45970432, 343880178>()].span(),
+            [qm31_const::<1919711807, 779296011, 2126345215, 343880177>()].span(),
+            [qm31_const::<2121039344, 1181949195, 180188160, 343880178>()].span(),
+            [qm31_const::<2053930165, 1047731467, 113079296, 343880178>()].span(),
+            [qm31_const::<1718384270, 376642827, 1925018623, 343880177>()].span(),
+            [qm31_const::<1651275091, 242425099, 1857909759, 343880177>()].span(),
+            [qm31_const::<1852602628, 645078283, 2059236351, 343880177>()].span(),
+            [qm31_const::<1785493449, 510860555, 1992127487, 343880177>()].span(),
+            [qm31_const::<1449947554, 1987255562, 1656583166, 343880177>()].span(),
+            [qm31_const::<1382838375, 1853037834, 1589474302, 343880177>()].span(),
+            [qm31_const::<510356977, 108207322, 717059022, 343880161>()].span(),
+            [qm31_const::<577466156, 242425050, 784167886, 343880161>()].span(),
+            [qm31_const::<376138619, 1987255513, 582841293, 343880161>()].span(),
+            [qm31_const::<443247798, 2121473241, 649950157, 343880161>()].span(),
+            [qm31_const::<778793693, 645078234, 985494478, 343880161>()].span(),
+            [qm31_const::<845902872, 779295962, 1052603342, 343880161>()].span(),
+            [qm31_const::<644575335, 376642778, 851276750, 343880161>()].span(),
+            [qm31_const::<711684514, 510860506, 918385614, 343880161>()].span(),
+            [qm31_const::<1047230409, 1181949146, 1253929934, 343880161>()].span(),
+            [qm31_const::<1114339588, 1316166874, 1321038798, 343880161>()].span(),
+            [qm31_const::<1717810224, 376642479, 1925018275, 343880061>()].span(),
+            [qm31_const::<1650701045, 242424751, 1857909411, 343880061>()].span(),
+            [qm31_const::<1583591866, 108207023, 1790800547, 343880061>()].span(),
+            [qm31_const::<1516482687, 2121472942, 1723691682, 343880061>()].span(),
+            [qm31_const::<1986246940, 913513391, 45970084, 343880062>()].span(),
+            [qm31_const::<1919137761, 779295663, 2126344867, 343880061>()].span(),
+            [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
+        ]
+            .span();
+        let interaction_values = array![
+            qm31_const::<1005168032, 79980996, 1847888101, 1941984119>(),
+            qm31_const::<1072277211, 214198724, 1914996965, 1941984119>(),
+            qm31_const::<1139386390, 348416452, 1982105829, 1941984119>(),
+            qm31_const::<1206495569, 482634180, 2049214693, 1941984119>(),
+        ];
+        let mut interaction_columns = make_interaction_trace(
+            interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
+        );
+        component
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_trace,
+                ref trace_columns,
+                ref interaction_columns,
+                qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+                point,
+            );
+        assert_eq!(sum, QM31Trait::from_fixed_array(JNZ_OPCODE_TAKEN_SAMPLE_EVAL_RESULT))
+    }
+}
