@@ -612,37 +612,40 @@ fn write_trace_simd(
 
                 // Verify Mul Small.
 
-                let carry_1_col33 = (((((((op0_limb_0_col24) * (op1_limb_0_col29))
+                let carry_1_col33 = (((((op0_limb_0_col24) * (op1_limb_0_col29))
                     - (dst_limb_0_col15))
-                    + (((op0_limb_0_col24) * (op1_limb_1_col30)) * (M31_512)))
-                    + (((op0_limb_1_col25) * (op1_limb_0_col29)) * (M31_512)))
-                    - ((dst_limb_1_col16) * (M31_512)))
+                    + (((((op0_limb_0_col24) * (op1_limb_1_col30))
+                        + ((op0_limb_1_col25) * (op1_limb_0_col29)))
+                        - (dst_limb_1_col16))
+                        * (M31_512)))
                     * (M31_8192));
                 *row[33] = carry_1_col33;
                 *sub_component_inputs.range_check_11[0] = [carry_1_col33];
                 *lookup_data.range_check_11_0 = [carry_1_col33];
-                let carry_3_col34 = (((((((((((carry_1_col33)
-                    + ((op0_limb_0_col24) * (op1_limb_2_col31)))
-                    + ((op0_limb_1_col25) * (op1_limb_1_col30)))
-                    + ((op0_limb_2_col26) * (op1_limb_0_col29)))
-                    - (dst_limb_2_col17))
-                    + (((op0_limb_0_col24) * (op1_limb_3_col32)) * (M31_512)))
-                    + (((op0_limb_1_col25) * (op1_limb_2_col31)) * (M31_512)))
-                    + (((op0_limb_2_col26) * (op1_limb_1_col30)) * (M31_512)))
-                    + (((op0_limb_3_col27) * (op1_limb_0_col29)) * (M31_512)))
-                    - ((dst_limb_3_col18) * (M31_512)))
+                let carry_3_col34 = ((((carry_1_col33)
+                    + (((((op0_limb_0_col24) * (op1_limb_2_col31))
+                        + ((op0_limb_1_col25) * (op1_limb_1_col30)))
+                        + ((op0_limb_2_col26) * (op1_limb_0_col29)))
+                        - (dst_limb_2_col17)))
+                    + (((((((op0_limb_0_col24) * (op1_limb_3_col32))
+                        + ((op0_limb_1_col25) * (op1_limb_2_col31)))
+                        + ((op0_limb_2_col26) * (op1_limb_1_col30)))
+                        + ((op0_limb_3_col27) * (op1_limb_0_col29)))
+                        - (dst_limb_3_col18))
+                        * (M31_512)))
                     * (M31_8192));
                 *row[34] = carry_3_col34;
                 *sub_component_inputs.range_check_11[1] = [carry_3_col34];
                 *lookup_data.range_check_11_1 = [carry_3_col34];
-                let carry_5_col35 = (((((((((carry_3_col34)
-                    + ((op0_limb_1_col25) * (op1_limb_3_col32)))
-                    + ((op0_limb_2_col26) * (op1_limb_2_col31)))
-                    + ((op0_limb_3_col27) * (op1_limb_1_col30)))
-                    - (dst_limb_4_col19))
-                    + (((op0_limb_2_col26) * (op1_limb_3_col32)) * (M31_512)))
-                    + (((op0_limb_3_col27) * (op1_limb_2_col31)) * (M31_512)))
-                    - ((dst_limb_5_col20) * (M31_512)))
+                let carry_5_col35 = ((((carry_3_col34)
+                    + (((((op0_limb_1_col25) * (op1_limb_3_col32))
+                        + ((op0_limb_2_col26) * (op1_limb_2_col31)))
+                        + ((op0_limb_3_col27) * (op1_limb_1_col30)))
+                        - (dst_limb_4_col19)))
+                    + (((((op0_limb_2_col26) * (op1_limb_3_col32))
+                        + ((op0_limb_3_col27) * (op1_limb_2_col31)))
+                        - (dst_limb_5_col20))
+                        * (M31_512)))
                     * (M31_8192));
                 *row[35] = carry_5_col35;
                 *sub_component_inputs.range_check_11[2] = [carry_5_col35];
