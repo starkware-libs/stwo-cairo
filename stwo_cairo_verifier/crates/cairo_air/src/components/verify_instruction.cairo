@@ -346,3 +346,96 @@ fn lookup_constraints(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
+#[cfg(and(test, feature: "qm31_opcode"))]
+mod tests {
+    use core::array::ArrayImpl;
+    use core::num::traits::Zero;
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{
+        LookupElements, PreprocessedColumn, PreprocessedColumnKey, PreprocessedColumnTrait,
+        PreprocessedMaskValues,
+    };
+    use stwo_verifier_core::circle::CirclePoint;
+    use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
+    use crate::cairo_component::*;
+    use crate::components::sample_evaluations::*;
+    use crate::test_utils::{make_interaction_trace, make_lookup_elements};
+    use crate::utils::*;
+    use super::{Claim, Component, InteractionClaim};
+
+    #[test]
+    fn test_evaluation_result() {
+        let component = Component {
+            claim: Claim { log_size: 15 },
+            interaction_claim: InteractionClaim {
+                claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
+            },
+            memory_address_to_id_lookup_elements: make_lookup_elements(
+                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
+                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
+            ),
+            memory_id_to_big_lookup_elements: make_lookup_elements(
+                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
+                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
+            ),
+            range_check_4_3_lookup_elements: make_lookup_elements(
+                qm31_const::<2002655739, 648487962, 2031513586, 1279836774>(),
+                qm31_const::<1537860752, 1033525355, 1098983534, 838300228>(),
+            ),
+            range_check_7_2_5_lookup_elements: make_lookup_elements(
+                qm31_const::<425514336, 1473331321, 384012983, 274885242>(),
+                qm31_const::<660930654, 31738603, 1176905988, 765990201>(),
+            ),
+            verify_instruction_lookup_elements: make_lookup_elements(
+                qm31_const::<1069488928, 1058545294, 340383544, 1219862120>(),
+                qm31_const::<1812811714, 1448895316, 1764436954, 1191872819>(),
+            ),
+        };
+        let mut sum: QM31 = Zero::zero();
+        let point = CirclePoint {
+            x: qm31_const::<461666434, 38651694, 1083586041, 510305943>(),
+            y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
+        };
+
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+
+        let mut trace_columns = [
+            [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
+            [qm31_const::<1591990121, 771341002, 584090809, 1375009625>()].span(),
+            [qm31_const::<1793317658, 1173994186, 785417401, 1375009625>()].span(),
+            [qm31_const::<1726208479, 1039776458, 718308537, 1375009625>()].span(),
+            [qm31_const::<1390662584, 368687818, 382764217, 1375009625>()].span(),
+            [qm31_const::<1323553405, 234470090, 315655353, 1375009625>()].span(),
+            [qm31_const::<1524880942, 637123274, 516981945, 1375009625>()].span(),
+            [qm31_const::<1457771763, 502905546, 449873081, 1375009625>()].span(),
+            [qm31_const::<48489085, 1979300555, 1188070585, 1375009625>()].span(),
+            [qm31_const::<2128863553, 1845082826, 1120961721, 1375009625>()].span(),
+            [qm31_const::<1852335767, 645078115, 2059236183, 343880121>()].span(),
+            [qm31_const::<1919444946, 779295843, 2126345047, 343880121>()].span(),
+            [qm31_const::<1986554125, 913513571, 45970264, 343880122>()].span(),
+            [qm31_const::<2053663304, 1047731299, 113079128, 343880122>()].span(),
+            [qm31_const::<1583899051, 108207203, 1790800727, 343880121>()].span(),
+            [qm31_const::<1651008230, 242424931, 1857909591, 343880121>()].span(),
+            [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
+        ]
+            .span();
+        let interaction_values = array![
+            qm31_const::<1005168032, 79980996, 1847888101, 1941984119>(),
+            qm31_const::<1072277211, 214198724, 1914996965, 1941984119>(),
+            qm31_const::<1139386390, 348416452, 1982105829, 1941984119>(),
+        ];
+        let mut interaction_columns = make_interaction_trace(
+            interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
+        );
+        component
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_trace,
+                ref trace_columns,
+                ref interaction_columns,
+                qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
+                point,
+            );
+        assert_eq!(sum, QM31Trait::from_fixed_array(VERIFY_INSTRUCTION_SAMPLE_EVAL_RESULT))
+    }
+}
