@@ -152,14 +152,6 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
         }
     }
 
-    fn max_constraint_log_degree_bound(self: @PedersenContextComponents) -> u32 {
-        if let Option::Some(components) = self.components {
-            components.max_constraint_log_degree_bound()
-        } else {
-            0
-        }
-    }
-
     fn mask_points(
         self: @PedersenContextComponents,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -287,16 +279,5 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 random_coeff,
                 point,
             );
-    }
-
-    fn max_constraint_log_degree_bound(self: @PedersenComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree =
-            core::cmp::max(max_degree, self.partial_ec_mul.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(
-                max_degree, self.pedersen_points_table.max_constraint_log_degree_bound(),
-            );
-        max_degree
     }
 }
