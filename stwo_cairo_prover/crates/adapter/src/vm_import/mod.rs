@@ -8,6 +8,7 @@ use cairo_vm::air_public_input::{PublicInput, PublicInputError};
 use cairo_vm::stdlib::collections::HashMap;
 use json::PrivateInput;
 use memmap2::Mmap;
+use serde::{Deserialize, Serialize};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use thiserror::Error;
 use tracing::{span, Level};
@@ -45,17 +46,67 @@ fn deserialize_inputs<'a>(
 ) -> Result<(PublicInput<'a>, PrivateInput), VmImportError> {
     #[cfg(feature = "std")]
     {
-        Ok((
-            sonic_rs::from_str(public_input_string)?,
-            sonic_rs::from_str(private_input_string)?,
-        ))
+        tracing::info!(
+            "Deserializing public input JSON ({} bytes)...",
+            public_input_string.len()
+        );
+        let public_input = sonic_rs::from_str(public_input_string).map_err(|e| {
+            tracing::error!(
+                "Failed to deserialize public input JSON ({} bytes): {}",
+                public_input_string.len(),
+                e
+            );
+            e
+        })?;
+        tracing::info!("Public input deserialized successfully");
+
+        tracing::info!(
+            "Deserializing private input JSON ({} bytes)...",
+            private_input_string.len()
+        );
+        let private_input = sonic_rs::from_str(private_input_string).map_err(|e| {
+            tracing::error!(
+                "Failed to deserialize private input JSON ({} bytes): {}",
+                private_input_string.len(),
+                e
+            );
+            e
+        })?;
+        tracing::info!("Private input deserialized successfully");
+
+        Ok((public_input, private_input))
     }
     #[cfg(not(feature = "std"))]
     {
-        Ok((
-            serde_json::from_str(public_input_string)?,
-            serde_json::from_str(private_input_string)?,
-        ))
+        tracing::info!(
+            "Deserializing public input JSON ({} bytes)...",
+            public_input_string.len()
+        );
+        let public_input = serde_json::from_str(public_input_string).map_err(|e| {
+            tracing::error!(
+                "Failed to deserialize public input JSON ({} bytes): {}",
+                public_input_string.len(),
+                e
+            );
+            e
+        })?;
+        tracing::info!("Public input deserialized successfully");
+
+        tracing::info!(
+            "Deserializing private input JSON ({} bytes)...",
+            private_input_string.len()
+        );
+        let private_input = serde_json::from_str(private_input_string).map_err(|e| {
+            tracing::error!(
+                "Failed to deserialize private input JSON ({} bytes): {}",
+                private_input_string.len(),
+                e
+            );
+            e
+        })?;
+        tracing::info!("Private input deserialized successfully");
+
+        Ok((public_input, private_input))
     }
 }
 
@@ -69,6 +120,12 @@ pub fn adapt_vm_output(
     private_input_json: &Path,
 ) -> Result<ProverInput, VmImportError> {
     let _span = span!(Level::INFO, "adapt_vm_output").entered();
+
+    tracing::info!(
+        "Reading JSON files: public_input={}, private_input={}",
+        public_input_json.display(),
+        private_input_json.display()
+    );
 
     let (public_input_string, private_input_string) = (
         read_to_string(public_input_json).unwrap_or_else(|_| {
@@ -84,8 +141,24 @@ pub fn adapt_vm_output(
             )
         }),
     );
+
+    tracing::info!(
+        "JSON files loaded - public_input size: {} bytes ({:.2} MB), private_input size: {} bytes",
+        public_input_string.len(),
+        public_input_string.len() as f64 / 1_048_576.0,
+        private_input_string.len()
+    );
+
+    tracing::info!("Starting JSON deserialization...");
     let (public_input, private_input) =
         deserialize_inputs(&public_input_string, &private_input_string)?;
+    tracing::info!("JSON deserialization completed successfully");
+
+    tracing::info!(
+        "Public input contains {} memory segments, {} public memory entries",
+        public_input.memory_segments.len(),
+        public_input.public_memory.len()
+    );
 
     let end_addr = public_input
         .memory_segments
@@ -104,8 +177,22 @@ pub fn adapt_vm_output(
         .unwrap()
         .join(&private_input.trace_path);
 
+    tracing::info!(
+        "Loading binary files: memory={}, trace={}",
+        memory_path.display(),
+        trace_path.display()
+    );
+
     let memory = MmappedFile::<MemoryEntry>::new(memory_path.as_path());
     let trace = MmappedFile::<RelocatedTraceEntry>::new(trace_path.as_path());
+
+    tracing::info!(
+        "Binary files loaded - memory: {} entries ({:.2} MB), trace: {} entries ({:.2} MB)",
+        memory.as_slice().len(),
+        (memory.as_slice().len() * std::mem::size_of::<MemoryEntry>()) as f64 / 1_048_576.0,
+        trace.as_slice().len(),
+        (trace.as_slice().len() * std::mem::size_of::<RelocatedTraceEntry>()) as f64 / 1_048_576.0
+    );
 
     let public_memory_addresses = public_input
         .public_memory
@@ -137,11 +224,22 @@ pub fn adapt_to_stwo_input(
     memory_segments: &HashMap<&str, MemorySegmentAddresses>,
     public_segment_context: PublicSegmentContext,
 ) -> Result<ProverInput, VmImportError> {
+    tracing::info!(
+        "Building prover input - trace entries: {}, public memory addresses: {}",
+        trace.len(),
+        public_memory_addresses.len()
+    );
+
     let state_transitions = StateTransitions::from_slice_parallel(trace, &memory);
     let mut builtin_segments = BuiltinSegments::from_memory_segments(memory_segments);
     builtin_segments.fill_memory_holes(&mut memory);
     builtin_segments.pad_builtin_segments(&mut memory);
     let (memory, inst_cache) = memory.build();
+
+    tracing::info!(
+        "Prover input built - instruction cache size: {}",
+        inst_cache.len()
+    );
 
     Ok(ProverInput {
         state_transitions,
@@ -150,6 +248,10 @@ pub fn adapt_to_stwo_input(
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_mem: Vec::new(),
+        #[cfg(feature = "extract-mem-trace")]
+        relocated_trace: Vec::new(),
     })
 }
 
@@ -166,6 +268,13 @@ impl<T: Pod> MmappedFile<T> {
             mmap.len().is_multiple_of(std::mem::size_of::<T>()),
             "File size is not a multiple of the type size"
         );
+        tracing::debug!(
+            "Memory-mapped file {} - size: {} bytes ({:.2} MB), entries: {}",
+            path.display(),
+            mmap.len(),
+            mmap.len() as f64 / 1_048_576.0,
+            mmap.len() / std::mem::size_of::<T>()
+        );
         Self {
             mmap,
             _marker: std::marker::PhantomData,
@@ -179,7 +288,7 @@ impl<T: Pod> MmappedFile<T> {
 
 /// A single entry from the trace file.
 #[repr(C)]
-#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq)]
+#[derive(Copy, Clone, Default, Pod, Zeroable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct RelocatedTraceEntry {
     pub ap: usize,
     pub fp: usize,
