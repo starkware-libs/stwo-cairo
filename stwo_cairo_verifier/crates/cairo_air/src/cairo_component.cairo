@@ -19,8 +19,6 @@ pub trait CairoComponent<T> {
         point: CirclePoint<QM31>,
     );
 
-    fn max_constraint_log_degree_bound(self: @T) -> u32;
-
     fn evaluate_constraints_at_point(
         self: @T,
         ref sum: QM31,
