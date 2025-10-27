@@ -3417,6 +3417,7 @@ dependencies = [
  "anyhow",
  "cairo-air",
  "cairo-vm",
+ "dashmap",
  "dev-utils",
  "hex",
  "itertools 0.12.1",

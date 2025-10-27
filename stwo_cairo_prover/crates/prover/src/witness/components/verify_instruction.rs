@@ -2,9 +2,8 @@
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::components::verify_instruction::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use dashmap::DashMap;
 use itertools::Itertools;
-use stwo_cairo_adapter::decode::deconstruct_instruction;
-use stwo_cairo_adapter::HashMap;
 
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_4_3, range_check_7_2_5,
@@ -16,22 +15,12 @@ pub type PackedInputType = (PackedM31, [PackedM31; 3], [PackedM31; 2], PackedM31
 
 #[derive(Default)]
 pub struct ClaimGenerator {
-    /// pc -> encoded instruction.
-    instructions: HashMap<u32, u128>,
-
-    /// pc -> multiplicity.
-    multiplicities: HashMap<u32, AtomicU32>,
+    mults: DashMap<InputType, AtomicU32>,
 }
 impl ClaimGenerator {
-    pub fn new(instructions: Vec<(u32, u128)>) -> Self {
-        let instructions = HashMap::from_iter(instructions);
-        let keys = instructions.keys().copied();
-        let mut multiplicities = HashMap::with_capacity(keys.len());
-        multiplicities.extend(keys.zip(std::iter::repeat_with(|| AtomicU32::new(0))));
-
+    pub fn new() -> Self {
         Self {
-            multiplicities,
-            instructions,
+            mults: DashMap::new(),
         }
     }
 
@@ -44,15 +33,13 @@ impl ClaimGenerator {
         range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let (mut inputs, mut mults) = self
-            .multiplicities
-            .into_iter()
-            .sorted_by_key(|(pc, _)| *pc)
-            .map(|(pc, multiplicity)| {
-                let (offsets, flags, opcode_extension) =
-                    deconstruct_instruction(*self.instructions.get(&pc).unwrap());
-                let multiplicity = M31(multiplicity.into_inner());
-                ((M31(pc), offsets, flags, opcode_extension), multiplicity)
+            .mults
+            .iter()
+            .map(|entry| {
+                let (key, val) = entry.pair();
+                (*key, M31(val.load(Ordering::Relaxed)))
             })
+            .sorted_by_key(|(key, _)| key.0)
             .unzip::<_, _, Vec<_>, Vec<_>>();
         let n_rows = inputs.len();
         assert_ne!(n_rows, 0);
@@ -119,11 +106,10 @@ impl ClaimGenerator {
         });
     }
 
-    // Instruction is determined by PC.
-    pub fn add_input(&self, (pc, ..): &InputType) {
-        self.multiplicities
-            .get(&pc.0)
-            .unwrap()
+    pub fn add_input(&self, input: &InputType) {
+        self.mults
+            .entry(*input)
+            .or_insert_with(|| AtomicU32::new(0))
             .fetch_add(1, Ordering::Relaxed);
     }
 }

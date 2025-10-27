@@ -29,7 +29,7 @@ pub const N_REGISTERS: usize = 3;
 pub struct ProverInput {
     pub state_transitions: StateTransitions,
     pub memory: Memory,
-    pub inst_cache: Vec<(u32, u128)>,
+    pc_num: usize,
     pub public_memory_addresses: Vec<u32>,
     pub builtin_segments: BuiltinSegments,
     pub public_segment_context: PublicSegmentContext,
@@ -125,7 +125,7 @@ impl ExecutionResources {
                 id_to_big: input.memory.f252_values.len(),
                 id_to_small: input.memory.small_values.len(),
             },
-            verify_instructions_count: input.inst_cache.len(),
+            verify_instructions_count: input.pc_num,
         }
     }
 }
