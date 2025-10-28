@@ -1,8 +1,8 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
 use crate::components::subroutines::cond_range_check_2::CondRangeCheck2;
+use crate::components::subroutines::decode_small_sign::DecodeSmallSign;
 use crate::components::subroutines::read_id::ReadId;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
@@ -46,12 +46,7 @@ impl ReadSmall {
             memory_address_to_id_lookup_elements,
             eval,
         );
-        CondDecodeSmallSign::evaluate(
-            [M31_1.clone()],
-            msb_col1.clone(),
-            mid_limbs_set_col2.clone(),
-            eval,
-        );
+        DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
             partial_limb_msb_col7.clone(),

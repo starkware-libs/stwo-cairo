@@ -708,11 +708,11 @@ verify_instruction_state: &verify_instruction::ClaimGenerator,
 
             // Cond Felt 252 As Rel Imm.
 
-            // Cond Decode Small Sign.
+            // Decode Small Sign.
 
             let msb_tmp_57455_94 = res_limb_27_col224.eq(M31_256);let msb_col229 = msb_tmp_57455_94.as_m31();
-            *row[229] = msb_col229;let mid_limbs_set_tmp_57455_95 = res_limb_20_col217.eq(M31_511);let mid_limbs_set_col230 = mid_limbs_set_tmp_57455_95.as_m31();
-            *row[230] = mid_limbs_set_col230;let cond_decode_small_sign_output_tmp_57455_96 = [msb_col229, mid_limbs_set_col230];
+            *row[229] = msb_col229;let mid_limbs_set_tmp_57455_95 = ((res_limb_20_col217.eq(M31_511)) & (res_limb_27_col224.eq(M31_256)));let mid_limbs_set_col230 = mid_limbs_set_tmp_57455_95.as_m31();
+            *row[230] = mid_limbs_set_col230;let decode_small_sign_output_tmp_57455_96 = [msb_col229, mid_limbs_set_col230];
 
             let remainder_bits_tmp_57455_97 = ((res_limb_3_col200) - (((mid_limbs_set_col230) * (M31_508))));
 
@@ -730,11 +730,11 @@ verify_instruction_state: &verify_instruction::ClaimGenerator,
 
             // Cond Felt 252 As Rel Imm.
 
-            // Cond Decode Small Sign.
+            // Decode Small Sign.
 
             let msb_tmp_57455_106 = op1_limb_27_col111.eq(M31_256);let msb_col235 = msb_tmp_57455_106.as_m31();
-            *row[235] = msb_col235;let mid_limbs_set_tmp_57455_107 = op1_limb_20_col104.eq(M31_511);let mid_limbs_set_col236 = mid_limbs_set_tmp_57455_107.as_m31();
-            *row[236] = mid_limbs_set_col236;let cond_decode_small_sign_output_tmp_57455_108 = [msb_col235, mid_limbs_set_col236];
+            *row[235] = msb_col235;let mid_limbs_set_tmp_57455_107 = ((op1_limb_20_col104.eq(M31_511)) & (op1_limb_27_col111.eq(M31_256)));let mid_limbs_set_col236 = mid_limbs_set_tmp_57455_107.as_m31();
+            *row[236] = mid_limbs_set_col236;let decode_small_sign_output_tmp_57455_108 = [msb_col235, mid_limbs_set_col236];
 
             let remainder_bits_tmp_57455_109 = ((op1_limb_3_col87) - (((mid_limbs_set_col236) * (M31_508))));
 
