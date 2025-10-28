@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::cond_decode_small_sign::cond_decode_small_sign_evaluate;
 use crate::components::subroutines::cond_range_check_2::cond_range_check_2_evaluate;
+use crate::components::subroutines::decode_small_sign::decode_small_sign_evaluate;
 use crate::components::subroutines::read_id::read_id_evaluate;
 use crate::prelude::*;
 
@@ -34,13 +34,8 @@ pub fn read_small_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    cond_decode_small_sign_evaluate(
-        qm31_const::<1, 0, 0, 0>(),
-        msb_col1,
-        mid_limbs_set_col2,
-        ref sum,
-        domain_vanishing_eval_inv,
-        random_coeff,
+    decode_small_sign_evaluate(
+        [], msb_col1, mid_limbs_set_col2, ref sum, domain_vanishing_eval_inv, random_coeff,
     );
     cond_range_check_2_evaluate(
         [remainder_bits_col6, qm31_const::<1, 0, 0, 0>()],
