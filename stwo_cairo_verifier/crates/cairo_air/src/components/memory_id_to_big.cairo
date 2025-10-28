@@ -1,6 +1,6 @@
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
-    PreprocessedColumn, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
@@ -10,6 +10,7 @@ use stwo_verifier_core::utils::{ArrayImpl, pow2};
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 use crate::cairo_component::CairoComponent;
 use crate::claim::ClaimTrait;
+use crate::prelude::*;
 use crate::{CairoInteractionElements, RelationUsesDict, accumulate_relation_uses};
 use super::super::Invertible;
 use super::super::utils::UsizeImpl;
@@ -344,7 +345,8 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_h_alpha1: range_check_9_9_h_alpha_1,
             RangeCheck_9_9_h_z: *self.range_9_9_h_lookup_elements.z,
             claimed_sum: *self.claimed_sum,
-            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
+            seq: preprocessed_mask_values
+                .get(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
@@ -484,7 +486,8 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
             RangeCheck_9_9_d_alpha1: range_check_9_9_d_alpha_1,
             RangeCheck_9_9_d_z: *self.range_9_9_d_lookup_elements.z,
             claimed_sum: *self.claimed_sum,
-            seq: preprocessed_mask_values.get(PreprocessedColumn::Seq(*self.log_n_rows)),
+            seq: preprocessed_mask_values
+                .get(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);

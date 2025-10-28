@@ -3,14 +3,14 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((4));
+const LOG_SIZE: u32 = 4;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 4].span();
@@ -67,26 +67,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((0)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((1)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((2)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((3)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((4)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((5)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((6)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((7)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((8)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((9)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((10)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((11)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((12)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((13)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((14)));
-        preprocessed_column_set.insert(PreprocessedColumn::BlakeSigma((15)));
+        preprocessed_column_set.insert(preprocessed_columns::seq_column_idx(LOG_SIZE));
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__0_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__1_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__2_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__3_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__4_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__5_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__6_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__7_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__8_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__9_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__10_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__11_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__12_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__13_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__14_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BLAKE_SIGMA__15_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -95,7 +95,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        SOME_COLUMN.log_size() + 1
+        LOG_SIZE + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -107,29 +107,29 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut blake_round_sigma_sum_0: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
-        let blakesigma_0 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((0)));
-        let blakesigma_1 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((1)));
-        let blakesigma_2 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((2)));
-        let blakesigma_3 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((3)));
-        let blakesigma_4 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((4)));
-        let blakesigma_5 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((5)));
-        let blakesigma_6 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((6)));
-        let blakesigma_7 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((7)));
-        let blakesigma_8 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((8)));
-        let blakesigma_9 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((9)));
-        let blakesigma_10 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((10)));
-        let blakesigma_11 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((11)));
-        let blakesigma_12 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((12)));
-        let blakesigma_13 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((13)));
-        let blakesigma_14 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((14)));
-        let blakesigma_15 = preprocessed_mask_values.get(PreprocessedColumn::BlakeSigma((15)));
+        let seq = preprocessed_mask_values.get(preprocessed_columns::seq_column_idx(LOG_SIZE));
+        let blakesigma_0 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__0_IDX);
+        let blakesigma_1 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__1_IDX);
+        let blakesigma_2 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__2_IDX);
+        let blakesigma_3 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__3_IDX);
+        let blakesigma_4 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__4_IDX);
+        let blakesigma_5 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__5_IDX);
+        let blakesigma_6 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__6_IDX);
+        let blakesigma_7 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__7_IDX);
+        let blakesigma_8 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__8_IDX);
+        let blakesigma_9 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__9_IDX);
+        let blakesigma_10 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__10_IDX);
+        let blakesigma_11 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__11_IDX);
+        let blakesigma_12 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__12_IDX);
+        let blakesigma_13 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__13_IDX);
+        let blakesigma_14 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__14_IDX);
+        let blakesigma_15 = preprocessed_mask_values.get(preprocessed_columns::BLAKE_SIGMA__15_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

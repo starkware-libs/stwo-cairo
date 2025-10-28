@@ -6,8 +6,6 @@ pub const ELEM_BITS: u32 = 12;
 
 pub const EXPAND_BITS: u32 = 2;
 
-pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
-
 pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
 
 
@@ -116,11 +114,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             VerifyBitwiseXor_12_z,
             claimed_sum,
             bitwise_xor_10_0: preprocessed_mask_values
-                .get(PreprocessedColumn::BitwiseXor((LIMB_BITS, 0))),
+                .get(preprocessed_columns::BITWISE_XOR__10_0_IDX),
             bitwise_xor_10_1: preprocessed_mask_values
-                .get(PreprocessedColumn::BitwiseXor((LIMB_BITS, 1))),
+                .get(preprocessed_columns::BITWISE_XOR__10_1_IDX),
             bitwise_xor_10_2: preprocessed_mask_values
-                .get(PreprocessedColumn::BitwiseXor((LIMB_BITS, 2))),
+                .get(preprocessed_columns::BITWISE_XOR__10_2_IDX),
             column_size: pow2(LOG_SIZE).try_into().unwrap(),
         };
 

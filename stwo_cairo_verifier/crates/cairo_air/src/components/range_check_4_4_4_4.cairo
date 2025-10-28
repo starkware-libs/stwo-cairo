@@ -3,14 +3,14 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0));
+const LOG_SIZE: u32 = 16;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 4].span();
@@ -70,13 +70,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)));
-        preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)));
-        preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)));
-        preprocessed_column_set.insert(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)));
+        preprocessed_column_set.insert(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_0_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_1_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_2_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_3_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -85,7 +85,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        SOME_COLUMN.log_size() + 1
+        LOG_SIZE + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -97,20 +97,20 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_4_4_4_4_sum_0: QM31 = Zero::zero();
         let rangecheck_4_4_4_4_0 = preprocessed_mask_values
-            .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 0)));
+            .get(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_0_IDX);
         let rangecheck_4_4_4_4_1 = preprocessed_mask_values
-            .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 1)));
+            .get(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_1_IDX);
         let rangecheck_4_4_4_4_2 = preprocessed_mask_values
-            .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 2)));
+            .get(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_2_IDX);
         let rangecheck_4_4_4_4_3 = preprocessed_mask_values
-            .get(PreprocessedColumn::RangeCheck4(([4, 4, 4, 4], 3)));
+            .get(preprocessed_columns::RANGE_CHECK_4_4_4_4_4_3_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

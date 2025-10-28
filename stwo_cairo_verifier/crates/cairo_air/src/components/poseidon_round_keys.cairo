@@ -3,14 +3,14 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((6));
+const LOG_SIZE: u32 = 6;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 4].span();
@@ -67,40 +67,40 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((0)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((1)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((2)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((3)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((4)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((5)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((6)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((7)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((8)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((9)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((10)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((11)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((12)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((13)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((14)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((15)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((16)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((17)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((18)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((19)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((20)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((21)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((22)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((23)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((24)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((25)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((26)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((27)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((28)));
-        preprocessed_column_set.insert(PreprocessedColumn::PoseidonRoundKeys((29)));
+        preprocessed_column_set.insert(preprocessed_columns::seq_column_idx(LOG_SIZE));
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__0_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__1_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__2_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__3_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__4_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__5_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__6_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__7_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__8_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__9_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__10_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__11_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__12_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__13_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__14_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__15_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__16_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__17_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__18_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__19_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__20_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__21_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__22_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__23_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__24_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__25_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__26_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__27_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__28_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::POSEIDON_ROUND_KEYS__29_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -109,7 +109,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     }
 
     fn max_constraint_log_degree_bound(self: @Component) -> u32 {
-        SOME_COLUMN.log_size() + 1
+        LOG_SIZE + 1
     }
 
     fn evaluate_constraints_at_point(
@@ -121,73 +121,73 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut poseidon_round_keys_sum_0: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
+        let seq = preprocessed_mask_values.get(preprocessed_columns::seq_column_idx(LOG_SIZE));
         let poseidonroundkeys_0 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((0)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__0_IDX);
         let poseidonroundkeys_1 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((1)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__1_IDX);
         let poseidonroundkeys_2 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((2)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__2_IDX);
         let poseidonroundkeys_3 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((3)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__3_IDX);
         let poseidonroundkeys_4 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((4)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__4_IDX);
         let poseidonroundkeys_5 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((5)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__5_IDX);
         let poseidonroundkeys_6 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((6)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__6_IDX);
         let poseidonroundkeys_7 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((7)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__7_IDX);
         let poseidonroundkeys_8 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((8)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__8_IDX);
         let poseidonroundkeys_9 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((9)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__9_IDX);
         let poseidonroundkeys_10 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((10)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__10_IDX);
         let poseidonroundkeys_11 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((11)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__11_IDX);
         let poseidonroundkeys_12 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((12)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__12_IDX);
         let poseidonroundkeys_13 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((13)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__13_IDX);
         let poseidonroundkeys_14 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((14)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__14_IDX);
         let poseidonroundkeys_15 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((15)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__15_IDX);
         let poseidonroundkeys_16 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((16)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__16_IDX);
         let poseidonroundkeys_17 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((17)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__17_IDX);
         let poseidonroundkeys_18 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((18)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__18_IDX);
         let poseidonroundkeys_19 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((19)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__19_IDX);
         let poseidonroundkeys_20 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((20)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__20_IDX);
         let poseidonroundkeys_21 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((21)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__21_IDX);
         let poseidonroundkeys_22 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((22)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__22_IDX);
         let poseidonroundkeys_23 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((23)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__23_IDX);
         let poseidonroundkeys_24 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((24)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__24_IDX);
         let poseidonroundkeys_25 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((25)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__25_IDX);
         let poseidonroundkeys_26 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((26)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__26_IDX);
         let poseidonroundkeys_27 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((27)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__27_IDX);
         let poseidonroundkeys_28 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((28)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__28_IDX);
         let poseidonroundkeys_29 = preprocessed_mask_values
-            .get(PreprocessedColumn::PoseidonRoundKeys((29)));
+            .get(preprocessed_columns::POSEIDON_ROUND_KEYS__29_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

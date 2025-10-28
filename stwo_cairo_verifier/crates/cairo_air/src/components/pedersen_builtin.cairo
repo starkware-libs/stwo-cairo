@@ -92,7 +92,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let log_size = *(self.claim.log_size);
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        preprocessed_column_set
+            .insert(preprocessed_columns::seq_column_idx(*(self.claim.log_size)));
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -529,7 +530,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut partial_ec_mul_sum_17: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_18: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_19: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        let seq = preprocessed_mask_values
+            .get(preprocessed_columns::seq_column_idx(*(self.claim.log_size)));
 
         let [
             value_limb_0_col0,

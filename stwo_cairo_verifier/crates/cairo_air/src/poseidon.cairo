@@ -13,9 +13,7 @@ use stwo_cairo_air::CairoInteractionElements;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, components, utils};
-use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey, PreprocessedMaskValuesImpl,
-};
+use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
 #[cfg(not(feature: "poseidon252_verifier"))]
