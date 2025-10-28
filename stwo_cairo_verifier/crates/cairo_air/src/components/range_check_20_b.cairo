@@ -69,7 +69,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     ) {
         let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(seq_column_idx(LOG_SIZE));
+        preprocessed_column_set.insert(SEQ_20_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -92,14 +92,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_20_b_sum_0: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(seq_column_idx(LOG_SIZE));
+        let seq_20 = preprocessed_mask_values.get(SEQ_20_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        range_check_20_b_sum_0 = self.range_check_20_b_lookup_elements.combine_qm31([seq]);
+        range_check_20_b_sum_0 = self.range_check_20_b_lookup_elements.combine_qm31([seq_20]);
 
         lookup_constraints(
             ref sum,

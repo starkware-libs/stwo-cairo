@@ -48,24 +48,28 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let rangecheck_4_4_4_4_0 =
-            eval.get_preprocessed_column((RangeCheck::new([4, 4, 4, 4], 0)).id());
-        let rangecheck_4_4_4_4_1 =
-            eval.get_preprocessed_column((RangeCheck::new([4, 4, 4, 4], 1)).id());
-        let rangecheck_4_4_4_4_2 =
-            eval.get_preprocessed_column((RangeCheck::new([4, 4, 4, 4], 2)).id());
-        let rangecheck_4_4_4_4_3 =
-            eval.get_preprocessed_column((RangeCheck::new([4, 4, 4, 4], 3)).id());
+        let range_check_4_4_4_4_column_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_4_4_4_4_column_0".to_owned(),
+        });
+        let range_check_4_4_4_4_column_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_4_4_4_4_column_1".to_owned(),
+        });
+        let range_check_4_4_4_4_column_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_4_4_4_4_column_2".to_owned(),
+        });
+        let range_check_4_4_4_4_column_3 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_4_4_4_4_column_3".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_4_4_4_4_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                rangecheck_4_4_4_4_0.clone(),
-                rangecheck_4_4_4_4_1.clone(),
-                rangecheck_4_4_4_4_2.clone(),
-                rangecheck_4_4_4_4_3.clone(),
+                range_check_4_4_4_4_column_0.clone(),
+                range_check_4_4_4_4_column_1.clone(),
+                range_check_4_4_4_4_column_2.clone(),
+                range_check_4_4_4_4_column_3.clone(),
             ],
         ));
 
