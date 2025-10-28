@@ -20,6 +20,7 @@ pub use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
 pub use crate::cairo_component::{CairoComponent, NewComponent};
 pub use crate::claim::ClaimTrait;
 pub use crate::components::subroutines::*;
+pub use crate::preprocessed_columns::seq_column_idx;
 pub use crate::{
-    CairoInteractionElements, PreprocessedColumnTrait, RelationUsesDict, accumulate_relation_uses,
+    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, preprocessed_columns,
 };

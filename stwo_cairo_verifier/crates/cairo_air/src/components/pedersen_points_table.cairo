@@ -3,14 +3,14 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::Seq((23));
+const LOG_SIZE: u32 = 23;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 4].span();
@@ -61,6 +61,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
     }
 }
 
+#[cfg(not(feature: "poseidon252_verifier"))]
 pub impl CairoComponentImpl of CairoComponent<Component> {
     fn mask_points(
         self: @Component,
@@ -69,66 +70,66 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((0)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((1)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((2)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((3)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((4)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((5)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((6)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((7)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((8)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((9)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((10)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((11)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((12)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((13)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((14)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((15)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((16)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((17)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((18)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((19)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((20)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((21)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((22)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((23)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((24)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((25)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((26)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((27)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((28)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((29)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((30)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((31)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((32)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((33)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((34)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((35)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((36)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((37)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((38)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((39)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((40)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((41)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((42)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((43)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((44)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((45)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((46)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((47)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((48)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((49)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((50)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((51)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((52)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((53)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((54)));
-        preprocessed_column_set.insert(PreprocessedColumn::PedersenPoints((55)));
+        preprocessed_column_set.insert(preprocessed_columns::seq_column_idx(LOG_SIZE));
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__0_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__1_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__2_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__3_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__4_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__5_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__6_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__7_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__8_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__9_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__10_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__11_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__12_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__13_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__14_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__15_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__16_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__17_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__18_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__19_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__20_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__21_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__22_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__23_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__24_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__25_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__26_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__27_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__28_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__29_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__30_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__31_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__32_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__33_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__34_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__35_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__36_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__37_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__38_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__39_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__40_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__41_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__42_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__43_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__44_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__45_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__46_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__47_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__48_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__49_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__50_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__51_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__52_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__53_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__54_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::PEDERSEN_POINTS__55_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -145,125 +146,125 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut pedersen_points_table_sum_0: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(SOME_COLUMN.log_size()));
+        let seq = preprocessed_mask_values.get(preprocessed_columns::seq_column_idx(LOG_SIZE));
         let pedersenpoints_0 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((0)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__0_IDX);
         let pedersenpoints_1 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((1)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__1_IDX);
         let pedersenpoints_2 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((2)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__2_IDX);
         let pedersenpoints_3 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((3)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__3_IDX);
         let pedersenpoints_4 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((4)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__4_IDX);
         let pedersenpoints_5 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((5)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__5_IDX);
         let pedersenpoints_6 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((6)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__6_IDX);
         let pedersenpoints_7 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((7)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__7_IDX);
         let pedersenpoints_8 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((8)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__8_IDX);
         let pedersenpoints_9 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((9)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__9_IDX);
         let pedersenpoints_10 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((10)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__10_IDX);
         let pedersenpoints_11 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((11)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__11_IDX);
         let pedersenpoints_12 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((12)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__12_IDX);
         let pedersenpoints_13 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((13)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__13_IDX);
         let pedersenpoints_14 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((14)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__14_IDX);
         let pedersenpoints_15 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((15)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__15_IDX);
         let pedersenpoints_16 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((16)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__16_IDX);
         let pedersenpoints_17 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((17)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__17_IDX);
         let pedersenpoints_18 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((18)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__18_IDX);
         let pedersenpoints_19 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((19)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__19_IDX);
         let pedersenpoints_20 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((20)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__20_IDX);
         let pedersenpoints_21 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((21)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__21_IDX);
         let pedersenpoints_22 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((22)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__22_IDX);
         let pedersenpoints_23 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((23)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__23_IDX);
         let pedersenpoints_24 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((24)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__24_IDX);
         let pedersenpoints_25 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((25)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__25_IDX);
         let pedersenpoints_26 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((26)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__26_IDX);
         let pedersenpoints_27 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((27)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__27_IDX);
         let pedersenpoints_28 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((28)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__28_IDX);
         let pedersenpoints_29 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((29)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__29_IDX);
         let pedersenpoints_30 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((30)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__30_IDX);
         let pedersenpoints_31 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((31)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__31_IDX);
         let pedersenpoints_32 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((32)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__32_IDX);
         let pedersenpoints_33 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((33)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__33_IDX);
         let pedersenpoints_34 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((34)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__34_IDX);
         let pedersenpoints_35 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((35)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__35_IDX);
         let pedersenpoints_36 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((36)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__36_IDX);
         let pedersenpoints_37 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((37)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__37_IDX);
         let pedersenpoints_38 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((38)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__38_IDX);
         let pedersenpoints_39 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((39)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__39_IDX);
         let pedersenpoints_40 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((40)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__40_IDX);
         let pedersenpoints_41 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((41)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__41_IDX);
         let pedersenpoints_42 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((42)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__42_IDX);
         let pedersenpoints_43 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((43)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__43_IDX);
         let pedersenpoints_44 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((44)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__44_IDX);
         let pedersenpoints_45 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((45)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__45_IDX);
         let pedersenpoints_46 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((46)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__46_IDX);
         let pedersenpoints_47 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((47)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__47_IDX);
         let pedersenpoints_48 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((48)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__48_IDX);
         let pedersenpoints_49 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((49)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__49_IDX);
         let pedersenpoints_50 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((50)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__50_IDX);
         let pedersenpoints_51 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((51)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__51_IDX);
         let pedersenpoints_52 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((52)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__52_IDX);
         let pedersenpoints_53 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((53)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__53_IDX);
         let pedersenpoints_54 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((54)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__54_IDX);
         let pedersenpoints_55 = preprocessed_mask_values
-            .get(PreprocessedColumn::PedersenPoints((55)));
+            .get(preprocessed_columns::PEDERSEN_POINTS__55_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
