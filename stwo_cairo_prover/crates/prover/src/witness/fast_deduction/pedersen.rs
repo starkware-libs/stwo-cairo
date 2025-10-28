@@ -40,9 +40,8 @@ impl PartialEcMul {
 
         let window_value = m_shifted[0].0 as usize;
         let table_row = table_offset_usize + round_usize * ROWS_PER_WINDOW + window_value;
-        let table_point: ProjectivePoint = PEDERSEN_TABLE
-            .get_row(table_row)
-            .try_into()
+        let affine_point = PEDERSEN_TABLE.get_row(table_row);
+        let table_point = ProjectivePoint::from_affine(affine_point.x, affine_point.y)
             .expect("Table point should be on curve");
 
         let new_accumulator_point = (accumulator_point + table_point)
