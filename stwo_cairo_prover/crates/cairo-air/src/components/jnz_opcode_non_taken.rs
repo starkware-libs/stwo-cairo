@@ -177,10 +177,10 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::JNZ_OPCODE;
+    use crate::components::constraints_regression_test_values::JNZ_OPCODE_NON_TAKEN;
 
     #[test]
-    fn jnz_opcode_constraints_regression() {
+    fn jnz_opcode_non_taken_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
@@ -197,6 +197,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, JNZ_OPCODE);
+        assert_eq!(sum, JNZ_OPCODE_NON_TAKEN);
     }
 }

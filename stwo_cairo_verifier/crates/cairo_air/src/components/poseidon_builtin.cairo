@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub const N_TRACE_COLUMNS: usize = 341;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 9] = [
     ('MemoryAddressToId', 6), ('MemoryIdToBig', 6), ('PoseidonFullRoundChain', 2),
-    ('RangeCheckFelt252Width27', 2), ('Cube252', 2), ('RangeCheck_3_3_3_3_3', 2),
+    ('RangeCheck252Width27', 2), ('Cube252', 2), ('RangeCheck_3_3_3_3_3', 2),
     ('RangeCheck_4_4_4_4', 6), ('RangeCheck_4_4', 3), ('Poseidon3PartialRoundsChain', 1),
 ];
 
@@ -56,7 +56,7 @@ pub struct Component {
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
-    pub range_check_felt_252_width_27_lookup_elements: crate::RangeCheckFelt252Width27Elements,
+    pub range_check_252_width_27_lookup_elements: crate::RangeCheck252Width27Elements,
     pub cube_252_lookup_elements: crate::Cube252Elements,
     pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
     pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
@@ -81,8 +81,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
             poseidon_full_round_chain_lookup_elements: interaction_elements
                 .poseidon_full_round_chain
                 .clone(),
-            range_check_felt_252_width_27_lookup_elements: interaction_elements
-                .range_check_felt_252_width_27
+            range_check_252_width_27_lookup_elements: interaction_elements
+                .range_check_252_width_27
                 .clone(),
             cube_252_lookup_elements: interaction_elements.cube_252.clone(),
             range_check_3_3_3_3_3_lookup_elements: interaction_elements
@@ -555,8 +555,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut memory_id_to_big_sum_5: QM31 = Zero::zero();
         let mut poseidon_full_round_chain_sum_6: QM31 = Zero::zero();
         let mut poseidon_full_round_chain_sum_7: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_8: QM31 = Zero::zero();
-        let mut range_check_felt_252_width_27_sum_9: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_8: QM31 = Zero::zero();
+        let mut range_check_252_width_27_sum_9: QM31 = Zero::zero();
         let mut cube_252_sum_10: QM31 = Zero::zero();
         let mut range_check_3_3_3_3_3_sum_11: QM31 = Zero::zero();
         let mut range_check_3_3_3_3_3_sum_12: QM31 = Zero::zero();
@@ -2647,7 +2647,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             poseidon_full_round_chain_output_limb_28_col282,
             poseidon_full_round_chain_output_limb_29_col283,
             self.poseidon_full_round_chain_lookup_elements,
-            self.range_check_felt_252_width_27_lookup_elements,
+            self.range_check_252_width_27_lookup_elements,
             self.cube_252_lookup_elements,
             self.range_check_3_3_3_3_3_lookup_elements,
             self.range_check_4_4_4_4_lookup_elements,
@@ -2656,8 +2656,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             seq,
             ref poseidon_full_round_chain_sum_6,
             ref poseidon_full_round_chain_sum_7,
-            ref range_check_felt_252_width_27_sum_8,
-            ref range_check_felt_252_width_27_sum_9,
+            ref range_check_252_width_27_sum_8,
+            ref range_check_252_width_27_sum_9,
             ref cube_252_sum_10,
             ref range_check_3_3_3_3_3_sum_11,
             ref range_check_3_3_3_3_3_sum_12,
@@ -2923,8 +2923,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             memory_id_to_big_sum_5,
             poseidon_full_round_chain_sum_6,
             poseidon_full_round_chain_sum_7,
-            range_check_felt_252_width_27_sum_8,
-            range_check_felt_252_width_27_sum_9,
+            range_check_252_width_27_sum_8,
+            range_check_252_width_27_sum_9,
             cube_252_sum_10,
             range_check_3_3_3_3_3_sum_11,
             range_check_3_3_3_3_3_sum_12,
@@ -2968,8 +2968,8 @@ fn lookup_constraints(
     memory_id_to_big_sum_5: QM31,
     poseidon_full_round_chain_sum_6: QM31,
     poseidon_full_round_chain_sum_7: QM31,
-    range_check_felt_252_width_27_sum_8: QM31,
-    range_check_felt_252_width_27_sum_9: QM31,
+    range_check_252_width_27_sum_8: QM31,
+    range_check_252_width_27_sum_9: QM31,
     cube_252_sum_10: QM31,
     range_check_3_3_3_3_3_sum_11: QM31,
     range_check_3_3_3_3_3_sum_12: QM31,
@@ -3193,10 +3193,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
         ))
-        * range_check_felt_252_width_27_sum_8
-        * range_check_felt_252_width_27_sum_9)
-        - range_check_felt_252_width_27_sum_8
-        - range_check_felt_252_width_27_sum_9)
+        * range_check_252_width_27_sum_8
+        * range_check_252_width_27_sum_9)
+        - range_check_252_width_27_sum_8
+        - range_check_252_width_27_sum_9)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 

@@ -31883,7 +31883,7 @@
           "fp": 498
         }
       ],
-      "call_opcode": [],
+      "call_opcode_abs": [],
       "call_opcode_rel_imm": [
         {
           "pc": 3,
@@ -35446,7 +35446,7 @@
           "fp": 5544
         }
       ],
-      "jnz_opcode": [
+      "jnz_opcode_non_taken": [
         {
           "pc": 17,
           "ap": 775,
@@ -37508,7 +37508,7 @@
       "jump_opcode_rel_imm": [],
       "jump_opcode_rel": [],
       "jump_opcode_double_deref": [],
-      "jump_opcode": [],
+      "jump_opcode_abs": [],
       "mul_opcode_small": [],
       "mul_opcode": [],
       "ret_opcode": [

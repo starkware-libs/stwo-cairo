@@ -43,7 +43,7 @@ relation!(RangeCheck_9_9_E, 2);
 relation!(RangeCheck_9_9_F, 2);
 relation!(RangeCheck_9_9_G, 2);
 relation!(RangeCheck_9_9_H, 2);
-relation!(RangeCheckFelt252Width27, 10);
+relation!(RangeCheck252Width27, 10);
 relation!(TripleXor32, 8);
 relation!(VerifyBitwiseXor_12, 3);
 relation!(VerifyBitwiseXor_4, 3);

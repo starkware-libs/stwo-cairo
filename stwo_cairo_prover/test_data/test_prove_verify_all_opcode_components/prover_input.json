@@ -5605,7 +5605,7 @@
           "fp": 2498
         }
       ],
-      "call_opcode": [
+      "call_opcode_abs": [
         {
           "pc": 303,
           "ap": 1558,
@@ -6014,7 +6014,7 @@
           "fp": 2503
         }
       ],
-      "jnz_opcode": [
+      "jnz_opcode_non_taken": [
         {
           "pc": 1326,
           "ap": 1409,
@@ -6414,7 +6414,7 @@
           "fp": 2503
         }
       ],
-      "jump_opcode": [
+      "jump_opcode_abs": [
         {
           "pc": 294,
           "ap": 1551,
