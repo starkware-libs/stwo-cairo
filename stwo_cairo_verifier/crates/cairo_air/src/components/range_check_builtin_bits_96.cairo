@@ -82,10 +82,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *(self.claim.log_size);
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
+        let trace_gen = CanonicCosetImpl::new(*(self.claim.log_size)).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        preprocessed_column_set.insert(seq_column_idx(*(self.claim.log_size)));
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -130,7 +129,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
         let mut range_check_6_sum_1: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_2: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        let seq = preprocessed_mask_values.get(seq_column_idx(*(self.claim.log_size)));
 
         let [
             value_id_col0,
@@ -312,7 +311,7 @@ mod tests {
         preprocessed_trace
             .values
             .insert(
-                PreprocessedColumnKey::encode(@PreprocessedColumn::Seq(component.claim.log_size)),
+                PreprocessedColumnKey::encode(@seq_column_idx(component.claim.log_size)),
                 NullableTrait::new(qm31_const::<661475002, 1056737278, 1714677692, 134009591>()),
             );
 
