@@ -7,7 +7,7 @@ use rayon::iter::{IntoParallelIterator, ParallelIterator};
 use starknet_curve::curve_params::{
     PEDERSEN_P0, PEDERSEN_P1, PEDERSEN_P2, PEDERSEN_P3, SHIFT_POINT,
 };
-use starknet_types_core::curve::{AffinePoint, ProjectivePoint};
+use starknet_types_core::curve::ProjectivePoint;
 use starknet_types_core::felt::Felt;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
@@ -35,6 +35,14 @@ pub const P1_SECTION_START: usize = P0_SECTION_START + NUM_WINDOWS * ROWS_PER_WI
 pub const P2_SECTION_START: usize = P1_SECTION_START + 16;
 pub const P3_SECTION_START: usize = P2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
 pub const PEDERSEN_TABLE_N_ROWS: usize = P3_SECTION_START + 16;
+
+// We don't use starknet_types_core::curve::AffinePoint because, as of 10/2025,
+// its .x() and .y() getters are slow.
+#[derive(Clone)]
+pub struct SimpleAffinePoint {
+    pub x: Felt,
+    pub y: Felt,
+}
 
 #[derive(Debug)]
 pub struct PedersenPoints {
@@ -84,18 +92,18 @@ pub struct PedersenPointsTable {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
 
-    rows: Vec<AffinePoint>,
+    rows: Vec<SimpleAffinePoint>,
 }
 
 impl PedersenPointsTable {
     #[allow(dead_code)] //  Will be used by the deduce_output of PartialEcMul
-    pub fn get_row(&self, index: usize) -> AffinePoint {
+    pub fn get_row(&self, index: usize) -> SimpleAffinePoint {
         self.rows[index].clone()
     }
 
     pub fn get_row_coordinates(&self, index: usize) -> [Felt252; 2] {
-        let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x().into();
-        let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y().into();
+        let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x.into();
+        let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y.into();
         [x_f252, y_f252]
     }
 
@@ -108,7 +116,7 @@ impl PedersenPointsTable {
     }
 }
 
-fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
+fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<SimpleAffinePoint> {
     // Initialize the accumulator to -SHIFT_POINT
     let mut p = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
 
@@ -131,11 +139,14 @@ fn create_block(point: &ProjectivePoint, n_rows: usize) -> Vec<AffinePoint> {
         .iter()
         .zip_eq(block_points_ys.iter())
         .zip_eq(z_inverses.iter())
-        .map(|((x, y), z_inv)| AffinePoint::new_unchecked(x * z_inv, y * z_inv))
+        .map(|((x, y), z_inv)| SimpleAffinePoint {
+            x: x * z_inv,
+            y: y * z_inv,
+        })
         .collect()
 }
 
-fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<AffinePoint> {
+fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
     (0..NUM_WINDOWS)
         .into_par_iter()
         .map(|window| {
@@ -150,7 +161,7 @@ fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<AffinePoint> {
         .concat()
 }
 
-fn create_table_rows() -> Vec<AffinePoint> {
+fn create_table_rows() -> Vec<SimpleAffinePoint> {
     let mut rows = vec![];
     rows.extend(create_p0_or_p2_section(
         &ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
@@ -175,12 +186,12 @@ fn create_table_rows() -> Vec<AffinePoint> {
     rows
 }
 
-fn rows_to_columns(rows: &[AffinePoint]) -> [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] {
+fn rows_to_columns(rows: &[SimpleAffinePoint]) -> [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] {
     let mut columns_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] =
         from_fn(|_| Vec::with_capacity(rows.len()));
     for row in rows {
-        let x_f252: Felt252 = row.x().into();
-        let y_f252: Felt252 = row.y().into();
+        let x_f252: Felt252 = row.x.into();
+        let y_f252: Felt252 = row.y.into();
         for (col_idx, value) in x_f252
             .get_limbs()
             .iter()
