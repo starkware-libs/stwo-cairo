@@ -9,9 +9,9 @@ pub fn mask_points(
     trace_gen: CirclePointIndex,
     log_size: u32,
 ) {
-    preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((10, 0)));
-    preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((10, 1)));
-    preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((10, 2)));
+    preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__10_0_IDX);
+    preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__10_1_IDX);
+    preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__10_2_IDX);
     let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
     trace_mask_points.append(array![point]);
     trace_mask_points.append(array![point]);
