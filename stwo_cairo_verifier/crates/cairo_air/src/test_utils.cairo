@@ -1,6 +1,7 @@
 use core::num::traits::Zero;
 use core::num::traits::one::One;
 use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
+use stwo_constraint_framework::{PreprocessedColumnIdx, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
@@ -147,4 +148,20 @@ pub fn make_interaction_trace(values: Array<QM31>, last_row_sum: QM31) -> Column
         result.append_span(columns.span());
     }
     result.span()
+}
+
+pub fn preprocessed_mask_add(
+    mask_values: PreprocessedMaskValues, column_idx: PreprocessedColumnIdx, value: QM31,
+) -> PreprocessedMaskValues {
+    let mut new_values: Array<Nullable<QM31>> = array![];
+
+    for (i, column_mask_values) in mask_values.values.into_iter().enumerate() {
+        if i == column_idx {
+            new_values.append(NullableTrait::new(value));
+        } else {
+            new_values.append(column_mask_values);
+        }
+    }
+
+    PreprocessedMaskValues { values: new_values }
 }
