@@ -3,9 +3,9 @@
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct CondDecodeSmallSign {}
+pub struct DecodeSmallSign {}
 
-impl CondDecodeSmallSign {
+impl DecodeSmallSign {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -13,7 +13,7 @@ impl CondDecodeSmallSign {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [cond_decode_small_sign_input_limb_28]: [E::F; 1],
+        []: [E::F; 0],
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
         eval: &mut E,
@@ -27,10 +27,7 @@ impl CondDecodeSmallSign {
             (mid_limbs_set_col1.clone() * (mid_limbs_set_col1.clone() - M31_1.clone())),
         );
         // Cannot have msb equals 0 and mid_limbs_set equals 1.
-        eval.add_constraint(
-            ((cond_decode_small_sign_input_limb_28.clone() * mid_limbs_set_col1.clone())
-                * (msb_col0.clone() - M31_1.clone())),
-        );
+        eval.add_constraint((mid_limbs_set_col1.clone() * (msb_col0.clone() - M31_1.clone())));
         []
     }
 }

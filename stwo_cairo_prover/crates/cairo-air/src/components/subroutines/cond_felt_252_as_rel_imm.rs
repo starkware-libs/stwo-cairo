@@ -1,8 +1,8 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::cond_decode_small_sign::CondDecodeSmallSign;
 use crate::components::subroutines::cond_range_check_2::CondRangeCheck2;
+use crate::components::subroutines::decode_small_sign::DecodeSmallSign;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct CondFelt252AsRelImm {}
@@ -30,12 +30,7 @@ impl CondFelt252AsRelImm {
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
 
-        CondDecodeSmallSign::evaluate(
-            [cond_felt_252_as_rel_imm_input_limb_28.clone()],
-            msb_col0.clone(),
-            mid_limbs_set_col1.clone(),
-            eval,
-        );
+        DecodeSmallSign::evaluate([], msb_col0.clone(), mid_limbs_set_col1.clone(), eval);
         let remainder_bits_tmp_1e9bf_3 = eval.add_intermediate(
             (cond_felt_252_as_rel_imm_input_limb_3.clone()
                 - (mid_limbs_set_col1.clone() * M31_508.clone())),
