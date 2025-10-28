@@ -3,14 +3,14 @@
 use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-const SOME_COLUMN: PreprocessedColumn = PreprocessedColumn::BitwiseXor((9, 0));
+const LOG_SIZE: u32 = 18;
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
         let interaction_log_sizes = [log_size; 4].span();
@@ -67,12 +67,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((9, 0)));
-        preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((9, 1)));
-        preprocessed_column_set.insert(PreprocessedColumn::BitwiseXor((9, 2)));
+        preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__9_0_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__9_1_IDX);
+        preprocessed_column_set.insert(preprocessed_columns::BITWISE_XOR__9_2_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -89,15 +89,18 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = SOME_COLUMN.log_size();
+        let log_size = LOG_SIZE;
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_bitwise_xor_9_sum_0: QM31 = Zero::zero();
-        let bitwisexor_9_0 = preprocessed_mask_values.get(PreprocessedColumn::BitwiseXor((9, 0)));
-        let bitwisexor_9_1 = preprocessed_mask_values.get(PreprocessedColumn::BitwiseXor((9, 1)));
-        let bitwisexor_9_2 = preprocessed_mask_values.get(PreprocessedColumn::BitwiseXor((9, 2)));
+        let bitwisexor_9_0 = preprocessed_mask_values
+            .get(preprocessed_columns::BITWISE_XOR__9_0_IDX);
+        let bitwisexor_9_1 = preprocessed_mask_values
+            .get(preprocessed_columns::BITWISE_XOR__9_1_IDX);
+        let bitwisexor_9_2 = preprocessed_mask_values
+            .get(preprocessed_columns::BITWISE_XOR__9_2_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
