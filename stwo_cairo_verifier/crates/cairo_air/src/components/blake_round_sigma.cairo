@@ -69,23 +69,23 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     ) {
         let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(seq_column_idx(LOG_SIZE));
-        preprocessed_column_set.insert(BLAKE_SIGMA__0_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__1_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__2_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__3_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__4_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__5_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__6_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__7_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__8_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__9_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__10_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__11_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__12_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__13_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__14_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA__15_IDX);
+        preprocessed_column_set.insert(SEQ_4_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_0_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_1_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_2_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_3_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_4_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_5_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_6_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_7_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_8_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_9_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_10_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_11_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_12_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_13_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_14_IDX);
+        preprocessed_column_set.insert(BLAKE_SIGMA_15_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -108,23 +108,23 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut blake_round_sigma_sum_0: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(seq_column_idx(LOG_SIZE));
-        let blakesigma_0 = preprocessed_mask_values.get(BLAKE_SIGMA__0_IDX);
-        let blakesigma_1 = preprocessed_mask_values.get(BLAKE_SIGMA__1_IDX);
-        let blakesigma_2 = preprocessed_mask_values.get(BLAKE_SIGMA__2_IDX);
-        let blakesigma_3 = preprocessed_mask_values.get(BLAKE_SIGMA__3_IDX);
-        let blakesigma_4 = preprocessed_mask_values.get(BLAKE_SIGMA__4_IDX);
-        let blakesigma_5 = preprocessed_mask_values.get(BLAKE_SIGMA__5_IDX);
-        let blakesigma_6 = preprocessed_mask_values.get(BLAKE_SIGMA__6_IDX);
-        let blakesigma_7 = preprocessed_mask_values.get(BLAKE_SIGMA__7_IDX);
-        let blakesigma_8 = preprocessed_mask_values.get(BLAKE_SIGMA__8_IDX);
-        let blakesigma_9 = preprocessed_mask_values.get(BLAKE_SIGMA__9_IDX);
-        let blakesigma_10 = preprocessed_mask_values.get(BLAKE_SIGMA__10_IDX);
-        let blakesigma_11 = preprocessed_mask_values.get(BLAKE_SIGMA__11_IDX);
-        let blakesigma_12 = preprocessed_mask_values.get(BLAKE_SIGMA__12_IDX);
-        let blakesigma_13 = preprocessed_mask_values.get(BLAKE_SIGMA__13_IDX);
-        let blakesigma_14 = preprocessed_mask_values.get(BLAKE_SIGMA__14_IDX);
-        let blakesigma_15 = preprocessed_mask_values.get(BLAKE_SIGMA__15_IDX);
+        let seq_4 = preprocessed_mask_values.get(SEQ_4_IDX);
+        let blake_sigma_0 = preprocessed_mask_values.get(BLAKE_SIGMA_0_IDX);
+        let blake_sigma_1 = preprocessed_mask_values.get(BLAKE_SIGMA_1_IDX);
+        let blake_sigma_2 = preprocessed_mask_values.get(BLAKE_SIGMA_2_IDX);
+        let blake_sigma_3 = preprocessed_mask_values.get(BLAKE_SIGMA_3_IDX);
+        let blake_sigma_4 = preprocessed_mask_values.get(BLAKE_SIGMA_4_IDX);
+        let blake_sigma_5 = preprocessed_mask_values.get(BLAKE_SIGMA_5_IDX);
+        let blake_sigma_6 = preprocessed_mask_values.get(BLAKE_SIGMA_6_IDX);
+        let blake_sigma_7 = preprocessed_mask_values.get(BLAKE_SIGMA_7_IDX);
+        let blake_sigma_8 = preprocessed_mask_values.get(BLAKE_SIGMA_8_IDX);
+        let blake_sigma_9 = preprocessed_mask_values.get(BLAKE_SIGMA_9_IDX);
+        let blake_sigma_10 = preprocessed_mask_values.get(BLAKE_SIGMA_10_IDX);
+        let blake_sigma_11 = preprocessed_mask_values.get(BLAKE_SIGMA_11_IDX);
+        let blake_sigma_12 = preprocessed_mask_values.get(BLAKE_SIGMA_12_IDX);
+        let blake_sigma_13 = preprocessed_mask_values.get(BLAKE_SIGMA_13_IDX);
+        let blake_sigma_14 = preprocessed_mask_values.get(BLAKE_SIGMA_14_IDX);
+        let blake_sigma_15 = preprocessed_mask_values.get(BLAKE_SIGMA_15_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
@@ -135,10 +135,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .blake_round_sigma_lookup_elements
             .combine_qm31(
                 [
-                    seq, blakesigma_0, blakesigma_1, blakesigma_2, blakesigma_3, blakesigma_4,
-                    blakesigma_5, blakesigma_6, blakesigma_7, blakesigma_8, blakesigma_9,
-                    blakesigma_10, blakesigma_11, blakesigma_12, blakesigma_13, blakesigma_14,
-                    blakesigma_15,
+                    seq_4, blake_sigma_0, blake_sigma_1, blake_sigma_2, blake_sigma_3,
+                    blake_sigma_4, blake_sigma_5, blake_sigma_6, blake_sigma_7, blake_sigma_8,
+                    blake_sigma_9, blake_sigma_10, blake_sigma_11, blake_sigma_12, blake_sigma_13,
+                    blake_sigma_14, blake_sigma_15,
                 ],
             );
 

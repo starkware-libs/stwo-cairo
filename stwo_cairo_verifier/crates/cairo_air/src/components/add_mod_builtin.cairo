@@ -2487,7 +2487,7 @@ mod tests {
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
             seq_column_idx(component.claim.log_size),
-            qm31_const::<661475002, 1056737278, 1714677692, 134009591>(),
+            qm31_const::<735272696, 1215403647, 795393303, 879304430>(),
         );
 
         let mut trace_columns = [
