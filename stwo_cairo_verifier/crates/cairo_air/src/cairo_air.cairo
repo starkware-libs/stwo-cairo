@@ -44,7 +44,7 @@ use stwo_cairo_air::pedersen::{
 use stwo_cairo_air::poseidon::{
     PoseidonContextClaim, PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
 };
-use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMNS;
+use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, PREPROCESSED_COLUMNS};
 use stwo_cairo_air::range_checks::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
     RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
@@ -52,8 +52,7 @@ use stwo_cairo_air::range_checks::{
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
-    PreprocessedColumnSet, PreprocessedMaskValuesImpl,
+    LookupElements, LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -147,7 +146,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         let mut preprocessed_trace_log_sizes = array![];
 
         for preprocessed_column in PREPROCESSED_COLUMNS.span() {
-            preprocessed_trace_log_sizes.append(preprocessed_column.log_size());
+            preprocessed_trace_log_sizes.append(*preprocessed_column.log_size);
         }
 
         let trace_log_sizes = aggregated_log_sizes.pop_front().unwrap();
@@ -663,7 +662,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             .unbox();
 
         let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
-            preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
+            preprocessed_mask_values,
         );
         let CairoAir {
             opcodes,
@@ -1122,7 +1121,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             .unbox();
 
         let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
-            preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
+            preprocessed_mask_values,
         );
 
         let CairoAir {
@@ -1575,7 +1574,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             .unbox();
 
         let mut preprocessed_mask_values = PreprocessedMaskValuesImpl::new(
-            preprocessed_mask_values, PREPROCESSED_COLUMNS.span(),
+            preprocessed_mask_values,
         );
 
         let CairoAir {
@@ -1733,24 +1732,16 @@ fn preprocessed_trace_mask_points(
 ) -> ColumnArray<Array<CirclePoint<QM31>>> {
     let mut mask_points = array![];
 
-    let PreprocessedColumnSet { values: original_values, mut contains } = preprocessed_column_set;
+    let PreprocessedColumnSet { mut contains } = preprocessed_column_set;
 
-    for preprocessed_column in PREPROCESSED_COLUMNS.span() {
-        let preprocessed_column_key = PreprocessedColumnKey::encode(preprocessed_column);
-
-        if contains.get(preprocessed_column_key) {
+    for idx in 0..NUM_PREPROCESSED_COLUMNS {
+        if contains.get(idx.into()) {
             mask_points.append(array![point]);
             // Remove the item from the set.
-            contains.insert(preprocessed_column_key, false);
+            contains.insert(idx.into(), false);
         } else {
             mask_points.append(array![]);
         }
-    }
-
-    // Sanity check all the original values have been handled.
-    for value in original_values {
-        let column_key = PreprocessedColumnKey::encode(@value);
-        assert!(!contains.get(column_key));
     }
 
     mask_points
