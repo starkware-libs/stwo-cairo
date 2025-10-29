@@ -1222,16 +1222,17 @@ fn write_trace_simd(
                 let memory_id_to_big_value_tmp_cf8b4_74 =
                     memory_id_to_big_state.deduce_output(offsets_a_id_col84);
 
-                // Cond Decode Small Sign.
+                // Decode Small Sign.
 
                 let msb_tmp_cf8b4_75 = memory_id_to_big_value_tmp_cf8b4_74.get_m31(27).eq(M31_256);
                 let msb_col85 = msb_tmp_cf8b4_75.as_m31();
                 *row[85] = msb_col85;
                 let mid_limbs_set_tmp_cf8b4_76 =
-                    memory_id_to_big_value_tmp_cf8b4_74.get_m31(20).eq(M31_511);
+                    ((memory_id_to_big_value_tmp_cf8b4_74.get_m31(20).eq(M31_511))
+                        & (msb_tmp_cf8b4_75));
                 let mid_limbs_set_col86 = mid_limbs_set_tmp_cf8b4_76.as_m31();
                 *row[86] = mid_limbs_set_col86;
-                let cond_decode_small_sign_output_tmp_cf8b4_77 = [msb_col85, mid_limbs_set_col86];
+                let decode_small_sign_output_tmp_cf8b4_77 = [msb_col85, mid_limbs_set_col86];
 
                 let offsets_a_limb_0_col87 = memory_id_to_big_value_tmp_cf8b4_74.get_m31(0);
                 *row[87] = offsets_a_limb_0_col87;
@@ -1309,16 +1310,17 @@ fn write_trace_simd(
                 let memory_id_to_big_value_tmp_cf8b4_84 =
                     memory_id_to_big_state.deduce_output(offsets_b_id_col92);
 
-                // Cond Decode Small Sign.
+                // Decode Small Sign.
 
                 let msb_tmp_cf8b4_85 = memory_id_to_big_value_tmp_cf8b4_84.get_m31(27).eq(M31_256);
                 let msb_col93 = msb_tmp_cf8b4_85.as_m31();
                 *row[93] = msb_col93;
                 let mid_limbs_set_tmp_cf8b4_86 =
-                    memory_id_to_big_value_tmp_cf8b4_84.get_m31(20).eq(M31_511);
+                    ((memory_id_to_big_value_tmp_cf8b4_84.get_m31(20).eq(M31_511))
+                        & (msb_tmp_cf8b4_85));
                 let mid_limbs_set_col94 = mid_limbs_set_tmp_cf8b4_86.as_m31();
                 *row[94] = mid_limbs_set_col94;
-                let cond_decode_small_sign_output_tmp_cf8b4_87 = [msb_col93, mid_limbs_set_col94];
+                let decode_small_sign_output_tmp_cf8b4_87 = [msb_col93, mid_limbs_set_col94];
 
                 let offsets_b_limb_0_col95 = memory_id_to_big_value_tmp_cf8b4_84.get_m31(0);
                 *row[95] = offsets_b_limb_0_col95;
@@ -1396,16 +1398,17 @@ fn write_trace_simd(
                 let memory_id_to_big_value_tmp_cf8b4_94 =
                     memory_id_to_big_state.deduce_output(offsets_c_id_col100);
 
-                // Cond Decode Small Sign.
+                // Decode Small Sign.
 
                 let msb_tmp_cf8b4_95 = memory_id_to_big_value_tmp_cf8b4_94.get_m31(27).eq(M31_256);
                 let msb_col101 = msb_tmp_cf8b4_95.as_m31();
                 *row[101] = msb_col101;
                 let mid_limbs_set_tmp_cf8b4_96 =
-                    memory_id_to_big_value_tmp_cf8b4_94.get_m31(20).eq(M31_511);
+                    ((memory_id_to_big_value_tmp_cf8b4_94.get_m31(20).eq(M31_511))
+                        & (msb_tmp_cf8b4_95));
                 let mid_limbs_set_col102 = mid_limbs_set_tmp_cf8b4_96.as_m31();
                 *row[102] = mid_limbs_set_col102;
-                let cond_decode_small_sign_output_tmp_cf8b4_97 = [msb_col101, mid_limbs_set_col102];
+                let decode_small_sign_output_tmp_cf8b4_97 = [msb_col101, mid_limbs_set_col102];
 
                 let offsets_c_limb_0_col103 = memory_id_to_big_value_tmp_cf8b4_94.get_m31(0);
                 *row[103] = offsets_c_limb_0_col103;
