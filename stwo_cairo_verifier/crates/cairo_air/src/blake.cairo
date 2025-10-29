@@ -170,14 +170,6 @@ pub impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
         }
     }
 
-    fn max_constraint_log_degree_bound(self: @BlakeContextComponents) -> u32 {
-        if let Option::Some(components) = self.components {
-            components.max_constraint_log_degree_bound()
-        } else {
-            0
-        }
-    }
-
     fn mask_points(
         self: @BlakeContextComponents,
         ref preprocessed_column_set: PreprocessedColumnSet,
@@ -375,21 +367,6 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
                 random_coeff,
                 point,
             );
-    }
-
-    fn max_constraint_log_degree_bound(self: @BlakeComponents) -> u32 {
-        let mut max_degree = 0;
-        max_degree = core::cmp::max(max_degree, self.blake_round.max_constraint_log_degree_bound());
-        max_degree = core::cmp::max(max_degree, self.blake_g.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.blake_round_sigma.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(max_degree, self.triple_xor_32.max_constraint_log_degree_bound());
-        max_degree =
-            core::cmp::max(
-                max_degree, self.verify_bitwise_xor_12.max_constraint_log_degree_bound(),
-            );
-        max_degree
     }
 }
 

@@ -446,50 +446,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
     }
 
-    fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
-        let BuiltinComponents {
-            add_mod_builtin,
-            bitwise_builtin,
-            mul_mod_builtin,
-            pedersen_builtin,
-            poseidon_builtin,
-            range_check_96_builtin,
-            range_check_128_builtin,
-        } = self;
-        let mut max_degree = 0;
-
-        if let Option::Some(component) = add_mod_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = bitwise_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = mul_mod_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = pedersen_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = poseidon_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = range_check_96_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        max_degree
-    }
-
-
     fn evaluate_constraints_at_point(
         self: @BuiltinComponents,
         ref sum: QM31,
@@ -675,22 +631,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                 );
         }
     }
-
-    fn max_constraint_log_degree_bound(self: @BuiltinComponents) -> u32 {
-        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
-        let mut max_degree = 0;
-
-        if let Option::Some(component) = bitwise_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            max_degree = core::cmp::max(max_degree, component.max_constraint_log_degree_bound());
-        }
-
-        max_degree
-    }
-
 
     fn evaluate_constraints_at_point(
         self: @BuiltinComponents,
