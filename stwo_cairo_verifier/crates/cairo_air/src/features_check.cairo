@@ -7,7 +7,8 @@
 //! - `blake_outputs_packing`: Enables outputs packing with Blake hash. Optional feature,
 //! currently only supported when using the Blake hash.
 //! - `poseidon_outputs_packing`: Enables outputs packing with Poseidon hash. Optional feature,
-//! supported by both the verifiers, regardless of their hash function.
+//! supported by both the verifiers, regardless of their hash function. When this feature is enabled
+//! in the poseidon hash verifier, the verifier will also include the poseidon builtin.
 //! Notice that `qm31_opcode` and `poseidon252_verifier` are mutually exclusive features, and thus
 //! one of them is redundant, however, they mean different things, and it is possible that in the
 //! future they won't be mutually exclusive.
