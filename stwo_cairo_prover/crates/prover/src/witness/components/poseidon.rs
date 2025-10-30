@@ -5,8 +5,8 @@ use cairo_air::poseidon::air::{
 use tracing::{span, Level};
 
 use crate::witness::components::{
-    cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
-    range_check_252_width_27,
+    cube_252, poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_full_round_chain,
+    poseidon_round_keys, range_check_252_width_27,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
@@ -19,6 +19,7 @@ pub struct PoseidonContextClaimGenerator {
     pub cube_252_trace_generator: cube_252::ClaimGenerator,
     pub poseidon_round_keys_trace_generator: poseidon_round_keys::ClaimGenerator,
     pub range_check_252_width_27_trace_generator: range_check_252_width_27::ClaimGenerator,
+    pub poseidon_aggregator_trace_generator: poseidon_aggregator::ClaimGenerator,
 }
 impl Default for PoseidonContextClaimGenerator {
     fn default() -> Self {
@@ -36,6 +37,7 @@ impl PoseidonContextClaimGenerator {
         let poseidon_round_keys_trace_generator = poseidon_round_keys::ClaimGenerator::new();
         let range_check_252_width_27_trace_generator =
             range_check_252_width_27::ClaimGenerator::new();
+        let poseidon_aggregator_trace_generator = poseidon_aggregator::ClaimGenerator::new();
 
         Self {
             poseidon_3_partial_rounds_chain_trace_generator,
@@ -43,6 +45,7 @@ impl PoseidonContextClaimGenerator {
             cube_252_trace_generator,
             poseidon_round_keys_trace_generator,
             range_check_252_width_27_trace_generator,
+            poseidon_aggregator_trace_generator,
         }
     }
 

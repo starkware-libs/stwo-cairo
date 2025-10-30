@@ -67,6 +67,7 @@ pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         poseidon_3_partial_rounds_chain: LookupElementsDummyImpl::dummy(),
         poseidon_full_round_chain: LookupElementsDummyImpl::dummy(),
         cube_252: LookupElementsDummyImpl::dummy(),
+        poseidon_aggregator: LookupElementsDummyImpl::dummy(),
         poseidon_round_keys: LookupElementsDummyImpl::dummy(),
         range_check_252_width_27: LookupElementsDummyImpl::dummy(),
         partial_ec_mul: LookupElementsDummyImpl::dummy(),
