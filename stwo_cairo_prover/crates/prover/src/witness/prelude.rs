@@ -1,7 +1,9 @@
 pub use std::iter::zip;
 pub use std::simd::Simd;
+pub use std::sync::atomic::{AtomicU32, Ordering};
 
 pub(crate) use cairo_air::relations;
+pub use dashmap::DashMap;
 pub use num_traits::{One, Zero};
 pub use rayon::prelude::*;
 pub use stwo::core::fields::m31::M31;

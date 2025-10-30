@@ -18,9 +18,7 @@ pub struct ClaimGenerator {
 }
 impl ClaimGenerator {
     pub fn new() -> Self {
-        Self {
-            packed_inputs: vec![],
-        }
+        Self::default()
     }
 
     pub fn is_empty(&self) -> bool {
