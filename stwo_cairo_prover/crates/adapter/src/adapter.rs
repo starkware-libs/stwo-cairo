@@ -47,7 +47,7 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     Ok(ProverInput {
         state_transitions,
         memory,
-        inst_cache,
+        pc_num: inst_cache.len(),
         public_memory_addresses,
         builtin_segments,
         public_segment_context,
@@ -75,8 +75,7 @@ mod tests {
 
         let compiled_program = get_compiled_cairo_program_path(test_name);
         let mut prover_input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-        // Instruction cache and public memory addresses are not deterministic, sort them.
-        prover_input.inst_cache.sort_by_key(|(addr, _)| *addr);
+        // Public memory addresses are not deterministic, sort them.
         prover_input.public_memory_addresses.sort();
 
         let prover_input_value =

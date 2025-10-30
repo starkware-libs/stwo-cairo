@@ -24,7 +24,7 @@ sonic-rs = { version = "0.3.17", optional = true }
 stwo.workspace = true
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
-dashmap = "6.1.0"
+dashmap.workspace = true
 rayon.workspace = true
 clap.workspace = true
 crypto-bigint = "0.5.1"
