@@ -34,6 +34,7 @@ where
         log_blowup_factor,
         &mut MC::C::default(),
         &twiddles,
+        false,
     );
 
     commitment_scheme.commitment.root()

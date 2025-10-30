@@ -10,6 +10,7 @@ use stwo::core::pcs::TreeVec;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::{BackendForChannel, Column};
+use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::CommitmentSchemeProver;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_constraint_framework::relation_tracker::{
@@ -44,9 +45,16 @@ where
         interaction_tree
             .iter()
             .map(|poly| {
-                poly.evaluate(CanonicCoset::new(poly.log_size()).circle_domain())
-                    .values
-                    .to_cpu()
+                poly.get_evaluation_on_domain(
+                    CanonicCoset::new(poly.evals.domain.log_size() - 1).circle_domain(),
+                    &SimdBackend::precompute_twiddles(
+                        CanonicCoset::new(poly.evals.domain.log_size())
+                            .circle_domain()
+                            .half_coset,
+                    ),
+                )
+                .values
+                .to_cpu()
             })
             .collect_vec()
     });

@@ -58,7 +58,7 @@ where
     }
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
-        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles, false);
 
     // Preprocessed trace.
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
