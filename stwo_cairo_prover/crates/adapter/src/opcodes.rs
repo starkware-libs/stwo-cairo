@@ -701,19 +701,11 @@ fn u256_from_le_array(arr: [u32; 8]) -> U256 {
 // 2^29 - 1
 const SMALL_ADD_POSITIVE_UPPER_BOUND: U256 = U256::from_u32(2_u32.pow(29) - 1);
 // P - 2^29 - 1
-const SMALL_ADD_NEGATIVE_LOWER_BOUND: U256 = U256::from_words([
-    0xFFFFFFFFE0000000,
-    0xFFFFFFFFFFFFFFFF,
-    0xFFFFFFFFFFFFFFFF,
-    0x0800000000000010,
-]);
+const SMALL_ADD_NEGATIVE_LOWER_BOUND: U256 =
+    U256::from_be_hex("0800000000000010FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFE0000000");
 // P - 1
-const SMALL_ADD_NEGATIVE_UPPER_BOUND: U256 = U256::from_words([
-    0x000000000000000,
-    0x000000000000000,
-    0x000000000000000,
-    0x0800000000000011,
-]);
+const SMALL_ADD_NEGATIVE_UPPER_BOUND: U256 =
+    U256::from_be_hex("0800000000000011000000000000000000000000000000000000000000000000");
 
 // Returns 'true' if all the operands modulo P are within the range of [-2^29 - 1, 2^29 - 1].
 fn is_small_add(dst: MemoryValue, op0: MemoryValue, op_1: MemoryValue) -> bool {
