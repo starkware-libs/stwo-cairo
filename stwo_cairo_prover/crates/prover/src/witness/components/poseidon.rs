@@ -71,11 +71,11 @@ impl PoseidonContextClaimGenerator {
             .poseidon_3_partial_rounds_chain_trace_generator
             .write_trace(
                 tree_builder,
-                &mut self.cube_252_trace_generator,
                 &self.poseidon_round_keys_trace_generator,
-                &mut self.range_check_252_width_27_trace_generator,
-                &range_checks_trace_generator.rc_4_4_trace_generator,
+                &mut self.cube_252_trace_generator,
                 &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
+                &range_checks_trace_generator.rc_4_4_trace_generator,
+                &mut self.range_check_252_width_27_trace_generator,
             );
         let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) =
             self.poseidon_full_round_chain_trace_generator.write_trace(
@@ -109,10 +109,10 @@ impl PoseidonContextClaimGenerator {
         let (range_check_felt_252_width_27_claim, range_check_felt_252_width_27_interaction_gen) =
             self.range_check_252_width_27_trace_generator.write_trace(
                 tree_builder,
-                &range_checks_trace_generator.rc_18_trace_generator,
-                &range_checks_trace_generator.rc_18_b_trace_generator,
                 &range_checks_trace_generator.rc_9_9_trace_generator,
+                &range_checks_trace_generator.rc_18_trace_generator,
                 &range_checks_trace_generator.rc_9_9_b_trace_generator,
+                &range_checks_trace_generator.rc_18_b_trace_generator,
                 &range_checks_trace_generator.rc_9_9_c_trace_generator,
                 &range_checks_trace_generator.rc_9_9_d_trace_generator,
                 &range_checks_trace_generator.rc_9_9_e_trace_generator,

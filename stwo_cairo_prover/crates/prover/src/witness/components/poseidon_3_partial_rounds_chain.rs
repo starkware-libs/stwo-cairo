@@ -30,11 +30,11 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252_state: &mut cube_252::ClaimGenerator,
         poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
-        range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
-        range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+        cube_252_state: &mut cube_252::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
+        range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+        range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -47,11 +47,11 @@ impl ClaimGenerator {
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             self.packed_inputs,
             n_rows,
-            cube_252_state,
             poseidon_round_keys_state,
-            range_check_252_width_27_state,
-            range_check_4_4_state,
+            cube_252_state,
             range_check_4_4_4_4_state,
+            range_check_4_4_state,
+            range_check_252_width_27_state,
         );
         sub_component_inputs
             .poseidon_round_keys
@@ -113,11 +113,11 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    cube_252_state: &mut cube_252::ClaimGenerator,
     poseidon_round_keys_state: &poseidon_round_keys::ClaimGenerator,
-    range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
-    range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+    cube_252_state: &mut cube_252::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
+    range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+    range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
