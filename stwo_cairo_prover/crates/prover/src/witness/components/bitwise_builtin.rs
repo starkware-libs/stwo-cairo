@@ -27,8 +27,8 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
         verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
+        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
@@ -37,8 +37,8 @@ impl ClaimGenerator {
             self.bitwise_builtin_segment_start,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            verify_bitwise_xor_8_state,
             verify_bitwise_xor_9_state,
+            verify_bitwise_xor_8_state,
         );
         sub_component_inputs
             .memory_address_to_id
@@ -96,8 +96,8 @@ fn write_trace_simd(
     bitwise_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
+    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

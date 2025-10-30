@@ -25,9 +25,9 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_11_state: &range_check_11::ClaimGenerator,
-        range_check_18_state: &range_check_18::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
+        range_check_18_state: &range_check_18::ClaimGenerator,
+        range_check_11_state: &range_check_11::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
@@ -41,9 +41,9 @@ impl ClaimGenerator {
             n_rows,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            range_check_11_state,
-            range_check_18_state,
             verify_instruction_state,
+            range_check_18_state,
+            range_check_11_state,
         );
         sub_component_inputs
             .verify_instruction
@@ -106,9 +106,9 @@ fn write_trace_simd(
     n_rows: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    range_check_11_state: &range_check_11::ClaimGenerator,
-    range_check_18_state: &range_check_18::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
+    range_check_18_state: &range_check_18::ClaimGenerator,
+    range_check_11_state: &range_check_11::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

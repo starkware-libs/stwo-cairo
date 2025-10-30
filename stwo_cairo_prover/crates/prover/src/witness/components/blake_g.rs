@@ -29,11 +29,11 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+        verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
         verify_bitwise_xor_12_state: &verify_bitwise_xor_12::ClaimGenerator,
         verify_bitwise_xor_4_state: &verify_bitwise_xor_4::ClaimGenerator,
         verify_bitwise_xor_7_state: &verify_bitwise_xor_7::ClaimGenerator,
-        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-        verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
         verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
@@ -47,11 +47,11 @@ impl ClaimGenerator {
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             self.packed_inputs,
             n_rows,
+            verify_bitwise_xor_8_state,
+            verify_bitwise_xor_8_b_state,
             verify_bitwise_xor_12_state,
             verify_bitwise_xor_4_state,
             verify_bitwise_xor_7_state,
-            verify_bitwise_xor_8_state,
-            verify_bitwise_xor_8_b_state,
             verify_bitwise_xor_9_state,
         );
         sub_component_inputs
@@ -124,11 +124,11 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
+    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+    verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
     verify_bitwise_xor_12_state: &verify_bitwise_xor_12::ClaimGenerator,
     verify_bitwise_xor_4_state: &verify_bitwise_xor_4::ClaimGenerator,
     verify_bitwise_xor_7_state: &verify_bitwise_xor_7::ClaimGenerator,
-    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-    verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
     verify_bitwise_xor_9_state: &verify_bitwise_xor_9::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,

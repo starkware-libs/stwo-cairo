@@ -67,11 +67,11 @@ impl BlakeContextClaimGenerator {
         );
         let (blake_g_claim, blake_g_interaction_gen) = self.blake_g.write_trace(
             tree_builder,
+            verify_bitwise_xor_8_trace_generator,
+            verify_bitwise_xor_8_b_trace_generator,
             &self.verify_bitwise_xor_12,
             verify_bitwise_xor_4_trace_generator,
             verify_bitwise_xor_7_trace_generator,
-            verify_bitwise_xor_8_trace_generator,
-            verify_bitwise_xor_8_b_trace_generator,
             verify_bitwise_xor_9_trace_generator,
         );
         let (blake_sigma_claim, blake_sigma_interaction_gen) =

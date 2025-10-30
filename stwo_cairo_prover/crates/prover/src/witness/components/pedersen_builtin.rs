@@ -28,10 +28,10 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        partial_ec_mul_state: &mut partial_ec_mul::ClaimGenerator,
-        pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
         range_check_5_4_state: &range_check_5_4::ClaimGenerator,
         range_check_8_state: &range_check_8::ClaimGenerator,
+        pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
+        partial_ec_mul_state: &mut partial_ec_mul::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
@@ -40,10 +40,10 @@ impl ClaimGenerator {
             self.pedersen_builtin_segment_start,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            partial_ec_mul_state,
-            pedersen_points_table_state,
             range_check_5_4_state,
             range_check_8_state,
+            pedersen_points_table_state,
+            partial_ec_mul_state,
         );
         sub_component_inputs
             .range_check_5_4
@@ -115,10 +115,10 @@ fn write_trace_simd(
     pedersen_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    partial_ec_mul_state: &mut partial_ec_mul::ClaimGenerator,
-    pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
     range_check_5_4_state: &range_check_5_4::ClaimGenerator,
     range_check_8_state: &range_check_8::ClaimGenerator,
+    pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
+    partial_ec_mul_state: &mut partial_ec_mul::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

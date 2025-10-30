@@ -235,9 +235,9 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_11_trace_generator,
-                    &range_checks_trace_generator.rc_18_trace_generator,
                     verify_instruction_trace_generator,
+                    &range_checks_trace_generator.rc_18_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
                 )
             })
             .unzip();
@@ -283,13 +283,13 @@ impl OpcodesClaimGenerator {
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
-                    &mut blake_context_trace_generator.blake_round,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_7_2_5_trace_generator,
-                    &mut blake_context_trace_generator.triple_xor_32,
-                    verify_bitwise_xor_8_trace_generator,
                     verify_instruction_trace_generator,
+                    &range_checks_trace_generator.rc_7_2_5_trace_generator,
+                    verify_bitwise_xor_8_trace_generator,
+                    &mut blake_context_trace_generator.blake_round,
+                    &mut blake_context_trace_generator.triple_xor_32,
                 )
             })
             .unzip();
@@ -325,16 +325,7 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_11_trace_generator,
-                    &range_checks_trace_generator.rc_18_trace_generator,
-                    &range_checks_trace_generator.rc_20_trace_generator,
-                    &range_checks_trace_generator.rc_20_b_trace_generator,
-                    &range_checks_trace_generator.rc_20_c_trace_generator,
-                    &range_checks_trace_generator.rc_20_d_trace_generator,
-                    &range_checks_trace_generator.rc_20_e_trace_generator,
-                    &range_checks_trace_generator.rc_20_f_trace_generator,
-                    &range_checks_trace_generator.rc_20_g_trace_generator,
-                    &range_checks_trace_generator.rc_20_h_trace_generator,
+                    verify_instruction_trace_generator,
                     &range_checks_trace_generator.rc_9_9_trace_generator,
                     &range_checks_trace_generator.rc_9_9_b_trace_generator,
                     &range_checks_trace_generator.rc_9_9_c_trace_generator,
@@ -343,7 +334,16 @@ impl OpcodesClaimGenerator {
                     &range_checks_trace_generator.rc_9_9_f_trace_generator,
                     &range_checks_trace_generator.rc_9_9_g_trace_generator,
                     &range_checks_trace_generator.rc_9_9_h_trace_generator,
-                    verify_instruction_trace_generator,
+                    &range_checks_trace_generator.rc_20_trace_generator,
+                    &range_checks_trace_generator.rc_20_b_trace_generator,
+                    &range_checks_trace_generator.rc_20_c_trace_generator,
+                    &range_checks_trace_generator.rc_20_d_trace_generator,
+                    &range_checks_trace_generator.rc_20_e_trace_generator,
+                    &range_checks_trace_generator.rc_20_f_trace_generator,
+                    &range_checks_trace_generator.rc_20_g_trace_generator,
+                    &range_checks_trace_generator.rc_20_h_trace_generator,
+                    &range_checks_trace_generator.rc_18_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
                 )
             })
             .unzip();
@@ -427,6 +427,7 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
+                    verify_instruction_trace_generator,
                     &range_checks_trace_generator.rc_20_trace_generator,
                     &range_checks_trace_generator.rc_20_b_trace_generator,
                     &range_checks_trace_generator.rc_20_c_trace_generator,
@@ -435,7 +436,6 @@ impl OpcodesClaimGenerator {
                     &range_checks_trace_generator.rc_20_f_trace_generator,
                     &range_checks_trace_generator.rc_20_g_trace_generator,
                     &range_checks_trace_generator.rc_20_h_trace_generator,
-                    verify_instruction_trace_generator,
                 )
             })
             .unzip();
@@ -447,8 +447,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_11_trace_generator,
                     verify_instruction_trace_generator,
+                    &range_checks_trace_generator.rc_11_trace_generator,
                 )
             })
             .unzip();
@@ -460,8 +460,8 @@ impl OpcodesClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
                     verify_instruction_trace_generator,
+                    &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
                 )
             })
             .unzip();

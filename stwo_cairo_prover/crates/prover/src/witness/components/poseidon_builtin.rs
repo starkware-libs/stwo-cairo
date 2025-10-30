@@ -27,30 +27,30 @@ impl ClaimGenerator {
     pub fn write_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        cube_252_state: &mut cube_252::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
         poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
         range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
+        cube_252_state: &mut cube_252::ClaimGenerator,
         range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
-        range_check_4_4_state: &range_check_4_4::ClaimGenerator,
         range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
+        range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+        poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             log_size,
             self.poseidon_builtin_segment_start,
-            cube_252_state,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            poseidon_3_partial_rounds_chain_state,
             poseidon_full_round_chain_state,
             range_check_252_width_27_state,
+            cube_252_state,
             range_check_3_3_3_3_3_state,
-            range_check_4_4_state,
             range_check_4_4_4_4_state,
+            range_check_4_4_state,
+            poseidon_3_partial_rounds_chain_state,
         );
         sub_component_inputs
             .memory_address_to_id
@@ -138,15 +138,15 @@ struct SubComponentInputs {
 fn write_trace_simd(
     log_size: u32,
     poseidon_builtin_segment_start: u32,
-    cube_252_state: &mut cube_252::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
     poseidon_full_round_chain_state: &mut poseidon_full_round_chain::ClaimGenerator,
     range_check_252_width_27_state: &mut range_check_252_width_27::ClaimGenerator,
+    cube_252_state: &mut cube_252::ClaimGenerator,
     range_check_3_3_3_3_3_state: &range_check_3_3_3_3_3::ClaimGenerator,
-    range_check_4_4_state: &range_check_4_4::ClaimGenerator,
     range_check_4_4_4_4_state: &range_check_4_4_4_4::ClaimGenerator,
+    range_check_4_4_state: &range_check_4_4::ClaimGenerator,
+    poseidon_3_partial_rounds_chain_state: &mut poseidon_3_partial_rounds_chain::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

@@ -24,13 +24,13 @@ impl ClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        blake_round_state: &mut blake_round::ClaimGenerator,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-        triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
-        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
+        range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
+        verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+        blake_round_state: &mut blake_round::ClaimGenerator,
+        triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
@@ -42,13 +42,13 @@ impl ClaimGenerator {
         let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
             packed_inputs,
             n_rows,
-            blake_round_state,
             memory_address_to_id_state,
             memory_id_to_big_state,
-            range_check_7_2_5_state,
-            triple_xor_32_state,
-            verify_bitwise_xor_8_state,
             verify_instruction_state,
+            range_check_7_2_5_state,
+            verify_bitwise_xor_8_state,
+            blake_round_state,
+            triple_xor_32_state,
         );
         sub_component_inputs
             .verify_instruction
@@ -120,13 +120,13 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
-    blake_round_state: &mut blake_round::ClaimGenerator,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
-    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
-    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
+    range_check_7_2_5_state: &range_check_7_2_5::ClaimGenerator,
+    verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
+    blake_round_state: &mut blake_round::ClaimGenerator,
+    triple_xor_32_state: &mut triple_xor_32::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

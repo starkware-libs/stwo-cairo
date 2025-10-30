@@ -27,6 +27,7 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+        verify_instruction_state: &verify_instruction::ClaimGenerator,
         range_check_20_state: &range_check_20::ClaimGenerator,
         range_check_20_b_state: &range_check_20_b::ClaimGenerator,
         range_check_20_c_state: &range_check_20_c::ClaimGenerator,
@@ -35,7 +36,6 @@ impl ClaimGenerator {
         range_check_20_f_state: &range_check_20_f::ClaimGenerator,
         range_check_20_g_state: &range_check_20_g::ClaimGenerator,
         range_check_20_h_state: &range_check_20_h::ClaimGenerator,
-        verify_instruction_state: &verify_instruction::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
@@ -49,6 +49,7 @@ impl ClaimGenerator {
             n_rows,
             memory_address_to_id_state,
             memory_id_to_big_state,
+            verify_instruction_state,
             range_check_20_state,
             range_check_20_b_state,
             range_check_20_c_state,
@@ -57,7 +58,6 @@ impl ClaimGenerator {
             range_check_20_f_state,
             range_check_20_g_state,
             range_check_20_h_state,
-            verify_instruction_state,
         );
         sub_component_inputs
             .verify_instruction
@@ -162,6 +162,7 @@ fn write_trace_simd(
     n_rows: usize,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
+    verify_instruction_state: &verify_instruction::ClaimGenerator,
     range_check_20_state: &range_check_20::ClaimGenerator,
     range_check_20_b_state: &range_check_20_b::ClaimGenerator,
     range_check_20_c_state: &range_check_20_c::ClaimGenerator,
@@ -170,7 +171,6 @@ fn write_trace_simd(
     range_check_20_f_state: &range_check_20_f::ClaimGenerator,
     range_check_20_g_state: &range_check_20_g::ClaimGenerator,
     range_check_20_h_state: &range_check_20_h::ClaimGenerator,
-    verify_instruction_state: &verify_instruction::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
