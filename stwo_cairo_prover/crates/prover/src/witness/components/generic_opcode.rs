@@ -3,7 +3,7 @@
 #![allow(unused_parens)]#![cfg_attr(rustfmt, rustfmt_skip)]
 use crate::witness::prelude::*;
 use cairo_air::components::generic_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
-use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::witness::components::range_check_11;use crate::witness::components::range_check_18;use crate::witness::components::range_check_20;use crate::witness::components::range_check_20_b;use crate::witness::components::range_check_20_c;use crate::witness::components::range_check_20_d;use crate::witness::components::range_check_20_e;use crate::witness::components::range_check_20_f;use crate::witness::components::range_check_20_g;use crate::witness::components::range_check_20_h;use crate::witness::components::range_check_9_9;use crate::witness::components::range_check_9_9_b;use crate::witness::components::range_check_9_9_c;use crate::witness::components::range_check_9_9_d;use crate::witness::components::range_check_9_9_e;use crate::witness::components::range_check_9_9_f;use crate::witness::components::range_check_9_9_g;use crate::witness::components::range_check_9_9_h;use crate::witness::components::verify_instruction;
+use crate::witness::components::memory_address_to_id;use crate::witness::components::memory_id_to_big;use crate::witness::components::verify_instruction;use crate::witness::components::range_check_9_9;use crate::witness::components::range_check_9_9_b;use crate::witness::components::range_check_9_9_c;use crate::witness::components::range_check_9_9_d;use crate::witness::components::range_check_9_9_e;use crate::witness::components::range_check_9_9_f;use crate::witness::components::range_check_9_9_g;use crate::witness::components::range_check_9_9_h;use crate::witness::components::range_check_20;use crate::witness::components::range_check_20_b;use crate::witness::components::range_check_20_c;use crate::witness::components::range_check_20_d;use crate::witness::components::range_check_20_e;use crate::witness::components::range_check_20_f;use crate::witness::components::range_check_20_g;use crate::witness::components::range_check_20_h;use crate::witness::components::range_check_18;use crate::witness::components::range_check_11;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -22,16 +22,7 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-range_check_11_state: &range_check_11::ClaimGenerator,
-range_check_18_state: &range_check_18::ClaimGenerator,
-range_check_20_state: &range_check_20::ClaimGenerator,
-range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-range_check_20_h_state: &range_check_20_h::ClaimGenerator,
+verify_instruction_state: &verify_instruction::ClaimGenerator,
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
 range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
@@ -40,7 +31,16 @@ range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
 range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
 range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
 range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
-verify_instruction_state: &verify_instruction::ClaimGenerator,
+range_check_20_state: &range_check_20::ClaimGenerator,
+range_check_20_b_state: &range_check_20_b::ClaimGenerator,
+range_check_20_c_state: &range_check_20_c::ClaimGenerator,
+range_check_20_d_state: &range_check_20_d::ClaimGenerator,
+range_check_20_e_state: &range_check_20_e::ClaimGenerator,
+range_check_20_f_state: &range_check_20_f::ClaimGenerator,
+range_check_20_g_state: &range_check_20_g::ClaimGenerator,
+range_check_20_h_state: &range_check_20_h::ClaimGenerator,
+range_check_18_state: &range_check_18::ClaimGenerator,
+range_check_11_state: &range_check_11::ClaimGenerator,
 
     ) -> (Claim, InteractionClaimGenerator)
     {
@@ -52,7 +52,7 @@ verify_instruction_state: &verify_instruction::ClaimGenerator,
         let packed_inputs = pack_values(&self.inputs);
 
         let (trace, lookup_data, sub_component_inputs) =
-            write_trace_simd(packed_inputs,n_rows,memory_address_to_id_state,memory_id_to_big_state,range_check_11_state,range_check_18_state,range_check_20_state,range_check_20_b_state,range_check_20_c_state,range_check_20_d_state,range_check_20_e_state,range_check_20_f_state,range_check_20_g_state,range_check_20_h_state,range_check_9_9_state,range_check_9_9_b_state,range_check_9_9_c_state,range_check_9_9_d_state,range_check_9_9_e_state,range_check_9_9_f_state,range_check_9_9_g_state,range_check_9_9_h_state,verify_instruction_state,);
+            write_trace_simd(packed_inputs,n_rows,memory_address_to_id_state,memory_id_to_big_state,verify_instruction_state,range_check_9_9_state,range_check_9_9_b_state,range_check_9_9_c_state,range_check_9_9_d_state,range_check_9_9_e_state,range_check_9_9_f_state,range_check_9_9_g_state,range_check_9_9_h_state,range_check_20_state,range_check_20_b_state,range_check_20_c_state,range_check_20_d_state,range_check_20_e_state,range_check_20_f_state,range_check_20_g_state,range_check_20_h_state,range_check_18_state,range_check_11_state,);
         sub_component_inputs.verify_instruction.iter().for_each(|inputs| {verify_instruction_state.add_packed_inputs(inputs);});sub_component_inputs.memory_address_to_id.iter().for_each(|inputs| {memory_address_to_id_state.add_packed_inputs(inputs);});sub_component_inputs.memory_id_to_big.iter().for_each(|inputs| {memory_id_to_big_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9.iter().for_each(|inputs| {range_check_9_9_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_b.iter().for_each(|inputs| {range_check_9_9_b_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_c.iter().for_each(|inputs| {range_check_9_9_c_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_d.iter().for_each(|inputs| {range_check_9_9_d_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_e.iter().for_each(|inputs| {range_check_9_9_e_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_f.iter().for_each(|inputs| {range_check_9_9_f_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_g.iter().for_each(|inputs| {range_check_9_9_g_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_9_9_h.iter().for_each(|inputs| {range_check_9_9_h_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20.iter().for_each(|inputs| {range_check_20_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_b.iter().for_each(|inputs| {range_check_20_b_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_c.iter().for_each(|inputs| {range_check_20_c_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_d.iter().for_each(|inputs| {range_check_20_d_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_e.iter().for_each(|inputs| {range_check_20_e_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_f.iter().for_each(|inputs| {range_check_20_f_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_g.iter().for_each(|inputs| {range_check_20_g_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_20_h.iter().for_each(|inputs| {range_check_20_h_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_18.iter().for_each(|inputs| {range_check_18_state.add_packed_inputs(inputs);});sub_component_inputs.range_check_11.iter().for_each(|inputs| {range_check_11_state.add_packed_inputs(inputs);});
         tree_builder.extend_evals(trace.to_evals());
 
@@ -80,16 +80,7 @@ struct SubComponentInputs {
 fn write_trace_simd(
     inputs: Vec<PackedInputType>,n_rows: usize,memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
 memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-range_check_11_state: &range_check_11::ClaimGenerator,
-range_check_18_state: &range_check_18::ClaimGenerator,
-range_check_20_state: &range_check_20::ClaimGenerator,
-range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-range_check_20_h_state: &range_check_20_h::ClaimGenerator,
+verify_instruction_state: &verify_instruction::ClaimGenerator,
 range_check_9_9_state: &range_check_9_9::ClaimGenerator,
 range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
 range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
@@ -98,7 +89,16 @@ range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
 range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
 range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
 range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
-verify_instruction_state: &verify_instruction::ClaimGenerator,
+range_check_20_state: &range_check_20::ClaimGenerator,
+range_check_20_b_state: &range_check_20_b::ClaimGenerator,
+range_check_20_c_state: &range_check_20_c::ClaimGenerator,
+range_check_20_d_state: &range_check_20_d::ClaimGenerator,
+range_check_20_e_state: &range_check_20_e::ClaimGenerator,
+range_check_20_f_state: &range_check_20_f::ClaimGenerator,
+range_check_20_g_state: &range_check_20_g::ClaimGenerator,
+range_check_20_h_state: &range_check_20_h::ClaimGenerator,
+range_check_18_state: &range_check_18::ClaimGenerator,
+range_check_11_state: &range_check_11::ClaimGenerator,
 
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData,SubComponentInputs,) {
     let log_n_packed_rows = inputs.len().ilog2();
