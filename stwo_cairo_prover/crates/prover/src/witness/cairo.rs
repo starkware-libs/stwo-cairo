@@ -145,7 +145,6 @@ impl CairoClaimGenerator {
         ProverInput {
             state_transitions,
             memory,
-            inst_cache,
             public_memory_addresses,
             builtin_segments,
             public_segment_context,
@@ -155,8 +154,7 @@ impl CairoClaimGenerator {
         let initial_state = state_transitions.initial_state;
         let final_state = state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(state_transitions);
-        let verify_instruction_trace_generator =
-            verify_instruction::ClaimGenerator::new(inst_cache);
+        let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
         let builtins = BuiltinsClaimGenerator::new(builtin_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
@@ -387,10 +385,10 @@ impl CairoInteractionClaimGenerator {
             .verify_instruction_interaction_gen
             .write_interaction_trace(
                 tree_builder,
+                &interaction_elements.range_checks.rc_7_2_5,
+                &interaction_elements.range_checks.rc_4_3,
                 &interaction_elements.memory_address_to_id,
                 &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_checks.rc_4_3,
-                &interaction_elements.range_checks.rc_7_2_5,
                 &interaction_elements.verify_instruction,
             );
         let blake_context_interaction_claim = self
