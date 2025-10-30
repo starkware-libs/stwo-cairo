@@ -1,9 +1,10 @@
+// This file was created by the AIR team.
+
 use crate::components::prelude::*;
 use crate::components::subroutines::encode_offsets::EncodeOffsets;
 use crate::components::subroutines::mem_verify::MemVerify;
 
 pub const N_TRACE_COLUMNS: usize = 17;
-const N_LOOKUPS: usize = 5;
 pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -39,8 +40,7 @@ pub struct Claim {
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![self.log_size; N_TRACE_COLUMNS];
-        let interaction_log_sizes =
-            vec![self.log_size; SECURE_EXTENSION_DEGREE * N_LOOKUPS.div_ceil(2)];
+        let interaction_log_sizes = vec![self.log_size; SECURE_EXTENSION_DEGREE * 3];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 

@@ -12,11 +12,10 @@ pub type PackedInputType = [PackedUInt32; 3];
 pub struct ClaimGenerator {
     pub packed_inputs: Vec<PackedInputType>,
 }
+
 impl ClaimGenerator {
     pub fn new() -> Self {
-        Self {
-            packed_inputs: vec![],
-        }
+        Self::default()
     }
 
     pub fn is_empty(&self) -> bool {

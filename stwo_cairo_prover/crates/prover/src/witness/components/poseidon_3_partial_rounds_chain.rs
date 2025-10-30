@@ -16,11 +16,10 @@ pub type PackedInputType = (PackedM31, PackedM31, [PackedFelt252Width27; 4]);
 pub struct ClaimGenerator {
     pub packed_inputs: Vec<PackedInputType>,
 }
+
 impl ClaimGenerator {
     pub fn new() -> Self {
-        Self {
-            packed_inputs: vec![],
-        }
+        Self::default()
     }
 
     pub fn is_empty(&self) -> bool {

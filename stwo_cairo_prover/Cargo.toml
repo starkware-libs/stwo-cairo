@@ -79,6 +79,7 @@ rayon = "1.10.0"
 indoc = "2.0.6"
 tempfile = "3.8.1"
 anyhow = "1.0.98"
+dashmap = "6.0.1"
 
 [profile.bench]
 codegen-units = 1

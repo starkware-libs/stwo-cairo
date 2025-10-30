@@ -17,6 +17,7 @@ pub type PackedInputType = PackedCasmState;
 pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
+
 impl ClaimGenerator {
     pub fn new(inputs: Vec<InputType>) -> Self {
         Self { inputs }
