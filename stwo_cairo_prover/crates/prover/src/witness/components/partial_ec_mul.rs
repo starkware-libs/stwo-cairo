@@ -279,9 +279,9 @@ fn write_trace_simd(
     let M31_65536 = PackedM31::broadcast(M31::from(65536));
     let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
+    let UInt32_131072 = PackedUInt32::broadcast(UInt32::from(131072));
     let UInt32_262143 = PackedUInt32::broadcast(UInt32::from(262143));
     let UInt32_511 = PackedUInt32::broadcast(UInt32::from(511));
-    let UInt32_65536 = PackedUInt32::broadcast(UInt32::from(65536));
     let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
     let enabler_col = Enabler::new(n_rows);
 
@@ -1134,7 +1134,7 @@ fn write_trace_simd(
 
                 // Verify Mul 252.
 
-                // Double Karatsuba N 7 Limb Max Bound 511.
+                // Double Karatsuba 1454 B.
 
                 // Single Karatsuba N 7.
 
@@ -1847,7 +1847,7 @@ fn write_trace_simd(
                     z2_tmp_71feb_51[12],
                 ];
 
-                let double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55 = [
+                let double_karatsuba_1454b_output_tmp_71feb_55 = [
                     single_karatsuba_n_7_output_tmp_71feb_42[0],
                     single_karatsuba_n_7_output_tmp_71feb_42[1],
                     single_karatsuba_n_7_output_tmp_71feb_42[2],
@@ -1986,89 +1986,61 @@ fn write_trace_simd(
                 ];
 
                 let conv_tmp_71feb_56 = [
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[0])
-                        - (sub_res_limb_0_col186)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[1])
-                        - (sub_res_limb_1_col187)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[2])
-                        - (sub_res_limb_2_col188)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[3])
-                        - (sub_res_limb_3_col189)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[4])
-                        - (sub_res_limb_4_col190)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[5])
-                        - (sub_res_limb_5_col191)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[6])
-                        - (sub_res_limb_6_col192)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[7])
-                        - (sub_res_limb_7_col193)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[8])
-                        - (sub_res_limb_8_col194)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[9])
-                        - (sub_res_limb_9_col195)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[10])
-                        - (sub_res_limb_10_col196)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[11])
-                        - (sub_res_limb_11_col197)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[12])
-                        - (sub_res_limb_12_col198)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[13])
-                        - (sub_res_limb_13_col199)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[14])
-                        - (sub_res_limb_14_col200)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[15])
-                        - (sub_res_limb_15_col201)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[16])
-                        - (sub_res_limb_16_col202)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[17])
-                        - (sub_res_limb_17_col203)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[18])
-                        - (sub_res_limb_18_col204)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[19])
-                        - (sub_res_limb_19_col205)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[20])
-                        - (sub_res_limb_20_col206)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[21])
-                        - (sub_res_limb_21_col207)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[22])
-                        - (sub_res_limb_22_col208)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[23])
-                        - (sub_res_limb_23_col209)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[24])
-                        - (sub_res_limb_24_col210)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[25])
-                        - (sub_res_limb_25_col211)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[26])
-                        - (sub_res_limb_26_col212)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[27])
-                        - (sub_res_limb_27_col213)),
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[28],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[29],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[30],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[31],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[32],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[33],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[34],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[35],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[36],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[37],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[38],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[39],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[40],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[41],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[42],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[43],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[44],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[45],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[46],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[47],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[48],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[49],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[50],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[51],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[52],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[53],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_55[54],
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[0]) - (sub_res_limb_0_col186)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[1]) - (sub_res_limb_1_col187)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[2]) - (sub_res_limb_2_col188)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[3]) - (sub_res_limb_3_col189)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[4]) - (sub_res_limb_4_col190)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[5]) - (sub_res_limb_5_col191)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[6]) - (sub_res_limb_6_col192)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[7]) - (sub_res_limb_7_col193)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[8]) - (sub_res_limb_8_col194)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[9]) - (sub_res_limb_9_col195)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[10]) - (sub_res_limb_10_col196)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[11]) - (sub_res_limb_11_col197)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[12]) - (sub_res_limb_12_col198)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[13]) - (sub_res_limb_13_col199)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[14]) - (sub_res_limb_14_col200)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[15]) - (sub_res_limb_15_col201)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[16]) - (sub_res_limb_16_col202)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[17]) - (sub_res_limb_17_col203)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[18]) - (sub_res_limb_18_col204)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[19]) - (sub_res_limb_19_col205)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[20]) - (sub_res_limb_20_col206)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[21]) - (sub_res_limb_21_col207)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[22]) - (sub_res_limb_22_col208)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[23]) - (sub_res_limb_23_col209)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[24]) - (sub_res_limb_24_col210)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[25]) - (sub_res_limb_25_col211)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[26]) - (sub_res_limb_26_col212)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_55[27]) - (sub_res_limb_27_col213)),
+                    double_karatsuba_1454b_output_tmp_71feb_55[28],
+                    double_karatsuba_1454b_output_tmp_71feb_55[29],
+                    double_karatsuba_1454b_output_tmp_71feb_55[30],
+                    double_karatsuba_1454b_output_tmp_71feb_55[31],
+                    double_karatsuba_1454b_output_tmp_71feb_55[32],
+                    double_karatsuba_1454b_output_tmp_71feb_55[33],
+                    double_karatsuba_1454b_output_tmp_71feb_55[34],
+                    double_karatsuba_1454b_output_tmp_71feb_55[35],
+                    double_karatsuba_1454b_output_tmp_71feb_55[36],
+                    double_karatsuba_1454b_output_tmp_71feb_55[37],
+                    double_karatsuba_1454b_output_tmp_71feb_55[38],
+                    double_karatsuba_1454b_output_tmp_71feb_55[39],
+                    double_karatsuba_1454b_output_tmp_71feb_55[40],
+                    double_karatsuba_1454b_output_tmp_71feb_55[41],
+                    double_karatsuba_1454b_output_tmp_71feb_55[42],
+                    double_karatsuba_1454b_output_tmp_71feb_55[43],
+                    double_karatsuba_1454b_output_tmp_71feb_55[44],
+                    double_karatsuba_1454b_output_tmp_71feb_55[45],
+                    double_karatsuba_1454b_output_tmp_71feb_55[46],
+                    double_karatsuba_1454b_output_tmp_71feb_55[47],
+                    double_karatsuba_1454b_output_tmp_71feb_55[48],
+                    double_karatsuba_1454b_output_tmp_71feb_55[49],
+                    double_karatsuba_1454b_output_tmp_71feb_55[50],
+                    double_karatsuba_1454b_output_tmp_71feb_55[51],
+                    double_karatsuba_1454b_output_tmp_71feb_55[52],
+                    double_karatsuba_1454b_output_tmp_71feb_55[53],
+                    double_karatsuba_1454b_output_tmp_71feb_55[54],
                 ];
                 let conv_mod_tmp_71feb_57 = [
                     ((((M31_32) * (conv_tmp_71feb_56[0])) - ((M31_4) * (conv_tmp_71feb_56[21])))
@@ -2159,10 +2131,10 @@ fn write_trace_simd(
                             ((conv_mod_tmp_71feb_57[1]) + (M31_134217728)),
                         )) & (UInt32_511))
                             << (UInt32_9)))
-                        + (UInt32_65536))
+                        + (UInt32_131072))
                         & (UInt32_262143));
                 let k_col243 = ((k_mod_2_18_biased_tmp_71feb_58.low().as_m31())
-                    + (((k_mod_2_18_biased_tmp_71feb_58.high().as_m31()) - (M31_1)) * (M31_65536)));
+                    + (((k_mod_2_18_biased_tmp_71feb_58.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[243] = k_col243;
                 *sub_component_inputs.range_check_20[0] = [((k_col243) + (M31_524288))];
                 *lookup_data.range_check_20_0 = [((k_col243) + (M31_524288))];
@@ -2412,7 +2384,7 @@ fn write_trace_simd(
 
                 // Verify Mul 252.
 
-                // Double Karatsuba N 7 Limb Max Bound 511.
+                // Double Karatsuba 1454 B.
 
                 // Single Karatsuba N 7.
 
@@ -3125,7 +3097,7 @@ fn write_trace_simd(
                     z2_tmp_71feb_74[12],
                 ];
 
-                let double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78 = [
+                let double_karatsuba_1454b_output_tmp_71feb_78 = [
                     single_karatsuba_n_7_output_tmp_71feb_65[0],
                     single_karatsuba_n_7_output_tmp_71feb_65[1],
                     single_karatsuba_n_7_output_tmp_71feb_65[2],
@@ -3264,89 +3236,61 @@ fn write_trace_simd(
                 ];
 
                 let conv_tmp_71feb_79 = [
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[0])
-                        - (mul_res_limb_0_col271)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[1])
-                        - (mul_res_limb_1_col272)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[2])
-                        - (mul_res_limb_2_col273)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[3])
-                        - (mul_res_limb_3_col274)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[4])
-                        - (mul_res_limb_4_col275)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[5])
-                        - (mul_res_limb_5_col276)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[6])
-                        - (mul_res_limb_6_col277)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[7])
-                        - (mul_res_limb_7_col278)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[8])
-                        - (mul_res_limb_8_col279)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[9])
-                        - (mul_res_limb_9_col280)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[10])
-                        - (mul_res_limb_10_col281)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[11])
-                        - (mul_res_limb_11_col282)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[12])
-                        - (mul_res_limb_12_col283)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[13])
-                        - (mul_res_limb_13_col284)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[14])
-                        - (mul_res_limb_14_col285)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[15])
-                        - (mul_res_limb_15_col286)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[16])
-                        - (mul_res_limb_16_col287)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[17])
-                        - (mul_res_limb_17_col288)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[18])
-                        - (mul_res_limb_18_col289)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[19])
-                        - (mul_res_limb_19_col290)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[20])
-                        - (mul_res_limb_20_col291)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[21])
-                        - (mul_res_limb_21_col292)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[22])
-                        - (mul_res_limb_22_col293)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[23])
-                        - (mul_res_limb_23_col294)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[24])
-                        - (mul_res_limb_24_col295)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[25])
-                        - (mul_res_limb_25_col296)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[26])
-                        - (mul_res_limb_26_col297)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[27])
-                        - (mul_res_limb_27_col298)),
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[28],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[29],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[30],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[31],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[32],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[33],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[34],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[35],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[36],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[37],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[38],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[39],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[40],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[41],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[42],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[43],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[44],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[45],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[46],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[47],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[48],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[49],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[50],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[51],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[52],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[53],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_78[54],
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[0]) - (mul_res_limb_0_col271)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[1]) - (mul_res_limb_1_col272)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[2]) - (mul_res_limb_2_col273)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[3]) - (mul_res_limb_3_col274)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[4]) - (mul_res_limb_4_col275)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[5]) - (mul_res_limb_5_col276)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[6]) - (mul_res_limb_6_col277)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[7]) - (mul_res_limb_7_col278)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[8]) - (mul_res_limb_8_col279)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[9]) - (mul_res_limb_9_col280)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[10]) - (mul_res_limb_10_col281)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[11]) - (mul_res_limb_11_col282)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[12]) - (mul_res_limb_12_col283)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[13]) - (mul_res_limb_13_col284)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[14]) - (mul_res_limb_14_col285)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[15]) - (mul_res_limb_15_col286)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[16]) - (mul_res_limb_16_col287)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[17]) - (mul_res_limb_17_col288)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[18]) - (mul_res_limb_18_col289)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[19]) - (mul_res_limb_19_col290)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[20]) - (mul_res_limb_20_col291)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[21]) - (mul_res_limb_21_col292)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[22]) - (mul_res_limb_22_col293)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[23]) - (mul_res_limb_23_col294)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[24]) - (mul_res_limb_24_col295)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[25]) - (mul_res_limb_25_col296)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[26]) - (mul_res_limb_26_col297)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_78[27]) - (mul_res_limb_27_col298)),
+                    double_karatsuba_1454b_output_tmp_71feb_78[28],
+                    double_karatsuba_1454b_output_tmp_71feb_78[29],
+                    double_karatsuba_1454b_output_tmp_71feb_78[30],
+                    double_karatsuba_1454b_output_tmp_71feb_78[31],
+                    double_karatsuba_1454b_output_tmp_71feb_78[32],
+                    double_karatsuba_1454b_output_tmp_71feb_78[33],
+                    double_karatsuba_1454b_output_tmp_71feb_78[34],
+                    double_karatsuba_1454b_output_tmp_71feb_78[35],
+                    double_karatsuba_1454b_output_tmp_71feb_78[36],
+                    double_karatsuba_1454b_output_tmp_71feb_78[37],
+                    double_karatsuba_1454b_output_tmp_71feb_78[38],
+                    double_karatsuba_1454b_output_tmp_71feb_78[39],
+                    double_karatsuba_1454b_output_tmp_71feb_78[40],
+                    double_karatsuba_1454b_output_tmp_71feb_78[41],
+                    double_karatsuba_1454b_output_tmp_71feb_78[42],
+                    double_karatsuba_1454b_output_tmp_71feb_78[43],
+                    double_karatsuba_1454b_output_tmp_71feb_78[44],
+                    double_karatsuba_1454b_output_tmp_71feb_78[45],
+                    double_karatsuba_1454b_output_tmp_71feb_78[46],
+                    double_karatsuba_1454b_output_tmp_71feb_78[47],
+                    double_karatsuba_1454b_output_tmp_71feb_78[48],
+                    double_karatsuba_1454b_output_tmp_71feb_78[49],
+                    double_karatsuba_1454b_output_tmp_71feb_78[50],
+                    double_karatsuba_1454b_output_tmp_71feb_78[51],
+                    double_karatsuba_1454b_output_tmp_71feb_78[52],
+                    double_karatsuba_1454b_output_tmp_71feb_78[53],
+                    double_karatsuba_1454b_output_tmp_71feb_78[54],
                 ];
                 let conv_mod_tmp_71feb_80 = [
                     ((((M31_32) * (conv_tmp_71feb_79[0])) - ((M31_4) * (conv_tmp_71feb_79[21])))
@@ -3437,10 +3381,10 @@ fn write_trace_simd(
                             ((conv_mod_tmp_71feb_80[1]) + (M31_134217728)),
                         )) & (UInt32_511))
                             << (UInt32_9)))
-                        + (UInt32_65536))
+                        + (UInt32_131072))
                         & (UInt32_262143));
                 let k_col299 = ((k_mod_2_18_biased_tmp_71feb_81.low().as_m31())
-                    + (((k_mod_2_18_biased_tmp_71feb_81.high().as_m31()) - (M31_1)) * (M31_65536)));
+                    + (((k_mod_2_18_biased_tmp_71feb_81.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[299] = k_col299;
                 *sub_component_inputs.range_check_20[4] = [((k_col299) + (M31_524288))];
                 *lookup_data.range_check_20_4 = [((k_col299) + (M31_524288))];
@@ -3942,7 +3886,7 @@ fn write_trace_simd(
 
                 // Verify Mul 252.
 
-                // Double Karatsuba N 7 Limb Max Bound 511.
+                // Double Karatsuba 1454 B.
 
                 // Single Karatsuba N 7.
 
@@ -4655,7 +4599,7 @@ fn write_trace_simd(
                     z2_tmp_71feb_121[12],
                 ];
 
-                let double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125 = [
+                let double_karatsuba_1454b_output_tmp_71feb_125 = [
                     single_karatsuba_n_7_output_tmp_71feb_112[0],
                     single_karatsuba_n_7_output_tmp_71feb_112[1],
                     single_karatsuba_n_7_output_tmp_71feb_112[2],
@@ -4794,89 +4738,61 @@ fn write_trace_simd(
                 ];
 
                 let conv_tmp_71feb_126 = [
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[0])
-                        - (mul_res_limb_0_col385)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[1])
-                        - (mul_res_limb_1_col386)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[2])
-                        - (mul_res_limb_2_col387)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[3])
-                        - (mul_res_limb_3_col388)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[4])
-                        - (mul_res_limb_4_col389)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[5])
-                        - (mul_res_limb_5_col390)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[6])
-                        - (mul_res_limb_6_col391)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[7])
-                        - (mul_res_limb_7_col392)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[8])
-                        - (mul_res_limb_8_col393)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[9])
-                        - (mul_res_limb_9_col394)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[10])
-                        - (mul_res_limb_10_col395)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[11])
-                        - (mul_res_limb_11_col396)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[12])
-                        - (mul_res_limb_12_col397)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[13])
-                        - (mul_res_limb_13_col398)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[14])
-                        - (mul_res_limb_14_col399)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[15])
-                        - (mul_res_limb_15_col400)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[16])
-                        - (mul_res_limb_16_col401)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[17])
-                        - (mul_res_limb_17_col402)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[18])
-                        - (mul_res_limb_18_col403)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[19])
-                        - (mul_res_limb_19_col404)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[20])
-                        - (mul_res_limb_20_col405)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[21])
-                        - (mul_res_limb_21_col406)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[22])
-                        - (mul_res_limb_22_col407)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[23])
-                        - (mul_res_limb_23_col408)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[24])
-                        - (mul_res_limb_24_col409)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[25])
-                        - (mul_res_limb_25_col410)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[26])
-                        - (mul_res_limb_26_col411)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[27])
-                        - (mul_res_limb_27_col412)),
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[28],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[29],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[30],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[31],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[32],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[33],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[34],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[35],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[36],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[37],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[38],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[39],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[40],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[41],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[42],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[43],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[44],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[45],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[46],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[47],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[48],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[49],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[50],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[51],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[52],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[53],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_71feb_125[54],
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[0]) - (mul_res_limb_0_col385)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[1]) - (mul_res_limb_1_col386)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[2]) - (mul_res_limb_2_col387)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[3]) - (mul_res_limb_3_col388)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[4]) - (mul_res_limb_4_col389)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[5]) - (mul_res_limb_5_col390)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[6]) - (mul_res_limb_6_col391)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[7]) - (mul_res_limb_7_col392)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[8]) - (mul_res_limb_8_col393)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[9]) - (mul_res_limb_9_col394)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[10]) - (mul_res_limb_10_col395)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[11]) - (mul_res_limb_11_col396)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[12]) - (mul_res_limb_12_col397)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[13]) - (mul_res_limb_13_col398)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[14]) - (mul_res_limb_14_col399)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[15]) - (mul_res_limb_15_col400)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[16]) - (mul_res_limb_16_col401)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[17]) - (mul_res_limb_17_col402)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[18]) - (mul_res_limb_18_col403)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[19]) - (mul_res_limb_19_col404)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[20]) - (mul_res_limb_20_col405)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[21]) - (mul_res_limb_21_col406)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[22]) - (mul_res_limb_22_col407)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[23]) - (mul_res_limb_23_col408)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[24]) - (mul_res_limb_24_col409)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[25]) - (mul_res_limb_25_col410)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[26]) - (mul_res_limb_26_col411)),
+                    ((double_karatsuba_1454b_output_tmp_71feb_125[27]) - (mul_res_limb_27_col412)),
+                    double_karatsuba_1454b_output_tmp_71feb_125[28],
+                    double_karatsuba_1454b_output_tmp_71feb_125[29],
+                    double_karatsuba_1454b_output_tmp_71feb_125[30],
+                    double_karatsuba_1454b_output_tmp_71feb_125[31],
+                    double_karatsuba_1454b_output_tmp_71feb_125[32],
+                    double_karatsuba_1454b_output_tmp_71feb_125[33],
+                    double_karatsuba_1454b_output_tmp_71feb_125[34],
+                    double_karatsuba_1454b_output_tmp_71feb_125[35],
+                    double_karatsuba_1454b_output_tmp_71feb_125[36],
+                    double_karatsuba_1454b_output_tmp_71feb_125[37],
+                    double_karatsuba_1454b_output_tmp_71feb_125[38],
+                    double_karatsuba_1454b_output_tmp_71feb_125[39],
+                    double_karatsuba_1454b_output_tmp_71feb_125[40],
+                    double_karatsuba_1454b_output_tmp_71feb_125[41],
+                    double_karatsuba_1454b_output_tmp_71feb_125[42],
+                    double_karatsuba_1454b_output_tmp_71feb_125[43],
+                    double_karatsuba_1454b_output_tmp_71feb_125[44],
+                    double_karatsuba_1454b_output_tmp_71feb_125[45],
+                    double_karatsuba_1454b_output_tmp_71feb_125[46],
+                    double_karatsuba_1454b_output_tmp_71feb_125[47],
+                    double_karatsuba_1454b_output_tmp_71feb_125[48],
+                    double_karatsuba_1454b_output_tmp_71feb_125[49],
+                    double_karatsuba_1454b_output_tmp_71feb_125[50],
+                    double_karatsuba_1454b_output_tmp_71feb_125[51],
+                    double_karatsuba_1454b_output_tmp_71feb_125[52],
+                    double_karatsuba_1454b_output_tmp_71feb_125[53],
+                    double_karatsuba_1454b_output_tmp_71feb_125[54],
                 ];
                 let conv_mod_tmp_71feb_127 = [
                     ((((M31_32) * (conv_tmp_71feb_126[0])) - ((M31_4) * (conv_tmp_71feb_126[21])))
@@ -4972,10 +4888,10 @@ fn write_trace_simd(
                             ((conv_mod_tmp_71feb_127[1]) + (M31_134217728)),
                         )) & (UInt32_511))
                             << (UInt32_9)))
-                        + (UInt32_65536))
+                        + (UInt32_131072))
                         & (UInt32_262143));
                 let k_col413 = ((k_mod_2_18_biased_tmp_71feb_128.low().as_m31())
-                    + (((k_mod_2_18_biased_tmp_71feb_128.high().as_m31()) - (M31_1))
+                    + (((k_mod_2_18_biased_tmp_71feb_128.high().as_m31()) - (M31_2))
                         * (M31_65536)));
                 *row[413] = k_col413;
                 *sub_component_inputs.range_check_20[8] = [((k_col413) + (M31_524288))];
