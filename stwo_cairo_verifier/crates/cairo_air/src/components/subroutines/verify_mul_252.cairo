@@ -1,6 +1,6 @@
 // This file was created by the AIR team.
 
-use crate::components::subroutines::double_karatsuba_n_7_limb_max_bound_511::double_karatsuba_n_7_limb_max_bound_511_evaluate;
+use crate::components::subroutines::double_karatsuba_1454b::double_karatsuba_1454b_evaluate;
 use crate::prelude::*;
 
 
@@ -162,63 +162,63 @@ pub fn verify_mul_252_evaluate(
     ] =
         input;
     let [
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_0,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_1,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_2,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_3,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_4,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_5,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_6,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_7,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_8,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_9,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_10,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_11,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_12,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_13,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_14,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_15,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_16,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_17,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_18,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_19,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_20,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_21,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_22,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_23,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_24,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_25,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_26,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_27,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_28,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_29,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_30,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_31,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_32,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_33,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_34,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_35,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_36,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_37,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_38,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_39,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_40,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_41,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_42,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_43,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_44,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_45,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_46,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_47,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_48,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_49,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_50,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_51,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_52,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_53,
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_54,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_0,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_1,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_2,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_3,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_4,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_5,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_6,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_7,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_8,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_9,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_10,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_11,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_12,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_13,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_14,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_15,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_16,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_17,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_18,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_19,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_20,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_21,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_22,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_23,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_24,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_25,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_26,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_27,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_28,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_29,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_30,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_31,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_32,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_33,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_34,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_35,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_36,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_37,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_38,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_39,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_40,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_41,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_42,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_43,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_44,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_45,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_46,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_47,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_48,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_49,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_50,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_51,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_52,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_53,
+        double_karatsuba_1454b_output_tmp_9a554_17_limb_54,
     ] =
-        double_karatsuba_n_7_limb_max_bound_511_evaluate(
+        double_karatsuba_1454b_evaluate(
         [
             verify_mul_252_input_a_limb_0, verify_mul_252_input_a_limb_1,
             verify_mul_252_input_a_limb_2, verify_mul_252_input_a_limb_3,
@@ -253,144 +253,89 @@ pub fn verify_mul_252_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    let conv_tmp_9a554_18_limb_0: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_0
+    let conv_tmp_9a554_18_limb_0: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_0
         - verify_mul_252_input_c_limb_0);
-    let conv_tmp_9a554_18_limb_1: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_1
+    let conv_tmp_9a554_18_limb_1: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_1
         - verify_mul_252_input_c_limb_1);
-    let conv_tmp_9a554_18_limb_2: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_2
+    let conv_tmp_9a554_18_limb_2: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_2
         - verify_mul_252_input_c_limb_2);
-    let conv_tmp_9a554_18_limb_3: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_3
+    let conv_tmp_9a554_18_limb_3: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_3
         - verify_mul_252_input_c_limb_3);
-    let conv_tmp_9a554_18_limb_4: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_4
+    let conv_tmp_9a554_18_limb_4: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_4
         - verify_mul_252_input_c_limb_4);
-    let conv_tmp_9a554_18_limb_5: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_5
+    let conv_tmp_9a554_18_limb_5: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_5
         - verify_mul_252_input_c_limb_5);
-    let conv_tmp_9a554_18_limb_6: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_6
+    let conv_tmp_9a554_18_limb_6: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_6
         - verify_mul_252_input_c_limb_6);
-    let conv_tmp_9a554_18_limb_7: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_7
+    let conv_tmp_9a554_18_limb_7: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_7
         - verify_mul_252_input_c_limb_7);
-    let conv_tmp_9a554_18_limb_8: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_8
+    let conv_tmp_9a554_18_limb_8: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_8
         - verify_mul_252_input_c_limb_8);
-    let conv_tmp_9a554_18_limb_9: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_9
+    let conv_tmp_9a554_18_limb_9: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_9
         - verify_mul_252_input_c_limb_9);
-    let conv_tmp_9a554_18_limb_10: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_10
+    let conv_tmp_9a554_18_limb_10: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_10
         - verify_mul_252_input_c_limb_10);
-    let conv_tmp_9a554_18_limb_11: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_11
+    let conv_tmp_9a554_18_limb_11: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_11
         - verify_mul_252_input_c_limb_11);
-    let conv_tmp_9a554_18_limb_12: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_12
+    let conv_tmp_9a554_18_limb_12: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_12
         - verify_mul_252_input_c_limb_12);
-    let conv_tmp_9a554_18_limb_13: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_13
+    let conv_tmp_9a554_18_limb_13: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_13
         - verify_mul_252_input_c_limb_13);
-    let conv_tmp_9a554_18_limb_14: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_14
+    let conv_tmp_9a554_18_limb_14: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_14
         - verify_mul_252_input_c_limb_14);
-    let conv_tmp_9a554_18_limb_15: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_15
+    let conv_tmp_9a554_18_limb_15: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_15
         - verify_mul_252_input_c_limb_15);
-    let conv_tmp_9a554_18_limb_16: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_16
+    let conv_tmp_9a554_18_limb_16: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_16
         - verify_mul_252_input_c_limb_16);
-    let conv_tmp_9a554_18_limb_17: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_17
+    let conv_tmp_9a554_18_limb_17: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_17
         - verify_mul_252_input_c_limb_17);
-    let conv_tmp_9a554_18_limb_18: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_18
+    let conv_tmp_9a554_18_limb_18: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_18
         - verify_mul_252_input_c_limb_18);
-    let conv_tmp_9a554_18_limb_19: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_19
+    let conv_tmp_9a554_18_limb_19: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_19
         - verify_mul_252_input_c_limb_19);
-    let conv_tmp_9a554_18_limb_20: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_20
+    let conv_tmp_9a554_18_limb_20: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_20
         - verify_mul_252_input_c_limb_20);
-    let conv_tmp_9a554_18_limb_21: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_21
+    let conv_tmp_9a554_18_limb_21: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_21
         - verify_mul_252_input_c_limb_21);
-    let conv_tmp_9a554_18_limb_22: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_22
+    let conv_tmp_9a554_18_limb_22: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_22
         - verify_mul_252_input_c_limb_22);
-    let conv_tmp_9a554_18_limb_23: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_23
+    let conv_tmp_9a554_18_limb_23: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_23
         - verify_mul_252_input_c_limb_23);
-    let conv_tmp_9a554_18_limb_24: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_24
+    let conv_tmp_9a554_18_limb_24: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_24
         - verify_mul_252_input_c_limb_24);
-    let conv_tmp_9a554_18_limb_25: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_25
+    let conv_tmp_9a554_18_limb_25: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_25
         - verify_mul_252_input_c_limb_25);
-    let conv_tmp_9a554_18_limb_26: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_26
+    let conv_tmp_9a554_18_limb_26: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_26
         - verify_mul_252_input_c_limb_26);
-    let conv_tmp_9a554_18_limb_27: QM31 =
-        (double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_27
+    let conv_tmp_9a554_18_limb_27: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_27
         - verify_mul_252_input_c_limb_27);
-    let conv_tmp_9a554_18_limb_28: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_28;
-    let conv_tmp_9a554_18_limb_29: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_29;
-    let conv_tmp_9a554_18_limb_30: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_30;
-    let conv_tmp_9a554_18_limb_31: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_31;
-    let conv_tmp_9a554_18_limb_32: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_32;
-    let conv_tmp_9a554_18_limb_33: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_33;
-    let conv_tmp_9a554_18_limb_34: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_34;
-    let conv_tmp_9a554_18_limb_35: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_35;
-    let conv_tmp_9a554_18_limb_36: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_36;
-    let conv_tmp_9a554_18_limb_37: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_37;
-    let conv_tmp_9a554_18_limb_38: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_38;
-    let conv_tmp_9a554_18_limb_39: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_39;
-    let conv_tmp_9a554_18_limb_40: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_40;
-    let conv_tmp_9a554_18_limb_41: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_41;
-    let conv_tmp_9a554_18_limb_42: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_42;
-    let conv_tmp_9a554_18_limb_43: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_43;
-    let conv_tmp_9a554_18_limb_44: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_44;
-    let conv_tmp_9a554_18_limb_45: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_45;
-    let conv_tmp_9a554_18_limb_46: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_46;
-    let conv_tmp_9a554_18_limb_47: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_47;
-    let conv_tmp_9a554_18_limb_48: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_48;
-    let conv_tmp_9a554_18_limb_49: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_49;
-    let conv_tmp_9a554_18_limb_50: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_50;
-    let conv_tmp_9a554_18_limb_51: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_51;
-    let conv_tmp_9a554_18_limb_52: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_52;
-    let conv_tmp_9a554_18_limb_53: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_53;
-    let conv_tmp_9a554_18_limb_54: QM31 =
-        double_karatsuba_n_7_limb_max_bound_511_output_tmp_9a554_17_limb_54;
+    let conv_tmp_9a554_18_limb_28: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_28;
+    let conv_tmp_9a554_18_limb_29: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_29;
+    let conv_tmp_9a554_18_limb_30: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_30;
+    let conv_tmp_9a554_18_limb_31: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_31;
+    let conv_tmp_9a554_18_limb_32: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_32;
+    let conv_tmp_9a554_18_limb_33: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_33;
+    let conv_tmp_9a554_18_limb_34: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_34;
+    let conv_tmp_9a554_18_limb_35: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_35;
+    let conv_tmp_9a554_18_limb_36: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_36;
+    let conv_tmp_9a554_18_limb_37: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_37;
+    let conv_tmp_9a554_18_limb_38: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_38;
+    let conv_tmp_9a554_18_limb_39: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_39;
+    let conv_tmp_9a554_18_limb_40: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_40;
+    let conv_tmp_9a554_18_limb_41: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_41;
+    let conv_tmp_9a554_18_limb_42: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_42;
+    let conv_tmp_9a554_18_limb_43: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_43;
+    let conv_tmp_9a554_18_limb_44: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_44;
+    let conv_tmp_9a554_18_limb_45: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_45;
+    let conv_tmp_9a554_18_limb_46: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_46;
+    let conv_tmp_9a554_18_limb_47: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_47;
+    let conv_tmp_9a554_18_limb_48: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_48;
+    let conv_tmp_9a554_18_limb_49: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_49;
+    let conv_tmp_9a554_18_limb_50: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_50;
+    let conv_tmp_9a554_18_limb_51: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_51;
+    let conv_tmp_9a554_18_limb_52: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_52;
+    let conv_tmp_9a554_18_limb_53: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_53;
+    let conv_tmp_9a554_18_limb_54: QM31 = double_karatsuba_1454b_output_tmp_9a554_17_limb_54;
     let conv_mod_tmp_9a554_19_limb_0: QM31 = (((qm31_const::<32, 0, 0, 0>()
         * conv_tmp_9a554_18_limb_0)
         - (qm31_const::<4, 0, 0, 0>() * conv_tmp_9a554_18_limb_21))
