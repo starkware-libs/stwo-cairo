@@ -4063,7 +4063,7 @@ fn write_trace_simd(
                     ((limb9b_1_col363) + ((M31_64) * (c3_limb_10_col251))),
                 ];
 
-                // Double Karatsuba N 8 Limb Max Bound 4095.
+                // Double Karatsuba B 1 Daa.
 
                 // Single Karatsuba N 8.
 
@@ -5265,7 +5265,7 @@ fn write_trace_simd(
                     z2_tmp_cf8b4_346[14],
                 ];
 
-                let double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350 = [
+                let double_karatsuba_b1daa_output_tmp_cf8b4_350 = [
                     single_karatsuba_n_8_output_tmp_cf8b4_337[0],
                     single_karatsuba_n_8_output_tmp_cf8b4_337[1],
                     single_karatsuba_n_8_output_tmp_cf8b4_337[2],
@@ -5423,7 +5423,7 @@ fn write_trace_simd(
                     single_karatsuba_n_8_output_tmp_cf8b4_342[30],
                 ];
 
-                // Double Karatsuba N 8 Limb Max Bound 4095.
+                // Double Karatsuba B 1 Daa.
 
                 // Single Karatsuba N 8.
 
@@ -6593,7 +6593,7 @@ fn write_trace_simd(
                     z2_tmp_cf8b4_364[14],
                 ];
 
-                let double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368 = [
+                let double_karatsuba_b1daa_output_tmp_cf8b4_368 = [
                     single_karatsuba_n_8_output_tmp_cf8b4_355[0],
                     single_karatsuba_n_8_output_tmp_cf8b4_355[1],
                     single_karatsuba_n_8_output_tmp_cf8b4_355[2],
@@ -6753,466 +6753,466 @@ fn write_trace_simd(
 
                 let carry_0_col364 = ((((M31_0)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[0]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[0])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[0])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[0])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[0])))
                     * (M31_524288));
                 *row[364] = carry_0_col364;
                 *sub_component_inputs.range_check_18[0] = [((carry_0_col364) + (M31_131072))];
                 *lookup_data.range_check_18_0 = [((carry_0_col364) + (M31_131072))];
                 let carry_1_col365 = ((((carry_0_col364)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[1]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[1])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[1])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[1])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[1])))
                     * (M31_524288));
                 *row[365] = carry_1_col365;
                 *sub_component_inputs.range_check_18[1] = [((carry_1_col365) + (M31_131072))];
                 *lookup_data.range_check_18_1 = [((carry_1_col365) + (M31_131072))];
                 let carry_2_col366 = ((((carry_1_col365)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[2]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[2])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[2])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[2])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[2])))
                     * (M31_524288));
                 *row[366] = carry_2_col366;
                 *sub_component_inputs.range_check_18[2] = [((carry_2_col366) + (M31_131072))];
                 *lookup_data.range_check_18_2 = [((carry_2_col366) + (M31_131072))];
                 let carry_3_col367 = ((((carry_2_col366)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[3]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[3])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[3])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[3])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[3])))
                     * (M31_524288));
                 *row[367] = carry_3_col367;
                 *sub_component_inputs.range_check_18[3] = [((carry_3_col367) + (M31_131072))];
                 *lookup_data.range_check_18_3 = [((carry_3_col367) + (M31_131072))];
                 let carry_4_col368 = ((((carry_3_col367)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[4]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[4])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[4])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[4])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[4])))
                     * (M31_524288));
                 *row[368] = carry_4_col368;
                 *sub_component_inputs.range_check_18[4] = [((carry_4_col368) + (M31_131072))];
                 *lookup_data.range_check_18_4 = [((carry_4_col368) + (M31_131072))];
                 let carry_5_col369 = ((((carry_4_col368)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[5]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[5])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[5])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[5])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[5])))
                     * (M31_524288));
                 *row[369] = carry_5_col369;
                 *sub_component_inputs.range_check_18[5] = [((carry_5_col369) + (M31_131072))];
                 *lookup_data.range_check_18_5 = [((carry_5_col369) + (M31_131072))];
                 let carry_6_col370 = ((((carry_5_col369)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[6]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[6])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[6])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[6])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[6])))
                     * (M31_524288));
                 *row[370] = carry_6_col370;
                 *sub_component_inputs.range_check_18[6] = [((carry_6_col370) + (M31_131072))];
                 *lookup_data.range_check_18_6 = [((carry_6_col370) + (M31_131072))];
                 let carry_7_col371 = ((((carry_6_col370)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[7]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[7])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[7])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[7])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[7])))
                     * (M31_524288));
                 *row[371] = carry_7_col371;
                 *sub_component_inputs.range_check_18[7] = [((carry_7_col371) + (M31_131072))];
                 *lookup_data.range_check_18_7 = [((carry_7_col371) + (M31_131072))];
                 let carry_8_col372 = ((((carry_7_col371)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[8]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[8])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[8])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[8])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[8])))
                     * (M31_524288));
                 *row[372] = carry_8_col372;
                 *sub_component_inputs.range_check_18[8] = [((carry_8_col372) + (M31_131072))];
                 *lookup_data.range_check_18_8 = [((carry_8_col372) + (M31_131072))];
                 let carry_9_col373 = ((((carry_8_col372)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[9]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[9])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[9])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[9])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[9])))
                     * (M31_524288));
                 *row[373] = carry_9_col373;
                 *sub_component_inputs.range_check_18[9] = [((carry_9_col373) + (M31_131072))];
                 *lookup_data.range_check_18_9 = [((carry_9_col373) + (M31_131072))];
                 let carry_10_col374 = ((((carry_9_col373)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[10]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[10])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[10])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[10])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[10])))
                     * (M31_524288));
                 *row[374] = carry_10_col374;
                 *sub_component_inputs.range_check_18[10] = [((carry_10_col374) + (M31_131072))];
                 *lookup_data.range_check_18_10 = [((carry_10_col374) + (M31_131072))];
                 let carry_11_col375 = ((((carry_10_col374)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[11]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[11])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[11])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[11])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[11])))
                     * (M31_524288));
                 *row[375] = carry_11_col375;
                 *sub_component_inputs.range_check_18[11] = [((carry_11_col375) + (M31_131072))];
                 *lookup_data.range_check_18_11 = [((carry_11_col375) + (M31_131072))];
                 let carry_12_col376 = ((((carry_11_col375)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[12]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[12])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[12])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[12])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[12])))
                     * (M31_524288));
                 *row[376] = carry_12_col376;
                 *sub_component_inputs.range_check_18[12] = [((carry_12_col376) + (M31_131072))];
                 *lookup_data.range_check_18_12 = [((carry_12_col376) + (M31_131072))];
                 let carry_13_col377 = ((((carry_12_col376)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[13]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[13])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[13])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[13])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[13])))
                     * (M31_524288));
                 *row[377] = carry_13_col377;
                 *sub_component_inputs.range_check_18[13] = [((carry_13_col377) + (M31_131072))];
                 *lookup_data.range_check_18_13 = [((carry_13_col377) + (M31_131072))];
                 let carry_14_col378 = ((((carry_13_col377)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[14]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[14])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[14])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[14])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[14])))
                     * (M31_524288));
                 *row[378] = carry_14_col378;
                 *sub_component_inputs.range_check_18[14] = [((carry_14_col378) + (M31_131072))];
                 *lookup_data.range_check_18_14 = [((carry_14_col378) + (M31_131072))];
                 let carry_15_col379 = ((((carry_14_col378)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_311[15]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[15])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[15])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[15])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[15])))
                     * (M31_524288));
                 *row[379] = carry_15_col379;
                 *sub_component_inputs.range_check_18[15] = [((carry_15_col379) + (M31_131072))];
                 *lookup_data.range_check_18_15 = [((carry_15_col379) + (M31_131072))];
                 let carry_16_col380 = ((((carry_15_col379)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[0]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[16])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[16])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[16])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[16])))
                     * (M31_524288));
                 *row[380] = carry_16_col380;
                 *sub_component_inputs.range_check_18[16] = [((carry_16_col380) + (M31_131072))];
                 *lookup_data.range_check_18_16 = [((carry_16_col380) + (M31_131072))];
                 let carry_17_col381 = ((((carry_16_col380)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[1]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[17])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[17])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[17])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[17])))
                     * (M31_524288));
                 *row[381] = carry_17_col381;
                 *sub_component_inputs.range_check_18[17] = [((carry_17_col381) + (M31_131072))];
                 *lookup_data.range_check_18_17 = [((carry_17_col381) + (M31_131072))];
                 let carry_18_col382 = ((((carry_17_col381)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[2]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[18])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[18])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[18])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[18])))
                     * (M31_524288));
                 *row[382] = carry_18_col382;
                 *sub_component_inputs.range_check_18[18] = [((carry_18_col382) + (M31_131072))];
                 *lookup_data.range_check_18_18 = [((carry_18_col382) + (M31_131072))];
                 let carry_19_col383 = ((((carry_18_col382)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[3]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[19])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[19])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[19])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[19])))
                     * (M31_524288));
                 *row[383] = carry_19_col383;
                 *sub_component_inputs.range_check_18[19] = [((carry_19_col383) + (M31_131072))];
                 *lookup_data.range_check_18_19 = [((carry_19_col383) + (M31_131072))];
                 let carry_20_col384 = ((((carry_19_col383)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[4]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[20])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[20])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[20])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[20])))
                     * (M31_524288));
                 *row[384] = carry_20_col384;
                 *sub_component_inputs.range_check_18[20] = [((carry_20_col384) + (M31_131072))];
                 *lookup_data.range_check_18_20 = [((carry_20_col384) + (M31_131072))];
                 let carry_21_col385 = ((((carry_20_col384)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[5]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[21])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[21])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[21])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[21])))
                     * (M31_524288));
                 *row[385] = carry_21_col385;
                 *sub_component_inputs.range_check_18[21] = [((carry_21_col385) + (M31_131072))];
                 *lookup_data.range_check_18_21 = [((carry_21_col385) + (M31_131072))];
                 let carry_22_col386 = ((((carry_21_col385)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[6]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[22])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[22])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[22])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[22])))
                     * (M31_524288));
                 *row[386] = carry_22_col386;
                 *sub_component_inputs.range_check_18[22] = [((carry_22_col386) + (M31_131072))];
                 *lookup_data.range_check_18_22 = [((carry_22_col386) + (M31_131072))];
                 let carry_23_col387 = ((((carry_22_col386)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[7]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[23])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[23])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[23])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[23])))
                     * (M31_524288));
                 *row[387] = carry_23_col387;
                 *sub_component_inputs.range_check_18[23] = [((carry_23_col387) + (M31_131072))];
                 *lookup_data.range_check_18_23 = [((carry_23_col387) + (M31_131072))];
                 let carry_24_col388 = ((((carry_23_col387)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[8]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[24])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[24])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[24])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[24])))
                     * (M31_524288));
                 *row[388] = carry_24_col388;
                 *sub_component_inputs.range_check_18[24] = [((carry_24_col388) + (M31_131072))];
                 *lookup_data.range_check_18_24 = [((carry_24_col388) + (M31_131072))];
                 let carry_25_col389 = ((((carry_24_col388)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[9]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[25])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[25])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[25])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[25])))
                     * (M31_524288));
                 *row[389] = carry_25_col389;
                 *sub_component_inputs.range_check_18[25] = [((carry_25_col389) + (M31_131072))];
                 *lookup_data.range_check_18_25 = [((carry_25_col389) + (M31_131072))];
                 let carry_26_col390 = ((((carry_25_col389)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[10]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[26])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[26])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[26])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[26])))
                     * (M31_524288));
                 *row[390] = carry_26_col390;
                 *sub_component_inputs.range_check_18[26] = [((carry_26_col390) + (M31_131072))];
                 *lookup_data.range_check_18_26 = [((carry_26_col390) + (M31_131072))];
                 let carry_27_col391 = ((((carry_26_col390)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[11]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[27])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[27])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[27])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[27])))
                     * (M31_524288));
                 *row[391] = carry_27_col391;
                 *sub_component_inputs.range_check_18[27] = [((carry_27_col391) + (M31_131072))];
                 *lookup_data.range_check_18_27 = [((carry_27_col391) + (M31_131072))];
                 let carry_28_col392 = ((((carry_27_col391)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[12]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[28])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[28])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[28])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[28])))
                     * (M31_524288));
                 *row[392] = carry_28_col392;
                 *sub_component_inputs.range_check_18[28] = [((carry_28_col392) + (M31_131072))];
                 *lookup_data.range_check_18_28 = [((carry_28_col392) + (M31_131072))];
                 let carry_29_col393 = ((((carry_28_col392)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[13]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[29])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[29])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[29])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[29])))
                     * (M31_524288));
                 *row[393] = carry_29_col393;
                 *sub_component_inputs.range_check_18[29] = [((carry_29_col393) + (M31_131072))];
                 *lookup_data.range_check_18_29 = [((carry_29_col393) + (M31_131072))];
                 let carry_30_col394 = ((((carry_29_col393)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[14]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[30])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[30])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[30])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[30])))
                     * (M31_524288));
                 *row[394] = carry_30_col394;
                 *sub_component_inputs.range_check_18[30] = [((carry_30_col394) + (M31_131072))];
                 *lookup_data.range_check_18_30 = [((carry_30_col394) + (M31_131072))];
                 let carry_31_col395 = ((((carry_30_col394)
                     - (mod_words_to_12_bit_array_output_tmp_cf8b4_332[15]))
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[31])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[31])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[31])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[31])))
                     * (M31_524288));
                 *row[395] = carry_31_col395;
                 *sub_component_inputs.range_check_18[31] = [((carry_31_col395) + (M31_131072))];
                 *lookup_data.range_check_18_31 = [((carry_31_col395) + (M31_131072))];
                 let carry_32_col396 = (((carry_31_col395)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[32])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[32])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[32])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[32])))
                     * (M31_524288));
                 *row[396] = carry_32_col396;
                 *sub_component_inputs.range_check_18[32] = [((carry_32_col396) + (M31_131072))];
                 *lookup_data.range_check_18_32 = [((carry_32_col396) + (M31_131072))];
                 let carry_33_col397 = (((carry_32_col396)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[33])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[33])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[33])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[33])))
                     * (M31_524288));
                 *row[397] = carry_33_col397;
                 *sub_component_inputs.range_check_18[33] = [((carry_33_col397) + (M31_131072))];
                 *lookup_data.range_check_18_33 = [((carry_33_col397) + (M31_131072))];
                 let carry_34_col398 = (((carry_33_col397)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[34])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[34])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[34])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[34])))
                     * (M31_524288));
                 *row[398] = carry_34_col398;
                 *sub_component_inputs.range_check_18[34] = [((carry_34_col398) + (M31_131072))];
                 *lookup_data.range_check_18_34 = [((carry_34_col398) + (M31_131072))];
                 let carry_35_col399 = (((carry_34_col398)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[35])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[35])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[35])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[35])))
                     * (M31_524288));
                 *row[399] = carry_35_col399;
                 *sub_component_inputs.range_check_18[35] = [((carry_35_col399) + (M31_131072))];
                 *lookup_data.range_check_18_35 = [((carry_35_col399) + (M31_131072))];
                 let carry_36_col400 = (((carry_35_col399)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[36])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[36])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[36])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[36])))
                     * (M31_524288));
                 *row[400] = carry_36_col400;
                 *sub_component_inputs.range_check_18[36] = [((carry_36_col400) + (M31_131072))];
                 *lookup_data.range_check_18_36 = [((carry_36_col400) + (M31_131072))];
                 let carry_37_col401 = (((carry_36_col400)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[37])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[37])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[37])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[37])))
                     * (M31_524288));
                 *row[401] = carry_37_col401;
                 *sub_component_inputs.range_check_18[37] = [((carry_37_col401) + (M31_131072))];
                 *lookup_data.range_check_18_37 = [((carry_37_col401) + (M31_131072))];
                 let carry_38_col402 = (((carry_37_col401)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[38])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[38])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[38])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[38])))
                     * (M31_524288));
                 *row[402] = carry_38_col402;
                 *sub_component_inputs.range_check_18[38] = [((carry_38_col402) + (M31_131072))];
                 *lookup_data.range_check_18_38 = [((carry_38_col402) + (M31_131072))];
                 let carry_39_col403 = (((carry_38_col402)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[39])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[39])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[39])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[39])))
                     * (M31_524288));
                 *row[403] = carry_39_col403;
                 *sub_component_inputs.range_check_18[39] = [((carry_39_col403) + (M31_131072))];
                 *lookup_data.range_check_18_39 = [((carry_39_col403) + (M31_131072))];
                 let carry_40_col404 = (((carry_39_col403)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[40])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[40])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[40])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[40])))
                     * (M31_524288));
                 *row[404] = carry_40_col404;
                 *sub_component_inputs.range_check_18[40] = [((carry_40_col404) + (M31_131072))];
                 *lookup_data.range_check_18_40 = [((carry_40_col404) + (M31_131072))];
                 let carry_41_col405 = (((carry_40_col404)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[41])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[41])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[41])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[41])))
                     * (M31_524288));
                 *row[405] = carry_41_col405;
                 *sub_component_inputs.range_check_18[41] = [((carry_41_col405) + (M31_131072))];
                 *lookup_data.range_check_18_41 = [((carry_41_col405) + (M31_131072))];
                 let carry_42_col406 = (((carry_41_col405)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[42])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[42])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[42])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[42])))
                     * (M31_524288));
                 *row[406] = carry_42_col406;
                 *sub_component_inputs.range_check_18[42] = [((carry_42_col406) + (M31_131072))];
                 *lookup_data.range_check_18_42 = [((carry_42_col406) + (M31_131072))];
                 let carry_43_col407 = (((carry_42_col406)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[43])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[43])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[43])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[43])))
                     * (M31_524288));
                 *row[407] = carry_43_col407;
                 *sub_component_inputs.range_check_18[43] = [((carry_43_col407) + (M31_131072))];
                 *lookup_data.range_check_18_43 = [((carry_43_col407) + (M31_131072))];
                 let carry_44_col408 = (((carry_43_col407)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[44])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[44])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[44])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[44])))
                     * (M31_524288));
                 *row[408] = carry_44_col408;
                 *sub_component_inputs.range_check_18[44] = [((carry_44_col408) + (M31_131072))];
                 *lookup_data.range_check_18_44 = [((carry_44_col408) + (M31_131072))];
                 let carry_45_col409 = (((carry_44_col408)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[45])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[45])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[45])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[45])))
                     * (M31_524288));
                 *row[409] = carry_45_col409;
                 *sub_component_inputs.range_check_18[45] = [((carry_45_col409) + (M31_131072))];
                 *lookup_data.range_check_18_45 = [((carry_45_col409) + (M31_131072))];
                 let carry_46_col410 = (((carry_45_col409)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[46])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[46])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[46])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[46])))
                     * (M31_524288));
                 *row[410] = carry_46_col410;
                 *sub_component_inputs.range_check_18[46] = [((carry_46_col410) + (M31_131072))];
                 *lookup_data.range_check_18_46 = [((carry_46_col410) + (M31_131072))];
                 let carry_47_col411 = (((carry_46_col410)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[47])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[47])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[47])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[47])))
                     * (M31_524288));
                 *row[411] = carry_47_col411;
                 *sub_component_inputs.range_check_18[47] = [((carry_47_col411) + (M31_131072))];
                 *lookup_data.range_check_18_47 = [((carry_47_col411) + (M31_131072))];
                 let carry_48_col412 = (((carry_47_col411)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[48])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[48])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[48])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[48])))
                     * (M31_524288));
                 *row[412] = carry_48_col412;
                 *sub_component_inputs.range_check_18[48] = [((carry_48_col412) + (M31_131072))];
                 *lookup_data.range_check_18_48 = [((carry_48_col412) + (M31_131072))];
                 let carry_49_col413 = (((carry_48_col412)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[49])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[49])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[49])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[49])))
                     * (M31_524288));
                 *row[413] = carry_49_col413;
                 *sub_component_inputs.range_check_18[49] = [((carry_49_col413) + (M31_131072))];
                 *lookup_data.range_check_18_49 = [((carry_49_col413) + (M31_131072))];
                 let carry_50_col414 = (((carry_49_col413)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[50])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[50])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[50])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[50])))
                     * (M31_524288));
                 *row[414] = carry_50_col414;
                 *sub_component_inputs.range_check_18[50] = [((carry_50_col414) + (M31_131072))];
                 *lookup_data.range_check_18_50 = [((carry_50_col414) + (M31_131072))];
                 let carry_51_col415 = (((carry_50_col414)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[51])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[51])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[51])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[51])))
                     * (M31_524288));
                 *row[415] = carry_51_col415;
                 *sub_component_inputs.range_check_18[51] = [((carry_51_col415) + (M31_131072))];
                 *lookup_data.range_check_18_51 = [((carry_51_col415) + (M31_131072))];
                 let carry_52_col416 = (((carry_51_col415)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[52])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[52])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[52])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[52])))
                     * (M31_524288));
                 *row[416] = carry_52_col416;
                 *sub_component_inputs.range_check_18[52] = [((carry_52_col416) + (M31_131072))];
                 *lookup_data.range_check_18_52 = [((carry_52_col416) + (M31_131072))];
                 let carry_53_col417 = (((carry_52_col416)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[53])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[53])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[53])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[53])))
                     * (M31_524288));
                 *row[417] = carry_53_col417;
                 *sub_component_inputs.range_check_18[53] = [((carry_53_col417) + (M31_131072))];
                 *lookup_data.range_check_18_53 = [((carry_53_col417) + (M31_131072))];
                 let carry_54_col418 = (((carry_53_col417)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[54])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[54])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[54])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[54])))
                     * (M31_524288));
                 *row[418] = carry_54_col418;
                 *sub_component_inputs.range_check_18[54] = [((carry_54_col418) + (M31_131072))];
                 *lookup_data.range_check_18_54 = [((carry_54_col418) + (M31_131072))];
                 let carry_55_col419 = (((carry_54_col418)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[55])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[55])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[55])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[55])))
                     * (M31_524288));
                 *row[419] = carry_55_col419;
                 *sub_component_inputs.range_check_18[55] = [((carry_55_col419) + (M31_131072))];
                 *lookup_data.range_check_18_55 = [((carry_55_col419) + (M31_131072))];
                 let carry_56_col420 = (((carry_55_col419)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[56])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[56])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[56])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[56])))
                     * (M31_524288));
                 *row[420] = carry_56_col420;
                 *sub_component_inputs.range_check_18[56] = [((carry_56_col420) + (M31_131072))];
                 *lookup_data.range_check_18_56 = [((carry_56_col420) + (M31_131072))];
                 let carry_57_col421 = (((carry_56_col420)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[57])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[57])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[57])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[57])))
                     * (M31_524288));
                 *row[421] = carry_57_col421;
                 *sub_component_inputs.range_check_18[57] = [((carry_57_col421) + (M31_131072))];
                 *lookup_data.range_check_18_57 = [((carry_57_col421) + (M31_131072))];
                 let carry_58_col422 = (((carry_57_col421)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[58])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[58])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[58])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[58])))
                     * (M31_524288));
                 *row[422] = carry_58_col422;
                 *sub_component_inputs.range_check_18[58] = [((carry_58_col422) + (M31_131072))];
                 *lookup_data.range_check_18_58 = [((carry_58_col422) + (M31_131072))];
                 let carry_59_col423 = (((carry_58_col422)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[59])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[59])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[59])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[59])))
                     * (M31_524288));
                 *row[423] = carry_59_col423;
                 *sub_component_inputs.range_check_18[59] = [((carry_59_col423) + (M31_131072))];
                 *lookup_data.range_check_18_59 = [((carry_59_col423) + (M31_131072))];
                 let carry_60_col424 = (((carry_59_col423)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[60])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[60])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[60])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[60])))
                     * (M31_524288));
                 *row[424] = carry_60_col424;
                 *sub_component_inputs.range_check_18[60] = [((carry_60_col424) + (M31_131072))];
                 *lookup_data.range_check_18_60 = [((carry_60_col424) + (M31_131072))];
                 let carry_61_col425 = (((carry_60_col424)
-                    + ((double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_350[61])
-                        - (double_karatsuba_n_8_limb_max_bound_4095_output_tmp_cf8b4_368[61])))
+                    + ((double_karatsuba_b1daa_output_tmp_cf8b4_350[61])
+                        - (double_karatsuba_b1daa_output_tmp_cf8b4_368[61])))
                     * (M31_524288));
                 *row[425] = carry_61_col425;
                 *sub_component_inputs.range_check_18[61] = [((carry_61_col425) + (M31_131072))];

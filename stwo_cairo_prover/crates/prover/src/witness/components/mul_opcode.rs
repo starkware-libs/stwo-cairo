@@ -215,9 +215,9 @@ fn write_trace_simd(
     let UInt16_6 = PackedUInt16::broadcast(UInt16::from(6));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
+    let UInt32_131072 = PackedUInt32::broadcast(UInt32::from(131072));
     let UInt32_262143 = PackedUInt32::broadcast(UInt32::from(262143));
     let UInt32_511 = PackedUInt32::broadcast(UInt32::from(511));
-    let UInt32_65536 = PackedUInt32::broadcast(UInt32::from(65536));
     let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
     let enabler_col = Enabler::new(n_rows);
 
@@ -829,7 +829,7 @@ fn write_trace_simd(
 
                 // Verify Mul 252.
 
-                // Double Karatsuba N 7 Limb Max Bound 511.
+                // Double Karatsuba 1454 B.
 
                 // Single Karatsuba N 7.
 
@@ -1542,7 +1542,7 @@ fn write_trace_simd(
                     z2_tmp_42314_40[12],
                 ];
 
-                let double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44 = [
+                let double_karatsuba_1454b_output_tmp_42314_44 = [
                     single_karatsuba_n_7_output_tmp_42314_31[0],
                     single_karatsuba_n_7_output_tmp_42314_31[1],
                     single_karatsuba_n_7_output_tmp_42314_31[2],
@@ -1681,89 +1681,61 @@ fn write_trace_simd(
                 ];
 
                 let conv_tmp_42314_45 = [
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[0])
-                        - (dst_limb_0_col15)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[1])
-                        - (dst_limb_1_col16)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[2])
-                        - (dst_limb_2_col17)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[3])
-                        - (dst_limb_3_col18)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[4])
-                        - (dst_limb_4_col19)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[5])
-                        - (dst_limb_5_col20)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[6])
-                        - (dst_limb_6_col21)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[7])
-                        - (dst_limb_7_col22)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[8])
-                        - (dst_limb_8_col23)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[9])
-                        - (dst_limb_9_col24)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[10])
-                        - (dst_limb_10_col25)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[11])
-                        - (dst_limb_11_col26)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[12])
-                        - (dst_limb_12_col27)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[13])
-                        - (dst_limb_13_col28)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[14])
-                        - (dst_limb_14_col29)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[15])
-                        - (dst_limb_15_col30)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[16])
-                        - (dst_limb_16_col31)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[17])
-                        - (dst_limb_17_col32)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[18])
-                        - (dst_limb_18_col33)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[19])
-                        - (dst_limb_19_col34)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[20])
-                        - (dst_limb_20_col35)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[21])
-                        - (dst_limb_21_col36)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[22])
-                        - (dst_limb_22_col37)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[23])
-                        - (dst_limb_23_col38)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[24])
-                        - (dst_limb_24_col39)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[25])
-                        - (dst_limb_25_col40)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[26])
-                        - (dst_limb_26_col41)),
-                    ((double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[27])
-                        - (dst_limb_27_col42)),
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[28],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[29],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[30],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[31],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[32],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[33],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[34],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[35],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[36],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[37],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[38],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[39],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[40],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[41],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[42],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[43],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[44],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[45],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[46],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[47],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[48],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[49],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[50],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[51],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[52],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[53],
-                    double_karatsuba_n_7_limb_max_bound_511_output_tmp_42314_44[54],
+                    ((double_karatsuba_1454b_output_tmp_42314_44[0]) - (dst_limb_0_col15)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[1]) - (dst_limb_1_col16)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[2]) - (dst_limb_2_col17)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[3]) - (dst_limb_3_col18)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[4]) - (dst_limb_4_col19)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[5]) - (dst_limb_5_col20)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[6]) - (dst_limb_6_col21)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[7]) - (dst_limb_7_col22)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[8]) - (dst_limb_8_col23)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[9]) - (dst_limb_9_col24)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[10]) - (dst_limb_10_col25)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[11]) - (dst_limb_11_col26)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[12]) - (dst_limb_12_col27)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[13]) - (dst_limb_13_col28)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[14]) - (dst_limb_14_col29)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[15]) - (dst_limb_15_col30)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[16]) - (dst_limb_16_col31)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[17]) - (dst_limb_17_col32)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[18]) - (dst_limb_18_col33)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[19]) - (dst_limb_19_col34)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[20]) - (dst_limb_20_col35)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[21]) - (dst_limb_21_col36)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[22]) - (dst_limb_22_col37)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[23]) - (dst_limb_23_col38)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[24]) - (dst_limb_24_col39)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[25]) - (dst_limb_25_col40)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[26]) - (dst_limb_26_col41)),
+                    ((double_karatsuba_1454b_output_tmp_42314_44[27]) - (dst_limb_27_col42)),
+                    double_karatsuba_1454b_output_tmp_42314_44[28],
+                    double_karatsuba_1454b_output_tmp_42314_44[29],
+                    double_karatsuba_1454b_output_tmp_42314_44[30],
+                    double_karatsuba_1454b_output_tmp_42314_44[31],
+                    double_karatsuba_1454b_output_tmp_42314_44[32],
+                    double_karatsuba_1454b_output_tmp_42314_44[33],
+                    double_karatsuba_1454b_output_tmp_42314_44[34],
+                    double_karatsuba_1454b_output_tmp_42314_44[35],
+                    double_karatsuba_1454b_output_tmp_42314_44[36],
+                    double_karatsuba_1454b_output_tmp_42314_44[37],
+                    double_karatsuba_1454b_output_tmp_42314_44[38],
+                    double_karatsuba_1454b_output_tmp_42314_44[39],
+                    double_karatsuba_1454b_output_tmp_42314_44[40],
+                    double_karatsuba_1454b_output_tmp_42314_44[41],
+                    double_karatsuba_1454b_output_tmp_42314_44[42],
+                    double_karatsuba_1454b_output_tmp_42314_44[43],
+                    double_karatsuba_1454b_output_tmp_42314_44[44],
+                    double_karatsuba_1454b_output_tmp_42314_44[45],
+                    double_karatsuba_1454b_output_tmp_42314_44[46],
+                    double_karatsuba_1454b_output_tmp_42314_44[47],
+                    double_karatsuba_1454b_output_tmp_42314_44[48],
+                    double_karatsuba_1454b_output_tmp_42314_44[49],
+                    double_karatsuba_1454b_output_tmp_42314_44[50],
+                    double_karatsuba_1454b_output_tmp_42314_44[51],
+                    double_karatsuba_1454b_output_tmp_42314_44[52],
+                    double_karatsuba_1454b_output_tmp_42314_44[53],
+                    double_karatsuba_1454b_output_tmp_42314_44[54],
                 ];
                 let conv_mod_tmp_42314_46 = [
                     ((((M31_32) * (conv_tmp_42314_45[0])) - ((M31_4) * (conv_tmp_42314_45[21])))
@@ -1854,10 +1826,10 @@ fn write_trace_simd(
                             ((conv_mod_tmp_42314_46[1]) + (M31_134217728)),
                         )) & (UInt32_511))
                             << (UInt32_9)))
-                        + (UInt32_65536))
+                        + (UInt32_131072))
                         & (UInt32_262143));
                 let k_col101 = ((k_mod_2_18_biased_tmp_42314_47.low().as_m31())
-                    + (((k_mod_2_18_biased_tmp_42314_47.high().as_m31()) - (M31_1)) * (M31_65536)));
+                    + (((k_mod_2_18_biased_tmp_42314_47.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[101] = k_col101;
                 *sub_component_inputs.range_check_20[0] = [((k_col101) + (M31_524288))];
                 *lookup_data.range_check_20_0 = [((k_col101) + (M31_524288))];
