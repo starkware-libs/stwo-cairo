@@ -168,8 +168,8 @@ impl BuiltinsClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    verify_bitwise_xor_8_trace_generator,
                     verify_bitwise_xor_9_trace_generator,
+                    verify_bitwise_xor_8_trace_generator,
                 )
             })
             .unzip();
@@ -181,8 +181,8 @@ impl BuiltinsClaimGenerator {
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
                     range_check_12_trace_generator,
-                    range_check_18_trace_generator,
                     range_check_3_6_6_3_trace_generator,
+                    range_check_18_trace_generator,
                 )
             })
             .unzip();
@@ -193,10 +193,10 @@ impl BuiltinsClaimGenerator {
                     tree_builder,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &mut pedersen_context_trace_generator.partial_ec_mul_trace_generator,
-                    &pedersen_context_trace_generator.pedersen_points_table_trace_generator,
                     range_check_5_4_trace_generator,
                     range_check_8_trace_generator,
+                    &pedersen_context_trace_generator.pedersen_points_table_trace_generator,
+                    &mut pedersen_context_trace_generator.partial_ec_mul_trace_generator,
                 )
             })
             .unzip();
@@ -205,16 +205,16 @@ impl BuiltinsClaimGenerator {
             .map(|poseidon_builtin_trace_generator| {
                 poseidon_builtin_trace_generator.write_trace(
                     tree_builder,
-                    &mut poseidon_context_trace_generator.cube_252_trace_generator,
                     memory_address_to_id_trace_generator,
                     memory_id_to_value_trace_generator,
-                    &mut poseidon_context_trace_generator
-                        .poseidon_3_partial_rounds_chain_trace_generator,
                     &mut poseidon_context_trace_generator.poseidon_full_round_chain_trace_generator,
                     &mut poseidon_context_trace_generator.range_check_252_width_27_trace_generator,
+                    &mut poseidon_context_trace_generator.cube_252_trace_generator,
                     range_check_3_3_3_3_3_trace_generator,
-                    range_check_4_4_trace_generator,
                     range_check_4_4_4_4_trace_generator,
+                    range_check_4_4_trace_generator,
+                    &mut poseidon_context_trace_generator
+                        .poseidon_3_partial_rounds_chain_trace_generator,
                 )
             })
             .unzip();

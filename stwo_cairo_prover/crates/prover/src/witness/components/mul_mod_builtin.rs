@@ -28,8 +28,8 @@ impl ClaimGenerator {
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_12_state: &range_check_12::ClaimGenerator,
-        range_check_18_state: &range_check_18::ClaimGenerator,
         range_check_3_6_6_3_state: &range_check_3_6_6_3::ClaimGenerator,
+        range_check_18_state: &range_check_18::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
@@ -39,8 +39,8 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
             range_check_12_state,
-            range_check_18_state,
             range_check_3_6_6_3_state,
+            range_check_18_state,
         );
         sub_component_inputs
             .memory_address_to_id
@@ -106,8 +106,8 @@ fn write_trace_simd(
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     range_check_12_state: &range_check_12::ClaimGenerator,
-    range_check_18_state: &range_check_18::ClaimGenerator,
     range_check_3_6_6_3_state: &range_check_3_6_6_3::ClaimGenerator,
+    range_check_18_state: &range_check_18::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
