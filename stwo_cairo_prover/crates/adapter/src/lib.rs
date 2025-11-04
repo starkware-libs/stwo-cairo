@@ -90,34 +90,35 @@ pub struct MemoryTablesSizes {
 
 /// Execution resources required to compute trace size.
 #[derive(Debug, Serialize, Deserialize)]
+#[allow(non_snake_case)]
 pub struct ExecutionResources {
     /// Map opcode to the number of invocations.
-    pub opcode_instance_counts: HashMap<String, usize>,
+    pub Opcode: HashMap<String, usize>,
     /// Map builtin to the number of invocations.
-    pub builtin_instance_counts: HashMap<BuiltinName, usize>,
+    pub Builtin: HashMap<BuiltinName, usize>,
     /// Sizes of memory tables.
-    pub memory_tables_sizes: MemoryTablesSizes,
+    pub Memory: MemoryTablesSizes,
     /// Number of verify instructions, corresponds to the number of unique pc values.
-    pub verify_instructions_count: usize,
+    pub verify_instruction: usize,
 }
 
 impl ExecutionResources {
     /// Create execution resources from prover input.
     pub fn from_prover_input(input: &ProverInput) -> Self {
         ExecutionResources {
-            opcode_instance_counts: input
+            Opcode: input
                 .state_transitions
                 .casm_states_by_opcode
                 .counts()
                 .into_iter()
                 .collect(),
-            builtin_instance_counts: input.builtin_segments.get_counts(),
-            memory_tables_sizes: MemoryTablesSizes {
+            Builtin: input.builtin_segments.get_counts(),
+            Memory: MemoryTablesSizes {
                 address_to_id: input.memory.address_to_id.len(),
                 id_to_big: input.memory.f252_values.len(),
                 id_to_small: input.memory.small_values.len(),
             },
-            verify_instructions_count: input.inst_cache.len(),
+            verify_instruction: input.inst_cache.len(),
         }
     }
 }
