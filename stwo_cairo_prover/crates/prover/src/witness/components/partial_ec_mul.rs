@@ -15,19 +15,24 @@ pub type PackedInputType = (
     (PackedM31, [PackedM31; 14], [PackedFelt252; 2]),
 );
 
+#[derive(Uninitialized, IterMut, ParIterMut, Default)]
+pub struct PackedInputTypeVec {
+    pub vec: Vec<PackedInputType>,
+}
+
 #[derive(Default)]
 pub struct ClaimGenerator {
-    pub packed_inputs: Vec<PackedInputType>,
+    pub packed_inputs: PackedInputTypeVec,
 }
 impl ClaimGenerator {
     pub fn new() -> Self {
         Self {
-            packed_inputs: vec![],
+            packed_inputs: PackedInputTypeVec { vec: vec![] },
         }
     }
 
     pub fn is_empty(&self) -> bool {
-        self.packed_inputs.is_empty()
+        self.packed_inputs.vec.is_empty()
     }
 
     pub fn write_trace(
@@ -51,13 +56,14 @@ impl ClaimGenerator {
         range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
         range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
-        assert!(!self.packed_inputs.is_empty());
-        let n_vec_rows = self.packed_inputs.len();
+        assert!(!self.packed_inputs.vec.is_empty());
+        let n_vec_rows = self.packed_inputs.vec.len();
         let n_rows = n_vec_rows * N_LANES;
         let packed_size = n_vec_rows.next_power_of_two();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
         self.packed_inputs
-            .resize(packed_size, *self.packed_inputs.first().unwrap());
+            .vec
+            .resize(packed_size, *self.packed_inputs.vec.first().unwrap());
 
         // Decreasing this value may cause a stack-overflow during witness generation.
         // NOTE: This is not autogened, when updating the code, re-add this.
@@ -69,7 +75,7 @@ impl ClaimGenerator {
             .unwrap();
         let (trace, lookup_data, sub_component_inputs) = pool.install(|| {
             write_trace_simd(
-                self.packed_inputs,
+                &mut self.packed_inputs,
                 n_rows,
                 pedersen_points_table_state,
                 range_check_19_state,
@@ -205,7 +211,7 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
-        self.packed_inputs.extend(inputs);
+        self.packed_inputs.vec.extend(inputs);
     }
 }
 
@@ -235,7 +241,7 @@ struct SubComponentInputs {
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
 fn write_trace_simd(
-    inputs: Vec<PackedInputType>,
+    inputs: &mut PackedInputTypeVec,
     n_rows: usize,
     pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
     range_check_19_state: &range_check_19::ClaimGenerator,
@@ -259,7 +265,7 @@ fn write_trace_simd(
     LookupData,
     SubComponentInputs,
 ) {
-    let log_n_packed_rows = inputs.len().ilog2();
+    let log_n_packed_rows = inputs.vec.len().ilog2();
     let log_size = log_n_packed_rows + LOG_N_LANES;
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
@@ -293,12 +299,13 @@ fn write_trace_simd(
         trace.par_iter_mut(),
         lookup_data.par_iter_mut(),
         sub_component_inputs.par_iter_mut(),
-        inputs.into_par_iter(),
+        inputs.par_iter_mut(),
     )
         .into_par_iter()
         .enumerate()
         .for_each(
             |(row_index, (mut row, lookup_data, sub_component_inputs, partial_ec_mul_input))| {
+                let partial_ec_mul_input = partial_ec_mul_input.vec;
                 let input_limb_0_col0 = partial_ec_mul_input.0;
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = partial_ec_mul_input.1;
