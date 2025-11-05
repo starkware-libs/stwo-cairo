@@ -1,6 +1,7 @@
 use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
 use components::partial_ec_mul::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
 use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
+use components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
 use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
 use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
 use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
@@ -30,6 +31,7 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 
 #[derive(Drop, Serde)]
 pub struct PoseidonClaim {
+    pub poseidon_aggregator: components::poseidon_aggregator::Claim,
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Claim,
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::Claim,
     pub cube_252: components::cube_252::Claim,
@@ -39,6 +41,7 @@ pub struct PoseidonClaim {
 
 pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
     fn mix_into(self: @PoseidonClaim, ref channel: Channel) {
+        self.poseidon_aggregator.mix_into(ref channel);
         self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
         self.poseidon_full_round_chain.mix_into(ref channel);
         self.cube_252.mix_into(ref channel);
@@ -49,6 +52,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
     fn log_sizes(self: @PoseidonClaim) -> TreeArray<Span<u32>> {
         utils::tree_array_concat_cols(
             array![
+                self.poseidon_aggregator.log_sizes(),
                 self.poseidon_3_partial_rounds_chain.log_sizes(),
                 self.poseidon_full_round_chain.log_sizes(), self.cube_252.log_sizes(),
                 self.poseidon_round_keys.log_sizes(), self.range_check_252_width_27.log_sizes(),
@@ -58,6 +62,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
 
     fn accumulate_relation_uses(self: @PoseidonClaim, ref relation_uses: RelationUsesDict) {
         let PoseidonClaim {
+            poseidon_aggregator,
             poseidon_3_partial_rounds_chain,
             poseidon_full_round_chain,
             cube_252,
@@ -67,6 +72,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
 
         // NOTE: The following components do not USE relations:
         // - poseidon_round_keys
+        poseidon_aggregator.accumulate_relation_uses(ref relation_uses);
         poseidon_3_partial_rounds_chain.accumulate_relation_uses(ref relation_uses);
         poseidon_full_round_chain.accumulate_relation_uses(ref relation_uses);
         cube_252.accumulate_relation_uses(ref relation_uses);
@@ -76,6 +82,7 @@ pub impl PoseidonClaimImpl of ClaimTrait<PoseidonClaim> {
 
 #[derive(Drop, Serde)]
 pub struct PoseidonInteractionClaim {
+    pub poseidon_aggregator: components::poseidon_aggregator::InteractionClaim,
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::InteractionClaim,
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::InteractionClaim,
     pub cube_252: components::cube_252::InteractionClaim,
@@ -86,6 +93,7 @@ pub struct PoseidonInteractionClaim {
 #[generate_trait]
 pub impl PoseidonInteractionClaimImpl of PoseidonInteractionClaimTrait {
     fn mix_into(self: @PoseidonInteractionClaim, ref channel: Channel) {
+        self.poseidon_aggregator.mix_into(ref channel);
         self.poseidon_3_partial_rounds_chain.mix_into(ref channel);
         self.poseidon_full_round_chain.mix_into(ref channel);
         self.cube_252.mix_into(ref channel);
@@ -95,6 +103,7 @@ pub impl PoseidonInteractionClaimImpl of PoseidonInteractionClaimTrait {
 
     fn sum(self: @PoseidonInteractionClaim) -> QM31 {
         let mut sum = Zero::zero();
+        sum += *self.poseidon_aggregator.claimed_sum;
         sum += *self.poseidon_3_partial_rounds_chain.claimed_sum;
         sum += *self.poseidon_full_round_chain.claimed_sum;
         sum += *self.cube_252.claimed_sum;
@@ -227,6 +236,7 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 #[derive(Drop)]
 pub struct PoseidonComponents {
+    pub poseidon_aggregator: components::poseidon_aggregator::Component,
     pub poseidon_3_partial_rounds_chain: components::poseidon_3_partial_rounds_chain::Component,
     pub poseidon_full_round_chain: components::poseidon_full_round_chain::Component,
     pub cube_252: components::cube_252::Component,
@@ -242,6 +252,10 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @PoseidonInteractionClaim,
     ) -> PoseidonComponents {
+        let poseidon_aggregator_component = components::poseidon_aggregator::NewComponentImpl::new(
+            claim.poseidon_aggregator, interaction_claim.poseidon_aggregator, interaction_elements,
+        );
+
         let poseidon_3_partial_rounds_chain_component =
             components::poseidon_3_partial_rounds_chain::NewComponentImpl::new(
             claim.poseidon_3_partial_rounds_chain,
@@ -272,6 +286,7 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         );
 
         PoseidonComponents {
+            poseidon_aggregator: poseidon_aggregator_component,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
             poseidon_full_round_chain: poseidon_full_round_chain_component,
             cube_252: cube_252_component,
@@ -287,6 +302,14 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
+        self
+            .poseidon_aggregator
+            .mask_points(
+                ref preprocessed_column_set,
+                ref trace_mask_points,
+                ref interaction_trace_mask_points,
+                point,
+            );
         self
             .poseidon_3_partial_rounds_chain
             .mask_points(
@@ -338,6 +361,16 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
+        self
+            .poseidon_aggregator
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
         self
             .poseidon_3_partial_rounds_chain
             .evaluate_constraints_at_point(
