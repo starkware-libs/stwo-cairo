@@ -80,6 +80,8 @@ pub type PoseidonFullRoundChainElements = LookupElements<32>;
 
 pub type Poseidon3PartialRoundsChainElements = LookupElements<42>;
 
+pub type PoseidonAggregatorElements = LookupElements<6>;
+
 pub type PoseidonRoundKeysElements = LookupElements<31>;
 
 pub type BlakeGElements = LookupElements<20>;
@@ -295,6 +297,7 @@ pub struct CairoInteractionElements {
     pub poseidon_full_round_chain: PoseidonFullRoundChainElements,
     pub poseidon_3_partial_rounds_chain: Poseidon3PartialRoundsChainElements,
     pub cube_252: Cube252Elements,
+    pub poseidon_aggregator: PoseidonAggregatorElements,
     pub poseidon_round_keys: PoseidonRoundKeysElements,
     pub range_check_252_width_27: RangeCheck252Width27Elements,
     pub memory_address_to_id: MemoryAddressToIdElements,
@@ -321,6 +324,7 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             poseidon_3_partial_rounds_chain: LookupElementsImpl::draw(ref channel),
             poseidon_full_round_chain: LookupElementsImpl::draw(ref channel),
             cube_252: LookupElementsImpl::draw(ref channel),
+            poseidon_aggregator: LookupElementsImpl::draw(ref channel),
             poseidon_round_keys: LookupElementsImpl::draw(ref channel),
             range_check_252_width_27: LookupElementsImpl::draw(ref channel),
             partial_ec_mul: LookupElementsImpl::draw(ref channel),
