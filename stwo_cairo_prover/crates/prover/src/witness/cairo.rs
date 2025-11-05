@@ -265,21 +265,19 @@ impl CairoClaimGenerator {
             &self.range_checks_trace_generator.rc_6_trace_generator,
             &self.range_checks_trace_generator.rc_12_trace_generator,
             &self.range_checks_trace_generator.rc_18_trace_generator,
-            &self.range_checks_trace_generator.rc_4_4_trace_generator,
             &self.range_checks_trace_generator.rc_3_6_6_3_trace_generator,
-            &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
-            &self
-                .range_checks_trace_generator
-                .rc_3_3_3_3_3_trace_generator,
             &self.verify_bitwise_xor_8_trace_generator,
             &self.verify_bitwise_xor_9_trace_generator,
         );
         let (pedersen_context_claim, pedersen_context_interaction_gen) = self
             .pedersen_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
-        let (poseidon_context_claim, poseidon_context_interaction_gen) = self
-            .poseidon_context_trace_generator
-            .write_trace(tree_builder, &self.range_checks_trace_generator);
+        let (poseidon_context_claim, poseidon_context_interaction_gen) =
+            self.poseidon_context_trace_generator.write_trace(
+                tree_builder,
+                &self.memory_id_to_value_trace_generator,
+                &self.range_checks_trace_generator,
+            );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
