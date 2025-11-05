@@ -29,6 +29,7 @@ pub mod partial_ec_mul;
 pub mod pedersen_builtin;
 pub mod pedersen_points_table;
 pub mod poseidon_3_partial_rounds_chain;
+pub mod poseidon_aggregator;
 pub mod poseidon_builtin;
 pub mod poseidon_full_round_chain;
 pub mod poseidon_round_keys;

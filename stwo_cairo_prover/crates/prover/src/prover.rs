@@ -131,6 +131,7 @@ where
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
+    
     Ok(CairoProof {
         claim,
         interaction_pow,
