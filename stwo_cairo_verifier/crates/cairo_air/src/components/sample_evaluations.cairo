@@ -1,4 +1,4 @@
-// AIR version 392b2f7c
+// AIR version f77ac272
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -124,9 +124,13 @@ pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1497275374 }, M31 { inner: 1553397994 }, M31 { inner: 270550909 },
     M31 { inner: 1898430073 },
 ];
+pub const POSEIDON_AGGREGATOR_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 207105312 }, M31 { inner: 932192942 }, M31 { inner: 1069558246 },
+    M31 { inner: 88237394 },
+];
 pub const POSEIDON_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1177591592 }, M31 { inner: 1985491762 }, M31 { inner: 103926390 },
-    M31 { inner: 1266541087 },
+    M31 { inner: 1422272293 }, M31 { inner: 243050144 }, M31 { inner: 453381982 },
+    M31 { inner: 1052561039 },
 ];
 pub const POSEIDON_FULL_ROUND_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1543437538 }, M31 { inner: 1586170267 }, M31 { inner: 1772280113 },
