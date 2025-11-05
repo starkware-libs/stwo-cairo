@@ -282,6 +282,7 @@ fn cairo_relation_entries(
     }
 
     if let Some(cairo_air::poseidon::air::Components {
+        poseidon_aggregator,
         poseidon_3_partial_rounds_chain,
         poseidon_full_round_chain,
         cube_252,
@@ -290,6 +291,7 @@ fn cairo_relation_entries(
     }) = &poseidon_context.components
     {
         entries.extend(chain!(
+            add_to_relation_entries(poseidon_aggregator, trace),
             add_to_relation_entries(poseidon_3_partial_rounds_chain, trace),
             add_to_relation_entries(poseidon_full_round_chain, trace),
             add_to_relation_entries(cube_252, trace),
