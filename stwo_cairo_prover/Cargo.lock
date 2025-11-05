@@ -3414,6 +3414,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "cairo-air",
+ "dashmap",
  "dev-utils",
  "hex",
  "itertools 0.12.1",
