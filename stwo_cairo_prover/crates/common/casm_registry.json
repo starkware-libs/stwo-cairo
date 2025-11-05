@@ -1,5 +1,5 @@
 {
-  "air_version": "1db56b01",
+  "air_version": "dca30991-dirty",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -867,11 +867,10 @@
       "max_instances_uses_limit": 67108863,
       "max_instances_rows_limit": 67108864
     },
-    "poseidon_builtin": {
-      "trace_type": "Builtin",
+    "poseidon_aggregator": {
+      "trace_type": "Component",
       "num_state_cols": 341,
       "use_lookup_cols": {
-        "MemoryAddressToId": 6,
         "MemoryIdToBig": 6,
         "PoseidonFullRoundChain": 2,
         "RangeCheck252Width27": 2,
@@ -883,10 +882,10 @@
       },
       "yield_lookup_cols": {
         "PoseidonFullRoundChain": 2,
-        "Poseidon3PartialRoundsChain": 1
+        "Poseidon3PartialRoundsChain": 1,
+        "PoseidonAggregator": 1
       },
       "lookup_rows": {
-        "memory_address_to_id": 6,
         "memory_id_to_big": 6,
         "poseidon_full_round_chain": 8,
         "range_check_252_width_27": 2,
@@ -896,9 +895,57 @@
         "range_check_4_4": 3,
         "poseidon_3_partial_rounds_chain": 27
       },
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 398,
+      "trace_cells_upper_bound": 70160,
+      "uses_upper_bound": {
+        "range_check_9_9": 1118,
+        "range_check_9_9_b": 1118,
+        "range_check_9_9_c": 1118,
+        "range_check_9_9_d": 1118,
+        "range_check_9_9_e": 1118,
+        "range_check_9_9_f": 988,
+        "range_check_9_9_g": 494,
+        "range_check_9_9_h": 494,
+        "range_check_20": 1296,
+        "range_check_20_b": 1296,
+        "range_check_20_c": 1296,
+        "range_check_20_d": 1296,
+        "range_check_20_e": 972,
+        "range_check_20_f": 972,
+        "range_check_20_g": 972,
+        "range_check_20_h": 972,
+        "poseidon_round_keys": 40,
+        "range_check_3_3_3_3_3": 50,
+        "range_check_18": 910,
+        "range_check_18_b": 260,
+        "range_check_4_4_4_4": 198,
+        "range_check_4_4": 99
+      },
+      "rows_upper_bound": {
+        "poseidon_full_round_chain": 8,
+        "cube_252": 122,
+        "range_check_252_width_27": 98,
+        "poseidon_3_partial_rounds_chain": 27
+      },
+      "max_instances_uses_limit": 1657008,
+      "max_instances_rows_limit": 2097152
+    },
+    "poseidon_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 6,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 6,
+        "PoseidonAggregator": 1
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 6,
+        "poseidon_aggregator": 1
+      },
       "padding_type": "None",
-      "total_num_trace_cols": 409,
-      "trace_cells_upper_bound": 70171,
+      "total_num_trace_cols": 22,
+      "trace_cells_upper_bound": 70182,
       "uses_upper_bound": {
         "memory_address_to_id": 6,
         "range_check_9_9": 1118,
@@ -925,6 +972,7 @@
         "range_check_4_4": 99
       },
       "rows_upper_bound": {
+        "poseidon_aggregator": 1,
         "poseidon_full_round_chain": 8,
         "cube_252": 122,
         "range_check_252_width_27": 98,

@@ -287,6 +287,7 @@ fn cairo_relation_entries(
         cube_252,
         poseidon_round_keys,
         range_check_252_width_27,
+        poseidon_aggregator,
     }) = &poseidon_context.components
     {
         entries.extend(chain!(
@@ -295,6 +296,7 @@ fn cairo_relation_entries(
             add_to_relation_entries(cube_252, trace),
             add_to_relation_entries(poseidon_round_keys, trace),
             add_to_relation_entries(range_check_252_width_27, trace),
+            add_to_relation_entries(poseidon_aggregator, trace),
         ));
     }
 
