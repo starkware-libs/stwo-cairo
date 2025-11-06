@@ -1,3 +1,4 @@
+use core::num::traits::Pow;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
 use crate::fields::qm31::{QM31, QM31Trait, QM31_EXTENSION_DEGREE};
@@ -8,6 +9,9 @@ use crate::pcs::verifier::{
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
 use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+
+const LOG_COMPOSITION_SPLIT_FACTOR: u32 = 1;
+const COMPOSITION_SPLIT_FACTOR: u32 = 2_u32.pow(LOG_COMPOSITION_SPLIT_FACTOR);
 
 /// Arithmetic Intermediate Representation (AIR).
 ///
@@ -55,11 +59,17 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
     let composition_random_coeff = channel.draw_secure_felt();
 
-    // Read composition polynomial commitment.
+    let composition_log_size = air.composition_log_degree_bound();
+
+    // Read composition polynomial commitment, there are 8 columns, 4 columns for left,
+    // and 4 columns for right, where composition(z) = left(z) + pi^{log_size-2} * right(z).
     commitment_scheme
         .commit(
             composition_commitment,
-            [air.composition_log_degree_bound(); QM31_EXTENSION_DEGREE].span(),
+            [
+                composition_log_size - LOG_COMPOSITION_SPLIT_FACTOR
+            ; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE]
+                .span(),
             ref channel,
             commitment_scheme_proof.config.fri_config.log_blowup_factor,
         );
@@ -69,12 +79,20 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     // Get mask sample points relative to OOD point.
     let mut sample_points = air.mask_points(ood_point);
+
     // Add the composition polynomial mask points.
-    sample_points.append(ArrayImpl::new_repeated(n: QM31_EXTENSION_DEGREE, v: array![ood_point]));
+    sample_points
+        .append(
+            ArrayImpl::new_repeated(
+                n: COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE, v: array![ood_point],
+            ),
+        );
 
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
-    let composition_oods_eval = try_extract_composition_eval(sampled_oods_values)
+    let composition_oods_eval = try_extract_composition_eval(
+        sampled_oods_values, ood_point, composition_log_size,
+    )
         .unwrap_or_else(
             || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
         );
@@ -92,16 +110,41 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel);
 }
 
-/// Attempts to extract the composition trace evaluation from the mask.
+fn circle_double_x(x: QM31) -> QM31 {
+    let sqx = x * x;
+    sqx + sqx - core::num::traits::One::one()
+}
+fn repeated_circle_double_x(x: QM31, n: u32) -> QM31 {
+    let mut res = x;
+    for _ in 0..n {
+        res = circle_double_x(res);
+    }
+    res
+}
+
+/// Attempts to extract and compute the composition trace evaluation from the mask.
 /// Returns `None` if the mask does not match the expected structure.
-fn try_extract_composition_eval(mask: TreeSpan<ColumnSpan<Span<QM31>>>) -> Option<QM31> {
+fn try_extract_composition_eval(
+    mask: TreeSpan<ColumnSpan<Span<QM31>>>,
+    oods_point: CirclePoint<QM31>,
+    composition_log_size: u32,
+) -> Option<QM31> {
     let cols = *mask.last()?;
-    let [c0, c1, c2, c3] = (*cols.try_into()?).unbox();
+    let [c0, c1, c2, c3, c4, c5, c6, c7] = (*cols.try_into()?).unbox();
     let [v0] = (*c0.try_into()?).unbox();
     let [v1] = (*c1.try_into()?).unbox();
     let [v2] = (*c2.try_into()?).unbox();
     let [v3] = (*c3.try_into()?).unbox();
-    Some(QM31Trait::from_partial_evals([v0, v1, v2, v3]))
+    let [v4] = (*c4.try_into()?).unbox();
+    let [v5] = (*c5.try_into()?).unbox();
+    let [v6] = (*c6.try_into()?).unbox();
+    let [v7] = (*c7.try_into()?).unbox();
+
+    let [left, right] = [
+        QM31Trait::from_partial_evals([v0, v1, v2, v3]),
+        QM31Trait::from_partial_evals([v4, v5, v6, v7]),
+    ];
+    Some(left + repeated_circle_double_x(x: oods_point.x, n: composition_log_size - 2) * right)
 }
 
 #[derive(Drop, Serde)]
