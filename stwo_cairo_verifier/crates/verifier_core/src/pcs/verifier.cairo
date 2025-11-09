@@ -4,7 +4,7 @@ use crate::circle::CirclePoint;
 use crate::fields::m31::M31;
 use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierTrait};
-use crate::pcs::quotients::{PointSample, fri_answers};
+use crate::pcs::quotients::fri_answers;
 use crate::utils::{
     ArrayImpl, ColumnsIndicesByDegreeBound, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl,
     group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree,
@@ -12,7 +12,7 @@ use crate::utils::{
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 use crate::verifier::VerificationError;
-use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan, queries};
+use crate::{ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
 
 /// Sanity check that the proof of work is not negligible.
@@ -112,7 +112,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     /// to that column.
     fn verify_values(
         self: CommitmentSchemeVerifier,
-        sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
+        oods_point: CirclePoint<QM31>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) {
@@ -168,12 +168,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         }
 
         // Answer FRI queries.
-        let samples = zip_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
             column_indices_per_tree_by_degree_bound,
             fri_config.log_blowup_factor,
-            samples,
+            oods_point,
+            sampled_values,
             random_coeff,
             query_positions_by_log_size,
             queried_values_per_tree.span(),
@@ -226,36 +226,4 @@ fn get_column_log_degree_bounds(
     }
 
     degree_bounds
-}
-
-
-/// Given sampled points and values by column per tree, zips them into samples by column per tree.
-#[inline]
-fn zip_samples(
-    sampled_points_by_column_per_tree: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
-    sampled_values_by_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
-) -> TreeSpan<ColumnSpan<Span<PointSample>>> {
-    let mut samples_by_column_per_tree = array![];
-    for (points_by_column, values_by_column) in zip_eq(
-        sampled_points_by_column_per_tree, sampled_values_by_column_per_tree,
-    ) {
-        let mut samples_by_column: Array<Span<PointSample>> = array![];
-        for (points, values) in zip_eq(points_by_column, *values_by_column) {
-            samples_by_column
-                .append(
-                    zip_eq(points, *values)
-                        .map(
-                            |tuple: (CirclePoint<QM31>, @QM31)| {
-                                let (point, value) = tuple;
-                                PointSample { point, value: *value }
-                            },
-                        )
-                        .collect::<Array<PointSample>>()
-                        .span(),
-                );
-        }
-        samples_by_column_per_tree.append(samples_by_column.span());
-    }
-
-    samples_by_column_per_tree.span()
 }
