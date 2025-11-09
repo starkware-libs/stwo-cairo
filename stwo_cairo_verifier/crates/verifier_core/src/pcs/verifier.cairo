@@ -112,7 +112,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     /// to that column.
     fn verify_values(
         self: CommitmentSchemeVerifier,
-        sampled_points: TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>,
+        oods_point: CirclePoint<QM31>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
     ) {
@@ -165,12 +165,12 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         }
 
         // Answer FRI queries.
-        let samples = zip_samples(sampled_points, sampled_values);
 
         let fri_answers = fri_answers(
             column_indices_per_tree_by_degree_bound,
             fri_config.log_blowup_factor,
-            samples,
+            oods_point,
+            sampled_values,
             random_coeff,
             query_positions_by_log_size,
             queried_values_per_tree.span(),

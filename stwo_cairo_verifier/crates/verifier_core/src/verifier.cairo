@@ -79,17 +79,6 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Draw OOD point.
     let ood_point = channel.get_random_point();
 
-    // Get mask sample points relative to OOD point.
-    let mut sample_points = air.mask_points(ood_point);
-
-    // Add the composition polynomial mask points.
-    sample_points
-        .append(
-            ArrayImpl::new_repeated(
-                n: COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE, v: array![ood_point],
-            ),
-        );
-
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = try_extract_composition_eval(
@@ -109,7 +98,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         VerificationError::OodsNotMatching,
     );
 
-    commitment_scheme.verify_values(sample_points, commitment_scheme_proof, ref channel);
+    commitment_scheme.verify_values(ood_point, commitment_scheme_proof, ref channel);
 }
 
 fn circle_double_x(x: QM31) -> QM31 {

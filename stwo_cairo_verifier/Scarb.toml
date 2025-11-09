@@ -12,6 +12,7 @@ members = [
 [workspace.tool.cairo-lint]
 manual_assert = false
 double_parens = false
+ifs_same_cond = false
 
 [cairo]
 enable-gas = false
