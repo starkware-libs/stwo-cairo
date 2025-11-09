@@ -40,24 +40,11 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             verify_instruction_state,
         );
-        sub_component_inputs
-            .verify_instruction
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
-            });
+        sub_component_inputs.iter().for_each(|inputs| {
+            verify_instruction_state.add_packed_inputs(inputs.verify_instruction.as_ref());
+            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
+            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
+        });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -71,11 +58,19 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct SubComponentInputs {
-    verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 3],
-    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
+type SubComponentInputs = Vec<SubComponentInputsPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
+    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct SubComponentInputsPerRow {
+    verify_instruction: [verify_instruction::PackedInputType; 1],
+    memory_address_to_id: [memory_address_to_id::PackedInputType; 3],
+    memory_id_to_big: [memory_id_to_big::PackedInputType; 3],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -99,7 +94,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_n_packed_rows),
+            uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
 
@@ -240,7 +235,7 @@ fn write_trace_simd(
                         & (UInt16_1));
                 let ap_update_add_1_col10 = ap_update_add_1_tmp_756b7_10.as_m31();
                 *row[10] = ap_update_add_1_col10;
-                *sub_component_inputs.verify_instruction[0] = (
+                sub_component_inputs.verify_instruction[0] = (
                     input_pc_col0,
                     [offset0_col3, offset1_col4, offset2_col5],
                     [
@@ -314,7 +309,7 @@ fn write_trace_simd(
                     );
                 let dst_id_col14 = memory_address_to_id_value_tmp_756b7_12;
                 *row[14] = dst_id_col14;
-                *sub_component_inputs.memory_address_to_id[0] =
+                sub_component_inputs.memory_address_to_id[0] =
                     ((mem_dst_base_col11) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[0]));
                 *lookup_data.memory_address_to_id_0 = [
                     ((mem_dst_base_col11) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[0])),
@@ -355,7 +350,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col21 = partial_limb_msb_tmp_756b7_19.as_m31();
                 *row[21] = partial_limb_msb_col21;
 
-                *sub_component_inputs.memory_id_to_big[0] = dst_id_col14;
+                sub_component_inputs.memory_id_to_big[0] = dst_id_col14;
                 *lookup_data.memory_id_to_big_0 = [
                     dst_id_col14,
                     dst_limb_0_col17,
@@ -406,7 +401,7 @@ fn write_trace_simd(
                     );
                 let op0_id_col22 = memory_address_to_id_value_tmp_756b7_22;
                 *row[22] = op0_id_col22;
-                *sub_component_inputs.memory_address_to_id[1] =
+                sub_component_inputs.memory_address_to_id[1] =
                     ((mem0_base_col12) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[1]));
                 *lookup_data.memory_address_to_id_1 = [
                     ((mem0_base_col12) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[1])),
@@ -447,7 +442,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col29 = partial_limb_msb_tmp_756b7_29.as_m31();
                 *row[29] = partial_limb_msb_col29;
 
-                *sub_component_inputs.memory_id_to_big[1] = op0_id_col22;
+                sub_component_inputs.memory_id_to_big[1] = op0_id_col22;
                 *lookup_data.memory_id_to_big_1 = [
                     op0_id_col22,
                     op0_limb_0_col25,
@@ -498,7 +493,7 @@ fn write_trace_simd(
                     );
                 let op1_id_col30 = memory_address_to_id_value_tmp_756b7_32;
                 *row[30] = op1_id_col30;
-                *sub_component_inputs.memory_address_to_id[2] =
+                sub_component_inputs.memory_address_to_id[2] =
                     ((mem1_base_col13) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[2]));
                 *lookup_data.memory_address_to_id_2 = [
                     ((mem1_base_col13) + (decode_instruction_bc3cd_output_tmp_756b7_11.0[2])),
@@ -539,7 +534,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col37 = partial_limb_msb_tmp_756b7_39.as_m31();
                 *row[37] = partial_limb_msb_col37;
 
-                *sub_component_inputs.memory_id_to_big[2] = op1_id_col30;
+                sub_component_inputs.memory_id_to_big[2] = op1_id_col30;
                 *lookup_data.memory_id_to_big_2 = [
                     op1_id_col30,
                     op1_limb_0_col33,

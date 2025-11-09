@@ -46,42 +46,14 @@ impl ClaimGenerator {
             pedersen_points_table_state,
             partial_ec_mul_state,
         );
-        sub_component_inputs
-            .range_check_5_4
-            .iter()
-            .for_each(|inputs| {
-                range_check_5_4_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .range_check_8
-            .iter()
-            .for_each(|inputs| {
-                range_check_8_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .pedersen_points_table
-            .iter()
-            .for_each(|inputs| {
-                pedersen_points_table_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .partial_ec_mul
-            .iter()
-            .for_each(|inputs| {
-                partial_ec_mul_state.add_packed_inputs(inputs);
-            });
+        sub_component_inputs.iter().for_each(|inputs| {
+            range_check_5_4_state.add_packed_inputs(inputs.range_check_5_4.as_ref());
+            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
+            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
+            range_check_8_state.add_packed_inputs(inputs.range_check_8.as_ref());
+            pedersen_points_table_state.add_packed_inputs(inputs.pedersen_points_table.as_ref());
+            partial_ec_mul_state.add_packed_inputs(inputs.partial_ec_mul.as_ref());
+        });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -97,14 +69,22 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct SubComponentInputs {
-    range_check_5_4: [Vec<range_check_5_4::PackedInputType>; 2],
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 3],
-    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
-    range_check_8: [Vec<range_check_8::PackedInputType>; 4],
-    pedersen_points_table: [Vec<pedersen_points_table::PackedInputType>; 1],
-    partial_ec_mul: [Vec<partial_ec_mul::PackedInputType>; 28],
+type SubComponentInputs = Vec<SubComponentInputsPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
+    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct SubComponentInputsPerRow {
+    range_check_5_4: [range_check_5_4::PackedInputType; 2],
+    memory_address_to_id: [memory_address_to_id::PackedInputType; 3],
+    memory_id_to_big: [memory_id_to_big::PackedInputType; 3],
+    range_check_8: [range_check_8::PackedInputType; 4],
+    pedersen_points_table: [pedersen_points_table::PackedInputType; 1],
+    partial_ec_mul: [partial_ec_mul::PackedInputType; 28],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -130,7 +110,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_n_packed_rows),
+            uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
 
@@ -256,7 +236,7 @@ fn write_trace_simd(
                         >> (UInt16_5));
                 let ms_limb_high_col28 = ms_limb_high_tmp_d00c6_4.as_m31();
                 *row[28] = ms_limb_high_col28;
-                *sub_component_inputs.range_check_5_4[0] = [ms_limb_low_col27, ms_limb_high_col28];
+                sub_component_inputs.range_check_5_4[0] = [ms_limb_low_col27, ms_limb_high_col28];
                 *lookup_data.range_check_5_4_0 = [ms_limb_low_col27, ms_limb_high_col28];
 
                 // Mem Verify.
@@ -267,11 +247,11 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(instance_addr_tmp_d00c6_0);
                 let pedersen_a_id_col29 = memory_address_to_id_value_tmp_d00c6_5;
                 *row[29] = pedersen_a_id_col29;
-                *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_d00c6_0;
+                sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_d00c6_0;
                 *lookup_data.memory_address_to_id_0 =
                     [instance_addr_tmp_d00c6_0, pedersen_a_id_col29];
 
-                *sub_component_inputs.memory_id_to_big[0] = pedersen_a_id_col29;
+                sub_component_inputs.memory_id_to_big[0] = pedersen_a_id_col29;
                 *lookup_data.memory_id_to_big_0 = [
                     pedersen_a_id_col29,
                     value_limb_0_col0,
@@ -440,7 +420,7 @@ fn write_trace_simd(
                         >> (UInt16_5));
                 let ms_limb_high_col58 = ms_limb_high_tmp_d00c6_11.as_m31();
                 *row[58] = ms_limb_high_col58;
-                *sub_component_inputs.range_check_5_4[1] = [ms_limb_low_col57, ms_limb_high_col58];
+                sub_component_inputs.range_check_5_4[1] = [ms_limb_low_col57, ms_limb_high_col58];
                 *lookup_data.range_check_5_4_1 = [ms_limb_low_col57, ms_limb_high_col58];
 
                 // Mem Verify.
@@ -451,12 +431,12 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_d00c6_0) + (M31_1)));
                 let pedersen_b_id_col59 = memory_address_to_id_value_tmp_d00c6_12;
                 *row[59] = pedersen_b_id_col59;
-                *sub_component_inputs.memory_address_to_id[1] =
+                sub_component_inputs.memory_address_to_id[1] =
                     ((instance_addr_tmp_d00c6_0) + (M31_1));
                 *lookup_data.memory_address_to_id_1 =
                     [((instance_addr_tmp_d00c6_0) + (M31_1)), pedersen_b_id_col59];
 
-                *sub_component_inputs.memory_id_to_big[1] = pedersen_b_id_col59;
+                sub_component_inputs.memory_id_to_big[1] = pedersen_b_id_col59;
                 *lookup_data.memory_id_to_big_1 = [
                     pedersen_b_id_col59,
                     value_limb_0_col30,
@@ -566,14 +546,14 @@ fn write_trace_simd(
                         & (value_limb_21_col21.eq(M31_136)));
                 let ms_and_mid_limbs_are_max_col61 = ms_and_mid_limbs_are_max_tmp_d00c6_16.as_m31();
                 *row[61] = ms_and_mid_limbs_are_max_col61;
-                *sub_component_inputs.range_check_8[0] =
+                sub_component_inputs.range_check_8[0] =
                     [((read_split_output_tmp_d00c6_7.1[1].get_m31(27)) - (ms_limb_is_max_col60))];
                 *lookup_data.range_check_8_0 =
                     [((read_split_output_tmp_d00c6_7.1[1].get_m31(27)) - (ms_limb_is_max_col60))];
                 let rc_input_col62 = ((ms_limb_is_max_col60)
                     * (((M31_120) + (value_limb_21_col21)) - (ms_and_mid_limbs_are_max_col61)));
                 *row[62] = rc_input_col62;
-                *sub_component_inputs.range_check_8[1] = [rc_input_col62];
+                sub_component_inputs.range_check_8[1] = [rc_input_col62];
                 *lookup_data.range_check_8_1 = [rc_input_col62];
 
                 // Verify Reduced 252.
@@ -587,7 +567,7 @@ fn write_trace_simd(
                         & (value_limb_21_col51.eq(M31_136)));
                 let ms_and_mid_limbs_are_max_col64 = ms_and_mid_limbs_are_max_tmp_d00c6_18.as_m31();
                 *row[64] = ms_and_mid_limbs_are_max_col64;
-                *sub_component_inputs.range_check_8[2] = [((read_split_output_tmp_d00c6_14.1[1]
+                sub_component_inputs.range_check_8[2] = [((read_split_output_tmp_d00c6_14.1[1]
                     .get_m31(27))
                     - (ms_limb_is_max_col63))];
                 *lookup_data.range_check_8_2 = [((read_split_output_tmp_d00c6_14.1[1]
@@ -596,10 +576,10 @@ fn write_trace_simd(
                 let rc_input_col65 = ((ms_limb_is_max_col63)
                     * (((M31_120) + (value_limb_21_col51)) - (ms_and_mid_limbs_are_max_col64)));
                 *row[65] = rc_input_col65;
-                *sub_component_inputs.range_check_8[3] = [rc_input_col65];
+                sub_component_inputs.range_check_8[3] = [rc_input_col65];
                 *lookup_data.range_check_8_3 = [rc_input_col65];
 
-                *sub_component_inputs.pedersen_points_table[0] = [(((M31_7340032)
+                sub_component_inputs.pedersen_points_table[0] = [(((M31_7340032)
                     + ((ms_limb_high_col58) * (M31_16)))
                     + (ms_limb_high_col28))];
                 let pedersen_points_table_output_tmp_d00c6_19 =
@@ -908,7 +888,7 @@ fn write_trace_simd(
                     pedersen_points_table_output_limb_54_col120,
                     pedersen_points_table_output_limb_55_col121,
                 ];
-                *sub_component_inputs.partial_ec_mul[0] = (
+                sub_component_inputs.partial_ec_mul[0] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_0,
                     (
@@ -961,7 +941,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[1] = (
+                sub_component_inputs.partial_ec_mul[1] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_1,
                     (
@@ -1014,7 +994,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[2] = (
+                sub_component_inputs.partial_ec_mul[2] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_2,
                     (
@@ -1067,7 +1047,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[3] = (
+                sub_component_inputs.partial_ec_mul[3] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_3,
                     (
@@ -1120,7 +1100,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[4] = (
+                sub_component_inputs.partial_ec_mul[4] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_4,
                     (
@@ -1173,7 +1153,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[5] = (
+                sub_component_inputs.partial_ec_mul[5] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_5,
                     (
@@ -1226,7 +1206,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[6] = (
+                sub_component_inputs.partial_ec_mul[6] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_6,
                     (
@@ -1279,7 +1259,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[7] = (
+                sub_component_inputs.partial_ec_mul[7] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_7,
                     (
@@ -1332,7 +1312,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[8] = (
+                sub_component_inputs.partial_ec_mul[8] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_8,
                     (
@@ -1385,7 +1365,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[9] = (
+                sub_component_inputs.partial_ec_mul[9] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_9,
                     (
@@ -1438,7 +1418,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[10] = (
+                sub_component_inputs.partial_ec_mul[10] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_10,
                     (
@@ -1491,7 +1471,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[11] = (
+                sub_component_inputs.partial_ec_mul[11] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_11,
                     (
@@ -1544,7 +1524,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[12] = (
+                sub_component_inputs.partial_ec_mul[12] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_12,
                     (
@@ -1597,7 +1577,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[13] = (
+                sub_component_inputs.partial_ec_mul[13] = (
                     partial_ec_mul_chain_tmp_tmp_d00c6_20,
                     M31_13,
                     (
@@ -2010,7 +1990,7 @@ fn write_trace_simd(
                     partial_ec_mul_output_limb_68_col190,
                     partial_ec_mul_output_limb_69_col191,
                 ];
-                *sub_component_inputs.partial_ec_mul[14] = (
+                sub_component_inputs.partial_ec_mul[14] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_14,
                     (
@@ -2063,7 +2043,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[15] = (
+                sub_component_inputs.partial_ec_mul[15] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_15,
                     (
@@ -2116,7 +2096,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[16] = (
+                sub_component_inputs.partial_ec_mul[16] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_16,
                     (
@@ -2169,7 +2149,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[17] = (
+                sub_component_inputs.partial_ec_mul[17] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_17,
                     (
@@ -2222,7 +2202,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[18] = (
+                sub_component_inputs.partial_ec_mul[18] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_18,
                     (
@@ -2275,7 +2255,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[19] = (
+                sub_component_inputs.partial_ec_mul[19] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_19,
                     (
@@ -2328,7 +2308,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[20] = (
+                sub_component_inputs.partial_ec_mul[20] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_20,
                     (
@@ -2381,7 +2361,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[21] = (
+                sub_component_inputs.partial_ec_mul[21] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_21,
                     (
@@ -2434,7 +2414,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[22] = (
+                sub_component_inputs.partial_ec_mul[22] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_22,
                     (
@@ -2487,7 +2467,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[23] = (
+                sub_component_inputs.partial_ec_mul[23] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_23,
                     (
@@ -2540,7 +2520,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[24] = (
+                sub_component_inputs.partial_ec_mul[24] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_24,
                     (
@@ -2593,7 +2573,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[25] = (
+                sub_component_inputs.partial_ec_mul[25] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_25,
                     (
@@ -2646,7 +2626,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[26] = (
+                sub_component_inputs.partial_ec_mul[26] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_26,
                     (
@@ -2699,7 +2679,7 @@ fn write_trace_simd(
                             ],
                         ),
                     ));
-                *sub_component_inputs.partial_ec_mul[27] = (
+                sub_component_inputs.partial_ec_mul[27] = (
                     partial_ec_mul_chain_id_tmp_d00c6_35,
                     M31_27,
                     (
@@ -3045,14 +3025,14 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_d00c6_0) + (M31_2)));
                 let pedersen_result_id_col262 = memory_address_to_id_value_tmp_d00c6_50;
                 *row[262] = pedersen_result_id_col262;
-                *sub_component_inputs.memory_address_to_id[2] =
+                sub_component_inputs.memory_address_to_id[2] =
                     ((instance_addr_tmp_d00c6_0) + (M31_2));
                 *lookup_data.memory_address_to_id_2 = [
                     ((instance_addr_tmp_d00c6_0) + (M31_2)),
                     pedersen_result_id_col262,
                 ];
 
-                *sub_component_inputs.memory_id_to_big[2] = pedersen_result_id_col262;
+                sub_component_inputs.memory_id_to_big[2] = pedersen_result_id_col262;
                 *lookup_data.memory_id_to_big_2 = [
                     pedersen_result_id_col262,
                     partial_ec_mul_output_limb_14_col206,
