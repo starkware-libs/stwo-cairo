@@ -53,42 +53,14 @@ impl ClaimGenerator {
             verify_bitwise_xor_7_state,
             verify_bitwise_xor_9_state,
         );
-        sub_component_inputs
-            .verify_bitwise_xor_8
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_8_b
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_b_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_12
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_12_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_4
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_4_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_7
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_7_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_9
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_9_state.add_packed_inputs(inputs);
-            });
+        sub_component_inputs.iter().for_each(|inputs| {
+            verify_bitwise_xor_8_state.add_packed_inputs(inputs.verify_bitwise_xor_8.as_ref());
+            verify_bitwise_xor_8_b_state.add_packed_inputs(inputs.verify_bitwise_xor_8_b.as_ref());
+            verify_bitwise_xor_12_state.add_packed_inputs(inputs.verify_bitwise_xor_12.as_ref());
+            verify_bitwise_xor_4_state.add_packed_inputs(inputs.verify_bitwise_xor_4.as_ref());
+            verify_bitwise_xor_7_state.add_packed_inputs(inputs.verify_bitwise_xor_7.as_ref());
+            verify_bitwise_xor_9_state.add_packed_inputs(inputs.verify_bitwise_xor_9.as_ref());
+        });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -106,14 +78,22 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct SubComponentInputs {
-    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
-    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8_b::PackedInputType>; 4],
-    verify_bitwise_xor_12: [Vec<verify_bitwise_xor_12::PackedInputType>; 2],
-    verify_bitwise_xor_4: [Vec<verify_bitwise_xor_4::PackedInputType>; 2],
-    verify_bitwise_xor_7: [Vec<verify_bitwise_xor_7::PackedInputType>; 2],
-    verify_bitwise_xor_9: [Vec<verify_bitwise_xor_9::PackedInputType>; 2],
+type SubComponentInputs = Vec<SubComponentInputsPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
+    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct SubComponentInputsPerRow {
+    verify_bitwise_xor_8: [verify_bitwise_xor_8::PackedInputType; 4],
+    verify_bitwise_xor_8_b: [verify_bitwise_xor_8_b::PackedInputType; 4],
+    verify_bitwise_xor_12: [verify_bitwise_xor_12::PackedInputType; 2],
+    verify_bitwise_xor_4: [verify_bitwise_xor_4::PackedInputType; 2],
+    verify_bitwise_xor_7: [verify_bitwise_xor_7::PackedInputType; 2],
+    verify_bitwise_xor_9: [verify_bitwise_xor_9::PackedInputType; 2],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -140,7 +120,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_n_packed_rows),
+            uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
 
@@ -251,7 +231,7 @@ fn write_trace_simd(
                         ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_f72c8_9[0])));
                 let xor_col18 = xor_tmp_f72c8_12.as_m31();
                 *row[18] = xor_col18;
-                *sub_component_inputs.verify_bitwise_xor_8[0] = [
+                sub_component_inputs.verify_bitwise_xor_8[0] = [
                     split_16_low_part_size_8_output_tmp_f72c8_5[0],
                     split_16_low_part_size_8_output_tmp_f72c8_9[0],
                     xor_col18,
@@ -268,7 +248,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col16)));
                 let xor_col19 = xor_tmp_f72c8_14.as_m31();
                 *row[19] = xor_col19;
-                *sub_component_inputs.verify_bitwise_xor_8[1] =
+                sub_component_inputs.verify_bitwise_xor_8[1] =
                     [ms_8_bits_col14, ms_8_bits_col16, xor_col19];
                 *lookup_data.verify_bitwise_xor_8_1 = [ms_8_bits_col14, ms_8_bits_col16, xor_col19];
 
@@ -281,7 +261,7 @@ fn write_trace_simd(
                         )));
                 let xor_col20 = xor_tmp_f72c8_16.as_m31();
                 *row[20] = xor_col20;
-                *sub_component_inputs.verify_bitwise_xor_8_b[0] = [
+                sub_component_inputs.verify_bitwise_xor_8_b[0] = [
                     split_16_low_part_size_8_output_tmp_f72c8_7[0],
                     split_16_low_part_size_8_output_tmp_f72c8_11[0],
                     xor_col20,
@@ -298,7 +278,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col17)));
                 let xor_col21 = xor_tmp_f72c8_18.as_m31();
                 *row[21] = xor_col21;
-                *sub_component_inputs.verify_bitwise_xor_8_b[1] =
+                sub_component_inputs.verify_bitwise_xor_8_b[1] =
                     [ms_8_bits_col15, ms_8_bits_col17, xor_col21];
                 *lookup_data.verify_bitwise_xor_8_b_1 =
                     [ms_8_bits_col15, ms_8_bits_col17, xor_col21];
@@ -372,7 +352,7 @@ fn write_trace_simd(
                         )));
                 let xor_col28 = xor_tmp_f72c8_34.as_m31();
                 *row[28] = xor_col28;
-                *sub_component_inputs.verify_bitwise_xor_12[0] = [
+                sub_component_inputs.verify_bitwise_xor_12[0] = [
                     split_16_low_part_size_12_output_tmp_f72c8_27[0],
                     split_16_low_part_size_12_output_tmp_f72c8_31[0],
                     xor_col28,
@@ -389,7 +369,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_4_bits_col26)));
                 let xor_col29 = xor_tmp_f72c8_36.as_m31();
                 *row[29] = xor_col29;
-                *sub_component_inputs.verify_bitwise_xor_4[0] =
+                sub_component_inputs.verify_bitwise_xor_4[0] =
                     [ms_4_bits_col24, ms_4_bits_col26, xor_col29];
                 *lookup_data.verify_bitwise_xor_4_0 = [ms_4_bits_col24, ms_4_bits_col26, xor_col29];
 
@@ -402,7 +382,7 @@ fn write_trace_simd(
                         )));
                 let xor_col30 = xor_tmp_f72c8_38.as_m31();
                 *row[30] = xor_col30;
-                *sub_component_inputs.verify_bitwise_xor_12[1] = [
+                sub_component_inputs.verify_bitwise_xor_12[1] = [
                     split_16_low_part_size_12_output_tmp_f72c8_29[0],
                     split_16_low_part_size_12_output_tmp_f72c8_33[0],
                     xor_col30,
@@ -419,7 +399,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_4_bits_col27)));
                 let xor_col31 = xor_tmp_f72c8_40.as_m31();
                 *row[31] = xor_col31;
-                *sub_component_inputs.verify_bitwise_xor_4[1] =
+                sub_component_inputs.verify_bitwise_xor_4[1] =
                     [ms_4_bits_col25, ms_4_bits_col27, xor_col31];
                 *lookup_data.verify_bitwise_xor_4_1 = [ms_4_bits_col25, ms_4_bits_col27, xor_col31];
 
@@ -497,7 +477,7 @@ fn write_trace_simd(
                         )));
                 let xor_col38 = xor_tmp_f72c8_56.as_m31();
                 *row[38] = xor_col38;
-                *sub_component_inputs.verify_bitwise_xor_8[2] = [
+                sub_component_inputs.verify_bitwise_xor_8[2] = [
                     split_16_low_part_size_8_output_tmp_f72c8_49[0],
                     split_16_low_part_size_8_output_tmp_f72c8_53[0],
                     xor_col38,
@@ -514,7 +494,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col36)));
                 let xor_col39 = xor_tmp_f72c8_58.as_m31();
                 *row[39] = xor_col39;
-                *sub_component_inputs.verify_bitwise_xor_8[3] =
+                sub_component_inputs.verify_bitwise_xor_8[3] =
                     [ms_8_bits_col34, ms_8_bits_col36, xor_col39];
                 *lookup_data.verify_bitwise_xor_8_3 = [ms_8_bits_col34, ms_8_bits_col36, xor_col39];
 
@@ -527,7 +507,7 @@ fn write_trace_simd(
                         )));
                 let xor_col40 = xor_tmp_f72c8_60.as_m31();
                 *row[40] = xor_col40;
-                *sub_component_inputs.verify_bitwise_xor_8_b[2] = [
+                sub_component_inputs.verify_bitwise_xor_8_b[2] = [
                     split_16_low_part_size_8_output_tmp_f72c8_51[0],
                     split_16_low_part_size_8_output_tmp_f72c8_55[0],
                     xor_col40,
@@ -544,7 +524,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col37)));
                 let xor_col41 = xor_tmp_f72c8_62.as_m31();
                 *row[41] = xor_col41;
-                *sub_component_inputs.verify_bitwise_xor_8_b[3] =
+                sub_component_inputs.verify_bitwise_xor_8_b[3] =
                     [ms_8_bits_col35, ms_8_bits_col37, xor_col41];
                 *lookup_data.verify_bitwise_xor_8_b_3 =
                     [ms_8_bits_col35, ms_8_bits_col37, xor_col41];
@@ -623,7 +603,7 @@ fn write_trace_simd(
                         )));
                 let xor_col48 = xor_tmp_f72c8_78.as_m31();
                 *row[48] = xor_col48;
-                *sub_component_inputs.verify_bitwise_xor_7[0] = [
+                sub_component_inputs.verify_bitwise_xor_7[0] = [
                     split_16_low_part_size_7_output_tmp_f72c8_71[0],
                     split_16_low_part_size_7_output_tmp_f72c8_75[0],
                     xor_col48,
@@ -640,7 +620,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_9_bits_col46)));
                 let xor_col49 = xor_tmp_f72c8_80.as_m31();
                 *row[49] = xor_col49;
-                *sub_component_inputs.verify_bitwise_xor_9[0] =
+                sub_component_inputs.verify_bitwise_xor_9[0] =
                     [ms_9_bits_col44, ms_9_bits_col46, xor_col49];
                 *lookup_data.verify_bitwise_xor_9_0 = [ms_9_bits_col44, ms_9_bits_col46, xor_col49];
 
@@ -653,7 +633,7 @@ fn write_trace_simd(
                         )));
                 let xor_col50 = xor_tmp_f72c8_82.as_m31();
                 *row[50] = xor_col50;
-                *sub_component_inputs.verify_bitwise_xor_7[1] = [
+                sub_component_inputs.verify_bitwise_xor_7[1] = [
                     split_16_low_part_size_7_output_tmp_f72c8_73[0],
                     split_16_low_part_size_7_output_tmp_f72c8_77[0],
                     xor_col50,
@@ -670,7 +650,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_9_bits_col47)));
                 let xor_col51 = xor_tmp_f72c8_84.as_m31();
                 *row[51] = xor_col51;
-                *sub_component_inputs.verify_bitwise_xor_9[1] =
+                sub_component_inputs.verify_bitwise_xor_9[1] =
                     [ms_9_bits_col45, ms_9_bits_col47, xor_col51];
                 *lookup_data.verify_bitwise_xor_9_1 = [ms_9_bits_col45, ms_9_bits_col47, xor_col51];
 

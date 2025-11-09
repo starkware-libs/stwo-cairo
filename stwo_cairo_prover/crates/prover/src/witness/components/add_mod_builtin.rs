@@ -35,18 +35,10 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
-            });
+        sub_component_inputs.iter().for_each(|inputs| {
+            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
+            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
+        });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -62,10 +54,18 @@ impl ClaimGenerator {
     }
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct SubComponentInputs {
-    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 29],
-    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 24],
+type SubComponentInputs = Vec<SubComponentInputsPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
+    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct SubComponentInputsPerRow {
+    memory_address_to_id: [memory_address_to_id::PackedInputType; 29],
+    memory_id_to_big: [memory_id_to_big::PackedInputType; 24],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -87,7 +87,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            SubComponentInputs::uninitialized(log_n_packed_rows),
+            uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
 
@@ -149,7 +149,7 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(instance_addr_tmp_c1b19_2);
                 let p0_id_col1 = memory_address_to_id_value_tmp_c1b19_4;
                 *row[1] = p0_id_col1;
-                *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_c1b19_2;
+                sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_c1b19_2;
                 *lookup_data.memory_address_to_id_0 = [instance_addr_tmp_c1b19_2, p0_id_col1];
 
                 // Read Positive Known Id Num Bits 99.
@@ -178,7 +178,7 @@ fn write_trace_simd(
                 *row[11] = p0_limb_9_col11;
                 let p0_limb_10_col12 = memory_id_to_big_value_tmp_c1b19_6.get_m31(10);
                 *row[12] = p0_limb_10_col12;
-                *sub_component_inputs.memory_id_to_big[0] = p0_id_col1;
+                sub_component_inputs.memory_id_to_big[0] = p0_id_col1;
                 *lookup_data.memory_id_to_big_0 = [
                     p0_id_col1,
                     p0_limb_0_col2,
@@ -255,7 +255,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_1)));
                 let p1_id_col13 = memory_address_to_id_value_tmp_c1b19_9;
                 *row[13] = p1_id_col13;
-                *sub_component_inputs.memory_address_to_id[1] =
+                sub_component_inputs.memory_address_to_id[1] =
                     ((instance_addr_tmp_c1b19_2) + (M31_1));
                 *lookup_data.memory_address_to_id_1 =
                     [((instance_addr_tmp_c1b19_2) + (M31_1)), p1_id_col13];
@@ -286,7 +286,7 @@ fn write_trace_simd(
                 *row[23] = p1_limb_9_col23;
                 let p1_limb_10_col24 = memory_id_to_big_value_tmp_c1b19_11.get_m31(10);
                 *row[24] = p1_limb_10_col24;
-                *sub_component_inputs.memory_id_to_big[1] = p1_id_col13;
+                sub_component_inputs.memory_id_to_big[1] = p1_id_col13;
                 *lookup_data.memory_id_to_big_1 = [
                     p1_id_col13,
                     p1_limb_0_col14,
@@ -363,7 +363,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_2)));
                 let p2_id_col25 = memory_address_to_id_value_tmp_c1b19_14;
                 *row[25] = p2_id_col25;
-                *sub_component_inputs.memory_address_to_id[2] =
+                sub_component_inputs.memory_address_to_id[2] =
                     ((instance_addr_tmp_c1b19_2) + (M31_2));
                 *lookup_data.memory_address_to_id_2 =
                     [((instance_addr_tmp_c1b19_2) + (M31_2)), p2_id_col25];
@@ -394,7 +394,7 @@ fn write_trace_simd(
                 *row[35] = p2_limb_9_col35;
                 let p2_limb_10_col36 = memory_id_to_big_value_tmp_c1b19_16.get_m31(10);
                 *row[36] = p2_limb_10_col36;
-                *sub_component_inputs.memory_id_to_big[2] = p2_id_col25;
+                sub_component_inputs.memory_id_to_big[2] = p2_id_col25;
                 *lookup_data.memory_id_to_big_2 = [
                     p2_id_col25,
                     p2_limb_0_col26,
@@ -471,7 +471,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_3)));
                 let p3_id_col37 = memory_address_to_id_value_tmp_c1b19_19;
                 *row[37] = p3_id_col37;
-                *sub_component_inputs.memory_address_to_id[3] =
+                sub_component_inputs.memory_address_to_id[3] =
                     ((instance_addr_tmp_c1b19_2) + (M31_3));
                 *lookup_data.memory_address_to_id_3 =
                     [((instance_addr_tmp_c1b19_2) + (M31_3)), p3_id_col37];
@@ -502,7 +502,7 @@ fn write_trace_simd(
                 *row[47] = p3_limb_9_col47;
                 let p3_limb_10_col48 = memory_id_to_big_value_tmp_c1b19_21.get_m31(10);
                 *row[48] = p3_limb_10_col48;
-                *sub_component_inputs.memory_id_to_big[3] = p3_id_col37;
+                sub_component_inputs.memory_id_to_big[3] = p3_id_col37;
                 *lookup_data.memory_id_to_big_3 = [
                     p3_id_col37,
                     p3_limb_0_col38,
@@ -579,7 +579,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_4)));
                 let values_ptr_id_col49 = memory_address_to_id_value_tmp_c1b19_24;
                 *row[49] = values_ptr_id_col49;
-                *sub_component_inputs.memory_address_to_id[4] =
+                sub_component_inputs.memory_address_to_id[4] =
                     ((instance_addr_tmp_c1b19_2) + (M31_4));
                 *lookup_data.memory_address_to_id_4 =
                     [((instance_addr_tmp_c1b19_2) + (M31_4)), values_ptr_id_col49];
@@ -607,7 +607,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col54 = partial_limb_msb_tmp_c1b19_27.as_m31();
                 *row[54] = partial_limb_msb_col54;
 
-                *sub_component_inputs.memory_id_to_big[4] = values_ptr_id_col49;
+                sub_component_inputs.memory_id_to_big[4] = values_ptr_id_col49;
                 *lookup_data.memory_id_to_big_4 = [
                     values_ptr_id_col49,
                     values_ptr_limb_0_col50,
@@ -684,7 +684,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_5)));
                 let offsets_ptr_id_col55 = memory_address_to_id_value_tmp_c1b19_31;
                 *row[55] = offsets_ptr_id_col55;
-                *sub_component_inputs.memory_address_to_id[5] =
+                sub_component_inputs.memory_address_to_id[5] =
                     ((instance_addr_tmp_c1b19_2) + (M31_5));
                 *lookup_data.memory_address_to_id_5 = [
                     ((instance_addr_tmp_c1b19_2) + (M31_5)),
@@ -714,7 +714,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col60 = partial_limb_msb_tmp_c1b19_34.as_m31();
                 *row[60] = partial_limb_msb_col60;
 
-                *sub_component_inputs.memory_id_to_big[5] = offsets_ptr_id_col55;
+                sub_component_inputs.memory_id_to_big[5] = offsets_ptr_id_col55;
                 *lookup_data.memory_id_to_big_5 = [
                     offsets_ptr_id_col55,
                     offsets_ptr_limb_0_col56,
@@ -791,7 +791,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_5)));
                 let offsets_ptr_prev_id_col61 = memory_address_to_id_value_tmp_c1b19_38;
                 *row[61] = offsets_ptr_prev_id_col61;
-                *sub_component_inputs.memory_address_to_id[6] =
+                sub_component_inputs.memory_address_to_id[6] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_5));
                 *lookup_data.memory_address_to_id_6 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_5)),
@@ -821,7 +821,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col66 = partial_limb_msb_tmp_c1b19_41.as_m31();
                 *row[66] = partial_limb_msb_col66;
 
-                *sub_component_inputs.memory_id_to_big[6] = offsets_ptr_prev_id_col61;
+                sub_component_inputs.memory_id_to_big[6] = offsets_ptr_prev_id_col61;
                 *lookup_data.memory_id_to_big_6 = [
                     offsets_ptr_prev_id_col61,
                     offsets_ptr_prev_limb_0_col62,
@@ -898,7 +898,7 @@ fn write_trace_simd(
                     .deduce_output(((instance_addr_tmp_c1b19_2) + (M31_6)));
                 let n_id_col67 = memory_address_to_id_value_tmp_c1b19_45;
                 *row[67] = n_id_col67;
-                *sub_component_inputs.memory_address_to_id[7] =
+                sub_component_inputs.memory_address_to_id[7] =
                     ((instance_addr_tmp_c1b19_2) + (M31_6));
                 *lookup_data.memory_address_to_id_7 =
                     [((instance_addr_tmp_c1b19_2) + (M31_6)), n_id_col67];
@@ -925,7 +925,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col72 = partial_limb_msb_tmp_c1b19_48.as_m31();
                 *row[72] = partial_limb_msb_col72;
 
-                *sub_component_inputs.memory_id_to_big[7] = n_id_col67;
+                sub_component_inputs.memory_id_to_big[7] = n_id_col67;
                 *lookup_data.memory_id_to_big_7 = [
                     n_id_col67,
                     n_limb_0_col68,
@@ -1002,7 +1002,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_6)));
                 let n_prev_id_col73 = memory_address_to_id_value_tmp_c1b19_52;
                 *row[73] = n_prev_id_col73;
-                *sub_component_inputs.memory_address_to_id[8] =
+                sub_component_inputs.memory_address_to_id[8] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_6));
                 *lookup_data.memory_address_to_id_8 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_6)),
@@ -1031,7 +1031,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col78 = partial_limb_msb_tmp_c1b19_55.as_m31();
                 *row[78] = partial_limb_msb_col78;
 
-                *sub_component_inputs.memory_id_to_big[8] = n_prev_id_col73;
+                sub_component_inputs.memory_id_to_big[8] = n_prev_id_col73;
                 *lookup_data.memory_id_to_big_8 = [
                     n_prev_id_col73,
                     n_prev_limb_0_col74,
@@ -1113,7 +1113,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_4)));
                 let values_ptr_prev_id_col79 = memory_address_to_id_value_tmp_c1b19_62;
                 *row[79] = values_ptr_prev_id_col79;
-                *sub_component_inputs.memory_address_to_id[9] =
+                sub_component_inputs.memory_address_to_id[9] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_4));
                 *lookup_data.memory_address_to_id_9 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_4)),
@@ -1128,7 +1128,7 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(prev_instance_addr_tmp_c1b19_3);
                 let p_prev0_id_col80 = memory_address_to_id_value_tmp_c1b19_64;
                 *row[80] = p_prev0_id_col80;
-                *sub_component_inputs.memory_address_to_id[10] = prev_instance_addr_tmp_c1b19_3;
+                sub_component_inputs.memory_address_to_id[10] = prev_instance_addr_tmp_c1b19_3;
                 *lookup_data.memory_address_to_id_10 =
                     [prev_instance_addr_tmp_c1b19_3, p_prev0_id_col80];
 
@@ -1140,7 +1140,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_1)));
                 let p_prev1_id_col81 = memory_address_to_id_value_tmp_c1b19_66;
                 *row[81] = p_prev1_id_col81;
-                *sub_component_inputs.memory_address_to_id[11] =
+                sub_component_inputs.memory_address_to_id[11] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_1));
                 *lookup_data.memory_address_to_id_11 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_1)),
@@ -1155,7 +1155,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_2)));
                 let p_prev2_id_col82 = memory_address_to_id_value_tmp_c1b19_68;
                 *row[82] = p_prev2_id_col82;
-                *sub_component_inputs.memory_address_to_id[12] =
+                sub_component_inputs.memory_address_to_id[12] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_2));
                 *lookup_data.memory_address_to_id_12 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_2)),
@@ -1170,7 +1170,7 @@ fn write_trace_simd(
                     .deduce_output(((prev_instance_addr_tmp_c1b19_3) + (M31_3)));
                 let p_prev3_id_col83 = memory_address_to_id_value_tmp_c1b19_70;
                 *row[83] = p_prev3_id_col83;
-                *sub_component_inputs.memory_address_to_id[13] =
+                sub_component_inputs.memory_address_to_id[13] =
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_3));
                 *lookup_data.memory_address_to_id_13 = [
                     ((prev_instance_addr_tmp_c1b19_3) + (M31_3)),
@@ -1185,7 +1185,7 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(offsets_ptr_tmp_c1b19_60);
                 let offsets_a_id_col84 = memory_address_to_id_value_tmp_c1b19_72;
                 *row[84] = offsets_a_id_col84;
-                *sub_component_inputs.memory_address_to_id[14] = offsets_ptr_tmp_c1b19_60;
+                sub_component_inputs.memory_address_to_id[14] = offsets_ptr_tmp_c1b19_60;
                 *lookup_data.memory_address_to_id_14 =
                     [offsets_ptr_tmp_c1b19_60, offsets_a_id_col84];
 
@@ -1223,7 +1223,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col91 = partial_limb_msb_tmp_c1b19_79.as_m31();
                 *row[91] = partial_limb_msb_col91;
 
-                *sub_component_inputs.memory_id_to_big[9] = offsets_a_id_col84;
+                sub_component_inputs.memory_id_to_big[9] = offsets_a_id_col84;
                 *lookup_data.memory_id_to_big_9 = [
                     offsets_a_id_col84,
                     offsets_a_limb_0_col87,
@@ -1272,7 +1272,7 @@ fn write_trace_simd(
                     .deduce_output(((offsets_ptr_tmp_c1b19_60) + (M31_1)));
                 let offsets_b_id_col92 = memory_address_to_id_value_tmp_c1b19_82;
                 *row[92] = offsets_b_id_col92;
-                *sub_component_inputs.memory_address_to_id[15] =
+                sub_component_inputs.memory_address_to_id[15] =
                     ((offsets_ptr_tmp_c1b19_60) + (M31_1));
                 *lookup_data.memory_address_to_id_15 =
                     [((offsets_ptr_tmp_c1b19_60) + (M31_1)), offsets_b_id_col92];
@@ -1311,7 +1311,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col99 = partial_limb_msb_tmp_c1b19_89.as_m31();
                 *row[99] = partial_limb_msb_col99;
 
-                *sub_component_inputs.memory_id_to_big[10] = offsets_b_id_col92;
+                sub_component_inputs.memory_id_to_big[10] = offsets_b_id_col92;
                 *lookup_data.memory_id_to_big_10 = [
                     offsets_b_id_col92,
                     offsets_b_limb_0_col95,
@@ -1360,7 +1360,7 @@ fn write_trace_simd(
                     .deduce_output(((offsets_ptr_tmp_c1b19_60) + (M31_2)));
                 let offsets_c_id_col100 = memory_address_to_id_value_tmp_c1b19_92;
                 *row[100] = offsets_c_id_col100;
-                *sub_component_inputs.memory_address_to_id[16] =
+                sub_component_inputs.memory_address_to_id[16] =
                     ((offsets_ptr_tmp_c1b19_60) + (M31_2));
                 *lookup_data.memory_address_to_id_16 =
                     [((offsets_ptr_tmp_c1b19_60) + (M31_2)), offsets_c_id_col100];
@@ -1399,7 +1399,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col107 = partial_limb_msb_tmp_c1b19_99.as_m31();
                 *row[107] = partial_limb_msb_col107;
 
-                *sub_component_inputs.memory_id_to_big[11] = offsets_c_id_col100;
+                sub_component_inputs.memory_id_to_big[11] = offsets_c_id_col100;
                 *lookup_data.memory_id_to_big_11 = [
                     offsets_c_id_col100,
                     offsets_c_limb_0_col103,
@@ -1455,7 +1455,7 @@ fn write_trace_simd(
                     );
                 let a0_id_col108 = memory_address_to_id_value_tmp_c1b19_103;
                 *row[108] = a0_id_col108;
-                *sub_component_inputs.memory_address_to_id[17] =
+                sub_component_inputs.memory_address_to_id[17] =
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0));
                 *lookup_data.memory_address_to_id_17 = [
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)),
@@ -1488,7 +1488,7 @@ fn write_trace_simd(
                 *row[118] = a0_limb_9_col118;
                 let a0_limb_10_col119 = memory_id_to_big_value_tmp_c1b19_105.get_m31(10);
                 *row[119] = a0_limb_10_col119;
-                *sub_component_inputs.memory_id_to_big[12] = a0_id_col108;
+                sub_component_inputs.memory_id_to_big[12] = a0_id_col108;
                 *lookup_data.memory_id_to_big_12 = [
                     a0_id_col108,
                     a0_limb_0_col109,
@@ -1568,7 +1568,7 @@ fn write_trace_simd(
                     );
                 let a1_id_col120 = memory_address_to_id_value_tmp_c1b19_108;
                 *row[120] = a1_id_col120;
-                *sub_component_inputs.memory_address_to_id[18] =
+                sub_component_inputs.memory_address_to_id[18] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_1));
                 *lookup_data.memory_address_to_id_18 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_1)),
@@ -1601,7 +1601,7 @@ fn write_trace_simd(
                 *row[130] = a1_limb_9_col130;
                 let a1_limb_10_col131 = memory_id_to_big_value_tmp_c1b19_110.get_m31(10);
                 *row[131] = a1_limb_10_col131;
-                *sub_component_inputs.memory_id_to_big[13] = a1_id_col120;
+                sub_component_inputs.memory_id_to_big[13] = a1_id_col120;
                 *lookup_data.memory_id_to_big_13 = [
                     a1_id_col120,
                     a1_limb_0_col121,
@@ -1681,7 +1681,7 @@ fn write_trace_simd(
                     );
                 let a2_id_col132 = memory_address_to_id_value_tmp_c1b19_113;
                 *row[132] = a2_id_col132;
-                *sub_component_inputs.memory_address_to_id[19] =
+                sub_component_inputs.memory_address_to_id[19] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_2));
                 *lookup_data.memory_address_to_id_19 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_2)),
@@ -1714,7 +1714,7 @@ fn write_trace_simd(
                 *row[142] = a2_limb_9_col142;
                 let a2_limb_10_col143 = memory_id_to_big_value_tmp_c1b19_115.get_m31(10);
                 *row[143] = a2_limb_10_col143;
-                *sub_component_inputs.memory_id_to_big[14] = a2_id_col132;
+                sub_component_inputs.memory_id_to_big[14] = a2_id_col132;
                 *lookup_data.memory_id_to_big_14 = [
                     a2_id_col132,
                     a2_limb_0_col133,
@@ -1794,7 +1794,7 @@ fn write_trace_simd(
                     );
                 let a3_id_col144 = memory_address_to_id_value_tmp_c1b19_118;
                 *row[144] = a3_id_col144;
-                *sub_component_inputs.memory_address_to_id[20] =
+                sub_component_inputs.memory_address_to_id[20] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_3));
                 *lookup_data.memory_address_to_id_20 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_81.0)) + (M31_3)),
@@ -1827,7 +1827,7 @@ fn write_trace_simd(
                 *row[154] = a3_limb_9_col154;
                 let a3_limb_10_col155 = memory_id_to_big_value_tmp_c1b19_120.get_m31(10);
                 *row[155] = a3_limb_10_col155;
-                *sub_component_inputs.memory_id_to_big[15] = a3_id_col144;
+                sub_component_inputs.memory_id_to_big[15] = a3_id_col144;
                 *lookup_data.memory_id_to_big_15 = [
                     a3_id_col144,
                     a3_limb_0_col145,
@@ -1906,7 +1906,7 @@ fn write_trace_simd(
                     );
                 let b0_id_col156 = memory_address_to_id_value_tmp_c1b19_123;
                 *row[156] = b0_id_col156;
-                *sub_component_inputs.memory_address_to_id[21] =
+                sub_component_inputs.memory_address_to_id[21] =
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0));
                 *lookup_data.memory_address_to_id_21 = [
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)),
@@ -1939,7 +1939,7 @@ fn write_trace_simd(
                 *row[166] = b0_limb_9_col166;
                 let b0_limb_10_col167 = memory_id_to_big_value_tmp_c1b19_125.get_m31(10);
                 *row[167] = b0_limb_10_col167;
-                *sub_component_inputs.memory_id_to_big[16] = b0_id_col156;
+                sub_component_inputs.memory_id_to_big[16] = b0_id_col156;
                 *lookup_data.memory_id_to_big_16 = [
                     b0_id_col156,
                     b0_limb_0_col157,
@@ -2019,7 +2019,7 @@ fn write_trace_simd(
                     );
                 let b1_id_col168 = memory_address_to_id_value_tmp_c1b19_128;
                 *row[168] = b1_id_col168;
-                *sub_component_inputs.memory_address_to_id[22] =
+                sub_component_inputs.memory_address_to_id[22] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_1));
                 *lookup_data.memory_address_to_id_22 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_1)),
@@ -2052,7 +2052,7 @@ fn write_trace_simd(
                 *row[178] = b1_limb_9_col178;
                 let b1_limb_10_col179 = memory_id_to_big_value_tmp_c1b19_130.get_m31(10);
                 *row[179] = b1_limb_10_col179;
-                *sub_component_inputs.memory_id_to_big[17] = b1_id_col168;
+                sub_component_inputs.memory_id_to_big[17] = b1_id_col168;
                 *lookup_data.memory_id_to_big_17 = [
                     b1_id_col168,
                     b1_limb_0_col169,
@@ -2132,7 +2132,7 @@ fn write_trace_simd(
                     );
                 let b2_id_col180 = memory_address_to_id_value_tmp_c1b19_133;
                 *row[180] = b2_id_col180;
-                *sub_component_inputs.memory_address_to_id[23] =
+                sub_component_inputs.memory_address_to_id[23] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_2));
                 *lookup_data.memory_address_to_id_23 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_2)),
@@ -2165,7 +2165,7 @@ fn write_trace_simd(
                 *row[190] = b2_limb_9_col190;
                 let b2_limb_10_col191 = memory_id_to_big_value_tmp_c1b19_135.get_m31(10);
                 *row[191] = b2_limb_10_col191;
-                *sub_component_inputs.memory_id_to_big[18] = b2_id_col180;
+                sub_component_inputs.memory_id_to_big[18] = b2_id_col180;
                 *lookup_data.memory_id_to_big_18 = [
                     b2_id_col180,
                     b2_limb_0_col181,
@@ -2245,7 +2245,7 @@ fn write_trace_simd(
                     );
                 let b3_id_col192 = memory_address_to_id_value_tmp_c1b19_138;
                 *row[192] = b3_id_col192;
-                *sub_component_inputs.memory_address_to_id[24] =
+                sub_component_inputs.memory_address_to_id[24] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_3));
                 *lookup_data.memory_address_to_id_24 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_91.0)) + (M31_3)),
@@ -2278,7 +2278,7 @@ fn write_trace_simd(
                 *row[202] = b3_limb_9_col202;
                 let b3_limb_10_col203 = memory_id_to_big_value_tmp_c1b19_140.get_m31(10);
                 *row[203] = b3_limb_10_col203;
-                *sub_component_inputs.memory_id_to_big[19] = b3_id_col192;
+                sub_component_inputs.memory_id_to_big[19] = b3_id_col192;
                 *lookup_data.memory_id_to_big_19 = [
                     b3_id_col192,
                     b3_limb_0_col193,
@@ -2357,7 +2357,7 @@ fn write_trace_simd(
                     );
                 let c0_id_col204 = memory_address_to_id_value_tmp_c1b19_143;
                 *row[204] = c0_id_col204;
-                *sub_component_inputs.memory_address_to_id[25] =
+                sub_component_inputs.memory_address_to_id[25] =
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0));
                 *lookup_data.memory_address_to_id_25 = [
                     ((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)),
@@ -2390,7 +2390,7 @@ fn write_trace_simd(
                 *row[214] = c0_limb_9_col214;
                 let c0_limb_10_col215 = memory_id_to_big_value_tmp_c1b19_145.get_m31(10);
                 *row[215] = c0_limb_10_col215;
-                *sub_component_inputs.memory_id_to_big[20] = c0_id_col204;
+                sub_component_inputs.memory_id_to_big[20] = c0_id_col204;
                 *lookup_data.memory_id_to_big_20 = [
                     c0_id_col204,
                     c0_limb_0_col205,
@@ -2470,7 +2470,7 @@ fn write_trace_simd(
                     );
                 let c1_id_col216 = memory_address_to_id_value_tmp_c1b19_148;
                 *row[216] = c1_id_col216;
-                *sub_component_inputs.memory_address_to_id[26] =
+                sub_component_inputs.memory_address_to_id[26] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_1));
                 *lookup_data.memory_address_to_id_26 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_1)),
@@ -2503,7 +2503,7 @@ fn write_trace_simd(
                 *row[226] = c1_limb_9_col226;
                 let c1_limb_10_col227 = memory_id_to_big_value_tmp_c1b19_150.get_m31(10);
                 *row[227] = c1_limb_10_col227;
-                *sub_component_inputs.memory_id_to_big[21] = c1_id_col216;
+                sub_component_inputs.memory_id_to_big[21] = c1_id_col216;
                 *lookup_data.memory_id_to_big_21 = [
                     c1_id_col216,
                     c1_limb_0_col217,
@@ -2583,7 +2583,7 @@ fn write_trace_simd(
                     );
                 let c2_id_col228 = memory_address_to_id_value_tmp_c1b19_153;
                 *row[228] = c2_id_col228;
-                *sub_component_inputs.memory_address_to_id[27] =
+                sub_component_inputs.memory_address_to_id[27] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_2));
                 *lookup_data.memory_address_to_id_27 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_2)),
@@ -2616,7 +2616,7 @@ fn write_trace_simd(
                 *row[238] = c2_limb_9_col238;
                 let c2_limb_10_col239 = memory_id_to_big_value_tmp_c1b19_155.get_m31(10);
                 *row[239] = c2_limb_10_col239;
-                *sub_component_inputs.memory_id_to_big[22] = c2_id_col228;
+                sub_component_inputs.memory_id_to_big[22] = c2_id_col228;
                 *lookup_data.memory_id_to_big_22 = [
                     c2_id_col228,
                     c2_limb_0_col229,
@@ -2696,7 +2696,7 @@ fn write_trace_simd(
                     );
                 let c3_id_col240 = memory_address_to_id_value_tmp_c1b19_158;
                 *row[240] = c3_id_col240;
-                *sub_component_inputs.memory_address_to_id[28] =
+                sub_component_inputs.memory_address_to_id[28] =
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_3));
                 *lookup_data.memory_address_to_id_28 = [
                     (((values_ptr_tmp_c1b19_102) + (read_small_output_tmp_c1b19_101.0)) + (M31_3)),
@@ -2729,7 +2729,7 @@ fn write_trace_simd(
                 *row[250] = c3_limb_9_col250;
                 let c3_limb_10_col251 = memory_id_to_big_value_tmp_c1b19_160.get_m31(10);
                 *row[251] = c3_limb_10_col251;
-                *sub_component_inputs.memory_id_to_big[23] = c3_id_col240;
+                sub_component_inputs.memory_id_to_big[23] = c3_id_col240;
                 *lookup_data.memory_id_to_big_23 = [
                     c3_id_col240,
                     c3_limb_0_col241,
