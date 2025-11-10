@@ -326,7 +326,7 @@
         "0x40780017fff7fff",
         "0x1",
         "0x400780017fff8000",
-        "0x1",
+        "0x32",
         "0x480a7ffa7fff8000",
         "0x480a80007fff8000",
         "0x1104800180018000",
@@ -15357,7 +15357,7 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 26,
+                    "end_col": 27,
                     "end_line": 162,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/builtin_usage_flexible_cairo.cairo"
