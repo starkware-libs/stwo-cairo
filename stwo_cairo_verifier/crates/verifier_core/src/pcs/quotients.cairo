@@ -53,6 +53,12 @@ pub fn fri_answers(
     while let Some(columns_per_tree) = column_indices_per_tree_by_degree_bound.pop_back() {
         log_size = log_size - 1;
 
+        let mut query_positions =
+            match match_nullable(query_positions_per_log_size.get(log_size.into())) {
+            FromNullableResult::NotNull(value) => value.unbox(),
+            FromNullableResult::Null => { continue; },
+        };
+
         // Collect the column samples and the number of columns in each tree.
         let mut samples: Array<Span<PointSample>> = array![];
         let mut n_columns_per_tree = array![];
@@ -74,7 +80,7 @@ pub fn fri_answers(
                     log_size,
                     samples,
                     random_coeff,
-                    query_positions_per_log_size.get(log_size.into()).deref(),
+                    query_positions,
                     ref queried_values_per_tree,
                     n_columns_per_tree,
                 ),
