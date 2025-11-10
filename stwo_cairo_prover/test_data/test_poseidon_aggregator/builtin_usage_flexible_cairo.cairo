@@ -159,7 +159,7 @@ func main{
     mul_mod_ptr,
 }() {
     alloc_locals;
-    local n_poseidon = 1;
+    local n_poseidon = 50;
 
     // Call poseidon builtin.
     do_poseidon(n_builtin_usages=n_poseidon);
