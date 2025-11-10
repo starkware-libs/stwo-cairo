@@ -25,7 +25,24 @@ pub struct CommitmentSchemeProof {
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<MerkleHasher>>,
-    /// All queried trace values.
+    /// For each tree, stores all queried trace values, ordered first by descending column size,
+    /// then by column index, and finally by query position.
+    ///
+    /// For illustration:
+    /// Suppose the first tree has two columns (c_1, c_3) with log degree bound 5,
+    /// one column (c_2) with log degree bound 4, and the queries are at positions 5 and 122.
+    ///
+    /// In this case, `queried_values[0]` would be:
+    ///
+    /// [
+    ///     // size 5 columns
+    ///     c_1@5, c_3@5, c_1@122, c_3@122,
+    ///     // size 4 columns
+    ///     c_2@fold(5), c_2@fold(122),
+    /// ],
+    ///
+    /// where `c_1@5` denotes the value of column 1 at query position 5,
+    /// and `fold(5)` denotes the folded position of query 5.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
