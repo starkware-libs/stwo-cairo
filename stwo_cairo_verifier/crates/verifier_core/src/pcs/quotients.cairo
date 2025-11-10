@@ -30,11 +30,14 @@ pub struct PointSample {
 ///
 /// # Arguments
 ///
-/// * `log_size_per_column`: The log size of the commitment domain for each column.
-/// * `samples_per_column`: OOD samples (i.e. point and eval) for each column.
-/// * `random_coeff`: Verifier randomness for folding multiple columns quotients together.
+/// * `column_indices_per_tree_by_degree_bound`: The column indices grouped by tree and by log
+/// degree bound.
+/// * `log_blowup_factor`: The FRI log blowup factor parameter.
+/// * `samples_per_column_per_tree`: OOD samples (i.e. point and eval) for each column in each tree.
+/// * `random_coeff`: Verifier randomness for folding multiple columns' quotients together.
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
-/// * `queried_values`: Evals of each column at the columns corresponding query positions.
+/// * `queried_values_per_tree`: All queried trace values in each tree, sorted by query position
+/// than column size and finally column index.
 pub fn fri_answers(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
     log_blowup_factor: u32,

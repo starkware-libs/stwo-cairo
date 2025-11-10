@@ -25,7 +25,8 @@ pub struct CommitmentSchemeProof {
     /// Sampled mask values.
     pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
     pub decommitments: TreeArray<MerkleDecommitment<MerkleHasher>>,
-    /// All queried trace values.
+    /// All queried trace values in each tree, sorted by query position than column size and finally
+    /// column index.
     pub queried_values: TreeArray<Span<M31>>,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
