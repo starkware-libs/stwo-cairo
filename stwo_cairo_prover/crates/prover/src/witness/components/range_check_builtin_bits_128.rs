@@ -88,7 +88,7 @@ fn write_trace_simd(
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
-            LookupData::uninitialized(log_n_packed_rows),
+            uninitialized_lookup_data(log_n_packed_rows),
             uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
@@ -122,7 +122,7 @@ fn write_trace_simd(
                 *row[0] = value_id_col0;
                 sub_component_inputs.memory_address_to_id[0] =
                     ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq));
-                *lookup_data.memory_address_to_id_0 = [
+                lookup_data.memory_address_to_id_0 = [
                     ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq)),
                     value_id_col0,
                 ];
@@ -172,7 +172,7 @@ fn write_trace_simd(
                 *row[16] = partial_limb_msb_col16;
 
                 sub_component_inputs.memory_id_to_big[0] = value_id_col0;
-                *lookup_data.memory_id_to_big_0 = [
+                lookup_data.memory_id_to_big_0 = [
                     value_id_col0,
                     value_limb_0_col1,
                     value_limb_1_col2,
@@ -245,10 +245,18 @@ fn write_trace_simd(
     (trace, lookup_data, sub_component_inputs)
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
+type LookupData = Vec<LookupDataPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_lookup_data(log_n_packed_rows: u32) -> LookupData {
+    let mut vec: LookupData = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct LookupDataPerRow {
+    memory_address_to_id_0: [PackedM31; 2],
+    memory_id_to_big_0: [PackedM31; 29],
 }
 
 pub struct InteractionClaimGenerator {
@@ -257,7 +265,7 @@ pub struct InteractionClaimGenerator {
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
-        self,
+        mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
@@ -266,15 +274,12 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_0,
-            &self.lookup_data.memory_id_to_big_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_0);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_0);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

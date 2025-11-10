@@ -128,7 +128,7 @@ fn write_trace_simd(
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
-            LookupData::uninitialized(log_n_packed_rows),
+            uninitialized_lookup_data(log_n_packed_rows),
             uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
@@ -308,7 +308,7 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_0 = memory_address_to_id_state.deduce_output(((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6)))));let input_state_0_id_col0 = memory_address_to_id_value_tmp_51986_0;
             *row[0] = input_state_0_id_col0;sub_component_inputs.memory_address_to_id[0] =
                 ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))));
-            *lookup_data.memory_address_to_id_0 = [((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6)))), input_state_0_id_col0];
+            lookup_data.memory_address_to_id_0 = [((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6)))), input_state_0_id_col0];
 
             // Read Positive Known Id Num Bits 252.
 
@@ -342,7 +342,7 @@ fn write_trace_simd(
             *row[27] = input_state_0_limb_26_col27;let input_state_0_limb_27_col28 = memory_id_to_big_value_tmp_51986_2.get_m31(27);
             *row[28] = input_state_0_limb_27_col28;sub_component_inputs.memory_id_to_big[0] =
                 input_state_0_id_col0;
-            *lookup_data.memory_id_to_big_0 = [input_state_0_id_col0, input_state_0_limb_0_col1, input_state_0_limb_1_col2, input_state_0_limb_2_col3, input_state_0_limb_3_col4, input_state_0_limb_4_col5, input_state_0_limb_5_col6, input_state_0_limb_6_col7, input_state_0_limb_7_col8, input_state_0_limb_8_col9, input_state_0_limb_9_col10, input_state_0_limb_10_col11, input_state_0_limb_11_col12, input_state_0_limb_12_col13, input_state_0_limb_13_col14, input_state_0_limb_14_col15, input_state_0_limb_15_col16, input_state_0_limb_16_col17, input_state_0_limb_17_col18, input_state_0_limb_18_col19, input_state_0_limb_19_col20, input_state_0_limb_20_col21, input_state_0_limb_21_col22, input_state_0_limb_22_col23, input_state_0_limb_23_col24, input_state_0_limb_24_col25, input_state_0_limb_25_col26, input_state_0_limb_26_col27, input_state_0_limb_27_col28];let read_positive_known_id_num_bits_252_output_tmp_51986_3 = PackedFelt252::from_limbs([input_state_0_limb_0_col1, input_state_0_limb_1_col2, input_state_0_limb_2_col3, input_state_0_limb_3_col4, input_state_0_limb_4_col5, input_state_0_limb_5_col6, input_state_0_limb_6_col7, input_state_0_limb_7_col8, input_state_0_limb_8_col9, input_state_0_limb_9_col10, input_state_0_limb_10_col11, input_state_0_limb_11_col12, input_state_0_limb_12_col13, input_state_0_limb_13_col14, input_state_0_limb_14_col15, input_state_0_limb_15_col16, input_state_0_limb_16_col17, input_state_0_limb_17_col18, input_state_0_limb_18_col19, input_state_0_limb_19_col20, input_state_0_limb_20_col21, input_state_0_limb_21_col22, input_state_0_limb_22_col23, input_state_0_limb_23_col24, input_state_0_limb_24_col25, input_state_0_limb_25_col26, input_state_0_limb_26_col27, input_state_0_limb_27_col28]);
+            lookup_data.memory_id_to_big_0 = [input_state_0_id_col0, input_state_0_limb_0_col1, input_state_0_limb_1_col2, input_state_0_limb_2_col3, input_state_0_limb_3_col4, input_state_0_limb_4_col5, input_state_0_limb_5_col6, input_state_0_limb_6_col7, input_state_0_limb_7_col8, input_state_0_limb_8_col9, input_state_0_limb_9_col10, input_state_0_limb_10_col11, input_state_0_limb_11_col12, input_state_0_limb_12_col13, input_state_0_limb_13_col14, input_state_0_limb_14_col15, input_state_0_limb_15_col16, input_state_0_limb_16_col17, input_state_0_limb_17_col18, input_state_0_limb_18_col19, input_state_0_limb_19_col20, input_state_0_limb_20_col21, input_state_0_limb_21_col22, input_state_0_limb_22_col23, input_state_0_limb_23_col24, input_state_0_limb_24_col25, input_state_0_limb_25_col26, input_state_0_limb_26_col27, input_state_0_limb_27_col28];let read_positive_known_id_num_bits_252_output_tmp_51986_3 = PackedFelt252::from_limbs([input_state_0_limb_0_col1, input_state_0_limb_1_col2, input_state_0_limb_2_col3, input_state_0_limb_3_col4, input_state_0_limb_4_col5, input_state_0_limb_5_col6, input_state_0_limb_6_col7, input_state_0_limb_7_col8, input_state_0_limb_8_col9, input_state_0_limb_9_col10, input_state_0_limb_10_col11, input_state_0_limb_11_col12, input_state_0_limb_12_col13, input_state_0_limb_13_col14, input_state_0_limb_14_col15, input_state_0_limb_15_col16, input_state_0_limb_16_col17, input_state_0_limb_17_col18, input_state_0_limb_18_col19, input_state_0_limb_19_col20, input_state_0_limb_20_col21, input_state_0_limb_21_col22, input_state_0_limb_22_col23, input_state_0_limb_23_col24, input_state_0_limb_24_col25, input_state_0_limb_25_col26, input_state_0_limb_26_col27, input_state_0_limb_27_col28]);
 
             let read_positive_num_bits_252_output_tmp_51986_4 = (read_positive_known_id_num_bits_252_output_tmp_51986_3, input_state_0_id_col0);
 
@@ -355,7 +355,7 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_6 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1)));let input_state_1_id_col29 = memory_address_to_id_value_tmp_51986_6;
             *row[29] = input_state_1_id_col29;sub_component_inputs.memory_address_to_id[1] =
                 ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1));
-            *lookup_data.memory_address_to_id_1 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1)), input_state_1_id_col29];
+            lookup_data.memory_address_to_id_1 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_1)), input_state_1_id_col29];
 
             // Read Positive Known Id Num Bits 252.
 
@@ -389,7 +389,7 @@ fn write_trace_simd(
             *row[56] = input_state_1_limb_26_col56;let input_state_1_limb_27_col57 = memory_id_to_big_value_tmp_51986_8.get_m31(27);
             *row[57] = input_state_1_limb_27_col57;sub_component_inputs.memory_id_to_big[1] =
                 input_state_1_id_col29;
-            *lookup_data.memory_id_to_big_1 = [input_state_1_id_col29, input_state_1_limb_0_col30, input_state_1_limb_1_col31, input_state_1_limb_2_col32, input_state_1_limb_3_col33, input_state_1_limb_4_col34, input_state_1_limb_5_col35, input_state_1_limb_6_col36, input_state_1_limb_7_col37, input_state_1_limb_8_col38, input_state_1_limb_9_col39, input_state_1_limb_10_col40, input_state_1_limb_11_col41, input_state_1_limb_12_col42, input_state_1_limb_13_col43, input_state_1_limb_14_col44, input_state_1_limb_15_col45, input_state_1_limb_16_col46, input_state_1_limb_17_col47, input_state_1_limb_18_col48, input_state_1_limb_19_col49, input_state_1_limb_20_col50, input_state_1_limb_21_col51, input_state_1_limb_22_col52, input_state_1_limb_23_col53, input_state_1_limb_24_col54, input_state_1_limb_25_col55, input_state_1_limb_26_col56, input_state_1_limb_27_col57];let read_positive_known_id_num_bits_252_output_tmp_51986_9 = PackedFelt252::from_limbs([input_state_1_limb_0_col30, input_state_1_limb_1_col31, input_state_1_limb_2_col32, input_state_1_limb_3_col33, input_state_1_limb_4_col34, input_state_1_limb_5_col35, input_state_1_limb_6_col36, input_state_1_limb_7_col37, input_state_1_limb_8_col38, input_state_1_limb_9_col39, input_state_1_limb_10_col40, input_state_1_limb_11_col41, input_state_1_limb_12_col42, input_state_1_limb_13_col43, input_state_1_limb_14_col44, input_state_1_limb_15_col45, input_state_1_limb_16_col46, input_state_1_limb_17_col47, input_state_1_limb_18_col48, input_state_1_limb_19_col49, input_state_1_limb_20_col50, input_state_1_limb_21_col51, input_state_1_limb_22_col52, input_state_1_limb_23_col53, input_state_1_limb_24_col54, input_state_1_limb_25_col55, input_state_1_limb_26_col56, input_state_1_limb_27_col57]);
+            lookup_data.memory_id_to_big_1 = [input_state_1_id_col29, input_state_1_limb_0_col30, input_state_1_limb_1_col31, input_state_1_limb_2_col32, input_state_1_limb_3_col33, input_state_1_limb_4_col34, input_state_1_limb_5_col35, input_state_1_limb_6_col36, input_state_1_limb_7_col37, input_state_1_limb_8_col38, input_state_1_limb_9_col39, input_state_1_limb_10_col40, input_state_1_limb_11_col41, input_state_1_limb_12_col42, input_state_1_limb_13_col43, input_state_1_limb_14_col44, input_state_1_limb_15_col45, input_state_1_limb_16_col46, input_state_1_limb_17_col47, input_state_1_limb_18_col48, input_state_1_limb_19_col49, input_state_1_limb_20_col50, input_state_1_limb_21_col51, input_state_1_limb_22_col52, input_state_1_limb_23_col53, input_state_1_limb_24_col54, input_state_1_limb_25_col55, input_state_1_limb_26_col56, input_state_1_limb_27_col57];let read_positive_known_id_num_bits_252_output_tmp_51986_9 = PackedFelt252::from_limbs([input_state_1_limb_0_col30, input_state_1_limb_1_col31, input_state_1_limb_2_col32, input_state_1_limb_3_col33, input_state_1_limb_4_col34, input_state_1_limb_5_col35, input_state_1_limb_6_col36, input_state_1_limb_7_col37, input_state_1_limb_8_col38, input_state_1_limb_9_col39, input_state_1_limb_10_col40, input_state_1_limb_11_col41, input_state_1_limb_12_col42, input_state_1_limb_13_col43, input_state_1_limb_14_col44, input_state_1_limb_15_col45, input_state_1_limb_16_col46, input_state_1_limb_17_col47, input_state_1_limb_18_col48, input_state_1_limb_19_col49, input_state_1_limb_20_col50, input_state_1_limb_21_col51, input_state_1_limb_22_col52, input_state_1_limb_23_col53, input_state_1_limb_24_col54, input_state_1_limb_25_col55, input_state_1_limb_26_col56, input_state_1_limb_27_col57]);
 
             let read_positive_num_bits_252_output_tmp_51986_10 = (read_positive_known_id_num_bits_252_output_tmp_51986_9, input_state_1_id_col29);
 
@@ -402,7 +402,7 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_12 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2)));let input_state_2_id_col58 = memory_address_to_id_value_tmp_51986_12;
             *row[58] = input_state_2_id_col58;sub_component_inputs.memory_address_to_id[2] =
                 ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2));
-            *lookup_data.memory_address_to_id_2 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2)), input_state_2_id_col58];
+            lookup_data.memory_address_to_id_2 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_2)), input_state_2_id_col58];
 
             // Read Positive Known Id Num Bits 252.
 
@@ -436,7 +436,7 @@ fn write_trace_simd(
             *row[85] = input_state_2_limb_26_col85;let input_state_2_limb_27_col86 = memory_id_to_big_value_tmp_51986_14.get_m31(27);
             *row[86] = input_state_2_limb_27_col86;sub_component_inputs.memory_id_to_big[2] =
                 input_state_2_id_col58;
-            *lookup_data.memory_id_to_big_2 = [input_state_2_id_col58, input_state_2_limb_0_col59, input_state_2_limb_1_col60, input_state_2_limb_2_col61, input_state_2_limb_3_col62, input_state_2_limb_4_col63, input_state_2_limb_5_col64, input_state_2_limb_6_col65, input_state_2_limb_7_col66, input_state_2_limb_8_col67, input_state_2_limb_9_col68, input_state_2_limb_10_col69, input_state_2_limb_11_col70, input_state_2_limb_12_col71, input_state_2_limb_13_col72, input_state_2_limb_14_col73, input_state_2_limb_15_col74, input_state_2_limb_16_col75, input_state_2_limb_17_col76, input_state_2_limb_18_col77, input_state_2_limb_19_col78, input_state_2_limb_20_col79, input_state_2_limb_21_col80, input_state_2_limb_22_col81, input_state_2_limb_23_col82, input_state_2_limb_24_col83, input_state_2_limb_25_col84, input_state_2_limb_26_col85, input_state_2_limb_27_col86];let read_positive_known_id_num_bits_252_output_tmp_51986_15 = PackedFelt252::from_limbs([input_state_2_limb_0_col59, input_state_2_limb_1_col60, input_state_2_limb_2_col61, input_state_2_limb_3_col62, input_state_2_limb_4_col63, input_state_2_limb_5_col64, input_state_2_limb_6_col65, input_state_2_limb_7_col66, input_state_2_limb_8_col67, input_state_2_limb_9_col68, input_state_2_limb_10_col69, input_state_2_limb_11_col70, input_state_2_limb_12_col71, input_state_2_limb_13_col72, input_state_2_limb_14_col73, input_state_2_limb_15_col74, input_state_2_limb_16_col75, input_state_2_limb_17_col76, input_state_2_limb_18_col77, input_state_2_limb_19_col78, input_state_2_limb_20_col79, input_state_2_limb_21_col80, input_state_2_limb_22_col81, input_state_2_limb_23_col82, input_state_2_limb_24_col83, input_state_2_limb_25_col84, input_state_2_limb_26_col85, input_state_2_limb_27_col86]);
+            lookup_data.memory_id_to_big_2 = [input_state_2_id_col58, input_state_2_limb_0_col59, input_state_2_limb_1_col60, input_state_2_limb_2_col61, input_state_2_limb_3_col62, input_state_2_limb_4_col63, input_state_2_limb_5_col64, input_state_2_limb_6_col65, input_state_2_limb_7_col66, input_state_2_limb_8_col67, input_state_2_limb_9_col68, input_state_2_limb_10_col69, input_state_2_limb_11_col70, input_state_2_limb_12_col71, input_state_2_limb_13_col72, input_state_2_limb_14_col73, input_state_2_limb_15_col74, input_state_2_limb_16_col75, input_state_2_limb_17_col76, input_state_2_limb_18_col77, input_state_2_limb_19_col78, input_state_2_limb_20_col79, input_state_2_limb_21_col80, input_state_2_limb_22_col81, input_state_2_limb_23_col82, input_state_2_limb_24_col83, input_state_2_limb_25_col84, input_state_2_limb_26_col85, input_state_2_limb_27_col86];let read_positive_known_id_num_bits_252_output_tmp_51986_15 = PackedFelt252::from_limbs([input_state_2_limb_0_col59, input_state_2_limb_1_col60, input_state_2_limb_2_col61, input_state_2_limb_3_col62, input_state_2_limb_4_col63, input_state_2_limb_5_col64, input_state_2_limb_6_col65, input_state_2_limb_7_col66, input_state_2_limb_8_col67, input_state_2_limb_9_col68, input_state_2_limb_10_col69, input_state_2_limb_11_col70, input_state_2_limb_12_col71, input_state_2_limb_13_col72, input_state_2_limb_14_col73, input_state_2_limb_15_col74, input_state_2_limb_16_col75, input_state_2_limb_17_col76, input_state_2_limb_18_col77, input_state_2_limb_19_col78, input_state_2_limb_20_col79, input_state_2_limb_21_col80, input_state_2_limb_22_col81, input_state_2_limb_23_col82, input_state_2_limb_24_col83, input_state_2_limb_25_col84, input_state_2_limb_26_col85, input_state_2_limb_27_col86]);
 
             let read_positive_num_bits_252_output_tmp_51986_16 = (read_positive_known_id_num_bits_252_output_tmp_51986_15, input_state_2_id_col58);
 
@@ -489,7 +489,7 @@ fn write_trace_simd(
             *row[118] = combination_limb_9_col118;let biased_limb_accumulator_u32_tmp_51986_61 = PackedUInt32::from_m31(((((((packed_input_state_2_tmp_51986_17.get_m31(0)) + (M31_4883209))) - (combination_limb_0_col109))) + (M31_134217729)));let p_coef_col119 = ((biased_limb_accumulator_u32_tmp_51986_61.low().as_m31()) - (M31_1));
             *row[119] = p_coef_col119;let carry_0_tmp_51986_62 = ((((((((packed_input_state_2_tmp_51986_17.get_m31(0)) + (M31_4883209))) - (combination_limb_0_col109))) - (p_coef_col119))) * (M31_16));let carry_1_tmp_51986_63 = ((((((((carry_0_tmp_51986_62) + (packed_input_state_2_tmp_51986_17.get_m31(1)))) + (M31_28820206))) - (combination_limb_1_col110))) * (M31_16));let carry_2_tmp_51986_64 = ((((((((carry_1_tmp_51986_63) + (packed_input_state_2_tmp_51986_17.get_m31(2)))) + (M31_79012328))) - (combination_limb_2_col111))) * (M31_16));let carry_3_tmp_51986_65 = ((((((((carry_2_tmp_51986_64) + (packed_input_state_2_tmp_51986_17.get_m31(3)))) + (M31_49157069))) - (combination_limb_3_col112))) * (M31_16));let carry_4_tmp_51986_66 = ((((((((carry_3_tmp_51986_65) + (packed_input_state_2_tmp_51986_17.get_m31(4)))) + (M31_78826183))) - (combination_limb_4_col113))) * (M31_16));let carry_5_tmp_51986_67 = ((((((((carry_4_tmp_51986_66) + (packed_input_state_2_tmp_51986_17.get_m31(5)))) + (M31_72285071))) - (combination_limb_5_col114))) * (M31_16));let carry_6_tmp_51986_68 = ((((((((carry_5_tmp_51986_67) + (packed_input_state_2_tmp_51986_17.get_m31(6)))) + (M31_33413160))) - (combination_limb_6_col115))) * (M31_16));let carry_7_tmp_51986_69 = ((((((((((carry_6_tmp_51986_68) + (packed_input_state_2_tmp_51986_17.get_m31(7)))) + (M31_90842759))) - (combination_limb_7_col116))) - (((p_coef_col119) * (M31_136))))) * (M31_16));let carry_8_tmp_51986_70 = ((((((((carry_7_tmp_51986_69) + (packed_input_state_2_tmp_51986_17.get_m31(8)))) + (M31_60124463))) - (combination_limb_8_col117))) * (M31_16));let linear_combination_n_2_coefs_1_1_output_tmp_51986_80 = combination_tmp_51986_60;
 
-            let poseidon_full_round_chain_chain_tmp_tmp_51986_81 = ((seq) * (M31_2));*lookup_data.poseidon_full_round_chain_0 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_0, combination_limb_0_col87, combination_limb_1_col88, combination_limb_2_col89, combination_limb_3_col90, combination_limb_4_col91, combination_limb_5_col92, combination_limb_6_col93, combination_limb_7_col94, combination_limb_8_col95, combination_limb_9_col96, combination_limb_0_col98, combination_limb_1_col99, combination_limb_2_col100, combination_limb_3_col101, combination_limb_4_col102, combination_limb_5_col103, combination_limb_6_col104, combination_limb_7_col105, combination_limb_8_col106, combination_limb_9_col107, combination_limb_0_col109, combination_limb_1_col110, combination_limb_2_col111, combination_limb_3_col112, combination_limb_4_col113, combination_limb_5_col114, combination_limb_6_col115, combination_limb_7_col116, combination_limb_8_col117, combination_limb_9_col118];sub_component_inputs.poseidon_full_round_chain[0] =
+            let poseidon_full_round_chain_chain_tmp_tmp_51986_81 = ((seq) * (M31_2));lookup_data.poseidon_full_round_chain_0 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_0, combination_limb_0_col87, combination_limb_1_col88, combination_limb_2_col89, combination_limb_3_col90, combination_limb_4_col91, combination_limb_5_col92, combination_limb_6_col93, combination_limb_7_col94, combination_limb_8_col95, combination_limb_9_col96, combination_limb_0_col98, combination_limb_1_col99, combination_limb_2_col100, combination_limb_3_col101, combination_limb_4_col102, combination_limb_5_col103, combination_limb_6_col104, combination_limb_7_col105, combination_limb_8_col106, combination_limb_9_col107, combination_limb_0_col109, combination_limb_1_col110, combination_limb_2_col111, combination_limb_3_col112, combination_limb_4_col113, combination_limb_5_col114, combination_limb_6_col115, combination_limb_7_col116, combination_limb_8_col117, combination_limb_9_col118];sub_component_inputs.poseidon_full_round_chain[0] =
                 (poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_0, [linear_combination_n_2_coefs_1_1_output_tmp_51986_38, linear_combination_n_2_coefs_1_1_output_tmp_51986_59, linear_combination_n_2_coefs_1_1_output_tmp_51986_80]);
             let poseidon_full_round_chain_output_round_0_tmp_51986_82 = PackedPoseidonFullRoundChain::deduce_output((poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_0, [linear_combination_n_2_coefs_1_1_output_tmp_51986_38, linear_combination_n_2_coefs_1_1_output_tmp_51986_59, linear_combination_n_2_coefs_1_1_output_tmp_51986_80]));sub_component_inputs.poseidon_full_round_chain[1] =
                 (poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_1, [poseidon_full_round_chain_output_round_0_tmp_51986_82.2[0], poseidon_full_round_chain_output_round_0_tmp_51986_82.2[1], poseidon_full_round_chain_output_round_0_tmp_51986_82.2[2]]);
@@ -527,11 +527,11 @@ fn write_trace_simd(
             *row[146] = poseidon_full_round_chain_output_limb_26_col146;let poseidon_full_round_chain_output_limb_27_col147 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(7);
             *row[147] = poseidon_full_round_chain_output_limb_27_col147;let poseidon_full_round_chain_output_limb_28_col148 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(8);
             *row[148] = poseidon_full_round_chain_output_limb_28_col148;let poseidon_full_round_chain_output_limb_29_col149 = poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2].get_m31(9);
-            *row[149] = poseidon_full_round_chain_output_limb_29_col149;*lookup_data.poseidon_full_round_chain_1 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_4, poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129, poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139, poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149];sub_component_inputs.range_check_252_width_27[0] =
+            *row[149] = poseidon_full_round_chain_output_limb_29_col149;lookup_data.poseidon_full_round_chain_1 = [poseidon_full_round_chain_chain_tmp_tmp_51986_81, M31_4, poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129, poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139, poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149];sub_component_inputs.range_check_252_width_27[0] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[0];
-            *lookup_data.range_check_252_width_27_0 = [poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129];sub_component_inputs.range_check_252_width_27[1] =
+            lookup_data.range_check_252_width_27_0 = [poseidon_full_round_chain_output_limb_0_col120, poseidon_full_round_chain_output_limb_1_col121, poseidon_full_round_chain_output_limb_2_col122, poseidon_full_round_chain_output_limb_3_col123, poseidon_full_round_chain_output_limb_4_col124, poseidon_full_round_chain_output_limb_5_col125, poseidon_full_round_chain_output_limb_6_col126, poseidon_full_round_chain_output_limb_7_col127, poseidon_full_round_chain_output_limb_8_col128, poseidon_full_round_chain_output_limb_9_col129];sub_component_inputs.range_check_252_width_27[1] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[1];
-            *lookup_data.range_check_252_width_27_1 = [poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139];sub_component_inputs.cube_252[0] =
+            lookup_data.range_check_252_width_27_1 = [poseidon_full_round_chain_output_limb_10_col130, poseidon_full_round_chain_output_limb_11_col131, poseidon_full_round_chain_output_limb_12_col132, poseidon_full_round_chain_output_limb_13_col133, poseidon_full_round_chain_output_limb_14_col134, poseidon_full_round_chain_output_limb_15_col135, poseidon_full_round_chain_output_limb_16_col136, poseidon_full_round_chain_output_limb_17_col137, poseidon_full_round_chain_output_limb_18_col138, poseidon_full_round_chain_output_limb_19_col139];sub_component_inputs.cube_252[0] =
                 poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2];
             let cube_252_output_tmp_51986_86 = PackedCube252::deduce_output(poseidon_full_round_chain_output_round_3_tmp_51986_85.2[2]);let cube_252_output_limb_0_col150 = cube_252_output_tmp_51986_86.get_m31(0);
             *row[150] = cube_252_output_limb_0_col150;let cube_252_output_limb_1_col151 = cube_252_output_tmp_51986_86.get_m31(1);
@@ -543,7 +543,7 @@ fn write_trace_simd(
             *row[156] = cube_252_output_limb_6_col156;let cube_252_output_limb_7_col157 = cube_252_output_tmp_51986_86.get_m31(7);
             *row[157] = cube_252_output_limb_7_col157;let cube_252_output_limb_8_col158 = cube_252_output_tmp_51986_86.get_m31(8);
             *row[158] = cube_252_output_limb_8_col158;let cube_252_output_limb_9_col159 = cube_252_output_tmp_51986_86.get_m31(9);
-            *row[159] = cube_252_output_limb_9_col159;*lookup_data.cube_252_0 = [poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149, cube_252_output_limb_0_col150, cube_252_output_limb_1_col151, cube_252_output_limb_2_col152, cube_252_output_limb_3_col153, cube_252_output_limb_4_col154, cube_252_output_limb_5_col155, cube_252_output_limb_6_col156, cube_252_output_limb_7_col157, cube_252_output_limb_8_col158, cube_252_output_limb_9_col159];
+            *row[159] = cube_252_output_limb_9_col159;lookup_data.cube_252_0 = [poseidon_full_round_chain_output_limb_20_col140, poseidon_full_round_chain_output_limb_21_col141, poseidon_full_round_chain_output_limb_22_col142, poseidon_full_round_chain_output_limb_23_col143, poseidon_full_round_chain_output_limb_24_col144, poseidon_full_round_chain_output_limb_25_col145, poseidon_full_round_chain_output_limb_26_col146, poseidon_full_round_chain_output_limb_27_col147, poseidon_full_round_chain_output_limb_28_col148, poseidon_full_round_chain_output_limb_29_col149, cube_252_output_limb_0_col150, cube_252_output_limb_1_col151, cube_252_output_limb_2_col152, cube_252_output_limb_3_col153, cube_252_output_limb_4_col154, cube_252_output_limb_5_col155, cube_252_output_limb_6_col156, cube_252_output_limb_7_col157, cube_252_output_limb_8_col158, cube_252_output_limb_9_col159];
 
             // Linear Combination N 4 Coefs 1 1 M 2 1.
 
@@ -560,9 +560,9 @@ fn write_trace_simd(
             *row[169] = combination_limb_9_col169;let biased_limb_accumulator_u32_tmp_51986_88 = PackedUInt32::from_m31(((((((((((poseidon_full_round_chain_output_limb_0_col120) + (poseidon_full_round_chain_output_limb_10_col130))) - (((M31_2) * (cube_252_output_limb_0_col150))))) + (M31_103094260))) - (combination_limb_0_col160))) + (M31_402653187)));let p_coef_col170 = ((biased_limb_accumulator_u32_tmp_51986_88.low().as_m31()) - (M31_3));
             *row[170] = p_coef_col170;let carry_0_tmp_51986_89 = ((((((((((((poseidon_full_round_chain_output_limb_0_col120) + (poseidon_full_round_chain_output_limb_10_col130))) - (((M31_2) * (cube_252_output_limb_0_col150))))) + (M31_103094260))) - (combination_limb_0_col160))) - (p_coef_col170))) * (M31_16));let carry_1_tmp_51986_90 = ((((((((((((carry_0_tmp_51986_89) + (poseidon_full_round_chain_output_limb_1_col121))) + (poseidon_full_round_chain_output_limb_11_col131))) - (((M31_2) * (cube_252_output_limb_1_col151))))) + (M31_121146754))) - (combination_limb_1_col161))) * (M31_16));let carry_2_tmp_51986_91 = ((((((((((((carry_1_tmp_51986_90) + (poseidon_full_round_chain_output_limb_2_col122))) + (poseidon_full_round_chain_output_limb_12_col132))) - (((M31_2) * (cube_252_output_limb_2_col152))))) + (M31_95050340))) - (combination_limb_2_col162))) * (M31_16));let carry_3_tmp_51986_92 = ((((((((((((carry_2_tmp_51986_91) + (poseidon_full_round_chain_output_limb_3_col123))) + (poseidon_full_round_chain_output_limb_13_col133))) - (((M31_2) * (cube_252_output_limb_3_col153))))) + (M31_16173996))) - (combination_limb_3_col163))) * (M31_16));let carry_4_tmp_51986_93 = ((((((((((((carry_3_tmp_51986_92) + (poseidon_full_round_chain_output_limb_4_col124))) + (poseidon_full_round_chain_output_limb_14_col134))) - (((M31_2) * (cube_252_output_limb_4_col154))))) + (M31_50758155))) - (combination_limb_4_col164))) * (M31_16));let carry_5_tmp_51986_94 = ((((((((((((carry_4_tmp_51986_93) + (poseidon_full_round_chain_output_limb_5_col125))) + (poseidon_full_round_chain_output_limb_15_col135))) - (((M31_2) * (cube_252_output_limb_5_col155))))) + (M31_54415179))) - (combination_limb_5_col165))) * (M31_16));let carry_6_tmp_51986_95 = ((((((((((((carry_5_tmp_51986_94) + (poseidon_full_round_chain_output_limb_6_col126))) + (poseidon_full_round_chain_output_limb_16_col136))) - (((M31_2) * (cube_252_output_limb_6_col156))))) + (M31_19292069))) - (combination_limb_6_col166))) * (M31_16));let carry_7_tmp_51986_96 = ((((((((((((((carry_6_tmp_51986_95) + (poseidon_full_round_chain_output_limb_7_col127))) + (poseidon_full_round_chain_output_limb_17_col137))) - (((M31_2) * (cube_252_output_limb_7_col157))))) + (M31_45351266))) - (combination_limb_7_col167))) - (((p_coef_col170) * (M31_136))))) * (M31_16));let carry_8_tmp_51986_97 = ((((((((((((carry_7_tmp_51986_96) + (poseidon_full_round_chain_output_limb_8_col128))) + (poseidon_full_round_chain_output_limb_18_col138))) - (((M31_2) * (cube_252_output_limb_8_col158))))) + (M31_122233508))) - (combination_limb_8_col168))) * (M31_16));sub_component_inputs.range_check_3_3_3_3_3[0] =
                 [((p_coef_col170) + (M31_3)), ((carry_0_tmp_51986_89) + (M31_3)), ((carry_1_tmp_51986_90) + (M31_3)), ((carry_2_tmp_51986_91) + (M31_3)), ((carry_3_tmp_51986_92) + (M31_3))];
-            *lookup_data.range_check_3_3_3_3_3_0 = [((p_coef_col170) + (M31_3)), ((carry_0_tmp_51986_89) + (M31_3)), ((carry_1_tmp_51986_90) + (M31_3)), ((carry_2_tmp_51986_91) + (M31_3)), ((carry_3_tmp_51986_92) + (M31_3))];sub_component_inputs.range_check_3_3_3_3_3[1] =
+            lookup_data.range_check_3_3_3_3_3_0 = [((p_coef_col170) + (M31_3)), ((carry_0_tmp_51986_89) + (M31_3)), ((carry_1_tmp_51986_90) + (M31_3)), ((carry_2_tmp_51986_91) + (M31_3)), ((carry_3_tmp_51986_92) + (M31_3))];sub_component_inputs.range_check_3_3_3_3_3[1] =
                 [((carry_4_tmp_51986_93) + (M31_3)), ((carry_5_tmp_51986_94) + (M31_3)), ((carry_6_tmp_51986_95) + (M31_3)), ((carry_7_tmp_51986_96) + (M31_3)), ((carry_8_tmp_51986_97) + (M31_3))];
-            *lookup_data.range_check_3_3_3_3_3_1 = [((carry_4_tmp_51986_93) + (M31_3)), ((carry_5_tmp_51986_94) + (M31_3)), ((carry_6_tmp_51986_95) + (M31_3)), ((carry_7_tmp_51986_96) + (M31_3)), ((carry_8_tmp_51986_97) + (M31_3))];let linear_combination_n_4_coefs_1_1_m2_1_output_tmp_51986_98 = combination_tmp_51986_87;
+            lookup_data.range_check_3_3_3_3_3_1 = [((carry_4_tmp_51986_93) + (M31_3)), ((carry_5_tmp_51986_94) + (M31_3)), ((carry_6_tmp_51986_95) + (M31_3)), ((carry_7_tmp_51986_96) + (M31_3)), ((carry_8_tmp_51986_97) + (M31_3))];let linear_combination_n_4_coefs_1_1_m2_1_output_tmp_51986_98 = combination_tmp_51986_87;
 
             sub_component_inputs.cube_252[1] =
                 linear_combination_n_4_coefs_1_1_m2_1_output_tmp_51986_98;
@@ -576,7 +576,7 @@ fn write_trace_simd(
             *row[177] = cube_252_output_limb_6_col177;let cube_252_output_limb_7_col178 = cube_252_output_tmp_51986_99.get_m31(7);
             *row[178] = cube_252_output_limb_7_col178;let cube_252_output_limb_8_col179 = cube_252_output_tmp_51986_99.get_m31(8);
             *row[179] = cube_252_output_limb_8_col179;let cube_252_output_limb_9_col180 = cube_252_output_tmp_51986_99.get_m31(9);
-            *row[180] = cube_252_output_limb_9_col180;*lookup_data.cube_252_1 = [combination_limb_0_col160, combination_limb_1_col161, combination_limb_2_col162, combination_limb_3_col163, combination_limb_4_col164, combination_limb_5_col165, combination_limb_6_col166, combination_limb_7_col167, combination_limb_8_col168, combination_limb_9_col169, cube_252_output_limb_0_col171, cube_252_output_limb_1_col172, cube_252_output_limb_2_col173, cube_252_output_limb_3_col174, cube_252_output_limb_4_col175, cube_252_output_limb_5_col176, cube_252_output_limb_6_col177, cube_252_output_limb_7_col178, cube_252_output_limb_8_col179, cube_252_output_limb_9_col180];
+            *row[180] = cube_252_output_limb_9_col180;lookup_data.cube_252_1 = [combination_limb_0_col160, combination_limb_1_col161, combination_limb_2_col162, combination_limb_3_col163, combination_limb_4_col164, combination_limb_5_col165, combination_limb_6_col166, combination_limb_7_col167, combination_limb_8_col168, combination_limb_9_col169, cube_252_output_limb_0_col171, cube_252_output_limb_1_col172, cube_252_output_limb_2_col173, cube_252_output_limb_3_col174, cube_252_output_limb_4_col175, cube_252_output_limb_5_col176, cube_252_output_limb_6_col177, cube_252_output_limb_7_col178, cube_252_output_limb_8_col179, cube_252_output_limb_9_col180];
 
             // Linear Combination N 4 Coefs 4 2 M 2 1.
 
@@ -593,13 +593,13 @@ fn write_trace_simd(
             *row[190] = combination_limb_9_col190;let biased_limb_accumulator_u32_tmp_51986_101 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_full_round_chain_output_limb_0_col120))) + (((M31_2) * (cube_252_output_limb_0_col150))))) - (((M31_2) * (cube_252_output_limb_0_col171))))) + (M31_121657377))) - (combination_limb_0_col181))) + (M31_402653187)));let p_coef_col191 = ((biased_limb_accumulator_u32_tmp_51986_101.low().as_m31()) - (M31_3));
             *row[191] = p_coef_col191;let carry_0_tmp_51986_102 = ((((((((((((((M31_4) * (poseidon_full_round_chain_output_limb_0_col120))) + (((M31_2) * (cube_252_output_limb_0_col150))))) - (((M31_2) * (cube_252_output_limb_0_col171))))) + (M31_121657377))) - (combination_limb_0_col181))) - (p_coef_col191))) * (M31_16));let carry_1_tmp_51986_103 = ((((((((((((carry_0_tmp_51986_102) + (((M31_4) * (poseidon_full_round_chain_output_limb_1_col121))))) + (((M31_2) * (cube_252_output_limb_1_col151))))) - (((M31_2) * (cube_252_output_limb_1_col172))))) + (M31_112479959))) - (combination_limb_1_col182))) * (M31_16));let carry_2_tmp_51986_104 = ((((((((((((carry_1_tmp_51986_103) + (((M31_4) * (poseidon_full_round_chain_output_limb_2_col122))))) + (((M31_2) * (cube_252_output_limb_2_col152))))) - (((M31_2) * (cube_252_output_limb_2_col173))))) + (M31_130418270))) - (combination_limb_2_col183))) * (M31_16));let carry_3_tmp_51986_105 = ((((((((((((carry_2_tmp_51986_104) + (((M31_4) * (poseidon_full_round_chain_output_limb_3_col123))))) + (((M31_2) * (cube_252_output_limb_3_col153))))) - (((M31_2) * (cube_252_output_limb_3_col174))))) + (M31_4974792))) - (combination_limb_3_col184))) * (M31_16));let carry_4_tmp_51986_106 = ((((((((((((carry_3_tmp_51986_105) + (((M31_4) * (poseidon_full_round_chain_output_limb_4_col124))))) + (((M31_2) * (cube_252_output_limb_4_col154))))) - (((M31_2) * (cube_252_output_limb_4_col175))))) + (M31_59852719))) - (combination_limb_4_col185))) * (M31_16));let carry_5_tmp_51986_107 = ((((((((((((carry_4_tmp_51986_106) + (((M31_4) * (poseidon_full_round_chain_output_limb_5_col125))))) + (((M31_2) * (cube_252_output_limb_5_col155))))) - (((M31_2) * (cube_252_output_limb_5_col176))))) + (M31_120369218))) - (combination_limb_5_col186))) * (M31_16));let carry_6_tmp_51986_108 = ((((((((((((carry_5_tmp_51986_107) + (((M31_4) * (poseidon_full_round_chain_output_limb_6_col126))))) + (((M31_2) * (cube_252_output_limb_6_col156))))) - (((M31_2) * (cube_252_output_limb_6_col177))))) + (M31_62439890))) - (combination_limb_6_col187))) * (M31_16));let carry_7_tmp_51986_109 = ((((((((((((((carry_6_tmp_51986_108) + (((M31_4) * (poseidon_full_round_chain_output_limb_7_col127))))) + (((M31_2) * (cube_252_output_limb_7_col157))))) - (((M31_2) * (cube_252_output_limb_7_col178))))) + (M31_50468641))) - (combination_limb_7_col188))) - (((p_coef_col191) * (M31_136))))) * (M31_16));let carry_8_tmp_51986_110 = ((((((((((((carry_7_tmp_51986_109) + (((M31_4) * (poseidon_full_round_chain_output_limb_8_col128))))) + (((M31_2) * (cube_252_output_limb_8_col158))))) - (((M31_2) * (cube_252_output_limb_8_col179))))) + (M31_86573645))) - (combination_limb_8_col189))) * (M31_16));sub_component_inputs.range_check_4_4_4_4[0] =
                 [((p_coef_col191) + (M31_3)), ((carry_0_tmp_51986_102) + (M31_3)), ((carry_1_tmp_51986_103) + (M31_3)), ((carry_2_tmp_51986_104) + (M31_3))];
-            *lookup_data.range_check_4_4_4_4_0 = [((p_coef_col191) + (M31_3)), ((carry_0_tmp_51986_102) + (M31_3)), ((carry_1_tmp_51986_103) + (M31_3)), ((carry_2_tmp_51986_104) + (M31_3))];sub_component_inputs.range_check_4_4_4_4[1] =
+            lookup_data.range_check_4_4_4_4_0 = [((p_coef_col191) + (M31_3)), ((carry_0_tmp_51986_102) + (M31_3)), ((carry_1_tmp_51986_103) + (M31_3)), ((carry_2_tmp_51986_104) + (M31_3))];sub_component_inputs.range_check_4_4_4_4[1] =
                 [((carry_3_tmp_51986_105) + (M31_3)), ((carry_4_tmp_51986_106) + (M31_3)), ((carry_5_tmp_51986_107) + (M31_3)), ((carry_6_tmp_51986_108) + (M31_3))];
-            *lookup_data.range_check_4_4_4_4_1 = [((carry_3_tmp_51986_105) + (M31_3)), ((carry_4_tmp_51986_106) + (M31_3)), ((carry_5_tmp_51986_107) + (M31_3)), ((carry_6_tmp_51986_108) + (M31_3))];sub_component_inputs.range_check_4_4[0] =
+            lookup_data.range_check_4_4_4_4_1 = [((carry_3_tmp_51986_105) + (M31_3)), ((carry_4_tmp_51986_106) + (M31_3)), ((carry_5_tmp_51986_107) + (M31_3)), ((carry_6_tmp_51986_108) + (M31_3))];sub_component_inputs.range_check_4_4[0] =
                 [((carry_7_tmp_51986_109) + (M31_3)), ((carry_8_tmp_51986_110) + (M31_3))];
-            *lookup_data.range_check_4_4_0 = [((carry_7_tmp_51986_109) + (M31_3)), ((carry_8_tmp_51986_110) + (M31_3))];let linear_combination_n_4_coefs_4_2_m2_1_output_tmp_51986_111 = combination_tmp_51986_100;
+            lookup_data.range_check_4_4_0 = [((carry_7_tmp_51986_109) + (M31_3)), ((carry_8_tmp_51986_110) + (M31_3))];let linear_combination_n_4_coefs_4_2_m2_1_output_tmp_51986_111 = combination_tmp_51986_100;
 
-            *lookup_data.poseidon_3_partial_rounds_chain_0 = [seq, M31_4, cube_252_output_limb_0_col150, cube_252_output_limb_1_col151, cube_252_output_limb_2_col152, cube_252_output_limb_3_col153, cube_252_output_limb_4_col154, cube_252_output_limb_5_col155, cube_252_output_limb_6_col156, cube_252_output_limb_7_col157, cube_252_output_limb_8_col158, cube_252_output_limb_9_col159, combination_limb_0_col160, combination_limb_1_col161, combination_limb_2_col162, combination_limb_3_col163, combination_limb_4_col164, combination_limb_5_col165, combination_limb_6_col166, combination_limb_7_col167, combination_limb_8_col168, combination_limb_9_col169, cube_252_output_limb_0_col171, cube_252_output_limb_1_col172, cube_252_output_limb_2_col173, cube_252_output_limb_3_col174, cube_252_output_limb_4_col175, cube_252_output_limb_5_col176, cube_252_output_limb_6_col177, cube_252_output_limb_7_col178, cube_252_output_limb_8_col179, cube_252_output_limb_9_col180, combination_limb_0_col181, combination_limb_1_col182, combination_limb_2_col183, combination_limb_3_col184, combination_limb_4_col185, combination_limb_5_col186, combination_limb_6_col187, combination_limb_7_col188, combination_limb_8_col189, combination_limb_9_col190];sub_component_inputs.poseidon_3_partial_rounds_chain[0] =
+            lookup_data.poseidon_3_partial_rounds_chain_0 = [seq, M31_4, cube_252_output_limb_0_col150, cube_252_output_limb_1_col151, cube_252_output_limb_2_col152, cube_252_output_limb_3_col153, cube_252_output_limb_4_col154, cube_252_output_limb_5_col155, cube_252_output_limb_6_col156, cube_252_output_limb_7_col157, cube_252_output_limb_8_col158, cube_252_output_limb_9_col159, combination_limb_0_col160, combination_limb_1_col161, combination_limb_2_col162, combination_limb_3_col163, combination_limb_4_col164, combination_limb_5_col165, combination_limb_6_col166, combination_limb_7_col167, combination_limb_8_col168, combination_limb_9_col169, cube_252_output_limb_0_col171, cube_252_output_limb_1_col172, cube_252_output_limb_2_col173, cube_252_output_limb_3_col174, cube_252_output_limb_4_col175, cube_252_output_limb_5_col176, cube_252_output_limb_6_col177, cube_252_output_limb_7_col178, cube_252_output_limb_8_col179, cube_252_output_limb_9_col180, combination_limb_0_col181, combination_limb_1_col182, combination_limb_2_col183, combination_limb_3_col184, combination_limb_4_col185, combination_limb_5_col186, combination_limb_6_col187, combination_limb_7_col188, combination_limb_8_col189, combination_limb_9_col190];sub_component_inputs.poseidon_3_partial_rounds_chain[0] =
                 (seq, M31_4, [cube_252_output_tmp_51986_86, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_51986_98, cube_252_output_tmp_51986_99, linear_combination_n_4_coefs_4_2_m2_1_output_tmp_51986_111]);
             let poseidon_3_partial_rounds_chain_output_round_4_tmp_51986_113 = PackedPoseidon3PartialRoundsChain::deduce_output((seq, M31_4, [cube_252_output_tmp_51986_86, linear_combination_n_4_coefs_1_1_m2_1_output_tmp_51986_98, cube_252_output_tmp_51986_99, linear_combination_n_4_coefs_4_2_m2_1_output_tmp_51986_111]));sub_component_inputs.poseidon_3_partial_rounds_chain[1] =
                 (seq, M31_5, [poseidon_3_partial_rounds_chain_output_round_4_tmp_51986_113.2[0], poseidon_3_partial_rounds_chain_output_round_4_tmp_51986_113.2[1], poseidon_3_partial_rounds_chain_output_round_4_tmp_51986_113.2[2], poseidon_3_partial_rounds_chain_output_round_4_tmp_51986_113.2[3]]);
@@ -693,7 +693,7 @@ fn write_trace_simd(
             *row[228] = poseidon_3_partial_rounds_chain_output_limb_36_col228;let poseidon_3_partial_rounds_chain_output_limb_37_col229 = poseidon_3_partial_rounds_chain_output_round_30_tmp_51986_139.2[3].get_m31(7);
             *row[229] = poseidon_3_partial_rounds_chain_output_limb_37_col229;let poseidon_3_partial_rounds_chain_output_limb_38_col230 = poseidon_3_partial_rounds_chain_output_round_30_tmp_51986_139.2[3].get_m31(8);
             *row[230] = poseidon_3_partial_rounds_chain_output_limb_38_col230;let poseidon_3_partial_rounds_chain_output_limb_39_col231 = poseidon_3_partial_rounds_chain_output_round_30_tmp_51986_139.2[3].get_m31(9);
-            *row[231] = poseidon_3_partial_rounds_chain_output_limb_39_col231;*lookup_data.poseidon_3_partial_rounds_chain_1 = [seq, M31_31, poseidon_3_partial_rounds_chain_output_limb_0_col192, poseidon_3_partial_rounds_chain_output_limb_1_col193, poseidon_3_partial_rounds_chain_output_limb_2_col194, poseidon_3_partial_rounds_chain_output_limb_3_col195, poseidon_3_partial_rounds_chain_output_limb_4_col196, poseidon_3_partial_rounds_chain_output_limb_5_col197, poseidon_3_partial_rounds_chain_output_limb_6_col198, poseidon_3_partial_rounds_chain_output_limb_7_col199, poseidon_3_partial_rounds_chain_output_limb_8_col200, poseidon_3_partial_rounds_chain_output_limb_9_col201, poseidon_3_partial_rounds_chain_output_limb_10_col202, poseidon_3_partial_rounds_chain_output_limb_11_col203, poseidon_3_partial_rounds_chain_output_limb_12_col204, poseidon_3_partial_rounds_chain_output_limb_13_col205, poseidon_3_partial_rounds_chain_output_limb_14_col206, poseidon_3_partial_rounds_chain_output_limb_15_col207, poseidon_3_partial_rounds_chain_output_limb_16_col208, poseidon_3_partial_rounds_chain_output_limb_17_col209, poseidon_3_partial_rounds_chain_output_limb_18_col210, poseidon_3_partial_rounds_chain_output_limb_19_col211, poseidon_3_partial_rounds_chain_output_limb_20_col212, poseidon_3_partial_rounds_chain_output_limb_21_col213, poseidon_3_partial_rounds_chain_output_limb_22_col214, poseidon_3_partial_rounds_chain_output_limb_23_col215, poseidon_3_partial_rounds_chain_output_limb_24_col216, poseidon_3_partial_rounds_chain_output_limb_25_col217, poseidon_3_partial_rounds_chain_output_limb_26_col218, poseidon_3_partial_rounds_chain_output_limb_27_col219, poseidon_3_partial_rounds_chain_output_limb_28_col220, poseidon_3_partial_rounds_chain_output_limb_29_col221, poseidon_3_partial_rounds_chain_output_limb_30_col222, poseidon_3_partial_rounds_chain_output_limb_31_col223, poseidon_3_partial_rounds_chain_output_limb_32_col224, poseidon_3_partial_rounds_chain_output_limb_33_col225, poseidon_3_partial_rounds_chain_output_limb_34_col226, poseidon_3_partial_rounds_chain_output_limb_35_col227, poseidon_3_partial_rounds_chain_output_limb_36_col228, poseidon_3_partial_rounds_chain_output_limb_37_col229, poseidon_3_partial_rounds_chain_output_limb_38_col230, poseidon_3_partial_rounds_chain_output_limb_39_col231];
+            *row[231] = poseidon_3_partial_rounds_chain_output_limb_39_col231;lookup_data.poseidon_3_partial_rounds_chain_1 = [seq, M31_31, poseidon_3_partial_rounds_chain_output_limb_0_col192, poseidon_3_partial_rounds_chain_output_limb_1_col193, poseidon_3_partial_rounds_chain_output_limb_2_col194, poseidon_3_partial_rounds_chain_output_limb_3_col195, poseidon_3_partial_rounds_chain_output_limb_4_col196, poseidon_3_partial_rounds_chain_output_limb_5_col197, poseidon_3_partial_rounds_chain_output_limb_6_col198, poseidon_3_partial_rounds_chain_output_limb_7_col199, poseidon_3_partial_rounds_chain_output_limb_8_col200, poseidon_3_partial_rounds_chain_output_limb_9_col201, poseidon_3_partial_rounds_chain_output_limb_10_col202, poseidon_3_partial_rounds_chain_output_limb_11_col203, poseidon_3_partial_rounds_chain_output_limb_12_col204, poseidon_3_partial_rounds_chain_output_limb_13_col205, poseidon_3_partial_rounds_chain_output_limb_14_col206, poseidon_3_partial_rounds_chain_output_limb_15_col207, poseidon_3_partial_rounds_chain_output_limb_16_col208, poseidon_3_partial_rounds_chain_output_limb_17_col209, poseidon_3_partial_rounds_chain_output_limb_18_col210, poseidon_3_partial_rounds_chain_output_limb_19_col211, poseidon_3_partial_rounds_chain_output_limb_20_col212, poseidon_3_partial_rounds_chain_output_limb_21_col213, poseidon_3_partial_rounds_chain_output_limb_22_col214, poseidon_3_partial_rounds_chain_output_limb_23_col215, poseidon_3_partial_rounds_chain_output_limb_24_col216, poseidon_3_partial_rounds_chain_output_limb_25_col217, poseidon_3_partial_rounds_chain_output_limb_26_col218, poseidon_3_partial_rounds_chain_output_limb_27_col219, poseidon_3_partial_rounds_chain_output_limb_28_col220, poseidon_3_partial_rounds_chain_output_limb_29_col221, poseidon_3_partial_rounds_chain_output_limb_30_col222, poseidon_3_partial_rounds_chain_output_limb_31_col223, poseidon_3_partial_rounds_chain_output_limb_32_col224, poseidon_3_partial_rounds_chain_output_limb_33_col225, poseidon_3_partial_rounds_chain_output_limb_34_col226, poseidon_3_partial_rounds_chain_output_limb_35_col227, poseidon_3_partial_rounds_chain_output_limb_36_col228, poseidon_3_partial_rounds_chain_output_limb_37_col229, poseidon_3_partial_rounds_chain_output_limb_38_col230, poseidon_3_partial_rounds_chain_output_limb_39_col231];
 
             // Linear Combination N 4 Coefs 4 2 1 1.
 
@@ -710,11 +710,11 @@ fn write_trace_simd(
             *row[241] = combination_limb_9_col241;let biased_limb_accumulator_u32_tmp_51986_141 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_0_col192))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_10_col202))))) + (poseidon_3_partial_rounds_chain_output_limb_20_col212))) + (M31_40454143))) - (combination_limb_0_col232))) + (M31_134217729)));let p_coef_col242 = ((biased_limb_accumulator_u32_tmp_51986_141.low().as_m31()) - (M31_1));
             *row[242] = p_coef_col242;let carry_0_tmp_51986_142 = ((((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_0_col192))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_10_col202))))) + (poseidon_3_partial_rounds_chain_output_limb_20_col212))) + (M31_40454143))) - (combination_limb_0_col232))) - (p_coef_col242))) * (M31_16));let carry_1_tmp_51986_143 = ((((((((((((carry_0_tmp_51986_142) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_1_col193))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_11_col203))))) + (poseidon_3_partial_rounds_chain_output_limb_21_col213))) + (M31_49554771))) - (combination_limb_1_col233))) * (M31_16));let carry_2_tmp_51986_144 = ((((((((((((carry_1_tmp_51986_143) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_2_col194))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_12_col204))))) + (poseidon_3_partial_rounds_chain_output_limb_22_col214))) + (M31_55508188))) - (combination_limb_2_col234))) * (M31_16));let carry_3_tmp_51986_145 = ((((((((((((carry_2_tmp_51986_144) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_3_col195))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_13_col205))))) + (poseidon_3_partial_rounds_chain_output_limb_23_col215))) + (M31_116986206))) - (combination_limb_3_col235))) * (M31_16));let carry_4_tmp_51986_146 = ((((((((((((carry_3_tmp_51986_145) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_4_col196))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_14_col206))))) + (poseidon_3_partial_rounds_chain_output_limb_24_col216))) + (M31_88680813))) - (combination_limb_4_col236))) * (M31_16));let carry_5_tmp_51986_147 = ((((((((((((carry_4_tmp_51986_146) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_5_col197))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_15_col207))))) + (poseidon_3_partial_rounds_chain_output_limb_25_col217))) + (M31_45553283))) - (combination_limb_5_col237))) * (M31_16));let carry_6_tmp_51986_148 = ((((((((((((carry_5_tmp_51986_147) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_6_col198))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_16_col208))))) + (poseidon_3_partial_rounds_chain_output_limb_26_col218))) + (M31_62360091))) - (combination_limb_6_col238))) * (M31_16));let carry_7_tmp_51986_149 = ((((((((((((((carry_6_tmp_51986_148) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_7_col199))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_17_col209))))) + (poseidon_3_partial_rounds_chain_output_limb_27_col219))) + (M31_77099918))) - (combination_limb_7_col239))) - (((p_coef_col242) * (M31_136))))) * (M31_16));let carry_8_tmp_51986_150 = ((((((((((((carry_7_tmp_51986_149) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_8_col200))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_18_col210))))) + (poseidon_3_partial_rounds_chain_output_limb_28_col220))) + (M31_22899501))) - (combination_limb_8_col240))) * (M31_16));sub_component_inputs.range_check_4_4_4_4[2] =
                 [((p_coef_col242) + (M31_1)), ((carry_0_tmp_51986_142) + (M31_1)), ((carry_1_tmp_51986_143) + (M31_1)), ((carry_2_tmp_51986_144) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_2 = [((p_coef_col242) + (M31_1)), ((carry_0_tmp_51986_142) + (M31_1)), ((carry_1_tmp_51986_143) + (M31_1)), ((carry_2_tmp_51986_144) + (M31_1))];sub_component_inputs.range_check_4_4_4_4[3] =
+            lookup_data.range_check_4_4_4_4_2 = [((p_coef_col242) + (M31_1)), ((carry_0_tmp_51986_142) + (M31_1)), ((carry_1_tmp_51986_143) + (M31_1)), ((carry_2_tmp_51986_144) + (M31_1))];sub_component_inputs.range_check_4_4_4_4[3] =
                 [((carry_3_tmp_51986_145) + (M31_1)), ((carry_4_tmp_51986_146) + (M31_1)), ((carry_5_tmp_51986_147) + (M31_1)), ((carry_6_tmp_51986_148) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_3 = [((carry_3_tmp_51986_145) + (M31_1)), ((carry_4_tmp_51986_146) + (M31_1)), ((carry_5_tmp_51986_147) + (M31_1)), ((carry_6_tmp_51986_148) + (M31_1))];sub_component_inputs.range_check_4_4[1] =
+            lookup_data.range_check_4_4_4_4_3 = [((carry_3_tmp_51986_145) + (M31_1)), ((carry_4_tmp_51986_146) + (M31_1)), ((carry_5_tmp_51986_147) + (M31_1)), ((carry_6_tmp_51986_148) + (M31_1))];sub_component_inputs.range_check_4_4[1] =
                 [((carry_7_tmp_51986_149) + (M31_1)), ((carry_8_tmp_51986_150) + (M31_1))];
-            *lookup_data.range_check_4_4_1 = [((carry_7_tmp_51986_149) + (M31_1)), ((carry_8_tmp_51986_150) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_151 = combination_tmp_51986_140;
+            lookup_data.range_check_4_4_1 = [((carry_7_tmp_51986_149) + (M31_1)), ((carry_8_tmp_51986_150) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_151 = combination_tmp_51986_140;
 
             // Linear Combination N 4 Coefs 4 2 1 1.
 
@@ -731,13 +731,13 @@ fn write_trace_simd(
             *row[252] = combination_limb_9_col252;let biased_limb_accumulator_u32_tmp_51986_153 = PackedUInt32::from_m31(((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_20_col212))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_30_col222))))) + (combination_limb_0_col232))) + (M31_48383197))) - (combination_limb_0_col243))) + (M31_134217729)));let p_coef_col253 = ((biased_limb_accumulator_u32_tmp_51986_153.low().as_m31()) - (M31_1));
             *row[253] = p_coef_col253;let carry_0_tmp_51986_154 = ((((((((((((((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_20_col212))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_30_col222))))) + (combination_limb_0_col232))) + (M31_48383197))) - (combination_limb_0_col243))) - (p_coef_col253))) * (M31_16));let carry_1_tmp_51986_155 = ((((((((((((carry_0_tmp_51986_154) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_21_col213))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_31_col223))))) + (combination_limb_1_col233))) + (M31_48193339))) - (combination_limb_1_col244))) * (M31_16));let carry_2_tmp_51986_156 = ((((((((((((carry_1_tmp_51986_155) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_22_col214))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_32_col224))))) + (combination_limb_2_col234))) + (M31_55955004))) - (combination_limb_2_col245))) * (M31_16));let carry_3_tmp_51986_157 = ((((((((((((carry_2_tmp_51986_156) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_23_col215))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_33_col225))))) + (combination_limb_3_col235))) + (M31_65659846))) - (combination_limb_3_col246))) * (M31_16));let carry_4_tmp_51986_158 = ((((((((((((carry_3_tmp_51986_157) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_24_col216))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_34_col226))))) + (combination_limb_4_col236))) + (M31_68491350))) - (combination_limb_4_col247))) * (M31_16));let carry_5_tmp_51986_159 = ((((((((((((carry_4_tmp_51986_158) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_25_col217))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_35_col227))))) + (combination_limb_5_col237))) + (M31_119023582))) - (combination_limb_5_col248))) * (M31_16));let carry_6_tmp_51986_160 = ((((((((((((carry_5_tmp_51986_159) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_26_col218))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_36_col228))))) + (combination_limb_6_col238))) + (M31_33439011))) - (combination_limb_6_col249))) * (M31_16));let carry_7_tmp_51986_161 = ((((((((((((((carry_6_tmp_51986_160) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_27_col219))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_37_col229))))) + (combination_limb_7_col239))) + (M31_58475513))) - (combination_limb_7_col250))) - (((p_coef_col253) * (M31_136))))) * (M31_16));let carry_8_tmp_51986_162 = ((((((((((((carry_7_tmp_51986_161) + (((M31_4) * (poseidon_3_partial_rounds_chain_output_limb_28_col220))))) + (((M31_2) * (poseidon_3_partial_rounds_chain_output_limb_38_col230))))) + (combination_limb_8_col240))) + (M31_18765944))) - (combination_limb_8_col251))) * (M31_16));sub_component_inputs.range_check_4_4_4_4[4] =
                 [((p_coef_col253) + (M31_1)), ((carry_0_tmp_51986_154) + (M31_1)), ((carry_1_tmp_51986_155) + (M31_1)), ((carry_2_tmp_51986_156) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_4 = [((p_coef_col253) + (M31_1)), ((carry_0_tmp_51986_154) + (M31_1)), ((carry_1_tmp_51986_155) + (M31_1)), ((carry_2_tmp_51986_156) + (M31_1))];sub_component_inputs.range_check_4_4_4_4[5] =
+            lookup_data.range_check_4_4_4_4_4 = [((p_coef_col253) + (M31_1)), ((carry_0_tmp_51986_154) + (M31_1)), ((carry_1_tmp_51986_155) + (M31_1)), ((carry_2_tmp_51986_156) + (M31_1))];sub_component_inputs.range_check_4_4_4_4[5] =
                 [((carry_3_tmp_51986_157) + (M31_1)), ((carry_4_tmp_51986_158) + (M31_1)), ((carry_5_tmp_51986_159) + (M31_1)), ((carry_6_tmp_51986_160) + (M31_1))];
-            *lookup_data.range_check_4_4_4_4_5 = [((carry_3_tmp_51986_157) + (M31_1)), ((carry_4_tmp_51986_158) + (M31_1)), ((carry_5_tmp_51986_159) + (M31_1)), ((carry_6_tmp_51986_160) + (M31_1))];sub_component_inputs.range_check_4_4[2] =
+            lookup_data.range_check_4_4_4_4_5 = [((carry_3_tmp_51986_157) + (M31_1)), ((carry_4_tmp_51986_158) + (M31_1)), ((carry_5_tmp_51986_159) + (M31_1)), ((carry_6_tmp_51986_160) + (M31_1))];sub_component_inputs.range_check_4_4[2] =
                 [((carry_7_tmp_51986_161) + (M31_1)), ((carry_8_tmp_51986_162) + (M31_1))];
-            *lookup_data.range_check_4_4_2 = [((carry_7_tmp_51986_161) + (M31_1)), ((carry_8_tmp_51986_162) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_163 = combination_tmp_51986_152;
+            lookup_data.range_check_4_4_2 = [((carry_7_tmp_51986_161) + (M31_1)), ((carry_8_tmp_51986_162) + (M31_1))];let linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_163 = combination_tmp_51986_152;
 
-            let poseidon_full_round_chain_chain_id_tmp_51986_164 = ((poseidon_full_round_chain_chain_tmp_tmp_51986_81) + (M31_1));*lookup_data.poseidon_full_round_chain_2 = [poseidon_full_round_chain_chain_id_tmp_51986_164, M31_31, combination_limb_0_col243, combination_limb_1_col244, combination_limb_2_col245, combination_limb_3_col246, combination_limb_4_col247, combination_limb_5_col248, combination_limb_6_col249, combination_limb_7_col250, combination_limb_8_col251, combination_limb_9_col252, combination_limb_0_col232, combination_limb_1_col233, combination_limb_2_col234, combination_limb_3_col235, combination_limb_4_col236, combination_limb_5_col237, combination_limb_6_col238, combination_limb_7_col239, combination_limb_8_col240, combination_limb_9_col241, poseidon_3_partial_rounds_chain_output_limb_30_col222, poseidon_3_partial_rounds_chain_output_limb_31_col223, poseidon_3_partial_rounds_chain_output_limb_32_col224, poseidon_3_partial_rounds_chain_output_limb_33_col225, poseidon_3_partial_rounds_chain_output_limb_34_col226, poseidon_3_partial_rounds_chain_output_limb_35_col227, poseidon_3_partial_rounds_chain_output_limb_36_col228, poseidon_3_partial_rounds_chain_output_limb_37_col229, poseidon_3_partial_rounds_chain_output_limb_38_col230, poseidon_3_partial_rounds_chain_output_limb_39_col231];sub_component_inputs.poseidon_full_round_chain[4] =
+            let poseidon_full_round_chain_chain_id_tmp_51986_164 = ((poseidon_full_round_chain_chain_tmp_tmp_51986_81) + (M31_1));lookup_data.poseidon_full_round_chain_2 = [poseidon_full_round_chain_chain_id_tmp_51986_164, M31_31, combination_limb_0_col243, combination_limb_1_col244, combination_limb_2_col245, combination_limb_3_col246, combination_limb_4_col247, combination_limb_5_col248, combination_limb_6_col249, combination_limb_7_col250, combination_limb_8_col251, combination_limb_9_col252, combination_limb_0_col232, combination_limb_1_col233, combination_limb_2_col234, combination_limb_3_col235, combination_limb_4_col236, combination_limb_5_col237, combination_limb_6_col238, combination_limb_7_col239, combination_limb_8_col240, combination_limb_9_col241, poseidon_3_partial_rounds_chain_output_limb_30_col222, poseidon_3_partial_rounds_chain_output_limb_31_col223, poseidon_3_partial_rounds_chain_output_limb_32_col224, poseidon_3_partial_rounds_chain_output_limb_33_col225, poseidon_3_partial_rounds_chain_output_limb_34_col226, poseidon_3_partial_rounds_chain_output_limb_35_col227, poseidon_3_partial_rounds_chain_output_limb_36_col228, poseidon_3_partial_rounds_chain_output_limb_37_col229, poseidon_3_partial_rounds_chain_output_limb_38_col230, poseidon_3_partial_rounds_chain_output_limb_39_col231];sub_component_inputs.poseidon_full_round_chain[4] =
                 (poseidon_full_round_chain_chain_id_tmp_51986_164, M31_31, [linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_163, linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_151, poseidon_3_partial_rounds_chain_output_round_30_tmp_51986_139.2[3]]);
             let poseidon_full_round_chain_output_round_31_tmp_51986_165 = PackedPoseidonFullRoundChain::deduce_output((poseidon_full_round_chain_chain_id_tmp_51986_164, M31_31, [linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_163, linear_combination_n_4_coefs_4_2_1_1_output_tmp_51986_151, poseidon_3_partial_rounds_chain_output_round_30_tmp_51986_139.2[3]]));sub_component_inputs.poseidon_full_round_chain[5] =
                 (poseidon_full_round_chain_chain_id_tmp_51986_164, M31_32, [poseidon_full_round_chain_output_round_31_tmp_51986_165.2[0], poseidon_full_round_chain_output_round_31_tmp_51986_165.2[1], poseidon_full_round_chain_output_round_31_tmp_51986_165.2[2]]);
@@ -775,7 +775,7 @@ fn write_trace_simd(
             *row[280] = poseidon_full_round_chain_output_limb_26_col280;let poseidon_full_round_chain_output_limb_27_col281 = poseidon_full_round_chain_output_round_34_tmp_51986_168.2[2].get_m31(7);
             *row[281] = poseidon_full_round_chain_output_limb_27_col281;let poseidon_full_round_chain_output_limb_28_col282 = poseidon_full_round_chain_output_round_34_tmp_51986_168.2[2].get_m31(8);
             *row[282] = poseidon_full_round_chain_output_limb_28_col282;let poseidon_full_round_chain_output_limb_29_col283 = poseidon_full_round_chain_output_round_34_tmp_51986_168.2[2].get_m31(9);
-            *row[283] = poseidon_full_round_chain_output_limb_29_col283;*lookup_data.poseidon_full_round_chain_3 = [poseidon_full_round_chain_chain_id_tmp_51986_164, M31_35, poseidon_full_round_chain_output_limb_0_col254, poseidon_full_round_chain_output_limb_1_col255, poseidon_full_round_chain_output_limb_2_col256, poseidon_full_round_chain_output_limb_3_col257, poseidon_full_round_chain_output_limb_4_col258, poseidon_full_round_chain_output_limb_5_col259, poseidon_full_round_chain_output_limb_6_col260, poseidon_full_round_chain_output_limb_7_col261, poseidon_full_round_chain_output_limb_8_col262, poseidon_full_round_chain_output_limb_9_col263, poseidon_full_round_chain_output_limb_10_col264, poseidon_full_round_chain_output_limb_11_col265, poseidon_full_round_chain_output_limb_12_col266, poseidon_full_round_chain_output_limb_13_col267, poseidon_full_round_chain_output_limb_14_col268, poseidon_full_round_chain_output_limb_15_col269, poseidon_full_round_chain_output_limb_16_col270, poseidon_full_round_chain_output_limb_17_col271, poseidon_full_round_chain_output_limb_18_col272, poseidon_full_round_chain_output_limb_19_col273, poseidon_full_round_chain_output_limb_20_col274, poseidon_full_round_chain_output_limb_21_col275, poseidon_full_round_chain_output_limb_22_col276, poseidon_full_round_chain_output_limb_23_col277, poseidon_full_round_chain_output_limb_24_col278, poseidon_full_round_chain_output_limb_25_col279, poseidon_full_round_chain_output_limb_26_col280, poseidon_full_round_chain_output_limb_27_col281, poseidon_full_round_chain_output_limb_28_col282, poseidon_full_round_chain_output_limb_29_col283];let poseidon_hades_permutation_output_tmp_51986_169 = [poseidon_full_round_chain_output_round_34_tmp_51986_168.2[0], poseidon_full_round_chain_output_round_34_tmp_51986_168.2[1], poseidon_full_round_chain_output_round_34_tmp_51986_168.2[2]];
+            *row[283] = poseidon_full_round_chain_output_limb_29_col283;lookup_data.poseidon_full_round_chain_3 = [poseidon_full_round_chain_chain_id_tmp_51986_164, M31_35, poseidon_full_round_chain_output_limb_0_col254, poseidon_full_round_chain_output_limb_1_col255, poseidon_full_round_chain_output_limb_2_col256, poseidon_full_round_chain_output_limb_3_col257, poseidon_full_round_chain_output_limb_4_col258, poseidon_full_round_chain_output_limb_5_col259, poseidon_full_round_chain_output_limb_6_col260, poseidon_full_round_chain_output_limb_7_col261, poseidon_full_round_chain_output_limb_8_col262, poseidon_full_round_chain_output_limb_9_col263, poseidon_full_round_chain_output_limb_10_col264, poseidon_full_round_chain_output_limb_11_col265, poseidon_full_round_chain_output_limb_12_col266, poseidon_full_round_chain_output_limb_13_col267, poseidon_full_round_chain_output_limb_14_col268, poseidon_full_round_chain_output_limb_15_col269, poseidon_full_round_chain_output_limb_16_col270, poseidon_full_round_chain_output_limb_17_col271, poseidon_full_round_chain_output_limb_18_col272, poseidon_full_round_chain_output_limb_19_col273, poseidon_full_round_chain_output_limb_20_col274, poseidon_full_round_chain_output_limb_21_col275, poseidon_full_round_chain_output_limb_22_col276, poseidon_full_round_chain_output_limb_23_col277, poseidon_full_round_chain_output_limb_24_col278, poseidon_full_round_chain_output_limb_25_col279, poseidon_full_round_chain_output_limb_26_col280, poseidon_full_round_chain_output_limb_27_col281, poseidon_full_round_chain_output_limb_28_col282, poseidon_full_round_chain_output_limb_29_col283];let poseidon_hades_permutation_output_tmp_51986_169 = [poseidon_full_round_chain_output_round_34_tmp_51986_168.2[0], poseidon_full_round_chain_output_round_34_tmp_51986_168.2[1], poseidon_full_round_chain_output_round_34_tmp_51986_168.2[2]];
 
             // Felt 252 Unpack From 27.
 
@@ -806,11 +806,11 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_172 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3)));let output_state_0_id_col302 = memory_address_to_id_value_tmp_51986_172;
             *row[302] = output_state_0_id_col302;sub_component_inputs.memory_address_to_id[3] =
                 ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3));
-            *lookup_data.memory_address_to_id_3 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3)), output_state_0_id_col302];
+            lookup_data.memory_address_to_id_3 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_3)), output_state_0_id_col302];
 
             sub_component_inputs.memory_id_to_big[3] =
                 output_state_0_id_col302;
-            *lookup_data.memory_id_to_big_3 = [output_state_0_id_col302, unpacked_limb_0_col284, unpacked_limb_1_col285, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(2), unpacked_limb_3_col286, unpacked_limb_4_col287, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(5), unpacked_limb_6_col288, unpacked_limb_7_col289, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(8), unpacked_limb_9_col290, unpacked_limb_10_col291, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(11), unpacked_limb_12_col292, unpacked_limb_13_col293, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(14), unpacked_limb_15_col294, unpacked_limb_16_col295, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(17), unpacked_limb_18_col296, unpacked_limb_19_col297, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(20), unpacked_limb_21_col298, unpacked_limb_22_col299, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(23), unpacked_limb_24_col300, unpacked_limb_25_col301, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(26), poseidon_full_round_chain_output_limb_9_col263];
+            lookup_data.memory_id_to_big_3 = [output_state_0_id_col302, unpacked_limb_0_col284, unpacked_limb_1_col285, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(2), unpacked_limb_3_col286, unpacked_limb_4_col287, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(5), unpacked_limb_6_col288, unpacked_limb_7_col289, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(8), unpacked_limb_9_col290, unpacked_limb_10_col291, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(11), unpacked_limb_12_col292, unpacked_limb_13_col293, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(14), unpacked_limb_15_col294, unpacked_limb_16_col295, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(17), unpacked_limb_18_col296, unpacked_limb_19_col297, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(20), unpacked_limb_21_col298, unpacked_limb_22_col299, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(23), unpacked_limb_24_col300, unpacked_limb_25_col301, felt_252_unpack_from_27_output_tmp_51986_171.get_m31(26), poseidon_full_round_chain_output_limb_9_col263];
 
             // Felt 252 Unpack From 27.
 
@@ -841,11 +841,11 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_176 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4)));let output_state_1_id_col321 = memory_address_to_id_value_tmp_51986_176;
             *row[321] = output_state_1_id_col321;sub_component_inputs.memory_address_to_id[4] =
                 ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4));
-            *lookup_data.memory_address_to_id_4 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4)), output_state_1_id_col321];
+            lookup_data.memory_address_to_id_4 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_4)), output_state_1_id_col321];
 
             sub_component_inputs.memory_id_to_big[4] =
                 output_state_1_id_col321;
-            *lookup_data.memory_id_to_big_4 = [output_state_1_id_col321, unpacked_limb_0_col303, unpacked_limb_1_col304, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(2), unpacked_limb_3_col305, unpacked_limb_4_col306, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(5), unpacked_limb_6_col307, unpacked_limb_7_col308, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(8), unpacked_limb_9_col309, unpacked_limb_10_col310, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(11), unpacked_limb_12_col311, unpacked_limb_13_col312, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(14), unpacked_limb_15_col313, unpacked_limb_16_col314, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(17), unpacked_limb_18_col315, unpacked_limb_19_col316, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(20), unpacked_limb_21_col317, unpacked_limb_22_col318, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(23), unpacked_limb_24_col319, unpacked_limb_25_col320, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(26), poseidon_full_round_chain_output_limb_19_col273];
+            lookup_data.memory_id_to_big_4 = [output_state_1_id_col321, unpacked_limb_0_col303, unpacked_limb_1_col304, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(2), unpacked_limb_3_col305, unpacked_limb_4_col306, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(5), unpacked_limb_6_col307, unpacked_limb_7_col308, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(8), unpacked_limb_9_col309, unpacked_limb_10_col310, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(11), unpacked_limb_12_col311, unpacked_limb_13_col312, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(14), unpacked_limb_15_col313, unpacked_limb_16_col314, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(17), unpacked_limb_18_col315, unpacked_limb_19_col316, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(20), unpacked_limb_21_col317, unpacked_limb_22_col318, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(23), unpacked_limb_24_col319, unpacked_limb_25_col320, felt_252_unpack_from_27_output_tmp_51986_175.get_m31(26), poseidon_full_round_chain_output_limb_19_col273];
 
             // Felt 252 Unpack From 27.
 
@@ -876,51 +876,59 @@ fn write_trace_simd(
             let memory_address_to_id_value_tmp_51986_180 = memory_address_to_id_state.deduce_output(((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5)));let output_state_2_id_col340 = memory_address_to_id_value_tmp_51986_180;
             *row[340] = output_state_2_id_col340;sub_component_inputs.memory_address_to_id[5] =
                 ((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5));
-            *lookup_data.memory_address_to_id_5 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5)), output_state_2_id_col340];
+            lookup_data.memory_address_to_id_5 = [((((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start))) + (((seq) * (M31_6))))) + (M31_5)), output_state_2_id_col340];
 
             sub_component_inputs.memory_id_to_big[5] =
                 output_state_2_id_col340;
-            *lookup_data.memory_id_to_big_5 = [output_state_2_id_col340, unpacked_limb_0_col322, unpacked_limb_1_col323, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(2), unpacked_limb_3_col324, unpacked_limb_4_col325, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(5), unpacked_limb_6_col326, unpacked_limb_7_col327, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(8), unpacked_limb_9_col328, unpacked_limb_10_col329, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(11), unpacked_limb_12_col330, unpacked_limb_13_col331, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(14), unpacked_limb_15_col332, unpacked_limb_16_col333, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(17), unpacked_limb_18_col334, unpacked_limb_19_col335, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(20), unpacked_limb_21_col336, unpacked_limb_22_col337, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(23), unpacked_limb_24_col338, unpacked_limb_25_col339, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(26), poseidon_full_round_chain_output_limb_29_col283];
+            lookup_data.memory_id_to_big_5 = [output_state_2_id_col340, unpacked_limb_0_col322, unpacked_limb_1_col323, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(2), unpacked_limb_3_col324, unpacked_limb_4_col325, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(5), unpacked_limb_6_col326, unpacked_limb_7_col327, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(8), unpacked_limb_9_col328, unpacked_limb_10_col329, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(11), unpacked_limb_12_col330, unpacked_limb_13_col331, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(14), unpacked_limb_15_col332, unpacked_limb_16_col333, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(17), unpacked_limb_18_col334, unpacked_limb_19_col335, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(20), unpacked_limb_21_col336, unpacked_limb_22_col337, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(23), unpacked_limb_24_col338, unpacked_limb_25_col339, felt_252_unpack_from_27_output_tmp_51986_179.get_m31(26), poseidon_full_round_chain_output_limb_29_col283];
         });
 
     (trace, lookup_data, sub_component_inputs)
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct LookupData {
-    cube_252_0: Vec<[PackedM31; 20]>,
-    cube_252_1: Vec<[PackedM31; 20]>,
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
-    memory_address_to_id_2: Vec<[PackedM31; 2]>,
-    memory_address_to_id_3: Vec<[PackedM31; 2]>,
-    memory_address_to_id_4: Vec<[PackedM31; 2]>,
-    memory_address_to_id_5: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
-    memory_id_to_big_1: Vec<[PackedM31; 29]>,
-    memory_id_to_big_2: Vec<[PackedM31; 29]>,
-    memory_id_to_big_3: Vec<[PackedM31; 29]>,
-    memory_id_to_big_4: Vec<[PackedM31; 29]>,
-    memory_id_to_big_5: Vec<[PackedM31; 29]>,
-    poseidon_3_partial_rounds_chain_0: Vec<[PackedM31; 42]>,
-    poseidon_3_partial_rounds_chain_1: Vec<[PackedM31; 42]>,
-    poseidon_full_round_chain_0: Vec<[PackedM31; 32]>,
-    poseidon_full_round_chain_1: Vec<[PackedM31; 32]>,
-    poseidon_full_round_chain_2: Vec<[PackedM31; 32]>,
-    poseidon_full_round_chain_3: Vec<[PackedM31; 32]>,
-    range_check_252_width_27_0: Vec<[PackedM31; 10]>,
-    range_check_252_width_27_1: Vec<[PackedM31; 10]>,
-    range_check_3_3_3_3_3_0: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_1: Vec<[PackedM31; 5]>,
-    range_check_4_4_0: Vec<[PackedM31; 2]>,
-    range_check_4_4_1: Vec<[PackedM31; 2]>,
-    range_check_4_4_2: Vec<[PackedM31; 2]>,
-    range_check_4_4_4_4_0: Vec<[PackedM31; 4]>,
-    range_check_4_4_4_4_1: Vec<[PackedM31; 4]>,
-    range_check_4_4_4_4_2: Vec<[PackedM31; 4]>,
-    range_check_4_4_4_4_3: Vec<[PackedM31; 4]>,
-    range_check_4_4_4_4_4: Vec<[PackedM31; 4]>,
-    range_check_4_4_4_4_5: Vec<[PackedM31; 4]>,
+type LookupData = Vec<LookupDataPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_lookup_data(log_n_packed_rows: u32) -> LookupData {
+    let mut vec: LookupData = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct LookupDataPerRow {
+    cube_252_0: [PackedM31; 20],
+    cube_252_1: [PackedM31; 20],
+    memory_address_to_id_0: [PackedM31; 2],
+    memory_address_to_id_1: [PackedM31; 2],
+    memory_address_to_id_2: [PackedM31; 2],
+    memory_address_to_id_3: [PackedM31; 2],
+    memory_address_to_id_4: [PackedM31; 2],
+    memory_address_to_id_5: [PackedM31; 2],
+    memory_id_to_big_0: [PackedM31; 29],
+    memory_id_to_big_1: [PackedM31; 29],
+    memory_id_to_big_2: [PackedM31; 29],
+    memory_id_to_big_3: [PackedM31; 29],
+    memory_id_to_big_4: [PackedM31; 29],
+    memory_id_to_big_5: [PackedM31; 29],
+    poseidon_3_partial_rounds_chain_0: [PackedM31; 42],
+    poseidon_3_partial_rounds_chain_1: [PackedM31; 42],
+    poseidon_full_round_chain_0: [PackedM31; 32],
+    poseidon_full_round_chain_1: [PackedM31; 32],
+    poseidon_full_round_chain_2: [PackedM31; 32],
+    poseidon_full_round_chain_3: [PackedM31; 32],
+    range_check_252_width_27_0: [PackedM31; 10],
+    range_check_252_width_27_1: [PackedM31; 10],
+    range_check_3_3_3_3_3_0: [PackedM31; 5],
+    range_check_3_3_3_3_3_1: [PackedM31; 5],
+    range_check_4_4_0: [PackedM31; 2],
+    range_check_4_4_1: [PackedM31; 2],
+    range_check_4_4_2: [PackedM31; 2],
+    range_check_4_4_4_4_0: [PackedM31; 4],
+    range_check_4_4_4_4_1: [PackedM31; 4],
+    range_check_4_4_4_4_2: [PackedM31; 4],
+    range_check_4_4_4_4_3: [PackedM31; 4],
+    range_check_4_4_4_4_4: [PackedM31; 4],
+    range_check_4_4_4_4_5: [PackedM31; 4],
 }
 
 pub struct InteractionClaimGenerator {
@@ -929,7 +937,7 @@ pub struct InteractionClaimGenerator {
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
-        self,
+        mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
@@ -945,235 +953,187 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_0,
-            &self.lookup_data.memory_id_to_big_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_0);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_0);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_1,
-            &self.lookup_data.memory_id_to_big_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_1);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.memory_id_to_big_2,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_2);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_2);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_full_round_chain_0,
-            &self.lookup_data.poseidon_full_round_chain_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = poseidon_full_round_chain.combine(values0);
-                let denom1: PackedQM31 = poseidon_full_round_chain.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    poseidon_full_round_chain.combine(&values.poseidon_full_round_chain_0);
+                let denom1: PackedQM31 =
+                    poseidon_full_round_chain.combine(&values.poseidon_full_round_chain_1);
                 writer.write_frac(denom0 - denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_252_width_27_0,
-            &self.lookup_data.range_check_252_width_27_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_252_width_27.combine(values0);
-                let denom1: PackedQM31 = range_check_252_width_27.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    range_check_252_width_27.combine(&values.range_check_252_width_27_0);
+                let denom1: PackedQM31 =
+                    range_check_252_width_27.combine(&values.range_check_252_width_27_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.cube_252_0,
-            &self.lookup_data.range_check_3_3_3_3_3_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = cube_252.combine(values0);
-                let denom1: PackedQM31 = range_check_3_3_3_3_3.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = cube_252.combine(&values.cube_252_0);
+                let denom1: PackedQM31 =
+                    range_check_3_3_3_3_3.combine(&values.range_check_3_3_3_3_3_0);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_3_3_3_3_3_1,
-            &self.lookup_data.cube_252_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_3_3_3_3_3.combine(values0);
-                let denom1: PackedQM31 = cube_252.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    range_check_3_3_3_3_3.combine(&values.range_check_3_3_3_3_3_1);
+                let denom1: PackedQM31 = cube_252.combine(&values.cube_252_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_0,
-            &self.lookup_data.range_check_4_4_4_4_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_4_4_4_4.combine(values0);
-                let denom1: PackedQM31 = range_check_4_4_4_4.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_0);
+                let denom1: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_0,
-            &self.lookup_data.poseidon_3_partial_rounds_chain_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_4_4.combine(values0);
-                let denom1: PackedQM31 = poseidon_3_partial_rounds_chain.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = range_check_4_4.combine(&values.range_check_4_4_0);
+                let denom1: PackedQM31 = poseidon_3_partial_rounds_chain
+                    .combine(&values.poseidon_3_partial_rounds_chain_0);
                 writer.write_frac(denom1 - denom0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_3_partial_rounds_chain_1,
-            &self.lookup_data.range_check_4_4_4_4_2,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = poseidon_3_partial_rounds_chain.combine(values0);
-                let denom1: PackedQM31 = range_check_4_4_4_4.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = poseidon_3_partial_rounds_chain
+                    .combine(&values.poseidon_3_partial_rounds_chain_1);
+                let denom1: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_2);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_3,
-            &self.lookup_data.range_check_4_4_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_4_4_4_4.combine(values0);
-                let denom1: PackedQM31 = range_check_4_4.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_3);
+                let denom1: PackedQM31 = range_check_4_4.combine(&values.range_check_4_4_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_4_4_4,
-            &self.lookup_data.range_check_4_4_4_4_5,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_4_4_4_4.combine(values0);
-                let denom1: PackedQM31 = range_check_4_4_4_4.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_4);
+                let denom1: PackedQM31 = range_check_4_4_4_4.combine(&values.range_check_4_4_4_4_5);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_4_4_2,
-            &self.lookup_data.poseidon_full_round_chain_2,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_4_4.combine(values0);
-                let denom1: PackedQM31 = poseidon_full_round_chain.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = range_check_4_4.combine(&values.range_check_4_4_2);
+                let denom1: PackedQM31 =
+                    poseidon_full_round_chain.combine(&values.poseidon_full_round_chain_2);
                 writer.write_frac(denom1 - denom0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.poseidon_full_round_chain_3,
-            &self.lookup_data.memory_address_to_id_3,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = poseidon_full_round_chain.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    poseidon_full_round_chain.combine(&values.poseidon_full_round_chain_3);
+                let denom1: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_3);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_3,
-            &self.lookup_data.memory_address_to_id_4,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_3);
+                let denom1: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_4);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_id_to_big_4,
-            &self.lookup_data.memory_address_to_id_5,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_id_to_big.combine(values0);
-                let denom1: PackedQM31 = memory_address_to_id.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_4);
+                let denom1: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_5);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (col_gen.par_iter_mut(), &self.lookup_data.memory_id_to_big_5)
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
             .for_each(|(writer, values)| {
-                let denom = memory_id_to_big.combine(values);
+                let denom = memory_id_to_big.combine(&values.memory_id_to_big_5);
                 writer.write_frac(PackedQM31::one(), denom);
             });
         col_gen.finalize_col();

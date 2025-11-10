@@ -98,7 +98,7 @@ fn write_trace_simd(
     let (mut trace, mut lookup_data, mut sub_component_inputs) = unsafe {
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
-            LookupData::uninitialized(log_n_packed_rows),
+            uninitialized_lookup_data(log_n_packed_rows),
             uninitialized_sub_component_inputs(log_n_packed_rows),
         )
     };
@@ -136,7 +136,7 @@ fn write_trace_simd(
                 sub_component_inputs.memory_address_to_id[0] =
                     ((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)));
-                *lookup_data.memory_address_to_id_0 = [
+                lookup_data.memory_address_to_id_0 = [
                     ((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5))),
                     op0_id_col0,
@@ -203,7 +203,7 @@ fn write_trace_simd(
                 let op0_limb_27_col28 = memory_id_to_big_value_tmp_efb2a_2.get_m31(27);
                 *row[28] = op0_limb_27_col28;
                 sub_component_inputs.memory_id_to_big[0] = op0_id_col0;
-                *lookup_data.memory_id_to_big_0 = [
+                lookup_data.memory_id_to_big_0 = [
                     op0_id_col0,
                     op0_limb_0_col1,
                     op0_limb_1_col2,
@@ -287,7 +287,7 @@ fn write_trace_simd(
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_1));
-                *lookup_data.memory_address_to_id_1 = [
+                lookup_data.memory_address_to_id_1 = [
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_1)),
@@ -355,7 +355,7 @@ fn write_trace_simd(
                 let op1_limb_27_col57 = memory_id_to_big_value_tmp_efb2a_7.get_m31(27);
                 *row[57] = op1_limb_27_col57;
                 sub_component_inputs.memory_id_to_big[1] = op1_id_col29;
-                *lookup_data.memory_id_to_big_1 = [
+                lookup_data.memory_id_to_big_1 = [
                     op1_id_col29,
                     op1_limb_0_col30,
                     op1_limb_1_col31,
@@ -431,8 +431,7 @@ fn write_trace_simd(
                 *row[58] = xor_col58;
                 sub_component_inputs.verify_bitwise_xor_9[0] =
                     [op0_limb_0_col1, op1_limb_0_col30, xor_col58];
-                *lookup_data.verify_bitwise_xor_9_0 =
-                    [op0_limb_0_col1, op1_limb_0_col30, xor_col58];
+                lookup_data.verify_bitwise_xor_9_0 = [op0_limb_0_col1, op1_limb_0_col30, xor_col58];
 
                 let and_tmp_efb2a_12 =
                     ((M31_1073741824) * (((op0_limb_0_col1) + (op1_limb_0_col30)) - (xor_col58)));
@@ -445,8 +444,7 @@ fn write_trace_simd(
                 *row[59] = xor_col59;
                 sub_component_inputs.verify_bitwise_xor_9[1] =
                     [op0_limb_1_col2, op1_limb_1_col31, xor_col59];
-                *lookup_data.verify_bitwise_xor_9_1 =
-                    [op0_limb_1_col2, op1_limb_1_col31, xor_col59];
+                lookup_data.verify_bitwise_xor_9_1 = [op0_limb_1_col2, op1_limb_1_col31, xor_col59];
 
                 let and_tmp_efb2a_15 =
                     ((M31_1073741824) * (((op0_limb_1_col2) + (op1_limb_1_col31)) - (xor_col59)));
@@ -459,8 +457,7 @@ fn write_trace_simd(
                 *row[60] = xor_col60;
                 sub_component_inputs.verify_bitwise_xor_9[2] =
                     [op0_limb_2_col3, op1_limb_2_col32, xor_col60];
-                *lookup_data.verify_bitwise_xor_9_2 =
-                    [op0_limb_2_col3, op1_limb_2_col32, xor_col60];
+                lookup_data.verify_bitwise_xor_9_2 = [op0_limb_2_col3, op1_limb_2_col32, xor_col60];
 
                 let and_tmp_efb2a_18 =
                     ((M31_1073741824) * (((op0_limb_2_col3) + (op1_limb_2_col32)) - (xor_col60)));
@@ -473,8 +470,7 @@ fn write_trace_simd(
                 *row[61] = xor_col61;
                 sub_component_inputs.verify_bitwise_xor_9[3] =
                     [op0_limb_3_col4, op1_limb_3_col33, xor_col61];
-                *lookup_data.verify_bitwise_xor_9_3 =
-                    [op0_limb_3_col4, op1_limb_3_col33, xor_col61];
+                lookup_data.verify_bitwise_xor_9_3 = [op0_limb_3_col4, op1_limb_3_col33, xor_col61];
 
                 let and_tmp_efb2a_21 =
                     ((M31_1073741824) * (((op0_limb_3_col4) + (op1_limb_3_col33)) - (xor_col61)));
@@ -487,8 +483,7 @@ fn write_trace_simd(
                 *row[62] = xor_col62;
                 sub_component_inputs.verify_bitwise_xor_9[4] =
                     [op0_limb_4_col5, op1_limb_4_col34, xor_col62];
-                *lookup_data.verify_bitwise_xor_9_4 =
-                    [op0_limb_4_col5, op1_limb_4_col34, xor_col62];
+                lookup_data.verify_bitwise_xor_9_4 = [op0_limb_4_col5, op1_limb_4_col34, xor_col62];
 
                 let and_tmp_efb2a_24 =
                     ((M31_1073741824) * (((op0_limb_4_col5) + (op1_limb_4_col34)) - (xor_col62)));
@@ -501,8 +496,7 @@ fn write_trace_simd(
                 *row[63] = xor_col63;
                 sub_component_inputs.verify_bitwise_xor_9[5] =
                     [op0_limb_5_col6, op1_limb_5_col35, xor_col63];
-                *lookup_data.verify_bitwise_xor_9_5 =
-                    [op0_limb_5_col6, op1_limb_5_col35, xor_col63];
+                lookup_data.verify_bitwise_xor_9_5 = [op0_limb_5_col6, op1_limb_5_col35, xor_col63];
 
                 let and_tmp_efb2a_27 =
                     ((M31_1073741824) * (((op0_limb_5_col6) + (op1_limb_5_col35)) - (xor_col63)));
@@ -515,8 +509,7 @@ fn write_trace_simd(
                 *row[64] = xor_col64;
                 sub_component_inputs.verify_bitwise_xor_9[6] =
                     [op0_limb_6_col7, op1_limb_6_col36, xor_col64];
-                *lookup_data.verify_bitwise_xor_9_6 =
-                    [op0_limb_6_col7, op1_limb_6_col36, xor_col64];
+                lookup_data.verify_bitwise_xor_9_6 = [op0_limb_6_col7, op1_limb_6_col36, xor_col64];
 
                 let and_tmp_efb2a_30 =
                     ((M31_1073741824) * (((op0_limb_6_col7) + (op1_limb_6_col36)) - (xor_col64)));
@@ -529,8 +522,7 @@ fn write_trace_simd(
                 *row[65] = xor_col65;
                 sub_component_inputs.verify_bitwise_xor_9[7] =
                     [op0_limb_7_col8, op1_limb_7_col37, xor_col65];
-                *lookup_data.verify_bitwise_xor_9_7 =
-                    [op0_limb_7_col8, op1_limb_7_col37, xor_col65];
+                lookup_data.verify_bitwise_xor_9_7 = [op0_limb_7_col8, op1_limb_7_col37, xor_col65];
 
                 let and_tmp_efb2a_33 =
                     ((M31_1073741824) * (((op0_limb_7_col8) + (op1_limb_7_col37)) - (xor_col65)));
@@ -543,8 +535,7 @@ fn write_trace_simd(
                 *row[66] = xor_col66;
                 sub_component_inputs.verify_bitwise_xor_9[8] =
                     [op0_limb_8_col9, op1_limb_8_col38, xor_col66];
-                *lookup_data.verify_bitwise_xor_9_8 =
-                    [op0_limb_8_col9, op1_limb_8_col38, xor_col66];
+                lookup_data.verify_bitwise_xor_9_8 = [op0_limb_8_col9, op1_limb_8_col38, xor_col66];
 
                 let and_tmp_efb2a_36 =
                     ((M31_1073741824) * (((op0_limb_8_col9) + (op1_limb_8_col38)) - (xor_col66)));
@@ -557,7 +548,7 @@ fn write_trace_simd(
                 *row[67] = xor_col67;
                 sub_component_inputs.verify_bitwise_xor_9[9] =
                     [op0_limb_9_col10, op1_limb_9_col39, xor_col67];
-                *lookup_data.verify_bitwise_xor_9_9 =
+                lookup_data.verify_bitwise_xor_9_9 =
                     [op0_limb_9_col10, op1_limb_9_col39, xor_col67];
 
                 let and_tmp_efb2a_39 =
@@ -571,7 +562,7 @@ fn write_trace_simd(
                 *row[68] = xor_col68;
                 sub_component_inputs.verify_bitwise_xor_9[10] =
                     [op0_limb_10_col11, op1_limb_10_col40, xor_col68];
-                *lookup_data.verify_bitwise_xor_9_10 =
+                lookup_data.verify_bitwise_xor_9_10 =
                     [op0_limb_10_col11, op1_limb_10_col40, xor_col68];
 
                 let and_tmp_efb2a_42 = ((M31_1073741824)
@@ -585,7 +576,7 @@ fn write_trace_simd(
                 *row[69] = xor_col69;
                 sub_component_inputs.verify_bitwise_xor_9[11] =
                     [op0_limb_11_col12, op1_limb_11_col41, xor_col69];
-                *lookup_data.verify_bitwise_xor_9_11 =
+                lookup_data.verify_bitwise_xor_9_11 =
                     [op0_limb_11_col12, op1_limb_11_col41, xor_col69];
 
                 let and_tmp_efb2a_45 = ((M31_1073741824)
@@ -599,7 +590,7 @@ fn write_trace_simd(
                 *row[70] = xor_col70;
                 sub_component_inputs.verify_bitwise_xor_9[12] =
                     [op0_limb_12_col13, op1_limb_12_col42, xor_col70];
-                *lookup_data.verify_bitwise_xor_9_12 =
+                lookup_data.verify_bitwise_xor_9_12 =
                     [op0_limb_12_col13, op1_limb_12_col42, xor_col70];
 
                 let and_tmp_efb2a_48 = ((M31_1073741824)
@@ -613,7 +604,7 @@ fn write_trace_simd(
                 *row[71] = xor_col71;
                 sub_component_inputs.verify_bitwise_xor_9[13] =
                     [op0_limb_13_col14, op1_limb_13_col43, xor_col71];
-                *lookup_data.verify_bitwise_xor_9_13 =
+                lookup_data.verify_bitwise_xor_9_13 =
                     [op0_limb_13_col14, op1_limb_13_col43, xor_col71];
 
                 let and_tmp_efb2a_51 = ((M31_1073741824)
@@ -627,7 +618,7 @@ fn write_trace_simd(
                 *row[72] = xor_col72;
                 sub_component_inputs.verify_bitwise_xor_9[14] =
                     [op0_limb_14_col15, op1_limb_14_col44, xor_col72];
-                *lookup_data.verify_bitwise_xor_9_14 =
+                lookup_data.verify_bitwise_xor_9_14 =
                     [op0_limb_14_col15, op1_limb_14_col44, xor_col72];
 
                 let and_tmp_efb2a_54 = ((M31_1073741824)
@@ -641,7 +632,7 @@ fn write_trace_simd(
                 *row[73] = xor_col73;
                 sub_component_inputs.verify_bitwise_xor_9[15] =
                     [op0_limb_15_col16, op1_limb_15_col45, xor_col73];
-                *lookup_data.verify_bitwise_xor_9_15 =
+                lookup_data.verify_bitwise_xor_9_15 =
                     [op0_limb_15_col16, op1_limb_15_col45, xor_col73];
 
                 let and_tmp_efb2a_57 = ((M31_1073741824)
@@ -655,7 +646,7 @@ fn write_trace_simd(
                 *row[74] = xor_col74;
                 sub_component_inputs.verify_bitwise_xor_9[16] =
                     [op0_limb_16_col17, op1_limb_16_col46, xor_col74];
-                *lookup_data.verify_bitwise_xor_9_16 =
+                lookup_data.verify_bitwise_xor_9_16 =
                     [op0_limb_16_col17, op1_limb_16_col46, xor_col74];
 
                 let and_tmp_efb2a_60 = ((M31_1073741824)
@@ -669,7 +660,7 @@ fn write_trace_simd(
                 *row[75] = xor_col75;
                 sub_component_inputs.verify_bitwise_xor_9[17] =
                     [op0_limb_17_col18, op1_limb_17_col47, xor_col75];
-                *lookup_data.verify_bitwise_xor_9_17 =
+                lookup_data.verify_bitwise_xor_9_17 =
                     [op0_limb_17_col18, op1_limb_17_col47, xor_col75];
 
                 let and_tmp_efb2a_63 = ((M31_1073741824)
@@ -683,7 +674,7 @@ fn write_trace_simd(
                 *row[76] = xor_col76;
                 sub_component_inputs.verify_bitwise_xor_9[18] =
                     [op0_limb_18_col19, op1_limb_18_col48, xor_col76];
-                *lookup_data.verify_bitwise_xor_9_18 =
+                lookup_data.verify_bitwise_xor_9_18 =
                     [op0_limb_18_col19, op1_limb_18_col48, xor_col76];
 
                 let and_tmp_efb2a_66 = ((M31_1073741824)
@@ -697,7 +688,7 @@ fn write_trace_simd(
                 *row[77] = xor_col77;
                 sub_component_inputs.verify_bitwise_xor_9[19] =
                     [op0_limb_19_col20, op1_limb_19_col49, xor_col77];
-                *lookup_data.verify_bitwise_xor_9_19 =
+                lookup_data.verify_bitwise_xor_9_19 =
                     [op0_limb_19_col20, op1_limb_19_col49, xor_col77];
 
                 let and_tmp_efb2a_69 = ((M31_1073741824)
@@ -711,7 +702,7 @@ fn write_trace_simd(
                 *row[78] = xor_col78;
                 sub_component_inputs.verify_bitwise_xor_9[20] =
                     [op0_limb_20_col21, op1_limb_20_col50, xor_col78];
-                *lookup_data.verify_bitwise_xor_9_20 =
+                lookup_data.verify_bitwise_xor_9_20 =
                     [op0_limb_20_col21, op1_limb_20_col50, xor_col78];
 
                 let and_tmp_efb2a_72 = ((M31_1073741824)
@@ -725,7 +716,7 @@ fn write_trace_simd(
                 *row[79] = xor_col79;
                 sub_component_inputs.verify_bitwise_xor_9[21] =
                     [op0_limb_21_col22, op1_limb_21_col51, xor_col79];
-                *lookup_data.verify_bitwise_xor_9_21 =
+                lookup_data.verify_bitwise_xor_9_21 =
                     [op0_limb_21_col22, op1_limb_21_col51, xor_col79];
 
                 let and_tmp_efb2a_75 = ((M31_1073741824)
@@ -739,7 +730,7 @@ fn write_trace_simd(
                 *row[80] = xor_col80;
                 sub_component_inputs.verify_bitwise_xor_9[22] =
                     [op0_limb_22_col23, op1_limb_22_col52, xor_col80];
-                *lookup_data.verify_bitwise_xor_9_22 =
+                lookup_data.verify_bitwise_xor_9_22 =
                     [op0_limb_22_col23, op1_limb_22_col52, xor_col80];
 
                 let and_tmp_efb2a_78 = ((M31_1073741824)
@@ -753,7 +744,7 @@ fn write_trace_simd(
                 *row[81] = xor_col81;
                 sub_component_inputs.verify_bitwise_xor_9[23] =
                     [op0_limb_23_col24, op1_limb_23_col53, xor_col81];
-                *lookup_data.verify_bitwise_xor_9_23 =
+                lookup_data.verify_bitwise_xor_9_23 =
                     [op0_limb_23_col24, op1_limb_23_col53, xor_col81];
 
                 let and_tmp_efb2a_81 = ((M31_1073741824)
@@ -767,7 +758,7 @@ fn write_trace_simd(
                 *row[82] = xor_col82;
                 sub_component_inputs.verify_bitwise_xor_9[24] =
                     [op0_limb_24_col25, op1_limb_24_col54, xor_col82];
-                *lookup_data.verify_bitwise_xor_9_24 =
+                lookup_data.verify_bitwise_xor_9_24 =
                     [op0_limb_24_col25, op1_limb_24_col54, xor_col82];
 
                 let and_tmp_efb2a_84 = ((M31_1073741824)
@@ -781,7 +772,7 @@ fn write_trace_simd(
                 *row[83] = xor_col83;
                 sub_component_inputs.verify_bitwise_xor_9[25] =
                     [op0_limb_25_col26, op1_limb_25_col55, xor_col83];
-                *lookup_data.verify_bitwise_xor_9_25 =
+                lookup_data.verify_bitwise_xor_9_25 =
                     [op0_limb_25_col26, op1_limb_25_col55, xor_col83];
 
                 let and_tmp_efb2a_87 = ((M31_1073741824)
@@ -795,7 +786,7 @@ fn write_trace_simd(
                 *row[84] = xor_col84;
                 sub_component_inputs.verify_bitwise_xor_9[26] =
                     [op0_limb_26_col27, op1_limb_26_col56, xor_col84];
-                *lookup_data.verify_bitwise_xor_9_26 =
+                lookup_data.verify_bitwise_xor_9_26 =
                     [op0_limb_26_col27, op1_limb_26_col56, xor_col84];
 
                 let and_tmp_efb2a_90 = ((M31_1073741824)
@@ -809,7 +800,7 @@ fn write_trace_simd(
                 *row[85] = xor_col85;
                 sub_component_inputs.verify_bitwise_xor_8[0] =
                     [op0_limb_27_col28, op1_limb_27_col57, xor_col85];
-                *lookup_data.verify_bitwise_xor_8_0 =
+                lookup_data.verify_bitwise_xor_8_0 =
                     [op0_limb_27_col28, op1_limb_27_col57, xor_col85];
 
                 let and_tmp_efb2a_93 = ((M31_1073741824)
@@ -831,7 +822,7 @@ fn write_trace_simd(
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_2));
-                *lookup_data.memory_address_to_id_2 = [
+                lookup_data.memory_address_to_id_2 = [
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_2)),
@@ -839,7 +830,7 @@ fn write_trace_simd(
                 ];
 
                 sub_component_inputs.memory_id_to_big[2] = and_id_col86;
-                *lookup_data.memory_id_to_big_2 = [
+                lookup_data.memory_id_to_big_2 = [
                     and_id_col86,
                     and_tmp_efb2a_12,
                     and_tmp_efb2a_15,
@@ -887,7 +878,7 @@ fn write_trace_simd(
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_3));
-                *lookup_data.memory_address_to_id_3 = [
+                lookup_data.memory_address_to_id_3 = [
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_3)),
@@ -895,7 +886,7 @@ fn write_trace_simd(
                 ];
 
                 sub_component_inputs.memory_id_to_big[3] = xor_id_col87;
-                *lookup_data.memory_id_to_big_3 = [
+                lookup_data.memory_id_to_big_3 = [
                     xor_id_col87,
                     xor_col58,
                     xor_col59,
@@ -943,7 +934,7 @@ fn write_trace_simd(
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_4));
-                *lookup_data.memory_address_to_id_4 = [
+                lookup_data.memory_address_to_id_4 = [
                     (((PackedM31::broadcast(M31::from(bitwise_builtin_segment_start)))
                         + ((seq) * (M31_5)))
                         + (M31_4)),
@@ -951,7 +942,7 @@ fn write_trace_simd(
                 ];
 
                 sub_component_inputs.memory_id_to_big[4] = or_id_col88;
-                *lookup_data.memory_id_to_big_4 = [
+                lookup_data.memory_id_to_big_4 = [
                     or_id_col88,
                     ((and_tmp_efb2a_12) + (xor_col58)),
                     ((and_tmp_efb2a_15) + (xor_col59)),
@@ -988,46 +979,54 @@ fn write_trace_simd(
     (trace, lookup_data, sub_component_inputs)
 }
 
-#[derive(Uninitialized, IterMut, ParIterMut)]
-struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
-    memory_address_to_id_2: Vec<[PackedM31; 2]>,
-    memory_address_to_id_3: Vec<[PackedM31; 2]>,
-    memory_address_to_id_4: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
-    memory_id_to_big_1: Vec<[PackedM31; 29]>,
-    memory_id_to_big_2: Vec<[PackedM31; 29]>,
-    memory_id_to_big_3: Vec<[PackedM31; 29]>,
-    memory_id_to_big_4: Vec<[PackedM31; 29]>,
-    verify_bitwise_xor_8_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_2: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_3: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_4: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_5: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_6: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_7: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_8: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_9: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_10: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_11: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_12: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_13: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_14: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_15: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_16: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_17: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_18: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_19: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_20: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_21: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_22: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_23: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_24: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_25: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_26: Vec<[PackedM31; 3]>,
+type LookupData = Vec<LookupDataPerRow>;
+
+#[allow(clippy::uninit_vec)]
+unsafe fn uninitialized_lookup_data(log_n_packed_rows: u32) -> LookupData {
+    let mut vec: LookupData = Vec::with_capacity(1 << log_n_packed_rows);
+    vec.set_len(1 << log_n_packed_rows);
+    vec
+}
+
+struct LookupDataPerRow {
+    memory_address_to_id_0: [PackedM31; 2],
+    memory_address_to_id_1: [PackedM31; 2],
+    memory_address_to_id_2: [PackedM31; 2],
+    memory_address_to_id_3: [PackedM31; 2],
+    memory_address_to_id_4: [PackedM31; 2],
+    memory_id_to_big_0: [PackedM31; 29],
+    memory_id_to_big_1: [PackedM31; 29],
+    memory_id_to_big_2: [PackedM31; 29],
+    memory_id_to_big_3: [PackedM31; 29],
+    memory_id_to_big_4: [PackedM31; 29],
+    verify_bitwise_xor_8_0: [PackedM31; 3],
+    verify_bitwise_xor_9_0: [PackedM31; 3],
+    verify_bitwise_xor_9_1: [PackedM31; 3],
+    verify_bitwise_xor_9_2: [PackedM31; 3],
+    verify_bitwise_xor_9_3: [PackedM31; 3],
+    verify_bitwise_xor_9_4: [PackedM31; 3],
+    verify_bitwise_xor_9_5: [PackedM31; 3],
+    verify_bitwise_xor_9_6: [PackedM31; 3],
+    verify_bitwise_xor_9_7: [PackedM31; 3],
+    verify_bitwise_xor_9_8: [PackedM31; 3],
+    verify_bitwise_xor_9_9: [PackedM31; 3],
+    verify_bitwise_xor_9_10: [PackedM31; 3],
+    verify_bitwise_xor_9_11: [PackedM31; 3],
+    verify_bitwise_xor_9_12: [PackedM31; 3],
+    verify_bitwise_xor_9_13: [PackedM31; 3],
+    verify_bitwise_xor_9_14: [PackedM31; 3],
+    verify_bitwise_xor_9_15: [PackedM31; 3],
+    verify_bitwise_xor_9_16: [PackedM31; 3],
+    verify_bitwise_xor_9_17: [PackedM31; 3],
+    verify_bitwise_xor_9_18: [PackedM31; 3],
+    verify_bitwise_xor_9_19: [PackedM31; 3],
+    verify_bitwise_xor_9_20: [PackedM31; 3],
+    verify_bitwise_xor_9_21: [PackedM31; 3],
+    verify_bitwise_xor_9_22: [PackedM31; 3],
+    verify_bitwise_xor_9_23: [PackedM31; 3],
+    verify_bitwise_xor_9_24: [PackedM31; 3],
+    verify_bitwise_xor_9_25: [PackedM31; 3],
+    verify_bitwise_xor_9_26: [PackedM31; 3],
 }
 
 pub struct InteractionClaimGenerator {
@@ -1036,7 +1035,7 @@ pub struct InteractionClaimGenerator {
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
-        self,
+        mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         memory_id_to_big: &relations::MemoryIdToBig,
@@ -1047,267 +1046,224 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_0,
-            &self.lookup_data.memory_id_to_big_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_0);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_0);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_1,
-            &self.lookup_data.memory_id_to_big_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_1);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_0,
-            &self.lookup_data.verify_bitwise_xor_9_1,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_0);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_2,
-            &self.lookup_data.verify_bitwise_xor_9_3,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_2);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_3);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_4,
-            &self.lookup_data.verify_bitwise_xor_9_5,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_4);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_5);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_6,
-            &self.lookup_data.verify_bitwise_xor_9_7,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_6);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_7);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_8,
-            &self.lookup_data.verify_bitwise_xor_9_9,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_8);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_9);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_10,
-            &self.lookup_data.verify_bitwise_xor_9_11,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_10);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_11);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_12,
-            &self.lookup_data.verify_bitwise_xor_9_13,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_12);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_13);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_14,
-            &self.lookup_data.verify_bitwise_xor_9_15,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_14);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_15);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_16,
-            &self.lookup_data.verify_bitwise_xor_9_17,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_16);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_17);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_18,
-            &self.lookup_data.verify_bitwise_xor_9_19,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_18);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_19);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_20,
-            &self.lookup_data.verify_bitwise_xor_9_21,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_20);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_21);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_22,
-            &self.lookup_data.verify_bitwise_xor_9_23,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_22);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_23);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_24,
-            &self.lookup_data.verify_bitwise_xor_9_25,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_9.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_24);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_25);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_9_26,
-            &self.lookup_data.verify_bitwise_xor_8_0,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_9.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_8.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    verify_bitwise_xor_9.combine(&values.verify_bitwise_xor_9_26);
+                let denom1: PackedQM31 =
+                    verify_bitwise_xor_8.combine(&values.verify_bitwise_xor_8_0);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.memory_id_to_big_2,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_2);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_2);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_3,
-            &self.lookup_data.memory_id_to_big_3,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_3);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_3);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.memory_address_to_id_4,
-            &self.lookup_data.memory_id_to_big_4,
-        )
+        (col_gen.par_iter_mut(), self.lookup_data.par_iter_mut())
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+            .for_each(|(writer, values)| {
+                let denom0: PackedQM31 =
+                    memory_address_to_id.combine(&values.memory_address_to_id_4);
+                let denom1: PackedQM31 = memory_id_to_big.combine(&values.memory_id_to_big_4);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
