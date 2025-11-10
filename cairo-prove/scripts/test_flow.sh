@@ -17,7 +17,9 @@ cd ..
 
 # Generate proof
 echo "🔍 Generating proof..."
-./target/release/cairo-prove prove example/target/release/example.executable.json ./example_proof.json --arguments 100
+DEBUGINFOD_URLS= gdb -ex run -ex bt -ex quit --args ./target/release/cairo-prove prove \
+    example/target/release/example.executable.json \
+    ./example_proof.json --arguments 100
 
 # Verify proof
 echo "✅ Verifying proof..."
