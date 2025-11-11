@@ -232,6 +232,7 @@ mod tests {
             &mut CommitmentSchemeProver::<SimdBackend, Blake2sMerkleChannel>::new(
                 config, &twiddles,
             );
+        commitment_scheme.set_store_polynomials_coefficients();
 
         // Preprocessed trace.
         let preproceseed_column_0 = RangeCheck::new(log_ranges, 0).gen_column_simd();
@@ -278,10 +279,12 @@ mod tests {
             interaction_claim.claimed_sum,
         );
 
-        let trace_polys = commitment_scheme
-            .trees
-            .as_ref()
-            .map(|t| t.polynomials.iter().cloned().collect_vec());
+        let trace_polys = commitment_scheme.trees.as_ref().map(|t| {
+            t.polynomials
+                .iter()
+                .map(|poly| poly.coeffs.clone().unwrap())
+                .collect_vec()
+        });
 
         let component_eval = component.deref();
         stwo_constraint_framework::assert_constraints_on_polys(
