@@ -3,13 +3,14 @@ use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::{chain, Itertools};
-use num_traits::One;
+use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
-use stwo::core::fields::m31::M31;
+use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::pcs::TreeVec;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::backend::{BackendForChannel, Column};
+use stwo::prover::backend::{BackendForChannel, Col, Column};
+use stwo::prover::poly::circle::CircleCoefficients;
 use stwo::prover::CommitmentSchemeProver;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_constraint_framework::relation_tracker::{
@@ -44,7 +45,9 @@ where
         interaction_tree
             .iter()
             .map(|poly| {
-                poly.evaluate(CanonicCoset::new(poly.log_size()).circle_domain())
+                let coeffs = reduce_degree(poly.evals.clone().interpolate());
+                coeffs
+                    .evaluate(CanonicCoset::new(coeffs.log_size()).circle_domain())
                     .values
                     .to_cpu()
             })
@@ -317,4 +320,20 @@ fn add_to_relation_entries_many<E: FrameworkEval>(
         .iter()
         .flat_map(|x| add_to_relation_entries(x, trace))
         .collect()
+}
+
+/// Reduces the polynomial to a minimal degree polynomial that evaluates to the same values.
+pub fn reduce_degree(coeffs: CircleCoefficients<SimdBackend>) -> CircleCoefficients<SimdBackend> {
+    let mut new_log_size = coeffs.log_size();
+    while new_log_size > 1 {
+        if ((1 << (new_log_size - 1))..(1 << new_log_size))
+            .any(|i| coeffs.coeffs.at(i) != BaseField::zero())
+        {
+            break;
+        }
+        new_log_size -= 1;
+    }
+    CircleCoefficients::new(Col::<SimdBackend, BaseField>::from_iter(
+        coeffs.coeffs.to_cpu()[..1 << new_log_size].iter().copied(),
+    ))
 }
