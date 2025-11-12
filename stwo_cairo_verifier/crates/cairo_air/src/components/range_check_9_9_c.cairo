@@ -69,8 +69,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     ) {
         let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(RANGE_CHECK_2_9_9_0_IDX);
-        preprocessed_column_set.insert(RANGE_CHECK_2_9_9_1_IDX);
+        preprocessed_column_set.insert(RANGE_CHECK_9_9_COLUMN_0_IDX);
+        preprocessed_column_set.insert(RANGE_CHECK_9_9_COLUMN_1_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -93,8 +93,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_9_9_c_sum_0: QM31 = Zero::zero();
-        let rangecheck_9_9_0 = preprocessed_mask_values.get(RANGE_CHECK_2_9_9_0_IDX);
-        let rangecheck_9_9_1 = preprocessed_mask_values.get(RANGE_CHECK_2_9_9_1_IDX);
+        let range_check_9_9_column_0 = preprocessed_mask_values.get(RANGE_CHECK_9_9_COLUMN_0_IDX);
+        let range_check_9_9_column_1 = preprocessed_mask_values.get(RANGE_CHECK_9_9_COLUMN_1_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
@@ -103,7 +103,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         range_check_9_9_c_sum_0 = self
             .range_check_9_9_c_lookup_elements
-            .combine_qm31([rangecheck_9_9_0, rangecheck_9_9_1]);
+            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
 
         lookup_constraints(
             ref sum,
