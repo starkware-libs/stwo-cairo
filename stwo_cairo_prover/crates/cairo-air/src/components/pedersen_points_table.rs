@@ -48,126 +48,240 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let pedersenpoints_0 = eval.get_preprocessed_column((PedersenPoints::new(0)).id());
-        let pedersenpoints_1 = eval.get_preprocessed_column((PedersenPoints::new(1)).id());
-        let pedersenpoints_2 = eval.get_preprocessed_column((PedersenPoints::new(2)).id());
-        let pedersenpoints_3 = eval.get_preprocessed_column((PedersenPoints::new(3)).id());
-        let pedersenpoints_4 = eval.get_preprocessed_column((PedersenPoints::new(4)).id());
-        let pedersenpoints_5 = eval.get_preprocessed_column((PedersenPoints::new(5)).id());
-        let pedersenpoints_6 = eval.get_preprocessed_column((PedersenPoints::new(6)).id());
-        let pedersenpoints_7 = eval.get_preprocessed_column((PedersenPoints::new(7)).id());
-        let pedersenpoints_8 = eval.get_preprocessed_column((PedersenPoints::new(8)).id());
-        let pedersenpoints_9 = eval.get_preprocessed_column((PedersenPoints::new(9)).id());
-        let pedersenpoints_10 = eval.get_preprocessed_column((PedersenPoints::new(10)).id());
-        let pedersenpoints_11 = eval.get_preprocessed_column((PedersenPoints::new(11)).id());
-        let pedersenpoints_12 = eval.get_preprocessed_column((PedersenPoints::new(12)).id());
-        let pedersenpoints_13 = eval.get_preprocessed_column((PedersenPoints::new(13)).id());
-        let pedersenpoints_14 = eval.get_preprocessed_column((PedersenPoints::new(14)).id());
-        let pedersenpoints_15 = eval.get_preprocessed_column((PedersenPoints::new(15)).id());
-        let pedersenpoints_16 = eval.get_preprocessed_column((PedersenPoints::new(16)).id());
-        let pedersenpoints_17 = eval.get_preprocessed_column((PedersenPoints::new(17)).id());
-        let pedersenpoints_18 = eval.get_preprocessed_column((PedersenPoints::new(18)).id());
-        let pedersenpoints_19 = eval.get_preprocessed_column((PedersenPoints::new(19)).id());
-        let pedersenpoints_20 = eval.get_preprocessed_column((PedersenPoints::new(20)).id());
-        let pedersenpoints_21 = eval.get_preprocessed_column((PedersenPoints::new(21)).id());
-        let pedersenpoints_22 = eval.get_preprocessed_column((PedersenPoints::new(22)).id());
-        let pedersenpoints_23 = eval.get_preprocessed_column((PedersenPoints::new(23)).id());
-        let pedersenpoints_24 = eval.get_preprocessed_column((PedersenPoints::new(24)).id());
-        let pedersenpoints_25 = eval.get_preprocessed_column((PedersenPoints::new(25)).id());
-        let pedersenpoints_26 = eval.get_preprocessed_column((PedersenPoints::new(26)).id());
-        let pedersenpoints_27 = eval.get_preprocessed_column((PedersenPoints::new(27)).id());
-        let pedersenpoints_28 = eval.get_preprocessed_column((PedersenPoints::new(28)).id());
-        let pedersenpoints_29 = eval.get_preprocessed_column((PedersenPoints::new(29)).id());
-        let pedersenpoints_30 = eval.get_preprocessed_column((PedersenPoints::new(30)).id());
-        let pedersenpoints_31 = eval.get_preprocessed_column((PedersenPoints::new(31)).id());
-        let pedersenpoints_32 = eval.get_preprocessed_column((PedersenPoints::new(32)).id());
-        let pedersenpoints_33 = eval.get_preprocessed_column((PedersenPoints::new(33)).id());
-        let pedersenpoints_34 = eval.get_preprocessed_column((PedersenPoints::new(34)).id());
-        let pedersenpoints_35 = eval.get_preprocessed_column((PedersenPoints::new(35)).id());
-        let pedersenpoints_36 = eval.get_preprocessed_column((PedersenPoints::new(36)).id());
-        let pedersenpoints_37 = eval.get_preprocessed_column((PedersenPoints::new(37)).id());
-        let pedersenpoints_38 = eval.get_preprocessed_column((PedersenPoints::new(38)).id());
-        let pedersenpoints_39 = eval.get_preprocessed_column((PedersenPoints::new(39)).id());
-        let pedersenpoints_40 = eval.get_preprocessed_column((PedersenPoints::new(40)).id());
-        let pedersenpoints_41 = eval.get_preprocessed_column((PedersenPoints::new(41)).id());
-        let pedersenpoints_42 = eval.get_preprocessed_column((PedersenPoints::new(42)).id());
-        let pedersenpoints_43 = eval.get_preprocessed_column((PedersenPoints::new(43)).id());
-        let pedersenpoints_44 = eval.get_preprocessed_column((PedersenPoints::new(44)).id());
-        let pedersenpoints_45 = eval.get_preprocessed_column((PedersenPoints::new(45)).id());
-        let pedersenpoints_46 = eval.get_preprocessed_column((PedersenPoints::new(46)).id());
-        let pedersenpoints_47 = eval.get_preprocessed_column((PedersenPoints::new(47)).id());
-        let pedersenpoints_48 = eval.get_preprocessed_column((PedersenPoints::new(48)).id());
-        let pedersenpoints_49 = eval.get_preprocessed_column((PedersenPoints::new(49)).id());
-        let pedersenpoints_50 = eval.get_preprocessed_column((PedersenPoints::new(50)).id());
-        let pedersenpoints_51 = eval.get_preprocessed_column((PedersenPoints::new(51)).id());
-        let pedersenpoints_52 = eval.get_preprocessed_column((PedersenPoints::new(52)).id());
-        let pedersenpoints_53 = eval.get_preprocessed_column((PedersenPoints::new(53)).id());
-        let pedersenpoints_54 = eval.get_preprocessed_column((PedersenPoints::new(54)).id());
-        let pedersenpoints_55 = eval.get_preprocessed_column((PedersenPoints::new(55)).id());
+        let seq_23 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "seq_23".to_owned(),
+        });
+        let pedersen_points_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_0".to_owned(),
+        });
+        let pedersen_points_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_1".to_owned(),
+        });
+        let pedersen_points_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_2".to_owned(),
+        });
+        let pedersen_points_3 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_3".to_owned(),
+        });
+        let pedersen_points_4 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_4".to_owned(),
+        });
+        let pedersen_points_5 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_5".to_owned(),
+        });
+        let pedersen_points_6 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_6".to_owned(),
+        });
+        let pedersen_points_7 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_7".to_owned(),
+        });
+        let pedersen_points_8 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_8".to_owned(),
+        });
+        let pedersen_points_9 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_9".to_owned(),
+        });
+        let pedersen_points_10 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_10".to_owned(),
+        });
+        let pedersen_points_11 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_11".to_owned(),
+        });
+        let pedersen_points_12 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_12".to_owned(),
+        });
+        let pedersen_points_13 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_13".to_owned(),
+        });
+        let pedersen_points_14 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_14".to_owned(),
+        });
+        let pedersen_points_15 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_15".to_owned(),
+        });
+        let pedersen_points_16 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_16".to_owned(),
+        });
+        let pedersen_points_17 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_17".to_owned(),
+        });
+        let pedersen_points_18 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_18".to_owned(),
+        });
+        let pedersen_points_19 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_19".to_owned(),
+        });
+        let pedersen_points_20 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_20".to_owned(),
+        });
+        let pedersen_points_21 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_21".to_owned(),
+        });
+        let pedersen_points_22 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_22".to_owned(),
+        });
+        let pedersen_points_23 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_23".to_owned(),
+        });
+        let pedersen_points_24 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_24".to_owned(),
+        });
+        let pedersen_points_25 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_25".to_owned(),
+        });
+        let pedersen_points_26 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_26".to_owned(),
+        });
+        let pedersen_points_27 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_27".to_owned(),
+        });
+        let pedersen_points_28 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_28".to_owned(),
+        });
+        let pedersen_points_29 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_29".to_owned(),
+        });
+        let pedersen_points_30 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_30".to_owned(),
+        });
+        let pedersen_points_31 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_31".to_owned(),
+        });
+        let pedersen_points_32 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_32".to_owned(),
+        });
+        let pedersen_points_33 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_33".to_owned(),
+        });
+        let pedersen_points_34 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_34".to_owned(),
+        });
+        let pedersen_points_35 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_35".to_owned(),
+        });
+        let pedersen_points_36 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_36".to_owned(),
+        });
+        let pedersen_points_37 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_37".to_owned(),
+        });
+        let pedersen_points_38 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_38".to_owned(),
+        });
+        let pedersen_points_39 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_39".to_owned(),
+        });
+        let pedersen_points_40 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_40".to_owned(),
+        });
+        let pedersen_points_41 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_41".to_owned(),
+        });
+        let pedersen_points_42 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_42".to_owned(),
+        });
+        let pedersen_points_43 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_43".to_owned(),
+        });
+        let pedersen_points_44 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_44".to_owned(),
+        });
+        let pedersen_points_45 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_45".to_owned(),
+        });
+        let pedersen_points_46 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_46".to_owned(),
+        });
+        let pedersen_points_47 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_47".to_owned(),
+        });
+        let pedersen_points_48 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_48".to_owned(),
+        });
+        let pedersen_points_49 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_49".to_owned(),
+        });
+        let pedersen_points_50 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_50".to_owned(),
+        });
+        let pedersen_points_51 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_51".to_owned(),
+        });
+        let pedersen_points_52 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_52".to_owned(),
+        });
+        let pedersen_points_53 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_53".to_owned(),
+        });
+        let pedersen_points_54 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_54".to_owned(),
+        });
+        let pedersen_points_55 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "pedersen_points_55".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.pedersen_points_table_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                seq.clone(),
-                pedersenpoints_0.clone(),
-                pedersenpoints_1.clone(),
-                pedersenpoints_2.clone(),
-                pedersenpoints_3.clone(),
-                pedersenpoints_4.clone(),
-                pedersenpoints_5.clone(),
-                pedersenpoints_6.clone(),
-                pedersenpoints_7.clone(),
-                pedersenpoints_8.clone(),
-                pedersenpoints_9.clone(),
-                pedersenpoints_10.clone(),
-                pedersenpoints_11.clone(),
-                pedersenpoints_12.clone(),
-                pedersenpoints_13.clone(),
-                pedersenpoints_14.clone(),
-                pedersenpoints_15.clone(),
-                pedersenpoints_16.clone(),
-                pedersenpoints_17.clone(),
-                pedersenpoints_18.clone(),
-                pedersenpoints_19.clone(),
-                pedersenpoints_20.clone(),
-                pedersenpoints_21.clone(),
-                pedersenpoints_22.clone(),
-                pedersenpoints_23.clone(),
-                pedersenpoints_24.clone(),
-                pedersenpoints_25.clone(),
-                pedersenpoints_26.clone(),
-                pedersenpoints_27.clone(),
-                pedersenpoints_28.clone(),
-                pedersenpoints_29.clone(),
-                pedersenpoints_30.clone(),
-                pedersenpoints_31.clone(),
-                pedersenpoints_32.clone(),
-                pedersenpoints_33.clone(),
-                pedersenpoints_34.clone(),
-                pedersenpoints_35.clone(),
-                pedersenpoints_36.clone(),
-                pedersenpoints_37.clone(),
-                pedersenpoints_38.clone(),
-                pedersenpoints_39.clone(),
-                pedersenpoints_40.clone(),
-                pedersenpoints_41.clone(),
-                pedersenpoints_42.clone(),
-                pedersenpoints_43.clone(),
-                pedersenpoints_44.clone(),
-                pedersenpoints_45.clone(),
-                pedersenpoints_46.clone(),
-                pedersenpoints_47.clone(),
-                pedersenpoints_48.clone(),
-                pedersenpoints_49.clone(),
-                pedersenpoints_50.clone(),
-                pedersenpoints_51.clone(),
-                pedersenpoints_52.clone(),
-                pedersenpoints_53.clone(),
-                pedersenpoints_54.clone(),
-                pedersenpoints_55.clone(),
+                seq_23.clone(),
+                pedersen_points_0.clone(),
+                pedersen_points_1.clone(),
+                pedersen_points_2.clone(),
+                pedersen_points_3.clone(),
+                pedersen_points_4.clone(),
+                pedersen_points_5.clone(),
+                pedersen_points_6.clone(),
+                pedersen_points_7.clone(),
+                pedersen_points_8.clone(),
+                pedersen_points_9.clone(),
+                pedersen_points_10.clone(),
+                pedersen_points_11.clone(),
+                pedersen_points_12.clone(),
+                pedersen_points_13.clone(),
+                pedersen_points_14.clone(),
+                pedersen_points_15.clone(),
+                pedersen_points_16.clone(),
+                pedersen_points_17.clone(),
+                pedersen_points_18.clone(),
+                pedersen_points_19.clone(),
+                pedersen_points_20.clone(),
+                pedersen_points_21.clone(),
+                pedersen_points_22.clone(),
+                pedersen_points_23.clone(),
+                pedersen_points_24.clone(),
+                pedersen_points_25.clone(),
+                pedersen_points_26.clone(),
+                pedersen_points_27.clone(),
+                pedersen_points_28.clone(),
+                pedersen_points_29.clone(),
+                pedersen_points_30.clone(),
+                pedersen_points_31.clone(),
+                pedersen_points_32.clone(),
+                pedersen_points_33.clone(),
+                pedersen_points_34.clone(),
+                pedersen_points_35.clone(),
+                pedersen_points_36.clone(),
+                pedersen_points_37.clone(),
+                pedersen_points_38.clone(),
+                pedersen_points_39.clone(),
+                pedersen_points_40.clone(),
+                pedersen_points_41.clone(),
+                pedersen_points_42.clone(),
+                pedersen_points_43.clone(),
+                pedersen_points_44.clone(),
+                pedersen_points_45.clone(),
+                pedersen_points_46.clone(),
+                pedersen_points_47.clone(),
+                pedersen_points_48.clone(),
+                pedersen_points_49.clone(),
+                pedersen_points_50.clone(),
+                pedersen_points_51.clone(),
+                pedersen_points_52.clone(),
+                pedersen_points_53.clone(),
+                pedersen_points_54.clone(),
+                pedersen_points_55.clone(),
             ],
         ));
 

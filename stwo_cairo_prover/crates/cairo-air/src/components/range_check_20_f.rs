@@ -48,13 +48,15 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
+        let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "seq_20".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_20_f_lookup_elements,
             -E::EF::from(multiplicity),
-            std::slice::from_ref(&seq),
+            std::slice::from_ref(&seq_20),
         ));
 
         eval.finalize_logup_in_pairs();

@@ -69,9 +69,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
     ) {
         let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(BITWISE_XOR__4_0_IDX);
-        preprocessed_column_set.insert(BITWISE_XOR__4_1_IDX);
-        preprocessed_column_set.insert(BITWISE_XOR__4_2_IDX);
+        preprocessed_column_set.insert(BITWISE_XOR_4_0_IDX);
+        preprocessed_column_set.insert(BITWISE_XOR_4_1_IDX);
+        preprocessed_column_set.insert(BITWISE_XOR_4_2_IDX);
         trace_mask_points.append(array![point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
         interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
@@ -94,9 +94,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_bitwise_xor_4_sum_0: QM31 = Zero::zero();
-        let bitwisexor_4_0 = preprocessed_mask_values.get(BITWISE_XOR__4_0_IDX);
-        let bitwisexor_4_1 = preprocessed_mask_values.get(BITWISE_XOR__4_1_IDX);
-        let bitwisexor_4_2 = preprocessed_mask_values.get(BITWISE_XOR__4_2_IDX);
+        let bitwise_xor_4_0 = preprocessed_mask_values.get(BITWISE_XOR_4_0_IDX);
+        let bitwise_xor_4_1 = preprocessed_mask_values.get(BITWISE_XOR_4_1_IDX);
+        let bitwise_xor_4_2 = preprocessed_mask_values.get(BITWISE_XOR_4_2_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
@@ -105,7 +105,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         verify_bitwise_xor_4_sum_0 = self
             .verify_bitwise_xor_4_lookup_elements
-            .combine_qm31([bitwisexor_4_0, bitwisexor_4_1, bitwisexor_4_2]);
+            .combine_qm31([bitwise_xor_4_0, bitwise_xor_4_1, bitwise_xor_4_2]);
 
         lookup_constraints(
             ref sum,

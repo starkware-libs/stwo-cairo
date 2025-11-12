@@ -110,11 +110,11 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             VerifyBitwiseXor_12_z,
             claimed_sum,
             bitwise_xor_10_0: preprocessed_mask_values
-                .get(preprocessed_columns::BITWISE_XOR__10_0_IDX),
+                .get(preprocessed_columns::BITWISE_XOR_10_0_IDX),
             bitwise_xor_10_1: preprocessed_mask_values
-                .get(preprocessed_columns::BITWISE_XOR__10_1_IDX),
+                .get(preprocessed_columns::BITWISE_XOR_10_1_IDX),
             bitwise_xor_10_2: preprocessed_mask_values
-                .get(preprocessed_columns::BITWISE_XOR__10_2_IDX),
+                .get(preprocessed_columns::BITWISE_XOR_10_2_IDX),
             column_size: pow2(LOG_SIZE).try_into().unwrap(),
         };
 

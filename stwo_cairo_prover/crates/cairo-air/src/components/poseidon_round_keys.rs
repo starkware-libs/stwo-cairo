@@ -48,74 +48,136 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let poseidonroundkeys_0 = eval.get_preprocessed_column((PoseidonRoundKeys::new(0)).id());
-        let poseidonroundkeys_1 = eval.get_preprocessed_column((PoseidonRoundKeys::new(1)).id());
-        let poseidonroundkeys_2 = eval.get_preprocessed_column((PoseidonRoundKeys::new(2)).id());
-        let poseidonroundkeys_3 = eval.get_preprocessed_column((PoseidonRoundKeys::new(3)).id());
-        let poseidonroundkeys_4 = eval.get_preprocessed_column((PoseidonRoundKeys::new(4)).id());
-        let poseidonroundkeys_5 = eval.get_preprocessed_column((PoseidonRoundKeys::new(5)).id());
-        let poseidonroundkeys_6 = eval.get_preprocessed_column((PoseidonRoundKeys::new(6)).id());
-        let poseidonroundkeys_7 = eval.get_preprocessed_column((PoseidonRoundKeys::new(7)).id());
-        let poseidonroundkeys_8 = eval.get_preprocessed_column((PoseidonRoundKeys::new(8)).id());
-        let poseidonroundkeys_9 = eval.get_preprocessed_column((PoseidonRoundKeys::new(9)).id());
-        let poseidonroundkeys_10 = eval.get_preprocessed_column((PoseidonRoundKeys::new(10)).id());
-        let poseidonroundkeys_11 = eval.get_preprocessed_column((PoseidonRoundKeys::new(11)).id());
-        let poseidonroundkeys_12 = eval.get_preprocessed_column((PoseidonRoundKeys::new(12)).id());
-        let poseidonroundkeys_13 = eval.get_preprocessed_column((PoseidonRoundKeys::new(13)).id());
-        let poseidonroundkeys_14 = eval.get_preprocessed_column((PoseidonRoundKeys::new(14)).id());
-        let poseidonroundkeys_15 = eval.get_preprocessed_column((PoseidonRoundKeys::new(15)).id());
-        let poseidonroundkeys_16 = eval.get_preprocessed_column((PoseidonRoundKeys::new(16)).id());
-        let poseidonroundkeys_17 = eval.get_preprocessed_column((PoseidonRoundKeys::new(17)).id());
-        let poseidonroundkeys_18 = eval.get_preprocessed_column((PoseidonRoundKeys::new(18)).id());
-        let poseidonroundkeys_19 = eval.get_preprocessed_column((PoseidonRoundKeys::new(19)).id());
-        let poseidonroundkeys_20 = eval.get_preprocessed_column((PoseidonRoundKeys::new(20)).id());
-        let poseidonroundkeys_21 = eval.get_preprocessed_column((PoseidonRoundKeys::new(21)).id());
-        let poseidonroundkeys_22 = eval.get_preprocessed_column((PoseidonRoundKeys::new(22)).id());
-        let poseidonroundkeys_23 = eval.get_preprocessed_column((PoseidonRoundKeys::new(23)).id());
-        let poseidonroundkeys_24 = eval.get_preprocessed_column((PoseidonRoundKeys::new(24)).id());
-        let poseidonroundkeys_25 = eval.get_preprocessed_column((PoseidonRoundKeys::new(25)).id());
-        let poseidonroundkeys_26 = eval.get_preprocessed_column((PoseidonRoundKeys::new(26)).id());
-        let poseidonroundkeys_27 = eval.get_preprocessed_column((PoseidonRoundKeys::new(27)).id());
-        let poseidonroundkeys_28 = eval.get_preprocessed_column((PoseidonRoundKeys::new(28)).id());
-        let poseidonroundkeys_29 = eval.get_preprocessed_column((PoseidonRoundKeys::new(29)).id());
+        let seq_6 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "seq_6".to_owned(),
+        });
+        let poseidon_round_keys_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_0".to_owned(),
+        });
+        let poseidon_round_keys_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_1".to_owned(),
+        });
+        let poseidon_round_keys_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_2".to_owned(),
+        });
+        let poseidon_round_keys_3 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_3".to_owned(),
+        });
+        let poseidon_round_keys_4 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_4".to_owned(),
+        });
+        let poseidon_round_keys_5 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_5".to_owned(),
+        });
+        let poseidon_round_keys_6 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_6".to_owned(),
+        });
+        let poseidon_round_keys_7 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_7".to_owned(),
+        });
+        let poseidon_round_keys_8 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_8".to_owned(),
+        });
+        let poseidon_round_keys_9 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_9".to_owned(),
+        });
+        let poseidon_round_keys_10 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_10".to_owned(),
+        });
+        let poseidon_round_keys_11 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_11".to_owned(),
+        });
+        let poseidon_round_keys_12 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_12".to_owned(),
+        });
+        let poseidon_round_keys_13 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_13".to_owned(),
+        });
+        let poseidon_round_keys_14 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_14".to_owned(),
+        });
+        let poseidon_round_keys_15 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_15".to_owned(),
+        });
+        let poseidon_round_keys_16 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_16".to_owned(),
+        });
+        let poseidon_round_keys_17 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_17".to_owned(),
+        });
+        let poseidon_round_keys_18 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_18".to_owned(),
+        });
+        let poseidon_round_keys_19 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_19".to_owned(),
+        });
+        let poseidon_round_keys_20 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_20".to_owned(),
+        });
+        let poseidon_round_keys_21 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_21".to_owned(),
+        });
+        let poseidon_round_keys_22 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_22".to_owned(),
+        });
+        let poseidon_round_keys_23 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_23".to_owned(),
+        });
+        let poseidon_round_keys_24 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_24".to_owned(),
+        });
+        let poseidon_round_keys_25 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_25".to_owned(),
+        });
+        let poseidon_round_keys_26 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_26".to_owned(),
+        });
+        let poseidon_round_keys_27 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_27".to_owned(),
+        });
+        let poseidon_round_keys_28 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_28".to_owned(),
+        });
+        let poseidon_round_keys_29 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "poseidon_round_keys_29".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_round_keys_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                seq.clone(),
-                poseidonroundkeys_0.clone(),
-                poseidonroundkeys_1.clone(),
-                poseidonroundkeys_2.clone(),
-                poseidonroundkeys_3.clone(),
-                poseidonroundkeys_4.clone(),
-                poseidonroundkeys_5.clone(),
-                poseidonroundkeys_6.clone(),
-                poseidonroundkeys_7.clone(),
-                poseidonroundkeys_8.clone(),
-                poseidonroundkeys_9.clone(),
-                poseidonroundkeys_10.clone(),
-                poseidonroundkeys_11.clone(),
-                poseidonroundkeys_12.clone(),
-                poseidonroundkeys_13.clone(),
-                poseidonroundkeys_14.clone(),
-                poseidonroundkeys_15.clone(),
-                poseidonroundkeys_16.clone(),
-                poseidonroundkeys_17.clone(),
-                poseidonroundkeys_18.clone(),
-                poseidonroundkeys_19.clone(),
-                poseidonroundkeys_20.clone(),
-                poseidonroundkeys_21.clone(),
-                poseidonroundkeys_22.clone(),
-                poseidonroundkeys_23.clone(),
-                poseidonroundkeys_24.clone(),
-                poseidonroundkeys_25.clone(),
-                poseidonroundkeys_26.clone(),
-                poseidonroundkeys_27.clone(),
-                poseidonroundkeys_28.clone(),
-                poseidonroundkeys_29.clone(),
+                seq_6.clone(),
+                poseidon_round_keys_0.clone(),
+                poseidon_round_keys_1.clone(),
+                poseidon_round_keys_2.clone(),
+                poseidon_round_keys_3.clone(),
+                poseidon_round_keys_4.clone(),
+                poseidon_round_keys_5.clone(),
+                poseidon_round_keys_6.clone(),
+                poseidon_round_keys_7.clone(),
+                poseidon_round_keys_8.clone(),
+                poseidon_round_keys_9.clone(),
+                poseidon_round_keys_10.clone(),
+                poseidon_round_keys_11.clone(),
+                poseidon_round_keys_12.clone(),
+                poseidon_round_keys_13.clone(),
+                poseidon_round_keys_14.clone(),
+                poseidon_round_keys_15.clone(),
+                poseidon_round_keys_16.clone(),
+                poseidon_round_keys_17.clone(),
+                poseidon_round_keys_18.clone(),
+                poseidon_round_keys_19.clone(),
+                poseidon_round_keys_20.clone(),
+                poseidon_round_keys_21.clone(),
+                poseidon_round_keys_22.clone(),
+                poseidon_round_keys_23.clone(),
+                poseidon_round_keys_24.clone(),
+                poseidon_round_keys_25.clone(),
+                poseidon_round_keys_26.clone(),
+                poseidon_round_keys_27.clone(),
+                poseidon_round_keys_28.clone(),
+                poseidon_round_keys_29.clone(),
             ],
         ));
 

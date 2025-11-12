@@ -48,14 +48,21 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let rangecheck_9_9_0 = eval.get_preprocessed_column((RangeCheck::new([9, 9], 0)).id());
-        let rangecheck_9_9_1 = eval.get_preprocessed_column((RangeCheck::new([9, 9], 1)).id());
+        let range_check_9_9_column_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_9_9_column_0".to_owned(),
+        });
+        let range_check_9_9_column_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_9_9_column_1".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_9_9_f_lookup_elements,
             -E::EF::from(multiplicity),
-            &[rangecheck_9_9_0.clone(), rangecheck_9_9_1.clone()],
+            &[
+                range_check_9_9_column_0.clone(),
+                range_check_9_9_column_1.clone(),
+            ],
         ));
 
         eval.finalize_logup_in_pairs();

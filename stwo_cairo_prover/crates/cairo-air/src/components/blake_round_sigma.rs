@@ -48,46 +48,80 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let blakesigma_0 = eval.get_preprocessed_column((BlakeSigma::new(0)).id());
-        let blakesigma_1 = eval.get_preprocessed_column((BlakeSigma::new(1)).id());
-        let blakesigma_2 = eval.get_preprocessed_column((BlakeSigma::new(2)).id());
-        let blakesigma_3 = eval.get_preprocessed_column((BlakeSigma::new(3)).id());
-        let blakesigma_4 = eval.get_preprocessed_column((BlakeSigma::new(4)).id());
-        let blakesigma_5 = eval.get_preprocessed_column((BlakeSigma::new(5)).id());
-        let blakesigma_6 = eval.get_preprocessed_column((BlakeSigma::new(6)).id());
-        let blakesigma_7 = eval.get_preprocessed_column((BlakeSigma::new(7)).id());
-        let blakesigma_8 = eval.get_preprocessed_column((BlakeSigma::new(8)).id());
-        let blakesigma_9 = eval.get_preprocessed_column((BlakeSigma::new(9)).id());
-        let blakesigma_10 = eval.get_preprocessed_column((BlakeSigma::new(10)).id());
-        let blakesigma_11 = eval.get_preprocessed_column((BlakeSigma::new(11)).id());
-        let blakesigma_12 = eval.get_preprocessed_column((BlakeSigma::new(12)).id());
-        let blakesigma_13 = eval.get_preprocessed_column((BlakeSigma::new(13)).id());
-        let blakesigma_14 = eval.get_preprocessed_column((BlakeSigma::new(14)).id());
-        let blakesigma_15 = eval.get_preprocessed_column((BlakeSigma::new(15)).id());
+        let seq_4 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "seq_4".to_owned(),
+        });
+        let blake_sigma_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_0".to_owned(),
+        });
+        let blake_sigma_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_1".to_owned(),
+        });
+        let blake_sigma_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_2".to_owned(),
+        });
+        let blake_sigma_3 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_3".to_owned(),
+        });
+        let blake_sigma_4 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_4".to_owned(),
+        });
+        let blake_sigma_5 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_5".to_owned(),
+        });
+        let blake_sigma_6 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_6".to_owned(),
+        });
+        let blake_sigma_7 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_7".to_owned(),
+        });
+        let blake_sigma_8 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_8".to_owned(),
+        });
+        let blake_sigma_9 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_9".to_owned(),
+        });
+        let blake_sigma_10 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_10".to_owned(),
+        });
+        let blake_sigma_11 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_11".to_owned(),
+        });
+        let blake_sigma_12 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_12".to_owned(),
+        });
+        let blake_sigma_13 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_13".to_owned(),
+        });
+        let blake_sigma_14 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_14".to_owned(),
+        });
+        let blake_sigma_15 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "blake_sigma_15".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.blake_round_sigma_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                seq.clone(),
-                blakesigma_0.clone(),
-                blakesigma_1.clone(),
-                blakesigma_2.clone(),
-                blakesigma_3.clone(),
-                blakesigma_4.clone(),
-                blakesigma_5.clone(),
-                blakesigma_6.clone(),
-                blakesigma_7.clone(),
-                blakesigma_8.clone(),
-                blakesigma_9.clone(),
-                blakesigma_10.clone(),
-                blakesigma_11.clone(),
-                blakesigma_12.clone(),
-                blakesigma_13.clone(),
-                blakesigma_14.clone(),
-                blakesigma_15.clone(),
+                seq_4.clone(),
+                blake_sigma_0.clone(),
+                blake_sigma_1.clone(),
+                blake_sigma_2.clone(),
+                blake_sigma_3.clone(),
+                blake_sigma_4.clone(),
+                blake_sigma_5.clone(),
+                blake_sigma_6.clone(),
+                blake_sigma_7.clone(),
+                blake_sigma_8.clone(),
+                blake_sigma_9.clone(),
+                blake_sigma_10.clone(),
+                blake_sigma_11.clone(),
+                blake_sigma_12.clone(),
+                blake_sigma_13.clone(),
+                blake_sigma_14.clone(),
+                blake_sigma_15.clone(),
             ],
         ));
 

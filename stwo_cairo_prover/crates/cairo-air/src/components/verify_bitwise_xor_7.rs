@@ -48,18 +48,24 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let bitwisexor_7_0 = eval.get_preprocessed_column((BitwiseXor::new(7, 0)).id());
-        let bitwisexor_7_1 = eval.get_preprocessed_column((BitwiseXor::new(7, 1)).id());
-        let bitwisexor_7_2 = eval.get_preprocessed_column((BitwiseXor::new(7, 2)).id());
+        let bitwise_xor_7_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_7_0".to_owned(),
+        });
+        let bitwise_xor_7_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_7_1".to_owned(),
+        });
+        let bitwise_xor_7_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_7_2".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.verify_bitwise_xor_7_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                bitwisexor_7_0.clone(),
-                bitwisexor_7_1.clone(),
-                bitwisexor_7_2.clone(),
+                bitwise_xor_7_0.clone(),
+                bitwise_xor_7_1.clone(),
+                bitwise_xor_7_2.clone(),
             ],
         ));
 
