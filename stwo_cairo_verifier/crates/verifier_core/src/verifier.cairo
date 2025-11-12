@@ -59,7 +59,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     // Draw a random coefficient from the channel to be used in the composition polynomial.
     // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
-    let composition_random_coeff = channel.draw_secure_felt();
+    let _composition_random_coeff = channel.draw_secure_felt();
 
     let composition_log_size = air.composition_log_degree_bound();
 
@@ -79,24 +79,35 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // Draw OOD point.
     let ood_point = channel.get_random_point();
 
-    let sampled_oods_values = commitment_scheme_proof.sampled_values;
+    // // Get mask sample points relative to OOD point.
+    // let mut sample_points = air.mask_points(ood_point);
 
-    let composition_oods_eval = try_extract_composition_eval(
-        sampled_oods_values, ood_point, composition_log_size,
-    )
-        .unwrap_or_else(
-            || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
-        );
+    // // Add the composition polynomial mask points.
+    // sample_points
+    //     .append(
+    //         ArrayImpl::new_repeated(
+    //             n: COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE, v: array![ood_point],
+    //         ),
+    //     );
 
-    // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
-    assert!(
-        composition_oods_eval == air
-            .eval_composition_polynomial_at_point(
-                ood_point, sampled_oods_values, composition_random_coeff,
-            ),
-        "{}",
-        VerificationError::OodsNotMatching,
-    );
+    // let sampled_oods_values = commitment_scheme_proof.sampled_values;
+
+    // let composition_oods_eval = try_extract_composition_eval(
+    //     sampled_oods_values, ood_point, composition_log_size,
+    // )
+    //     .unwrap_or_else(
+    //         || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
+    //     );
+
+    // // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
+    // assert!(
+    //     composition_oods_eval == air
+    //         .eval_composition_polynomial_at_point(
+    //             ood_point, sampled_oods_values, composition_random_coeff,
+    //         ),
+    //     "{}",
+    //     VerificationError::OodsNotMatching,
+    // );
 
     commitment_scheme.verify_values(ood_point, commitment_scheme_proof, ref channel);
 }

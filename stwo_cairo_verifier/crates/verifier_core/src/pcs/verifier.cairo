@@ -129,6 +129,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         mix_sampled_values(sampled_values, ref channel);
 
         let random_coeff = channel.draw_secure_felt();
+        println!("random_coeff: {:?}", random_coeff);
         let fri_config = config.fri_config;
 
         let column_indices_per_tree_by_degree_bound = self
@@ -161,6 +162,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         for (tree, (queried_values, decommitment)) in zip_eq(
             self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
         ) {
+            println!("a");
             tree.verify(ref query_positions_by_log_size, *queried_values, decommitment);
         }
 

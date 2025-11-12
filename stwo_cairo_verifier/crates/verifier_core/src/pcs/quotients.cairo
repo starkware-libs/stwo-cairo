@@ -105,7 +105,7 @@ pub fn fri_answers(
 ///
 fn sample_batches_for_log_size(
     columns_per_tree: @TreeSpan<Span<usize>>,
-    sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+    mut sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
     oods_point: CirclePoint<QM31>,
     log_size: u32,
     log_blowup_factor: u32,
@@ -116,35 +116,32 @@ fn sample_batches_for_log_size(
     let mut indexed_evaluations_at_prev_point = array![];
 
     let mut n_columns_per_tree = array![];
-    let mut index = 0;
-    for (columns, samples_per_column) in zip_eq(
-        *columns_per_tree, sample_values_per_column_per_tree,
-    ) {
-        for column in columns {
-            // Note that samples_per_column[*column] can be an empty array.
-            let sample_values_at_column = *samples_per_column[*column];
+    
 
-            if let Some(point_box) = sample_values_at_column.try_into() {
-                let [point_sample]: [QM31; 1] = (*point_box).unbox();
-
-                indexed_evaluations_at_point.append((index, point_sample));
-            } else if let Some(tuple_box) = sample_values_at_column.try_into() {
-                let [prev_point_sample, point_sample]: [QM31; 2] = (*tuple_box).unbox();
-
-                indexed_evaluations_at_prev_point.append((index, prev_point_sample));
-                indexed_evaluations_at_point.append((index, point_sample));
-            } else {
-                assert!(sample_values_at_column.is_empty(), "Unexpected number of samples");
-            }
-            index += 1;
-        }
-
+    for columns in columns_per_tree {
         n_columns_per_tree.append(columns.len());
     }
 
-    if index == 0 {
-        return Option::None;
+    let samples_per_column = tree_take_n(ref sample_values_per_column_per_tree, n_columns_per_tree.span());
+    if samples_per_column.is_empty() {
+        return None;
     }
+
+    for (index, sample_values_at_column) in samples_per_column.into_iter().enumerate() {
+        if let Some(point_box) = sample_values_at_column.try_into() {
+            let [point_sample]: [QM31; 1] = (*point_box).unbox();
+
+            indexed_evaluations_at_point.append((index, point_sample));
+        } else if let Some(tuple_box) = sample_values_at_column.try_into() {
+            let [prev_point_sample, point_sample]: [QM31; 2] = (*tuple_box).unbox();
+
+            indexed_evaluations_at_prev_point.append((index, prev_point_sample));
+            indexed_evaluations_at_point.append((index, point_sample));
+        } else {
+            assert!(sample_values_at_column.is_empty(), "Unexpected number of samples");
+        }
+    }
+
 
     let mut sample_batches_by_point: Array<ColumnSampleBatch> = array![];
     if !indexed_evaluations_at_point.is_empty() {
@@ -168,7 +165,7 @@ fn sample_batches_for_log_size(
             );
     }
 
-    Option::Some((sample_batches_by_point, n_columns_per_tree))
+    Some((sample_batches_by_point, n_columns_per_tree))
 }
 
 fn fri_answers_for_log_size(
