@@ -51,15 +51,45 @@ impl ClaimGenerator {
             blake_round_state,
             triple_xor_32_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            verify_instruction_state.add_packed_inputs(inputs.verify_instruction.as_ref());
-            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
-            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
-            range_check_7_2_5_state.add_packed_inputs(inputs.range_check_7_2_5.as_ref());
-            verify_bitwise_xor_8_state.add_packed_inputs(inputs.verify_bitwise_xor_8.as_ref());
-            blake_round_state.add_packed_inputs(inputs.blake_round.as_ref());
-            triple_xor_32_state.add_packed_inputs(inputs.triple_xor_32.as_ref());
+        sub_component_inputs
+            .verify_instruction
+            .iter()
+            .for_each(|inputs| {
+                verify_instruction_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_address_to_id
+            .iter()
+            .for_each(|inputs| {
+                memory_address_to_id_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_id_to_big
+            .iter()
+            .for_each(|inputs| {
+                memory_id_to_big_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_7_2_5
+            .iter()
+            .for_each(|inputs| {
+                range_check_7_2_5_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .verify_bitwise_xor_8
+            .iter()
+            .for_each(|inputs| {
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs.blake_round.iter().for_each(|inputs| {
+            blake_round_state.add_packed_inputs(inputs);
         });
+        sub_component_inputs
+            .triple_xor_32
+            .iter()
+            .for_each(|inputs| {
+                triple_xor_32_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -73,23 +103,15 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    verify_instruction: [verify_instruction::PackedInputType; 1],
-    memory_address_to_id: [memory_address_to_id::PackedInputType; 20],
-    memory_id_to_big: [memory_id_to_big::PackedInputType; 20],
-    range_check_7_2_5: [range_check_7_2_5::PackedInputType; 17],
-    verify_bitwise_xor_8: [verify_bitwise_xor_8::PackedInputType; 4],
-    blake_round: [blake_round::PackedInputType; 10],
-    triple_xor_32: [triple_xor_32::PackedInputType; 8],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    verify_instruction: [Vec<verify_instruction::PackedInputType>; 1],
+    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 20],
+    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 20],
+    range_check_7_2_5: [Vec<range_check_7_2_5::PackedInputType>; 17],
+    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
+    blake_round: [Vec<blake_round::PackedInputType>; 10],
+    triple_xor_32: [Vec<triple_xor_32::PackedInputType>; 8],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -117,7 +139,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -291,7 +313,7 @@ fn write_trace_simd(
                 *row[9] = ap_update_add_1_col9;
                 let opcode_extension_col10 = memory_id_to_big_value_tmp_53f39_1.get_m31(7);
                 *row[10] = opcode_extension_col10;
-                sub_component_inputs.verify_instruction[0] = (
+                *sub_component_inputs.verify_instruction[0] = (
                     input_pc_col0,
                     [offset0_col3, offset1_col4, offset2_col5],
                     [
@@ -353,7 +375,7 @@ fn write_trace_simd(
                     );
                 let op0_id_col12 = memory_address_to_id_value_tmp_53f39_10;
                 *row[12] = op0_id_col12;
-                sub_component_inputs.memory_address_to_id[0] =
+                *sub_component_inputs.memory_address_to_id[0] =
                     ((mem0_base_col11) + (decode_instruction_472fe_output_tmp_53f39_9.0[1]));
                 *lookup_data.memory_address_to_id_0 = [
                     ((mem0_base_col11) + (decode_instruction_472fe_output_tmp_53f39_9.0[1])),
@@ -382,7 +404,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col17 = partial_limb_msb_tmp_53f39_13.as_m31();
                 *row[17] = partial_limb_msb_col17;
 
-                sub_component_inputs.memory_id_to_big[0] = op0_id_col12;
+                *sub_component_inputs.memory_id_to_big[0] = op0_id_col12;
                 *lookup_data.memory_id_to_big_0 = [
                     op0_id_col12,
                     op0_limb_0_col13,
@@ -465,7 +487,7 @@ fn write_trace_simd(
                     );
                 let op1_id_col19 = memory_address_to_id_value_tmp_53f39_17;
                 *row[19] = op1_id_col19;
-                sub_component_inputs.memory_address_to_id[1] =
+                *sub_component_inputs.memory_address_to_id[1] =
                     ((mem1_base_col18) + (decode_instruction_472fe_output_tmp_53f39_9.0[2]));
                 *lookup_data.memory_address_to_id_1 = [
                     ((mem1_base_col18) + (decode_instruction_472fe_output_tmp_53f39_9.0[2])),
@@ -494,7 +516,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col24 = partial_limb_msb_tmp_53f39_20.as_m31();
                 *row[24] = partial_limb_msb_col24;
 
-                sub_component_inputs.memory_id_to_big[1] = op1_id_col19;
+                *sub_component_inputs.memory_id_to_big[1] = op1_id_col19;
                 *lookup_data.memory_id_to_big_1 = [
                     op1_id_col19,
                     op1_limb_0_col20,
@@ -571,7 +593,7 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(input_ap_col1);
                 let ap_id_col25 = memory_address_to_id_value_tmp_53f39_24;
                 *row[25] = ap_id_col25;
-                sub_component_inputs.memory_address_to_id[2] = input_ap_col1;
+                *sub_component_inputs.memory_address_to_id[2] = input_ap_col1;
                 *lookup_data.memory_address_to_id_2 = [input_ap_col1, ap_id_col25];
 
                 // Read Positive Known Id Num Bits 29.
@@ -596,7 +618,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col30 = partial_limb_msb_tmp_53f39_27.as_m31();
                 *row[30] = partial_limb_msb_col30;
 
-                sub_component_inputs.memory_id_to_big[2] = ap_id_col25;
+                *sub_component_inputs.memory_id_to_big[2] = ap_id_col25;
                 *lookup_data.memory_id_to_big_2 = [
                     ap_id_col25,
                     ap_limb_0_col26,
@@ -707,7 +729,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_38 = ((high_14_ms_bits_tmp_53f39_36) >> (UInt16_9));
                 let high_5_ms_bits_col36 = high_5_ms_bits_tmp_53f39_38.as_m31();
                 *row[36] = high_5_ms_bits_col36;
-                sub_component_inputs.range_check_7_2_5[0] = [
+                *sub_component_inputs.range_check_7_2_5[0] = [
                     low_7_ms_bits_col34,
                     high_2_ls_bits_tmp_53f39_37,
                     high_5_ms_bits_col36,
@@ -728,14 +750,14 @@ fn write_trace_simd(
                     );
                 let dst_id_col37 = memory_address_to_id_value_tmp_53f39_39;
                 *row[37] = dst_id_col37;
-                sub_component_inputs.memory_address_to_id[3] =
+                *sub_component_inputs.memory_address_to_id[3] =
                     ((mem_dst_base_col31) + (decode_instruction_472fe_output_tmp_53f39_9.0[0]));
                 *lookup_data.memory_address_to_id_3 = [
                     ((mem_dst_base_col31) + (decode_instruction_472fe_output_tmp_53f39_9.0[0])),
                     dst_id_col37,
                 ];
 
-                sub_component_inputs.memory_id_to_big[3] = dst_id_col37;
+                *sub_component_inputs.memory_id_to_big[3] = dst_id_col37;
                 *lookup_data.memory_id_to_big_3 = [
                     dst_id_col37,
                     ((low_16_bits_col32) - ((low_7_ms_bits_col34) * (M31_512))),
@@ -827,7 +849,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_50 = ((high_14_ms_bits_tmp_53f39_48) >> (UInt16_9));
                 let high_5_ms_bits_col42 = high_5_ms_bits_tmp_53f39_50.as_m31();
                 *row[42] = high_5_ms_bits_col42;
-                sub_component_inputs.range_check_7_2_5[1] = [
+                *sub_component_inputs.range_check_7_2_5[1] = [
                     low_7_ms_bits_col40,
                     high_2_ls_bits_tmp_53f39_49,
                     high_5_ms_bits_col42,
@@ -846,14 +868,14 @@ fn write_trace_simd(
                     .deduce_output(decode_blake_opcode_output_tmp_53f39_42.0[0]);
                 let state_0_id_col43 = memory_address_to_id_value_tmp_53f39_51;
                 *row[43] = state_0_id_col43;
-                sub_component_inputs.memory_address_to_id[4] =
+                *sub_component_inputs.memory_address_to_id[4] =
                     decode_blake_opcode_output_tmp_53f39_42.0[0];
                 *lookup_data.memory_address_to_id_4 = [
                     decode_blake_opcode_output_tmp_53f39_42.0[0],
                     state_0_id_col43,
                 ];
 
-                sub_component_inputs.memory_id_to_big[4] = state_0_id_col43;
+                *sub_component_inputs.memory_id_to_big[4] = state_0_id_col43;
                 *lookup_data.memory_id_to_big_4 = [
                     state_0_id_col43,
                     ((low_16_bits_col38) - ((low_7_ms_bits_col40) * (M31_512))),
@@ -924,7 +946,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_61 = ((high_14_ms_bits_tmp_53f39_59) >> (UInt16_9));
                 let high_5_ms_bits_col48 = high_5_ms_bits_tmp_53f39_61.as_m31();
                 *row[48] = high_5_ms_bits_col48;
-                sub_component_inputs.range_check_7_2_5[2] = [
+                *sub_component_inputs.range_check_7_2_5[2] = [
                     low_7_ms_bits_col46,
                     high_2_ls_bits_tmp_53f39_60,
                     high_5_ms_bits_col48,
@@ -943,14 +965,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_1)));
                 let state_1_id_col49 = memory_address_to_id_value_tmp_53f39_62;
                 *row[49] = state_1_id_col49;
-                sub_component_inputs.memory_address_to_id[5] =
+                *sub_component_inputs.memory_address_to_id[5] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_1));
                 *lookup_data.memory_address_to_id_5 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_1)),
                     state_1_id_col49,
                 ];
 
-                sub_component_inputs.memory_id_to_big[5] = state_1_id_col49;
+                *sub_component_inputs.memory_id_to_big[5] = state_1_id_col49;
                 *lookup_data.memory_id_to_big_5 = [
                     state_1_id_col49,
                     ((low_16_bits_col44) - ((low_7_ms_bits_col46) * (M31_512))),
@@ -1021,7 +1043,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_72 = ((high_14_ms_bits_tmp_53f39_70) >> (UInt16_9));
                 let high_5_ms_bits_col54 = high_5_ms_bits_tmp_53f39_72.as_m31();
                 *row[54] = high_5_ms_bits_col54;
-                sub_component_inputs.range_check_7_2_5[3] = [
+                *sub_component_inputs.range_check_7_2_5[3] = [
                     low_7_ms_bits_col52,
                     high_2_ls_bits_tmp_53f39_71,
                     high_5_ms_bits_col54,
@@ -1040,14 +1062,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_2)));
                 let state_2_id_col55 = memory_address_to_id_value_tmp_53f39_73;
                 *row[55] = state_2_id_col55;
-                sub_component_inputs.memory_address_to_id[6] =
+                *sub_component_inputs.memory_address_to_id[6] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_2));
                 *lookup_data.memory_address_to_id_6 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_2)),
                     state_2_id_col55,
                 ];
 
-                sub_component_inputs.memory_id_to_big[6] = state_2_id_col55;
+                *sub_component_inputs.memory_id_to_big[6] = state_2_id_col55;
                 *lookup_data.memory_id_to_big_6 = [
                     state_2_id_col55,
                     ((low_16_bits_col50) - ((low_7_ms_bits_col52) * (M31_512))),
@@ -1118,7 +1140,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_83 = ((high_14_ms_bits_tmp_53f39_81) >> (UInt16_9));
                 let high_5_ms_bits_col60 = high_5_ms_bits_tmp_53f39_83.as_m31();
                 *row[60] = high_5_ms_bits_col60;
-                sub_component_inputs.range_check_7_2_5[4] = [
+                *sub_component_inputs.range_check_7_2_5[4] = [
                     low_7_ms_bits_col58,
                     high_2_ls_bits_tmp_53f39_82,
                     high_5_ms_bits_col60,
@@ -1137,14 +1159,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_3)));
                 let state_3_id_col61 = memory_address_to_id_value_tmp_53f39_84;
                 *row[61] = state_3_id_col61;
-                sub_component_inputs.memory_address_to_id[7] =
+                *sub_component_inputs.memory_address_to_id[7] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_3));
                 *lookup_data.memory_address_to_id_7 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_3)),
                     state_3_id_col61,
                 ];
 
-                sub_component_inputs.memory_id_to_big[7] = state_3_id_col61;
+                *sub_component_inputs.memory_id_to_big[7] = state_3_id_col61;
                 *lookup_data.memory_id_to_big_7 = [
                     state_3_id_col61,
                     ((low_16_bits_col56) - ((low_7_ms_bits_col58) * (M31_512))),
@@ -1215,7 +1237,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_94 = ((high_14_ms_bits_tmp_53f39_92) >> (UInt16_9));
                 let high_5_ms_bits_col66 = high_5_ms_bits_tmp_53f39_94.as_m31();
                 *row[66] = high_5_ms_bits_col66;
-                sub_component_inputs.range_check_7_2_5[5] = [
+                *sub_component_inputs.range_check_7_2_5[5] = [
                     low_7_ms_bits_col64,
                     high_2_ls_bits_tmp_53f39_93,
                     high_5_ms_bits_col66,
@@ -1234,14 +1256,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_4)));
                 let state_4_id_col67 = memory_address_to_id_value_tmp_53f39_95;
                 *row[67] = state_4_id_col67;
-                sub_component_inputs.memory_address_to_id[8] =
+                *sub_component_inputs.memory_address_to_id[8] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_4));
                 *lookup_data.memory_address_to_id_8 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_4)),
                     state_4_id_col67,
                 ];
 
-                sub_component_inputs.memory_id_to_big[8] = state_4_id_col67;
+                *sub_component_inputs.memory_id_to_big[8] = state_4_id_col67;
                 *lookup_data.memory_id_to_big_8 = [
                     state_4_id_col67,
                     ((low_16_bits_col62) - ((low_7_ms_bits_col64) * (M31_512))),
@@ -1313,7 +1335,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_105 = ((high_14_ms_bits_tmp_53f39_103) >> (UInt16_9));
                 let high_5_ms_bits_col72 = high_5_ms_bits_tmp_53f39_105.as_m31();
                 *row[72] = high_5_ms_bits_col72;
-                sub_component_inputs.range_check_7_2_5[6] = [
+                *sub_component_inputs.range_check_7_2_5[6] = [
                     low_7_ms_bits_col70,
                     high_2_ls_bits_tmp_53f39_104,
                     high_5_ms_bits_col72,
@@ -1332,14 +1354,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_5)));
                 let state_5_id_col73 = memory_address_to_id_value_tmp_53f39_106;
                 *row[73] = state_5_id_col73;
-                sub_component_inputs.memory_address_to_id[9] =
+                *sub_component_inputs.memory_address_to_id[9] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_5));
                 *lookup_data.memory_address_to_id_9 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_5)),
                     state_5_id_col73,
                 ];
 
-                sub_component_inputs.memory_id_to_big[9] = state_5_id_col73;
+                *sub_component_inputs.memory_id_to_big[9] = state_5_id_col73;
                 *lookup_data.memory_id_to_big_9 = [
                     state_5_id_col73,
                     ((low_16_bits_col68) - ((low_7_ms_bits_col70) * (M31_512))),
@@ -1411,7 +1433,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_116 = ((high_14_ms_bits_tmp_53f39_114) >> (UInt16_9));
                 let high_5_ms_bits_col78 = high_5_ms_bits_tmp_53f39_116.as_m31();
                 *row[78] = high_5_ms_bits_col78;
-                sub_component_inputs.range_check_7_2_5[7] = [
+                *sub_component_inputs.range_check_7_2_5[7] = [
                     low_7_ms_bits_col76,
                     high_2_ls_bits_tmp_53f39_115,
                     high_5_ms_bits_col78,
@@ -1430,14 +1452,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_6)));
                 let state_6_id_col79 = memory_address_to_id_value_tmp_53f39_117;
                 *row[79] = state_6_id_col79;
-                sub_component_inputs.memory_address_to_id[10] =
+                *sub_component_inputs.memory_address_to_id[10] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_6));
                 *lookup_data.memory_address_to_id_10 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_6)),
                     state_6_id_col79,
                 ];
 
-                sub_component_inputs.memory_id_to_big[10] = state_6_id_col79;
+                *sub_component_inputs.memory_id_to_big[10] = state_6_id_col79;
                 *lookup_data.memory_id_to_big_10 = [
                     state_6_id_col79,
                     ((low_16_bits_col74) - ((low_7_ms_bits_col76) * (M31_512))),
@@ -1509,7 +1531,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_127 = ((high_14_ms_bits_tmp_53f39_125) >> (UInt16_9));
                 let high_5_ms_bits_col84 = high_5_ms_bits_tmp_53f39_127.as_m31();
                 *row[84] = high_5_ms_bits_col84;
-                sub_component_inputs.range_check_7_2_5[8] = [
+                *sub_component_inputs.range_check_7_2_5[8] = [
                     low_7_ms_bits_col82,
                     high_2_ls_bits_tmp_53f39_126,
                     high_5_ms_bits_col84,
@@ -1528,14 +1550,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_7)));
                 let state_7_id_col85 = memory_address_to_id_value_tmp_53f39_128;
                 *row[85] = state_7_id_col85;
-                sub_component_inputs.memory_address_to_id[11] =
+                *sub_component_inputs.memory_address_to_id[11] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_7));
                 *lookup_data.memory_address_to_id_11 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[0]) + (M31_7)),
                     state_7_id_col85,
                 ];
 
-                sub_component_inputs.memory_id_to_big[11] = state_7_id_col85;
+                *sub_component_inputs.memory_id_to_big[11] = state_7_id_col85;
                 *lookup_data.memory_id_to_big_11 = [
                     state_7_id_col85,
                     ((low_16_bits_col80) - ((low_7_ms_bits_col82) * (M31_512))),
@@ -1599,7 +1621,7 @@ fn write_trace_simd(
                         ^ (UInt16_127));
                 let xor_col88 = xor_tmp_53f39_135.as_m31();
                 *row[88] = xor_col88;
-                sub_component_inputs.verify_bitwise_xor_8[0] = [
+                *sub_component_inputs.verify_bitwise_xor_8[0] = [
                     split_16_low_part_size_8_output_tmp_53f39_132[0],
                     M31_127,
                     xor_col88,
@@ -1615,7 +1637,8 @@ fn write_trace_simd(
                 let xor_tmp_53f39_137 = ((PackedUInt16::from_m31(ms_8_bits_col86)) ^ (UInt16_82));
                 let xor_col89 = xor_tmp_53f39_137.as_m31();
                 *row[89] = xor_col89;
-                sub_component_inputs.verify_bitwise_xor_8[1] = [ms_8_bits_col86, M31_82, xor_col89];
+                *sub_component_inputs.verify_bitwise_xor_8[1] =
+                    [ms_8_bits_col86, M31_82, xor_col89];
                 *lookup_data.verify_bitwise_xor_8_1 = [ms_8_bits_col86, M31_82, xor_col89];
 
                 // Bitwise Xor Num Bits 8.
@@ -1625,7 +1648,7 @@ fn write_trace_simd(
                         ^ (UInt16_14));
                 let xor_col90 = xor_tmp_53f39_139.as_m31();
                 *row[90] = xor_col90;
-                sub_component_inputs.verify_bitwise_xor_8[2] = [
+                *sub_component_inputs.verify_bitwise_xor_8[2] = [
                     split_16_low_part_size_8_output_tmp_53f39_134[0],
                     M31_14,
                     xor_col90,
@@ -1641,7 +1664,8 @@ fn write_trace_simd(
                 let xor_tmp_53f39_141 = ((PackedUInt16::from_m31(ms_8_bits_col87)) ^ (UInt16_81));
                 let xor_col91 = xor_tmp_53f39_141.as_m31();
                 *row[91] = xor_col91;
-                sub_component_inputs.verify_bitwise_xor_8[3] = [ms_8_bits_col87, M31_81, xor_col91];
+                *sub_component_inputs.verify_bitwise_xor_8[3] =
+                    [ms_8_bits_col87, M31_81, xor_col91];
                 *lookup_data.verify_bitwise_xor_8_3 = [ms_8_bits_col87, M31_81, xor_col91];
 
                 let create_blake_round_input_output_tmp_53f39_143 = [
@@ -1720,7 +1744,7 @@ fn write_trace_simd(
                     M31_23520,
                     decode_blake_opcode_output_tmp_53f39_42.0[1],
                 ];
-                sub_component_inputs.blake_round[0] = (
+                *sub_component_inputs.blake_round[0] = (
                     seq,
                     M31_0,
                     (
@@ -1770,7 +1794,7 @@ fn write_trace_simd(
                         decode_blake_opcode_output_tmp_53f39_42.0[1],
                     ),
                 ));
-                sub_component_inputs.blake_round[1] = (
+                *sub_component_inputs.blake_round[1] = (
                     seq,
                     M31_1,
                     (
@@ -1820,7 +1844,7 @@ fn write_trace_simd(
                         blake_round_output_round_0_tmp_53f39_145.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[2] = (
+                *sub_component_inputs.blake_round[2] = (
                     seq,
                     M31_2,
                     (
@@ -1870,7 +1894,7 @@ fn write_trace_simd(
                         blake_round_output_round_1_tmp_53f39_146.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[3] = (
+                *sub_component_inputs.blake_round[3] = (
                     seq,
                     M31_3,
                     (
@@ -1920,7 +1944,7 @@ fn write_trace_simd(
                         blake_round_output_round_2_tmp_53f39_147.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[4] = (
+                *sub_component_inputs.blake_round[4] = (
                     seq,
                     M31_4,
                     (
@@ -1970,7 +1994,7 @@ fn write_trace_simd(
                         blake_round_output_round_3_tmp_53f39_148.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[5] = (
+                *sub_component_inputs.blake_round[5] = (
                     seq,
                     M31_5,
                     (
@@ -2020,7 +2044,7 @@ fn write_trace_simd(
                         blake_round_output_round_4_tmp_53f39_149.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[6] = (
+                *sub_component_inputs.blake_round[6] = (
                     seq,
                     M31_6,
                     (
@@ -2070,7 +2094,7 @@ fn write_trace_simd(
                         blake_round_output_round_5_tmp_53f39_150.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[7] = (
+                *sub_component_inputs.blake_round[7] = (
                     seq,
                     M31_7,
                     (
@@ -2120,7 +2144,7 @@ fn write_trace_simd(
                         blake_round_output_round_6_tmp_53f39_151.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[8] = (
+                *sub_component_inputs.blake_round[8] = (
                     seq,
                     M31_8,
                     (
@@ -2170,7 +2194,7 @@ fn write_trace_simd(
                         blake_round_output_round_7_tmp_53f39_152.2 .1,
                     ),
                 ));
-                sub_component_inputs.blake_round[9] = (
+                *sub_component_inputs.blake_round[9] = (
                     seq,
                     M31_9,
                     (
@@ -2423,7 +2447,7 @@ fn write_trace_simd(
 
                 // Create Blake Output.
 
-                sub_component_inputs.triple_xor_32[0] = [
+                *sub_component_inputs.triple_xor_32[0] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[0],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[8],
                     create_blake_round_input_output_tmp_53f39_143[0],
@@ -2449,7 +2473,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col125,
                     triple_xor_32_output_limb_1_col126,
                 ];
-                sub_component_inputs.triple_xor_32[1] = [
+                *sub_component_inputs.triple_xor_32[1] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[1],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[9],
                     create_blake_round_input_output_tmp_53f39_143[1],
@@ -2475,7 +2499,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col127,
                     triple_xor_32_output_limb_1_col128,
                 ];
-                sub_component_inputs.triple_xor_32[2] = [
+                *sub_component_inputs.triple_xor_32[2] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[2],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[10],
                     create_blake_round_input_output_tmp_53f39_143[2],
@@ -2501,7 +2525,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col129,
                     triple_xor_32_output_limb_1_col130,
                 ];
-                sub_component_inputs.triple_xor_32[3] = [
+                *sub_component_inputs.triple_xor_32[3] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[3],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[11],
                     create_blake_round_input_output_tmp_53f39_143[3],
@@ -2527,7 +2551,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col131,
                     triple_xor_32_output_limb_1_col132,
                 ];
-                sub_component_inputs.triple_xor_32[4] = [
+                *sub_component_inputs.triple_xor_32[4] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[4],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[12],
                     create_blake_round_input_output_tmp_53f39_143[4],
@@ -2553,7 +2577,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col133,
                     triple_xor_32_output_limb_1_col134,
                 ];
-                sub_component_inputs.triple_xor_32[5] = [
+                *sub_component_inputs.triple_xor_32[5] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[5],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[13],
                     create_blake_round_input_output_tmp_53f39_143[5],
@@ -2579,7 +2603,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col135,
                     triple_xor_32_output_limb_1_col136,
                 ];
-                sub_component_inputs.triple_xor_32[6] = [
+                *sub_component_inputs.triple_xor_32[6] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[6],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[14],
                     create_blake_round_input_output_tmp_53f39_143[6],
@@ -2605,7 +2629,7 @@ fn write_trace_simd(
                     triple_xor_32_output_limb_0_col137,
                     triple_xor_32_output_limb_1_col138,
                 ];
-                sub_component_inputs.triple_xor_32[7] = [
+                *sub_component_inputs.triple_xor_32[7] = [
                     blake_round_output_round_9_tmp_53f39_154.2 .0[7],
                     blake_round_output_round_9_tmp_53f39_154.2 .0[15],
                     create_blake_round_input_output_tmp_53f39_143[7],
@@ -2657,7 +2681,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_167 = ((high_14_ms_bits_tmp_53f39_165) >> (UInt16_9));
                 let high_5_ms_bits_col143 = high_5_ms_bits_tmp_53f39_167.as_m31();
                 *row[143] = high_5_ms_bits_col143;
-                sub_component_inputs.range_check_7_2_5[9] = [
+                *sub_component_inputs.range_check_7_2_5[9] = [
                     low_7_ms_bits_col141,
                     high_2_ls_bits_tmp_53f39_166,
                     high_5_ms_bits_col143,
@@ -2676,14 +2700,14 @@ fn write_trace_simd(
                     .deduce_output(decode_blake_opcode_output_tmp_53f39_42.0[2]);
                 let new_state_0_id_col144 = memory_address_to_id_value_tmp_53f39_168;
                 *row[144] = new_state_0_id_col144;
-                sub_component_inputs.memory_address_to_id[12] =
+                *sub_component_inputs.memory_address_to_id[12] =
                     decode_blake_opcode_output_tmp_53f39_42.0[2];
                 *lookup_data.memory_address_to_id_12 = [
                     decode_blake_opcode_output_tmp_53f39_42.0[2],
                     new_state_0_id_col144,
                 ];
 
-                sub_component_inputs.memory_id_to_big[12] = new_state_0_id_col144;
+                *sub_component_inputs.memory_id_to_big[12] = new_state_0_id_col144;
                 *lookup_data.memory_id_to_big_12 = [
                     new_state_0_id_col144,
                     ((triple_xor_32_output_limb_0_col125) - ((low_7_ms_bits_col141) * (M31_512))),
@@ -2731,7 +2755,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_173 = ((high_14_ms_bits_tmp_53f39_171) >> (UInt16_9));
                 let high_5_ms_bits_col147 = high_5_ms_bits_tmp_53f39_173.as_m31();
                 *row[147] = high_5_ms_bits_col147;
-                sub_component_inputs.range_check_7_2_5[10] = [
+                *sub_component_inputs.range_check_7_2_5[10] = [
                     low_7_ms_bits_col145,
                     high_2_ls_bits_tmp_53f39_172,
                     high_5_ms_bits_col147,
@@ -2750,14 +2774,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_1)));
                 let new_state_1_id_col148 = memory_address_to_id_value_tmp_53f39_174;
                 *row[148] = new_state_1_id_col148;
-                sub_component_inputs.memory_address_to_id[13] =
+                *sub_component_inputs.memory_address_to_id[13] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_1));
                 *lookup_data.memory_address_to_id_13 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_1)),
                     new_state_1_id_col148,
                 ];
 
-                sub_component_inputs.memory_id_to_big[13] = new_state_1_id_col148;
+                *sub_component_inputs.memory_id_to_big[13] = new_state_1_id_col148;
                 *lookup_data.memory_id_to_big_13 = [
                     new_state_1_id_col148,
                     ((triple_xor_32_output_limb_0_col127) - ((low_7_ms_bits_col145) * (M31_512))),
@@ -2805,7 +2829,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_179 = ((high_14_ms_bits_tmp_53f39_177) >> (UInt16_9));
                 let high_5_ms_bits_col151 = high_5_ms_bits_tmp_53f39_179.as_m31();
                 *row[151] = high_5_ms_bits_col151;
-                sub_component_inputs.range_check_7_2_5[11] = [
+                *sub_component_inputs.range_check_7_2_5[11] = [
                     low_7_ms_bits_col149,
                     high_2_ls_bits_tmp_53f39_178,
                     high_5_ms_bits_col151,
@@ -2824,14 +2848,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_2)));
                 let new_state_2_id_col152 = memory_address_to_id_value_tmp_53f39_180;
                 *row[152] = new_state_2_id_col152;
-                sub_component_inputs.memory_address_to_id[14] =
+                *sub_component_inputs.memory_address_to_id[14] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_2));
                 *lookup_data.memory_address_to_id_14 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_2)),
                     new_state_2_id_col152,
                 ];
 
-                sub_component_inputs.memory_id_to_big[14] = new_state_2_id_col152;
+                *sub_component_inputs.memory_id_to_big[14] = new_state_2_id_col152;
                 *lookup_data.memory_id_to_big_14 = [
                     new_state_2_id_col152,
                     ((triple_xor_32_output_limb_0_col129) - ((low_7_ms_bits_col149) * (M31_512))),
@@ -2879,7 +2903,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_185 = ((high_14_ms_bits_tmp_53f39_183) >> (UInt16_9));
                 let high_5_ms_bits_col155 = high_5_ms_bits_tmp_53f39_185.as_m31();
                 *row[155] = high_5_ms_bits_col155;
-                sub_component_inputs.range_check_7_2_5[12] = [
+                *sub_component_inputs.range_check_7_2_5[12] = [
                     low_7_ms_bits_col153,
                     high_2_ls_bits_tmp_53f39_184,
                     high_5_ms_bits_col155,
@@ -2898,14 +2922,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_3)));
                 let new_state_3_id_col156 = memory_address_to_id_value_tmp_53f39_186;
                 *row[156] = new_state_3_id_col156;
-                sub_component_inputs.memory_address_to_id[15] =
+                *sub_component_inputs.memory_address_to_id[15] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_3));
                 *lookup_data.memory_address_to_id_15 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_3)),
                     new_state_3_id_col156,
                 ];
 
-                sub_component_inputs.memory_id_to_big[15] = new_state_3_id_col156;
+                *sub_component_inputs.memory_id_to_big[15] = new_state_3_id_col156;
                 *lookup_data.memory_id_to_big_15 = [
                     new_state_3_id_col156,
                     ((triple_xor_32_output_limb_0_col131) - ((low_7_ms_bits_col153) * (M31_512))),
@@ -2953,7 +2977,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_191 = ((high_14_ms_bits_tmp_53f39_189) >> (UInt16_9));
                 let high_5_ms_bits_col159 = high_5_ms_bits_tmp_53f39_191.as_m31();
                 *row[159] = high_5_ms_bits_col159;
-                sub_component_inputs.range_check_7_2_5[13] = [
+                *sub_component_inputs.range_check_7_2_5[13] = [
                     low_7_ms_bits_col157,
                     high_2_ls_bits_tmp_53f39_190,
                     high_5_ms_bits_col159,
@@ -2972,14 +2996,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_4)));
                 let new_state_4_id_col160 = memory_address_to_id_value_tmp_53f39_192;
                 *row[160] = new_state_4_id_col160;
-                sub_component_inputs.memory_address_to_id[16] =
+                *sub_component_inputs.memory_address_to_id[16] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_4));
                 *lookup_data.memory_address_to_id_16 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_4)),
                     new_state_4_id_col160,
                 ];
 
-                sub_component_inputs.memory_id_to_big[16] = new_state_4_id_col160;
+                *sub_component_inputs.memory_id_to_big[16] = new_state_4_id_col160;
                 *lookup_data.memory_id_to_big_16 = [
                     new_state_4_id_col160,
                     ((triple_xor_32_output_limb_0_col133) - ((low_7_ms_bits_col157) * (M31_512))),
@@ -3027,7 +3051,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_197 = ((high_14_ms_bits_tmp_53f39_195) >> (UInt16_9));
                 let high_5_ms_bits_col163 = high_5_ms_bits_tmp_53f39_197.as_m31();
                 *row[163] = high_5_ms_bits_col163;
-                sub_component_inputs.range_check_7_2_5[14] = [
+                *sub_component_inputs.range_check_7_2_5[14] = [
                     low_7_ms_bits_col161,
                     high_2_ls_bits_tmp_53f39_196,
                     high_5_ms_bits_col163,
@@ -3046,14 +3070,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_5)));
                 let new_state_5_id_col164 = memory_address_to_id_value_tmp_53f39_198;
                 *row[164] = new_state_5_id_col164;
-                sub_component_inputs.memory_address_to_id[17] =
+                *sub_component_inputs.memory_address_to_id[17] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_5));
                 *lookup_data.memory_address_to_id_17 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_5)),
                     new_state_5_id_col164,
                 ];
 
-                sub_component_inputs.memory_id_to_big[17] = new_state_5_id_col164;
+                *sub_component_inputs.memory_id_to_big[17] = new_state_5_id_col164;
                 *lookup_data.memory_id_to_big_17 = [
                     new_state_5_id_col164,
                     ((triple_xor_32_output_limb_0_col135) - ((low_7_ms_bits_col161) * (M31_512))),
@@ -3101,7 +3125,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_203 = ((high_14_ms_bits_tmp_53f39_201) >> (UInt16_9));
                 let high_5_ms_bits_col167 = high_5_ms_bits_tmp_53f39_203.as_m31();
                 *row[167] = high_5_ms_bits_col167;
-                sub_component_inputs.range_check_7_2_5[15] = [
+                *sub_component_inputs.range_check_7_2_5[15] = [
                     low_7_ms_bits_col165,
                     high_2_ls_bits_tmp_53f39_202,
                     high_5_ms_bits_col167,
@@ -3120,14 +3144,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_6)));
                 let new_state_6_id_col168 = memory_address_to_id_value_tmp_53f39_204;
                 *row[168] = new_state_6_id_col168;
-                sub_component_inputs.memory_address_to_id[18] =
+                *sub_component_inputs.memory_address_to_id[18] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_6));
                 *lookup_data.memory_address_to_id_18 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_6)),
                     new_state_6_id_col168,
                 ];
 
-                sub_component_inputs.memory_id_to_big[18] = new_state_6_id_col168;
+                *sub_component_inputs.memory_id_to_big[18] = new_state_6_id_col168;
                 *lookup_data.memory_id_to_big_18 = [
                     new_state_6_id_col168,
                     ((triple_xor_32_output_limb_0_col137) - ((low_7_ms_bits_col165) * (M31_512))),
@@ -3175,7 +3199,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_53f39_209 = ((high_14_ms_bits_tmp_53f39_207) >> (UInt16_9));
                 let high_5_ms_bits_col171 = high_5_ms_bits_tmp_53f39_209.as_m31();
                 *row[171] = high_5_ms_bits_col171;
-                sub_component_inputs.range_check_7_2_5[16] = [
+                *sub_component_inputs.range_check_7_2_5[16] = [
                     low_7_ms_bits_col169,
                     high_2_ls_bits_tmp_53f39_208,
                     high_5_ms_bits_col171,
@@ -3194,14 +3218,14 @@ fn write_trace_simd(
                     .deduce_output(((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_7)));
                 let new_state_7_id_col172 = memory_address_to_id_value_tmp_53f39_210;
                 *row[172] = new_state_7_id_col172;
-                sub_component_inputs.memory_address_to_id[19] =
+                *sub_component_inputs.memory_address_to_id[19] =
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_7));
                 *lookup_data.memory_address_to_id_19 = [
                     ((decode_blake_opcode_output_tmp_53f39_42.0[2]) + (M31_7)),
                     new_state_7_id_col172,
                 ];
 
-                sub_component_inputs.memory_id_to_big[19] = new_state_7_id_col172;
+                *sub_component_inputs.memory_id_to_big[19] = new_state_7_id_col172;
                 *lookup_data.memory_id_to_big_19 = [
                     new_state_7_id_col172,
                     ((triple_xor_32_output_limb_0_col139) - ((low_7_ms_bits_col169) * (M31_512))),

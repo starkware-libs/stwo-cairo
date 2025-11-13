@@ -55,15 +55,48 @@ impl ClaimGenerator {
             range_check_9_9_d_state,
             range_check_9_9_e_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            range_check_9_9_state.add_packed_inputs(inputs.range_check_9_9.as_ref());
-            range_check_18_state.add_packed_inputs(inputs.range_check_18.as_ref());
-            range_check_9_9_b_state.add_packed_inputs(inputs.range_check_9_9_b.as_ref());
-            range_check_18_b_state.add_packed_inputs(inputs.range_check_18_b.as_ref());
-            range_check_9_9_c_state.add_packed_inputs(inputs.range_check_9_9_c.as_ref());
-            range_check_9_9_d_state.add_packed_inputs(inputs.range_check_9_9_d.as_ref());
-            range_check_9_9_e_state.add_packed_inputs(inputs.range_check_9_9_e.as_ref());
-        });
+        sub_component_inputs
+            .range_check_9_9
+            .iter()
+            .for_each(|inputs| {
+                range_check_9_9_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_18
+            .iter()
+            .for_each(|inputs| {
+                range_check_18_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_9_9_b
+            .iter()
+            .for_each(|inputs| {
+                range_check_9_9_b_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_18_b
+            .iter()
+            .for_each(|inputs| {
+                range_check_18_b_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_9_9_c
+            .iter()
+            .for_each(|inputs| {
+                range_check_9_9_c_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_9_9_d
+            .iter()
+            .for_each(|inputs| {
+                range_check_9_9_d_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_9_9_e
+            .iter()
+            .for_each(|inputs| {
+                range_check_9_9_e_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -81,23 +114,15 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    range_check_9_9: [range_check_9_9::PackedInputType; 1],
-    range_check_18: [range_check_18::PackedInputType; 7],
-    range_check_9_9_b: [range_check_9_9_b::PackedInputType; 1],
-    range_check_18_b: [range_check_18_b::PackedInputType; 2],
-    range_check_9_9_c: [range_check_9_9_c::PackedInputType; 1],
-    range_check_9_9_d: [range_check_9_9_d::PackedInputType; 1],
-    range_check_9_9_e: [range_check_9_9_e::PackedInputType; 1],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 1],
+    range_check_18: [Vec<range_check_18::PackedInputType>; 7],
+    range_check_9_9_b: [Vec<range_check_9_9_b::PackedInputType>; 1],
+    range_check_18_b: [Vec<range_check_18_b::PackedInputType>; 2],
+    range_check_9_9_c: [Vec<range_check_9_9_c::PackedInputType>; 1],
+    range_check_9_9_d: [Vec<range_check_9_9_d::PackedInputType>; 1],
+    range_check_9_9_e: [Vec<range_check_9_9_e::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -125,7 +150,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -172,14 +197,14 @@ fn write_trace_simd(
                 *row[10] = limb_0_high_part_col10;
                 let limb_1_low_part_col11 = input_as_felt252_tmp_a0466_0.get_m31(3);
                 *row[11] = limb_1_low_part_col11;
-                sub_component_inputs.range_check_9_9[0] =
+                *sub_component_inputs.range_check_9_9[0] =
                     [limb_0_high_part_col10, limb_1_low_part_col11];
                 *lookup_data.range_check_9_9_0 = [limb_0_high_part_col10, limb_1_low_part_col11];
-                sub_component_inputs.range_check_18[0] =
+                *sub_component_inputs.range_check_18[0] =
                     [((input_limb_0_col0) - ((limb_0_high_part_col10) * (M31_262144)))];
                 *lookup_data.range_check_18_0 =
                     [((input_limb_0_col0) - ((limb_0_high_part_col10) * (M31_262144)))];
-                sub_component_inputs.range_check_18[1] =
+                *sub_component_inputs.range_check_18[1] =
                     [(((input_limb_1_col1) - (limb_1_low_part_col11)) * (M31_4194304))];
                 *lookup_data.range_check_18_1 =
                     [(((input_limb_1_col1) - (limb_1_low_part_col11)) * (M31_4194304))];
@@ -187,14 +212,14 @@ fn write_trace_simd(
                 *row[12] = limb_2_high_part_col12;
                 let limb_3_low_part_col13 = input_as_felt252_tmp_a0466_0.get_m31(9);
                 *row[13] = limb_3_low_part_col13;
-                sub_component_inputs.range_check_9_9_b[0] =
+                *sub_component_inputs.range_check_9_9_b[0] =
                     [limb_2_high_part_col12, limb_3_low_part_col13];
                 *lookup_data.range_check_9_9_b_0 = [limb_2_high_part_col12, limb_3_low_part_col13];
-                sub_component_inputs.range_check_18_b[0] =
+                *sub_component_inputs.range_check_18_b[0] =
                     [((input_limb_2_col2) - ((limb_2_high_part_col12) * (M31_262144)))];
                 *lookup_data.range_check_18_b_0 =
                     [((input_limb_2_col2) - ((limb_2_high_part_col12) * (M31_262144)))];
-                sub_component_inputs.range_check_18[2] =
+                *sub_component_inputs.range_check_18[2] =
                     [(((input_limb_3_col3) - (limb_3_low_part_col13)) * (M31_4194304))];
                 *lookup_data.range_check_18_2 =
                     [(((input_limb_3_col3) - (limb_3_low_part_col13)) * (M31_4194304))];
@@ -202,14 +227,14 @@ fn write_trace_simd(
                 *row[14] = limb_4_high_part_col14;
                 let limb_5_low_part_col15 = input_as_felt252_tmp_a0466_0.get_m31(15);
                 *row[15] = limb_5_low_part_col15;
-                sub_component_inputs.range_check_9_9_c[0] =
+                *sub_component_inputs.range_check_9_9_c[0] =
                     [limb_4_high_part_col14, limb_5_low_part_col15];
                 *lookup_data.range_check_9_9_c_0 = [limb_4_high_part_col14, limb_5_low_part_col15];
-                sub_component_inputs.range_check_18[3] =
+                *sub_component_inputs.range_check_18[3] =
                     [((input_limb_4_col4) - ((limb_4_high_part_col14) * (M31_262144)))];
                 *lookup_data.range_check_18_3 =
                     [((input_limb_4_col4) - ((limb_4_high_part_col14) * (M31_262144)))];
-                sub_component_inputs.range_check_18[4] =
+                *sub_component_inputs.range_check_18[4] =
                     [(((input_limb_5_col5) - (limb_5_low_part_col15)) * (M31_4194304))];
                 *lookup_data.range_check_18_4 =
                     [(((input_limb_5_col5) - (limb_5_low_part_col15)) * (M31_4194304))];
@@ -217,23 +242,23 @@ fn write_trace_simd(
                 *row[16] = limb_6_high_part_col16;
                 let limb_7_low_part_col17 = input_as_felt252_tmp_a0466_0.get_m31(21);
                 *row[17] = limb_7_low_part_col17;
-                sub_component_inputs.range_check_9_9_d[0] =
+                *sub_component_inputs.range_check_9_9_d[0] =
                     [limb_6_high_part_col16, limb_7_low_part_col17];
                 *lookup_data.range_check_9_9_d_0 = [limb_6_high_part_col16, limb_7_low_part_col17];
-                sub_component_inputs.range_check_18_b[1] =
+                *sub_component_inputs.range_check_18_b[1] =
                     [((input_limb_6_col6) - ((limb_6_high_part_col16) * (M31_262144)))];
                 *lookup_data.range_check_18_b_1 =
                     [((input_limb_6_col6) - ((limb_6_high_part_col16) * (M31_262144)))];
-                sub_component_inputs.range_check_18[5] =
+                *sub_component_inputs.range_check_18[5] =
                     [(((input_limb_7_col7) - (limb_7_low_part_col17)) * (M31_4194304))];
                 *lookup_data.range_check_18_5 =
                     [(((input_limb_7_col7) - (limb_7_low_part_col17)) * (M31_4194304))];
                 let limb_8_high_part_col18 = input_as_felt252_tmp_a0466_0.get_m31(26);
                 *row[18] = limb_8_high_part_col18;
-                sub_component_inputs.range_check_9_9_e[0] =
+                *sub_component_inputs.range_check_9_9_e[0] =
                     [limb_8_high_part_col18, input_limb_9_col9];
                 *lookup_data.range_check_9_9_e_0 = [limb_8_high_part_col18, input_limb_9_col9];
-                sub_component_inputs.range_check_18[6] =
+                *sub_component_inputs.range_check_18[6] =
                     [((input_limb_8_col8) - ((limb_8_high_part_col18) * (M31_262144)))];
                 *lookup_data.range_check_18_6 =
                     [((input_limb_8_col8) - ((limb_8_high_part_col18) * (M31_262144)))];
