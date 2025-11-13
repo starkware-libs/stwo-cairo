@@ -59,6 +59,7 @@ where
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+    commitment_scheme.set_store_polynomials_coefficients();
 
     // Preprocessed trace.
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
