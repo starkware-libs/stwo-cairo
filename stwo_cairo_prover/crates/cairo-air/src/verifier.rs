@@ -16,6 +16,7 @@ use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_B
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
+use tracing::{span, Level};
 
 use crate::air::{
     lookup_sum, CairoClaim, CairoComponents, CairoInteractionElements, MemorySection, PublicData,
@@ -278,6 +279,8 @@ pub fn verify_cairo<MC: MerkleChannel>(
     }: CairoProof<MC::H>,
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> Result<(), CairoVerificationError> {
+    let _span = span!(Level::INFO, "verify_cairo").entered();
+
     // Auxiliary verifications.
     // Assert that ADDRESS->ID component does not overflow.
     assert!(
