@@ -44,11 +44,21 @@ impl ClaimGenerator {
             poseidon_round_keys_state,
             range_check_3_3_3_3_3_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            cube_252_state.add_packed_inputs(inputs.cube_252.as_ref());
-            poseidon_round_keys_state.add_packed_inputs(inputs.poseidon_round_keys.as_ref());
-            range_check_3_3_3_3_3_state.add_packed_inputs(inputs.range_check_3_3_3_3_3.as_ref());
+        sub_component_inputs.cube_252.iter().for_each(|inputs| {
+            cube_252_state.add_packed_inputs(inputs);
         });
+        sub_component_inputs
+            .poseidon_round_keys
+            .iter()
+            .for_each(|inputs| {
+                poseidon_round_keys_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_3_3_3_3_3
+            .iter()
+            .for_each(|inputs| {
+                range_check_3_3_3_3_3_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -66,19 +76,11 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    cube_252: [cube_252::PackedInputType; 3],
-    poseidon_round_keys: [poseidon_round_keys::PackedInputType; 1],
-    range_check_3_3_3_3_3: [range_check_3_3_3_3_3::PackedInputType; 6],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    cube_252: [Vec<cube_252::PackedInputType>; 3],
+    poseidon_round_keys: [Vec<poseidon_round_keys::PackedInputType>; 1],
+    range_check_3_3_3_3_3: [Vec<range_check_3_3_3_3_3::PackedInputType>; 6],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -102,7 +104,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -197,7 +199,7 @@ fn write_trace_simd(
                 *row[30] = input_limb_30_col30;
                 let input_limb_31_col31 = poseidon_full_round_chain_input.2[2].get_m31(9);
                 *row[31] = input_limb_31_col31;
-                sub_component_inputs.cube_252[0] = poseidon_full_round_chain_input.2[0];
+                *sub_component_inputs.cube_252[0] = poseidon_full_round_chain_input.2[0];
                 let cube_252_output_tmp_f9fbc_0 =
                     PackedCube252::deduce_output(poseidon_full_round_chain_input.2[0]);
                 let cube_252_output_limb_0_col32 = cube_252_output_tmp_f9fbc_0.get_m31(0);
@@ -242,7 +244,7 @@ fn write_trace_simd(
                     cube_252_output_limb_8_col40,
                     cube_252_output_limb_9_col41,
                 ];
-                sub_component_inputs.cube_252[1] = poseidon_full_round_chain_input.2[1];
+                *sub_component_inputs.cube_252[1] = poseidon_full_round_chain_input.2[1];
                 let cube_252_output_tmp_f9fbc_1 =
                     PackedCube252::deduce_output(poseidon_full_round_chain_input.2[1]);
                 let cube_252_output_limb_0_col42 = cube_252_output_tmp_f9fbc_1.get_m31(0);
@@ -287,7 +289,7 @@ fn write_trace_simd(
                     cube_252_output_limb_8_col50,
                     cube_252_output_limb_9_col51,
                 ];
-                sub_component_inputs.cube_252[2] = poseidon_full_round_chain_input.2[2];
+                *sub_component_inputs.cube_252[2] = poseidon_full_round_chain_input.2[2];
                 let cube_252_output_tmp_f9fbc_2 =
                     PackedCube252::deduce_output(poseidon_full_round_chain_input.2[2]);
                 let cube_252_output_limb_0_col52 = cube_252_output_tmp_f9fbc_2.get_m31(0);
@@ -332,7 +334,7 @@ fn write_trace_simd(
                     cube_252_output_limb_8_col60,
                     cube_252_output_limb_9_col61,
                 ];
-                sub_component_inputs.poseidon_round_keys[0] = [input_limb_1_col1];
+                *sub_component_inputs.poseidon_round_keys[0] = [input_limb_1_col1];
                 let poseidon_round_keys_output_tmp_f9fbc_3 =
                     PackedPoseidonRoundKeys::deduce_output([input_limb_1_col1]);
                 let poseidon_round_keys_output_limb_0_col62 =
@@ -575,7 +577,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_8_col70))
                     - (combination_limb_8_col100))
                     * (M31_16));
-                sub_component_inputs.range_check_3_3_3_3_3[0] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[0] = [
                     ((p_coef_col102) + (M31_1)),
                     ((carry_0_tmp_f9fbc_6) + (M31_1)),
                     ((carry_1_tmp_f9fbc_7) + (M31_1)),
@@ -589,7 +591,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_f9fbc_8) + (M31_1)),
                     ((carry_3_tmp_f9fbc_9) + (M31_1)),
                 ];
-                sub_component_inputs.range_check_3_3_3_3_3[1] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[1] = [
                     ((carry_4_tmp_f9fbc_10) + (M31_1)),
                     ((carry_5_tmp_f9fbc_11) + (M31_1)),
                     ((carry_6_tmp_f9fbc_12) + (M31_1)),
@@ -721,7 +723,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_18_col80))
                     - (combination_limb_8_col111))
                     * (M31_16));
-                sub_component_inputs.range_check_3_3_3_3_3[2] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[2] = [
                     ((p_coef_col113) + (M31_2)),
                     ((carry_0_tmp_f9fbc_18) + (M31_2)),
                     ((carry_1_tmp_f9fbc_19) + (M31_2)),
@@ -735,7 +737,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_f9fbc_20) + (M31_2)),
                     ((carry_3_tmp_f9fbc_21) + (M31_2)),
                 ];
-                sub_component_inputs.range_check_3_3_3_3_3[3] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[3] = [
                     ((carry_4_tmp_f9fbc_22) + (M31_2)),
                     ((carry_5_tmp_f9fbc_23) + (M31_2)),
                     ((carry_6_tmp_f9fbc_24) + (M31_2)),
@@ -867,7 +869,7 @@ fn write_trace_simd(
                     + (poseidon_round_keys_output_limb_28_col90))
                     - (combination_limb_8_col122))
                     * (M31_16));
-                sub_component_inputs.range_check_3_3_3_3_3[4] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[4] = [
                     ((p_coef_col124) + (M31_3)),
                     ((carry_0_tmp_f9fbc_30) + (M31_3)),
                     ((carry_1_tmp_f9fbc_31) + (M31_3)),
@@ -881,7 +883,7 @@ fn write_trace_simd(
                     ((carry_2_tmp_f9fbc_32) + (M31_3)),
                     ((carry_3_tmp_f9fbc_33) + (M31_3)),
                 ];
-                sub_component_inputs.range_check_3_3_3_3_3[5] = [
+                *sub_component_inputs.range_check_3_3_3_3_3[5] = [
                     ((carry_4_tmp_f9fbc_34) + (M31_3)),
                     ((carry_5_tmp_f9fbc_35) + (M31_3)),
                     ((carry_6_tmp_f9fbc_36) + (M31_3)),

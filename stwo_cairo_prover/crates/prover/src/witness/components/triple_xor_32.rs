@@ -42,10 +42,18 @@ impl ClaimGenerator {
             verify_bitwise_xor_8_state,
             verify_bitwise_xor_8_b_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            verify_bitwise_xor_8_state.add_packed_inputs(inputs.verify_bitwise_xor_8.as_ref());
-            verify_bitwise_xor_8_b_state.add_packed_inputs(inputs.verify_bitwise_xor_8_b.as_ref());
-        });
+        sub_component_inputs
+            .verify_bitwise_xor_8
+            .iter()
+            .for_each(|inputs| {
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .verify_bitwise_xor_8_b
+            .iter()
+            .for_each(|inputs| {
+                verify_bitwise_xor_8_b_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -63,18 +71,10 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    verify_bitwise_xor_8: [verify_bitwise_xor_8::PackedInputType; 4],
-    verify_bitwise_xor_8_b: [verify_bitwise_xor_8_b::PackedInputType; 4],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
+    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8_b::PackedInputType>; 4],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -97,7 +97,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -195,7 +195,7 @@ fn write_trace_simd(
                         ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_5[0])));
                 let xor_col12 = xor_tmp_298db_12.as_m31();
                 *row[12] = xor_col12;
-                sub_component_inputs.verify_bitwise_xor_8[0] = [
+                *sub_component_inputs.verify_bitwise_xor_8[0] = [
                     split_16_low_part_size_8_output_tmp_298db_1[0],
                     split_16_low_part_size_8_output_tmp_298db_5[0],
                     xor_col12,
@@ -212,7 +212,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_9[0])));
                 let xor_col13 = xor_tmp_298db_14.as_m31();
                 *row[13] = xor_col13;
-                sub_component_inputs.verify_bitwise_xor_8[1] = [
+                *sub_component_inputs.verify_bitwise_xor_8[1] = [
                     xor_col12,
                     split_16_low_part_size_8_output_tmp_298db_9[0],
                     xor_col13,
@@ -229,7 +229,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col8)));
                 let xor_col14 = xor_tmp_298db_16.as_m31();
                 *row[14] = xor_col14;
-                sub_component_inputs.verify_bitwise_xor_8[2] =
+                *sub_component_inputs.verify_bitwise_xor_8[2] =
                     [ms_8_bits_col6, ms_8_bits_col8, xor_col14];
                 *lookup_data.verify_bitwise_xor_8_2 = [ms_8_bits_col6, ms_8_bits_col8, xor_col14];
 
@@ -239,7 +239,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col10)));
                 let xor_col15 = xor_tmp_298db_18.as_m31();
                 *row[15] = xor_col15;
-                sub_component_inputs.verify_bitwise_xor_8[3] =
+                *sub_component_inputs.verify_bitwise_xor_8[3] =
                     [xor_col14, ms_8_bits_col10, xor_col15];
                 *lookup_data.verify_bitwise_xor_8_3 = [xor_col14, ms_8_bits_col10, xor_col15];
 
@@ -250,7 +250,7 @@ fn write_trace_simd(
                         ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_7[0])));
                 let xor_col16 = xor_tmp_298db_20.as_m31();
                 *row[16] = xor_col16;
-                sub_component_inputs.verify_bitwise_xor_8_b[0] = [
+                *sub_component_inputs.verify_bitwise_xor_8_b[0] = [
                     split_16_low_part_size_8_output_tmp_298db_3[0],
                     split_16_low_part_size_8_output_tmp_298db_7[0],
                     xor_col16,
@@ -267,7 +267,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(split_16_low_part_size_8_output_tmp_298db_11[0])));
                 let xor_col17 = xor_tmp_298db_22.as_m31();
                 *row[17] = xor_col17;
-                sub_component_inputs.verify_bitwise_xor_8_b[1] = [
+                *sub_component_inputs.verify_bitwise_xor_8_b[1] = [
                     xor_col16,
                     split_16_low_part_size_8_output_tmp_298db_11[0],
                     xor_col17,
@@ -284,7 +284,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col9)));
                 let xor_col18 = xor_tmp_298db_24.as_m31();
                 *row[18] = xor_col18;
-                sub_component_inputs.verify_bitwise_xor_8_b[2] =
+                *sub_component_inputs.verify_bitwise_xor_8_b[2] =
                     [ms_8_bits_col7, ms_8_bits_col9, xor_col18];
                 *lookup_data.verify_bitwise_xor_8_b_2 = [ms_8_bits_col7, ms_8_bits_col9, xor_col18];
 
@@ -294,7 +294,7 @@ fn write_trace_simd(
                     ^ (PackedUInt16::from_m31(ms_8_bits_col11)));
                 let xor_col19 = xor_tmp_298db_26.as_m31();
                 *row[19] = xor_col19;
-                sub_component_inputs.verify_bitwise_xor_8_b[3] =
+                *sub_component_inputs.verify_bitwise_xor_8_b[3] =
                     [xor_col18, ms_8_bits_col11, xor_col19];
                 *lookup_data.verify_bitwise_xor_8_b_3 = [xor_col18, ms_8_bits_col11, xor_col19];
 

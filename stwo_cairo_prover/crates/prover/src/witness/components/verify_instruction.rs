@@ -62,12 +62,30 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            range_check_7_2_5_state.add_packed_inputs(inputs.range_check_7_2_5.as_ref());
-            range_check_4_3_state.add_packed_inputs(inputs.range_check_4_3.as_ref());
-            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
-            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
-        });
+        sub_component_inputs
+            .range_check_7_2_5
+            .iter()
+            .for_each(|inputs| {
+                range_check_7_2_5_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_4_3
+            .iter()
+            .for_each(|inputs| {
+                range_check_4_3_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_address_to_id
+            .iter()
+            .for_each(|inputs| {
+                memory_address_to_id_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_id_to_big
+            .iter()
+            .for_each(|inputs| {
+                memory_id_to_big_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -95,20 +113,12 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    range_check_7_2_5: [range_check_7_2_5::PackedInputType; 1],
-    range_check_4_3: [range_check_4_3::PackedInputType; 1],
-    memory_address_to_id: [memory_address_to_id::PackedInputType; 1],
-    memory_id_to_big: [memory_id_to_big::PackedInputType; 1],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    range_check_7_2_5: [Vec<range_check_7_2_5::PackedInputType>; 1],
+    range_check_4_3: [Vec<range_check_4_3::PackedInputType>; 1],
+    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 1],
+    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -133,7 +143,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -211,11 +221,11 @@ fn write_trace_simd(
                     ((PackedUInt16::from_m31(input_offset2_col3)) >> (UInt16_13));
                 let offset2_high_col14 = offset2_high_tmp_16a4f_7.as_m31();
                 *row[14] = offset2_high_col14;
-                sub_component_inputs.range_check_7_2_5[0] =
+                *sub_component_inputs.range_check_7_2_5[0] =
                     [offset0_mid_col8, offset1_low_col9, offset1_high_col11];
                 *lookup_data.range_check_7_2_5_0 =
                     [offset0_mid_col8, offset1_low_col9, offset1_high_col11];
-                sub_component_inputs.range_check_4_3[0] = [offset2_low_col12, offset2_high_col14];
+                *sub_component_inputs.range_check_4_3[0] = [offset2_low_col12, offset2_high_col14];
                 *lookup_data.range_check_4_3_0 = [offset2_low_col12, offset2_high_col14];
                 let encode_offsets_output_tmp_16a4f_8 = [
                     offset0_low_col7,
@@ -234,10 +244,10 @@ fn write_trace_simd(
                     memory_address_to_id_state.deduce_output(input_pc_col0);
                 let instruction_id_col15 = memory_address_to_id_value_tmp_16a4f_9;
                 *row[15] = instruction_id_col15;
-                sub_component_inputs.memory_address_to_id[0] = input_pc_col0;
+                *sub_component_inputs.memory_address_to_id[0] = input_pc_col0;
                 *lookup_data.memory_address_to_id_0 = [input_pc_col0, instruction_id_col15];
 
-                sub_component_inputs.memory_id_to_big[0] = instruction_id_col15;
+                *sub_component_inputs.memory_id_to_big[0] = instruction_id_col15;
                 *lookup_data.memory_id_to_big_0 = [
                     instruction_id_col15,
                     offset0_low_col7,

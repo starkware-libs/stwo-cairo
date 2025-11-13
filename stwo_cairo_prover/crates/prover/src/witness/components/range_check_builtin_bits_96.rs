@@ -39,11 +39,24 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             range_check_6_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
-            range_check_6_state.add_packed_inputs(inputs.range_check_6.as_ref());
-            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
-        });
+        sub_component_inputs
+            .memory_address_to_id
+            .iter()
+            .for_each(|inputs| {
+                memory_address_to_id_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_6
+            .iter()
+            .for_each(|inputs| {
+                range_check_6_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_id_to_big
+            .iter()
+            .for_each(|inputs| {
+                memory_id_to_big_state.add_packed_inputs(inputs);
+            });
         tree_builder.extend_evals(trace.to_evals());
 
         (
@@ -59,19 +72,11 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    memory_address_to_id: [memory_address_to_id::PackedInputType; 1],
-    range_check_6: [range_check_6::PackedInputType; 1],
-    memory_id_to_big: [memory_id_to_big::PackedInputType; 1],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 1],
+    range_check_6: [Vec<range_check_6::PackedInputType>; 1],
+    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -94,7 +99,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -123,7 +128,7 @@ fn write_trace_simd(
                     );
                 let value_id_col0 = memory_address_to_id_value_tmp_6e07e_0;
                 *row[0] = value_id_col0;
-                sub_component_inputs.memory_address_to_id[0] =
+                *sub_component_inputs.memory_address_to_id[0] =
                     ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start)))
                         + (seq));
                 *lookup_data.memory_address_to_id_0 = [
@@ -161,10 +166,10 @@ fn write_trace_simd(
 
                 // Range Check Last Limb Bits In Ms Limb 6.
 
-                sub_component_inputs.range_check_6[0] = [value_limb_10_col11];
+                *sub_component_inputs.range_check_6[0] = [value_limb_10_col11];
                 *lookup_data.range_check_6_0 = [value_limb_10_col11];
 
-                sub_component_inputs.memory_id_to_big[0] = value_id_col0;
+                *sub_component_inputs.memory_id_to_big[0] = value_id_col0;
                 *lookup_data.memory_id_to_big_0 = [
                     value_id_col0,
                     value_limb_0_col1,
