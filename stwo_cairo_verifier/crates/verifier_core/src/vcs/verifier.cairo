@@ -123,7 +123,9 @@ impl MerkleVerifierImpl<
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
         let layer_cols = column_indices_by_deg_bound.pop_back().unwrap();
-        let layer_column_queries = queries_per_log_size.get(layer_log_size).deref();
+        let layer_column_queries = queries_per_log_size
+            .get(layer_log_size)
+            .deref_or(array![].span());
 
         let n_columns_in_layer = layer_cols.len();
         assert!(n_columns_in_layer != 0);
@@ -167,8 +169,7 @@ impl MerkleVerifierImpl<
                 let column_values = if layer_column_queries.next_if_eq(@current_query).is_some() {
                     queried_values.pop_front_n(n_columns_in_layer)
                 } else {
-                    assert!(n_columns_in_layer == 0);
-                    array![].span()
+                    column_witness.pop_front_n(n_columns_in_layer)
                 };
 
                 layer_total_queries
