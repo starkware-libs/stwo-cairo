@@ -5,14 +5,15 @@ use cairo_air::poseidon::air::{
 use tracing::{span, Level};
 
 use crate::witness::components::{
-    cube_252, poseidon_3_partial_rounds_chain, poseidon_full_round_chain, poseidon_round_keys,
-    range_check_252_width_27,
+    cube_252, memory_id_to_big, poseidon_3_partial_rounds_chain, poseidon_aggregator,
+    poseidon_full_round_chain, poseidon_round_keys, range_check_252_width_27,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
 use crate::witness::utils::TreeBuilder;
 
 pub struct PoseidonContextClaimGenerator {
+    pub poseidon_aggregator_trace_generator: poseidon_aggregator::ClaimGenerator,
     pub poseidon_3_partial_rounds_chain_trace_generator:
         poseidon_3_partial_rounds_chain::ClaimGenerator,
     pub poseidon_full_round_chain_trace_generator: poseidon_full_round_chain::ClaimGenerator,
@@ -28,6 +29,7 @@ impl Default for PoseidonContextClaimGenerator {
 
 impl PoseidonContextClaimGenerator {
     pub fn new() -> Self {
+        let poseidon_aggregator_trace_generator = poseidon_aggregator::ClaimGenerator::new();
         let poseidon_3_partial_rounds_chain_trace_generator =
             poseidon_3_partial_rounds_chain::ClaimGenerator::new();
         let poseidon_full_round_chain_trace_generator =
@@ -38,6 +40,7 @@ impl PoseidonContextClaimGenerator {
             range_check_252_width_27::ClaimGenerator::new();
 
         Self {
+            poseidon_aggregator_trace_generator,
             poseidon_3_partial_rounds_chain_trace_generator,
             poseidon_full_round_chain_trace_generator,
             cube_252_trace_generator,
@@ -49,21 +52,31 @@ impl PoseidonContextClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        memory_id_to_big_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
     ) -> (
         PoseidonContextClaim,
         PoseidonContextInteractionClaimGenerator,
     ) {
         let span = span!(Level::INFO, "write poseidon context trace").entered();
-        if self
-            .poseidon_3_partial_rounds_chain_trace_generator
-            .is_empty()
-        {
+        if self.poseidon_aggregator_trace_generator.is_empty() {
             return (
                 PoseidonContextClaim { claim: None },
                 PoseidonContextInteractionClaimGenerator { gen: None },
             );
         }
+        let (poseidon_aggregator_claim, poseidon_aggregator_interaction_gen) =
+            self.poseidon_aggregator_trace_generator.write_trace(
+                tree_builder,
+                memory_id_to_big_trace_generator,
+                &mut self.poseidon_full_round_chain_trace_generator,
+                &mut self.range_check_252_width_27_trace_generator,
+                &mut self.cube_252_trace_generator,
+                &range_checks_trace_generator.rc_3_3_3_3_3_trace_generator,
+                &range_checks_trace_generator.rc_4_4_4_4_trace_generator,
+                &range_checks_trace_generator.rc_4_4_trace_generator,
+                &mut self.poseidon_3_partial_rounds_chain_trace_generator,
+            );
         let (
             poseidon_3_partial_rounds_chain_claim,
             poseidon_3_partial_rounds_chain_interaction_gen,
@@ -120,6 +133,7 @@ impl PoseidonContextClaimGenerator {
         span.exit();
 
         let claim = Some(Claim {
+            poseidon_aggregator: poseidon_aggregator_claim,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
             poseidon_full_round_chain: poseidon_full_round_chain_claim,
             cube_252: cube_252_claim,
@@ -127,6 +141,7 @@ impl PoseidonContextClaimGenerator {
             range_check_252_width_27: range_check_felt_252_width_27_claim,
         });
         let gen = Some(InteractionClaimGenerator {
+            poseidon_aggregator_interaction_gen,
             poseidon_3_partial_rounds_chain_interaction_gen,
             poseidon_full_round_chain_interaction_gen,
             cube_252_interaction_gen,
@@ -158,6 +173,7 @@ impl PoseidonContextInteractionClaimGenerator {
 }
 
 struct InteractionClaimGenerator {
+    poseidon_aggregator_interaction_gen: poseidon_aggregator::InteractionClaimGenerator,
     poseidon_3_partial_rounds_chain_interaction_gen:
         poseidon_3_partial_rounds_chain::InteractionClaimGenerator,
     poseidon_full_round_chain_interaction_gen: poseidon_full_round_chain::InteractionClaimGenerator,
@@ -172,6 +188,20 @@ impl InteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> InteractionClaim {
+        let poseidon_aggregator_interaction_claim = self
+            .poseidon_aggregator_interaction_gen
+            .write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.poseidon_full_round_chain,
+                &interaction_elements.range_check_252_width_27,
+                &interaction_elements.cube_252,
+                &interaction_elements.range_checks.rc_3_3_3_3_3,
+                &interaction_elements.range_checks.rc_4_4_4_4,
+                &interaction_elements.range_checks.rc_4_4,
+                &interaction_elements.poseidon_3_partial_rounds_chain,
+                &interaction_elements.poseidon_aggregator,
+            );
         let poseidon_3_partial_rounds_chain_interaction_claim = self
             .poseidon_3_partial_rounds_chain_interaction_gen
             .write_interaction_trace(
@@ -230,6 +260,7 @@ impl InteractionClaimGenerator {
             );
 
         InteractionClaim {
+            poseidon_aggregator: poseidon_aggregator_interaction_claim,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
             poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
             cube_252: cube_252_interaction_claim,

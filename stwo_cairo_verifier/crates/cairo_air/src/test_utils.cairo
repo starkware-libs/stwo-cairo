@@ -64,6 +64,7 @@ pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         blake_g: LookupElementsDummyImpl::dummy(),
         blake_round_sigma: LookupElementsDummyImpl::dummy(),
         triple_xor_32: LookupElementsDummyImpl::dummy(),
+        poseidon_aggregator: LookupElementsDummyImpl::dummy(),
         poseidon_3_partial_rounds_chain: LookupElementsDummyImpl::dummy(),
         poseidon_full_round_chain: LookupElementsDummyImpl::dummy(),
         cube_252: LookupElementsDummyImpl::dummy(),
