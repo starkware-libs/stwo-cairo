@@ -52,12 +52,32 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             range_check_7_2_5_state,
         );
-        sub_component_inputs.iter().for_each(|inputs| {
-            blake_round_sigma_state.add_packed_inputs(inputs.blake_round_sigma.as_ref());
-            range_check_7_2_5_state.add_packed_inputs(inputs.range_check_7_2_5.as_ref());
-            memory_address_to_id_state.add_packed_inputs(inputs.memory_address_to_id.as_ref());
-            memory_id_to_big_state.add_packed_inputs(inputs.memory_id_to_big.as_ref());
-            blake_g_state.add_packed_inputs(inputs.blake_g.as_ref());
+        sub_component_inputs
+            .blake_round_sigma
+            .iter()
+            .for_each(|inputs| {
+                blake_round_sigma_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .range_check_7_2_5
+            .iter()
+            .for_each(|inputs| {
+                range_check_7_2_5_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_address_to_id
+            .iter()
+            .for_each(|inputs| {
+                memory_address_to_id_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs
+            .memory_id_to_big
+            .iter()
+            .for_each(|inputs| {
+                memory_id_to_big_state.add_packed_inputs(inputs);
+            });
+        sub_component_inputs.blake_g.iter().for_each(|inputs| {
+            blake_g_state.add_packed_inputs(inputs);
         });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -83,21 +103,13 @@ impl ClaimGenerator {
     }
 }
 
-type SubComponentInputs = Vec<SubComponentInputsPerRow>;
-
-#[allow(clippy::uninit_vec)]
-unsafe fn uninitialized_sub_component_inputs(log_n_packed_rows: u32) -> SubComponentInputs {
-    let mut vec: SubComponentInputs = Vec::with_capacity(1 << log_n_packed_rows);
-    vec.set_len(1 << log_n_packed_rows);
-    vec
-}
-
-struct SubComponentInputsPerRow {
-    blake_round_sigma: [blake_round_sigma::PackedInputType; 1],
-    range_check_7_2_5: [range_check_7_2_5::PackedInputType; 16],
-    memory_address_to_id: [memory_address_to_id::PackedInputType; 16],
-    memory_id_to_big: [memory_id_to_big::PackedInputType; 16],
-    blake_g: [blake_g::PackedInputType; 8],
+#[derive(Uninitialized, IterMut, ParIterMut)]
+struct SubComponentInputs {
+    blake_round_sigma: [Vec<blake_round_sigma::PackedInputType>; 1],
+    range_check_7_2_5: [Vec<range_check_7_2_5::PackedInputType>; 16],
+    memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 16],
+    memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 16],
+    blake_g: [Vec<blake_g::PackedInputType>; 8],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -123,7 +135,7 @@ fn write_trace_simd(
         (
             ComponentTrace::<N_TRACE_COLUMNS>::uninitialized(log_size),
             LookupData::uninitialized(log_n_packed_rows),
-            uninitialized_sub_component_inputs(log_n_packed_rows),
+            SubComponentInputs::uninitialized(log_n_packed_rows),
         )
     };
 
@@ -218,7 +230,7 @@ fn write_trace_simd(
                 *row[33] = input_limb_33_col33;
                 let input_limb_34_col34 = blake_round_input.2 .1;
                 *row[34] = input_limb_34_col34;
-                sub_component_inputs.blake_round_sigma[0] = [input_limb_1_col1];
+                *sub_component_inputs.blake_round_sigma[0] = [input_limb_1_col1];
                 let blake_round_sigma_output_tmp_92ff8_0 =
                     PackedBlakeRoundSigma::deduce_output(input_limb_1_col1);
                 let blake_round_sigma_output_limb_0_col35 = blake_round_sigma_output_tmp_92ff8_0[0];
@@ -317,7 +329,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_8 = ((high_14_ms_bits_tmp_92ff8_6) >> (UInt16_9));
                 let high_5_ms_bits_col55 = high_5_ms_bits_tmp_92ff8_8.as_m31();
                 *row[55] = high_5_ms_bits_col55;
-                sub_component_inputs.range_check_7_2_5[0] = [
+                *sub_component_inputs.range_check_7_2_5[0] = [
                     low_7_ms_bits_col53,
                     high_2_ls_bits_tmp_92ff8_7,
                     high_5_ms_bits_col55,
@@ -338,14 +350,14 @@ fn write_trace_simd(
                     );
                 let message_word_0_id_col56 = memory_address_to_id_value_tmp_92ff8_9;
                 *row[56] = message_word_0_id_col56;
-                sub_component_inputs.memory_address_to_id[0] =
+                *sub_component_inputs.memory_address_to_id[0] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_0_col35));
                 *lookup_data.memory_address_to_id_0 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_0_col35)),
                     message_word_0_id_col56,
                 ];
 
-                sub_component_inputs.memory_id_to_big[0] = message_word_0_id_col56;
+                *sub_component_inputs.memory_id_to_big[0] = message_word_0_id_col56;
                 *lookup_data.memory_id_to_big_0 = [
                     message_word_0_id_col56,
                     ((low_16_bits_col51) - ((low_7_ms_bits_col53) * (M31_512))),
@@ -418,7 +430,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_19 = ((high_14_ms_bits_tmp_92ff8_17) >> (UInt16_9));
                 let high_5_ms_bits_col61 = high_5_ms_bits_tmp_92ff8_19.as_m31();
                 *row[61] = high_5_ms_bits_col61;
-                sub_component_inputs.range_check_7_2_5[1] = [
+                *sub_component_inputs.range_check_7_2_5[1] = [
                     low_7_ms_bits_col59,
                     high_2_ls_bits_tmp_92ff8_18,
                     high_5_ms_bits_col61,
@@ -439,14 +451,14 @@ fn write_trace_simd(
                     );
                 let message_word_1_id_col62 = memory_address_to_id_value_tmp_92ff8_20;
                 *row[62] = message_word_1_id_col62;
-                sub_component_inputs.memory_address_to_id[1] =
+                *sub_component_inputs.memory_address_to_id[1] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_1_col36));
                 *lookup_data.memory_address_to_id_1 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_1_col36)),
                     message_word_1_id_col62,
                 ];
 
-                sub_component_inputs.memory_id_to_big[1] = message_word_1_id_col62;
+                *sub_component_inputs.memory_id_to_big[1] = message_word_1_id_col62;
                 *lookup_data.memory_id_to_big_1 = [
                     message_word_1_id_col62,
                     ((low_16_bits_col57) - ((low_7_ms_bits_col59) * (M31_512))),
@@ -519,7 +531,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_30 = ((high_14_ms_bits_tmp_92ff8_28) >> (UInt16_9));
                 let high_5_ms_bits_col67 = high_5_ms_bits_tmp_92ff8_30.as_m31();
                 *row[67] = high_5_ms_bits_col67;
-                sub_component_inputs.range_check_7_2_5[2] = [
+                *sub_component_inputs.range_check_7_2_5[2] = [
                     low_7_ms_bits_col65,
                     high_2_ls_bits_tmp_92ff8_29,
                     high_5_ms_bits_col67,
@@ -540,14 +552,14 @@ fn write_trace_simd(
                     );
                 let message_word_2_id_col68 = memory_address_to_id_value_tmp_92ff8_31;
                 *row[68] = message_word_2_id_col68;
-                sub_component_inputs.memory_address_to_id[2] =
+                *sub_component_inputs.memory_address_to_id[2] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_2_col37));
                 *lookup_data.memory_address_to_id_2 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_2_col37)),
                     message_word_2_id_col68,
                 ];
 
-                sub_component_inputs.memory_id_to_big[2] = message_word_2_id_col68;
+                *sub_component_inputs.memory_id_to_big[2] = message_word_2_id_col68;
                 *lookup_data.memory_id_to_big_2 = [
                     message_word_2_id_col68,
                     ((low_16_bits_col63) - ((low_7_ms_bits_col65) * (M31_512))),
@@ -620,7 +632,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_41 = ((high_14_ms_bits_tmp_92ff8_39) >> (UInt16_9));
                 let high_5_ms_bits_col73 = high_5_ms_bits_tmp_92ff8_41.as_m31();
                 *row[73] = high_5_ms_bits_col73;
-                sub_component_inputs.range_check_7_2_5[3] = [
+                *sub_component_inputs.range_check_7_2_5[3] = [
                     low_7_ms_bits_col71,
                     high_2_ls_bits_tmp_92ff8_40,
                     high_5_ms_bits_col73,
@@ -641,14 +653,14 @@ fn write_trace_simd(
                     );
                 let message_word_3_id_col74 = memory_address_to_id_value_tmp_92ff8_42;
                 *row[74] = message_word_3_id_col74;
-                sub_component_inputs.memory_address_to_id[3] =
+                *sub_component_inputs.memory_address_to_id[3] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_3_col38));
                 *lookup_data.memory_address_to_id_3 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_3_col38)),
                     message_word_3_id_col74,
                 ];
 
-                sub_component_inputs.memory_id_to_big[3] = message_word_3_id_col74;
+                *sub_component_inputs.memory_id_to_big[3] = message_word_3_id_col74;
                 *lookup_data.memory_id_to_big_3 = [
                     message_word_3_id_col74,
                     ((low_16_bits_col69) - ((low_7_ms_bits_col71) * (M31_512))),
@@ -721,7 +733,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_52 = ((high_14_ms_bits_tmp_92ff8_50) >> (UInt16_9));
                 let high_5_ms_bits_col79 = high_5_ms_bits_tmp_92ff8_52.as_m31();
                 *row[79] = high_5_ms_bits_col79;
-                sub_component_inputs.range_check_7_2_5[4] = [
+                *sub_component_inputs.range_check_7_2_5[4] = [
                     low_7_ms_bits_col77,
                     high_2_ls_bits_tmp_92ff8_51,
                     high_5_ms_bits_col79,
@@ -742,14 +754,14 @@ fn write_trace_simd(
                     );
                 let message_word_4_id_col80 = memory_address_to_id_value_tmp_92ff8_53;
                 *row[80] = message_word_4_id_col80;
-                sub_component_inputs.memory_address_to_id[4] =
+                *sub_component_inputs.memory_address_to_id[4] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_4_col39));
                 *lookup_data.memory_address_to_id_4 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_4_col39)),
                     message_word_4_id_col80,
                 ];
 
-                sub_component_inputs.memory_id_to_big[4] = message_word_4_id_col80;
+                *sub_component_inputs.memory_id_to_big[4] = message_word_4_id_col80;
                 *lookup_data.memory_id_to_big_4 = [
                     message_word_4_id_col80,
                     ((low_16_bits_col75) - ((low_7_ms_bits_col77) * (M31_512))),
@@ -822,7 +834,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_63 = ((high_14_ms_bits_tmp_92ff8_61) >> (UInt16_9));
                 let high_5_ms_bits_col85 = high_5_ms_bits_tmp_92ff8_63.as_m31();
                 *row[85] = high_5_ms_bits_col85;
-                sub_component_inputs.range_check_7_2_5[5] = [
+                *sub_component_inputs.range_check_7_2_5[5] = [
                     low_7_ms_bits_col83,
                     high_2_ls_bits_tmp_92ff8_62,
                     high_5_ms_bits_col85,
@@ -843,14 +855,14 @@ fn write_trace_simd(
                     );
                 let message_word_5_id_col86 = memory_address_to_id_value_tmp_92ff8_64;
                 *row[86] = message_word_5_id_col86;
-                sub_component_inputs.memory_address_to_id[5] =
+                *sub_component_inputs.memory_address_to_id[5] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_5_col40));
                 *lookup_data.memory_address_to_id_5 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_5_col40)),
                     message_word_5_id_col86,
                 ];
 
-                sub_component_inputs.memory_id_to_big[5] = message_word_5_id_col86;
+                *sub_component_inputs.memory_id_to_big[5] = message_word_5_id_col86;
                 *lookup_data.memory_id_to_big_5 = [
                     message_word_5_id_col86,
                     ((low_16_bits_col81) - ((low_7_ms_bits_col83) * (M31_512))),
@@ -923,7 +935,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_74 = ((high_14_ms_bits_tmp_92ff8_72) >> (UInt16_9));
                 let high_5_ms_bits_col91 = high_5_ms_bits_tmp_92ff8_74.as_m31();
                 *row[91] = high_5_ms_bits_col91;
-                sub_component_inputs.range_check_7_2_5[6] = [
+                *sub_component_inputs.range_check_7_2_5[6] = [
                     low_7_ms_bits_col89,
                     high_2_ls_bits_tmp_92ff8_73,
                     high_5_ms_bits_col91,
@@ -944,14 +956,14 @@ fn write_trace_simd(
                     );
                 let message_word_6_id_col92 = memory_address_to_id_value_tmp_92ff8_75;
                 *row[92] = message_word_6_id_col92;
-                sub_component_inputs.memory_address_to_id[6] =
+                *sub_component_inputs.memory_address_to_id[6] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_6_col41));
                 *lookup_data.memory_address_to_id_6 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_6_col41)),
                     message_word_6_id_col92,
                 ];
 
-                sub_component_inputs.memory_id_to_big[6] = message_word_6_id_col92;
+                *sub_component_inputs.memory_id_to_big[6] = message_word_6_id_col92;
                 *lookup_data.memory_id_to_big_6 = [
                     message_word_6_id_col92,
                     ((low_16_bits_col87) - ((low_7_ms_bits_col89) * (M31_512))),
@@ -1024,7 +1036,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_85 = ((high_14_ms_bits_tmp_92ff8_83) >> (UInt16_9));
                 let high_5_ms_bits_col97 = high_5_ms_bits_tmp_92ff8_85.as_m31();
                 *row[97] = high_5_ms_bits_col97;
-                sub_component_inputs.range_check_7_2_5[7] = [
+                *sub_component_inputs.range_check_7_2_5[7] = [
                     low_7_ms_bits_col95,
                     high_2_ls_bits_tmp_92ff8_84,
                     high_5_ms_bits_col97,
@@ -1045,14 +1057,14 @@ fn write_trace_simd(
                     );
                 let message_word_7_id_col98 = memory_address_to_id_value_tmp_92ff8_86;
                 *row[98] = message_word_7_id_col98;
-                sub_component_inputs.memory_address_to_id[7] =
+                *sub_component_inputs.memory_address_to_id[7] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_7_col42));
                 *lookup_data.memory_address_to_id_7 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_7_col42)),
                     message_word_7_id_col98,
                 ];
 
-                sub_component_inputs.memory_id_to_big[7] = message_word_7_id_col98;
+                *sub_component_inputs.memory_id_to_big[7] = message_word_7_id_col98;
                 *lookup_data.memory_id_to_big_7 = [
                     message_word_7_id_col98,
                     ((low_16_bits_col93) - ((low_7_ms_bits_col95) * (M31_512))),
@@ -1125,7 +1137,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_96 = ((high_14_ms_bits_tmp_92ff8_94) >> (UInt16_9));
                 let high_5_ms_bits_col103 = high_5_ms_bits_tmp_92ff8_96.as_m31();
                 *row[103] = high_5_ms_bits_col103;
-                sub_component_inputs.range_check_7_2_5[8] = [
+                *sub_component_inputs.range_check_7_2_5[8] = [
                     low_7_ms_bits_col101,
                     high_2_ls_bits_tmp_92ff8_95,
                     high_5_ms_bits_col103,
@@ -1146,14 +1158,14 @@ fn write_trace_simd(
                     );
                 let message_word_8_id_col104 = memory_address_to_id_value_tmp_92ff8_97;
                 *row[104] = message_word_8_id_col104;
-                sub_component_inputs.memory_address_to_id[8] =
+                *sub_component_inputs.memory_address_to_id[8] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_8_col43));
                 *lookup_data.memory_address_to_id_8 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_8_col43)),
                     message_word_8_id_col104,
                 ];
 
-                sub_component_inputs.memory_id_to_big[8] = message_word_8_id_col104;
+                *sub_component_inputs.memory_id_to_big[8] = message_word_8_id_col104;
                 *lookup_data.memory_id_to_big_8 = [
                     message_word_8_id_col104,
                     ((low_16_bits_col99) - ((low_7_ms_bits_col101) * (M31_512))),
@@ -1227,7 +1239,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_107 = ((high_14_ms_bits_tmp_92ff8_105) >> (UInt16_9));
                 let high_5_ms_bits_col109 = high_5_ms_bits_tmp_92ff8_107.as_m31();
                 *row[109] = high_5_ms_bits_col109;
-                sub_component_inputs.range_check_7_2_5[9] = [
+                *sub_component_inputs.range_check_7_2_5[9] = [
                     low_7_ms_bits_col107,
                     high_2_ls_bits_tmp_92ff8_106,
                     high_5_ms_bits_col109,
@@ -1248,14 +1260,14 @@ fn write_trace_simd(
                     );
                 let message_word_9_id_col110 = memory_address_to_id_value_tmp_92ff8_108;
                 *row[110] = message_word_9_id_col110;
-                sub_component_inputs.memory_address_to_id[9] =
+                *sub_component_inputs.memory_address_to_id[9] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_9_col44));
                 *lookup_data.memory_address_to_id_9 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_9_col44)),
                     message_word_9_id_col110,
                 ];
 
-                sub_component_inputs.memory_id_to_big[9] = message_word_9_id_col110;
+                *sub_component_inputs.memory_id_to_big[9] = message_word_9_id_col110;
                 *lookup_data.memory_id_to_big_9 = [
                     message_word_9_id_col110,
                     ((low_16_bits_col105) - ((low_7_ms_bits_col107) * (M31_512))),
@@ -1329,7 +1341,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_118 = ((high_14_ms_bits_tmp_92ff8_116) >> (UInt16_9));
                 let high_5_ms_bits_col115 = high_5_ms_bits_tmp_92ff8_118.as_m31();
                 *row[115] = high_5_ms_bits_col115;
-                sub_component_inputs.range_check_7_2_5[10] = [
+                *sub_component_inputs.range_check_7_2_5[10] = [
                     low_7_ms_bits_col113,
                     high_2_ls_bits_tmp_92ff8_117,
                     high_5_ms_bits_col115,
@@ -1350,14 +1362,14 @@ fn write_trace_simd(
                     );
                 let message_word_10_id_col116 = memory_address_to_id_value_tmp_92ff8_119;
                 *row[116] = message_word_10_id_col116;
-                sub_component_inputs.memory_address_to_id[10] =
+                *sub_component_inputs.memory_address_to_id[10] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_10_col45));
                 *lookup_data.memory_address_to_id_10 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_10_col45)),
                     message_word_10_id_col116,
                 ];
 
-                sub_component_inputs.memory_id_to_big[10] = message_word_10_id_col116;
+                *sub_component_inputs.memory_id_to_big[10] = message_word_10_id_col116;
                 *lookup_data.memory_id_to_big_10 = [
                     message_word_10_id_col116,
                     ((low_16_bits_col111) - ((low_7_ms_bits_col113) * (M31_512))),
@@ -1431,7 +1443,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_129 = ((high_14_ms_bits_tmp_92ff8_127) >> (UInt16_9));
                 let high_5_ms_bits_col121 = high_5_ms_bits_tmp_92ff8_129.as_m31();
                 *row[121] = high_5_ms_bits_col121;
-                sub_component_inputs.range_check_7_2_5[11] = [
+                *sub_component_inputs.range_check_7_2_5[11] = [
                     low_7_ms_bits_col119,
                     high_2_ls_bits_tmp_92ff8_128,
                     high_5_ms_bits_col121,
@@ -1452,14 +1464,14 @@ fn write_trace_simd(
                     );
                 let message_word_11_id_col122 = memory_address_to_id_value_tmp_92ff8_130;
                 *row[122] = message_word_11_id_col122;
-                sub_component_inputs.memory_address_to_id[11] =
+                *sub_component_inputs.memory_address_to_id[11] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_11_col46));
                 *lookup_data.memory_address_to_id_11 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_11_col46)),
                     message_word_11_id_col122,
                 ];
 
-                sub_component_inputs.memory_id_to_big[11] = message_word_11_id_col122;
+                *sub_component_inputs.memory_id_to_big[11] = message_word_11_id_col122;
                 *lookup_data.memory_id_to_big_11 = [
                     message_word_11_id_col122,
                     ((low_16_bits_col117) - ((low_7_ms_bits_col119) * (M31_512))),
@@ -1533,7 +1545,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_140 = ((high_14_ms_bits_tmp_92ff8_138) >> (UInt16_9));
                 let high_5_ms_bits_col127 = high_5_ms_bits_tmp_92ff8_140.as_m31();
                 *row[127] = high_5_ms_bits_col127;
-                sub_component_inputs.range_check_7_2_5[12] = [
+                *sub_component_inputs.range_check_7_2_5[12] = [
                     low_7_ms_bits_col125,
                     high_2_ls_bits_tmp_92ff8_139,
                     high_5_ms_bits_col127,
@@ -1554,14 +1566,14 @@ fn write_trace_simd(
                     );
                 let message_word_12_id_col128 = memory_address_to_id_value_tmp_92ff8_141;
                 *row[128] = message_word_12_id_col128;
-                sub_component_inputs.memory_address_to_id[12] =
+                *sub_component_inputs.memory_address_to_id[12] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_12_col47));
                 *lookup_data.memory_address_to_id_12 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_12_col47)),
                     message_word_12_id_col128,
                 ];
 
-                sub_component_inputs.memory_id_to_big[12] = message_word_12_id_col128;
+                *sub_component_inputs.memory_id_to_big[12] = message_word_12_id_col128;
                 *lookup_data.memory_id_to_big_12 = [
                     message_word_12_id_col128,
                     ((low_16_bits_col123) - ((low_7_ms_bits_col125) * (M31_512))),
@@ -1635,7 +1647,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_151 = ((high_14_ms_bits_tmp_92ff8_149) >> (UInt16_9));
                 let high_5_ms_bits_col133 = high_5_ms_bits_tmp_92ff8_151.as_m31();
                 *row[133] = high_5_ms_bits_col133;
-                sub_component_inputs.range_check_7_2_5[13] = [
+                *sub_component_inputs.range_check_7_2_5[13] = [
                     low_7_ms_bits_col131,
                     high_2_ls_bits_tmp_92ff8_150,
                     high_5_ms_bits_col133,
@@ -1656,14 +1668,14 @@ fn write_trace_simd(
                     );
                 let message_word_13_id_col134 = memory_address_to_id_value_tmp_92ff8_152;
                 *row[134] = message_word_13_id_col134;
-                sub_component_inputs.memory_address_to_id[13] =
+                *sub_component_inputs.memory_address_to_id[13] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_13_col48));
                 *lookup_data.memory_address_to_id_13 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_13_col48)),
                     message_word_13_id_col134,
                 ];
 
-                sub_component_inputs.memory_id_to_big[13] = message_word_13_id_col134;
+                *sub_component_inputs.memory_id_to_big[13] = message_word_13_id_col134;
                 *lookup_data.memory_id_to_big_13 = [
                     message_word_13_id_col134,
                     ((low_16_bits_col129) - ((low_7_ms_bits_col131) * (M31_512))),
@@ -1737,7 +1749,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_162 = ((high_14_ms_bits_tmp_92ff8_160) >> (UInt16_9));
                 let high_5_ms_bits_col139 = high_5_ms_bits_tmp_92ff8_162.as_m31();
                 *row[139] = high_5_ms_bits_col139;
-                sub_component_inputs.range_check_7_2_5[14] = [
+                *sub_component_inputs.range_check_7_2_5[14] = [
                     low_7_ms_bits_col137,
                     high_2_ls_bits_tmp_92ff8_161,
                     high_5_ms_bits_col139,
@@ -1758,14 +1770,14 @@ fn write_trace_simd(
                     );
                 let message_word_14_id_col140 = memory_address_to_id_value_tmp_92ff8_163;
                 *row[140] = message_word_14_id_col140;
-                sub_component_inputs.memory_address_to_id[14] =
+                *sub_component_inputs.memory_address_to_id[14] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_14_col49));
                 *lookup_data.memory_address_to_id_14 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_14_col49)),
                     message_word_14_id_col140,
                 ];
 
-                sub_component_inputs.memory_id_to_big[14] = message_word_14_id_col140;
+                *sub_component_inputs.memory_id_to_big[14] = message_word_14_id_col140;
                 *lookup_data.memory_id_to_big_14 = [
                     message_word_14_id_col140,
                     ((low_16_bits_col135) - ((low_7_ms_bits_col137) * (M31_512))),
@@ -1839,7 +1851,7 @@ fn write_trace_simd(
                 let high_5_ms_bits_tmp_92ff8_173 = ((high_14_ms_bits_tmp_92ff8_171) >> (UInt16_9));
                 let high_5_ms_bits_col145 = high_5_ms_bits_tmp_92ff8_173.as_m31();
                 *row[145] = high_5_ms_bits_col145;
-                sub_component_inputs.range_check_7_2_5[15] = [
+                *sub_component_inputs.range_check_7_2_5[15] = [
                     low_7_ms_bits_col143,
                     high_2_ls_bits_tmp_92ff8_172,
                     high_5_ms_bits_col145,
@@ -1860,14 +1872,14 @@ fn write_trace_simd(
                     );
                 let message_word_15_id_col146 = memory_address_to_id_value_tmp_92ff8_174;
                 *row[146] = message_word_15_id_col146;
-                sub_component_inputs.memory_address_to_id[15] =
+                *sub_component_inputs.memory_address_to_id[15] =
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_15_col50));
                 *lookup_data.memory_address_to_id_15 = [
                     ((input_limb_34_col34) + (blake_round_sigma_output_limb_15_col50)),
                     message_word_15_id_col146,
                 ];
 
-                sub_component_inputs.memory_id_to_big[15] = message_word_15_id_col146;
+                *sub_component_inputs.memory_id_to_big[15] = message_word_15_id_col146;
                 *lookup_data.memory_id_to_big_15 = [
                     message_word_15_id_col146,
                     ((low_16_bits_col141) - ((low_7_ms_bits_col143) * (M31_512))),
@@ -1902,7 +1914,7 @@ fn write_trace_simd(
 
                 let read_u_32_output_tmp_92ff8_176 = expected_word_tmp_92ff8_169;
 
-                sub_component_inputs.blake_g[0] = [
+                *sub_component_inputs.blake_g[0] = [
                     blake_round_input.2 .0[0],
                     blake_round_input.2 .0[4],
                     blake_round_input.2 .0[8],
@@ -1956,7 +1968,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col153,
                     blake_g_output_limb_7_col154,
                 ];
-                sub_component_inputs.blake_g[1] = [
+                *sub_component_inputs.blake_g[1] = [
                     blake_round_input.2 .0[1],
                     blake_round_input.2 .0[5],
                     blake_round_input.2 .0[9],
@@ -2010,7 +2022,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col161,
                     blake_g_output_limb_7_col162,
                 ];
-                sub_component_inputs.blake_g[2] = [
+                *sub_component_inputs.blake_g[2] = [
                     blake_round_input.2 .0[2],
                     blake_round_input.2 .0[6],
                     blake_round_input.2 .0[10],
@@ -2064,7 +2076,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col169,
                     blake_g_output_limb_7_col170,
                 ];
-                sub_component_inputs.blake_g[3] = [
+                *sub_component_inputs.blake_g[3] = [
                     blake_round_input.2 .0[3],
                     blake_round_input.2 .0[7],
                     blake_round_input.2 .0[11],
@@ -2118,7 +2130,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col177,
                     blake_g_output_limb_7_col178,
                 ];
-                sub_component_inputs.blake_g[4] = [
+                *sub_component_inputs.blake_g[4] = [
                     blake_g_output_tmp_92ff8_177[0],
                     blake_g_output_tmp_92ff8_178[1],
                     blake_g_output_tmp_92ff8_179[2],
@@ -2172,7 +2184,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col185,
                     blake_g_output_limb_7_col186,
                 ];
-                sub_component_inputs.blake_g[5] = [
+                *sub_component_inputs.blake_g[5] = [
                     blake_g_output_tmp_92ff8_178[0],
                     blake_g_output_tmp_92ff8_179[1],
                     blake_g_output_tmp_92ff8_180[2],
@@ -2226,7 +2238,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col193,
                     blake_g_output_limb_7_col194,
                 ];
-                sub_component_inputs.blake_g[6] = [
+                *sub_component_inputs.blake_g[6] = [
                     blake_g_output_tmp_92ff8_179[0],
                     blake_g_output_tmp_92ff8_180[1],
                     blake_g_output_tmp_92ff8_177[2],
@@ -2280,7 +2292,7 @@ fn write_trace_simd(
                     blake_g_output_limb_6_col201,
                     blake_g_output_limb_7_col202,
                 ];
-                sub_component_inputs.blake_g[7] = [
+                *sub_component_inputs.blake_g[7] = [
                     blake_g_output_tmp_92ff8_180[0],
                     blake_g_output_tmp_92ff8_177[1],
                     blake_g_output_tmp_92ff8_178[2],
