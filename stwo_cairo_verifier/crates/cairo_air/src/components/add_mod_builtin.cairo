@@ -80,10 +80,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *(self.claim.log_size);
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
+        let trace_gen = CanonicCosetImpl::new(*(self.claim.log_size)).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        preprocessed_column_set.insert(seq_column_idx(*(self.claim.log_size)));
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -533,7 +532,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut memory_id_to_big_sum_50: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_51: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_52: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(PreprocessedColumn::Seq(*(self.claim.log_size)));
+        let seq = preprocessed_mask_values.get(seq_column_idx(*(self.claim.log_size)));
 
         let [
             is_instance_0_col0,
@@ -2448,15 +2447,15 @@ mod tests {
     use core::array::ArrayImpl;
     use core::num::traits::Zero;
     #[allow(unused_imports)]
-    use stwo_constraint_framework::{
-        LookupElements, PreprocessedColumn, PreprocessedColumnKey, PreprocessedColumnTrait,
-        PreprocessedMaskValues,
-    };
+    use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{LookupElements, PreprocessedMaskValues};
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements};
+    #[allow(unused_imports)]
+    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -2482,13 +2481,14 @@ mod tests {
             y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
         };
 
-        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
-        preprocessed_trace
-            .values
-            .insert(
-                PreprocessedColumnKey::encode(@PreprocessedColumn::Seq(component.claim.log_size)),
-                NullableTrait::new(qm31_const::<661475002, 1056737278, 1714677692, 134009591>()),
-            );
+        let mut preprocessed_trace = PreprocessedMaskValues {
+            values: [Default::default(); NUM_PREPROCESSED_COLUMNS].span().into(),
+        };
+        let mut preprocessed_trace = preprocessed_mask_add(
+            preprocessed_trace,
+            seq_column_idx(component.claim.log_size),
+            qm31_const::<661475002, 1056737278, 1714677692, 134009591>(),
+        );
 
         let mut trace_columns = [
             [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),

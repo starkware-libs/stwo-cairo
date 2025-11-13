@@ -92,8 +92,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = *(self.claim.log_size);
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
+        let trace_gen = CanonicCosetImpl::new(*(self.claim.log_size)).coset.step;
         let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
         trace_mask_points.append(array![point]);
         trace_mask_points.append(array![point]);
@@ -554,15 +553,15 @@ mod tests {
     use core::array::ArrayImpl;
     use core::num::traits::Zero;
     #[allow(unused_imports)]
-    use stwo_constraint_framework::{
-        LookupElements, PreprocessedColumn, PreprocessedColumnKey, PreprocessedColumnTrait,
-        PreprocessedMaskValues,
-    };
+    use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
+    #[allow(unused_imports)]
+    use stwo_constraint_framework::{LookupElements, PreprocessedMaskValues};
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements};
+    #[allow(unused_imports)]
+    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -612,7 +611,9 @@ mod tests {
             y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
         };
 
-        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
+        let mut preprocessed_trace = PreprocessedMaskValues {
+            values: [Default::default(); NUM_PREPROCESSED_COLUMNS].span().into(),
+        };
 
         let mut trace_columns = [
             [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
