@@ -14,16 +14,16 @@ func main{
     bitwise_ptr,
     ec_op_ptr,
     keccak_ptr,
-    poseidon_ptr,
+    poseidon_ptr: PoseidonBuiltin*,
     range_check96_ptr,
     add_mod_ptr,
     mul_mod_ptr,
 }() {
-    assert [poseidon_ptr] = 0;
-    let n_poseidon = 1;
+    alloc_locals;
+    local n_poseidon = 30;
 
     // Call poseidon builtin.
-    // do_15_poseidon(n_times=n_poseidon);
+    do_15_poseidon(n_times=n_poseidon);
 
     return ();
 }
