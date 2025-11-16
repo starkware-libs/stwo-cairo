@@ -22,9 +22,10 @@ use crate::cairo_claim::CairoClaim;
 use crate::cairo_components::CairoComponents;
 use crate::cairo_interaction_claim::lookup_sum;
 use crate::cairo_interaction_elements::CairoInteractionElements;
-use crate::public_data::{MemorySection, PublicMemory, PublicSegmentRanges, SegmentRange};
-use crate::public_data::PublicData;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::public_data::{
+    MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
+};
 use crate::{CairoProof, PreProcessedTraceVariant};
 
 fn verify_claim(claim: &CairoClaim) {

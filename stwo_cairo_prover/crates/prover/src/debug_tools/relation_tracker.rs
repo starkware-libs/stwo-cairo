@@ -1,7 +1,6 @@
+use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::cairo_components::CairoComponents;
 use cairo_air::public_data::PublicData;
-use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::{chain, Itertools};
 use num_traits::{One, Zero};
@@ -101,22 +100,6 @@ fn cairo_relation_entries(
     trace: &TreeVec<Vec<&Vec<M31>>>,
 ) -> Vec<RelationTrackerEntry> {
     let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_8_b,
-        verify_bitwise_xor_9,
-        pedersen_context,
-        poseidon_context,
-    } = cairo_components;
-    let OpcodeComponents {
         add,
         add_small,
         add_ap,
@@ -137,7 +120,20 @@ fn cairo_relation_entries(
         mul_small,
         qm31,
         ret,
-    } = opcodes;
+        verify_instruction,
+        blake_context,
+        builtins,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
+        verify_bitwise_xor_9,
+        pedersen_context,
+        poseidon_context,
+    } = cairo_components;
 
     let RangeChecksComponents {
         rc_6,
