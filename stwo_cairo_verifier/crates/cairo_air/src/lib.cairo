@@ -25,10 +25,7 @@ use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
-use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumnImpl, PreprocessedColumnKey,
-    PreprocessedColumnTrait, PreprocessedMaskValuesImpl,
-};
+use stwo_constraint_framework::{LookupElements, LookupElementsImpl, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
 #[cfg(not(feature: "qm31_opcode"))]
@@ -93,7 +90,6 @@ pub const POSEIDON_MEMORY_CELLS: usize = 6;
 // This is for both the 128 and 96 bit range checks.
 pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 
-
 pub mod pedersen;
 use pedersen::PedersenContextInteractionClaimImpl;
 
@@ -117,6 +113,13 @@ pub mod preprocessed_columns;
 use preprocessed_columns::preprocessed_root;
 
 pub mod claim;
+
+// TODO(az-starkware): Once we upgrade Cairo version, move these to preprocessed_column.cairo
+// using #[path = "..."]
+#[cfg(not(feature: "poseidon252_verifier"))]
+mod preprocessed_columns_canonical;
+#[cfg(feature: "poseidon252_verifier")]
+mod preprocessed_columns_without_pedersen;
 
 // A dict from relation_id, which is a string encoded as a felt252, to the number of uses of the
 // corresponding relation.
