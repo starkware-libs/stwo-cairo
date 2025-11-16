@@ -49,14 +49,6 @@ impl PedersenContextClaimGenerator {
             self.partial_ec_mul_trace_generator.write_trace(
                 tree_builder,
                 &self.pedersen_points_table_trace_generator,
-                &range_checks_trace_generator.rc_20_trace_generator,
-                &range_checks_trace_generator.rc_20_b_trace_generator,
-                &range_checks_trace_generator.rc_20_c_trace_generator,
-                &range_checks_trace_generator.rc_20_d_trace_generator,
-                &range_checks_trace_generator.rc_20_e_trace_generator,
-                &range_checks_trace_generator.rc_20_f_trace_generator,
-                &range_checks_trace_generator.rc_20_g_trace_generator,
-                &range_checks_trace_generator.rc_20_h_trace_generator,
                 &range_checks_trace_generator.rc_9_9_trace_generator,
                 &range_checks_trace_generator.rc_9_9_b_trace_generator,
                 &range_checks_trace_generator.rc_9_9_c_trace_generator,
@@ -65,6 +57,14 @@ impl PedersenContextClaimGenerator {
                 &range_checks_trace_generator.rc_9_9_f_trace_generator,
                 &range_checks_trace_generator.rc_9_9_g_trace_generator,
                 &range_checks_trace_generator.rc_9_9_h_trace_generator,
+                &range_checks_trace_generator.rc_20_trace_generator,
+                &range_checks_trace_generator.rc_20_b_trace_generator,
+                &range_checks_trace_generator.rc_20_c_trace_generator,
+                &range_checks_trace_generator.rc_20_d_trace_generator,
+                &range_checks_trace_generator.rc_20_e_trace_generator,
+                &range_checks_trace_generator.rc_20_f_trace_generator,
+                &range_checks_trace_generator.rc_20_g_trace_generator,
+                &range_checks_trace_generator.rc_20_h_trace_generator,
             );
         let (pedersen_points_table_claim, pedersen_points_table_interaction_gen) = self
             .pedersen_points_table_trace_generator

@@ -109,8 +109,8 @@ pub const MUL_OPCODE_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 339038298 },
 ];
 pub const PARTIAL_EC_MUL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 634137930 }, M31 { inner: 1279291453 }, M31 { inner: 970464316 },
-    M31 { inner: 1821946701 },
+    M31 { inner: 1710714702 }, M31 { inner: 1269545248 }, M31 { inner: 1597466063 },
+    M31 { inner: 1296059504 },
 ];
 pub const PEDERSEN_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1243129983 }, M31 { inner: 547404663 }, M31 { inner: 457083723 },
