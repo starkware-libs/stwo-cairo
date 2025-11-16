@@ -1,4 +1,5 @@
-use cairo_air::air::{CairoComponents, PublicData};
+use cairo_air::cairo_components::CairoComponents;
+use cairo_air::public_data::PublicData;
 use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;

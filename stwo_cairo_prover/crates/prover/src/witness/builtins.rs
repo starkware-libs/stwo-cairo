@@ -1,5 +1,5 @@
-use cairo_air::air::CairoInteractionElements;
 use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{

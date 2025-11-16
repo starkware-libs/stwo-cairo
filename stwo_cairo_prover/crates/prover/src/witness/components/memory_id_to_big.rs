@@ -585,7 +585,7 @@ impl InteractionClaimGenerator {
 
 #[cfg(test)]
 mod tests {
-    use cairo_air::air::CairoInteractionElements;
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
     use cairo_air::components::memory_id_to_big::{self, SmallEval};
     use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;

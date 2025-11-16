@@ -8,7 +8,8 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
+use crate::cairo_interaction_elements::CairoInteractionElements;
+use crate::cairo_claim::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };

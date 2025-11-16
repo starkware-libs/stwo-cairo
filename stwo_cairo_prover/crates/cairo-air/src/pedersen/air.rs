@@ -4,7 +4,8 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
+use crate::cairo_interaction_elements::CairoInteractionElements;
+use crate::cairo_claim::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::prelude::*;
 use crate::components::{indented_component_display, partial_ec_mul, pedersen_points_table};
 

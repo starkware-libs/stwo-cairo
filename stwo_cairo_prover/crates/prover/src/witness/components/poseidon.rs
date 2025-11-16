@@ -1,4 +1,4 @@
-use cairo_air::air::CairoInteractionElements;
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::poseidon::air::{
     Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
 };

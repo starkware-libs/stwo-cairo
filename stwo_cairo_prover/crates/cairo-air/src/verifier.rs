@@ -17,11 +17,13 @@ use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 use thiserror::Error;
 
-use crate::air::{
-    lookup_sum, CairoClaim, CairoComponents, CairoInteractionElements, MemorySection, PublicData,
-    PublicMemory, PublicSegmentRanges, SegmentRange,
-};
 use crate::builtins_air::BuiltinsClaim;
+use crate::cairo_claim::CairoClaim;
+use crate::cairo_components::CairoComponents;
+use crate::cairo_interaction_claim::lookup_sum;
+use crate::cairo_interaction_elements::CairoInteractionElements;
+use crate::public_data::{MemorySection, PublicMemory, PublicSegmentRanges, SegmentRange};
+use crate::public_data::PublicData;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::{CairoProof, PreProcessedTraceVariant};
 

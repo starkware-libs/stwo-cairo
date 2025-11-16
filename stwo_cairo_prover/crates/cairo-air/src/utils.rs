@@ -13,7 +13,7 @@ use stwo::core::vcs::MerkleHasher;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
-use crate::air::{MemorySection, PublicMemory};
+use crate::public_data::{MemorySection, PublicMemory};
 use crate::CairoProof;
 
 mod json {

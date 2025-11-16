@@ -1,7 +1,7 @@
-use cairo_air::air::CairoInteractionElements;
 use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
 use tracing::{span, Level};

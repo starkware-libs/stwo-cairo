@@ -1,9 +1,9 @@
 use std::array;
 
-use cairo_air::air::{
-    CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
-    PublicMemory, PublicSegmentRanges, SegmentRange,
-};
+use cairo_air::cairo_claim::CairoClaim;
+use cairo_air::cairo_interaction_claim::CairoInteractionClaim;
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
+use cairo_air::public_data::{MemorySmallValue, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange};
 use itertools::Itertools;
 use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
