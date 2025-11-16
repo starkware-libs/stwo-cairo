@@ -10,11 +10,11 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::air::CairoInteractionElements;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
 };
+use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BuiltinsClaim {

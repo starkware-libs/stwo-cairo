@@ -8,10 +8,11 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
+use crate::air::CairoInteractionElements;
 use crate::components::{
     blake_g, blake_round, blake_round_sigma, triple_xor_32, verify_bitwise_xor_12,
 };
+use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BlakeContextClaim {
