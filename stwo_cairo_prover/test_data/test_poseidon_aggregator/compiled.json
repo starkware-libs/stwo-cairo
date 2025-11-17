@@ -69,11 +69,11 @@
         "0x208b7fff7fff7ffe",
         "0x480a7ffa7fff8000",
         "0x480680017fff8000",
-        "0x0",
-        "0x480680017fff8000",
         "0xf",
+        "0x480680017fff8000",
+        "0x1e",
         "0x1104800180018000",
-        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffce",
+        "0xe",
         "0x480a7ff37fff8000",
         "0x480a7ff47fff8000",
         "0x480a7ff57fff8000",
@@ -85,6 +85,24 @@
         "0x480a7ffb7fff8000",
         "0x480a7ffc7fff8000",
         "0x480a7ffd7fff8000",
+        "0x208b7fff7fff7ffe",
+        "0x20780017fff7ffd",
+        "0x4",
+        "0x480a7ffb7fff8000",
+        "0x208b7fff7fff7ffe",
+        "0x480a7ffb7fff8000",
+        "0x480680017fff8000",
+        "0x0",
+        "0x480680017fff8000",
+        "0xf",
+        "0x1104800180018000",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffb7",
+        "0x480680017fff8000",
+        "0xf",
+        "0x482680017ffd8000",
+        "0x800000000000011000000000000000000000000000000000000000000000000",
+        "0x1104800180018000",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff2",
         "0x208b7fff7fff7ffe"
     ],
     "debug_info": {
@@ -1248,36 +1266,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 35,
-                    "end_line": 17,
+                    "end_line": 15,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
-                            "end_col": 54,
-                            "end_line": 7,
+                            "end_col": 55,
+                            "end_line": 27,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
-                                    "end_col": 45,
-                                    "end_line": 23,
+                                    "end_col": 54,
+                                    "end_line": 22,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 23
+                                    "start_line": 22
                                 },
                                 "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
                             ],
-                            "start_col": 24,
-                            "start_line": 7
+                            "start_col": 25,
+                            "start_line": 27
                         },
                         "While expanding the reference 'poseidon_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 17
+                    "start_line": 15
                 }
             },
             "53": {
@@ -1306,13 +1324,13 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 30,
-                    "end_line": 23,
+                    "end_col": 38,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
-                    "start_col": 29,
-                    "start_line": 23
+                    "start_col": 36,
+                    "start_line": 22
                 }
             },
             "55": {
@@ -1341,13 +1359,13 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 44,
-                    "end_line": 23,
+                    "end_col": 53,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
-                    "start_col": 42,
-                    "start_line": 23
+                    "start_col": 51,
+                    "start_line": 22
                 }
             },
             "57": {
@@ -1376,13 +1394,13 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 45,
-                    "end_line": 23,
+                    "end_col": 54,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 23
+                    "start_line": 22
                 }
             },
             "59": {
@@ -1412,36 +1430,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 15,
-                    "end_line": 10,
+                    "end_line": 8,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 15,
-                            "end_line": 10,
+                            "end_line": 8,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'output_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 10
+                            "start_line": 8
                         },
                         "While expanding the reference 'output_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 10
+                    "start_line": 8
                 }
             },
             "60": {
@@ -1471,36 +1489,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 17,
-                    "end_line": 11,
+                    "end_line": 9,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 17,
-                            "end_line": 11,
+                            "end_line": 9,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 11
+                            "start_line": 9
                         },
                         "While expanding the reference 'pedersen_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 11
+                    "start_line": 9
                 }
             },
             "61": {
@@ -1530,36 +1548,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 20,
-                    "end_line": 12,
+                    "end_line": 10,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 20,
-                            "end_line": 12,
+                            "end_line": 10,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'range_check_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 12
+                            "start_line": 10
                         },
                         "While expanding the reference 'range_check_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 12
+                    "start_line": 10
                 }
             },
             "62": {
@@ -1589,36 +1607,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 14,
-                    "end_line": 13,
+                    "end_line": 11,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
-                            "end_line": 13,
+                            "end_line": 11,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'ecdsa_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 13
+                            "start_line": 11
                         },
                         "While expanding the reference 'ecdsa_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 13
+                    "start_line": 11
                 }
             },
             "63": {
@@ -1648,36 +1666,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 16,
-                    "end_line": 14,
+                    "end_line": 12,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
-                            "end_line": 14,
+                            "end_line": 12,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'bitwise_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 14
+                            "start_line": 12
                         },
                         "While expanding the reference 'bitwise_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 14
+                    "start_line": 12
                 }
             },
             "64": {
@@ -1707,36 +1725,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 14,
-                    "end_line": 15,
+                    "end_line": 13,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
-                            "end_line": 15,
+                            "end_line": 13,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'ec_op_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 15
+                            "start_line": 13
                         },
                         "While expanding the reference 'ec_op_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 15
+                    "start_line": 13
                 }
             },
             "65": {
@@ -1766,36 +1784,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 15,
-                    "end_line": 16,
+                    "end_line": 14,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 15,
-                            "end_line": 16,
+                            "end_line": 14,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'keccak_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 16
+                            "start_line": 14
                         },
                         "While expanding the reference 'keccak_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 16
+                    "start_line": 14
                 }
             },
             "66": {
@@ -1824,49 +1842,49 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 54,
-                    "end_line": 7,
+                    "end_col": 55,
+                    "end_line": 27,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
-                            "end_col": 45,
-                            "end_line": 23,
+                            "end_col": 54,
+                            "end_line": 22,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 35,
-                                    "end_line": 17,
+                                    "end_line": 15,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "parent_location": [
                                         {
                                             "end_col": 15,
-                                            "end_line": 25,
+                                            "end_line": 23,
                                             "input_file": {
-                                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                             },
                                             "start_col": 5,
-                                            "start_line": 25
+                                            "start_line": 23
                                         },
                                         "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
                                     ],
                                     "start_col": 5,
-                                    "start_line": 17
+                                    "start_line": 15
                                 },
                                 "While expanding the reference 'poseidon_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 23
+                            "start_line": 22
                         },
                         "While trying to update the implicit return value 'poseidon_ptr' in:"
                     ],
-                    "start_col": 24,
-                    "start_line": 7
+                    "start_col": 25,
+                    "start_line": 27
                 }
             },
             "67": {
@@ -1896,36 +1914,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 22,
-                    "end_line": 18,
+                    "end_line": 16,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 22,
-                            "end_line": 18,
+                            "end_line": 16,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'range_check96_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 18
+                            "start_line": 16
                         },
                         "While expanding the reference 'range_check96_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 18
+                    "start_line": 16
                 }
             },
             "68": {
@@ -1955,36 +1973,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 16,
-                    "end_line": 19,
+                    "end_line": 17,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
-                            "end_line": 19,
+                            "end_line": 17,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'add_mod_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 19
+                            "start_line": 17
                         },
                         "While expanding the reference 'add_mod_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 19
+                    "start_line": 17
                 }
             },
             "69": {
@@ -2014,36 +2032,36 @@
                 "hints": [],
                 "inst": {
                     "end_col": 16,
-                    "end_line": 20,
+                    "end_line": 18,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
-                            "end_line": 20,
+                            "end_line": 18,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
-                                    "end_line": 25,
+                                    "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 25
+                                    "start_line": 23
                                 },
                                 "While trying to retrieve the implicit argument 'mul_mod_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 20
+                            "start_line": 18
                         },
                         "While expanding the reference 'mul_mod_ptr' in:"
                     ],
                     "start_col": 5,
-                    "start_line": 20
+                    "start_line": 18
                 }
             },
             "70": {
@@ -2073,12 +2091,357 @@
                 "hints": [],
                 "inst": {
                     "end_col": 15,
-                    "end_line": 25,
+                    "end_line": 23,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/test_prove_verify_poseidon_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 25
+                    "start_line": 23
+                }
+            },
+            "71": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 28,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 28
+                }
+            },
+            "73": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 55,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 55,
+                            "end_line": 27,
+                            "input_file": {
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 19,
+                                    "end_line": 29,
+                                    "input_file": {
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                                    },
+                                    "start_col": 9,
+                                    "start_line": 29
+                                },
+                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
+                            ],
+                            "start_col": 25,
+                            "start_line": 27
+                        },
+                        "While expanding the reference 'poseidon_ptr' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 27
+                }
+            },
+            "74": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 19,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 9,
+                    "start_line": 29
+                }
+            },
+            "75": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 55,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 54,
+                            "end_line": 7,
+                            "input_file": {
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 49,
+                                    "end_line": 32,
+                                    "input_file": {
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 32
+                                },
+                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
+                            ],
+                            "start_col": 24,
+                            "start_line": 7
+                        },
+                        "While expanding the reference 'poseidon_ptr' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 27
+                }
+            },
+            "76": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 32,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 31,
+                    "start_line": 32
+                }
+            },
+            "78": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 48,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 46,
+                    "start_line": 32
+                }
+            },
+            "80": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 31
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 49,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 32
+                }
+            },
+            "82": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 32
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 38,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 36,
+                    "start_line": 34
+                }
+            },
+            "84": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 32
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 63,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 51,
+                    "start_line": 34
+                }
+            },
+            "86": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 32
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 64,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 34
+                }
+            },
+            "88": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_poseidon"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 9,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_poseidon.chain_len": 29,
+                        "__main__.do_chains_poseidon.n_chains": 30,
+                        "__main__.do_chains_poseidon.poseidon_ptr": 33
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_poseidon_aggregator/do_30_poseidon_chains.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 35
                 }
             }
         }
@@ -2104,6 +2467,106 @@
         "__main__.do_chain_poseidon": {
             "destination": "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon",
             "type": "alias"
+        },
+        "__main__.do_chains_poseidon": {
+            "decorators": [],
+            "pc": 71,
+            "type": "function"
+        },
+        "__main__.do_chains_poseidon.Args": {
+            "full_name": "__main__.do_chains_poseidon.Args",
+            "members": {
+                "chain_len": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "n_chains": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                }
+            },
+            "size": 2,
+            "type": "struct"
+        },
+        "__main__.do_chains_poseidon.ImplicitArgs": {
+            "full_name": "__main__.do_chains_poseidon.ImplicitArgs",
+            "members": {
+                "poseidon_ptr": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.PoseidonBuiltin*",
+                    "offset": 0
+                }
+            },
+            "size": 1,
+            "type": "struct"
+        },
+        "__main__.do_chains_poseidon.Return": {
+            "cairo_type": "()",
+            "type": "type_definition"
+        },
+        "__main__.do_chains_poseidon.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
+        "__main__.do_chains_poseidon.chain_len": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_chains_poseidon.chain_len",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 71,
+                    "value": "[cast(fp + (-4), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_chains_poseidon.n_chains": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_chains_poseidon.n_chains",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 71,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_chains_poseidon.poseidon_ptr": {
+            "cairo_type": "starkware.cairo.common.cairo_builtins.PoseidonBuiltin*",
+            "full_name": "__main__.do_chains_poseidon.poseidon_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 71,
+                    "value": "[cast(fp + (-5), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 8,
+                        "offset": 0
+                    },
+                    "pc": 82,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 9,
+                        "offset": 0
+                    },
+                    "pc": 88,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+                }
+            ],
+            "type": "reference"
         },
         "__main__.main": {
             "decorators": [],
@@ -3109,6 +3572,46 @@
                     "offset": 0
                 },
                 "pc": 59,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 71,
+                "value": "[cast(fp + (-4), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 71,
+                "value": "[cast(fp + (-3), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 71,
+                "value": "[cast(fp + (-5), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 8,
+                    "offset": 0
+                },
+                "pc": 82,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 9,
+                    "offset": 0
+                },
+                "pc": 88,
                 "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
             }
         ]
