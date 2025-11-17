@@ -101,7 +101,7 @@ jobs:
           RUST_LOG: info
 
   cairo-prove-test:
-    runs-on: ubuntu-latest
+    runs-on: stwo-cairo-avx-l
     defaults:
       run:
         working-directory: ./cairo-prove
