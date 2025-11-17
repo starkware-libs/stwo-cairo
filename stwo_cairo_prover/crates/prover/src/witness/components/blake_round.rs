@@ -159,7 +159,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, blake_round_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, blake_round_input))| {
                 let input_limb_0_col0 = blake_round_input.0;
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = blake_round_input.1;
