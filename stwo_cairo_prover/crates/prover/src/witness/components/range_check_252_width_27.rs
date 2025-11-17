@@ -169,7 +169,7 @@ fn write_trace_simd(
         .for_each(
             |(
                 row_index,
-                (mut row, lookup_data, sub_component_inputs, range_check_252_width_27_input),
+                (row, lookup_data, sub_component_inputs, range_check_252_width_27_input),
             )| {
                 let input_limb_0_col0 = range_check_252_width_27_input.get_m31(0);
                 *row[0] = input_limb_0_col0;

@@ -168,10 +168,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(
-                row_index,
-                (mut row, lookup_data, sub_component_inputs, verify_instruction_input),
-            )| {
+            |(row_index, (row, lookup_data, sub_component_inputs, verify_instruction_input))| {
                 let input_pc_col0 = verify_instruction_input.0;
                 *row[0] = input_pc_col0;
                 let input_offset0_col1 = verify_instruction_input.1[0];

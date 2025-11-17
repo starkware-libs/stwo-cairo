@@ -129,7 +129,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, assert_eq_opcode_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, assert_eq_opcode_input))| {
                 let input_pc_col0 = assert_eq_opcode_input.pc;
                 *row[0] = input_pc_col0;
                 let input_ap_col1 = assert_eq_opcode_input.ap;

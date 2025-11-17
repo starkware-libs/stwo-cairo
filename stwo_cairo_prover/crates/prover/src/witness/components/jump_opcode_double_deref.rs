@@ -138,7 +138,7 @@ fn write_trace_simd(
         .for_each(
             |(
                 row_index,
-                (mut row, lookup_data, sub_component_inputs, jump_opcode_double_deref_input),
+                (row, lookup_data, sub_component_inputs, jump_opcode_double_deref_input),
             )| {
                 let input_pc_col0 = jump_opcode_double_deref_input.pc;
                 *row[0] = input_pc_col0;
