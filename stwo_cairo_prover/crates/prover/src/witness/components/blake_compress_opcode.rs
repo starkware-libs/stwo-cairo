@@ -219,10 +219,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(
-                row_index,
-                (mut row, lookup_data, sub_component_inputs, blake_compress_opcode_input),
-            )| {
+            |(row_index, (row, lookup_data, sub_component_inputs, blake_compress_opcode_input))| {
                 let seq = seq.packed_at(row_index);
                 let input_pc_col0 = blake_compress_opcode_input.pc;
                 *row[0] = input_pc_col0;

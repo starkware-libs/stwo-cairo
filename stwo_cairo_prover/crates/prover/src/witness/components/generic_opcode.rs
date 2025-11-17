@@ -205,7 +205,7 @@ range_check_11_state: &range_check_11::ClaimGenerator,
     .into_par_iter()
     .enumerate()
     .for_each(
-        |(row_index,(mut row, lookup_data,sub_component_inputs,generic_opcode_input,))| {
+        |(row_index,(row, lookup_data,sub_component_inputs,generic_opcode_input,))| {
             let input_pc_col0 = generic_opcode_input.pc;
             *row[0] = input_pc_col0;let input_ap_col1 = generic_opcode_input.ap;
             *row[1] = input_ap_col1;let input_fp_col2 = generic_opcode_input.fp;

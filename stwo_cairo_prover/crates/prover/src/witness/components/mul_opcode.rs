@@ -231,7 +231,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, mul_opcode_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, mul_opcode_input))| {
                 let input_pc_col0 = mul_opcode_input.pc;
                 *row[0] = input_pc_col0;
                 let input_ap_col1 = mul_opcode_input.ap;

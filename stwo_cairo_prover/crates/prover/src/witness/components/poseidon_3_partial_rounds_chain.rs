@@ -158,7 +158,7 @@ fn write_trace_simd(
         .for_each(
             |(
                 row_index,
-                (mut row, lookup_data, sub_component_inputs, poseidon_3_partial_rounds_chain_input),
+                (row, lookup_data, sub_component_inputs, poseidon_3_partial_rounds_chain_input),
             )| {
                 let input_limb_0_col0 = poseidon_3_partial_rounds_chain_input.0;
                 *row[0] = input_limb_0_col0;

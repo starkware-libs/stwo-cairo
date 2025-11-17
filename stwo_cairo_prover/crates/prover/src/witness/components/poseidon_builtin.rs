@@ -106,155 +106,147 @@ fn write_trace_simd(
     )
         .into_par_iter()
         .enumerate()
-        .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs))| {
-                let seq = seq.packed_at(row_index);
+        .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
+            let seq = seq.packed_at(row_index);
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_0 = memory_address_to_id_state
-                    .deduce_output(
-                        ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6))),
-                    );
-                let input_state_0_id_col0 = memory_address_to_id_value_tmp_1a5dd_0;
-                *row[0] = input_state_0_id_col0;
-                *sub_component_inputs.memory_address_to_id[0] =
-                    ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)));
-                *lookup_data.memory_address_to_id_0 = [
-                    ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6))),
-                    input_state_0_id_col0,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_0 = memory_address_to_id_state.deduce_output(
+                ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6))),
+            );
+            let input_state_0_id_col0 = memory_address_to_id_value_tmp_1a5dd_0;
+            *row[0] = input_state_0_id_col0;
+            *sub_component_inputs.memory_address_to_id[0] =
+                ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)));
+            *lookup_data.memory_address_to_id_0 = [
+                ((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6))),
+                input_state_0_id_col0,
+            ];
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_2 = memory_address_to_id_state
-                    .deduce_output(
-                        (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6)))
-                            + (M31_1)),
-                    );
-                let input_state_1_id_col1 = memory_address_to_id_value_tmp_1a5dd_2;
-                *row[1] = input_state_1_id_col1;
-                *sub_component_inputs.memory_address_to_id[1] =
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_1));
-                *lookup_data.memory_address_to_id_1 = [
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_1)),
-                    input_state_1_id_col1,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_2 = memory_address_to_id_state.deduce_output(
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_1)),
+            );
+            let input_state_1_id_col1 = memory_address_to_id_value_tmp_1a5dd_2;
+            *row[1] = input_state_1_id_col1;
+            *sub_component_inputs.memory_address_to_id[1] =
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_1));
+            *lookup_data.memory_address_to_id_1 = [
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_1)),
+                input_state_1_id_col1,
+            ];
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_4 = memory_address_to_id_state
-                    .deduce_output(
-                        (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6)))
-                            + (M31_2)),
-                    );
-                let input_state_2_id_col2 = memory_address_to_id_value_tmp_1a5dd_4;
-                *row[2] = input_state_2_id_col2;
-                *sub_component_inputs.memory_address_to_id[2] =
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_2));
-                *lookup_data.memory_address_to_id_2 = [
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_2)),
-                    input_state_2_id_col2,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_4 = memory_address_to_id_state.deduce_output(
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_2)),
+            );
+            let input_state_2_id_col2 = memory_address_to_id_value_tmp_1a5dd_4;
+            *row[2] = input_state_2_id_col2;
+            *sub_component_inputs.memory_address_to_id[2] =
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_2));
+            *lookup_data.memory_address_to_id_2 = [
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_2)),
+                input_state_2_id_col2,
+            ];
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_6 = memory_address_to_id_state
-                    .deduce_output(
-                        (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6)))
-                            + (M31_3)),
-                    );
-                let output_state_0_id_col3 = memory_address_to_id_value_tmp_1a5dd_6;
-                *row[3] = output_state_0_id_col3;
-                *sub_component_inputs.memory_address_to_id[3] =
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_3));
-                *lookup_data.memory_address_to_id_3 = [
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_3)),
-                    output_state_0_id_col3,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_6 = memory_address_to_id_state.deduce_output(
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_3)),
+            );
+            let output_state_0_id_col3 = memory_address_to_id_value_tmp_1a5dd_6;
+            *row[3] = output_state_0_id_col3;
+            *sub_component_inputs.memory_address_to_id[3] =
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_3));
+            *lookup_data.memory_address_to_id_3 = [
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_3)),
+                output_state_0_id_col3,
+            ];
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_8 = memory_address_to_id_state
-                    .deduce_output(
-                        (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6)))
-                            + (M31_4)),
-                    );
-                let output_state_1_id_col4 = memory_address_to_id_value_tmp_1a5dd_8;
-                *row[4] = output_state_1_id_col4;
-                *sub_component_inputs.memory_address_to_id[4] =
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_4));
-                *lookup_data.memory_address_to_id_4 = [
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_4)),
-                    output_state_1_id_col4,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_8 = memory_address_to_id_state.deduce_output(
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_4)),
+            );
+            let output_state_1_id_col4 = memory_address_to_id_value_tmp_1a5dd_8;
+            *row[4] = output_state_1_id_col4;
+            *sub_component_inputs.memory_address_to_id[4] =
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_4));
+            *lookup_data.memory_address_to_id_4 = [
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_4)),
+                output_state_1_id_col4,
+            ];
 
-                // Read Id.
+            // Read Id.
 
-                let memory_address_to_id_value_tmp_1a5dd_10 = memory_address_to_id_state
-                    .deduce_output(
-                        (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                            + ((seq) * (M31_6)))
-                            + (M31_5)),
-                    );
-                let output_state_2_id_col5 = memory_address_to_id_value_tmp_1a5dd_10;
-                *row[5] = output_state_2_id_col5;
-                *sub_component_inputs.memory_address_to_id[5] =
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_5));
-                *lookup_data.memory_address_to_id_5 = [
-                    (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
-                        + ((seq) * (M31_6)))
-                        + (M31_5)),
-                    output_state_2_id_col5,
-                ];
+            let memory_address_to_id_value_tmp_1a5dd_10 = memory_address_to_id_state.deduce_output(
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_5)),
+            );
+            let output_state_2_id_col5 = memory_address_to_id_value_tmp_1a5dd_10;
+            *row[5] = output_state_2_id_col5;
+            *sub_component_inputs.memory_address_to_id[5] =
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_5));
+            *lookup_data.memory_address_to_id_5 = [
+                (((PackedM31::broadcast(M31::from(poseidon_builtin_segment_start)))
+                    + ((seq) * (M31_6)))
+                    + (M31_5)),
+                output_state_2_id_col5,
+            ];
 
-                *sub_component_inputs.poseidon_aggregator[0] = (
-                    [
-                        input_state_0_id_col0,
-                        input_state_1_id_col1,
-                        input_state_2_id_col2,
-                    ],
-                    [
-                        output_state_0_id_col3,
-                        output_state_1_id_col4,
-                        output_state_2_id_col5,
-                    ],
-                );
-                *lookup_data.poseidon_aggregator_0 = [
+            *sub_component_inputs.poseidon_aggregator[0] = (
+                [
                     input_state_0_id_col0,
                     input_state_1_id_col1,
                     input_state_2_id_col2,
+                ],
+                [
                     output_state_0_id_col3,
                     output_state_1_id_col4,
                     output_state_2_id_col5,
-                ];
-            },
-        );
+                ],
+            );
+            *lookup_data.poseidon_aggregator_0 = [
+                input_state_0_id_col0,
+                input_state_1_id_col1,
+                input_state_2_id_col2,
+                output_state_0_id_col3,
+                output_state_1_id_col4,
+                output_state_2_id_col5,
+            ];
+        });
 
     (trace, lookup_data, sub_component_inputs)
 }

@@ -114,7 +114,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, triple_xor_32_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, triple_xor_32_input))| {
                 let input_limb_0_col0 = triple_xor_32_input[0].low().as_m31();
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = triple_xor_32_input[0].high().as_m31();

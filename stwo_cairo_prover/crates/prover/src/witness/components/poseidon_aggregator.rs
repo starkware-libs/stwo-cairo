@@ -350,7 +350,7 @@ fn write_trace_simd(
     .into_par_iter()
     .enumerate()
     .for_each(
-        |(row_index,(mut row, lookup_data,sub_component_inputs,poseidon_aggregator_input,))| {
+        |(row_index,(row, lookup_data,sub_component_inputs,poseidon_aggregator_input,))| {
             let seq = seq.packed_at(row_index);let input_limb_0_col0 = poseidon_aggregator_input.0[0];
             *row[0] = input_limb_0_col0;let input_limb_1_col1 = poseidon_aggregator_input.0[1];
             *row[1] = input_limb_1_col1;let input_limb_2_col2 = poseidon_aggregator_input.0[2];
