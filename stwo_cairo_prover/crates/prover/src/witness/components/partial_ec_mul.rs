@@ -294,7 +294,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, partial_ec_mul_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, partial_ec_mul_input))| {
                 let input_limb_0_col0 = partial_ec_mul_input.0;
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = partial_ec_mul_input.1;

@@ -283,7 +283,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(
-            |(row_index, (mut row, lookup_data, sub_component_inputs, cube_252_input))| {
+            |(row_index, (row, lookup_data, sub_component_inputs, cube_252_input))| {
                 let input_limb_0_col0 = cube_252_input.get_m31(0);
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = cube_252_input.get_m31(1);

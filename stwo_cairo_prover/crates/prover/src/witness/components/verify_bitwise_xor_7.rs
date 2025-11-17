@@ -67,7 +67,7 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
-        .for_each(|(row_index, (mut row, lookup_data))| {
+        .for_each(|(row_index, (row, lookup_data))| {
             let bitwisexor_7_0 = bitwisexor_7_0.packed_at(row_index);
             let bitwisexor_7_1 = bitwisexor_7_1.packed_at(row_index);
             let bitwisexor_7_2 = bitwisexor_7_2.packed_at(row_index);
