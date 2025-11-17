@@ -641,6 +641,68 @@ pub mod tests {
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
+
+            #[test]
+            fn test_poseidon_aggregator() {
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig::default(),
+                    preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                    channel_salt: None,
+                };
+
+                // Run poseidon builtin with 15 different instances.
+                let compiled_program_a =
+                    get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
+                let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
+                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let poseidon_builtin_size_a = 2u32.pow(
+                    proof_a
+                        .claim
+                        .builtins
+                        .poseidon_builtin
+                        .expect("Poseidon builtin is not present in the claim")
+                        .log_size,
+                );
+                assert!(poseidon_builtin_size_a == 16, "Expected program to contain 15 poseidon instances, which then padded to the next power of two");
+
+                let poseidon_aggregator_log_size_a = proof_a
+                    .claim
+                    .poseidon_context
+                    .claim
+                    .expect("Poseidon context is not present in the claim")
+                    .poseidon_aggregator
+                    .log_size;
+
+                // Run poseidon builtin with 15 different instances, each one 30 times.
+                let compiled_program_b =
+                    get_compiled_cairo_program_path("test_poseidon_aggregator");
+                let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
+                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let poseidon_builtin_size_b = 2u32.pow(
+                    proof_b
+                        .claim
+                        .builtins
+                        .poseidon_builtin
+                        .expect("Poseidon builtin is not present in the claim")
+                        .log_size,
+                );
+                assert!(poseidon_builtin_size_b == 512, "Expected program to contain 15*30 poseidon instances, which then padded to the next power of two");
+
+                let poseidon_aggregator_log_size_b = proof_b
+                    .claim
+                    .poseidon_context
+                    .claim
+                    .expect("Poseidon context is not present in the claim")
+                    .poseidon_aggregator
+                    .log_size;
+
+                assert_eq!(
+                    poseidon_aggregator_log_size_a,
+                    poseidon_aggregator_log_size_b,
+                    "Poseidon aggregator log size should be the same for both proof because it uses multiplicity"
+                );
+            }
         }
     }
 }
