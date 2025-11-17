@@ -117,20 +117,20 @@ pub fn fused_quotient_denominator(px: QM31, py: QM31, dx: M31, dy: M31) -> CM31 
 #[inline]
 pub fn fused_mul_add(a: QM31, b: QM31, c: QM31) -> QM31 {
     let mut mul_res = mul_qm_unreduced(a, b);
-    mul_res.a.a += c.a.a.inner.into();
-    mul_res.a.b += c.a.b.inner.into();
-    mul_res.b.a += c.b.a.inner.into();
-    mul_res.b.b += c.b.b.inner.into();
+    mul_res.a.a += c.a.a.into();
+    mul_res.a.b += c.a.b.into();
+    mul_res.b.a += c.b.a.into();
+    mul_res.b.b += c.b.b.into();
     reduce_qm31(mul_res)
 }
 
 #[inline]
 pub fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
     let mut mul_res = mul_qm_unreduced(a, b);
-    mul_res.a.a -= c.a.a.inner.into();
-    mul_res.a.b -= c.a.b.inner.into();
-    mul_res.b.a -= c.b.a.inner.into();
-    mul_res.b.b -= c.b.b.inner.into();
+    mul_res.a.a -= c.a.a.into();
+    mul_res.a.b -= c.a.b.into();
+    mul_res.b.a -= c.b.a.into();
+    mul_res.b.b -= c.b.b.into();
     reduce_qm31(mul_res)
 }
 
