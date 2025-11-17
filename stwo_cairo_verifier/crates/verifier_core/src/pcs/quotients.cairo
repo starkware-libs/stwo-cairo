@@ -1,30 +1,26 @@
 use core::array::ArrayImpl;
-use core::dict::{Felt252Dict, Felt252DictEntryTrait};
-use core::nullable::{FromNullableResult, Nullable, NullableTrait, match_nullable, null};
+use core::dict::Felt252Dict;
+use core::nullable::{FromNullableResult, Nullable, match_nullable};
 use core::num::traits::{One, Zero};
 use stwo_verifier_utils::zip_eq::zip_eq;
-use crate::circle::{CirclePoint, CirclePointIndexImpl, CosetImpl, M31_CIRCLE_LOG_ORDER};
+use crate::circle::{
+    CirclePoint, CirclePointIndexImpl, CirclePointQM31AddCirclePointM31Trait, CosetImpl,
+    M31_CIRCLE_LOG_ORDER,
+};
 use crate::fields::BatchInvertible;
 use crate::fields::cm31::CM31;
 use crate::fields::m31::{M31, M31Zero, MulByM31Trait};
 use crate::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait, QM31, QM31Trait};
 use crate::poly::circle::{CanonicCosetImpl, CircleDomainImpl, CircleEvaluationImpl};
 use crate::utils::{
-    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByLogDegreeBound, SpanImpl, bit_reverse_index,
-    pack_qm31,
+    ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByLogDegreeBound, SpanExTrait, SpanImpl,
+    bit_reverse_index, pack_qm31,
 };
 use crate::{ColumnSpan, TreeArray, TreeSpan};
 
 
 #[cfg(test)]
 mod test;
-
-/// An OOD sample
-#[derive(Copy, Debug, Drop)]
-pub struct PointSample {
-    pub point: CirclePoint<QM31>,
-    pub value: QM31,
-}
 
 /// Computes the OOD quotients at the query positions.
 ///
@@ -37,11 +33,11 @@ pub struct PointSample {
 /// * `random_coeff`: Verifier randomness for folding multiple columns' quotients together.
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
 /// * `queried_values_per_tree`: For each tree, contains all queried trace values, ordered first
-/// then by column size, than by column index and finally by query position.
 pub fn fri_answers(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
     log_blowup_factor: u32,
-    samples_per_column_per_tree: TreeSpan<ColumnSpan<Span<PointSample>>>,
+    oods_point: CirclePoint<QM31>,
+    sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
     mut queried_values_per_tree: TreeSpan<Span<M31>>,
@@ -65,22 +61,21 @@ pub fn fri_answers(
             },
         };
 
-        // Collect the column samples and the number of columns in each tree.
-        let mut samples: Array<Span<PointSample>> = array![];
-        let mut n_columns_per_tree = array![];
-        for (columns, samples_per_column) in zip_eq(columns_per_tree, samples_per_column_per_tree) {
-            for column in columns {
-                // Note that samples_per_column[*column] can be an empty array.
-                samples.append(*samples_per_column[*column]);
-            }
-            n_columns_per_tree.append(columns.len());
-        }
+        let Some((sample_batches_by_point, n_columns_per_tree)) = sample_batches_for_log_size(
+            columns_per_tree,
+            sample_values_per_column_per_tree,
+            oods_point,
+            log_size,
+            log_blowup_factor,
+        ) else {
+            continue;
+        };
 
         answers
             .append(
                 fri_answers_for_log_size(
                     log_size,
-                    samples,
+                    sample_batches_by_point,
                     random_coeff,
                     queries_for_log_size,
                     ref queried_values_per_tree,
@@ -96,15 +91,96 @@ pub fn fri_answers(
     answers
 }
 
+/// Gathers sample batches and column counts for a given log size.
+///
+/// Returns `None` if there are no columns for this log size, otherwise returns
+/// `Some((sample_batches_by_point, n_columns_per_tree))`.
+///
+/// # Assumptions
+///
+/// Each column is sampled at one of the following sets of points:
+/// - `[]`
+/// - `[oods_point]`
+/// - `[oods_point - g, oods_point]`
+///
+/// where `g` is the trace generator corresponding to the given column.
+///
+fn sample_batches_for_log_size(
+    columns_per_tree: @TreeSpan<Span<usize>>,
+    sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+    oods_point: CirclePoint<QM31>,
+    log_size: u32,
+    log_blowup_factor: u32,
+) -> Option<(Array<ColumnSampleBatch>, TreeArray<usize>)> {
+    /// The (column index, evaluation) pairs at the out of domain point 'Z'.
+    let mut indexed_evaluations_at_point = array![];
+    /// The (column index, evaluation) pairs at the point `Z-g`.
+    let mut indexed_evaluations_at_prev_point = array![];
+
+    let mut n_columns_per_tree = array![];
+    let mut index = 0;
+    for (columns, samples_per_column) in zip_eq(
+        *columns_per_tree, sample_values_per_column_per_tree,
+    ) {
+        for column in columns {
+            // Note that samples_per_column[*column] can be an empty array.
+            let sample_values_at_column = *samples_per_column[*column];
+
+            if let Some(point_box) = sample_values_at_column.try_into() {
+                let [point_sample]: [QM31; 1] = (*point_box).unbox();
+
+                indexed_evaluations_at_point.append((index, point_sample));
+            } else if let Some(tuple_box) = sample_values_at_column.try_into() {
+                let [prev_point_sample, point_sample]: [QM31; 2] = (*tuple_box).unbox();
+
+                indexed_evaluations_at_prev_point.append((index, prev_point_sample));
+                indexed_evaluations_at_point.append((index, point_sample));
+            } else {
+                assert!(sample_values_at_column.is_empty(), "Unexpected number of samples");
+            }
+            index += 1;
+        }
+
+        n_columns_per_tree.append(columns.len());
+    }
+
+    if index == 0 {
+        return Option::None;
+    }
+
+    let mut sample_batches_by_point: Array<ColumnSampleBatch> = array![];
+    if !indexed_evaluations_at_point.is_empty() {
+        sample_batches_by_point
+            .append(
+                ColumnSampleBatch {
+                    point: oods_point, columns_and_values: indexed_evaluations_at_point,
+                },
+            );
+    }
+
+    if !indexed_evaluations_at_prev_point.is_empty() {
+        let trace_gen = CanonicCosetImpl::new(log_size - log_blowup_factor).coset.step;
+        let prev_point = oods_point.add_circle_point_m31(-trace_gen.mul(1).to_point());
+
+        sample_batches_by_point
+            .append(
+                ColumnSampleBatch {
+                    point: prev_point, columns_and_values: indexed_evaluations_at_prev_point,
+                },
+            );
+    }
+
+    Option::Some((sample_batches_by_point, n_columns_per_tree))
+}
+
 fn fri_answers_for_log_size(
     log_size: u32,
-    samples_per_column: Array<Span<PointSample>>,
+    sample_batches_by_point: Array<ColumnSampleBatch>,
     random_coeff: QM31,
     mut query_positions: Span<usize>,
     ref queried_values_per_tree: TreeSpan<Span<M31>>,
     n_columns_per_tree: TreeArray<usize>,
 ) -> Span<QM31> {
-    let sample_batches_by_point = ColumnSampleBatchImpl::group_by_point(samples_per_column);
     let quotient_constants = QuotientConstantsImpl::gen(@sample_batches_by_point, random_coeff);
     let commitment_domain = CanonicCosetImpl::new(log_size).circle_domain();
     let mut quotient_evals_at_queries = array![];
@@ -310,60 +386,6 @@ pub struct ColumnSampleBatch {
     pub point: CirclePoint<QM31>,
     /// The sampled column indices and their values at the point.
     pub columns_and_values: Array<(usize, QM31)>,
-}
-
-#[generate_trait]
-impl ColumnSampleBatchImpl of ColumnSampleBatchTrait {
-    /// Groups all column samples by sampled point.
-    ///
-    /// `samples_per_column[i]` represents all point samples for column `i`.
-    ///
-    /// The ordering of the groups is dictated by the ordering of the samples. Therefore the prover
-    /// and verifier must agree on the ordering of columns and points (offsets) for each column.
-    /// NOTE: PrefixSum columns (LogUp) are sampled at a single point `Z` and a single offset `-1`
-    /// -> `Z-g`. the current ordering for these columns is: [Z-g, Z].
-    fn group_by_point(samples_per_column: Array<Span<PointSample>>) -> Array<ColumnSampleBatch> {
-        // Samples grouped by point.
-        let mut grouped_samples: Felt252Dict<Nullable<Array<(usize, QM31)>>> = Default::default();
-        let mut point_set: Array<CirclePoint<QM31>> = array![];
-
-        let mut column = 0_usize;
-
-        for samples in samples_per_column {
-            // TODO(andrew): Almost all columns have a single sample at the OODS point.
-            // Handling this case specifically is more optimal than using the dictionary.
-            for sample in samples {
-                let point_key = CirclePointQM31Key::encode(sample.point);
-                let (entry, value) = grouped_samples.entry(point_key);
-
-                let mut point_samples = match match_nullable(value) {
-                    FromNullableResult::Null => {
-                        // This is the first time we've seen this point, add it to the point set.
-                        point_set.append(*sample.point);
-                        array![]
-                    },
-                    FromNullableResult::NotNull(value) => value.unbox(),
-                };
-                point_samples.append((column, *sample.value));
-                grouped_samples = entry.finalize(NullableTrait::new(point_samples));
-            }
-
-            column += 1;
-        }
-
-        let mut groups = array![];
-
-        for point in point_set {
-            let point_key = CirclePointQM31Key::encode(@point);
-            let (entry, columns_and_values) = grouped_samples.entry(point_key);
-            let columns_and_values = columns_and_values.deref();
-
-            grouped_samples = entry.finalize(null());
-            groups.append(ColumnSampleBatch { point, columns_and_values });
-        }
-
-        groups
-    }
 }
 
 /// Returns `complex_conjugate(v) - v`.

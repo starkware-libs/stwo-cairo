@@ -10,8 +10,10 @@ members = [
 ]
 
 [workspace.tool.cairo-lint]
-manual_assert = false
+collapsible_if_else = false
 double_parens = false
+ifs_same_cond = false
+manual_assert = false
 
 [cairo]
 enable-gas = false
