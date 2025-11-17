@@ -48,18 +48,24 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let rangecheck_7_2_5_0 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 0)).id());
-        let rangecheck_7_2_5_1 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 1)).id());
-        let rangecheck_7_2_5_2 = eval.get_preprocessed_column((RangeCheck::new([7, 2, 5], 2)).id());
+        let range_check_7_2_5_column_0 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_7_2_5_column_0".to_owned(),
+        });
+        let range_check_7_2_5_column_1 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_7_2_5_column_1".to_owned(),
+        });
+        let range_check_7_2_5_column_2 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "range_check_7_2_5_column_2".to_owned(),
+        });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_7_2_5_lookup_elements,
             -E::EF::from(multiplicity),
             &[
-                rangecheck_7_2_5_0.clone(),
-                rangecheck_7_2_5_1.clone(),
-                rangecheck_7_2_5_2.clone(),
+                range_check_7_2_5_column_0.clone(),
+                range_check_7_2_5_column_1.clone(),
+                range_check_7_2_5_column_2.clone(),
             ],
         ));
 
