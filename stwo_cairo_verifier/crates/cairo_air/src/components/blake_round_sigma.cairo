@@ -60,39 +60,6 @@ pub impl NewComponentImpl of NewComponent<Component> {
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
-    fn mask_points(
-        self: @Component,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
-        let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(SEQ_4_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_0_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_1_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_2_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_3_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_4_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_5_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_6_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_7_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_8_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_9_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_10_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_11_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_12_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_13_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_14_IDX);
-        preprocessed_column_set.insert(BLAKE_SIGMA_15_IDX);
-        trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,
