@@ -71,6 +71,7 @@ pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
         cube_252: LookupElementsDummyImpl::dummy(),
         poseidon_round_keys: LookupElementsDummyImpl::dummy(),
         range_check_252_width_27: LookupElementsDummyImpl::dummy(),
+        pedersen_aggregator: LookupElementsDummyImpl::dummy(),
         partial_ec_mul: LookupElementsDummyImpl::dummy(),
         pedersen_points_table: LookupElementsDummyImpl::dummy(),
         memory_address_to_id: LookupElementsDummyImpl::dummy(),

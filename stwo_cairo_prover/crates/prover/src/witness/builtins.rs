@@ -12,7 +12,7 @@ use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_6_6_3,
-    range_check_5_4, range_check_6, range_check_8, range_check_builtin_bits_128,
+    range_check_6, range_check_builtin_bits_128,
     range_check_builtin_bits_96, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
@@ -137,8 +137,6 @@ impl BuiltinsClaimGenerator {
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         pedersen_context_trace_generator: &mut PedersenContextClaimGenerator,
-        range_check_5_4_trace_generator: &range_check_5_4::ClaimGenerator,
-        range_check_8_trace_generator: &range_check_8::ClaimGenerator,
         poseidon_context_trace_generator: &mut PoseidonContextClaimGenerator,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
         range_check_12_trace_generator: &range_check_12::ClaimGenerator,
@@ -188,11 +186,7 @@ impl BuiltinsClaimGenerator {
                 pedersen_builtin_trace_generator.write_trace(
                     tree_builder,
                     memory_address_to_id_trace_generator,
-                    memory_id_to_value_trace_generator,
-                    range_check_5_4_trace_generator,
-                    range_check_8_trace_generator,
-                    &pedersen_context_trace_generator.pedersen_points_table_trace_generator,
-                    &mut pedersen_context_trace_generator.partial_ec_mul_trace_generator,
+                    &pedersen_context_trace_generator.pedersen_aggregator_trace_generator,
                 )
             })
             .unzip();
@@ -306,12 +300,8 @@ impl BuiltinsInteractionClaimGenerator {
                 .map(|pedersen_builtin_interaction_gen| {
                     pedersen_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
-                        &interaction_elements.range_checks.rc_5_4,
                         &interaction_elements.memory_address_to_id,
-                        &interaction_elements.memory_id_to_value,
-                        &interaction_elements.range_checks.rc_8,
-                        &interaction_elements.pedersen_points_table,
-                        &interaction_elements.partial_ec_mul,
+                        &interaction_elements.pedersen_aggregator,
                     )
                 });
         let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(

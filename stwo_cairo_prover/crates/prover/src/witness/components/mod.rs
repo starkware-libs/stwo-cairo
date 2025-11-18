@@ -52,3 +52,4 @@ pub mod verify_bitwise_xor_8;
 pub mod verify_bitwise_xor_8_b;
 pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
+pub mod pedersen_aggregator;

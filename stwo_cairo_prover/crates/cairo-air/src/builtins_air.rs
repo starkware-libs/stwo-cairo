@@ -251,18 +251,7 @@ impl BuiltinComponents {
                     memory_address_to_id_lookup_elements: interaction_elements
                         .memory_address_to_id
                         .clone(),
-                    memory_id_to_big_lookup_elements: interaction_elements
-                        .memory_id_to_value
-                        .clone(),
-                    partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-                    pedersen_points_table_lookup_elements: interaction_elements
-                        .pedersen_points_table
-                        .clone(),
-                    range_check_5_4_lookup_elements: interaction_elements
-                        .range_checks
-                        .rc_5_4
-                        .clone(),
-                    range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+                    pedersen_aggregator_lookup_elements: interaction_elements.pedersen_aggregator.clone(),
                 },
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
