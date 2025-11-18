@@ -60,53 +60,6 @@ pub impl NewComponentImpl of NewComponent<Component> {
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
-    fn mask_points(
-        self: @Component,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
-        let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(SEQ_6_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_0_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_1_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_2_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_3_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_4_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_5_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_6_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_7_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_8_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_9_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_10_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_11_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_12_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_13_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_14_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_15_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_16_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_17_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_18_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_19_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_20_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_21_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_22_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_23_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_24_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_25_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_26_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_27_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_28_IDX);
-        preprocessed_column_set.insert(POSEIDON_ROUND_KEYS_29_IDX);
-        trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,

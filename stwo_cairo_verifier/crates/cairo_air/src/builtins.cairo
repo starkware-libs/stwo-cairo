@@ -11,7 +11,7 @@ use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -366,94 +366,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
     }
 
-    fn mask_points(
-        self: @BuiltinComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let BuiltinComponents {
-            add_mod_builtin,
-            bitwise_builtin,
-            mul_mod_builtin,
-            pedersen_builtin,
-            poseidon_builtin,
-            range_check_96_builtin,
-            range_check_128_builtin,
-        } = self;
-
-        if let Option::Some(component) = add_mod_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = bitwise_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = mul_mod_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = pedersen_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = poseidon_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = range_check_96_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
     fn evaluate_constraints_at_point(
         self: @BuiltinComponents,
         ref sum: QM31,
@@ -610,36 +522,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
     }
 
-    fn mask_points(
-        self: @BuiltinComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let BuiltinComponents { bitwise_builtin, range_check_128_builtin } = self;
-
-        if let Option::Some(component) = bitwise_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
     fn evaluate_constraints_at_point(
         self: @BuiltinComponents,
         ref sum: QM31,
@@ -735,46 +617,6 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin: bitwise_builtin_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
-        }
-    }
-
-    fn mask_points(
-        self: @BuiltinComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let BuiltinComponents { bitwise_builtin, poseidon_builtin, range_check_128_builtin } = self;
-
-        if let Option::Some(component) = bitwise_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = poseidon_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-
-        if let Option::Some(component) = range_check_128_builtin.as_snap() {
-            component
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
         }
     }
 

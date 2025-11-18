@@ -1,13 +1,13 @@
 use core::num::traits::Zero;
 use stwo_constraint_framework::{
-    PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray};
+use stwo_verifier_core::{ColumnSpan, TreeArray};
 use crate::cairo_component::CairoComponent;
 use crate::claim::ClaimTrait;
 use crate::prelude::*;
@@ -172,23 +172,6 @@ pub impl NewBigComponentImpl of NewBigComponent {
 }
 
 pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
-    fn mask_points(
-        self: @BigComponent,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let trace_gen = CanonicCosetImpl::new(*self.log_n_rows).coset.step;
-        constraints_big::mask_points(
-            ref preprocessed_column_set,
-            ref trace_mask_points,
-            ref interaction_trace_mask_points,
-            point,
-            trace_gen,
-            *self.log_n_rows,
-        );
-    }
 
     fn evaluate_constraints_at_point(
         self: @BigComponent,
@@ -389,25 +372,6 @@ pub impl NewSmallComponentImpl of NewSmallComponent {
 }
 
 pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
-    fn mask_points(
-        self: @SmallComponent,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let log_size = *self.log_n_rows;
-        let trace_gen = CanonicCosetImpl::new(log_size).coset.step;
-        constraints_small::mask_points(
-            ref preprocessed_column_set,
-            ref trace_mask_points,
-            ref interaction_trace_mask_points,
-            point,
-            trace_gen,
-            log_size,
-        );
-    }
-
     fn evaluate_constraints_at_point(
         self: @SmallComponent,
         ref sum: QM31,

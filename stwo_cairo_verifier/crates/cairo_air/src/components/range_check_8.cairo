@@ -60,23 +60,6 @@ pub impl NewComponentImpl of NewComponent<Component> {
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
-    fn mask_points(
-        self: @Component,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
-        let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-        preprocessed_column_set.insert(SEQ_8_IDX);
-        trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-        interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    }
-
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,
