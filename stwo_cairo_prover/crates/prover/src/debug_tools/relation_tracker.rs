@@ -301,11 +301,13 @@ fn cairo_relation_entries(
     }
 
     if let Some(cairo_air::pedersen::air::Components {
+        pedersen_aggregator,
         pedersen_points_table,
         partial_ec_mul,
     }) = &pedersen_context.components
     {
         entries.extend(chain!(
+            add_to_relation_entries(pedersen_aggregator, trace),
             add_to_relation_entries(pedersen_points_table, trace),
             add_to_relation_entries(partial_ec_mul, trace),
         ));
