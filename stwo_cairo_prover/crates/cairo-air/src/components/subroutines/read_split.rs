@@ -1,7 +1,6 @@
 // This file was created by the AIR team.
 
 use crate::components::prelude::*;
-use crate::components::subroutines::mem_verify::MemVerify;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct ReadSplit {}
@@ -14,7 +13,7 @@ impl ReadSplit {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [read_split_input_address]: [E::F; 1],
+        [read_split_input_id]: [E::F; 1],
         value_limb_0_col0: E::F,
         value_limb_1_col1: E::F,
         value_limb_2_col2: E::F,
@@ -44,9 +43,7 @@ impl ReadSplit {
         value_limb_26_col26: E::F,
         ms_limb_low_col27: E::F,
         ms_limb_high_col28: E::F,
-        id_col29: E::F,
         range_check_5_4_lookup_elements: &relations::RangeCheck_5_4,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
         memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
         eval: &mut E,
     ) -> [E::F; 1] {
@@ -58,9 +55,11 @@ impl ReadSplit {
             &[ms_limb_low_col27.clone(), ms_limb_high_col28.clone()],
         ));
 
-        MemVerify::evaluate(
-            [
-                read_split_input_address.clone(),
+        eval.add_to_relation(RelationEntry::new(
+            memory_id_to_big_lookup_elements,
+            E::EF::one(),
+            &[
+                read_split_input_id.clone(),
                 value_limb_0_col0.clone(),
                 value_limb_1_col1.clone(),
                 value_limb_2_col2.clone(),
@@ -90,11 +89,8 @@ impl ReadSplit {
                 value_limb_26_col26.clone(),
                 ((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone()),
             ],
-            id_col29.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
-            eval,
-        );
+        ));
+
         [((ms_limb_high_col28.clone() * M31_32.clone()) + ms_limb_low_col27.clone())]
     }
 }
