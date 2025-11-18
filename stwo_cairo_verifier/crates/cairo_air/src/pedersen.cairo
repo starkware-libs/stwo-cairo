@@ -9,9 +9,9 @@ use stwo_cairo_air::CairoInteractionElements;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, components, utils};
-use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
+use stwo_constraint_framework::PreprocessedMaskValues;
+use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
@@ -150,24 +150,6 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
         }
     }
 
-    fn mask_points(
-        self: @PedersenContextComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
     fn evaluate_constraints_at_point(
         self: @PedersenContextComponents,
         ref sum: QM31,
@@ -221,31 +203,6 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
             partial_ec_mul: partial_ec_mul_component,
             pedersen_points_table: pedersen_points_table_component,
         }
-    }
-
-    fn mask_points(
-        self: @PedersenComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .partial_ec_mul
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .pedersen_points_table
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
     }
 
     fn evaluate_constraints_at_point(

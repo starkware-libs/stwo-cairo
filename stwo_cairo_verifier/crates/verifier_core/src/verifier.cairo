@@ -11,7 +11,7 @@ use crate::pcs::verifier::{
 };
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
-use crate::{ColumnArray, ColumnSpan, Hash, TreeArray, TreeSpan};
+use crate::{ColumnSpan, Hash, TreeSpan};
 
 // The composition polynomial is split into 2 polynomials, so it will have the same degree bound as
 // the largest trace column.
@@ -26,12 +26,6 @@ const COMPOSITION_SPLIT_FACTOR: u32 = 2_u32.pow(LOG_COMPOSITION_SPLIT_FACTOR);
 pub trait Air<T> {
     /// The degree of the composition polynomial.
     fn composition_log_degree_bound(self: @T) -> u32;
-
-    /// Returns the mask points for each trace column.
-    /// The returned `TreeArray` should be of size `n_interaction_phases`.
-    fn mask_points(
-        self: @T, point: CirclePoint<QM31>,
-    ) -> TreeArray<ColumnArray<Array<CirclePoint<QM31>>>>;
 
     /// Evaluates the constraint quotients combination of the AIR at `point`.
     fn eval_composition_polynomial_at_point(

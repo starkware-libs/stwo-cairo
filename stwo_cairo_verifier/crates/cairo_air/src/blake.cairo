@@ -9,7 +9,7 @@ use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -169,24 +169,6 @@ pub impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
         }
     }
 
-    fn mask_points(
-        self: @BlakeContextComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
     fn evaluate_constraints_at_point(
         self: @BlakeContextComponents,
         ref sum: QM31,
@@ -256,55 +238,6 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
         }
-    }
-
-    fn mask_points(
-        self: @BlakeComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .blake_round
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .blake_g
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .blake_round_sigma
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .triple_xor_32
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .verify_bitwise_xor_12
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
     }
 
     fn evaluate_constraints_at_point(

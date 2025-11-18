@@ -17,7 +17,9 @@ pub trait CairoComponent<T> {
         ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
         point: CirclePoint<QM31>,
-    );
+    ) {
+        panic!("Not implemented");
+    }
 
     fn evaluate_constraints_at_point(
         self: @T,

@@ -1,36 +1,5 @@
 use crate::prelude::*;
-use super::{MEMORY_ADDRESS_TO_ID_SPLIT, N_INTERACTION_TRACE_QM31_COLUMNS};
-
-pub fn mask_points(
-    ref preprocessed_column_set: PreprocessedColumnSet,
-    ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-    ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-    point: CirclePoint<QM31>,
-    trace_gen: CirclePointIndex,
-    log_size: u32,
-) {
-    preprocessed_column_set.insert(preprocessed_columns::seq_column_idx(log_size));
-    let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-
-    for _ in 0..MEMORY_ADDRESS_TO_ID_SPLIT {
-        trace_mask_points.append(array![point]); // ID.
-        trace_mask_points.append(array![point]); // Multiplicity.
-    }
-
-    for _ in 0..N_INTERACTION_TRACE_QM31_COLUMNS - 1 {
-        // Each QM31 column is implemented as 4 M31 columns.
-        interaction_trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point]);
-        interaction_trace_mask_points.append(array![point]);
-    }
-
-    // The final cumulative logup sum.
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-}
+use super::N_INTERACTION_TRACE_QM31_COLUMNS;
 
 #[derive(Drop)]
 pub struct ConstraintParams {

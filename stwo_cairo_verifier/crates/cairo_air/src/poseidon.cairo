@@ -14,9 +14,9 @@ use stwo_cairo_air::CairoInteractionElements;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, components, utils};
-use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_constraint_framework::{PreprocessedColumnSet, PreprocessedMaskValues};
+use stwo_constraint_framework::PreprocessedMaskValues;
+use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
@@ -190,24 +190,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
         }
     }
 
-    fn mask_points(
-        self: @PoseidonContextComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        if let Option::Some(components) = self.components {
-            components
-                .mask_points(
-                    ref preprocessed_column_set,
-                    ref trace_mask_points,
-                    ref interaction_trace_mask_points,
-                    point,
-                );
-        }
-    }
-
     fn evaluate_constraints_at_point(
         self: @PoseidonContextComponents,
         ref sum: QM31,
@@ -291,63 +273,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
             poseidon_round_keys: poseidon_round_keys_component,
             range_check_252_width_27: range_check_felt_252_width_27_component,
         }
-    }
-
-    fn mask_points(
-        self: @PoseidonComponents,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: Array<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        self
-            .poseidon_aggregator
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .poseidon_3_partial_rounds_chain
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .poseidon_full_round_chain
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .cube_252
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .poseidon_round_keys
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
-        self
-            .range_check_252_width_27
-            .mask_points(
-                ref preprocessed_column_set,
-                ref trace_mask_points,
-                ref interaction_trace_mask_points,
-                point,
-            );
     }
 
     fn evaluate_constraints_at_point(
