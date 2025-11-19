@@ -74,10 +74,11 @@ fn mul_qm_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
     };
 
     // All use cases require offsetting the entries prior to the reduction.
+    // Limbs aa, ab, ba all involve subtraction in the arithmetic; limb bb does not.
     let res_aa = aa_t_ba.a + r_ab_t_bb.a + PP16;
     let res_ab = aa_t_ba.b + r_ab_t_bb.b + PP16;
     let res_ba = aa_t_bb.a + ab_t_ba.a + PP16;
-    let res_bb = aa_t_bb.b + ab_t_ba.b + PP16;
+    let res_bb = aa_t_bb.b + ab_t_ba.b;
 
     UnreducedQM31 {
         a: UnreducedCM31 { a: res_aa, b: res_ab }, b: UnreducedCM31 { a: res_ba, b: res_bb },
@@ -131,6 +132,7 @@ pub fn fused_mul_sub(a: QM31, b: QM31, c: QM31) -> QM31 {
     mul_res.a.b -= c.a.b.into();
     mul_res.b.a -= c.b.a.into();
     mul_res.b.b -= c.b.b.into();
+    mul_res.b.b += PP16;
     reduce_qm31(mul_res)
 }
 
