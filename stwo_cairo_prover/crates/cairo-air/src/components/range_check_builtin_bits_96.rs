@@ -21,9 +21,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub range_check_6_lookup_elements: relations::RangeCheck_6,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -100,9 +98,7 @@ impl FrameworkEval for Eval {
             value_limb_8_col9.clone(),
             value_limb_9_col10.clone(),
             value_limb_10_col11.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.range_check_6_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.finalize_logup_in_pairs();
@@ -129,9 +125,7 @@ mod tests {
                 log_size: 4,
                 range_check96_builtin_segment_start: rng.gen::<u32>(),
             },
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            range_check_6_lookup_elements: relations::RangeCheck_6::dummy(),
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

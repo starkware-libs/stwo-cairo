@@ -1,4 +1,5 @@
 use crate::components::prelude::*;
+use crate::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
 pub const ELEM_BITS: u32 = 12;
 pub const EXPAND_BITS: u32 = 2;
 pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
@@ -8,7 +9,7 @@ pub const N_TRACE_COLUMNS: usize = N_MULT_COLUMNS;
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -62,9 +63,9 @@ impl FrameworkEval for Eval {
                 let c = c_low.clone() + E::F::from(M31((i ^ j) << LIMB_BITS));
 
                 eval.add_to_relation(RelationEntry::new(
-                    &self.verify_bitwise_xor_12_lookup_elements,
+                    &self.common_lookup_elements,
                     -E::EF::from(multiplicity),
-                    &[a, b, c],
+                    &[VERIFY_BITWISE_XOR_12_RELATION_ID.into(), a, b, c],
                 ));
             }
         }
@@ -90,7 +91,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 
         let expr_eval = eval.evaluate(ExprEvaluator::new());

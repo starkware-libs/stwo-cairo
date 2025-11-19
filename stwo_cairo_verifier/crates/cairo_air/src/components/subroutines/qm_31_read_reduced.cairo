@@ -25,9 +25,7 @@ pub fn qm_31_read_reduced_evaluate(
     value_limb_15_col16: QM31,
     delta_ab_inv_col17: QM31,
     delta_cd_inv_col18: QM31,
-    memory_address_to_id_lookup_elements: @crate::MemoryAddressToIdElements,
-    memory_id_to_big_lookup_elements: @crate::MemoryIdToBigElements,
-    range_check_4_4_4_4_lookup_elements: @crate::RangeCheck_4_4_4_4Elements,
+    common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
@@ -55,8 +53,7 @@ pub fn qm_31_read_reduced_evaluate(
         value_limb_13_col14,
         value_limb_14_col15,
         value_limb_15_col16,
-        memory_address_to_id_lookup_elements,
-        memory_id_to_big_lookup_elements,
+        common_lookup_elements,
         ref memory_address_to_id_sum_0,
         ref memory_id_to_big_sum_1,
         ref sum,
@@ -64,9 +61,13 @@ pub fn qm_31_read_reduced_evaluate(
         random_coeff,
     );
 
-    range_check_4_4_4_4_sum_2 = range_check_4_4_4_4_lookup_elements
+    range_check_4_4_4_4_sum_2 = common_lookup_elements
         .combine_qm31(
-            [value_limb_3_col4, value_limb_7_col8, value_limb_11_col12, value_limb_15_col16],
+            [
+                qm31_const::<1027333874, 0, 0, 0>(), value_limb_3_col4, value_limb_7_col8,
+                value_limb_11_col12, value_limb_15_col16,
+            ]
+                .span(),
         );
 
     // Constraint - delta_ab doesn't equal 0

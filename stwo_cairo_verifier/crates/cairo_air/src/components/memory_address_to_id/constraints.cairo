@@ -3,7 +3,7 @@ use super::N_INTERACTION_TRACE_QM31_COLUMNS;
 
 #[derive(Drop)]
 pub struct ConstraintParams {
-    pub lookup_elements: @crate::MemoryAddressToIdElements,
+    pub common_lookup_elements: @CommonLookupElements,
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
@@ -46,7 +46,7 @@ pub fn evaluate_constraints_at_point(
     random_coeff: QM31,
     domain_vanish_at_point_inv: QM31,
 ) {
-    let ConstraintParams { lookup_elements, claimed_sum, seq, column_size } = params;
+    let ConstraintParams { common_lookup_elements, claimed_sum, seq, column_size } = params;
     let column_size: QM31 = column_size.into();
 
     let mut prev_cum_sum: QM31 = Zero::zero();
@@ -69,10 +69,12 @@ pub fn evaluate_constraints_at_point(
         // Get the corresponding cumulative logup sum from interaction trace.
         let curr_cum_sum = as_qm31(interaction_mask_values.multi_pop_front::<4>().unwrap());
 
-        let combination_0 = lookup_elements.combine_qm31([address, id_0]);
+        let combination_0 = common_lookup_elements
+            .combine_qm31([qm31_const::<1444891767, 0, 0, 0>(), address, id_0].span());
         address += column_size;
 
-        let combination_1 = lookup_elements.combine_qm31([address, id_1]);
+        let combination_1 = common_lookup_elements
+            .combine_qm31([qm31_const::<1444891767, 0, 0, 0>(), address, id_1].span());
         address += column_size;
 
         // Check that:
@@ -104,9 +106,11 @@ pub fn evaluate_constraints_at_point(
         interaction_mask_values.multi_pop_front::<4>().unwrap(),
     );
 
-    let combination_0 = lookup_elements.combine_qm31([address, id_0]);
+    let combination_0 = common_lookup_elements
+        .combine_qm31([qm31_const::<1444891767, 0, 0, 0>(), address, id_0].span());
     address += column_size;
-    let combination_1 = lookup_elements.combine_qm31([address, id_1]);
+    let combination_1 = common_lookup_elements
+        .combine_qm31([qm31_const::<1444891767, 0, 0, 0>(), address, id_1].span());
 
     // Final constraint, Check that:
     // (current_cum_sum - prev_cum_sum - neg_1_cum_sum + claimed_sum/column_size) *
