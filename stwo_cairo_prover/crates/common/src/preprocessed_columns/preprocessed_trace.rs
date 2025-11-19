@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::iter::zip;
 use std::simd::Simd;
 
@@ -25,7 +26,7 @@ const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 
-pub trait PreProcessedColumn {
+pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
     fn log_size(&self) -> u32;
     fn id(&self) -> PreProcessedColumnId;
@@ -37,8 +38,22 @@ pub trait PreProcessedColumn {
 /// only one allowed to be used in proving Cairo programs, as it's commitment is known the verifier.
 pub struct PreProcessedTrace {
     columns: Vec<Box<dyn PreProcessedColumn>>,
+    column_indices: HashMap<PreProcessedColumnId, usize>,
 }
 impl PreProcessedTrace {
+    fn from_columns(columns: Vec<Box<dyn PreProcessedColumn>>) -> Self {
+        let mut column_indices = HashMap::new();
+
+        for (i, column) in columns.iter().enumerate() {
+            column_indices.insert(column.id(), i);
+        }
+
+        Self {
+            columns,
+            column_indices,
+        }
+    }
+
     /// Generates a canonical preprocessed trace. Used in proving Generic Cairo code & Starknet
     /// blocks.
     pub fn canonical() -> Self {
@@ -50,7 +65,7 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect();
 
-        Self { columns }
+        Self::from_columns(columns)
     }
 
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
@@ -76,7 +91,7 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect();
 
-        Self { columns }
+        Self::from_columns(columns)
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {
@@ -85,6 +100,14 @@ impl PreProcessedTrace {
 
     pub fn gen_trace(&self) -> Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>> {
         self.columns.iter().map(|c| c.gen_column_simd()).collect()
+    }
+
+    pub fn get_column(&self, id: &PreProcessedColumnId) -> &dyn PreProcessedColumn {
+        self.columns[*self
+            .column_indices
+            .get(id)
+            .unwrap_or_else(|| panic!("Missing preprocessed column {id:?}"))]
+        .as_ref()
     }
 
     pub fn ids(&self) -> Vec<PreProcessedColumnId> {
@@ -272,7 +295,7 @@ pub fn testing_preprocessed_tree(max_log_size: u32) -> PreProcessedTrace {
         .into_iter()
         .filter(|c| c.log_size() <= max_log_size)
         .collect();
-    PreProcessedTrace { columns }
+    PreProcessedTrace::from_columns(columns)
 }
 
 #[cfg(test)]

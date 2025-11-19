@@ -1,5 +1,6 @@
 use std::fs::read_to_string;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
@@ -66,13 +67,13 @@ where
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
 
     // Preprocessed trace.
-    let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
+    let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
     let mut tree_builder = commitment_scheme.tree_builder();
     tree_builder.extend_evals(preprocessed_trace.gen_trace());
     tree_builder.commit(channel);
 
     // Run Cairo.
-    let cairo_claim_generator = CairoClaimGenerator::new(input);
+    let cairo_claim_generator = CairoClaimGenerator::new(input, preprocessed_trace.clone());
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();
@@ -238,6 +239,8 @@ pub fn create_and_serialize_proof(
 
 #[cfg(test)]
 pub mod tests {
+    use std::sync::Arc;
+
     use dev_utils::utils::get_compiled_cairo_program_path;
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
     use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
@@ -248,7 +251,7 @@ pub mod tests {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
         let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-        let pp_tree = testing_preprocessed_tree(20);
+        let pp_tree = Arc::new(testing_preprocessed_tree(23));
         assert_cairo_constraints(input, pp_tree);
     }
 
@@ -362,7 +365,10 @@ pub mod tests {
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
             let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-            assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
+            assert_cairo_constraints(
+                input,
+                Arc::new(PreProcessedTrace::canonical_without_pedersen()),
+            );
         }
 
         #[test]
@@ -571,7 +577,10 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_add_mod_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, PreProcessedTrace::canonical_without_pedersen());
+                assert_cairo_constraints(
+                    input,
+                    Arc::new(PreProcessedTrace::canonical_without_pedersen()),
+                );
             }
 
             #[test]
@@ -579,7 +588,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_bitwise_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, testing_preprocessed_tree(20));
+                assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
             }
 
             #[test]
@@ -587,7 +596,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_mul_mod_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, testing_preprocessed_tree(20));
+                assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
             }
 
             #[test]
@@ -595,7 +604,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, PreProcessedTrace::canonical());
+                assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical()));
             }
 
             #[test]
@@ -603,7 +612,7 @@ pub mod tests {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, testing_preprocessed_tree(20));
+                assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
             }
 
             #[test]
@@ -612,7 +621,7 @@ pub mod tests {
                     "test_prove_verify_range_check_bits_96_builtin",
                 );
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, testing_preprocessed_tree(20));
+                assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
             }
 
             #[test]
@@ -621,7 +630,7 @@ pub mod tests {
                     "test_prove_verify_range_check_bits_128_builtin",
                 );
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-                assert_cairo_constraints(input, testing_preprocessed_tree(20));
+                assert_cairo_constraints(input, Arc::new(testing_preprocessed_tree(20)));
             }
         }
     }
