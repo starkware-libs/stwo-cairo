@@ -49,11 +49,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_7_2_5_lookup_elements: crate::RangeCheck_7_2_5Elements,
-    pub range_check_4_3_lookup_elements: crate::RangeCheck_4_3Elements,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub verify_instruction_lookup_elements: crate::VerifyInstructionElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -63,16 +59,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_7_2_5_lookup_elements: interaction_elements.range_checks.rc_7_2_5.clone(),
-            range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -162,8 +154,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             offset2_low_col12,
             offset2_mid_col13,
             offset2_high_col14,
-            self.range_check_7_2_5_lookup_elements,
-            self.range_check_4_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_7_2_5_sum_0,
             ref range_check_4_3_sum_1,
             ref sum,
@@ -184,8 +175,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
             ],
             instruction_id_col15,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
             ref memory_id_to_big_sum_3,
             ref sum,
@@ -194,12 +184,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         verify_instruction_sum_4 = self
-            .verify_instruction_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_pc_col0, input_offset0_col1, input_offset1_col2, input_offset2_col3,
-                    input_inst_felt5_high_col4, input_inst_felt6_col5, input_opcode_extension_col6,
-                ],
+                    qm31_const::<1719106205, 0, 0, 0>(), input_pc_col0, input_offset0_col1,
+                    input_offset1_col2, input_offset2_col3, input_inst_felt5_high_col4,
+                    input_inst_felt6_col5, input_opcode_extension_col6,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -312,14 +304,14 @@ mod tests {
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
-        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+        LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -330,25 +322,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_address_to_id_lookup_elements: make_lookup_elements(
-                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
-                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
-            ),
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            range_check_4_3_lookup_elements: make_lookup_elements(
-                qm31_const::<2002655739, 648487962, 2031513586, 1279836774>(),
-                qm31_const::<1537860752, 1033525355, 1098983534, 838300228>(),
-            ),
-            range_check_7_2_5_lookup_elements: make_lookup_elements(
-                qm31_const::<425514336, 1473331321, 384012983, 274885242>(),
-                qm31_const::<660930654, 31738603, 1176905988, 765990201>(),
-            ),
-            verify_instruction_lookup_elements: make_lookup_elements(
-                qm31_const::<1069488928, 1058545294, 340383544, 1219862120>(),
-                qm31_const::<1812811714, 1448895316, 1764436954, 1191872819>(),
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

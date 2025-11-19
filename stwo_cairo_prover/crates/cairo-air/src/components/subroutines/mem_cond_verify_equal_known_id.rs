@@ -16,13 +16,13 @@ impl MemCondVerifyEqualKnownId {
     pub fn evaluate<E: EvalAtRow>(
         [mem_cond_verify_equal_known_id_input_limb_0, mem_cond_verify_equal_known_id_input_limb_1, mem_cond_verify_equal_known_id_input_limb_2]: [E::F; 3],
         id_col0: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         ReadId::evaluate(
             [mem_cond_verify_equal_known_id_input_limb_0.clone()],
             id_col0.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         // The two ids are equal if the condition is met.

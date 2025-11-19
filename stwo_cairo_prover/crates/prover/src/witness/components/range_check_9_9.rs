@@ -79,6 +79,14 @@ fn write_trace_simd(
         )
     };
 
+    let M31_1813904000 = PackedM31::broadcast(M31::from(1813904000));
+    let M31_1830681619 = PackedM31::broadcast(M31::from(1830681619));
+    let M31_1847459238 = PackedM31::broadcast(M31::from(1847459238));
+    let M31_1864236857 = PackedM31::broadcast(M31::from(1864236857));
+    let M31_1881014476 = PackedM31::broadcast(M31::from(1881014476));
+    let M31_1897792095 = PackedM31::broadcast(M31::from(1897792095));
+    let M31_2065568285 = PackedM31::broadcast(M31::from(2065568285));
+    let M31_517791011 = PackedM31::broadcast(M31::from(517791011));
     let range_check_9_9_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "range_check_9_9_column_0".to_owned(),
     });
@@ -92,14 +100,46 @@ fn write_trace_simd(
         .for_each(|(row_index, (row, lookup_data))| {
             let range_check_9_9_column_0 = range_check_9_9_column_0.packed_at(row_index);
             let range_check_9_9_column_1 = range_check_9_9_column_1.packed_at(row_index);
-            *lookup_data.range_check_9_9_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_b_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_c_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_d_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_e_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_f_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_g_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
-            *lookup_data.range_check_9_9_h_0 = [range_check_9_9_column_0, range_check_9_9_column_1];
+            *lookup_data.range_check_9_9_0 = [
+                M31_517791011,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_b_0 = [
+                M31_1897792095,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_c_0 = [
+                M31_1881014476,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_d_0 = [
+                M31_1864236857,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_e_0 = [
+                M31_1847459238,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_f_0 = [
+                M31_1830681619,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_g_0 = [
+                M31_1813904000,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
+            *lookup_data.range_check_9_9_h_0 = [
+                M31_2065568285,
+                range_check_9_9_column_0,
+                range_check_9_9_column_1,
+            ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
@@ -139,14 +179,14 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    range_check_9_9_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_g_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_h_0: Vec<[PackedM31; 2]>,
+    range_check_9_9_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_g_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_h_0: Vec<[PackedM31; 3]>,
     mults_0: Vec<PackedM31>,
     mults_1: Vec<PackedM31>,
     mults_2: Vec<PackedM31>,
@@ -164,14 +204,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        range_check_9_9: &relations::RangeCheck_9_9,
-        range_check_9_9_b: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h: &relations::RangeCheck_9_9_H,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -186,8 +219,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_0, mults_1)| {
-                let denom0: PackedQM31 = range_check_9_9.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_b.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_1 + denom1 * mults_0), denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -202,8 +235,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_2, mults_3)| {
-                let denom0: PackedQM31 = range_check_9_9_c.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_d.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_3 + denom1 * mults_2), denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -218,8 +251,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_4, mults_5)| {
-                let denom0: PackedQM31 = range_check_9_9_e.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_f.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_5 + denom1 * mults_4), denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -234,8 +267,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_6, mults_7)| {
-                let denom0: PackedQM31 = range_check_9_9_g.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_h.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_7 + denom1 * mults_6), denom0 * denom1);
             });
         col_gen.finalize_col();

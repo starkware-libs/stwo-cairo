@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub blake_round_sigma_lookup_elements: crate::BlakeRoundSigmaElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -49,12 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            blake_round_sigma_lookup_elements: interaction_elements.blake_round_sigma.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -105,14 +105,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         blake_round_sigma_sum_0 = self
-            .blake_round_sigma_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    seq_4, blake_sigma_0, blake_sigma_1, blake_sigma_2, blake_sigma_3,
-                    blake_sigma_4, blake_sigma_5, blake_sigma_6, blake_sigma_7, blake_sigma_8,
-                    blake_sigma_9, blake_sigma_10, blake_sigma_11, blake_sigma_12, blake_sigma_13,
-                    blake_sigma_14, blake_sigma_15,
-                ],
+                    qm31_const::<1805967942, 0, 0, 0>(), seq_4, blake_sigma_0, blake_sigma_1,
+                    blake_sigma_2, blake_sigma_3, blake_sigma_4, blake_sigma_5, blake_sigma_6,
+                    blake_sigma_7, blake_sigma_8, blake_sigma_9, blake_sigma_10, blake_sigma_11,
+                    blake_sigma_12, blake_sigma_13, blake_sigma_14, blake_sigma_15,
+                ]
+                    .span(),
             );
 
         lookup_constraints(

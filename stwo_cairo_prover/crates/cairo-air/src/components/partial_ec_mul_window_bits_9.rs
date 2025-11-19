@@ -81,25 +81,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub pedersen_points_table_window_bits_9_lookup_elements:
-        relations::PedersenPointsTableWindowBits9,
-    pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
-    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
-    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
-    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-    pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-    pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
-    pub range_check_20_lookup_elements: relations::RangeCheck_20,
-    pub range_check_20_b_lookup_elements: relations::RangeCheck_20_B,
-    pub range_check_20_c_lookup_elements: relations::RangeCheck_20_C,
-    pub range_check_20_d_lookup_elements: relations::RangeCheck_20_D,
-    pub range_check_20_e_lookup_elements: relations::RangeCheck_20_E,
-    pub range_check_20_f_lookup_elements: relations::RangeCheck_20_F,
-    pub range_check_20_g_lookup_elements: relations::RangeCheck_20_G,
-    pub range_check_20_h_lookup_elements: relations::RangeCheck_20_H,
-    pub partial_ec_mul_window_bits_9_lookup_elements: relations::PartialEcMulWindowBits9,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -145,6 +127,8 @@ impl FrameworkEval for Eval {
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
+        let M31_1791500038 = E::F::from(M31::from(1791500038));
+        let M31_2038149019 = E::F::from(M31::from(2038149019));
         let M31_512 = E::F::from(M31::from(512));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
@@ -461,9 +445,10 @@ impl FrameworkEval for Eval {
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_points_table_window_bits_9_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1791500038.clone(),
                 ((M31_512.clone() * input_limb_1_col1.clone()) + input_limb_2_col2.clone()),
                 pedersen_points_table_window_bits_9_output_limb_0_col86.clone(),
                 pedersen_points_table_window_bits_9_output_limb_1_col87.clone(),
@@ -807,28 +792,14 @@ impl FrameworkEval for Eval {
             carry_24_col307.clone(),
             carry_25_col308.clone(),
             carry_26_col309.clone(),
-            &self.range_check_9_9_lookup_elements,
-            &self.range_check_9_9_b_lookup_elements,
-            &self.range_check_9_9_c_lookup_elements,
-            &self.range_check_9_9_d_lookup_elements,
-            &self.range_check_9_9_e_lookup_elements,
-            &self.range_check_9_9_f_lookup_elements,
-            &self.range_check_9_9_g_lookup_elements,
-            &self.range_check_9_9_h_lookup_elements,
-            &self.range_check_20_lookup_elements,
-            &self.range_check_20_b_lookup_elements,
-            &self.range_check_20_c_lookup_elements,
-            &self.range_check_20_d_lookup_elements,
-            &self.range_check_20_e_lookup_elements,
-            &self.range_check_20_f_lookup_elements,
-            &self.range_check_20_g_lookup_elements,
-            &self.range_check_20_h_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_window_bits_9_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
+                M31_2038149019.clone(),
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
                 input_limb_2_col2.clone(),
@@ -919,9 +890,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_window_bits_9_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
+                M31_2038149019.clone(),
                 input_limb_0_col0.clone(),
                 (input_limb_1_col1.clone() + M31_1.clone()),
                 input_limb_3_col3.clone(),
@@ -1032,26 +1004,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            pedersen_points_table_window_bits_9_lookup_elements:
-                relations::PedersenPointsTableWindowBits9::dummy(),
-            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
-            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
-            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
-            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
-            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F::dummy(),
-            range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G::dummy(),
-            range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H::dummy(),
-            range_check_20_lookup_elements: relations::RangeCheck_20::dummy(),
-            range_check_20_b_lookup_elements: relations::RangeCheck_20_B::dummy(),
-            range_check_20_c_lookup_elements: relations::RangeCheck_20_C::dummy(),
-            range_check_20_d_lookup_elements: relations::RangeCheck_20_D::dummy(),
-            range_check_20_e_lookup_elements: relations::RangeCheck_20_E::dummy(),
-            range_check_20_f_lookup_elements: relations::RangeCheck_20_F::dummy(),
-            range_check_20_g_lookup_elements: relations::RangeCheck_20_G::dummy(),
-            range_check_20_h_lookup_elements: relations::RangeCheck_20_H::dummy(),
-            partial_ec_mul_window_bits_9_lookup_elements: relations::PartialEcMulWindowBits9::dummy(
-            ),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

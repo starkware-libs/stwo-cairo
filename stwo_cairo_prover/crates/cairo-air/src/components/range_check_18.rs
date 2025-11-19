@@ -8,8 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_18_lookup_elements: relations::RangeCheck_18,
-    pub range_check_18_b_lookup_elements: relations::RangeCheck_18_B,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -49,6 +48,8 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1109051422 = E::F::from(M31::from(1109051422));
+        let M31_1424798916 = E::F::from(M31::from(1424798916));
         let seq_18 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_18".to_owned(),
         });
@@ -56,15 +57,15 @@ impl FrameworkEval for Eval {
         let multiplicity_1 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_18_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
-            std::slice::from_ref(&seq_18),
+            &[M31_1109051422.clone(), seq_18.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_18_b_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_1),
-            std::slice::from_ref(&seq_18),
+            &[M31_1424798916.clone(), seq_18.clone()],
         ));
 
         eval.finalize_logup_in_pairs();
@@ -88,8 +89,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
-            range_check_18_b_lookup_elements: relations::RangeCheck_18_B::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

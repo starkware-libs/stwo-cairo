@@ -9,9 +9,9 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -268,7 +268,7 @@ pub struct BuiltinComponents {
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         claim: @BuiltinsClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
         let BuiltinsClaim {
@@ -286,7 +286,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             add_mod_builtin_component =
                 Option::Some(
                     components::add_mod_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.add_mod_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.add_mod_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -296,7 +296,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin_component =
                 Option::Some(
                     components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -306,7 +306,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             mul_mod_builtin_component =
                 Option::Some(
                     components::mul_mod_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.mul_mod_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.mul_mod_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -316,7 +316,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             pedersen_builtin_component =
                 Option::Some(
                     components::pedersen_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.pedersen_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.pedersen_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -326,7 +326,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             poseidon_builtin_component =
                 Option::Some(
                     components::poseidon_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.poseidon_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.poseidon_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -338,7 +338,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     components::range_check96_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_96_builtin.unwrap(),
-                        interaction_elements,
+                        common_lookup_elements,
                     ),
                 );
         }
@@ -350,7 +350,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
-                        interaction_elements,
+                        common_lookup_elements,
                     ),
                 );
         }
@@ -476,7 +476,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         claim: @BuiltinsClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
         let BuiltinsClaim {
@@ -499,7 +499,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin_component =
                 Option::Some(
                     components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -511,7 +511,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
-                        interaction_elements,
+                        common_lookup_elements,
                     ),
                 );
         }
@@ -564,7 +564,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
     fn new(
         claim: @BuiltinsClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @BuiltinsInteractionClaim,
     ) -> BuiltinComponents {
         let BuiltinsClaim {
@@ -586,7 +586,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin_component =
                 Option::Some(
                     components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -596,7 +596,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             poseidon_builtin_component =
                 Option::Some(
                     components::poseidon_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.poseidon_builtin.unwrap(), interaction_elements,
+                        claim, @interaction_claim.poseidon_builtin.unwrap(), common_lookup_elements,
                     ),
                 );
         }
@@ -608,7 +608,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
                     components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
-                        interaction_elements,
+                        common_lookup_elements,
                     ),
                 );
         }

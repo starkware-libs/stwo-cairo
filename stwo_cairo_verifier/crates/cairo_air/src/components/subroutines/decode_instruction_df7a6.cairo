@@ -23,7 +23,7 @@ pub fn decode_instruction_df7a6_evaluate(
     opcode_call_col15: QM31,
     opcode_ret_col16: QM31,
     opcode_assert_eq_col17: QM31,
-    verify_instruction_lookup_elements: @crate::VerifyInstructionElements,
+    common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
@@ -113,10 +113,11 @@ pub fn decode_instruction_df7a6_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    verify_instruction_sum_0 = verify_instruction_lookup_elements
+    verify_instruction_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                decode_instruction_df7a6_input_pc, offset0_col0, offset1_col1, offset2_col2,
+                qm31_const::<1719106205, 0, 0, 0>(), decode_instruction_df7a6_input_pc,
+                offset0_col0, offset1_col1, offset2_col2,
                 ((((((dst_base_fp_col3 * qm31_const::<8, 0, 0, 0>())
                     + (op0_base_fp_col4 * qm31_const::<16, 0, 0, 0>()))
                     + (op1_imm_col5 * qm31_const::<32, 0, 0, 0>()))
@@ -132,7 +133,8 @@ pub fn decode_instruction_df7a6_evaluate(
                     + (opcode_ret_col16 * qm31_const::<128, 0, 0, 0>()))
                     + (opcode_assert_eq_col17 * qm31_const::<256, 0, 0, 0>())),
                 qm31_const::<0, 0, 0, 0>(),
-            ],
+            ]
+                .span(),
         );
 
     [
