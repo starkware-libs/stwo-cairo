@@ -53,24 +53,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub pedersen_points_table_window_bits_9_lookup_elements: crate::PedersenPointsTableWindowBits9Elements,
-    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
-    pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
-    pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
-    pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
-    pub range_check_9_9_e_lookup_elements: crate::RangeCheck_9_9_EElements,
-    pub range_check_9_9_f_lookup_elements: crate::RangeCheck_9_9_FElements,
-    pub range_check_9_9_g_lookup_elements: crate::RangeCheck_9_9_GElements,
-    pub range_check_9_9_h_lookup_elements: crate::RangeCheck_9_9_HElements,
-    pub range_check_20_lookup_elements: crate::RangeCheck_20Elements,
-    pub range_check_20_b_lookup_elements: crate::RangeCheck_20_BElements,
-    pub range_check_20_c_lookup_elements: crate::RangeCheck_20_CElements,
-    pub range_check_20_d_lookup_elements: crate::RangeCheck_20_DElements,
-    pub range_check_20_e_lookup_elements: crate::RangeCheck_20_EElements,
-    pub range_check_20_f_lookup_elements: crate::RangeCheck_20_FElements,
-    pub range_check_20_g_lookup_elements: crate::RangeCheck_20_GElements,
-    pub range_check_20_h_lookup_elements: crate::RangeCheck_20_HElements,
-    pub partial_ec_mul_window_bits_9_lookup_elements: crate::PartialEcMulWindowBits9Elements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -80,33 +63,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            pedersen_points_table_window_bits_9_lookup_elements: interaction_elements
-                .pedersen_points_table_window_bits_9
-                .clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
-            range_check_20_lookup_elements: interaction_elements.range_checks.rc_20.clone(),
-            range_check_20_b_lookup_elements: interaction_elements.range_checks.rc_20_b.clone(),
-            range_check_20_c_lookup_elements: interaction_elements.range_checks.rc_20_c.clone(),
-            range_check_20_d_lookup_elements: interaction_elements.range_checks.rc_20_d.clone(),
-            range_check_20_e_lookup_elements: interaction_elements.range_checks.rc_20_e.clone(),
-            range_check_20_f_lookup_elements: interaction_elements.range_checks.rc_20_f.clone(),
-            range_check_20_g_lookup_elements: interaction_elements.range_checks.rc_20_g.clone(),
-            range_check_20_h_lookup_elements: interaction_elements.range_checks.rc_20_h.clone(),
-            partial_ec_mul_window_bits_9_lookup_elements: interaction_elements
-                .partial_ec_mul_window_bits_9
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -1178,9 +1140,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         pedersen_points_table_window_bits_9_sum_0 = self
-            .pedersen_points_table_window_bits_9_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1791500038, 0, 0, 0>(),
                     ((qm31_const::<512, 0, 0, 0>() * input_limb_1_col1) + input_limb_2_col2),
                     pedersen_points_table_window_bits_9_output_limb_0_col86,
                     pedersen_points_table_window_bits_9_output_limb_1_col87,
@@ -1238,7 +1201,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     pedersen_points_table_window_bits_9_output_limb_53_col139,
                     pedersen_points_table_window_bits_9_output_limb_54_col140,
                     pedersen_points_table_window_bits_9_output_limb_55_col141,
-                ],
+                ]
+                    .span(),
             );
         ec_add_evaluate(
             [
@@ -1481,22 +1445,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_24_col307,
             carry_25_col308,
             carry_26_col309,
-            self.range_check_9_9_lookup_elements,
-            self.range_check_9_9_b_lookup_elements,
-            self.range_check_9_9_c_lookup_elements,
-            self.range_check_9_9_d_lookup_elements,
-            self.range_check_9_9_e_lookup_elements,
-            self.range_check_9_9_f_lookup_elements,
-            self.range_check_9_9_g_lookup_elements,
-            self.range_check_9_9_h_lookup_elements,
-            self.range_check_20_lookup_elements,
-            self.range_check_20_b_lookup_elements,
-            self.range_check_20_c_lookup_elements,
-            self.range_check_20_d_lookup_elements,
-            self.range_check_20_e_lookup_elements,
-            self.range_check_20_f_lookup_elements,
-            self.range_check_20_g_lookup_elements,
-            self.range_check_20_h_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_9_9_sum_1,
             ref range_check_9_9_b_sum_2,
             ref range_check_9_9_c_sum_3,
@@ -1629,10 +1578,48 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         partial_ec_mul_window_bits_9_sum_127 = self
-            .partial_ec_mul_window_bits_9_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
+                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
+                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
+                    input_limb_10_col10, input_limb_11_col11, input_limb_12_col12,
+                    input_limb_13_col13, input_limb_14_col14, input_limb_15_col15,
+                    input_limb_16_col16, input_limb_17_col17, input_limb_18_col18,
+                    input_limb_19_col19, input_limb_20_col20, input_limb_21_col21,
+                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
+                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
+                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
+                    input_limb_31_col31, input_limb_32_col32, input_limb_33_col33,
+                    input_limb_34_col34, input_limb_35_col35, input_limb_36_col36,
+                    input_limb_37_col37, input_limb_38_col38, input_limb_39_col39,
+                    input_limb_40_col40, input_limb_41_col41, input_limb_42_col42,
+                    input_limb_43_col43, input_limb_44_col44, input_limb_45_col45,
+                    input_limb_46_col46, input_limb_47_col47, input_limb_48_col48,
+                    input_limb_49_col49, input_limb_50_col50, input_limb_51_col51,
+                    input_limb_52_col52, input_limb_53_col53, input_limb_54_col54,
+                    input_limb_55_col55, input_limb_56_col56, input_limb_57_col57,
+                    input_limb_58_col58, input_limb_59_col59, input_limb_60_col60,
+                    input_limb_61_col61, input_limb_62_col62, input_limb_63_col63,
+                    input_limb_64_col64, input_limb_65_col65, input_limb_66_col66,
+                    input_limb_67_col67, input_limb_68_col68, input_limb_69_col69,
+                    input_limb_70_col70, input_limb_71_col71, input_limb_72_col72,
+                    input_limb_73_col73, input_limb_74_col74, input_limb_75_col75,
+                    input_limb_76_col76, input_limb_77_col77, input_limb_78_col78,
+                    input_limb_79_col79, input_limb_80_col80, input_limb_81_col81,
+                    input_limb_82_col82, input_limb_83_col83, input_limb_84_col84,
+                    input_limb_85_col85,
+                ]
+                    .span(),
+            );
+
+        partial_ec_mul_window_bits_9_sum_128 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<2038149019, 0, 0, 0>(), input_limb_0_col0,
+                    (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()), input_limb_3_col3,
                     input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
                     input_limb_8_col8, input_limb_9_col9, input_limb_10_col10, input_limb_11_col11,
                     input_limb_12_col12, input_limb_13_col13, input_limb_14_col14,
@@ -1641,62 +1628,27 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     input_limb_21_col21, input_limb_22_col22, input_limb_23_col23,
                     input_limb_24_col24, input_limb_25_col25, input_limb_26_col26,
                     input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
-                    input_limb_30_col30, input_limb_31_col31, input_limb_32_col32,
-                    input_limb_33_col33, input_limb_34_col34, input_limb_35_col35,
-                    input_limb_36_col36, input_limb_37_col37, input_limb_38_col38,
-                    input_limb_39_col39, input_limb_40_col40, input_limb_41_col41,
-                    input_limb_42_col42, input_limb_43_col43, input_limb_44_col44,
-                    input_limb_45_col45, input_limb_46_col46, input_limb_47_col47,
-                    input_limb_48_col48, input_limb_49_col49, input_limb_50_col50,
-                    input_limb_51_col51, input_limb_52_col52, input_limb_53_col53,
-                    input_limb_54_col54, input_limb_55_col55, input_limb_56_col56,
-                    input_limb_57_col57, input_limb_58_col58, input_limb_59_col59,
-                    input_limb_60_col60, input_limb_61_col61, input_limb_62_col62,
-                    input_limb_63_col63, input_limb_64_col64, input_limb_65_col65,
-                    input_limb_66_col66, input_limb_67_col67, input_limb_68_col68,
-                    input_limb_69_col69, input_limb_70_col70, input_limb_71_col71,
-                    input_limb_72_col72, input_limb_73_col73, input_limb_74_col74,
-                    input_limb_75_col75, input_limb_76_col76, input_limb_77_col77,
-                    input_limb_78_col78, input_limb_79_col79, input_limb_80_col80,
-                    input_limb_81_col81, input_limb_82_col82, input_limb_83_col83,
-                    input_limb_84_col84, input_limb_85_col85,
-                ],
-            );
-
-        partial_ec_mul_window_bits_9_sum_128 = self
-            .partial_ec_mul_window_bits_9_lookup_elements
-            .combine_qm31(
-                [
-                    input_limb_0_col0, (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()),
-                    input_limb_3_col3, input_limb_4_col4, input_limb_5_col5, input_limb_6_col6,
-                    input_limb_7_col7, input_limb_8_col8, input_limb_9_col9, input_limb_10_col10,
-                    input_limb_11_col11, input_limb_12_col12, input_limb_13_col13,
-                    input_limb_14_col14, input_limb_15_col15, input_limb_16_col16,
-                    input_limb_17_col17, input_limb_18_col18, input_limb_19_col19,
-                    input_limb_20_col20, input_limb_21_col21, input_limb_22_col22,
-                    input_limb_23_col23, input_limb_24_col24, input_limb_25_col25,
-                    input_limb_26_col26, input_limb_27_col27, input_limb_28_col28,
-                    input_limb_29_col29, qm31_const::<0, 0, 0, 0>(), result_x_limb_0_col198,
-                    result_x_limb_1_col199, result_x_limb_2_col200, result_x_limb_3_col201,
-                    result_x_limb_4_col202, result_x_limb_5_col203, result_x_limb_6_col204,
-                    result_x_limb_7_col205, result_x_limb_8_col206, result_x_limb_9_col207,
-                    result_x_limb_10_col208, result_x_limb_11_col209, result_x_limb_12_col210,
-                    result_x_limb_13_col211, result_x_limb_14_col212, result_x_limb_15_col213,
-                    result_x_limb_16_col214, result_x_limb_17_col215, result_x_limb_18_col216,
-                    result_x_limb_19_col217, result_x_limb_20_col218, result_x_limb_21_col219,
-                    result_x_limb_22_col220, result_x_limb_23_col221, result_x_limb_24_col222,
-                    result_x_limb_25_col223, result_x_limb_26_col224, result_x_limb_27_col225,
-                    result_y_limb_0_col254, result_y_limb_1_col255, result_y_limb_2_col256,
-                    result_y_limb_3_col257, result_y_limb_4_col258, result_y_limb_5_col259,
-                    result_y_limb_6_col260, result_y_limb_7_col261, result_y_limb_8_col262,
-                    result_y_limb_9_col263, result_y_limb_10_col264, result_y_limb_11_col265,
-                    result_y_limb_12_col266, result_y_limb_13_col267, result_y_limb_14_col268,
-                    result_y_limb_15_col269, result_y_limb_16_col270, result_y_limb_17_col271,
-                    result_y_limb_18_col272, result_y_limb_19_col273, result_y_limb_20_col274,
-                    result_y_limb_21_col275, result_y_limb_22_col276, result_y_limb_23_col277,
-                    result_y_limb_24_col278, result_y_limb_25_col279, result_y_limb_26_col280,
-                    result_y_limb_27_col281,
-                ],
+                    qm31_const::<0, 0, 0, 0>(), result_x_limb_0_col198, result_x_limb_1_col199,
+                    result_x_limb_2_col200, result_x_limb_3_col201, result_x_limb_4_col202,
+                    result_x_limb_5_col203, result_x_limb_6_col204, result_x_limb_7_col205,
+                    result_x_limb_8_col206, result_x_limb_9_col207, result_x_limb_10_col208,
+                    result_x_limb_11_col209, result_x_limb_12_col210, result_x_limb_13_col211,
+                    result_x_limb_14_col212, result_x_limb_15_col213, result_x_limb_16_col214,
+                    result_x_limb_17_col215, result_x_limb_18_col216, result_x_limb_19_col217,
+                    result_x_limb_20_col218, result_x_limb_21_col219, result_x_limb_22_col220,
+                    result_x_limb_23_col221, result_x_limb_24_col222, result_x_limb_25_col223,
+                    result_x_limb_26_col224, result_x_limb_27_col225, result_y_limb_0_col254,
+                    result_y_limb_1_col255, result_y_limb_2_col256, result_y_limb_3_col257,
+                    result_y_limb_4_col258, result_y_limb_5_col259, result_y_limb_6_col260,
+                    result_y_limb_7_col261, result_y_limb_8_col262, result_y_limb_9_col263,
+                    result_y_limb_10_col264, result_y_limb_11_col265, result_y_limb_12_col266,
+                    result_y_limb_13_col267, result_y_limb_14_col268, result_y_limb_15_col269,
+                    result_y_limb_16_col270, result_y_limb_17_col271, result_y_limb_18_col272,
+                    result_y_limb_19_col273, result_y_limb_20_col274, result_y_limb_21_col275,
+                    result_y_limb_22_col276, result_y_limb_23_col277, result_y_limb_24_col278,
+                    result_y_limb_25_col279, result_y_limb_26_col280, result_y_limb_27_col281,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -3359,14 +3311,14 @@ mod tests {
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
-        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+        LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -3377,77 +3329,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            partial_ec_mul_window_bits_9_lookup_elements: make_lookup_elements(
-                qm31_const::<1374879922, 1295111175, 331473165, 907942581>(),
-                qm31_const::<1662969993, 986548892, 772131862, 83756060>(),
-            ),
-            pedersen_points_table_window_bits_9_lookup_elements: make_lookup_elements(
-                qm31_const::<1056282772, 967322199, 525278534, 848470901>(),
-                qm31_const::<1298073645, 2079490959, 966563444, 1405099889>(),
-            ),
-            range_check_20_lookup_elements: make_lookup_elements(
-                qm31_const::<1932860727, 18341367, 2045797860, 1199128296>(),
-                qm31_const::<155807269, 899318514, 1185754398, 1543210647>(),
-            ),
-            range_check_20_b_lookup_elements: make_lookup_elements(
-                qm31_const::<1007364761, 205123076, 1260180806, 296890037>(),
-                qm31_const::<145477934, 1058074746, 1168116711, 435369134>(),
-            ),
-            range_check_20_c_lookup_elements: make_lookup_elements(
-                qm31_const::<429346395, 1144671906, 656225764, 296898282>(),
-                qm31_const::<1230482199, 1307250087, 1633915804, 2134139353>(),
-            ),
-            range_check_20_d_lookup_elements: make_lookup_elements(
-                qm31_const::<1882422753, 2084114286, 52164273, 296871044>(),
-                qm31_const::<1590055113, 1284130096, 2092337358, 877660413>(),
-            ),
-            range_check_20_e_lookup_elements: make_lookup_elements(
-                qm31_const::<1298012403, 876175677, 1595689087, 296878024>(),
-                qm31_const::<722537063, 1440411207, 346964784, 1123545529>(),
-            ),
-            range_check_20_f_lookup_elements: make_lookup_elements(
-                qm31_const::<1146789882, 741880003, 1528502277, 296852042>(),
-                qm31_const::<946610143, 1094045880, 453212534, 1897158948>(),
-            ),
-            range_check_20_g_lookup_elements: make_lookup_elements(
-                qm31_const::<562379532, 1681425041, 924543443, 296859023>(),
-                qm31_const::<424893500, 1310028305, 915116907, 731319435>(),
-            ),
-            range_check_20_h_lookup_elements: make_lookup_elements(
-                qm31_const::<2028159210, 473391334, 320489513, 296834305>(),
-                qm31_const::<875540222, 1963593080, 1991994536, 1828476143>(),
-            ),
-            range_check_9_9_lookup_elements: make_lookup_elements(
-                qm31_const::<989827041, 1225728465, 1602128278, 85336129>(),
-                qm31_const::<1454375758, 8286589, 1713209810, 1602293816>(),
-            ),
-            range_check_9_9_b_lookup_elements: make_lookup_elements(
-                qm31_const::<676159317, 930503385, 1105489908, 1544380136>(),
-                qm31_const::<2129889251, 701815395, 1830411342, 2061777868>(),
-            ),
-            range_check_9_9_c_lookup_elements: make_lookup_elements(
-                qm31_const::<1260569667, 2138441994, 1709448741, 1544373155>(),
-                qm31_const::<1022885008, 826842007, 1709607881, 1909661957>(),
-            ),
-            range_check_9_9_d_lookup_elements: make_lookup_elements(
-                qm31_const::<1551136661, 662010924, 2044956999, 1544361134>(),
-                qm31_const::<2005146556, 852740197, 532387412, 1763320973>(),
-            ),
-            range_check_9_9_e_lookup_elements: make_lookup_elements(
-                qm31_const::<2135547011, 1869949533, 501432185, 1544354154>(),
-                qm31_const::<1771048649, 362596150, 1943805170, 690289666>(),
-            ),
-            range_check_9_9_f_lookup_elements: make_lookup_elements(
-                qm31_const::<821895774, 1467264080, 1373815147, 1544343397>(),
-                qm31_const::<1435956769, 1381290646, 1730080787, 865114040>(),
-            ),
-            range_check_9_9_g_lookup_elements: make_lookup_elements(
-                qm31_const::<1406306124, 527719042, 1977773981, 1544336416>(),
-                qm31_const::<1018085498, 759742390, 862702750, 464139937>(),
-            ),
-            range_check_9_9_h_lookup_elements: make_lookup_elements(
-                qm31_const::<1696953766, 1198771643, 165798615, 1544324404>(),
-                qm31_const::<933744903, 1518924215, 418396039, 1277931404>(),
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

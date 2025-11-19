@@ -1,9 +1,10 @@
+use crate::cairo_air::VERIFY_BITWISE_XOR_12_RELATION_ID;
 use crate::prelude::*;
 use crate::utils::*;
 
 #[derive(Drop)]
 pub struct ConstraintParams {
-    pub lookup_elements: @crate::VerifyBitwiseXor_12Elements,
+    pub lookup_elements: @CommonLookupElements,
     pub bitwise_xor_10_0: QM31,
     pub bitwise_xor_10_1: QM31,
     pub bitwise_xor_10_2: QM31,
@@ -13,13 +14,14 @@ pub struct ConstraintParams {
 
 // Each row in the bitwise_xor_12 component yields 16 tuples into
 // the VerifyBitwiseXor_12 relation. Compute the <index>'th tuple.
-fn make_xor12_triplet(xor_10_0: QM31, xor_10_1: QM31, xor_10_2: QM31, index: u32) -> [QM31; 3] {
+fn make_xor12_triplet(xor_10_0: QM31, xor_10_1: QM31, xor_10_2: QM31, index: u32) -> Span<QM31> {
     let i = index / 4;
     let j = index % 4;
     [
-        xor_10_0 + m31(i * 1024).into(), xor_10_1 + m31(j * 1024).into(),
-        xor_10_2 + m31((i ^ j) * 1024).into(),
+        Into::<M31, QM31>::into(VERIFY_BITWISE_XOR_12_RELATION_ID), xor_10_0 + m31(i * 1024).into(),
+        xor_10_1 + m31(j * 1024).into(), xor_10_2 + m31((i ^ j) * 1024).into(),
     ]
+        .span()
 }
 
 pub fn evaluate_constraints_at_point(

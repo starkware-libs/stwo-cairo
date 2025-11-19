@@ -1,7 +1,12 @@
 use std::simd::Simd;
 
 use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
-use cairo_air::relations;
+use cairo_air::relations::{
+    self, MEMORY_ID_TO_BIG_RELATION_ID, RANGE_CHECK_9_9_B_RELATION_ID,
+    RANGE_CHECK_9_9_C_RELATION_ID, RANGE_CHECK_9_9_D_RELATION_ID, RANGE_CHECK_9_9_E_RELATION_ID,
+    RANGE_CHECK_9_9_F_RELATION_ID, RANGE_CHECK_9_9_G_RELATION_ID, RANGE_CHECK_9_9_H_RELATION_ID,
+    RANGE_CHECK_9_9_RELATION_ID,
+};
 use itertools::{chain, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
@@ -378,15 +383,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        lookup_elements: &relations::MemoryIdToBig,
-        range9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-        range9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-        range9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-        range9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-        range9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut offset = 0;
         let (big_traces, big_claimed_sums): (Vec<_>, Vec<_>) = self
@@ -398,15 +395,7 @@ impl InteractionClaimGenerator {
                     big_components_values,
                     big_multiplicities,
                     offset,
-                    lookup_elements,
-                    range9_9_lookup_elements,
-                    range9_9_b_lookup_elements,
-                    range9_9_c_lookup_elements,
-                    range9_9_d_lookup_elements,
-                    range9_9_e_lookup_elements,
-                    range9_9_f_lookup_elements,
-                    range9_9_g_lookup_elements,
-                    range9_9_h_lookup_elements,
+                    common_lookup_elements,
                 );
                 offset += big_multiplicities.len() as u32 * N_LANES as u32;
                 res
@@ -416,13 +405,8 @@ impl InteractionClaimGenerator {
             tree_builder.extend_evals(big_trace);
         }
 
-        let (small_trace, small_claimed_sum) = self.gen_small_memory_interaction_trace(
-            lookup_elements,
-            range9_9_lookup_elements,
-            range9_9_b_lookup_elements,
-            range9_9_c_lookup_elements,
-            range9_9_d_lookup_elements,
-        );
+        let (small_trace, small_claimed_sum) =
+            self.gen_small_memory_interaction_trace(common_lookup_elements);
         tree_builder.extend_evals(small_trace);
 
         InteractionClaim {
@@ -435,15 +419,7 @@ impl InteractionClaimGenerator {
         big_components_values: &[Vec<PackedM31>; N_M31_IN_FELT252],
         big_multiplicities: &[PackedM31],
         offset: u32,
-        lookup_elements: &relations::MemoryIdToBig,
-        range9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-        range9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-        range9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-        range9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-        range9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
@@ -462,20 +438,52 @@ impl InteractionClaimGenerator {
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
                         0 => (
-                            range9_9_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_b_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_B_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         1 => (
-                            range9_9_c_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_d_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_C_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_D_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         2 => (
-                            range9_9_e_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_f_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_E_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_F_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         3 => (
-                            range9_9_g_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_h_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_G_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_H_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         _ => {
                             unreachable!("There are only 4 possible values for i % 4.",)
@@ -503,7 +511,9 @@ impl InteractionClaimGenerator {
                     big_components_values[i - 1][vec_row]
                 }
             });
-            let denom: PackedQM31 = lookup_elements.combine(&id_and_value);
+            let denom: PackedQM31 = common_lookup_elements.combine(
+                &chain!([MEMORY_ID_TO_BIG_RELATION_ID.into()], id_and_value).collect_vec(),
+            );
             col_gen.write_frac(vec_row, (-big_multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
@@ -513,11 +523,7 @@ impl InteractionClaimGenerator {
 
     fn gen_small_memory_interaction_trace(
         &self,
-        lookup_elements: &relations::MemoryIdToBig,
-        range9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> (
         Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
         QM31,
@@ -533,12 +539,28 @@ impl InteractionClaimGenerator {
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 2 {
                         0 => (
-                            range9_9_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_b_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_B_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         1 => (
-                            range9_9_c_lookup_elements.combine(&[*limb0, *limb1]),
-                            range9_9_d_lookup_elements.combine(&[*limb2, *limb3]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_C_RELATION_ID.into(),
+                                *limb0,
+                                *limb1,
+                            ]),
+                            common_lookup_elements.combine(&[
+                                RANGE_CHECK_9_9_D_RELATION_ID.into(),
+                                *limb2,
+                                *limb3,
+                            ]),
                         ),
                         _ => {
                             unreachable!()
@@ -564,7 +586,9 @@ impl InteractionClaimGenerator {
                         self.small_values[i - 1][vec_row]
                     }
                 });
-            let denom: PackedQM31 = lookup_elements.combine(&id_and_value);
+            let denom: PackedQM31 = common_lookup_elements.combine(
+                &chain!([MEMORY_ID_TO_BIG_RELATION_ID.into()], id_and_value).collect_vec(),
+            );
             col_gen.write_frac(vec_row, (-self.small_multiplicities[vec_row]).into(), denom);
         }
         col_gen.finalize_col();
@@ -577,8 +601,8 @@ impl InteractionClaimGenerator {
 mod tests {
     use std::sync::Arc;
 
-    use cairo_air::air::CairoInteractionElements;
     use cairo_air::components::memory_id_to_big::{self, SmallEval};
+    use cairo_air::relations::CommonLookupElements;
     use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
     use rand::rngs::SmallRng;
@@ -638,35 +662,17 @@ mod tests {
 
         // Interaction trace.
         let mut dummy_channel = Blake2sChannel::default();
-        let interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
+        let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
         let mut tree_builder = commitment_scheme.tree_builder();
-        let interaction_claim = interaction_generator.write_interaction_trace(
-            &mut tree_builder,
-            &interaction_elements.memory_id_to_value,
-            &interaction_elements.range_checks.rc_9_9,
-            &interaction_elements.range_checks.rc_9_9_b,
-            &interaction_elements.range_checks.rc_9_9_c,
-            &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
-        );
+        let interaction_claim =
+            interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);
         tree_builder.finalize_interaction();
 
         let mut location_allocator = TraceLocationAllocator::default();
         let big_components = memory_id_to_big::big_components_from_claim(
             &claim.big_log_sizes,
             &interaction_claim.big_claimed_sums,
-            &interaction_elements.memory_id_to_value,
-            &interaction_elements.range_checks.rc_9_9,
-            &interaction_elements.range_checks.rc_9_9_b,
-            &interaction_elements.range_checks.rc_9_9_c,
-            &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
+            &interaction_elements,
             &mut location_allocator,
         );
 
@@ -674,11 +680,7 @@ mod tests {
             &mut location_allocator,
             SmallEval {
                 log_n_rows: claim.small_log_size,
-                lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range_check_9_9_relation: interaction_elements.range_checks.rc_9_9.clone(),
-                range_check_9_9_b_relation: interaction_elements.range_checks.rc_9_9_b.clone(),
-                range_check_9_9_c_relation: interaction_elements.range_checks.rc_9_9_c.clone(),
-                range_check_9_9_d_relation: interaction_elements.range_checks.rc_9_9_d.clone(),
+                common_lookup_elements: interaction_elements.clone(),
             },
             interaction_claim.small_claimed_sum,
         );

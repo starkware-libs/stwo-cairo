@@ -34,12 +34,11 @@ impl Qm31ReadReduced {
         value_limb_15_col16: E::F,
         delta_ab_inv_col17: E::F,
         delta_cd_inv_col18: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
-        range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 4] {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_1027333874 = E::F::from(M31::from(1027333874));
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_1548 = E::F::from(M31::from(1548));
         let M31_262144 = E::F::from(M31::from(262144));
@@ -64,14 +63,14 @@ impl Qm31ReadReduced {
             value_limb_13_col14.clone(),
             value_limb_14_col15.clone(),
             value_limb_15_col16.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_4_4_4_4_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1027333874.clone(),
                 value_limb_3_col4.clone(),
                 value_limb_7_col8.clone(),
                 value_limb_11_col12.clone(),

@@ -8,7 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -48,6 +48,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1805967942 = E::F::from(M31::from(1805967942));
         let seq_4 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_4".to_owned(),
         });
@@ -102,9 +103,10 @@ impl FrameworkEval for Eval {
         let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_round_sigma_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
             &[
+                M31_1805967942.clone(),
                 seq_4.clone(),
                 blake_sigma_0.clone(),
                 blake_sigma_1.clone(),
@@ -146,7 +148,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

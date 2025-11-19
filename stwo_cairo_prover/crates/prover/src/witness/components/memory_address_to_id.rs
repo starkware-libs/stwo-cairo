@@ -6,7 +6,7 @@ use cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
     N_TRACE_COLUMNS,
 };
-use cairo_air::relations;
+use cairo_air::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
 use itertools::{izip, Itertools};
 use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
 use stwo::core::fields::m31::{BaseField, M31};
@@ -186,7 +186,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        lookup_elements: &relations::MemoryAddressToId,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let packed_size = self.ids[0].len();
         let log_size = packed_size.ilog2() + LOG_N_LANES;
@@ -204,8 +204,16 @@ impl InteractionClaimGenerator {
                     let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
                     let addr0 = addr + PackedM31::broadcast(M31(((i * 2) * n_rows) as u32));
                     let addr1 = addr + PackedM31::broadcast(M31(((i * 2 + 1) * n_rows) as u32));
-                    let p0: PackedQM31 = lookup_elements.combine(&[addr0, id0]);
-                    let p1: PackedQM31 = lookup_elements.combine(&[addr1, id1]);
+                    let p0: PackedQM31 = common_lookup_elements.combine(&[
+                        MEMORY_ADDRESS_TO_ID_RELATION_ID.into(),
+                        addr0,
+                        id0,
+                    ]);
+                    let p1: PackedQM31 = common_lookup_elements.combine(&[
+                        MEMORY_ADDRESS_TO_ID_RELATION_ID.into(),
+                        addr1,
+                        id1,
+                    ]);
                     writer.write_frac(p0 * (-mult1) + p1 * (-mult0), p1 * p0);
                 });
             col_gen.finalize_col();

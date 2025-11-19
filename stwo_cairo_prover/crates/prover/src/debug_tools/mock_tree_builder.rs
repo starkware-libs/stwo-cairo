@@ -97,9 +97,7 @@ mod tests {
             &verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let mut triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
         triple_xor_32_trace_gen.add_packed_inputs(&[input], 0);
-        let triple_xor_relation = relations::TripleXor32::dummy();
-        let verify_bitwise_xor_8_relation = relations::VerifyBitwiseXor_8::dummy();
-        let verify_bitwise_xor_8_b_relation = relations::VerifyBitwiseXor_8_B::dummy();
+        let common_lookup_elements = relations::CommonLookupElements::dummy();
 
         let mut mock_commitment_scheme = MockCommitmentScheme::default();
 
@@ -114,12 +112,7 @@ mod tests {
         let mut mock_tree_builder = mock_commitment_scheme.tree_builder();
 
         // Interaction trace.
-        interaction_gen.write_interaction_trace(
-            &mut mock_tree_builder,
-            &verify_bitwise_xor_8_relation,
-            &verify_bitwise_xor_8_b_relation,
-            &triple_xor_relation,
-        );
+        interaction_gen.write_interaction_trace(&mut mock_tree_builder, &common_lookup_elements);
         mock_tree_builder.finalize_interaction();
         let trace = mock_commitment_scheme.trace_domain_evaluations();
 

@@ -8,8 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub pedersen_points_table_window_bits_9_lookup_elements:
-        relations::PedersenPointsTableWindowBits9,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -49,6 +48,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1791500038 = E::F::from(M31::from(1791500038));
         let seq_15 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_15".to_owned(),
         });
@@ -223,9 +223,10 @@ impl FrameworkEval for Eval {
         let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_points_table_window_bits_9_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
             &[
+                M31_1791500038.clone(),
                 seq_15.clone(),
                 pedersen_points_0.clone(),
                 pedersen_points_1.clone(),
@@ -307,8 +308,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            pedersen_points_table_window_bits_9_lookup_elements:
-                relations::PedersenPointsTableWindowBits9::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

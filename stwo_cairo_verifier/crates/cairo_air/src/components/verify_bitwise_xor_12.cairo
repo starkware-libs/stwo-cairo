@@ -42,7 +42,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub verify_bitwise_xor_12_lookup_elements: crate::VerifyBitwiseXor_12Elements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -52,14 +52,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            verify_bitwise_xor_12_lookup_elements: interaction_elements
-                .verify_bitwise_xor_12
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -77,7 +75,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
         let params = constraints::ConstraintParams {
-            lookup_elements: self.verify_bitwise_xor_12_lookup_elements,
+            lookup_elements: self.common_lookup_elements,
             claimed_sum,
             bitwise_xor_10_0: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::BITWISE_XOR_10_0_IDX),

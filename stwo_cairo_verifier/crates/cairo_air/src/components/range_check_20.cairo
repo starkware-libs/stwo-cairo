@@ -39,14 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_20_lookup_elements: crate::RangeCheck_20Elements,
-    pub range_check_20_b_lookup_elements: crate::RangeCheck_20_BElements,
-    pub range_check_20_c_lookup_elements: crate::RangeCheck_20_CElements,
-    pub range_check_20_d_lookup_elements: crate::RangeCheck_20_DElements,
-    pub range_check_20_e_lookup_elements: crate::RangeCheck_20_EElements,
-    pub range_check_20_f_lookup_elements: crate::RangeCheck_20_FElements,
-    pub range_check_20_g_lookup_elements: crate::RangeCheck_20_GElements,
-    pub range_check_20_h_lookup_elements: crate::RangeCheck_20_HElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -56,19 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_20_lookup_elements: interaction_elements.range_checks.rc_20.clone(),
-            range_check_20_b_lookup_elements: interaction_elements.range_checks.rc_20_b.clone(),
-            range_check_20_c_lookup_elements: interaction_elements.range_checks.rc_20_c.clone(),
-            range_check_20_d_lookup_elements: interaction_elements.range_checks.rc_20_d.clone(),
-            range_check_20_e_lookup_elements: interaction_elements.range_checks.rc_20_e.clone(),
-            range_check_20_f_lookup_elements: interaction_elements.range_checks.rc_20_f.clone(),
-            range_check_20_g_lookup_elements: interaction_elements.range_checks.rc_20_g.clone(),
-            range_check_20_h_lookup_elements: interaction_elements.range_checks.rc_20_h.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -147,21 +133,37 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        range_check_20_sum_0 = self.range_check_20_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_sum_0 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<1410849886, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_b_sum_1 = self.range_check_20_b_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_b_sum_1 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<514232941, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_c_sum_2 = self.range_check_20_c_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_c_sum_2 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<531010560, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_d_sum_3 = self.range_check_20_d_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_d_sum_3 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<480677703, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_e_sum_4 = self.range_check_20_e_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_e_sum_4 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<497455322, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_f_sum_5 = self.range_check_20_f_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_f_sum_5 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<447122465, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_g_sum_6 = self.range_check_20_g_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_g_sum_6 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<463900084, 0, 0, 0>(), seq_20].span());
 
-        range_check_20_h_sum_7 = self.range_check_20_h_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_h_sum_7 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<682009131, 0, 0, 0>(), seq_20].span());
 
         lookup_constraints(
             ref sum,

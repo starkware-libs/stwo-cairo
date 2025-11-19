@@ -25,15 +25,17 @@ use core::box::BoxImpl;
 use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::num::traits::Zero;
 use core::num::traits::one::One;
-use stwo_constraint_framework::{LookupElements, LookupElementsImpl, PreprocessedMaskValuesImpl};
+use stwo_constraint_framework::{
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValuesImpl,
+};
 use stwo_verifier_core::channel::{Channel, ChannelImpl, ChannelTrait};
 use stwo_verifier_core::fields::Invertible;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::m31::{AddM31Trait, MulByM31Trait};
 use stwo_verifier_core::fields::m31::{M31, P_U32};
+use stwo_verifier_core::fields::qm31::QM31;
 #[cfg(not(feature: "qm31_opcode"))]
 use stwo_verifier_core::fields::qm31::{PackedUnreducedQM31, PackedUnreducedQM31Trait};
-use stwo_verifier_core::fields::qm31::{QM31, qm31_const};
 use stwo_verifier_core::pcs::PcsConfigTrait;
 use stwo_verifier_core::pcs::verifier::{CommitmentSchemeVerifierImpl, get_trace_lde_log_size};
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
@@ -235,9 +237,9 @@ pub fn verify_cairo(proof: CairoProof) {
     );
     channel.mix_u64(interaction_pow);
 
-    let interaction_elements = CairoInteractionElementsImpl::draw(ref channel);
+    let common_lookup_elements = LookupElementsImpl::draw(ref channel);
     assert!(
-        lookup_sum(@claim, @interaction_elements, @interaction_claim).is_zero(),
+        lookup_sum(@claim, @common_lookup_elements, @interaction_claim).is_zero(),
         "{}",
         CairoVerificationError::InvalidLogupSum,
     );
@@ -257,7 +259,7 @@ pub fn verify_cairo(proof: CairoProof) {
     // of the trace plus 1.
     let cairo_air_log_degree_bound = trace_log_size + 1;
     let cairo_air = CairoAirNewImpl::new(
-        @claim, @interaction_elements, @interaction_claim, cairo_air_log_degree_bound,
+        @claim, @common_lookup_elements, @interaction_claim, cairo_air_log_degree_bound,
     );
     verify(
         cairo_air,
@@ -272,10 +274,10 @@ pub fn verify_cairo(proof: CairoProof) {
 
 pub fn lookup_sum(
     claim: @CairoClaim,
-    elements: @CairoInteractionElements,
+    common_lookup_elements: @CommonLookupElements,
     interaction_claim: @CairoInteractionClaim,
 ) -> QM31 {
-    let mut sum = claim.public_data.logup_sum(elements);
+    let mut sum = claim.public_data.logup_sum(common_lookup_elements);
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
     // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
@@ -753,7 +755,7 @@ pub struct PublicData {
 
 #[generate_trait]
 impl PublicDataImpl of PublicDataTrait {
-    fn logup_sum(self: @PublicData, lookup_elements: @CairoInteractionElements) -> QM31 {
+    fn logup_sum(self: @PublicData, common_lookup_elements: @crate::CommonLookupElements) -> QM31 {
         let mut sum = Zero::zero();
 
         let public_memory_entries = self
@@ -763,13 +765,13 @@ impl PublicDataImpl of PublicDataTrait {
                 initial_ap: (*self.initial_state.ap).into(),
                 final_ap: (*self.final_state.ap).into(),
             );
-        sum += sum_public_memory_entries(public_memory_entries, lookup_elements);
+        sum += sum_public_memory_entries(public_memory_entries, common_lookup_elements);
 
         // Yield initial state and use the final.
         let CasmState { pc, ap, fp } = *self.final_state;
-        sum += lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
+        sum += common_lookup_elements.combine([OPCODES_RELATION_ID, pc, ap, fp].span()).inverse();
         let CasmState { pc, ap, fp } = *self.initial_state;
-        sum -= lookup_elements.opcodes.combine([pc, ap, fp]).inverse();
+        sum -= common_lookup_elements.combine([OPCODES_RELATION_ID, pc, ap, fp].span()).inverse();
 
         sum
     }
@@ -783,24 +785,30 @@ impl PublicDataImpl of PublicDataTrait {
 
 #[cfg(feature: "qm31_opcode")]
 fn sum_public_memory_entries(
-    pub_memory_entries: PublicMemoryEntries, lookup_elements: @CairoInteractionElements,
+    pub_memory_entries: PublicMemoryEntries, common_lookup_elements: @crate::CommonLookupElements,
 ) -> QM31 {
     let mut sum = Zero::zero();
-    let id_to_value_alpha = *lookup_elements.memory_id_to_value.alpha;
-    let id_to_value_z = *lookup_elements.memory_id_to_value.z;
-    let addr_to_id_alpha = *lookup_elements.memory_address_to_id.alpha;
-    let addr_to_id_z = *lookup_elements.memory_address_to_id.z;
+    let common_z = *common_lookup_elements.z;
+    let common_alpha = *common_lookup_elements.alpha_powers[1];
+    let common_alpha2 = *common_lookup_elements.alpha_powers[2];
 
     for PublicMemoryEntry { address, id, value } in pub_memory_entries {
         let addr_m31: M31 = address.try_into().unwrap();
         let addr_qm31 = addr_m31.into();
         let id_m31: M31 = id.try_into().unwrap();
         let id_qm31 = id_m31.into();
-        let addr_to_id = (addr_qm31 + id_qm31 * addr_to_id_alpha - addr_to_id_z).inverse();
+        let addr_to_id = (MEMORY_ADDRESS_TO_ID_RELATION_ID.into()
+            + addr_qm31 * common_alpha
+            + id_qm31 * common_alpha2
+            - common_z)
+            .inverse();
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
-        let mut combine_sum = combine::combine_felt252(value, id_to_value_alpha);
-        combine_sum = combine_sum + id_m31.into() - id_to_value_z;
+        let mut combine_sum = combine::combine_felt252(value, common_alpha);
+        combine_sum = combine_sum * common_alpha
+            + id_m31.into() * common_alpha
+            + MEMORY_ID_TO_VALUE_RELATION_ID.into()
+            - common_z;
         let id_to_value = combine_sum.inverse();
 
         sum += addr_to_id + id_to_value;
@@ -813,42 +821,47 @@ fn sum_public_memory_entries(
 // An alternative implementation that uses batch inverse, for the case that we don't have an opcode
 // for it.
 fn sum_public_memory_entries(
-    pub_memory_entries: PublicMemoryEntries, lookup_elements: @CairoInteractionElements,
+    pub_memory_entries: PublicMemoryEntries, common_lookup_elements: @CommonLookupElements,
 ) -> QM31 {
     // Gather values to be inverted and summed.
     let mut values: Array<QM31> = array![];
 
-    let mut alpha_powers = lookup_elements.memory_id_to_value.alpha_powers.span();
-    // Remove the first element, which is 1.
+    let mut alpha_powers = common_lookup_elements.alpha_powers.span();
+    // Remove the first two elements (1 and alpha), so combine_felt252 below computes
+    // sum_{i} value[i] * alpha**(i+2) as required for the id_to_value relation.
     let _ = alpha_powers.pop_front();
-    let packed_alpha_powers: Array<PackedUnreducedQM31> = alpha_powers
+    let _ = alpha_powers.pop_front();
+    let mut packed_alpha_powers: Span<PackedUnreducedQM31> = alpha_powers
         .into_iter()
         .map(|alpha| -> PackedUnreducedQM31 {
             (*alpha).into()
         })
-        .collect();
+        .collect::<Array<_>>()
+        .span();
     let id_to_value_alpha_powers: Box<[PackedUnreducedQM31; 28]> = *(packed_alpha_powers
-        .span()
-        .try_into()
+        .multi_pop_front()
         .unwrap());
 
-    let addr_to_id_alpha: PackedUnreducedQM31 = (*lookup_elements.memory_address_to_id.alpha)
+    let common_alpha: PackedUnreducedQM31 = (*common_lookup_elements.alpha).into();
+    let common_alpha2: PackedUnreducedQM31 = (*common_lookup_elements.alpha
+        * *common_lookup_elements.alpha)
         .into();
-    let minus_id_to_value_z: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero()
-        - (*lookup_elements.memory_id_to_value.z).into();
-    let minus_addr_to_id_z: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero()
-        - (*lookup_elements.memory_address_to_id.z).into();
+    let minus_common_z: PackedUnreducedQM31 = PackedUnreducedQM31Trait::large_zero()
+        - (*common_lookup_elements.z).into();
 
     for PublicMemoryEntry { address, id, value } in pub_memory_entries {
         let addr_m31: M31 = address.try_into().unwrap();
         let id_m31: M31 = id.try_into().unwrap();
-        let addr_to_id: PackedUnreducedQM31 = minus_addr_to_id_z
-            + addr_to_id_alpha.mul_m31(id_m31).add_m31(addr_m31);
+        let addr_to_id: PackedUnreducedQM31 = (minus_common_z
+            + common_alpha2.mul_m31(id_m31)
+            + common_alpha.mul_m31(addr_m31))
+            .add_m31(MEMORY_ADDRESS_TO_ID_RELATION_ID);
         values.append(addr_to_id.reduce());
 
         // Use handwritten implementation of combine_id_to_value to improve performance.
         let combined_limbs = combine::combine_felt252(value, id_to_value_alpha_powers);
-        let id_to_value = minus_id_to_value_z + combined_limbs.add_m31(id_m31);
+        let id_to_value = (minus_common_z + combined_limbs + common_alpha.mul_m31(id_m31))
+            .add_m31(MEMORY_ID_TO_VALUE_RELATION_ID);
         values.append(id_to_value.reduce());
     }
 

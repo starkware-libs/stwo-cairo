@@ -92,43 +92,18 @@ pub struct BigEval {
     pub log_n_rows: u32,
     // Internal offset of the ids when there are multiple components.
     pub offset: u32,
-    pub lookup_elements: relations::MemoryIdToBig,
-    pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
-    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
-    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
-    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-    pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-    pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
-#[allow(clippy::too_many_arguments)]
 impl BigEval {
     pub fn new(
         log_n_rows: u32,
         offset: u32,
-        lookup_elements: relations::MemoryIdToBig,
-        range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
-        range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
-        range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
-        range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-        range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-        range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-        range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-        range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+        common_lookup_elements: relations::CommonLookupElements,
     ) -> Self {
         Self {
             log_n_rows,
             offset,
-            lookup_elements,
-            range_check_9_9_lookup_elements,
-            range_check_9_9_b_lookup_elements,
-            range_check_9_9_c_lookup_elements,
-            range_check_9_9_d_lookup_elements,
-            range_check_9_9_e_lookup_elements,
-            range_check_9_9_f_lookup_elements,
-            range_check_9_9_g_lookup_elements,
-            range_check_9_9_h_lookup_elements,
+            common_lookup_elements,
         }
     }
 }
@@ -142,7 +117,9 @@ impl FrameworkEval for BigEval {
         self.log_size() + 1
     }
 
+    #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let memory_id_to_big_output_col0 = eval.next_trace_mask();
         let memory_id_to_big_output_col1 = eval.next_trace_mask();
@@ -205,20 +182,14 @@ impl FrameworkEval for BigEval {
                 memory_id_to_big_output_col26.clone(),
                 memory_id_to_big_output_col27.clone(),
             ],
-            &self.range_check_9_9_lookup_elements,
-            &self.range_check_9_9_b_lookup_elements,
-            &self.range_check_9_9_c_lookup_elements,
-            &self.range_check_9_9_d_lookup_elements,
-            &self.range_check_9_9_e_lookup_elements,
-            &self.range_check_9_9_f_lookup_elements,
-            &self.range_check_9_9_g_lookup_elements,
-            &self.range_check_9_9_h_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity),
             &[
+                M31_1662111297.clone(),
                 seq.clone()
                     + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE))
                     + E::F::from(M31::from(self.offset)),
@@ -258,19 +229,10 @@ impl FrameworkEval for BigEval {
     }
 }
 
-#[allow(clippy::too_many_arguments)]
 pub fn big_components_from_claim(
     log_sizes: &[u32],
     claimed_sums: &[SecureField],
-    lookup_elements: &relations::MemoryIdToBig,
-    range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
-    range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-    range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-    range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-    range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-    range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-    range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-    range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
+    common_lookup_elements: &relations::CommonLookupElements,
     tree_span_provider: &mut TraceLocationAllocator,
 ) -> Vec<BigComponent> {
     // Every component is responsible for a range of memory ids. The ids must not overlap. Use an
@@ -280,19 +242,7 @@ pub fn big_components_from_claim(
     for (&log_size, &claimed_sum) in log_sizes.iter().zip_eq(claimed_sums) {
         components.push(BigComponent::new(
             tree_span_provider,
-            BigEval::new(
-                log_size,
-                offset,
-                lookup_elements.clone(),
-                range_check_9_9_lookup_elements.clone(),
-                range_check_9_9_b_lookup_elements.clone(),
-                range_check_9_9_c_lookup_elements.clone(),
-                range_check_9_9_d_lookup_elements.clone(),
-                range_check_9_9_e_lookup_elements.clone(),
-                range_check_9_9_f_lookup_elements.clone(),
-                range_check_9_9_g_lookup_elements.clone(),
-                range_check_9_9_h_lookup_elements.clone(),
-            ),
+            BigEval::new(log_size, offset, common_lookup_elements.clone()),
             claimed_sum,
         ));
         offset += 1 << log_size;
@@ -302,28 +252,13 @@ pub fn big_components_from_claim(
 
 pub struct SmallEval {
     pub log_n_rows: u32,
-    pub lookup_elements: relations::MemoryIdToBig,
-    pub range_check_9_9_relation: relations::RangeCheck_9_9,
-    pub range_check_9_9_b_relation: relations::RangeCheck_9_9_B,
-    pub range_check_9_9_c_relation: relations::RangeCheck_9_9_C,
-    pub range_check_9_9_d_relation: relations::RangeCheck_9_9_D,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl SmallEval {
-    pub fn new(
-        claim: Claim,
-        lookup_elements: relations::MemoryIdToBig,
-        range_check_9_9_relation: relations::RangeCheck_9_9,
-        range_check_9_9_b_relation: relations::RangeCheck_9_9_B,
-        range_check_9_9_c_relation: relations::RangeCheck_9_9_C,
-        range_check_9_9_d_relation: relations::RangeCheck_9_9_D,
-    ) -> Self {
+    pub fn new(claim: Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
             log_n_rows: claim.small_log_size,
-            lookup_elements,
-            range_check_9_9_relation,
-            range_check_9_9_b_relation,
-            range_check_9_9_c_relation,
-            range_check_9_9_d_relation,
+            common_lookup_elements,
         }
     }
 }
@@ -336,7 +271,9 @@ impl FrameworkEval for SmallEval {
         self.log_size() + 1
     }
 
+    #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let memory_id_to_small_output_col0 = eval.next_trace_mask();
         let memory_id_to_small_output_col1 = eval.next_trace_mask();
@@ -359,16 +296,14 @@ impl FrameworkEval for SmallEval {
                 memory_id_to_small_output_col6.clone(),
                 memory_id_to_small_output_col7.clone(),
             ],
-            &self.range_check_9_9_relation,
-            &self.range_check_9_9_b_relation,
-            &self.range_check_9_9_c_relation,
-            &self.range_check_9_9_d_relation,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity),
             &[
+                M31_1662111297.clone(),
                 seq.clone(),
                 memory_id_to_small_output_col0.clone(),
                 memory_id_to_small_output_col1.clone(),
@@ -462,23 +397,11 @@ mod tests {
         let big_eval = BigEval {
             log_n_rows: 4,
             offset: 0,
-            lookup_elements: relations::MemoryIdToBig::dummy(),
-            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
-            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
-            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
-            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
-            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F::dummy(),
-            range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G::dummy(),
-            range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let small_eval = SmallEval {
             log_n_rows: 4,
-            lookup_elements: relations::MemoryIdToBig::dummy(),
-            range_check_9_9_relation: relations::RangeCheck_9_9::dummy(),
-            range_check_9_9_b_relation: relations::RangeCheck_9_9_B::dummy(),
-            range_check_9_9_c_relation: relations::RangeCheck_9_9_C::dummy(),
-            range_check_9_9_d_relation: relations::RangeCheck_9_9_D::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 
         let big_expr_eval = big_eval.evaluate(ExprEvaluator::new());

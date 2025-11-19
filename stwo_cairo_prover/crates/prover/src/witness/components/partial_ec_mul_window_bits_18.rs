@@ -226,14 +226,32 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_1410849886 = PackedM31::broadcast(M31::from(1410849886));
+    let M31_1444721856 = PackedM31::broadcast(M31::from(1444721856));
+    let M31_1621226978 = PackedM31::broadcast(M31::from(1621226978));
+    let M31_1813904000 = PackedM31::broadcast(M31::from(1813904000));
+    let M31_1830681619 = PackedM31::broadcast(M31::from(1830681619));
+    let M31_1847459238 = PackedM31::broadcast(M31::from(1847459238));
+    let M31_1864236857 = PackedM31::broadcast(M31::from(1864236857));
+    let M31_1881014476 = PackedM31::broadcast(M31::from(1881014476));
+    let M31_1897792095 = PackedM31::broadcast(M31::from(1897792095));
     let M31_2 = PackedM31::broadcast(M31::from(2));
+    let M31_2065568285 = PackedM31::broadcast(M31::from(2065568285));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
     let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_4 = PackedM31::broadcast(M31::from(4));
     let M31_4194304 = PackedM31::broadcast(M31::from(4194304));
+    let M31_447122465 = PackedM31::broadcast(M31::from(447122465));
+    let M31_463900084 = PackedM31::broadcast(M31::from(463900084));
+    let M31_480677703 = PackedM31::broadcast(M31::from(480677703));
+    let M31_497455322 = PackedM31::broadcast(M31::from(497455322));
+    let M31_514232941 = PackedM31::broadcast(M31::from(514232941));
+    let M31_517791011 = PackedM31::broadcast(M31::from(517791011));
     let M31_524288 = PackedM31::broadcast(M31::from(524288));
+    let M31_531010560 = PackedM31::broadcast(M31::from(531010560));
     let M31_64 = PackedM31::broadcast(M31::from(64));
     let M31_65536 = PackedM31::broadcast(M31::from(65536));
+    let M31_682009131 = PackedM31::broadcast(M31::from(682009131));
     let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt32_131072 = PackedUInt32::broadcast(UInt32::from(131072));
     let UInt32_262143 = PackedUInt32::broadcast(UInt32::from(262143));
@@ -573,6 +591,7 @@ fn write_trace_simd(
                     pedersen_points_table_window_bits_18_output_tmp_3cd4f_0[1].get_m31(27);
                 *row[127] = pedersen_points_table_window_bits_18_output_limb_55_col127;
                 *lookup_data.pedersen_points_table_window_bits_18_0 = [
+                    M31_1444721856,
                     (((M31_262144) * (input_limb_1_col1)) + (input_limb_2_col2)),
                     pedersen_points_table_window_bits_18_output_limb_0_col72,
                     pedersen_points_table_window_bits_18_output_limb_1_col73,
@@ -700,46 +719,60 @@ fn write_trace_simd(
 
                 *sub_component_inputs.range_check_9_9[0] =
                     [slope_limb_0_col128, slope_limb_1_col129];
-                *lookup_data.range_check_9_9_0 = [slope_limb_0_col128, slope_limb_1_col129];
+                *lookup_data.range_check_9_9_0 =
+                    [M31_517791011, slope_limb_0_col128, slope_limb_1_col129];
                 *sub_component_inputs.range_check_9_9_b[0] =
                     [slope_limb_2_col130, slope_limb_3_col131];
-                *lookup_data.range_check_9_9_b_0 = [slope_limb_2_col130, slope_limb_3_col131];
+                *lookup_data.range_check_9_9_b_0 =
+                    [M31_1897792095, slope_limb_2_col130, slope_limb_3_col131];
                 *sub_component_inputs.range_check_9_9_c[0] =
                     [slope_limb_4_col132, slope_limb_5_col133];
-                *lookup_data.range_check_9_9_c_0 = [slope_limb_4_col132, slope_limb_5_col133];
+                *lookup_data.range_check_9_9_c_0 =
+                    [M31_1881014476, slope_limb_4_col132, slope_limb_5_col133];
                 *sub_component_inputs.range_check_9_9_d[0] =
                     [slope_limb_6_col134, slope_limb_7_col135];
-                *lookup_data.range_check_9_9_d_0 = [slope_limb_6_col134, slope_limb_7_col135];
+                *lookup_data.range_check_9_9_d_0 =
+                    [M31_1864236857, slope_limb_6_col134, slope_limb_7_col135];
                 *sub_component_inputs.range_check_9_9_e[0] =
                     [slope_limb_8_col136, slope_limb_9_col137];
-                *lookup_data.range_check_9_9_e_0 = [slope_limb_8_col136, slope_limb_9_col137];
+                *lookup_data.range_check_9_9_e_0 =
+                    [M31_1847459238, slope_limb_8_col136, slope_limb_9_col137];
                 *sub_component_inputs.range_check_9_9_f[0] =
                     [slope_limb_10_col138, slope_limb_11_col139];
-                *lookup_data.range_check_9_9_f_0 = [slope_limb_10_col138, slope_limb_11_col139];
+                *lookup_data.range_check_9_9_f_0 =
+                    [M31_1830681619, slope_limb_10_col138, slope_limb_11_col139];
                 *sub_component_inputs.range_check_9_9_g[0] =
                     [slope_limb_12_col140, slope_limb_13_col141];
-                *lookup_data.range_check_9_9_g_0 = [slope_limb_12_col140, slope_limb_13_col141];
+                *lookup_data.range_check_9_9_g_0 =
+                    [M31_1813904000, slope_limb_12_col140, slope_limb_13_col141];
                 *sub_component_inputs.range_check_9_9_h[0] =
                     [slope_limb_14_col142, slope_limb_15_col143];
-                *lookup_data.range_check_9_9_h_0 = [slope_limb_14_col142, slope_limb_15_col143];
+                *lookup_data.range_check_9_9_h_0 =
+                    [M31_2065568285, slope_limb_14_col142, slope_limb_15_col143];
                 *sub_component_inputs.range_check_9_9[1] =
                     [slope_limb_16_col144, slope_limb_17_col145];
-                *lookup_data.range_check_9_9_1 = [slope_limb_16_col144, slope_limb_17_col145];
+                *lookup_data.range_check_9_9_1 =
+                    [M31_517791011, slope_limb_16_col144, slope_limb_17_col145];
                 *sub_component_inputs.range_check_9_9_b[1] =
                     [slope_limb_18_col146, slope_limb_19_col147];
-                *lookup_data.range_check_9_9_b_1 = [slope_limb_18_col146, slope_limb_19_col147];
+                *lookup_data.range_check_9_9_b_1 =
+                    [M31_1897792095, slope_limb_18_col146, slope_limb_19_col147];
                 *sub_component_inputs.range_check_9_9_c[1] =
                     [slope_limb_20_col148, slope_limb_21_col149];
-                *lookup_data.range_check_9_9_c_1 = [slope_limb_20_col148, slope_limb_21_col149];
+                *lookup_data.range_check_9_9_c_1 =
+                    [M31_1881014476, slope_limb_20_col148, slope_limb_21_col149];
                 *sub_component_inputs.range_check_9_9_d[1] =
                     [slope_limb_22_col150, slope_limb_23_col151];
-                *lookup_data.range_check_9_9_d_1 = [slope_limb_22_col150, slope_limb_23_col151];
+                *lookup_data.range_check_9_9_d_1 =
+                    [M31_1864236857, slope_limb_22_col150, slope_limb_23_col151];
                 *sub_component_inputs.range_check_9_9_e[1] =
                     [slope_limb_24_col152, slope_limb_25_col153];
-                *lookup_data.range_check_9_9_e_1 = [slope_limb_24_col152, slope_limb_25_col153];
+                *lookup_data.range_check_9_9_e_1 =
+                    [M31_1847459238, slope_limb_24_col152, slope_limb_25_col153];
                 *sub_component_inputs.range_check_9_9_f[1] =
                     [slope_limb_26_col154, slope_limb_27_col155];
-                *lookup_data.range_check_9_9_f_1 = [slope_limb_26_col154, slope_limb_27_col155];
+                *lookup_data.range_check_9_9_f_1 =
+                    [M31_1830681619, slope_limb_26_col154, slope_limb_27_col155];
 
                 // Verify Mul 252.
 
@@ -2278,142 +2311,168 @@ fn write_trace_simd(
                     + (((k_mod_2_18_biased_tmp_3cd4f_22.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[156] = k_col156;
                 *sub_component_inputs.range_check_20[0] = [((k_col156) + (M31_524288))];
-                *lookup_data.range_check_20_0 = [((k_col156) + (M31_524288))];
+                *lookup_data.range_check_20_0 = [M31_1410849886, ((k_col156) + (M31_524288))];
                 let carry_0_col157 = (((conv_mod_tmp_3cd4f_21[0]) - (k_col156)) * (M31_4194304));
                 *row[157] = carry_0_col157;
                 *sub_component_inputs.range_check_20_b[0] = [((carry_0_col157) + (M31_524288))];
-                *lookup_data.range_check_20_b_0 = [((carry_0_col157) + (M31_524288))];
+                *lookup_data.range_check_20_b_0 =
+                    [M31_514232941, ((carry_0_col157) + (M31_524288))];
                 let carry_1_col158 =
                     (((conv_mod_tmp_3cd4f_21[1]) + (carry_0_col157)) * (M31_4194304));
                 *row[158] = carry_1_col158;
                 *sub_component_inputs.range_check_20_c[0] = [((carry_1_col158) + (M31_524288))];
-                *lookup_data.range_check_20_c_0 = [((carry_1_col158) + (M31_524288))];
+                *lookup_data.range_check_20_c_0 =
+                    [M31_531010560, ((carry_1_col158) + (M31_524288))];
                 let carry_2_col159 =
                     (((conv_mod_tmp_3cd4f_21[2]) + (carry_1_col158)) * (M31_4194304));
                 *row[159] = carry_2_col159;
                 *sub_component_inputs.range_check_20_d[0] = [((carry_2_col159) + (M31_524288))];
-                *lookup_data.range_check_20_d_0 = [((carry_2_col159) + (M31_524288))];
+                *lookup_data.range_check_20_d_0 =
+                    [M31_480677703, ((carry_2_col159) + (M31_524288))];
                 let carry_3_col160 =
                     (((conv_mod_tmp_3cd4f_21[3]) + (carry_2_col159)) * (M31_4194304));
                 *row[160] = carry_3_col160;
                 *sub_component_inputs.range_check_20_e[0] = [((carry_3_col160) + (M31_524288))];
-                *lookup_data.range_check_20_e_0 = [((carry_3_col160) + (M31_524288))];
+                *lookup_data.range_check_20_e_0 =
+                    [M31_497455322, ((carry_3_col160) + (M31_524288))];
                 let carry_4_col161 =
                     (((conv_mod_tmp_3cd4f_21[4]) + (carry_3_col160)) * (M31_4194304));
                 *row[161] = carry_4_col161;
                 *sub_component_inputs.range_check_20_f[0] = [((carry_4_col161) + (M31_524288))];
-                *lookup_data.range_check_20_f_0 = [((carry_4_col161) + (M31_524288))];
+                *lookup_data.range_check_20_f_0 =
+                    [M31_447122465, ((carry_4_col161) + (M31_524288))];
                 let carry_5_col162 =
                     (((conv_mod_tmp_3cd4f_21[5]) + (carry_4_col161)) * (M31_4194304));
                 *row[162] = carry_5_col162;
                 *sub_component_inputs.range_check_20_g[0] = [((carry_5_col162) + (M31_524288))];
-                *lookup_data.range_check_20_g_0 = [((carry_5_col162) + (M31_524288))];
+                *lookup_data.range_check_20_g_0 =
+                    [M31_463900084, ((carry_5_col162) + (M31_524288))];
                 let carry_6_col163 =
                     (((conv_mod_tmp_3cd4f_21[6]) + (carry_5_col162)) * (M31_4194304));
                 *row[163] = carry_6_col163;
                 *sub_component_inputs.range_check_20_h[0] = [((carry_6_col163) + (M31_524288))];
-                *lookup_data.range_check_20_h_0 = [((carry_6_col163) + (M31_524288))];
+                *lookup_data.range_check_20_h_0 =
+                    [M31_682009131, ((carry_6_col163) + (M31_524288))];
                 let carry_7_col164 =
                     (((conv_mod_tmp_3cd4f_21[7]) + (carry_6_col163)) * (M31_4194304));
                 *row[164] = carry_7_col164;
                 *sub_component_inputs.range_check_20[1] = [((carry_7_col164) + (M31_524288))];
-                *lookup_data.range_check_20_1 = [((carry_7_col164) + (M31_524288))];
+                *lookup_data.range_check_20_1 = [M31_1410849886, ((carry_7_col164) + (M31_524288))];
                 let carry_8_col165 =
                     (((conv_mod_tmp_3cd4f_21[8]) + (carry_7_col164)) * (M31_4194304));
                 *row[165] = carry_8_col165;
                 *sub_component_inputs.range_check_20_b[1] = [((carry_8_col165) + (M31_524288))];
-                *lookup_data.range_check_20_b_1 = [((carry_8_col165) + (M31_524288))];
+                *lookup_data.range_check_20_b_1 =
+                    [M31_514232941, ((carry_8_col165) + (M31_524288))];
                 let carry_9_col166 =
                     (((conv_mod_tmp_3cd4f_21[9]) + (carry_8_col165)) * (M31_4194304));
                 *row[166] = carry_9_col166;
                 *sub_component_inputs.range_check_20_c[1] = [((carry_9_col166) + (M31_524288))];
-                *lookup_data.range_check_20_c_1 = [((carry_9_col166) + (M31_524288))];
+                *lookup_data.range_check_20_c_1 =
+                    [M31_531010560, ((carry_9_col166) + (M31_524288))];
                 let carry_10_col167 =
                     (((conv_mod_tmp_3cd4f_21[10]) + (carry_9_col166)) * (M31_4194304));
                 *row[167] = carry_10_col167;
                 *sub_component_inputs.range_check_20_d[1] = [((carry_10_col167) + (M31_524288))];
-                *lookup_data.range_check_20_d_1 = [((carry_10_col167) + (M31_524288))];
+                *lookup_data.range_check_20_d_1 =
+                    [M31_480677703, ((carry_10_col167) + (M31_524288))];
                 let carry_11_col168 =
                     (((conv_mod_tmp_3cd4f_21[11]) + (carry_10_col167)) * (M31_4194304));
                 *row[168] = carry_11_col168;
                 *sub_component_inputs.range_check_20_e[1] = [((carry_11_col168) + (M31_524288))];
-                *lookup_data.range_check_20_e_1 = [((carry_11_col168) + (M31_524288))];
+                *lookup_data.range_check_20_e_1 =
+                    [M31_497455322, ((carry_11_col168) + (M31_524288))];
                 let carry_12_col169 =
                     (((conv_mod_tmp_3cd4f_21[12]) + (carry_11_col168)) * (M31_4194304));
                 *row[169] = carry_12_col169;
                 *sub_component_inputs.range_check_20_f[1] = [((carry_12_col169) + (M31_524288))];
-                *lookup_data.range_check_20_f_1 = [((carry_12_col169) + (M31_524288))];
+                *lookup_data.range_check_20_f_1 =
+                    [M31_447122465, ((carry_12_col169) + (M31_524288))];
                 let carry_13_col170 =
                     (((conv_mod_tmp_3cd4f_21[13]) + (carry_12_col169)) * (M31_4194304));
                 *row[170] = carry_13_col170;
                 *sub_component_inputs.range_check_20_g[1] = [((carry_13_col170) + (M31_524288))];
-                *lookup_data.range_check_20_g_1 = [((carry_13_col170) + (M31_524288))];
+                *lookup_data.range_check_20_g_1 =
+                    [M31_463900084, ((carry_13_col170) + (M31_524288))];
                 let carry_14_col171 =
                     (((conv_mod_tmp_3cd4f_21[14]) + (carry_13_col170)) * (M31_4194304));
                 *row[171] = carry_14_col171;
                 *sub_component_inputs.range_check_20_h[1] = [((carry_14_col171) + (M31_524288))];
-                *lookup_data.range_check_20_h_1 = [((carry_14_col171) + (M31_524288))];
+                *lookup_data.range_check_20_h_1 =
+                    [M31_682009131, ((carry_14_col171) + (M31_524288))];
                 let carry_15_col172 =
                     (((conv_mod_tmp_3cd4f_21[15]) + (carry_14_col171)) * (M31_4194304));
                 *row[172] = carry_15_col172;
                 *sub_component_inputs.range_check_20[2] = [((carry_15_col172) + (M31_524288))];
-                *lookup_data.range_check_20_2 = [((carry_15_col172) + (M31_524288))];
+                *lookup_data.range_check_20_2 =
+                    [M31_1410849886, ((carry_15_col172) + (M31_524288))];
                 let carry_16_col173 =
                     (((conv_mod_tmp_3cd4f_21[16]) + (carry_15_col172)) * (M31_4194304));
                 *row[173] = carry_16_col173;
                 *sub_component_inputs.range_check_20_b[2] = [((carry_16_col173) + (M31_524288))];
-                *lookup_data.range_check_20_b_2 = [((carry_16_col173) + (M31_524288))];
+                *lookup_data.range_check_20_b_2 =
+                    [M31_514232941, ((carry_16_col173) + (M31_524288))];
                 let carry_17_col174 =
                     (((conv_mod_tmp_3cd4f_21[17]) + (carry_16_col173)) * (M31_4194304));
                 *row[174] = carry_17_col174;
                 *sub_component_inputs.range_check_20_c[2] = [((carry_17_col174) + (M31_524288))];
-                *lookup_data.range_check_20_c_2 = [((carry_17_col174) + (M31_524288))];
+                *lookup_data.range_check_20_c_2 =
+                    [M31_531010560, ((carry_17_col174) + (M31_524288))];
                 let carry_18_col175 =
                     (((conv_mod_tmp_3cd4f_21[18]) + (carry_17_col174)) * (M31_4194304));
                 *row[175] = carry_18_col175;
                 *sub_component_inputs.range_check_20_d[2] = [((carry_18_col175) + (M31_524288))];
-                *lookup_data.range_check_20_d_2 = [((carry_18_col175) + (M31_524288))];
+                *lookup_data.range_check_20_d_2 =
+                    [M31_480677703, ((carry_18_col175) + (M31_524288))];
                 let carry_19_col176 =
                     (((conv_mod_tmp_3cd4f_21[19]) + (carry_18_col175)) * (M31_4194304));
                 *row[176] = carry_19_col176;
                 *sub_component_inputs.range_check_20_e[2] = [((carry_19_col176) + (M31_524288))];
-                *lookup_data.range_check_20_e_2 = [((carry_19_col176) + (M31_524288))];
+                *lookup_data.range_check_20_e_2 =
+                    [M31_497455322, ((carry_19_col176) + (M31_524288))];
                 let carry_20_col177 =
                     (((conv_mod_tmp_3cd4f_21[20]) + (carry_19_col176)) * (M31_4194304));
                 *row[177] = carry_20_col177;
                 *sub_component_inputs.range_check_20_f[2] = [((carry_20_col177) + (M31_524288))];
-                *lookup_data.range_check_20_f_2 = [((carry_20_col177) + (M31_524288))];
+                *lookup_data.range_check_20_f_2 =
+                    [M31_447122465, ((carry_20_col177) + (M31_524288))];
                 let carry_21_col178 = ((((conv_mod_tmp_3cd4f_21[21]) - ((M31_136) * (k_col156)))
                     + (carry_20_col177))
                     * (M31_4194304));
                 *row[178] = carry_21_col178;
                 *sub_component_inputs.range_check_20_g[2] = [((carry_21_col178) + (M31_524288))];
-                *lookup_data.range_check_20_g_2 = [((carry_21_col178) + (M31_524288))];
+                *lookup_data.range_check_20_g_2 =
+                    [M31_463900084, ((carry_21_col178) + (M31_524288))];
                 let carry_22_col179 =
                     (((conv_mod_tmp_3cd4f_21[22]) + (carry_21_col178)) * (M31_4194304));
                 *row[179] = carry_22_col179;
                 *sub_component_inputs.range_check_20_h[2] = [((carry_22_col179) + (M31_524288))];
-                *lookup_data.range_check_20_h_2 = [((carry_22_col179) + (M31_524288))];
+                *lookup_data.range_check_20_h_2 =
+                    [M31_682009131, ((carry_22_col179) + (M31_524288))];
                 let carry_23_col180 =
                     (((conv_mod_tmp_3cd4f_21[23]) + (carry_22_col179)) * (M31_4194304));
                 *row[180] = carry_23_col180;
                 *sub_component_inputs.range_check_20[3] = [((carry_23_col180) + (M31_524288))];
-                *lookup_data.range_check_20_3 = [((carry_23_col180) + (M31_524288))];
+                *lookup_data.range_check_20_3 =
+                    [M31_1410849886, ((carry_23_col180) + (M31_524288))];
                 let carry_24_col181 =
                     (((conv_mod_tmp_3cd4f_21[24]) + (carry_23_col180)) * (M31_4194304));
                 *row[181] = carry_24_col181;
                 *sub_component_inputs.range_check_20_b[3] = [((carry_24_col181) + (M31_524288))];
-                *lookup_data.range_check_20_b_3 = [((carry_24_col181) + (M31_524288))];
+                *lookup_data.range_check_20_b_3 =
+                    [M31_514232941, ((carry_24_col181) + (M31_524288))];
                 let carry_25_col182 =
                     (((conv_mod_tmp_3cd4f_21[25]) + (carry_24_col181)) * (M31_4194304));
                 *row[182] = carry_25_col182;
                 *sub_component_inputs.range_check_20_c[3] = [((carry_25_col182) + (M31_524288))];
-                *lookup_data.range_check_20_c_3 = [((carry_25_col182) + (M31_524288))];
+                *lookup_data.range_check_20_c_3 =
+                    [M31_531010560, ((carry_25_col182) + (M31_524288))];
                 let carry_26_col183 =
                     (((conv_mod_tmp_3cd4f_21[26]) + (carry_25_col182)) * (M31_4194304));
                 *row[183] = carry_26_col183;
                 *sub_component_inputs.range_check_20_d[3] = [((carry_26_col183) + (M31_524288))];
-                *lookup_data.range_check_20_d_3 = [((carry_26_col183) + (M31_524288))];
+                *lookup_data.range_check_20_d_3 =
+                    [M31_480677703, ((carry_26_col183) + (M31_524288))];
 
                 let result_x_tmp_3cd4f_23 = ((((slope_tmp_3cd4f_1) * (slope_tmp_3cd4f_1))
                     - (partial_ec_mul_window_bits_18_input.2 .1[0]))
@@ -2479,54 +2538,102 @@ fn write_trace_simd(
 
                 *sub_component_inputs.range_check_9_9[2] =
                     [result_x_limb_0_col184, result_x_limb_1_col185];
-                *lookup_data.range_check_9_9_2 = [result_x_limb_0_col184, result_x_limb_1_col185];
+                *lookup_data.range_check_9_9_2 = [
+                    M31_517791011,
+                    result_x_limb_0_col184,
+                    result_x_limb_1_col185,
+                ];
                 *sub_component_inputs.range_check_9_9_b[2] =
                     [result_x_limb_2_col186, result_x_limb_3_col187];
-                *lookup_data.range_check_9_9_b_2 = [result_x_limb_2_col186, result_x_limb_3_col187];
+                *lookup_data.range_check_9_9_b_2 = [
+                    M31_1897792095,
+                    result_x_limb_2_col186,
+                    result_x_limb_3_col187,
+                ];
                 *sub_component_inputs.range_check_9_9_c[2] =
                     [result_x_limb_4_col188, result_x_limb_5_col189];
-                *lookup_data.range_check_9_9_c_2 = [result_x_limb_4_col188, result_x_limb_5_col189];
+                *lookup_data.range_check_9_9_c_2 = [
+                    M31_1881014476,
+                    result_x_limb_4_col188,
+                    result_x_limb_5_col189,
+                ];
                 *sub_component_inputs.range_check_9_9_d[2] =
                     [result_x_limb_6_col190, result_x_limb_7_col191];
-                *lookup_data.range_check_9_9_d_2 = [result_x_limb_6_col190, result_x_limb_7_col191];
+                *lookup_data.range_check_9_9_d_2 = [
+                    M31_1864236857,
+                    result_x_limb_6_col190,
+                    result_x_limb_7_col191,
+                ];
                 *sub_component_inputs.range_check_9_9_e[2] =
                     [result_x_limb_8_col192, result_x_limb_9_col193];
-                *lookup_data.range_check_9_9_e_2 = [result_x_limb_8_col192, result_x_limb_9_col193];
+                *lookup_data.range_check_9_9_e_2 = [
+                    M31_1847459238,
+                    result_x_limb_8_col192,
+                    result_x_limb_9_col193,
+                ];
                 *sub_component_inputs.range_check_9_9_f[2] =
                     [result_x_limb_10_col194, result_x_limb_11_col195];
-                *lookup_data.range_check_9_9_f_2 =
-                    [result_x_limb_10_col194, result_x_limb_11_col195];
+                *lookup_data.range_check_9_9_f_2 = [
+                    M31_1830681619,
+                    result_x_limb_10_col194,
+                    result_x_limb_11_col195,
+                ];
                 *sub_component_inputs.range_check_9_9_g[1] =
                     [result_x_limb_12_col196, result_x_limb_13_col197];
-                *lookup_data.range_check_9_9_g_1 =
-                    [result_x_limb_12_col196, result_x_limb_13_col197];
+                *lookup_data.range_check_9_9_g_1 = [
+                    M31_1813904000,
+                    result_x_limb_12_col196,
+                    result_x_limb_13_col197,
+                ];
                 *sub_component_inputs.range_check_9_9_h[1] =
                     [result_x_limb_14_col198, result_x_limb_15_col199];
-                *lookup_data.range_check_9_9_h_1 =
-                    [result_x_limb_14_col198, result_x_limb_15_col199];
+                *lookup_data.range_check_9_9_h_1 = [
+                    M31_2065568285,
+                    result_x_limb_14_col198,
+                    result_x_limb_15_col199,
+                ];
                 *sub_component_inputs.range_check_9_9[3] =
                     [result_x_limb_16_col200, result_x_limb_17_col201];
-                *lookup_data.range_check_9_9_3 = [result_x_limb_16_col200, result_x_limb_17_col201];
+                *lookup_data.range_check_9_9_3 = [
+                    M31_517791011,
+                    result_x_limb_16_col200,
+                    result_x_limb_17_col201,
+                ];
                 *sub_component_inputs.range_check_9_9_b[3] =
                     [result_x_limb_18_col202, result_x_limb_19_col203];
-                *lookup_data.range_check_9_9_b_3 =
-                    [result_x_limb_18_col202, result_x_limb_19_col203];
+                *lookup_data.range_check_9_9_b_3 = [
+                    M31_1897792095,
+                    result_x_limb_18_col202,
+                    result_x_limb_19_col203,
+                ];
                 *sub_component_inputs.range_check_9_9_c[3] =
                     [result_x_limb_20_col204, result_x_limb_21_col205];
-                *lookup_data.range_check_9_9_c_3 =
-                    [result_x_limb_20_col204, result_x_limb_21_col205];
+                *lookup_data.range_check_9_9_c_3 = [
+                    M31_1881014476,
+                    result_x_limb_20_col204,
+                    result_x_limb_21_col205,
+                ];
                 *sub_component_inputs.range_check_9_9_d[3] =
                     [result_x_limb_22_col206, result_x_limb_23_col207];
-                *lookup_data.range_check_9_9_d_3 =
-                    [result_x_limb_22_col206, result_x_limb_23_col207];
+                *lookup_data.range_check_9_9_d_3 = [
+                    M31_1864236857,
+                    result_x_limb_22_col206,
+                    result_x_limb_23_col207,
+                ];
                 *sub_component_inputs.range_check_9_9_e[3] =
                     [result_x_limb_24_col208, result_x_limb_25_col209];
-                *lookup_data.range_check_9_9_e_3 =
-                    [result_x_limb_24_col208, result_x_limb_25_col209];
+                *lookup_data.range_check_9_9_e_3 = [
+                    M31_1847459238,
+                    result_x_limb_24_col208,
+                    result_x_limb_25_col209,
+                ];
                 *sub_component_inputs.range_check_9_9_f[3] =
                     [result_x_limb_26_col210, result_x_limb_27_col211];
-                *lookup_data.range_check_9_9_f_3 =
-                    [result_x_limb_26_col210, result_x_limb_27_col211];
+                *lookup_data.range_check_9_9_f_3 = [
+                    M31_1830681619,
+                    result_x_limb_26_col210,
+                    result_x_limb_27_col211,
+                ];
 
                 // Verify Mul 252.
 
@@ -3617,142 +3724,168 @@ fn write_trace_simd(
                     + (((k_mod_2_18_biased_tmp_3cd4f_44.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[212] = k_col212;
                 *sub_component_inputs.range_check_20[4] = [((k_col212) + (M31_524288))];
-                *lookup_data.range_check_20_4 = [((k_col212) + (M31_524288))];
+                *lookup_data.range_check_20_4 = [M31_1410849886, ((k_col212) + (M31_524288))];
                 let carry_0_col213 = (((conv_mod_tmp_3cd4f_43[0]) - (k_col212)) * (M31_4194304));
                 *row[213] = carry_0_col213;
                 *sub_component_inputs.range_check_20_b[4] = [((carry_0_col213) + (M31_524288))];
-                *lookup_data.range_check_20_b_4 = [((carry_0_col213) + (M31_524288))];
+                *lookup_data.range_check_20_b_4 =
+                    [M31_514232941, ((carry_0_col213) + (M31_524288))];
                 let carry_1_col214 =
                     (((conv_mod_tmp_3cd4f_43[1]) + (carry_0_col213)) * (M31_4194304));
                 *row[214] = carry_1_col214;
                 *sub_component_inputs.range_check_20_c[4] = [((carry_1_col214) + (M31_524288))];
-                *lookup_data.range_check_20_c_4 = [((carry_1_col214) + (M31_524288))];
+                *lookup_data.range_check_20_c_4 =
+                    [M31_531010560, ((carry_1_col214) + (M31_524288))];
                 let carry_2_col215 =
                     (((conv_mod_tmp_3cd4f_43[2]) + (carry_1_col214)) * (M31_4194304));
                 *row[215] = carry_2_col215;
                 *sub_component_inputs.range_check_20_d[4] = [((carry_2_col215) + (M31_524288))];
-                *lookup_data.range_check_20_d_4 = [((carry_2_col215) + (M31_524288))];
+                *lookup_data.range_check_20_d_4 =
+                    [M31_480677703, ((carry_2_col215) + (M31_524288))];
                 let carry_3_col216 =
                     (((conv_mod_tmp_3cd4f_43[3]) + (carry_2_col215)) * (M31_4194304));
                 *row[216] = carry_3_col216;
                 *sub_component_inputs.range_check_20_e[3] = [((carry_3_col216) + (M31_524288))];
-                *lookup_data.range_check_20_e_3 = [((carry_3_col216) + (M31_524288))];
+                *lookup_data.range_check_20_e_3 =
+                    [M31_497455322, ((carry_3_col216) + (M31_524288))];
                 let carry_4_col217 =
                     (((conv_mod_tmp_3cd4f_43[4]) + (carry_3_col216)) * (M31_4194304));
                 *row[217] = carry_4_col217;
                 *sub_component_inputs.range_check_20_f[3] = [((carry_4_col217) + (M31_524288))];
-                *lookup_data.range_check_20_f_3 = [((carry_4_col217) + (M31_524288))];
+                *lookup_data.range_check_20_f_3 =
+                    [M31_447122465, ((carry_4_col217) + (M31_524288))];
                 let carry_5_col218 =
                     (((conv_mod_tmp_3cd4f_43[5]) + (carry_4_col217)) * (M31_4194304));
                 *row[218] = carry_5_col218;
                 *sub_component_inputs.range_check_20_g[3] = [((carry_5_col218) + (M31_524288))];
-                *lookup_data.range_check_20_g_3 = [((carry_5_col218) + (M31_524288))];
+                *lookup_data.range_check_20_g_3 =
+                    [M31_463900084, ((carry_5_col218) + (M31_524288))];
                 let carry_6_col219 =
                     (((conv_mod_tmp_3cd4f_43[6]) + (carry_5_col218)) * (M31_4194304));
                 *row[219] = carry_6_col219;
                 *sub_component_inputs.range_check_20_h[3] = [((carry_6_col219) + (M31_524288))];
-                *lookup_data.range_check_20_h_3 = [((carry_6_col219) + (M31_524288))];
+                *lookup_data.range_check_20_h_3 =
+                    [M31_682009131, ((carry_6_col219) + (M31_524288))];
                 let carry_7_col220 =
                     (((conv_mod_tmp_3cd4f_43[7]) + (carry_6_col219)) * (M31_4194304));
                 *row[220] = carry_7_col220;
                 *sub_component_inputs.range_check_20[5] = [((carry_7_col220) + (M31_524288))];
-                *lookup_data.range_check_20_5 = [((carry_7_col220) + (M31_524288))];
+                *lookup_data.range_check_20_5 = [M31_1410849886, ((carry_7_col220) + (M31_524288))];
                 let carry_8_col221 =
                     (((conv_mod_tmp_3cd4f_43[8]) + (carry_7_col220)) * (M31_4194304));
                 *row[221] = carry_8_col221;
                 *sub_component_inputs.range_check_20_b[5] = [((carry_8_col221) + (M31_524288))];
-                *lookup_data.range_check_20_b_5 = [((carry_8_col221) + (M31_524288))];
+                *lookup_data.range_check_20_b_5 =
+                    [M31_514232941, ((carry_8_col221) + (M31_524288))];
                 let carry_9_col222 =
                     (((conv_mod_tmp_3cd4f_43[9]) + (carry_8_col221)) * (M31_4194304));
                 *row[222] = carry_9_col222;
                 *sub_component_inputs.range_check_20_c[5] = [((carry_9_col222) + (M31_524288))];
-                *lookup_data.range_check_20_c_5 = [((carry_9_col222) + (M31_524288))];
+                *lookup_data.range_check_20_c_5 =
+                    [M31_531010560, ((carry_9_col222) + (M31_524288))];
                 let carry_10_col223 =
                     (((conv_mod_tmp_3cd4f_43[10]) + (carry_9_col222)) * (M31_4194304));
                 *row[223] = carry_10_col223;
                 *sub_component_inputs.range_check_20_d[5] = [((carry_10_col223) + (M31_524288))];
-                *lookup_data.range_check_20_d_5 = [((carry_10_col223) + (M31_524288))];
+                *lookup_data.range_check_20_d_5 =
+                    [M31_480677703, ((carry_10_col223) + (M31_524288))];
                 let carry_11_col224 =
                     (((conv_mod_tmp_3cd4f_43[11]) + (carry_10_col223)) * (M31_4194304));
                 *row[224] = carry_11_col224;
                 *sub_component_inputs.range_check_20_e[4] = [((carry_11_col224) + (M31_524288))];
-                *lookup_data.range_check_20_e_4 = [((carry_11_col224) + (M31_524288))];
+                *lookup_data.range_check_20_e_4 =
+                    [M31_497455322, ((carry_11_col224) + (M31_524288))];
                 let carry_12_col225 =
                     (((conv_mod_tmp_3cd4f_43[12]) + (carry_11_col224)) * (M31_4194304));
                 *row[225] = carry_12_col225;
                 *sub_component_inputs.range_check_20_f[4] = [((carry_12_col225) + (M31_524288))];
-                *lookup_data.range_check_20_f_4 = [((carry_12_col225) + (M31_524288))];
+                *lookup_data.range_check_20_f_4 =
+                    [M31_447122465, ((carry_12_col225) + (M31_524288))];
                 let carry_13_col226 =
                     (((conv_mod_tmp_3cd4f_43[13]) + (carry_12_col225)) * (M31_4194304));
                 *row[226] = carry_13_col226;
                 *sub_component_inputs.range_check_20_g[4] = [((carry_13_col226) + (M31_524288))];
-                *lookup_data.range_check_20_g_4 = [((carry_13_col226) + (M31_524288))];
+                *lookup_data.range_check_20_g_4 =
+                    [M31_463900084, ((carry_13_col226) + (M31_524288))];
                 let carry_14_col227 =
                     (((conv_mod_tmp_3cd4f_43[14]) + (carry_13_col226)) * (M31_4194304));
                 *row[227] = carry_14_col227;
                 *sub_component_inputs.range_check_20_h[4] = [((carry_14_col227) + (M31_524288))];
-                *lookup_data.range_check_20_h_4 = [((carry_14_col227) + (M31_524288))];
+                *lookup_data.range_check_20_h_4 =
+                    [M31_682009131, ((carry_14_col227) + (M31_524288))];
                 let carry_15_col228 =
                     (((conv_mod_tmp_3cd4f_43[15]) + (carry_14_col227)) * (M31_4194304));
                 *row[228] = carry_15_col228;
                 *sub_component_inputs.range_check_20[6] = [((carry_15_col228) + (M31_524288))];
-                *lookup_data.range_check_20_6 = [((carry_15_col228) + (M31_524288))];
+                *lookup_data.range_check_20_6 =
+                    [M31_1410849886, ((carry_15_col228) + (M31_524288))];
                 let carry_16_col229 =
                     (((conv_mod_tmp_3cd4f_43[16]) + (carry_15_col228)) * (M31_4194304));
                 *row[229] = carry_16_col229;
                 *sub_component_inputs.range_check_20_b[6] = [((carry_16_col229) + (M31_524288))];
-                *lookup_data.range_check_20_b_6 = [((carry_16_col229) + (M31_524288))];
+                *lookup_data.range_check_20_b_6 =
+                    [M31_514232941, ((carry_16_col229) + (M31_524288))];
                 let carry_17_col230 =
                     (((conv_mod_tmp_3cd4f_43[17]) + (carry_16_col229)) * (M31_4194304));
                 *row[230] = carry_17_col230;
                 *sub_component_inputs.range_check_20_c[6] = [((carry_17_col230) + (M31_524288))];
-                *lookup_data.range_check_20_c_6 = [((carry_17_col230) + (M31_524288))];
+                *lookup_data.range_check_20_c_6 =
+                    [M31_531010560, ((carry_17_col230) + (M31_524288))];
                 let carry_18_col231 =
                     (((conv_mod_tmp_3cd4f_43[18]) + (carry_17_col230)) * (M31_4194304));
                 *row[231] = carry_18_col231;
                 *sub_component_inputs.range_check_20_d[6] = [((carry_18_col231) + (M31_524288))];
-                *lookup_data.range_check_20_d_6 = [((carry_18_col231) + (M31_524288))];
+                *lookup_data.range_check_20_d_6 =
+                    [M31_480677703, ((carry_18_col231) + (M31_524288))];
                 let carry_19_col232 =
                     (((conv_mod_tmp_3cd4f_43[19]) + (carry_18_col231)) * (M31_4194304));
                 *row[232] = carry_19_col232;
                 *sub_component_inputs.range_check_20_e[5] = [((carry_19_col232) + (M31_524288))];
-                *lookup_data.range_check_20_e_5 = [((carry_19_col232) + (M31_524288))];
+                *lookup_data.range_check_20_e_5 =
+                    [M31_497455322, ((carry_19_col232) + (M31_524288))];
                 let carry_20_col233 =
                     (((conv_mod_tmp_3cd4f_43[20]) + (carry_19_col232)) * (M31_4194304));
                 *row[233] = carry_20_col233;
                 *sub_component_inputs.range_check_20_f[5] = [((carry_20_col233) + (M31_524288))];
-                *lookup_data.range_check_20_f_5 = [((carry_20_col233) + (M31_524288))];
+                *lookup_data.range_check_20_f_5 =
+                    [M31_447122465, ((carry_20_col233) + (M31_524288))];
                 let carry_21_col234 = ((((conv_mod_tmp_3cd4f_43[21]) - ((M31_136) * (k_col212)))
                     + (carry_20_col233))
                     * (M31_4194304));
                 *row[234] = carry_21_col234;
                 *sub_component_inputs.range_check_20_g[5] = [((carry_21_col234) + (M31_524288))];
-                *lookup_data.range_check_20_g_5 = [((carry_21_col234) + (M31_524288))];
+                *lookup_data.range_check_20_g_5 =
+                    [M31_463900084, ((carry_21_col234) + (M31_524288))];
                 let carry_22_col235 =
                     (((conv_mod_tmp_3cd4f_43[22]) + (carry_21_col234)) * (M31_4194304));
                 *row[235] = carry_22_col235;
                 *sub_component_inputs.range_check_20_h[5] = [((carry_22_col235) + (M31_524288))];
-                *lookup_data.range_check_20_h_5 = [((carry_22_col235) + (M31_524288))];
+                *lookup_data.range_check_20_h_5 =
+                    [M31_682009131, ((carry_22_col235) + (M31_524288))];
                 let carry_23_col236 =
                     (((conv_mod_tmp_3cd4f_43[23]) + (carry_22_col235)) * (M31_4194304));
                 *row[236] = carry_23_col236;
                 *sub_component_inputs.range_check_20[7] = [((carry_23_col236) + (M31_524288))];
-                *lookup_data.range_check_20_7 = [((carry_23_col236) + (M31_524288))];
+                *lookup_data.range_check_20_7 =
+                    [M31_1410849886, ((carry_23_col236) + (M31_524288))];
                 let carry_24_col237 =
                     (((conv_mod_tmp_3cd4f_43[24]) + (carry_23_col236)) * (M31_4194304));
                 *row[237] = carry_24_col237;
                 *sub_component_inputs.range_check_20_b[7] = [((carry_24_col237) + (M31_524288))];
-                *lookup_data.range_check_20_b_7 = [((carry_24_col237) + (M31_524288))];
+                *lookup_data.range_check_20_b_7 =
+                    [M31_514232941, ((carry_24_col237) + (M31_524288))];
                 let carry_25_col238 =
                     (((conv_mod_tmp_3cd4f_43[25]) + (carry_24_col237)) * (M31_4194304));
                 *row[238] = carry_25_col238;
                 *sub_component_inputs.range_check_20_c[7] = [((carry_25_col238) + (M31_524288))];
-                *lookup_data.range_check_20_c_7 = [((carry_25_col238) + (M31_524288))];
+                *lookup_data.range_check_20_c_7 =
+                    [M31_531010560, ((carry_25_col238) + (M31_524288))];
                 let carry_26_col239 =
                     (((conv_mod_tmp_3cd4f_43[26]) + (carry_25_col238)) * (M31_4194304));
                 *row[239] = carry_26_col239;
                 *sub_component_inputs.range_check_20_d[7] = [((carry_26_col239) + (M31_524288))];
-                *lookup_data.range_check_20_d_7 = [((carry_26_col239) + (M31_524288))];
+                *lookup_data.range_check_20_d_7 =
+                    [M31_480677703, ((carry_26_col239) + (M31_524288))];
 
                 let result_y_tmp_3cd4f_45 = (((slope_tmp_3cd4f_1)
                     * ((partial_ec_mul_window_bits_18_input.2 .1[0]) - (result_x_tmp_3cd4f_23)))
@@ -3818,54 +3951,102 @@ fn write_trace_simd(
 
                 *sub_component_inputs.range_check_9_9[4] =
                     [result_y_limb_0_col240, result_y_limb_1_col241];
-                *lookup_data.range_check_9_9_4 = [result_y_limb_0_col240, result_y_limb_1_col241];
+                *lookup_data.range_check_9_9_4 = [
+                    M31_517791011,
+                    result_y_limb_0_col240,
+                    result_y_limb_1_col241,
+                ];
                 *sub_component_inputs.range_check_9_9_b[4] =
                     [result_y_limb_2_col242, result_y_limb_3_col243];
-                *lookup_data.range_check_9_9_b_4 = [result_y_limb_2_col242, result_y_limb_3_col243];
+                *lookup_data.range_check_9_9_b_4 = [
+                    M31_1897792095,
+                    result_y_limb_2_col242,
+                    result_y_limb_3_col243,
+                ];
                 *sub_component_inputs.range_check_9_9_c[4] =
                     [result_y_limb_4_col244, result_y_limb_5_col245];
-                *lookup_data.range_check_9_9_c_4 = [result_y_limb_4_col244, result_y_limb_5_col245];
+                *lookup_data.range_check_9_9_c_4 = [
+                    M31_1881014476,
+                    result_y_limb_4_col244,
+                    result_y_limb_5_col245,
+                ];
                 *sub_component_inputs.range_check_9_9_d[4] =
                     [result_y_limb_6_col246, result_y_limb_7_col247];
-                *lookup_data.range_check_9_9_d_4 = [result_y_limb_6_col246, result_y_limb_7_col247];
+                *lookup_data.range_check_9_9_d_4 = [
+                    M31_1864236857,
+                    result_y_limb_6_col246,
+                    result_y_limb_7_col247,
+                ];
                 *sub_component_inputs.range_check_9_9_e[4] =
                     [result_y_limb_8_col248, result_y_limb_9_col249];
-                *lookup_data.range_check_9_9_e_4 = [result_y_limb_8_col248, result_y_limb_9_col249];
+                *lookup_data.range_check_9_9_e_4 = [
+                    M31_1847459238,
+                    result_y_limb_8_col248,
+                    result_y_limb_9_col249,
+                ];
                 *sub_component_inputs.range_check_9_9_f[4] =
                     [result_y_limb_10_col250, result_y_limb_11_col251];
-                *lookup_data.range_check_9_9_f_4 =
-                    [result_y_limb_10_col250, result_y_limb_11_col251];
+                *lookup_data.range_check_9_9_f_4 = [
+                    M31_1830681619,
+                    result_y_limb_10_col250,
+                    result_y_limb_11_col251,
+                ];
                 *sub_component_inputs.range_check_9_9_g[2] =
                     [result_y_limb_12_col252, result_y_limb_13_col253];
-                *lookup_data.range_check_9_9_g_2 =
-                    [result_y_limb_12_col252, result_y_limb_13_col253];
+                *lookup_data.range_check_9_9_g_2 = [
+                    M31_1813904000,
+                    result_y_limb_12_col252,
+                    result_y_limb_13_col253,
+                ];
                 *sub_component_inputs.range_check_9_9_h[2] =
                     [result_y_limb_14_col254, result_y_limb_15_col255];
-                *lookup_data.range_check_9_9_h_2 =
-                    [result_y_limb_14_col254, result_y_limb_15_col255];
+                *lookup_data.range_check_9_9_h_2 = [
+                    M31_2065568285,
+                    result_y_limb_14_col254,
+                    result_y_limb_15_col255,
+                ];
                 *sub_component_inputs.range_check_9_9[5] =
                     [result_y_limb_16_col256, result_y_limb_17_col257];
-                *lookup_data.range_check_9_9_5 = [result_y_limb_16_col256, result_y_limb_17_col257];
+                *lookup_data.range_check_9_9_5 = [
+                    M31_517791011,
+                    result_y_limb_16_col256,
+                    result_y_limb_17_col257,
+                ];
                 *sub_component_inputs.range_check_9_9_b[5] =
                     [result_y_limb_18_col258, result_y_limb_19_col259];
-                *lookup_data.range_check_9_9_b_5 =
-                    [result_y_limb_18_col258, result_y_limb_19_col259];
+                *lookup_data.range_check_9_9_b_5 = [
+                    M31_1897792095,
+                    result_y_limb_18_col258,
+                    result_y_limb_19_col259,
+                ];
                 *sub_component_inputs.range_check_9_9_c[5] =
                     [result_y_limb_20_col260, result_y_limb_21_col261];
-                *lookup_data.range_check_9_9_c_5 =
-                    [result_y_limb_20_col260, result_y_limb_21_col261];
+                *lookup_data.range_check_9_9_c_5 = [
+                    M31_1881014476,
+                    result_y_limb_20_col260,
+                    result_y_limb_21_col261,
+                ];
                 *sub_component_inputs.range_check_9_9_d[5] =
                     [result_y_limb_22_col262, result_y_limb_23_col263];
-                *lookup_data.range_check_9_9_d_5 =
-                    [result_y_limb_22_col262, result_y_limb_23_col263];
+                *lookup_data.range_check_9_9_d_5 = [
+                    M31_1864236857,
+                    result_y_limb_22_col262,
+                    result_y_limb_23_col263,
+                ];
                 *sub_component_inputs.range_check_9_9_e[5] =
                     [result_y_limb_24_col264, result_y_limb_25_col265];
-                *lookup_data.range_check_9_9_e_5 =
-                    [result_y_limb_24_col264, result_y_limb_25_col265];
+                *lookup_data.range_check_9_9_e_5 = [
+                    M31_1847459238,
+                    result_y_limb_24_col264,
+                    result_y_limb_25_col265,
+                ];
                 *sub_component_inputs.range_check_9_9_f[5] =
                     [result_y_limb_26_col266, result_y_limb_27_col267];
-                *lookup_data.range_check_9_9_f_5 =
-                    [result_y_limb_26_col266, result_y_limb_27_col267];
+                *lookup_data.range_check_9_9_f_5 = [
+                    M31_1830681619,
+                    result_y_limb_26_col266,
+                    result_y_limb_27_col267,
+                ];
 
                 // Verify Mul 252.
 
@@ -5113,146 +5294,173 @@ fn write_trace_simd(
                     + (((k_mod_2_18_biased_tmp_3cd4f_66.high().as_m31()) - (M31_2)) * (M31_65536)));
                 *row[268] = k_col268;
                 *sub_component_inputs.range_check_20[8] = [((k_col268) + (M31_524288))];
-                *lookup_data.range_check_20_8 = [((k_col268) + (M31_524288))];
+                *lookup_data.range_check_20_8 = [M31_1410849886, ((k_col268) + (M31_524288))];
                 let carry_0_col269 = (((conv_mod_tmp_3cd4f_65[0]) - (k_col268)) * (M31_4194304));
                 *row[269] = carry_0_col269;
                 *sub_component_inputs.range_check_20_b[8] = [((carry_0_col269) + (M31_524288))];
-                *lookup_data.range_check_20_b_8 = [((carry_0_col269) + (M31_524288))];
+                *lookup_data.range_check_20_b_8 =
+                    [M31_514232941, ((carry_0_col269) + (M31_524288))];
                 let carry_1_col270 =
                     (((conv_mod_tmp_3cd4f_65[1]) + (carry_0_col269)) * (M31_4194304));
                 *row[270] = carry_1_col270;
                 *sub_component_inputs.range_check_20_c[8] = [((carry_1_col270) + (M31_524288))];
-                *lookup_data.range_check_20_c_8 = [((carry_1_col270) + (M31_524288))];
+                *lookup_data.range_check_20_c_8 =
+                    [M31_531010560, ((carry_1_col270) + (M31_524288))];
                 let carry_2_col271 =
                     (((conv_mod_tmp_3cd4f_65[2]) + (carry_1_col270)) * (M31_4194304));
                 *row[271] = carry_2_col271;
                 *sub_component_inputs.range_check_20_d[8] = [((carry_2_col271) + (M31_524288))];
-                *lookup_data.range_check_20_d_8 = [((carry_2_col271) + (M31_524288))];
+                *lookup_data.range_check_20_d_8 =
+                    [M31_480677703, ((carry_2_col271) + (M31_524288))];
                 let carry_3_col272 =
                     (((conv_mod_tmp_3cd4f_65[3]) + (carry_2_col271)) * (M31_4194304));
                 *row[272] = carry_3_col272;
                 *sub_component_inputs.range_check_20_e[6] = [((carry_3_col272) + (M31_524288))];
-                *lookup_data.range_check_20_e_6 = [((carry_3_col272) + (M31_524288))];
+                *lookup_data.range_check_20_e_6 =
+                    [M31_497455322, ((carry_3_col272) + (M31_524288))];
                 let carry_4_col273 =
                     (((conv_mod_tmp_3cd4f_65[4]) + (carry_3_col272)) * (M31_4194304));
                 *row[273] = carry_4_col273;
                 *sub_component_inputs.range_check_20_f[6] = [((carry_4_col273) + (M31_524288))];
-                *lookup_data.range_check_20_f_6 = [((carry_4_col273) + (M31_524288))];
+                *lookup_data.range_check_20_f_6 =
+                    [M31_447122465, ((carry_4_col273) + (M31_524288))];
                 let carry_5_col274 =
                     (((conv_mod_tmp_3cd4f_65[5]) + (carry_4_col273)) * (M31_4194304));
                 *row[274] = carry_5_col274;
                 *sub_component_inputs.range_check_20_g[6] = [((carry_5_col274) + (M31_524288))];
-                *lookup_data.range_check_20_g_6 = [((carry_5_col274) + (M31_524288))];
+                *lookup_data.range_check_20_g_6 =
+                    [M31_463900084, ((carry_5_col274) + (M31_524288))];
                 let carry_6_col275 =
                     (((conv_mod_tmp_3cd4f_65[6]) + (carry_5_col274)) * (M31_4194304));
                 *row[275] = carry_6_col275;
                 *sub_component_inputs.range_check_20_h[6] = [((carry_6_col275) + (M31_524288))];
-                *lookup_data.range_check_20_h_6 = [((carry_6_col275) + (M31_524288))];
+                *lookup_data.range_check_20_h_6 =
+                    [M31_682009131, ((carry_6_col275) + (M31_524288))];
                 let carry_7_col276 =
                     (((conv_mod_tmp_3cd4f_65[7]) + (carry_6_col275)) * (M31_4194304));
                 *row[276] = carry_7_col276;
                 *sub_component_inputs.range_check_20[9] = [((carry_7_col276) + (M31_524288))];
-                *lookup_data.range_check_20_9 = [((carry_7_col276) + (M31_524288))];
+                *lookup_data.range_check_20_9 = [M31_1410849886, ((carry_7_col276) + (M31_524288))];
                 let carry_8_col277 =
                     (((conv_mod_tmp_3cd4f_65[8]) + (carry_7_col276)) * (M31_4194304));
                 *row[277] = carry_8_col277;
                 *sub_component_inputs.range_check_20_b[9] = [((carry_8_col277) + (M31_524288))];
-                *lookup_data.range_check_20_b_9 = [((carry_8_col277) + (M31_524288))];
+                *lookup_data.range_check_20_b_9 =
+                    [M31_514232941, ((carry_8_col277) + (M31_524288))];
                 let carry_9_col278 =
                     (((conv_mod_tmp_3cd4f_65[9]) + (carry_8_col277)) * (M31_4194304));
                 *row[278] = carry_9_col278;
                 *sub_component_inputs.range_check_20_c[9] = [((carry_9_col278) + (M31_524288))];
-                *lookup_data.range_check_20_c_9 = [((carry_9_col278) + (M31_524288))];
+                *lookup_data.range_check_20_c_9 =
+                    [M31_531010560, ((carry_9_col278) + (M31_524288))];
                 let carry_10_col279 =
                     (((conv_mod_tmp_3cd4f_65[10]) + (carry_9_col278)) * (M31_4194304));
                 *row[279] = carry_10_col279;
                 *sub_component_inputs.range_check_20_d[9] = [((carry_10_col279) + (M31_524288))];
-                *lookup_data.range_check_20_d_9 = [((carry_10_col279) + (M31_524288))];
+                *lookup_data.range_check_20_d_9 =
+                    [M31_480677703, ((carry_10_col279) + (M31_524288))];
                 let carry_11_col280 =
                     (((conv_mod_tmp_3cd4f_65[11]) + (carry_10_col279)) * (M31_4194304));
                 *row[280] = carry_11_col280;
                 *sub_component_inputs.range_check_20_e[7] = [((carry_11_col280) + (M31_524288))];
-                *lookup_data.range_check_20_e_7 = [((carry_11_col280) + (M31_524288))];
+                *lookup_data.range_check_20_e_7 =
+                    [M31_497455322, ((carry_11_col280) + (M31_524288))];
                 let carry_12_col281 =
                     (((conv_mod_tmp_3cd4f_65[12]) + (carry_11_col280)) * (M31_4194304));
                 *row[281] = carry_12_col281;
                 *sub_component_inputs.range_check_20_f[7] = [((carry_12_col281) + (M31_524288))];
-                *lookup_data.range_check_20_f_7 = [((carry_12_col281) + (M31_524288))];
+                *lookup_data.range_check_20_f_7 =
+                    [M31_447122465, ((carry_12_col281) + (M31_524288))];
                 let carry_13_col282 =
                     (((conv_mod_tmp_3cd4f_65[13]) + (carry_12_col281)) * (M31_4194304));
                 *row[282] = carry_13_col282;
                 *sub_component_inputs.range_check_20_g[7] = [((carry_13_col282) + (M31_524288))];
-                *lookup_data.range_check_20_g_7 = [((carry_13_col282) + (M31_524288))];
+                *lookup_data.range_check_20_g_7 =
+                    [M31_463900084, ((carry_13_col282) + (M31_524288))];
                 let carry_14_col283 =
                     (((conv_mod_tmp_3cd4f_65[14]) + (carry_13_col282)) * (M31_4194304));
                 *row[283] = carry_14_col283;
                 *sub_component_inputs.range_check_20_h[7] = [((carry_14_col283) + (M31_524288))];
-                *lookup_data.range_check_20_h_7 = [((carry_14_col283) + (M31_524288))];
+                *lookup_data.range_check_20_h_7 =
+                    [M31_682009131, ((carry_14_col283) + (M31_524288))];
                 let carry_15_col284 =
                     (((conv_mod_tmp_3cd4f_65[15]) + (carry_14_col283)) * (M31_4194304));
                 *row[284] = carry_15_col284;
                 *sub_component_inputs.range_check_20[10] = [((carry_15_col284) + (M31_524288))];
-                *lookup_data.range_check_20_10 = [((carry_15_col284) + (M31_524288))];
+                *lookup_data.range_check_20_10 =
+                    [M31_1410849886, ((carry_15_col284) + (M31_524288))];
                 let carry_16_col285 =
                     (((conv_mod_tmp_3cd4f_65[16]) + (carry_15_col284)) * (M31_4194304));
                 *row[285] = carry_16_col285;
                 *sub_component_inputs.range_check_20_b[10] = [((carry_16_col285) + (M31_524288))];
-                *lookup_data.range_check_20_b_10 = [((carry_16_col285) + (M31_524288))];
+                *lookup_data.range_check_20_b_10 =
+                    [M31_514232941, ((carry_16_col285) + (M31_524288))];
                 let carry_17_col286 =
                     (((conv_mod_tmp_3cd4f_65[17]) + (carry_16_col285)) * (M31_4194304));
                 *row[286] = carry_17_col286;
                 *sub_component_inputs.range_check_20_c[10] = [((carry_17_col286) + (M31_524288))];
-                *lookup_data.range_check_20_c_10 = [((carry_17_col286) + (M31_524288))];
+                *lookup_data.range_check_20_c_10 =
+                    [M31_531010560, ((carry_17_col286) + (M31_524288))];
                 let carry_18_col287 =
                     (((conv_mod_tmp_3cd4f_65[18]) + (carry_17_col286)) * (M31_4194304));
                 *row[287] = carry_18_col287;
                 *sub_component_inputs.range_check_20_d[10] = [((carry_18_col287) + (M31_524288))];
-                *lookup_data.range_check_20_d_10 = [((carry_18_col287) + (M31_524288))];
+                *lookup_data.range_check_20_d_10 =
+                    [M31_480677703, ((carry_18_col287) + (M31_524288))];
                 let carry_19_col288 =
                     (((conv_mod_tmp_3cd4f_65[19]) + (carry_18_col287)) * (M31_4194304));
                 *row[288] = carry_19_col288;
                 *sub_component_inputs.range_check_20_e[8] = [((carry_19_col288) + (M31_524288))];
-                *lookup_data.range_check_20_e_8 = [((carry_19_col288) + (M31_524288))];
+                *lookup_data.range_check_20_e_8 =
+                    [M31_497455322, ((carry_19_col288) + (M31_524288))];
                 let carry_20_col289 =
                     (((conv_mod_tmp_3cd4f_65[20]) + (carry_19_col288)) * (M31_4194304));
                 *row[289] = carry_20_col289;
                 *sub_component_inputs.range_check_20_f[8] = [((carry_20_col289) + (M31_524288))];
-                *lookup_data.range_check_20_f_8 = [((carry_20_col289) + (M31_524288))];
+                *lookup_data.range_check_20_f_8 =
+                    [M31_447122465, ((carry_20_col289) + (M31_524288))];
                 let carry_21_col290 = ((((conv_mod_tmp_3cd4f_65[21]) - ((M31_136) * (k_col268)))
                     + (carry_20_col289))
                     * (M31_4194304));
                 *row[290] = carry_21_col290;
                 *sub_component_inputs.range_check_20_g[8] = [((carry_21_col290) + (M31_524288))];
-                *lookup_data.range_check_20_g_8 = [((carry_21_col290) + (M31_524288))];
+                *lookup_data.range_check_20_g_8 =
+                    [M31_463900084, ((carry_21_col290) + (M31_524288))];
                 let carry_22_col291 =
                     (((conv_mod_tmp_3cd4f_65[22]) + (carry_21_col290)) * (M31_4194304));
                 *row[291] = carry_22_col291;
                 *sub_component_inputs.range_check_20_h[8] = [((carry_22_col291) + (M31_524288))];
-                *lookup_data.range_check_20_h_8 = [((carry_22_col291) + (M31_524288))];
+                *lookup_data.range_check_20_h_8 =
+                    [M31_682009131, ((carry_22_col291) + (M31_524288))];
                 let carry_23_col292 =
                     (((conv_mod_tmp_3cd4f_65[23]) + (carry_22_col291)) * (M31_4194304));
                 *row[292] = carry_23_col292;
                 *sub_component_inputs.range_check_20[11] = [((carry_23_col292) + (M31_524288))];
-                *lookup_data.range_check_20_11 = [((carry_23_col292) + (M31_524288))];
+                *lookup_data.range_check_20_11 =
+                    [M31_1410849886, ((carry_23_col292) + (M31_524288))];
                 let carry_24_col293 =
                     (((conv_mod_tmp_3cd4f_65[24]) + (carry_23_col292)) * (M31_4194304));
                 *row[293] = carry_24_col293;
                 *sub_component_inputs.range_check_20_b[11] = [((carry_24_col293) + (M31_524288))];
-                *lookup_data.range_check_20_b_11 = [((carry_24_col293) + (M31_524288))];
+                *lookup_data.range_check_20_b_11 =
+                    [M31_514232941, ((carry_24_col293) + (M31_524288))];
                 let carry_25_col294 =
                     (((conv_mod_tmp_3cd4f_65[25]) + (carry_24_col293)) * (M31_4194304));
                 *row[294] = carry_25_col294;
                 *sub_component_inputs.range_check_20_c[11] = [((carry_25_col294) + (M31_524288))];
-                *lookup_data.range_check_20_c_11 = [((carry_25_col294) + (M31_524288))];
+                *lookup_data.range_check_20_c_11 =
+                    [M31_531010560, ((carry_25_col294) + (M31_524288))];
                 let carry_26_col295 =
                     (((conv_mod_tmp_3cd4f_65[26]) + (carry_25_col294)) * (M31_4194304));
                 *row[295] = carry_26_col295;
                 *sub_component_inputs.range_check_20_d[11] = [((carry_26_col295) + (M31_524288))];
-                *lookup_data.range_check_20_d_11 = [((carry_26_col295) + (M31_524288))];
+                *lookup_data.range_check_20_d_11 =
+                    [M31_480677703, ((carry_26_col295) + (M31_524288))];
 
                 let ec_add_output_tmp_3cd4f_67 = [result_x_tmp_3cd4f_23, result_y_tmp_3cd4f_45];
 
                 *lookup_data.partial_ec_mul_window_bits_18_0 = [
+                    M31_1621226978,
                     input_limb_0_col0,
                     input_limb_1_col1,
                     input_limb_2_col2,
@@ -5327,6 +5535,7 @@ fn write_trace_simd(
                     input_limb_71_col71,
                 ];
                 *lookup_data.partial_ec_mul_window_bits_18_1 = [
+                    M31_1621226978,
                     input_limb_0_col0,
                     ((input_limb_1_col1) + (M31_1)),
                     input_limb_3_col3,
@@ -5409,135 +5618,135 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    partial_ec_mul_window_bits_18_0: Vec<[PackedM31; 72]>,
-    partial_ec_mul_window_bits_18_1: Vec<[PackedM31; 72]>,
-    pedersen_points_table_window_bits_18_0: Vec<[PackedM31; 57]>,
-    range_check_20_0: Vec<[PackedM31; 1]>,
-    range_check_20_1: Vec<[PackedM31; 1]>,
-    range_check_20_2: Vec<[PackedM31; 1]>,
-    range_check_20_3: Vec<[PackedM31; 1]>,
-    range_check_20_4: Vec<[PackedM31; 1]>,
-    range_check_20_5: Vec<[PackedM31; 1]>,
-    range_check_20_6: Vec<[PackedM31; 1]>,
-    range_check_20_7: Vec<[PackedM31; 1]>,
-    range_check_20_8: Vec<[PackedM31; 1]>,
-    range_check_20_9: Vec<[PackedM31; 1]>,
-    range_check_20_10: Vec<[PackedM31; 1]>,
-    range_check_20_11: Vec<[PackedM31; 1]>,
-    range_check_20_b_0: Vec<[PackedM31; 1]>,
-    range_check_20_b_1: Vec<[PackedM31; 1]>,
-    range_check_20_b_2: Vec<[PackedM31; 1]>,
-    range_check_20_b_3: Vec<[PackedM31; 1]>,
-    range_check_20_b_4: Vec<[PackedM31; 1]>,
-    range_check_20_b_5: Vec<[PackedM31; 1]>,
-    range_check_20_b_6: Vec<[PackedM31; 1]>,
-    range_check_20_b_7: Vec<[PackedM31; 1]>,
-    range_check_20_b_8: Vec<[PackedM31; 1]>,
-    range_check_20_b_9: Vec<[PackedM31; 1]>,
-    range_check_20_b_10: Vec<[PackedM31; 1]>,
-    range_check_20_b_11: Vec<[PackedM31; 1]>,
-    range_check_20_c_0: Vec<[PackedM31; 1]>,
-    range_check_20_c_1: Vec<[PackedM31; 1]>,
-    range_check_20_c_2: Vec<[PackedM31; 1]>,
-    range_check_20_c_3: Vec<[PackedM31; 1]>,
-    range_check_20_c_4: Vec<[PackedM31; 1]>,
-    range_check_20_c_5: Vec<[PackedM31; 1]>,
-    range_check_20_c_6: Vec<[PackedM31; 1]>,
-    range_check_20_c_7: Vec<[PackedM31; 1]>,
-    range_check_20_c_8: Vec<[PackedM31; 1]>,
-    range_check_20_c_9: Vec<[PackedM31; 1]>,
-    range_check_20_c_10: Vec<[PackedM31; 1]>,
-    range_check_20_c_11: Vec<[PackedM31; 1]>,
-    range_check_20_d_0: Vec<[PackedM31; 1]>,
-    range_check_20_d_1: Vec<[PackedM31; 1]>,
-    range_check_20_d_2: Vec<[PackedM31; 1]>,
-    range_check_20_d_3: Vec<[PackedM31; 1]>,
-    range_check_20_d_4: Vec<[PackedM31; 1]>,
-    range_check_20_d_5: Vec<[PackedM31; 1]>,
-    range_check_20_d_6: Vec<[PackedM31; 1]>,
-    range_check_20_d_7: Vec<[PackedM31; 1]>,
-    range_check_20_d_8: Vec<[PackedM31; 1]>,
-    range_check_20_d_9: Vec<[PackedM31; 1]>,
-    range_check_20_d_10: Vec<[PackedM31; 1]>,
-    range_check_20_d_11: Vec<[PackedM31; 1]>,
-    range_check_20_e_0: Vec<[PackedM31; 1]>,
-    range_check_20_e_1: Vec<[PackedM31; 1]>,
-    range_check_20_e_2: Vec<[PackedM31; 1]>,
-    range_check_20_e_3: Vec<[PackedM31; 1]>,
-    range_check_20_e_4: Vec<[PackedM31; 1]>,
-    range_check_20_e_5: Vec<[PackedM31; 1]>,
-    range_check_20_e_6: Vec<[PackedM31; 1]>,
-    range_check_20_e_7: Vec<[PackedM31; 1]>,
-    range_check_20_e_8: Vec<[PackedM31; 1]>,
-    range_check_20_f_0: Vec<[PackedM31; 1]>,
-    range_check_20_f_1: Vec<[PackedM31; 1]>,
-    range_check_20_f_2: Vec<[PackedM31; 1]>,
-    range_check_20_f_3: Vec<[PackedM31; 1]>,
-    range_check_20_f_4: Vec<[PackedM31; 1]>,
-    range_check_20_f_5: Vec<[PackedM31; 1]>,
-    range_check_20_f_6: Vec<[PackedM31; 1]>,
-    range_check_20_f_7: Vec<[PackedM31; 1]>,
-    range_check_20_f_8: Vec<[PackedM31; 1]>,
-    range_check_20_g_0: Vec<[PackedM31; 1]>,
-    range_check_20_g_1: Vec<[PackedM31; 1]>,
-    range_check_20_g_2: Vec<[PackedM31; 1]>,
-    range_check_20_g_3: Vec<[PackedM31; 1]>,
-    range_check_20_g_4: Vec<[PackedM31; 1]>,
-    range_check_20_g_5: Vec<[PackedM31; 1]>,
-    range_check_20_g_6: Vec<[PackedM31; 1]>,
-    range_check_20_g_7: Vec<[PackedM31; 1]>,
-    range_check_20_g_8: Vec<[PackedM31; 1]>,
-    range_check_20_h_0: Vec<[PackedM31; 1]>,
-    range_check_20_h_1: Vec<[PackedM31; 1]>,
-    range_check_20_h_2: Vec<[PackedM31; 1]>,
-    range_check_20_h_3: Vec<[PackedM31; 1]>,
-    range_check_20_h_4: Vec<[PackedM31; 1]>,
-    range_check_20_h_5: Vec<[PackedM31; 1]>,
-    range_check_20_h_6: Vec<[PackedM31; 1]>,
-    range_check_20_h_7: Vec<[PackedM31; 1]>,
-    range_check_20_h_8: Vec<[PackedM31; 1]>,
-    range_check_9_9_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_b_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_c_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_d_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_e_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_3: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_4: Vec<[PackedM31; 2]>,
-    range_check_9_9_f_5: Vec<[PackedM31; 2]>,
-    range_check_9_9_g_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_g_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_g_2: Vec<[PackedM31; 2]>,
-    range_check_9_9_h_0: Vec<[PackedM31; 2]>,
-    range_check_9_9_h_1: Vec<[PackedM31; 2]>,
-    range_check_9_9_h_2: Vec<[PackedM31; 2]>,
+    partial_ec_mul_window_bits_18_0: Vec<[PackedM31; 73]>,
+    partial_ec_mul_window_bits_18_1: Vec<[PackedM31; 73]>,
+    pedersen_points_table_window_bits_18_0: Vec<[PackedM31; 58]>,
+    range_check_20_0: Vec<[PackedM31; 2]>,
+    range_check_20_1: Vec<[PackedM31; 2]>,
+    range_check_20_2: Vec<[PackedM31; 2]>,
+    range_check_20_3: Vec<[PackedM31; 2]>,
+    range_check_20_4: Vec<[PackedM31; 2]>,
+    range_check_20_5: Vec<[PackedM31; 2]>,
+    range_check_20_6: Vec<[PackedM31; 2]>,
+    range_check_20_7: Vec<[PackedM31; 2]>,
+    range_check_20_8: Vec<[PackedM31; 2]>,
+    range_check_20_9: Vec<[PackedM31; 2]>,
+    range_check_20_10: Vec<[PackedM31; 2]>,
+    range_check_20_11: Vec<[PackedM31; 2]>,
+    range_check_20_b_0: Vec<[PackedM31; 2]>,
+    range_check_20_b_1: Vec<[PackedM31; 2]>,
+    range_check_20_b_2: Vec<[PackedM31; 2]>,
+    range_check_20_b_3: Vec<[PackedM31; 2]>,
+    range_check_20_b_4: Vec<[PackedM31; 2]>,
+    range_check_20_b_5: Vec<[PackedM31; 2]>,
+    range_check_20_b_6: Vec<[PackedM31; 2]>,
+    range_check_20_b_7: Vec<[PackedM31; 2]>,
+    range_check_20_b_8: Vec<[PackedM31; 2]>,
+    range_check_20_b_9: Vec<[PackedM31; 2]>,
+    range_check_20_b_10: Vec<[PackedM31; 2]>,
+    range_check_20_b_11: Vec<[PackedM31; 2]>,
+    range_check_20_c_0: Vec<[PackedM31; 2]>,
+    range_check_20_c_1: Vec<[PackedM31; 2]>,
+    range_check_20_c_2: Vec<[PackedM31; 2]>,
+    range_check_20_c_3: Vec<[PackedM31; 2]>,
+    range_check_20_c_4: Vec<[PackedM31; 2]>,
+    range_check_20_c_5: Vec<[PackedM31; 2]>,
+    range_check_20_c_6: Vec<[PackedM31; 2]>,
+    range_check_20_c_7: Vec<[PackedM31; 2]>,
+    range_check_20_c_8: Vec<[PackedM31; 2]>,
+    range_check_20_c_9: Vec<[PackedM31; 2]>,
+    range_check_20_c_10: Vec<[PackedM31; 2]>,
+    range_check_20_c_11: Vec<[PackedM31; 2]>,
+    range_check_20_d_0: Vec<[PackedM31; 2]>,
+    range_check_20_d_1: Vec<[PackedM31; 2]>,
+    range_check_20_d_2: Vec<[PackedM31; 2]>,
+    range_check_20_d_3: Vec<[PackedM31; 2]>,
+    range_check_20_d_4: Vec<[PackedM31; 2]>,
+    range_check_20_d_5: Vec<[PackedM31; 2]>,
+    range_check_20_d_6: Vec<[PackedM31; 2]>,
+    range_check_20_d_7: Vec<[PackedM31; 2]>,
+    range_check_20_d_8: Vec<[PackedM31; 2]>,
+    range_check_20_d_9: Vec<[PackedM31; 2]>,
+    range_check_20_d_10: Vec<[PackedM31; 2]>,
+    range_check_20_d_11: Vec<[PackedM31; 2]>,
+    range_check_20_e_0: Vec<[PackedM31; 2]>,
+    range_check_20_e_1: Vec<[PackedM31; 2]>,
+    range_check_20_e_2: Vec<[PackedM31; 2]>,
+    range_check_20_e_3: Vec<[PackedM31; 2]>,
+    range_check_20_e_4: Vec<[PackedM31; 2]>,
+    range_check_20_e_5: Vec<[PackedM31; 2]>,
+    range_check_20_e_6: Vec<[PackedM31; 2]>,
+    range_check_20_e_7: Vec<[PackedM31; 2]>,
+    range_check_20_e_8: Vec<[PackedM31; 2]>,
+    range_check_20_f_0: Vec<[PackedM31; 2]>,
+    range_check_20_f_1: Vec<[PackedM31; 2]>,
+    range_check_20_f_2: Vec<[PackedM31; 2]>,
+    range_check_20_f_3: Vec<[PackedM31; 2]>,
+    range_check_20_f_4: Vec<[PackedM31; 2]>,
+    range_check_20_f_5: Vec<[PackedM31; 2]>,
+    range_check_20_f_6: Vec<[PackedM31; 2]>,
+    range_check_20_f_7: Vec<[PackedM31; 2]>,
+    range_check_20_f_8: Vec<[PackedM31; 2]>,
+    range_check_20_g_0: Vec<[PackedM31; 2]>,
+    range_check_20_g_1: Vec<[PackedM31; 2]>,
+    range_check_20_g_2: Vec<[PackedM31; 2]>,
+    range_check_20_g_3: Vec<[PackedM31; 2]>,
+    range_check_20_g_4: Vec<[PackedM31; 2]>,
+    range_check_20_g_5: Vec<[PackedM31; 2]>,
+    range_check_20_g_6: Vec<[PackedM31; 2]>,
+    range_check_20_g_7: Vec<[PackedM31; 2]>,
+    range_check_20_g_8: Vec<[PackedM31; 2]>,
+    range_check_20_h_0: Vec<[PackedM31; 2]>,
+    range_check_20_h_1: Vec<[PackedM31; 2]>,
+    range_check_20_h_2: Vec<[PackedM31; 2]>,
+    range_check_20_h_3: Vec<[PackedM31; 2]>,
+    range_check_20_h_4: Vec<[PackedM31; 2]>,
+    range_check_20_h_5: Vec<[PackedM31; 2]>,
+    range_check_20_h_6: Vec<[PackedM31; 2]>,
+    range_check_20_h_7: Vec<[PackedM31; 2]>,
+    range_check_20_h_8: Vec<[PackedM31; 2]>,
+    range_check_9_9_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_b_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_c_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_d_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_e_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_3: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_4: Vec<[PackedM31; 3]>,
+    range_check_9_9_f_5: Vec<[PackedM31; 3]>,
+    range_check_9_9_g_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_g_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_g_2: Vec<[PackedM31; 3]>,
+    range_check_9_9_h_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_h_1: Vec<[PackedM31; 3]>,
+    range_check_9_9_h_2: Vec<[PackedM31; 3]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -5549,24 +5758,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        pedersen_points_table_window_bits_18: &relations::PedersenPointsTableWindowBits18,
-        range_check_9_9: &relations::RangeCheck_9_9,
-        range_check_9_9_b: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h: &relations::RangeCheck_9_9_H,
-        range_check_20: &relations::RangeCheck_20,
-        range_check_20_b: &relations::RangeCheck_20_B,
-        range_check_20_c: &relations::RangeCheck_20_C,
-        range_check_20_d: &relations::RangeCheck_20_D,
-        range_check_20_e: &relations::RangeCheck_20_E,
-        range_check_20_f: &relations::RangeCheck_20_F,
-        range_check_20_g: &relations::RangeCheck_20_G,
-        range_check_20_h: &relations::RangeCheck_20_H,
-        partial_ec_mul_window_bits_18: &relations::PartialEcMulWindowBits18,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
@@ -5580,8 +5772,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = pedersen_points_table_window_bits_18.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5594,8 +5786,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5608,8 +5800,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5622,8 +5814,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5636,8 +5828,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_h.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5650,8 +5842,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5664,8 +5856,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5678,8 +5870,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5692,8 +5884,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5706,8 +5898,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5720,8 +5912,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5734,8 +5926,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5748,8 +5940,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5762,8 +5954,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5776,8 +5968,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5790,8 +5982,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5804,8 +5996,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5818,8 +6010,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5832,8 +6024,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5846,8 +6038,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5860,8 +6052,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5874,8 +6066,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5888,8 +6080,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5902,8 +6094,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5916,8 +6108,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5930,8 +6122,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_h.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5944,8 +6136,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5958,8 +6150,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5972,8 +6164,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5986,8 +6178,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6000,8 +6192,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6014,8 +6206,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6028,8 +6220,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6042,8 +6234,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6056,8 +6248,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6070,8 +6262,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6084,8 +6276,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6098,8 +6290,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6112,8 +6304,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6126,8 +6318,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6140,8 +6332,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6154,8 +6346,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6168,8 +6360,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6182,8 +6374,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6196,8 +6388,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6210,8 +6402,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6224,8 +6416,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_h.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6238,8 +6430,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_b.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6252,8 +6444,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_d.combine(values0);
-                let denom1: PackedQM31 = range_check_9_9_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6266,8 +6458,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_9_9_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6280,8 +6472,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6294,8 +6486,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6308,8 +6500,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6322,8 +6514,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6336,8 +6528,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6350,8 +6542,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6364,8 +6556,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6378,8 +6570,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6392,8 +6584,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6406,8 +6598,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = range_check_20_e.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6420,8 +6612,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_f.combine(values0);
-                let denom1: PackedQM31 = range_check_20_g.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6434,8 +6626,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_h.combine(values0);
-                let denom1: PackedQM31 = range_check_20.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6448,8 +6640,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = range_check_20_b.combine(values0);
-                let denom1: PackedQM31 = range_check_20_c.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6463,8 +6655,8 @@ impl InteractionClaimGenerator {
             .into_par_iter()
             .enumerate()
             .for_each(|(i, (writer, values0, values1))| {
-                let denom0: PackedQM31 = range_check_20_d.combine(values0);
-                let denom1: PackedQM31 = partial_ec_mul_window_bits_18.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6478,7 +6670,7 @@ impl InteractionClaimGenerator {
             .into_par_iter()
             .enumerate()
             .for_each(|(i, (writer, values))| {
-                let denom = partial_ec_mul_window_bits_18.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
             });
         col_gen.finalize_col();

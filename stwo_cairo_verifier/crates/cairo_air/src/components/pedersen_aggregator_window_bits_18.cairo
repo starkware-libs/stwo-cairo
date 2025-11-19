@@ -49,10 +49,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
-    pub partial_ec_mul_window_bits_18_lookup_elements: crate::PartialEcMulWindowBits18Elements,
-    pub pedersen_aggregator_window_bits_18_lookup_elements: crate::PedersenAggregatorWindowBits18Elements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -62,19 +59,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
-            partial_ec_mul_window_bits_18_lookup_elements: interaction_elements
-                .partial_ec_mul_window_bits_18
-                .clone(),
-            pedersen_aggregator_window_bits_18_lookup_elements: interaction_elements
-                .pedersen_aggregator_window_bits_18
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -1130,7 +1120,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_25_col28,
             value_limb_26_col29,
             value_limb_27_col30,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_id_to_big_sum_0,
             ref sum,
             domain_vanishing_eval_inv,
@@ -1166,7 +1156,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_25_col56,
             value_limb_26_col57,
             value_limb_27_col58,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_id_to_big_sum_1,
             ref sum,
             domain_vanishing_eval_inv,
@@ -1185,7 +1175,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ms_limb_is_max_col59,
             ms_and_mid_limbs_are_max_col60,
             rc_input_col61,
-            self.range_check_8_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_8_sum_2,
             ref range_check_8_sum_3,
             ref sum,
@@ -1205,7 +1195,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ms_limb_is_max_col62,
             ms_and_mid_limbs_are_max_col63,
             rc_input_col64,
-            self.range_check_8_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_8_sum_4,
             ref range_check_8_sum_5,
             ref sum,
@@ -1216,9 +1206,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             * qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_window_bits_18_sum_6 = self
-            .partial_ec_mul_window_bits_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1621226978, 0, 0, 0>(),
                     partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8, qm31_const::<0, 0, 0, 0>(),
                     (value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col5 + (value_limb_3_col6 * qm31_const::<512, 0, 0, 0>())),
@@ -1262,13 +1253,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     qm31_const::<199, 0, 0, 0>(), qm31_const::<222, 0, 0, 0>(),
                     qm31_const::<79, 0, 0, 0>(), qm31_const::<97, 0, 0, 0>(),
                     qm31_const::<108, 0, 0, 0>(), qm31_const::<141, 0, 0, 0>(),
-                ],
+                ]
+                    .span(),
             );
 
         partial_ec_mul_window_bits_18_sum_7 = self
-            .partial_ec_mul_window_bits_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1621226978, 0, 0, 0>(),
                     partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8,
                     qm31_const::<14, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col65,
                     partial_ec_mul_window_bits_18_output_limb_1_col66,
@@ -1340,16 +1333,18 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_window_bits_18_output_limb_67_col132,
                     partial_ec_mul_window_bits_18_output_limb_68_col133,
                     partial_ec_mul_window_bits_18_output_limb_69_col134,
-                ],
+                ]
+                    .span(),
             );
         let partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23: QM31 =
             (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_window_bits_18_sum_8 = self
-            .partial_ec_mul_window_bits_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1621226978, 0, 0, 0>(),
                     partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
                     qm31_const::<14, 0, 0, 0>(),
                     (value_limb_0_col31 + (value_limb_1_col32 * qm31_const::<512, 0, 0, 0>())),
@@ -1422,13 +1417,15 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_window_bits_18_output_limb_67_col132,
                     partial_ec_mul_window_bits_18_output_limb_68_col133,
                     partial_ec_mul_window_bits_18_output_limb_69_col134,
-                ],
+                ]
+                    .span(),
             );
 
         partial_ec_mul_window_bits_18_sum_9 = self
-            .partial_ec_mul_window_bits_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1621226978, 0, 0, 0>(),
                     partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
                     qm31_const::<28, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col135,
                     partial_ec_mul_window_bits_18_output_limb_1_col136,
@@ -1500,14 +1497,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_window_bits_18_output_limb_67_col202,
                     partial_ec_mul_window_bits_18_output_limb_68_col203,
                     partial_ec_mul_window_bits_18_output_limb_69_col204,
-                ],
+                ]
+                    .span(),
             );
 
         memory_id_to_big_sum_10 = self
-            .memory_id_to_big_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_2_col2, partial_ec_mul_window_bits_18_output_limb_14_col149,
+                    qm31_const::<1662111297, 0, 0, 0>(), input_limb_2_col2,
+                    partial_ec_mul_window_bits_18_output_limb_14_col149,
                     partial_ec_mul_window_bits_18_output_limb_15_col150,
                     partial_ec_mul_window_bits_18_output_limb_16_col151,
                     partial_ec_mul_window_bits_18_output_limb_17_col152,
@@ -1535,12 +1534,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_window_bits_18_output_limb_39_col174,
                     partial_ec_mul_window_bits_18_output_limb_40_col175,
                     partial_ec_mul_window_bits_18_output_limb_41_col176,
-                ],
+                ]
+                    .span(),
             );
 
         pedersen_aggregator_window_bits_18_sum_11 = self
-            .pedersen_aggregator_window_bits_18_lookup_elements
-            .combine_qm31([input_limb_0_col0, input_limb_1_col1, input_limb_2_col2]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<520578465, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2,
+                ]
+                    .span(),
+            );
 
         lookup_constraints(
             ref sum,
@@ -1729,14 +1735,14 @@ mod tests {
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
-        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+        LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -1747,21 +1753,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            partial_ec_mul_window_bits_18_lookup_elements: make_lookup_elements(
-                qm31_const::<37636051, 926155324, 1316217340, 1476484835>(),
-                qm31_const::<1101679660, 849400774, 849837411, 1270574324>(),
-            ),
-            pedersen_aggregator_window_bits_18_lookup_elements: make_lookup_elements(
-                qm31_const::<989342410, 1557514986, 1593463493, 412909928>(),
-                qm31_const::<142248599, 1510521029, 22359969, 507780239>(),
-            ),
-            range_check_8_lookup_elements: make_lookup_elements(
-                qm31_const::<1180316345, 706098445, 2005498950, 439840985>(),
-                qm31_const::<1338115896, 1708611778, 1362220287, 779911332>(),
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

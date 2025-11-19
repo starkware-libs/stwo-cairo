@@ -1,10 +1,11 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use cairo_air::air::{CairoComponents, CairoInteractionElements};
+use cairo_air::air::CairoComponents;
 use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
+use cairo_air::relations::CommonLookupElements;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
 use stwo::core::fields::m31::M31;
@@ -237,7 +238,7 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
 
     // Interaction trace.
     let mut dummy_channel = Blake2sChannel::default();
-    let interaction_elements = CairoInteractionElements::draw(&mut dummy_channel);
+    let interaction_elements = CommonLookupElements::draw(&mut dummy_channel);
     let mut tree_builder = commitment_scheme.tree_builder();
     let interaction_claim =
         interaction_generator.write_interaction_trace(&mut tree_builder, &interaction_elements);

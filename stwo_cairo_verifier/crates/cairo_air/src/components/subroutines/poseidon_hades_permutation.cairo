@@ -206,13 +206,7 @@ pub fn poseidon_hades_permutation_evaluate(
     poseidon_full_round_chain_output_limb_27_col194: QM31,
     poseidon_full_round_chain_output_limb_28_col195: QM31,
     poseidon_full_round_chain_output_limb_29_col196: QM31,
-    poseidon_full_round_chain_lookup_elements: @crate::PoseidonFullRoundChainElements,
-    range_check_252_width_27_lookup_elements: @crate::RangeCheck252Width27Elements,
-    cube_252_lookup_elements: @crate::Cube252Elements,
-    range_check_3_3_3_3_3_lookup_elements: @crate::RangeCheck_3_3_3_3_3Elements,
-    range_check_4_4_4_4_lookup_elements: @crate::RangeCheck_4_4_4_4Elements,
-    range_check_4_4_lookup_elements: @crate::RangeCheck_4_4Elements,
-    poseidon_3_partial_rounds_chain_lookup_elements: @crate::Poseidon3PartialRoundsChainElements,
+    common_lookup_elements: @CommonLookupElements,
     seq: QM31,
     ref poseidon_full_round_chain_sum_0: QM31,
     ref poseidon_full_round_chain_sum_1: QM31,
@@ -296,6 +290,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col8,
         combination_limb_9_col9,
         p_coef_col10,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -324,6 +319,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col19,
         combination_limb_9_col20,
         p_coef_col21,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -352,15 +348,17 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col30,
         combination_limb_9_col31,
         p_coef_col32,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
     let poseidon_full_round_chain_chain_tmp_tmp_7d028_63: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
 
-    poseidon_full_round_chain_sum_0 = poseidon_full_round_chain_lookup_elements
+    poseidon_full_round_chain_sum_0 = common_lookup_elements
         .combine_qm31(
             [
+                qm31_const::<1480369132, 0, 0, 0>(),
                 poseidon_full_round_chain_chain_tmp_tmp_7d028_63, qm31_const::<0, 0, 0, 0>(),
                 combination_limb_0_col0, combination_limb_1_col1, combination_limb_2_col2,
                 combination_limb_3_col3, combination_limb_4_col4, combination_limb_5_col5,
@@ -372,12 +370,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 combination_limb_1_col23, combination_limb_2_col24, combination_limb_3_col25,
                 combination_limb_4_col26, combination_limb_5_col27, combination_limb_6_col28,
                 combination_limb_7_col29, combination_limb_8_col30, combination_limb_9_col31,
-            ],
+            ]
+                .span(),
         );
 
-    poseidon_full_round_chain_sum_1 = poseidon_full_round_chain_lookup_elements
+    poseidon_full_round_chain_sum_1 = common_lookup_elements
         .combine_qm31(
             [
+                qm31_const::<1480369132, 0, 0, 0>(),
                 poseidon_full_round_chain_chain_tmp_tmp_7d028_63, qm31_const::<4, 0, 0, 0>(),
                 poseidon_full_round_chain_output_limb_0_col33,
                 poseidon_full_round_chain_output_limb_1_col34,
@@ -409,13 +409,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_full_round_chain_output_limb_27_col60,
                 poseidon_full_round_chain_output_limb_28_col61,
                 poseidon_full_round_chain_output_limb_29_col62,
-            ],
+            ]
+                .span(),
         );
 
-    range_check_252_width_27_sum_2 = range_check_252_width_27_lookup_elements
+    range_check_252_width_27_sum_2 = common_lookup_elements
         .combine_qm31(
             [
-                poseidon_full_round_chain_output_limb_0_col33,
+                qm31_const::<1090315331, 0, 0, 0>(), poseidon_full_round_chain_output_limb_0_col33,
                 poseidon_full_round_chain_output_limb_1_col34,
                 poseidon_full_round_chain_output_limb_2_col35,
                 poseidon_full_round_chain_output_limb_3_col36,
@@ -425,13 +426,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_full_round_chain_output_limb_7_col40,
                 poseidon_full_round_chain_output_limb_8_col41,
                 poseidon_full_round_chain_output_limb_9_col42,
-            ],
+            ]
+                .span(),
         );
 
-    range_check_252_width_27_sum_3 = range_check_252_width_27_lookup_elements
+    range_check_252_width_27_sum_3 = common_lookup_elements
         .combine_qm31(
             [
-                poseidon_full_round_chain_output_limb_10_col43,
+                qm31_const::<1090315331, 0, 0, 0>(), poseidon_full_round_chain_output_limb_10_col43,
                 poseidon_full_round_chain_output_limb_11_col44,
                 poseidon_full_round_chain_output_limb_12_col45,
                 poseidon_full_round_chain_output_limb_13_col46,
@@ -441,13 +443,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_full_round_chain_output_limb_17_col50,
                 poseidon_full_round_chain_output_limb_18_col51,
                 poseidon_full_round_chain_output_limb_19_col52,
-            ],
+            ]
+                .span(),
         );
 
-    cube_252_sum_4 = cube_252_lookup_elements
+    cube_252_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                poseidon_full_round_chain_output_limb_20_col53,
+                qm31_const::<1987997202, 0, 0, 0>(), poseidon_full_round_chain_output_limb_20_col53,
                 poseidon_full_round_chain_output_limb_21_col54,
                 poseidon_full_round_chain_output_limb_22_col55,
                 poseidon_full_round_chain_output_limb_23_col56,
@@ -462,7 +465,8 @@ pub fn poseidon_hades_permutation_evaluate(
                 cube_252_output_limb_5_col68, cube_252_output_limb_6_col69,
                 cube_252_output_limb_7_col70, cube_252_output_limb_8_col71,
                 cube_252_output_limb_9_col72,
-            ],
+            ]
+                .span(),
         );
     linear_combination_n_4_coefs_1_1_m2_1_evaluate(
         [
@@ -508,7 +512,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col81,
         combination_limb_9_col82,
         p_coef_col83,
-        range_check_3_3_3_3_3_lookup_elements,
+        common_lookup_elements,
         ref range_check_3_3_3_3_3_sum_5,
         ref range_check_3_3_3_3_3_sum_6,
         ref sum,
@@ -516,19 +520,20 @@ pub fn poseidon_hades_permutation_evaluate(
         random_coeff,
     );
 
-    cube_252_sum_7 = cube_252_lookup_elements
+    cube_252_sum_7 = common_lookup_elements
         .combine_qm31(
             [
-                combination_limb_0_col73, combination_limb_1_col74, combination_limb_2_col75,
-                combination_limb_3_col76, combination_limb_4_col77, combination_limb_5_col78,
-                combination_limb_6_col79, combination_limb_7_col80, combination_limb_8_col81,
-                combination_limb_9_col82, cube_252_output_limb_0_col84,
-                cube_252_output_limb_1_col85, cube_252_output_limb_2_col86,
-                cube_252_output_limb_3_col87, cube_252_output_limb_4_col88,
-                cube_252_output_limb_5_col89, cube_252_output_limb_6_col90,
-                cube_252_output_limb_7_col91, cube_252_output_limb_8_col92,
-                cube_252_output_limb_9_col93,
-            ],
+                qm31_const::<1987997202, 0, 0, 0>(), combination_limb_0_col73,
+                combination_limb_1_col74, combination_limb_2_col75, combination_limb_3_col76,
+                combination_limb_4_col77, combination_limb_5_col78, combination_limb_6_col79,
+                combination_limb_7_col80, combination_limb_8_col81, combination_limb_9_col82,
+                cube_252_output_limb_0_col84, cube_252_output_limb_1_col85,
+                cube_252_output_limb_2_col86, cube_252_output_limb_3_col87,
+                cube_252_output_limb_4_col88, cube_252_output_limb_5_col89,
+                cube_252_output_limb_6_col90, cube_252_output_limb_7_col91,
+                cube_252_output_limb_8_col92, cube_252_output_limb_9_col93,
+            ]
+                .span(),
         );
     linear_combination_n_4_coefs_4_2_m2_1_evaluate(
         [
@@ -569,8 +574,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col102,
         combination_limb_9_col103,
         p_coef_col104,
-        range_check_4_4_4_4_lookup_elements,
-        range_check_4_4_lookup_elements,
+        common_lookup_elements,
         ref range_check_4_4_4_4_sum_8,
         ref range_check_4_4_4_4_sum_9,
         ref range_check_4_4_sum_10,
@@ -579,18 +583,19 @@ pub fn poseidon_hades_permutation_evaluate(
         random_coeff,
     );
 
-    poseidon_3_partial_rounds_chain_sum_11 = poseidon_3_partial_rounds_chain_lookup_elements
+    poseidon_3_partial_rounds_chain_sum_11 = common_lookup_elements
         .combine_qm31(
             [
-                seq, qm31_const::<4, 0, 0, 0>(), cube_252_output_limb_0_col63,
-                cube_252_output_limb_1_col64, cube_252_output_limb_2_col65,
-                cube_252_output_limb_3_col66, cube_252_output_limb_4_col67,
-                cube_252_output_limb_5_col68, cube_252_output_limb_6_col69,
-                cube_252_output_limb_7_col70, cube_252_output_limb_8_col71,
-                cube_252_output_limb_9_col72, combination_limb_0_col73, combination_limb_1_col74,
-                combination_limb_2_col75, combination_limb_3_col76, combination_limb_4_col77,
-                combination_limb_5_col78, combination_limb_6_col79, combination_limb_7_col80,
-                combination_limb_8_col81, combination_limb_9_col82, cube_252_output_limb_0_col84,
+                qm31_const::<1343313504, 0, 0, 0>(), seq, qm31_const::<4, 0, 0, 0>(),
+                cube_252_output_limb_0_col63, cube_252_output_limb_1_col64,
+                cube_252_output_limb_2_col65, cube_252_output_limb_3_col66,
+                cube_252_output_limb_4_col67, cube_252_output_limb_5_col68,
+                cube_252_output_limb_6_col69, cube_252_output_limb_7_col70,
+                cube_252_output_limb_8_col71, cube_252_output_limb_9_col72,
+                combination_limb_0_col73, combination_limb_1_col74, combination_limb_2_col75,
+                combination_limb_3_col76, combination_limb_4_col77, combination_limb_5_col78,
+                combination_limb_6_col79, combination_limb_7_col80, combination_limb_8_col81,
+                combination_limb_9_col82, cube_252_output_limb_0_col84,
                 cube_252_output_limb_1_col85, cube_252_output_limb_2_col86,
                 cube_252_output_limb_3_col87, cube_252_output_limb_4_col88,
                 cube_252_output_limb_5_col89, cube_252_output_limb_6_col90,
@@ -599,13 +604,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 combination_limb_2_col96, combination_limb_3_col97, combination_limb_4_col98,
                 combination_limb_5_col99, combination_limb_6_col100, combination_limb_7_col101,
                 combination_limb_8_col102, combination_limb_9_col103,
-            ],
+            ]
+                .span(),
         );
 
-    poseidon_3_partial_rounds_chain_sum_12 = poseidon_3_partial_rounds_chain_lookup_elements
+    poseidon_3_partial_rounds_chain_sum_12 = common_lookup_elements
         .combine_qm31(
             [
-                seq, qm31_const::<31, 0, 0, 0>(),
+                qm31_const::<1343313504, 0, 0, 0>(), seq, qm31_const::<31, 0, 0, 0>(),
                 poseidon_3_partial_rounds_chain_output_limb_0_col105,
                 poseidon_3_partial_rounds_chain_output_limb_1_col106,
                 poseidon_3_partial_rounds_chain_output_limb_2_col107,
@@ -646,7 +652,8 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_3_partial_rounds_chain_output_limb_37_col142,
                 poseidon_3_partial_rounds_chain_output_limb_38_col143,
                 poseidon_3_partial_rounds_chain_output_limb_39_col144,
-            ],
+            ]
+                .span(),
         );
     linear_combination_n_4_coefs_4_2_1_1_evaluate(
         [
@@ -697,8 +704,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col153,
         combination_limb_9_col154,
         p_coef_col155,
-        range_check_4_4_4_4_lookup_elements,
-        range_check_4_4_lookup_elements,
+        common_lookup_elements,
         ref range_check_4_4_4_4_sum_13,
         ref range_check_4_4_4_4_sum_14,
         ref range_check_4_4_sum_15,
@@ -748,8 +754,7 @@ pub fn poseidon_hades_permutation_evaluate(
         combination_limb_8_col164,
         combination_limb_9_col165,
         p_coef_col166,
-        range_check_4_4_4_4_lookup_elements,
-        range_check_4_4_lookup_elements,
+        common_lookup_elements,
         ref range_check_4_4_4_4_sum_16,
         ref range_check_4_4_4_4_sum_17,
         ref range_check_4_4_sum_18,
@@ -761,9 +766,10 @@ pub fn poseidon_hades_permutation_evaluate(
         (poseidon_full_round_chain_chain_tmp_tmp_7d028_63
         + qm31_const::<1, 0, 0, 0>());
 
-    poseidon_full_round_chain_sum_19 = poseidon_full_round_chain_lookup_elements
+    poseidon_full_round_chain_sum_19 = common_lookup_elements
         .combine_qm31(
             [
+                qm31_const::<1480369132, 0, 0, 0>(),
                 poseidon_full_round_chain_chain_id_tmp_7d028_146, qm31_const::<31, 0, 0, 0>(),
                 combination_limb_0_col156, combination_limb_1_col157, combination_limb_2_col158,
                 combination_limb_3_col159, combination_limb_4_col160, combination_limb_5_col161,
@@ -782,12 +788,14 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_3_partial_rounds_chain_output_limb_37_col142,
                 poseidon_3_partial_rounds_chain_output_limb_38_col143,
                 poseidon_3_partial_rounds_chain_output_limb_39_col144,
-            ],
+            ]
+                .span(),
         );
 
-    poseidon_full_round_chain_sum_20 = poseidon_full_round_chain_lookup_elements
+    poseidon_full_round_chain_sum_20 = common_lookup_elements
         .combine_qm31(
             [
+                qm31_const::<1480369132, 0, 0, 0>(),
                 poseidon_full_round_chain_chain_id_tmp_7d028_146, qm31_const::<35, 0, 0, 0>(),
                 poseidon_full_round_chain_output_limb_0_col167,
                 poseidon_full_round_chain_output_limb_1_col168,
@@ -819,7 +827,8 @@ pub fn poseidon_hades_permutation_evaluate(
                 poseidon_full_round_chain_output_limb_27_col194,
                 poseidon_full_round_chain_output_limb_28_col195,
                 poseidon_full_round_chain_output_limb_29_col196,
-            ],
+            ]
+                .span(),
         );
 
     []
