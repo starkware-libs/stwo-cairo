@@ -65,24 +65,6 @@ pub impl NewComponentImpl of NewComponent<Component> {
 }
 
 pub impl CairoComponentImpl of CairoComponent<Component> {
-    fn mask_points(
-        self: @Component,
-        ref preprocessed_column_set: PreprocessedColumnSet,
-        ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-        point: CirclePoint<QM31>,
-    ) {
-        let trace_gen = CanonicCosetImpl::new(LOG_SIZE).coset.step;
-        constraints::mask_points(
-            ref preprocessed_column_set,
-            ref trace_mask_points,
-            ref interaction_trace_mask_points,
-            point,
-            trace_gen,
-            LOG_SIZE,
-        );
-    }
-
     fn evaluate_constraints_at_point(
         self: @Component,
         ref sum: QM31,

@@ -1,39 +1,5 @@
 use crate::prelude::*;
 
-
-pub fn mask_points(
-    ref preprocessed_column_set: PreprocessedColumnSet,
-    ref trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-    ref interaction_trace_mask_points: ColumnArray<Array<CirclePoint<QM31>>>,
-    point: CirclePoint<QM31>,
-    trace_gen: CirclePointIndex,
-    log_size: u32,
-) {
-    preprocessed_column_set.insert(preprocessed_columns::seq_column_idx(log_size));
-    let point_offset_neg_1 = point.add_circle_point_m31(-trace_gen.mul(1).to_point());
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-    interaction_trace_mask_points.append(array![point_offset_neg_1, point]);
-}
-
 #[derive(Drop)]
 pub struct ConstraintParams {
     pub MemoryIdToBig_alpha0: QM31,
