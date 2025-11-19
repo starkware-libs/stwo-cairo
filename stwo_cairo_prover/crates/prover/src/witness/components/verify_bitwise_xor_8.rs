@@ -1,24 +1,38 @@
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
-#![allow(dead_code)]
 use cairo_air::components::verify_bitwise_xor_8::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
 
 use crate::witness::prelude::*;
 
-const N_BITS: u32 = 8;
-
 pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
+    input_to_row: HashMap<[M31; 3], usize>,
+    preprocessed_trace: Arc<PreProcessedTrace>,
 }
+
 impl ClaimGenerator {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
+        let column_ids = [
+            PreProcessedColumnId {
+                id: "bitwise_xor_8_0".to_owned(),
+            },
+            PreProcessedColumnId {
+                id: "bitwise_xor_8_1".to_owned(),
+            },
+            PreProcessedColumnId {
+                id: "bitwise_xor_8_2".to_owned(),
+            },
+        ];
         Self {
             mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            input_to_row: make_input_to_row(&preprocessed_trace, column_ids),
+            preprocessed_trace,
         }
     }
 
@@ -28,19 +42,20 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();
 
-        let (trace, lookup_data) = write_trace_simd(mults);
+        let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
         tree_builder.extend_evals(trace.to_evals());
 
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
     pub fn add_input(&self, input: &InputType) {
-        self.mults.increase_at((input[0].0 << N_BITS) + input[1].0);
+        self.mults
+            .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_iter().for_each(|input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
                 self.add_input(&input);
             });
         });
@@ -51,7 +66,10 @@ impl ClaimGenerator {
 #[allow(unused_variables)]
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
-fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
+fn write_trace_simd(
+    preprocessed_trace: &PreProcessedTrace,
+    mults: Vec<PackedM31>,
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
     let (mut trace, mut lookup_data) = unsafe {
         (
@@ -60,18 +78,25 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         )
     };
 
-    let bitwisexor_8_0 = BitwiseXor::new(8, 0);
-    let bitwisexor_8_1 = BitwiseXor::new(8, 1);
-    let bitwisexor_8_2 = BitwiseXor::new(8, 2);
+    let bitwise_xor_8_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "bitwise_xor_8_0".to_owned(),
+    });
+    let bitwise_xor_8_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "bitwise_xor_8_1".to_owned(),
+    });
+    let bitwise_xor_8_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "bitwise_xor_8_2".to_owned(),
+    });
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (mut row, lookup_data))| {
-            let bitwisexor_8_0 = bitwisexor_8_0.packed_at(row_index);
-            let bitwisexor_8_1 = bitwisexor_8_1.packed_at(row_index);
-            let bitwisexor_8_2 = bitwisexor_8_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_8_0 = [bitwisexor_8_0, bitwisexor_8_1, bitwisexor_8_2];
+            let bitwise_xor_8_0 = bitwise_xor_8_0.packed_at(row_index);
+            let bitwise_xor_8_1 = bitwise_xor_8_1.packed_at(row_index);
+            let bitwise_xor_8_2 = bitwise_xor_8_2.packed_at(row_index);
+            *lookup_data.verify_bitwise_xor_8_0 =
+                [bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;

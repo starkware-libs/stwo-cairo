@@ -1,18 +1,18 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::verify_bitwise_xor_7::{
+use cairo_air::components::range_check_3_3_3_3_3::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
 
 use crate::witness::prelude::*;
 
-pub type InputType = [M31; 3];
-pub type PackedInputType = [PackedM31; 3];
+pub type InputType = [M31; 5];
+pub type PackedInputType = [PackedM31; 5];
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
-    input_to_row: HashMap<[M31; 3], usize>,
+    input_to_row: HashMap<[M31; 5], usize>,
     preprocessed_trace: Arc<PreProcessedTrace>,
 }
 
@@ -20,13 +20,19 @@ impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let column_ids = [
             PreProcessedColumnId {
-                id: "bitwise_xor_7_0".to_owned(),
+                id: "range_check_3_3_3_3_3_column_0".to_owned(),
             },
             PreProcessedColumnId {
-                id: "bitwise_xor_7_1".to_owned(),
+                id: "range_check_3_3_3_3_3_column_1".to_owned(),
             },
             PreProcessedColumnId {
-                id: "bitwise_xor_7_2".to_owned(),
+                id: "range_check_3_3_3_3_3_column_2".to_owned(),
+            },
+            PreProcessedColumnId {
+                id: "range_check_3_3_3_3_3_column_3".to_owned(),
+            },
+            PreProcessedColumnId {
+                id: "range_check_3_3_3_3_3_column_4".to_owned(),
             },
         ];
         Self {
@@ -78,25 +84,43 @@ fn write_trace_simd(
         )
     };
 
-    let bitwise_xor_7_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_0".to_owned(),
+    let range_check_3_3_3_3_3_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "range_check_3_3_3_3_3_column_0".to_owned(),
     });
-    let bitwise_xor_7_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_1".to_owned(),
+    let range_check_3_3_3_3_3_column_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "range_check_3_3_3_3_3_column_1".to_owned(),
     });
-    let bitwise_xor_7_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_2".to_owned(),
+    let range_check_3_3_3_3_3_column_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "range_check_3_3_3_3_3_column_2".to_owned(),
+    });
+    let range_check_3_3_3_3_3_column_3 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "range_check_3_3_3_3_3_column_3".to_owned(),
+    });
+    let range_check_3_3_3_3_3_column_4 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "range_check_3_3_3_3_3_column_4".to_owned(),
     });
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (mut row, lookup_data))| {
-            let bitwise_xor_7_0 = bitwise_xor_7_0.packed_at(row_index);
-            let bitwise_xor_7_1 = bitwise_xor_7_1.packed_at(row_index);
-            let bitwise_xor_7_2 = bitwise_xor_7_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_7_0 =
-                [bitwise_xor_7_0, bitwise_xor_7_1, bitwise_xor_7_2];
+            let range_check_3_3_3_3_3_column_0 =
+                range_check_3_3_3_3_3_column_0.packed_at(row_index);
+            let range_check_3_3_3_3_3_column_1 =
+                range_check_3_3_3_3_3_column_1.packed_at(row_index);
+            let range_check_3_3_3_3_3_column_2 =
+                range_check_3_3_3_3_3_column_2.packed_at(row_index);
+            let range_check_3_3_3_3_3_column_3 =
+                range_check_3_3_3_3_3_column_3.packed_at(row_index);
+            let range_check_3_3_3_3_3_column_4 =
+                range_check_3_3_3_3_3_column_4.packed_at(row_index);
+            *lookup_data.range_check_3_3_3_3_3_0 = [
+                range_check_3_3_3_3_3_column_0,
+                range_check_3_3_3_3_3_column_1,
+                range_check_3_3_3_3_3_column_2,
+                range_check_3_3_3_3_3_column_3,
+                range_check_3_3_3_3_3_column_4,
+            ];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;
@@ -107,7 +131,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_7_0: Vec<[PackedM31; 3]>,
+    range_check_3_3_3_3_3_0: Vec<[PackedM31; 5]>,
     mults: Vec<PackedM31>,
 }
 
@@ -118,7 +142,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_7: &relations::VerifyBitwiseXor_7,
+        range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -126,12 +150,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_7_0,
+            &self.lookup_data.range_check_3_3_3_3_3_0,
             self.lookup_data.mults,
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = verify_bitwise_xor_7.combine(values);
+                let denom = range_check_3_3_3_3_3.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

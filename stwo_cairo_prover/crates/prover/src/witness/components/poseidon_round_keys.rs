@@ -1,9 +1,9 @@
+// This file was created by the AIR team.
+
 #![allow(unused_parens)]
-#![allow(dead_code)]
 use cairo_air::components::poseidon_round_keys::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
-use stwo_cairo_common::preprocessed_columns::poseidon::N_ROUNDS;
 
 use crate::witness::prelude::*;
 
@@ -12,12 +12,19 @@ pub type PackedInputType = [PackedM31; 1];
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
+    input_to_row: HashMap<[M31; 1], usize>,
+    preprocessed_trace: Arc<PreProcessedTrace>,
 }
+
 impl ClaimGenerator {
-    #[allow(clippy::new_without_default)]
-    pub fn new() -> Self {
+    pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
+        let column_ids = [PreProcessedColumnId {
+            id: "seq_6".to_owned(),
+        }];
         Self {
-            mults: AtomicMultiplicityColumn::new(N_ROUNDS),
+            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            input_to_row: make_input_to_row(&preprocessed_trace, column_ids),
+            preprocessed_trace,
         }
     }
 
@@ -27,19 +34,20 @@ impl ClaimGenerator {
     ) -> (Claim, InteractionClaimGenerator) {
         let mults = self.mults.into_simd_vec();
 
-        let (trace, lookup_data) = write_trace_simd(mults);
+        let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
         tree_builder.extend_evals(trace.to_evals());
 
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
     pub fn add_input(&self, input: &InputType) {
-        self.mults.increase_at(input[0].0);
+        self.mults
+            .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_iter().for_each(|input| {
+            packed_input.unpack().into_par_iter().for_each(|input| {
                 self.add_input(&input);
             });
         });
@@ -50,7 +58,10 @@ impl ClaimGenerator {
 #[allow(unused_variables)]
 #[allow(clippy::double_parens)]
 #[allow(non_snake_case)]
-fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
+fn write_trace_simd(
+    preprocessed_trace: &PreProcessedTrace,
+    mults: Vec<PackedM31>,
+) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
     let (mut trace, mut lookup_data) = unsafe {
         (
@@ -59,105 +70,167 @@ fn write_trace_simd(mults: Vec<PackedM31>) -> (ComponentTrace<N_TRACE_COLUMNS>, 
         )
     };
 
-    let poseidonroundkeys_0 = PoseidonRoundKeys::new(0);
-    let poseidonroundkeys_1 = PoseidonRoundKeys::new(1);
-    let poseidonroundkeys_2 = PoseidonRoundKeys::new(2);
-    let poseidonroundkeys_3 = PoseidonRoundKeys::new(3);
-    let poseidonroundkeys_4 = PoseidonRoundKeys::new(4);
-    let poseidonroundkeys_5 = PoseidonRoundKeys::new(5);
-    let poseidonroundkeys_6 = PoseidonRoundKeys::new(6);
-    let poseidonroundkeys_7 = PoseidonRoundKeys::new(7);
-    let poseidonroundkeys_8 = PoseidonRoundKeys::new(8);
-    let poseidonroundkeys_9 = PoseidonRoundKeys::new(9);
-    let poseidonroundkeys_10 = PoseidonRoundKeys::new(10);
-    let poseidonroundkeys_11 = PoseidonRoundKeys::new(11);
-    let poseidonroundkeys_12 = PoseidonRoundKeys::new(12);
-    let poseidonroundkeys_13 = PoseidonRoundKeys::new(13);
-    let poseidonroundkeys_14 = PoseidonRoundKeys::new(14);
-    let poseidonroundkeys_15 = PoseidonRoundKeys::new(15);
-    let poseidonroundkeys_16 = PoseidonRoundKeys::new(16);
-    let poseidonroundkeys_17 = PoseidonRoundKeys::new(17);
-    let poseidonroundkeys_18 = PoseidonRoundKeys::new(18);
-    let poseidonroundkeys_19 = PoseidonRoundKeys::new(19);
-    let poseidonroundkeys_20 = PoseidonRoundKeys::new(20);
-    let poseidonroundkeys_21 = PoseidonRoundKeys::new(21);
-    let poseidonroundkeys_22 = PoseidonRoundKeys::new(22);
-    let poseidonroundkeys_23 = PoseidonRoundKeys::new(23);
-    let poseidonroundkeys_24 = PoseidonRoundKeys::new(24);
-    let poseidonroundkeys_25 = PoseidonRoundKeys::new(25);
-    let poseidonroundkeys_26 = PoseidonRoundKeys::new(26);
-    let poseidonroundkeys_27 = PoseidonRoundKeys::new(27);
-    let poseidonroundkeys_28 = PoseidonRoundKeys::new(28);
-    let poseidonroundkeys_29 = PoseidonRoundKeys::new(29);
-    let seq = Seq::new(LOG_SIZE);
+    let seq_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "seq_6".to_owned(),
+    });
+    let poseidon_round_keys_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_0".to_owned(),
+    });
+    let poseidon_round_keys_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_1".to_owned(),
+    });
+    let poseidon_round_keys_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_2".to_owned(),
+    });
+    let poseidon_round_keys_3 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_3".to_owned(),
+    });
+    let poseidon_round_keys_4 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_4".to_owned(),
+    });
+    let poseidon_round_keys_5 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_5".to_owned(),
+    });
+    let poseidon_round_keys_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_6".to_owned(),
+    });
+    let poseidon_round_keys_7 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_7".to_owned(),
+    });
+    let poseidon_round_keys_8 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_8".to_owned(),
+    });
+    let poseidon_round_keys_9 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_9".to_owned(),
+    });
+    let poseidon_round_keys_10 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_10".to_owned(),
+    });
+    let poseidon_round_keys_11 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_11".to_owned(),
+    });
+    let poseidon_round_keys_12 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_12".to_owned(),
+    });
+    let poseidon_round_keys_13 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_13".to_owned(),
+    });
+    let poseidon_round_keys_14 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_14".to_owned(),
+    });
+    let poseidon_round_keys_15 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_15".to_owned(),
+    });
+    let poseidon_round_keys_16 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_16".to_owned(),
+    });
+    let poseidon_round_keys_17 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_17".to_owned(),
+    });
+    let poseidon_round_keys_18 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_18".to_owned(),
+    });
+    let poseidon_round_keys_19 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_19".to_owned(),
+    });
+    let poseidon_round_keys_20 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_20".to_owned(),
+    });
+    let poseidon_round_keys_21 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_21".to_owned(),
+    });
+    let poseidon_round_keys_22 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_22".to_owned(),
+    });
+    let poseidon_round_keys_23 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_23".to_owned(),
+    });
+    let poseidon_round_keys_24 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_24".to_owned(),
+    });
+    let poseidon_round_keys_25 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_25".to_owned(),
+    });
+    let poseidon_round_keys_26 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_26".to_owned(),
+    });
+    let poseidon_round_keys_27 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_27".to_owned(),
+    });
+    let poseidon_round_keys_28 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_28".to_owned(),
+    });
+    let poseidon_round_keys_29 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "poseidon_round_keys_29".to_owned(),
+    });
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (mut row, lookup_data))| {
-            let poseidonroundkeys_0 = poseidonroundkeys_0.packed_at(row_index);
-            let poseidonroundkeys_1 = poseidonroundkeys_1.packed_at(row_index);
-            let poseidonroundkeys_2 = poseidonroundkeys_2.packed_at(row_index);
-            let poseidonroundkeys_3 = poseidonroundkeys_3.packed_at(row_index);
-            let poseidonroundkeys_4 = poseidonroundkeys_4.packed_at(row_index);
-            let poseidonroundkeys_5 = poseidonroundkeys_5.packed_at(row_index);
-            let poseidonroundkeys_6 = poseidonroundkeys_6.packed_at(row_index);
-            let poseidonroundkeys_7 = poseidonroundkeys_7.packed_at(row_index);
-            let poseidonroundkeys_8 = poseidonroundkeys_8.packed_at(row_index);
-            let poseidonroundkeys_9 = poseidonroundkeys_9.packed_at(row_index);
-            let poseidonroundkeys_10 = poseidonroundkeys_10.packed_at(row_index);
-            let poseidonroundkeys_11 = poseidonroundkeys_11.packed_at(row_index);
-            let poseidonroundkeys_12 = poseidonroundkeys_12.packed_at(row_index);
-            let poseidonroundkeys_13 = poseidonroundkeys_13.packed_at(row_index);
-            let poseidonroundkeys_14 = poseidonroundkeys_14.packed_at(row_index);
-            let poseidonroundkeys_15 = poseidonroundkeys_15.packed_at(row_index);
-            let poseidonroundkeys_16 = poseidonroundkeys_16.packed_at(row_index);
-            let poseidonroundkeys_17 = poseidonroundkeys_17.packed_at(row_index);
-            let poseidonroundkeys_18 = poseidonroundkeys_18.packed_at(row_index);
-            let poseidonroundkeys_19 = poseidonroundkeys_19.packed_at(row_index);
-            let poseidonroundkeys_20 = poseidonroundkeys_20.packed_at(row_index);
-            let poseidonroundkeys_21 = poseidonroundkeys_21.packed_at(row_index);
-            let poseidonroundkeys_22 = poseidonroundkeys_22.packed_at(row_index);
-            let poseidonroundkeys_23 = poseidonroundkeys_23.packed_at(row_index);
-            let poseidonroundkeys_24 = poseidonroundkeys_24.packed_at(row_index);
-            let poseidonroundkeys_25 = poseidonroundkeys_25.packed_at(row_index);
-            let poseidonroundkeys_26 = poseidonroundkeys_26.packed_at(row_index);
-            let poseidonroundkeys_27 = poseidonroundkeys_27.packed_at(row_index);
-            let poseidonroundkeys_28 = poseidonroundkeys_28.packed_at(row_index);
-            let poseidonroundkeys_29 = poseidonroundkeys_29.packed_at(row_index);
-            let seq = seq.packed_at(row_index);
+            let seq_6 = seq_6.packed_at(row_index);
+            let poseidon_round_keys_0 = poseidon_round_keys_0.packed_at(row_index);
+            let poseidon_round_keys_1 = poseidon_round_keys_1.packed_at(row_index);
+            let poseidon_round_keys_2 = poseidon_round_keys_2.packed_at(row_index);
+            let poseidon_round_keys_3 = poseidon_round_keys_3.packed_at(row_index);
+            let poseidon_round_keys_4 = poseidon_round_keys_4.packed_at(row_index);
+            let poseidon_round_keys_5 = poseidon_round_keys_5.packed_at(row_index);
+            let poseidon_round_keys_6 = poseidon_round_keys_6.packed_at(row_index);
+            let poseidon_round_keys_7 = poseidon_round_keys_7.packed_at(row_index);
+            let poseidon_round_keys_8 = poseidon_round_keys_8.packed_at(row_index);
+            let poseidon_round_keys_9 = poseidon_round_keys_9.packed_at(row_index);
+            let poseidon_round_keys_10 = poseidon_round_keys_10.packed_at(row_index);
+            let poseidon_round_keys_11 = poseidon_round_keys_11.packed_at(row_index);
+            let poseidon_round_keys_12 = poseidon_round_keys_12.packed_at(row_index);
+            let poseidon_round_keys_13 = poseidon_round_keys_13.packed_at(row_index);
+            let poseidon_round_keys_14 = poseidon_round_keys_14.packed_at(row_index);
+            let poseidon_round_keys_15 = poseidon_round_keys_15.packed_at(row_index);
+            let poseidon_round_keys_16 = poseidon_round_keys_16.packed_at(row_index);
+            let poseidon_round_keys_17 = poseidon_round_keys_17.packed_at(row_index);
+            let poseidon_round_keys_18 = poseidon_round_keys_18.packed_at(row_index);
+            let poseidon_round_keys_19 = poseidon_round_keys_19.packed_at(row_index);
+            let poseidon_round_keys_20 = poseidon_round_keys_20.packed_at(row_index);
+            let poseidon_round_keys_21 = poseidon_round_keys_21.packed_at(row_index);
+            let poseidon_round_keys_22 = poseidon_round_keys_22.packed_at(row_index);
+            let poseidon_round_keys_23 = poseidon_round_keys_23.packed_at(row_index);
+            let poseidon_round_keys_24 = poseidon_round_keys_24.packed_at(row_index);
+            let poseidon_round_keys_25 = poseidon_round_keys_25.packed_at(row_index);
+            let poseidon_round_keys_26 = poseidon_round_keys_26.packed_at(row_index);
+            let poseidon_round_keys_27 = poseidon_round_keys_27.packed_at(row_index);
+            let poseidon_round_keys_28 = poseidon_round_keys_28.packed_at(row_index);
+            let poseidon_round_keys_29 = poseidon_round_keys_29.packed_at(row_index);
             *lookup_data.poseidon_round_keys_0 = [
-                seq,
-                poseidonroundkeys_0,
-                poseidonroundkeys_1,
-                poseidonroundkeys_2,
-                poseidonroundkeys_3,
-                poseidonroundkeys_4,
-                poseidonroundkeys_5,
-                poseidonroundkeys_6,
-                poseidonroundkeys_7,
-                poseidonroundkeys_8,
-                poseidonroundkeys_9,
-                poseidonroundkeys_10,
-                poseidonroundkeys_11,
-                poseidonroundkeys_12,
-                poseidonroundkeys_13,
-                poseidonroundkeys_14,
-                poseidonroundkeys_15,
-                poseidonroundkeys_16,
-                poseidonroundkeys_17,
-                poseidonroundkeys_18,
-                poseidonroundkeys_19,
-                poseidonroundkeys_20,
-                poseidonroundkeys_21,
-                poseidonroundkeys_22,
-                poseidonroundkeys_23,
-                poseidonroundkeys_24,
-                poseidonroundkeys_25,
-                poseidonroundkeys_26,
-                poseidonroundkeys_27,
-                poseidonroundkeys_28,
-                poseidonroundkeys_29,
+                seq_6,
+                poseidon_round_keys_0,
+                poseidon_round_keys_1,
+                poseidon_round_keys_2,
+                poseidon_round_keys_3,
+                poseidon_round_keys_4,
+                poseidon_round_keys_5,
+                poseidon_round_keys_6,
+                poseidon_round_keys_7,
+                poseidon_round_keys_8,
+                poseidon_round_keys_9,
+                poseidon_round_keys_10,
+                poseidon_round_keys_11,
+                poseidon_round_keys_12,
+                poseidon_round_keys_13,
+                poseidon_round_keys_14,
+                poseidon_round_keys_15,
+                poseidon_round_keys_16,
+                poseidon_round_keys_17,
+                poseidon_round_keys_18,
+                poseidon_round_keys_19,
+                poseidon_round_keys_20,
+                poseidon_round_keys_21,
+                poseidon_round_keys_22,
+                poseidon_round_keys_23,
+                poseidon_round_keys_24,
+                poseidon_round_keys_25,
+                poseidon_round_keys_26,
+                poseidon_round_keys_27,
+                poseidon_round_keys_28,
+                poseidon_round_keys_29,
             ];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
