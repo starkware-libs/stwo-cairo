@@ -51,10 +51,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub cube_252_lookup_elements: crate::Cube252Elements,
-    pub poseidon_round_keys_lookup_elements: crate::PoseidonRoundKeysElements,
-    pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
-    pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -64,20 +61,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
-            range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                .range_checks
-                .rc_3_3_3_3_3
-                .clone(),
-            poseidon_full_round_chain_lookup_elements: interaction_elements
-                .poseidon_full_round_chain
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -659,55 +648,61 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         cube_252_sum_0 = self
-            .cube_252_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
-                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
-                    input_limb_10_col10, input_limb_11_col11, cube_252_output_limb_0_col32,
-                    cube_252_output_limb_1_col33, cube_252_output_limb_2_col34,
-                    cube_252_output_limb_3_col35, cube_252_output_limb_4_col36,
-                    cube_252_output_limb_5_col37, cube_252_output_limb_6_col38,
-                    cube_252_output_limb_7_col39, cube_252_output_limb_8_col40,
-                    cube_252_output_limb_9_col41,
-                ],
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_2_col2, input_limb_3_col3,
+                    input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
+                    input_limb_8_col8, input_limb_9_col9, input_limb_10_col10, input_limb_11_col11,
+                    cube_252_output_limb_0_col32, cube_252_output_limb_1_col33,
+                    cube_252_output_limb_2_col34, cube_252_output_limb_3_col35,
+                    cube_252_output_limb_4_col36, cube_252_output_limb_5_col37,
+                    cube_252_output_limb_6_col38, cube_252_output_limb_7_col39,
+                    cube_252_output_limb_8_col40, cube_252_output_limb_9_col41,
+                ]
+                    .span(),
             );
 
         cube_252_sum_1 = self
-            .cube_252_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_12_col12, input_limb_13_col13, input_limb_14_col14,
-                    input_limb_15_col15, input_limb_16_col16, input_limb_17_col17,
-                    input_limb_18_col18, input_limb_19_col19, input_limb_20_col20,
-                    input_limb_21_col21, cube_252_output_limb_0_col42, cube_252_output_limb_1_col43,
-                    cube_252_output_limb_2_col44, cube_252_output_limb_3_col45,
-                    cube_252_output_limb_4_col46, cube_252_output_limb_5_col47,
-                    cube_252_output_limb_6_col48, cube_252_output_limb_7_col49,
-                    cube_252_output_limb_8_col50, cube_252_output_limb_9_col51,
-                ],
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_12_col12, input_limb_13_col13,
+                    input_limb_14_col14, input_limb_15_col15, input_limb_16_col16,
+                    input_limb_17_col17, input_limb_18_col18, input_limb_19_col19,
+                    input_limb_20_col20, input_limb_21_col21, cube_252_output_limb_0_col42,
+                    cube_252_output_limb_1_col43, cube_252_output_limb_2_col44,
+                    cube_252_output_limb_3_col45, cube_252_output_limb_4_col46,
+                    cube_252_output_limb_5_col47, cube_252_output_limb_6_col48,
+                    cube_252_output_limb_7_col49, cube_252_output_limb_8_col50,
+                    cube_252_output_limb_9_col51,
+                ]
+                    .span(),
             );
 
         cube_252_sum_2 = self
-            .cube_252_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
-                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
-                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
-                    input_limb_31_col31, cube_252_output_limb_0_col52, cube_252_output_limb_1_col53,
-                    cube_252_output_limb_2_col54, cube_252_output_limb_3_col55,
-                    cube_252_output_limb_4_col56, cube_252_output_limb_5_col57,
-                    cube_252_output_limb_6_col58, cube_252_output_limb_7_col59,
-                    cube_252_output_limb_8_col60, cube_252_output_limb_9_col61,
-                ],
+                    qm31_const::<1987997202, 0, 0, 0>(), input_limb_22_col22, input_limb_23_col23,
+                    input_limb_24_col24, input_limb_25_col25, input_limb_26_col26,
+                    input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
+                    input_limb_30_col30, input_limb_31_col31, cube_252_output_limb_0_col52,
+                    cube_252_output_limb_1_col53, cube_252_output_limb_2_col54,
+                    cube_252_output_limb_3_col55, cube_252_output_limb_4_col56,
+                    cube_252_output_limb_5_col57, cube_252_output_limb_6_col58,
+                    cube_252_output_limb_7_col59, cube_252_output_limb_8_col60,
+                    cube_252_output_limb_9_col61,
+                ]
+                    .span(),
             );
 
         poseidon_round_keys_sum_3 = self
-            .poseidon_round_keys_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_1_col1, poseidon_round_keys_output_limb_0_col62,
+                    qm31_const::<1024310512, 0, 0, 0>(), input_limb_1_col1,
+                    poseidon_round_keys_output_limb_0_col62,
                     poseidon_round_keys_output_limb_1_col63,
                     poseidon_round_keys_output_limb_2_col64,
                     poseidon_round_keys_output_limb_3_col65,
@@ -737,7 +732,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     poseidon_round_keys_output_limb_27_col89,
                     poseidon_round_keys_output_limb_28_col90,
                     poseidon_round_keys_output_limb_29_col91,
-                ],
+                ]
+                    .span(),
             );
         linear_combination_n_4_coefs_3_1_1_1_evaluate(
             [
@@ -773,7 +769,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             combination_limb_8_col100,
             combination_limb_9_col101,
             p_coef_col102,
-            self.range_check_3_3_3_3_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_4,
             ref range_check_3_3_3_3_3_sum_5,
             ref sum,
@@ -814,7 +810,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             combination_limb_8_col111,
             combination_limb_9_col112,
             p_coef_col113,
-            self.range_check_3_3_3_3_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_6,
             ref range_check_3_3_3_3_3_sum_7,
             ref sum,
@@ -855,7 +851,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             combination_limb_8_col122,
             combination_limb_9_col123,
             p_coef_col124,
-            self.range_check_3_3_3_3_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_3_3_3_3_sum_8,
             ref range_check_3_3_3_3_3_sum_9,
             ref sum,
@@ -864,38 +860,42 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         poseidon_full_round_chain_sum_10 = self
-            .poseidon_full_round_chain_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
-                    input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
-                    input_limb_8_col8, input_limb_9_col9, input_limb_10_col10, input_limb_11_col11,
-                    input_limb_12_col12, input_limb_13_col13, input_limb_14_col14,
-                    input_limb_15_col15, input_limb_16_col16, input_limb_17_col17,
-                    input_limb_18_col18, input_limb_19_col19, input_limb_20_col20,
-                    input_limb_21_col21, input_limb_22_col22, input_limb_23_col23,
-                    input_limb_24_col24, input_limb_25_col25, input_limb_26_col26,
-                    input_limb_27_col27, input_limb_28_col28, input_limb_29_col29,
-                    input_limb_30_col30, input_limb_31_col31,
-                ],
+                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
+                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
+                    input_limb_10_col10, input_limb_11_col11, input_limb_12_col12,
+                    input_limb_13_col13, input_limb_14_col14, input_limb_15_col15,
+                    input_limb_16_col16, input_limb_17_col17, input_limb_18_col18,
+                    input_limb_19_col19, input_limb_20_col20, input_limb_21_col21,
+                    input_limb_22_col22, input_limb_23_col23, input_limb_24_col24,
+                    input_limb_25_col25, input_limb_26_col26, input_limb_27_col27,
+                    input_limb_28_col28, input_limb_29_col29, input_limb_30_col30,
+                    input_limb_31_col31,
+                ]
+                    .span(),
             );
 
         poseidon_full_round_chain_sum_11 = self
-            .poseidon_full_round_chain_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_0_col0, (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()),
-                    combination_limb_0_col92, combination_limb_1_col93, combination_limb_2_col94,
-                    combination_limb_3_col95, combination_limb_4_col96, combination_limb_5_col97,
-                    combination_limb_6_col98, combination_limb_7_col99, combination_limb_8_col100,
-                    combination_limb_9_col101, combination_limb_0_col103, combination_limb_1_col104,
-                    combination_limb_2_col105, combination_limb_3_col106, combination_limb_4_col107,
-                    combination_limb_5_col108, combination_limb_6_col109, combination_limb_7_col110,
-                    combination_limb_8_col111, combination_limb_9_col112, combination_limb_0_col114,
-                    combination_limb_1_col115, combination_limb_2_col116, combination_limb_3_col117,
-                    combination_limb_4_col118, combination_limb_5_col119, combination_limb_6_col120,
-                    combination_limb_7_col121, combination_limb_8_col122, combination_limb_9_col123,
-                ],
+                    qm31_const::<1480369132, 0, 0, 0>(), input_limb_0_col0,
+                    (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()), combination_limb_0_col92,
+                    combination_limb_1_col93, combination_limb_2_col94, combination_limb_3_col95,
+                    combination_limb_4_col96, combination_limb_5_col97, combination_limb_6_col98,
+                    combination_limb_7_col99, combination_limb_8_col100, combination_limb_9_col101,
+                    combination_limb_0_col103, combination_limb_1_col104, combination_limb_2_col105,
+                    combination_limb_3_col106, combination_limb_4_col107, combination_limb_5_col108,
+                    combination_limb_6_col109, combination_limb_7_col110, combination_limb_8_col111,
+                    combination_limb_9_col112, combination_limb_0_col114, combination_limb_1_col115,
+                    combination_limb_2_col116, combination_limb_3_col117, combination_limb_4_col118,
+                    combination_limb_5_col119, combination_limb_6_col120, combination_limb_7_col121,
+                    combination_limb_8_col122, combination_limb_9_col123,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -1085,14 +1085,14 @@ mod tests {
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
     use stwo_constraint_framework::{
-        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+        LookupElements, LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
     #[allow(unused_imports)]
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements, preprocessed_mask_add};
+    use crate::test_utils::{make_interaction_trace, preprocessed_mask_add};
     use crate::utils::*;
     use super::{Claim, Component, InteractionClaim};
 
@@ -1103,21 +1103,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            cube_252_lookup_elements: make_lookup_elements(
-                qm31_const::<1939233655, 1619044840, 261113095, 1630075268>(),
-                qm31_const::<755723700, 1754586089, 2095994220, 802306310>(),
-            ),
-            poseidon_full_round_chain_lookup_elements: make_lookup_elements(
-                qm31_const::<1798946566, 1261761511, 1965396494, 909844132>(),
-                qm31_const::<1128133586, 1523205859, 844911885, 1669479084>(),
-            ),
-            poseidon_round_keys_lookup_elements: make_lookup_elements(
-                qm31_const::<329128371, 1217552021, 2111282469, 775625911>(),
-                qm31_const::<225442684, 1397510358, 1436331847, 1340164402>(),
-            ),
-            range_check_3_3_3_3_3_lookup_elements: make_lookup_elements(
-                qm31_const::<1556236254, 464721654, 752948676, 101024730>(),
-                qm31_const::<1064120346, 1019909923, 1735446893, 2115040738>(),
+            common_lookup_elements: LookupElementsTrait::from_z_alpha(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

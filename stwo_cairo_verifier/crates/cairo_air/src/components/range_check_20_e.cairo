@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_20_e_lookup_elements: crate::RangeCheck_20_EElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -49,12 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_20_e_lookup_elements: interaction_elements.range_checks.rc_20_e.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -82,7 +82,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        range_check_20_e_sum_0 = self.range_check_20_e_lookup_elements.combine_qm31([seq_20]);
+        range_check_20_e_sum_0 = self
+            .common_lookup_elements
+            .combine_qm31([qm31_const::<497455322, 0, 0, 0>(), seq_20].span());
 
         lookup_constraints(
             ref sum,

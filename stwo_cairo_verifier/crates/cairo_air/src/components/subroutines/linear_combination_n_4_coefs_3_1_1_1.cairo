@@ -16,7 +16,7 @@ pub fn linear_combination_n_4_coefs_3_1_1_1_evaluate(
     combination_limb_8_col8: QM31,
     combination_limb_9_col9: QM31,
     p_coef_col10: QM31,
-    range_check_3_3_3_3_3_lookup_elements: @crate::RangeCheck_3_3_3_3_3Elements,
+    common_lookup_elements: @crate::CommonElements,
     ref range_check_3_3_3_3_3_sum_0: QM31,
     ref range_check_3_3_3_3_3_sum_1: QM31,
     ref sum: QM31,
@@ -143,26 +143,29 @@ pub fn linear_combination_n_4_coefs_3_1_1_1_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_3_3_3_3_3_sum_0 = range_check_3_3_3_3_3_lookup_elements
+    range_check_3_3_3_3_3_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                (p_coef_col10 + qm31_const::<1, 0, 0, 0>()),
+                qm31_const::<502259093, 0, 0, 0>(), (p_coef_col10 + qm31_const::<1, 0, 0, 0>()),
                 (carry_0_tmp_f4f81_2 + qm31_const::<1, 0, 0, 0>()),
                 (carry_1_tmp_f4f81_3 + qm31_const::<1, 0, 0, 0>()),
                 (carry_2_tmp_f4f81_4 + qm31_const::<1, 0, 0, 0>()),
                 (carry_3_tmp_f4f81_5 + qm31_const::<1, 0, 0, 0>()),
-            ],
+            ]
+                .span(),
         );
 
-    range_check_3_3_3_3_3_sum_1 = range_check_3_3_3_3_3_lookup_elements
+    range_check_3_3_3_3_3_sum_1 = common_lookup_elements
         .combine_qm31(
             [
+                qm31_const::<502259093, 0, 0, 0>(),
                 (carry_4_tmp_f4f81_6 + qm31_const::<1, 0, 0, 0>()),
                 (carry_5_tmp_f4f81_7 + qm31_const::<1, 0, 0, 0>()),
                 (carry_6_tmp_f4f81_8 + qm31_const::<1, 0, 0, 0>()),
                 (carry_7_tmp_f4f81_9 + qm31_const::<1, 0, 0, 0>()),
                 (carry_8_tmp_f4f81_10 + qm31_const::<1, 0, 0, 0>()),
-            ],
+            ]
+                .span(),
         );
 
     []

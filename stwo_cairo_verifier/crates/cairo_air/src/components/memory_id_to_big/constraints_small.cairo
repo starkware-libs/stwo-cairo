@@ -4,11 +4,7 @@ use crate::prelude::*;
 
 #[derive(Drop)]
 pub struct ConstraintParams {
-    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
-    pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
-    pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
-    pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
+    pub common_lookup_elements: crate::CommonElements,
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
@@ -22,16 +18,7 @@ pub fn evaluate_constraints_at_point(
     random_coeff: QM31,
     domain_vanishing_eval_inv: QM31,
 ) {
-    let ConstraintParams {
-        range_check_9_9_lookup_elements,
-        range_check_9_9_b_lookup_elements,
-        range_check_9_9_c_lookup_elements,
-        range_check_9_9_d_lookup_elements,
-        memory_id_to_big_lookup_elements,
-        claimed_sum,
-        seq,
-        column_size,
-    } = params;
+    let ConstraintParams { common_lookup_elements, claimed_sum, seq, column_size } = params;
     let mut range_check_9_9_sum_0: QM31 = Zero::zero();
     let mut range_check_9_9_b_sum_1: QM31 = Zero::zero();
     let mut range_check_9_9_c_sum_2: QM31 = Zero::zero();
@@ -96,10 +83,7 @@ pub fn evaluate_constraints_at_point(
             memory_id_to_small_output_col4, memory_id_to_small_output_col5,
             memory_id_to_small_output_col6, memory_id_to_small_output_col7,
         ],
-        @range_check_9_9_lookup_elements,
-        @range_check_9_9_b_lookup_elements,
-        @range_check_9_9_c_lookup_elements,
-        @range_check_9_9_d_lookup_elements,
+        @common_lookup_elements,
         ref range_check_9_9_sum_0,
         ref range_check_9_9_b_sum_1,
         ref range_check_9_9_c_sum_2,
@@ -109,18 +93,16 @@ pub fn evaluate_constraints_at_point(
         random_coeff,
     );
 
-    memory_id_to_big_sum_4 = memory_id_to_big_lookup_elements
+    memory_id_to_big_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                seq, memory_id_to_small_output_col0, memory_id_to_small_output_col1,
-                memory_id_to_small_output_col2, memory_id_to_small_output_col3,
-                memory_id_to_small_output_col4, memory_id_to_small_output_col5,
-                memory_id_to_small_output_col6, memory_id_to_small_output_col7, Zero::zero(),
-                Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(),
-                Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(),
-                Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(), Zero::zero(),
-                Zero::zero(),
-            ],
+                qm31_const::<1662111297, 0, 0, 0>(), seq, memory_id_to_small_output_col0,
+                memory_id_to_small_output_col1, memory_id_to_small_output_col2,
+                memory_id_to_small_output_col3, memory_id_to_small_output_col4,
+                memory_id_to_small_output_col5, memory_id_to_small_output_col6,
+                memory_id_to_small_output_col7,
+            ]
+                .span(),
         );
 
     lookup_constraints(
@@ -227,6 +209,7 @@ fn lookup_constraints(
 #[cfg(and(test, feature: "qm31_opcode"))]
 mod tests {
     use core::num::traits::Zero;
+    use stwo_constraint_framework::LookupElementsTrait;
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::Invertible;
     use stwo_verifier_core::fields::m31::m31;
@@ -234,42 +217,16 @@ mod tests {
     use stwo_verifier_core::poly::circle::CanonicCosetImpl;
     use stwo_verifier_core::utils::pow2;
     use crate::components::sample_evaluations::*;
-    use crate::test_utils::{make_interaction_trace, make_lookup_elements};
+    use crate::test_utils::make_interaction_trace;
     use super::{ConstraintParams, evaluate_constraints_at_point};
 
     #[test]
     fn test_evaluation_result() {
         let log_size = 15;
 
-        let memory_id_to_big_lookup_elements = make_lookup_elements::<
-            29,
-        >(
-            qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-            qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-        );
-        let range_check_9_9_lookup_elements = make_lookup_elements::<
-            2,
-        >(
-            qm31_const::<989827041, 1225728465, 1602128278, 85336129>(),
-            qm31_const::<1454375758, 8286589, 1713209810, 1602293816>(),
-        );
-        let range_check_9_9_b_lookup_elements = make_lookup_elements::<
-            2,
-        >(
-            qm31_const::<676159317, 930503385, 1105489908, 1544380136>(),
-            qm31_const::<2129889251, 701815395, 1830411342, 2061777868>(),
-        );
-        let range_check_9_9_c_lookup_elements = make_lookup_elements::<
-            2,
-        >(
-            qm31_const::<1260569667, 2138441994, 1709448741, 1544373155>(),
-            qm31_const::<1022885008, 826842007, 1709607881, 1909661957>(),
-        );
-        let range_check_9_9_d_lookup_elements = make_lookup_elements::<
-            2,
-        >(
-            qm31_const::<1551136661, 662010924, 2044956999, 1544361134>(),
-            qm31_const::<2005146556, 852740197, 532387412, 1763320973>(),
+        let common_lookup_elements = LookupElementsTrait::from_z_alpha(
+            qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+            qm31_const::<476823935, 939223384, 62486082, 122423602>(),
         );
 
         let mut sum: QM31 = Zero::zero();
@@ -301,14 +258,7 @@ mod tests {
         let claimed_sum = qm31_const::<1398335417, 314974026, 1722107152, 821933968>();
         let seq = qm31_const::<735272696, 1215403647, 795393303, 879304430>();
         let params = ConstraintParams {
-            memory_id_to_big_lookup_elements,
-            range_check_9_9_lookup_elements,
-            range_check_9_9_b_lookup_elements,
-            range_check_9_9_c_lookup_elements,
-            range_check_9_9_d_lookup_elements,
-            claimed_sum,
-            seq,
-            column_size: m31(pow2(log_size)),
+            common_lookup_elements, claimed_sum, seq, column_size: m31(pow2(log_size)),
         };
         let trace_domain = CanonicCosetImpl::new(log_size);
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();

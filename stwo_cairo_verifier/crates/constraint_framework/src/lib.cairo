@@ -5,34 +5,31 @@ use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, MulByM31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
+use stwo_verifier_core::utils::ArrayImpl;
 
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.
 // Copied from:
 pub type ClaimedPrefixSum = (QM31, usize);
 
+// The maximal number of felts we support combining in LookupElements::combine.
+const MAX_RELATION_SIZE: usize = 128;
+
 #[derive(Drop, Clone)]
-pub struct LookupElements<const N: usize> {
+pub struct LookupElements {
     pub z: QM31,
     pub alpha: QM31,
     pub alpha_powers: Array<QM31>,
 }
 
-
-pub trait LookupElementsTrait<const N: usize> {
-    fn draw(
-        ref channel: Channel,
-    ) -> LookupElements<
-        N,
-    > {
-        assert!(N != 0);
-        let [z, alpha]: [QM31; 2] = (*channel.draw_secure_felts(2).span().try_into().unwrap())
-            .unbox();
-
+pub trait LookupElementsTrait {
+    fn from_z_alpha(
+        z: QM31, alpha: QM31,
+    ) -> LookupElements {
         let mut acc = One::one();
         let mut alpha_powers = array![acc];
 
-        for _ in 1..N {
+        for _ in 1..(MAX_RELATION_SIZE + 1) {
             acc *= alpha;
             alpha_powers.append(acc);
         }
@@ -40,19 +37,29 @@ pub trait LookupElementsTrait<const N: usize> {
         LookupElements { z, alpha, alpha_powers }
     }
 
+    fn draw(
+        ref channel: Channel,
+    ) -> LookupElements {
+        let [z, alpha]: [QM31; 2] = (*channel.draw_secure_felts(2).span().try_into().unwrap())
+            .unbox();
+
+        Self::from_z_alpha(z, alpha)
+    }
+
 
     /// Computes \sigma_i = -z + values[i] * self.alpha^i where values[i] is in qm31.
     ///
     /// We use horner evaluation here regardless of the qm31_opcode feature flag as it is faster in
     /// both cases.
-    fn combine_qm31<impl IntoSpan: ToSpanTrait<[QM31; N], QM31>>(
-        self: @LookupElements<N>, values: [QM31; N],
+    fn combine_qm31(
+        self: @LookupElements, values: Span<QM31>,
     ) -> QM31 {
+        assert!(values.len() <= MAX_RELATION_SIZE);
         let alpha = *self.alpha;
-        let mut values_span = IntoSpan::span(@values);
-        let mut sum = *values_span.pop_back().unwrap();
+        let mut values = values;
+        let mut sum = *values.pop_back().unwrap();
 
-        while let Some(value) = values_span.pop_back() {
+        while let Some(value) = values.pop_back() {
             sum = sum * alpha + *value;
         }
 
@@ -62,23 +69,19 @@ pub trait LookupElementsTrait<const N: usize> {
     /// Computes \sigma_i = -z + values[i] * self.alpha^i where values[i] is in m31.
     ///
     /// The implementation varies based on the qm31_opcode feature flag.
-    fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
-        self: @LookupElements<N>, values: [M31; N],
-    ) -> QM31;
+    fn combine(self: @LookupElements, values: Span<M31>) -> QM31;
 }
 
 #[cfg(feature: "qm31_opcode")]
-pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
+pub impl LookupElementsImpl of LookupElementsTrait {
     /// With qm31_opcode enabled, qm31 by qm31 multiplication becomes a single opcode, making
     /// Horner's method the more efficient choice.
-    fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
-        self: @LookupElements<N>, values: [M31; N],
-    ) -> QM31 {
+    fn combine(self: @LookupElements, mut values: Span<M31>) -> QM31 {
+        assert!(values.len() <= MAX_RELATION_SIZE);
         let alpha = *self.alpha;
-        let mut values_span = IntoSpan::span(@values);
         let mut sum = (*values_span.pop_back().unwrap()).into();
 
-        while let Some(value) = values_span.pop_back() {
+        while let Some(value) = values.pop_back() {
             sum = sum * alpha + (*value).into();
         }
 
@@ -87,17 +90,15 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
 }
 
 #[cfg(not(feature: "qm31_opcode"))]
-pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
+pub impl LookupElementsImpl of LookupElementsTrait {
     /// Without qm31_opcode, the naive approach using precomputed alpha powers is faster than
     /// Horner's method because it uses qm31 by m31 multiplication instead of qm31 by qm31.
-    fn combine<impl IntoSpan: ToSpanTrait<[M31; N], M31>>(
-        self: @LookupElements<N>, values: [M31; N],
-    ) -> QM31 {
+    fn combine(self: @LookupElements, mut values: Span<M31>) -> QM31 {
+        assert!(values.len() <= MAX_RELATION_SIZE);
         let mut alpha_powers = self.alpha_powers.span();
-        let mut values_span = IntoSpan::span(@values);
         let mut sum = -*self.z;
 
-        while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values_span.pop_front()) {
+        while let (Some(alpha), Some(value)) = (alpha_powers.pop_front(), values.pop_front()) {
             sum += (*alpha).mul_m31(*value);
         }
 

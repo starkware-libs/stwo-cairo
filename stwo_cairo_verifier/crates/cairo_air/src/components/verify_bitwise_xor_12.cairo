@@ -42,7 +42,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub verify_bitwise_xor_12_lookup_elements: crate::VerifyBitwiseXor_12Elements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -57,9 +57,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            verify_bitwise_xor_12_lookup_elements: interaction_elements
-                .verify_bitwise_xor_12
-                .clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
