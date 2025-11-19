@@ -54,10 +54,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub verify_bitwise_xor_9_lookup_elements: crate::VerifyBitwiseXor_9Elements,
-    pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -67,15 +64,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            verify_bitwise_xor_9_lookup_elements: interaction_elements.verify_bitwise_xor_9.clone(),
-            verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -359,8 +353,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op0_limb_25_col26,
             op0_limb_26_col27,
             op0_limb_27_col28,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
             ref memory_id_to_big_sum_1,
             ref sum,
@@ -399,8 +392,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op1_limb_25_col55,
             op1_limb_26_col56,
             op1_limb_27_col57,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
             ref memory_id_to_big_sum_3,
             ref sum,
@@ -410,7 +402,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_0_col1, op1_limb_0_col30],
             xor_col58,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_4,
             ref sum,
             domain_vanishing_eval_inv,
@@ -421,7 +413,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_1_col2, op1_limb_1_col31],
             xor_col59,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_5,
             ref sum,
             domain_vanishing_eval_inv,
@@ -432,7 +424,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_2_col3, op1_limb_2_col32],
             xor_col60,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_6,
             ref sum,
             domain_vanishing_eval_inv,
@@ -443,7 +435,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_3_col4, op1_limb_3_col33],
             xor_col61,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_7,
             ref sum,
             domain_vanishing_eval_inv,
@@ -454,7 +446,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_4_col5, op1_limb_4_col34],
             xor_col62,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_8,
             ref sum,
             domain_vanishing_eval_inv,
@@ -465,7 +457,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_5_col6, op1_limb_5_col35],
             xor_col63,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_9,
             ref sum,
             domain_vanishing_eval_inv,
@@ -476,7 +468,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_6_col7, op1_limb_6_col36],
             xor_col64,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_10,
             ref sum,
             domain_vanishing_eval_inv,
@@ -487,7 +479,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_7_col8, op1_limb_7_col37],
             xor_col65,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_11,
             ref sum,
             domain_vanishing_eval_inv,
@@ -498,7 +490,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_8_col9, op1_limb_8_col38],
             xor_col66,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_12,
             ref sum,
             domain_vanishing_eval_inv,
@@ -509,7 +501,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_9_col10, op1_limb_9_col39],
             xor_col67,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_13,
             ref sum,
             domain_vanishing_eval_inv,
@@ -520,7 +512,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_10_col11, op1_limb_10_col40],
             xor_col68,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_14,
             ref sum,
             domain_vanishing_eval_inv,
@@ -531,7 +523,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_11_col12, op1_limb_11_col41],
             xor_col69,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_15,
             ref sum,
             domain_vanishing_eval_inv,
@@ -542,7 +534,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_12_col13, op1_limb_12_col42],
             xor_col70,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_16,
             ref sum,
             domain_vanishing_eval_inv,
@@ -553,7 +545,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_13_col14, op1_limb_13_col43],
             xor_col71,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_17,
             ref sum,
             domain_vanishing_eval_inv,
@@ -564,7 +556,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_14_col15, op1_limb_14_col44],
             xor_col72,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_18,
             ref sum,
             domain_vanishing_eval_inv,
@@ -575,7 +567,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_15_col16, op1_limb_15_col45],
             xor_col73,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_19,
             ref sum,
             domain_vanishing_eval_inv,
@@ -586,7 +578,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_16_col17, op1_limb_16_col46],
             xor_col74,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_20,
             ref sum,
             domain_vanishing_eval_inv,
@@ -597,7 +589,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_17_col18, op1_limb_17_col47],
             xor_col75,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_21,
             ref sum,
             domain_vanishing_eval_inv,
@@ -608,7 +600,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_18_col19, op1_limb_18_col48],
             xor_col76,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_22,
             ref sum,
             domain_vanishing_eval_inv,
@@ -619,7 +611,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_19_col20, op1_limb_19_col49],
             xor_col77,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_23,
             ref sum,
             domain_vanishing_eval_inv,
@@ -630,7 +622,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_20_col21, op1_limb_20_col50],
             xor_col78,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_24,
             ref sum,
             domain_vanishing_eval_inv,
@@ -641,7 +633,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_21_col22, op1_limb_21_col51],
             xor_col79,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_25,
             ref sum,
             domain_vanishing_eval_inv,
@@ -652,7 +644,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_22_col23, op1_limb_22_col52],
             xor_col80,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_26,
             ref sum,
             domain_vanishing_eval_inv,
@@ -663,7 +655,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_23_col24, op1_limb_23_col53],
             xor_col81,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_27,
             ref sum,
             domain_vanishing_eval_inv,
@@ -674,7 +666,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_24_col25, op1_limb_24_col54],
             xor_col82,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_28,
             ref sum,
             domain_vanishing_eval_inv,
@@ -685,7 +677,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_25_col26, op1_limb_25_col55],
             xor_col83,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_29,
             ref sum,
             domain_vanishing_eval_inv,
@@ -696,7 +688,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_9_evaluate(
             [op0_limb_26_col27, op1_limb_26_col56],
             xor_col84,
-            self.verify_bitwise_xor_9_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_9_sum_30,
             ref sum,
             domain_vanishing_eval_inv,
@@ -707,7 +699,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         bitwise_xor_num_bits_8_evaluate(
             [op0_limb_27_col28, op1_limb_27_col57],
             xor_col85,
-            self.verify_bitwise_xor_8_lookup_elements,
+            self.common_lookup_elements,
             ref verify_bitwise_xor_8_sum_31,
             ref sum,
             domain_vanishing_eval_inv,
@@ -728,8 +720,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 and_tmp_efb2a_84, and_tmp_efb2a_87, and_tmp_efb2a_90, and_tmp_efb2a_93,
             ],
             and_id_col86,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_32,
             ref memory_id_to_big_sum_33,
             ref sum,
@@ -746,8 +737,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 xor_col79, xor_col80, xor_col81, xor_col82, xor_col83, xor_col84, xor_col85,
             ],
             xor_id_col87,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_34,
             ref memory_id_to_big_sum_35,
             ref sum,
@@ -774,8 +764,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 (and_tmp_efb2a_90 + xor_col84), (and_tmp_efb2a_93 + xor_col85),
             ],
             or_id_col88,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_36,
             ref memory_id_to_big_sum_37,
             ref sum,
@@ -1311,21 +1300,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_address_to_id_lookup_elements: make_lookup_elements(
-                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
-                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
-            ),
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            verify_bitwise_xor_8_lookup_elements: make_lookup_elements(
-                qm31_const::<390097169, 1715941348, 958959293, 1227669969>(),
-                qm31_const::<105167513, 476596518, 1027059816, 1879697407>(),
-            ),
-            verify_bitwise_xor_9_lookup_elements: make_lookup_elements(
-                qm31_const::<974507519, 776396310, 1562918127, 1227662988>(),
-                qm31_const::<1834779873, 2002531844, 159681682, 1478723240>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

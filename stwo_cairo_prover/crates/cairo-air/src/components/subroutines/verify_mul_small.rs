@@ -17,16 +17,17 @@ impl VerifyMulSmall {
         carry_1_col0: E::F,
         carry_3_col1: E::F,
         carry_5_col2: E::F,
-        range_check_11_lookup_elements: &relations::RangeCheck_11,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
+        let M31_991608089 = E::F::from(M31::from(991608089));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_11_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(&carry_1_col0),
+            &[M31_991608089.clone(), carry_1_col0.clone()],
         ));
 
         // carry 1 definition.
@@ -43,9 +44,9 @@ impl VerifyMulSmall {
                         * M31_512.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_11_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(&carry_3_col1),
+            &[M31_991608089.clone(), carry_3_col1.clone()],
         ));
 
         // carry 3 definition.
@@ -71,9 +72,9 @@ impl VerifyMulSmall {
                         * M31_512.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_11_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(&carry_5_col2),
+            &[M31_991608089.clone(), carry_5_col2.clone()],
         ));
 
         // carry 5 definition.

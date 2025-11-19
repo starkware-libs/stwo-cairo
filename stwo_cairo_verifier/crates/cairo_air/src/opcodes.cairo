@@ -22,7 +22,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -602,7 +602,7 @@ pub struct OpcodeComponents {
 pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     fn new(
         claim: @OpcodeClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @OpcodeInteractionClaim,
     ) -> OpcodeComponents {
         let OpcodeClaim {
@@ -657,7 +657,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_components
                 .append(
                     components::add_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -670,7 +670,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_small_components
                 .append(
                     components::add_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -683,7 +683,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_ap_components
                 .append(
                     components::add_ap_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -696,7 +696,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_components
                 .append(
                     components::assert_eq_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -709,7 +709,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_imm_components
                 .append(
                     components::assert_eq_opcode_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -722,7 +722,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_double_deref_components
                 .append(
                     components::assert_eq_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -734,7 +734,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             blake_components
                 .append(
                     components::blake_compress_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -747,7 +747,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call_components
                 .append(
                     components::call_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -760,7 +760,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call_rel_imm_components
                 .append(
                     components::call_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -773,7 +773,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             generic_components
                 .append(
                     components::generic_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -784,7 +784,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jnz_components
                 .append(
                     components::jnz_opcode_non_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -797,7 +797,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jnz_taken_components
                 .append(
                     components::jnz_opcode_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -810,7 +810,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_components
                 .append(
                     components::jump_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -823,7 +823,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_double_deref_components
                 .append(
                     components::jump_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -836,7 +836,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_rel_components
                 .append(
                     components::jump_opcode_rel::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -849,7 +849,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_rel_imm_components
                 .append(
                     components::jump_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -860,7 +860,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             mul_components
                 .append(
                     components::mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -873,7 +873,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             mul_small_components
                 .append(
                     components::mul_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -886,7 +886,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             qm31_components
                 .append(
                     components::qm_31_add_mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -897,7 +897,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             ret_components
                 .append(
                     components::ret_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1176,7 +1176,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
 pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
     fn new(
         claim: @OpcodeClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @OpcodeInteractionClaim,
     ) -> OpcodeComponents {
         let OpcodeClaim {
@@ -1236,7 +1236,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_components
                 .append(
                     components::add_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1249,7 +1249,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_small_components
                 .append(
                     components::add_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1262,7 +1262,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             add_ap_components
                 .append(
                     components::add_ap_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1275,7 +1275,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_components
                 .append(
                     components::assert_eq_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1288,7 +1288,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_imm_components
                 .append(
                     components::assert_eq_opcode_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1301,7 +1301,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             assert_eq_double_deref_components
                 .append(
                     components::assert_eq_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1313,7 +1313,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             blake_components
                 .append(
                     components::blake_compress_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1326,7 +1326,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call_components
                 .append(
                     components::call_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1339,7 +1339,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             call_rel_imm_components
                 .append(
                     components::call_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1350,7 +1350,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jnz_components
                 .append(
                     components::jnz_opcode_non_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1363,7 +1363,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jnz_taken_components
                 .append(
                     components::jnz_opcode_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1376,7 +1376,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_components
                 .append(
                     components::jump_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1389,7 +1389,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_double_deref_components
                 .append(
                     components::jump_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1402,7 +1402,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_rel_components
                 .append(
                     components::jump_opcode_rel::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1415,7 +1415,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             jump_rel_imm_components
                 .append(
                     components::jump_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1426,7 +1426,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             mul_components
                 .append(
                     components::mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1439,7 +1439,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             mul_small_components
                 .append(
                     components::mul_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1452,7 +1452,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             qm31_components
                 .append(
                     components::qm_31_add_mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }
@@ -1463,7 +1463,7 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
             ret_components
                 .append(
                     components::ret_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
+                        claim, interaction_claim, common_lookup_elements,
                     ),
                 );
         }

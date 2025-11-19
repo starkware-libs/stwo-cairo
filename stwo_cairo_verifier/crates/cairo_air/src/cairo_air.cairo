@@ -17,6 +17,7 @@ use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::opcodes::*;
+use stwo_verifier_core::fields::m31::M31;
 use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -47,8 +48,7 @@ use stwo_cairo_air::poseidon::{
 use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
-    RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
-    RangeChecksInteractionElementsImpl,
+    RangeChecksInteractionClaimImpl,
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
@@ -62,52 +62,12 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
 
+pub type CommonElements = LookupElements;
 
-pub type Cube252Elements = LookupElements<20>;
+pub const OPCODES_RELATION_ID: M31 = M31 { inner: 428564188 };
+pub const MEMORY_ADDRESS_TO_ID_RELATION_ID: M31 = M31 { inner: 1444891767 };
+pub const MEMORY_ID_TO_VALUE_RELATION_ID: M31 = M31 { inner: 1662111297 };
 
-pub type MemoryAddressToIdElements = LookupElements<2>;
-
-pub type MemoryIdToBigElements = LookupElements<29>;
-
-pub type OpcodesElements = LookupElements<3>;
-
-pub type PedersenAggregatorElements = LookupElements<3>;
-
-pub type PartialEcMulElements = LookupElements<72>;
-
-pub type PedersenPointsTableElements = LookupElements<57>;
-
-pub type PoseidonFullRoundChainElements = LookupElements<32>;
-
-pub type Poseidon3PartialRoundsChainElements = LookupElements<42>;
-
-pub type PoseidonAggregatorElements = LookupElements<6>;
-
-pub type PoseidonRoundKeysElements = LookupElements<31>;
-
-pub type BlakeGElements = LookupElements<20>;
-
-pub type BlakeRoundElements = LookupElements<35>;
-
-pub type BlakeRoundSigmaElements = LookupElements<17>;
-
-pub type TripleXor32Elements = LookupElements<8>;
-
-pub type RangeCheck252Width27Elements = LookupElements<10>;
-
-pub type VerifyInstructionElements = LookupElements<7>;
-
-pub type VerifyBitwiseXor_4Elements = LookupElements<3>;
-
-pub type VerifyBitwiseXor_7Elements = LookupElements<3>;
-
-pub type VerifyBitwiseXor_8Elements = LookupElements<3>;
-
-pub type VerifyBitwiseXor_8_BElements = LookupElements<3>;
-
-pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
-
-pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
 /// Validates that every `mask_value` provided in the proof (in `sampled_values`) is used by at
 /// least one component.
@@ -303,67 +263,6 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
 }
 
 #[derive(Drop)]
-pub struct CairoInteractionElements {
-    pub opcodes: OpcodesElements,
-    pub verify_instruction: VerifyInstructionElements,
-    pub blake_round: BlakeRoundElements,
-    pub blake_g: BlakeGElements,
-    pub blake_round_sigma: BlakeRoundSigmaElements,
-    pub triple_xor_32: TripleXor32Elements,
-    pub poseidon_aggregator: PoseidonAggregatorElements,
-    pub poseidon_3_partial_rounds_chain: Poseidon3PartialRoundsChainElements,
-    pub poseidon_full_round_chain: PoseidonFullRoundChainElements,
-    pub cube_252: Cube252Elements,
-    pub poseidon_round_keys: PoseidonRoundKeysElements,
-    pub range_check_252_width_27: RangeCheck252Width27Elements,
-    pub pedersen_aggregator: PedersenAggregatorElements,
-    pub partial_ec_mul: PartialEcMulElements,
-    pub pedersen_points_table: PedersenPointsTableElements,
-    pub memory_address_to_id: MemoryAddressToIdElements,
-    pub memory_id_to_value: MemoryIdToBigElements,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: VerifyBitwiseXor_4Elements,
-    pub verify_bitwise_xor_7: VerifyBitwiseXor_7Elements,
-    pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
-    pub verify_bitwise_xor_8_b: VerifyBitwiseXor_8_BElements,
-    pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
-    pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
-}
-
-#[generate_trait]
-pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
-    fn draw(ref channel: Channel) -> CairoInteractionElements {
-        CairoInteractionElements {
-            opcodes: LookupElementsImpl::draw(ref channel),
-            verify_instruction: LookupElementsImpl::draw(ref channel),
-            blake_round: LookupElementsImpl::draw(ref channel),
-            blake_g: LookupElementsImpl::draw(ref channel),
-            blake_round_sigma: LookupElementsImpl::draw(ref channel),
-            triple_xor_32: LookupElementsImpl::draw(ref channel),
-            poseidon_aggregator: LookupElementsImpl::draw(ref channel),
-            poseidon_3_partial_rounds_chain: LookupElementsImpl::draw(ref channel),
-            poseidon_full_round_chain: LookupElementsImpl::draw(ref channel),
-            cube_252: LookupElementsImpl::draw(ref channel),
-            poseidon_round_keys: LookupElementsImpl::draw(ref channel),
-            range_check_252_width_27: LookupElementsImpl::draw(ref channel),
-            pedersen_aggregator: LookupElementsImpl::draw(ref channel),
-            partial_ec_mul: LookupElementsImpl::draw(ref channel),
-            pedersen_points_table: LookupElementsImpl::draw(ref channel),
-            memory_address_to_id: LookupElementsImpl::draw(ref channel),
-            memory_id_to_value: LookupElementsImpl::draw(ref channel),
-            range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),
-            verify_bitwise_xor_4: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_7: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_8_b: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
-        }
-    }
-}
-
-
-#[derive(Drop)]
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub struct CairoAir {
     opcodes: OpcodeComponents,
@@ -392,41 +291,45 @@ pub struct CairoAir {
 pub impl CairoAirNewImpl of CairoAirNewTrait {
     fn new(
         cairo_claim: @CairoClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @CairoInteractionClaim,
         composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
+            cairo_claim.opcodes, common_lookup_elements, interaction_claim.opcodes,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
+            cairo_claim.blake_context, common_lookup_elements, interaction_claim.blake_context,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
+            cairo_claim.builtins, common_lookup_elements, interaction_claim.builtins,
         );
 
         let pedersen_context_components = PedersenContextComponentsImpl::new(
-            cairo_claim.pedersen_context, interaction_elements, interaction_claim.pedersen_context,
+            cairo_claim.pedersen_context,
+            common_lookup_elements,
+            interaction_claim.pedersen_context,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
+            cairo_claim.poseidon_context,
+            common_lookup_elements,
+            interaction_claim.poseidon_context,
         );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
             interaction_claim.verify_instruction,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let memory_address_to_id_component =
             components::memory_address_to_id::NewComponentImpl::new(
             cairo_claim.memory_address_to_id,
             interaction_claim.memory_address_to_id,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         assert!(
@@ -446,7 +349,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             memory_id_to_value_components
                 .append(
                     components::memory_id_to_big::NewBigComponentImpl::new(
-                        log_size, offset, claimed_sum, interaction_elements,
+                        log_size, offset, claimed_sum, common_lookup_elements,
                     ),
                 );
             offset = offset + pow2(log_size);
@@ -458,46 +361,46 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             components::memory_id_to_big::NewSmallComponentImpl::new(
             *cairo_claim.memory_id_to_value.small_log_size,
             *interaction_claim.memory_id_to_value.small_claimed_sum,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
+            cairo_claim.range_checks, common_lookup_elements, interaction_claim.range_checks,
         );
 
         let verify_bitwise_xor_4_component =
             components::verify_bitwise_xor_4::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_4,
             interaction_claim.verify_bitwise_xor_4,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_7_component =
             components::verify_bitwise_xor_7::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_7,
             interaction_claim.verify_bitwise_xor_7,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_component =
             components::verify_bitwise_xor_8::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8,
             interaction_claim.verify_bitwise_xor_8,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_b_component =
             components::verify_bitwise_xor_8_b::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8_b,
             interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
             interaction_claim.verify_bitwise_xor_9,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         CairoAir {
@@ -740,33 +643,33 @@ pub struct CairoAir {
 pub impl CairoAirNewImpl of CairoAirNewTrait {
     fn new(
         cairo_claim: @CairoClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @CairoInteractionClaim,
         composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
+            cairo_claim.opcodes, common_lookup_elements, interaction_claim.opcodes,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
+            cairo_claim.blake_context, common_lookup_elements, interaction_claim.blake_context,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
+            cairo_claim.builtins, common_lookup_elements, interaction_claim.builtins,
         );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
             interaction_claim.verify_instruction,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let memory_address_to_id_component =
             components::memory_address_to_id::NewComponentImpl::new(
             cairo_claim.memory_address_to_id,
             interaction_claim.memory_address_to_id,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         assert!(
@@ -786,7 +689,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             memory_id_to_value_components
                 .append(
                     components::memory_id_to_big::NewBigComponentImpl::new(
-                        log_size, offset, claimed_sum, interaction_elements,
+                        log_size, offset, claimed_sum, common_lookup_elements,
                     ),
                 );
             offset = offset + pow2(log_size);
@@ -798,46 +701,46 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             components::memory_id_to_big::NewSmallComponentImpl::new(
             *cairo_claim.memory_id_to_value.small_log_size,
             *interaction_claim.memory_id_to_value.small_claimed_sum,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
+            cairo_claim.range_checks, common_lookup_elements, interaction_claim.range_checks,
         );
 
         let verify_bitwise_xor_4_component =
             components::verify_bitwise_xor_4::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_4,
             interaction_claim.verify_bitwise_xor_4,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_7_component =
             components::verify_bitwise_xor_7::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_7,
             interaction_claim.verify_bitwise_xor_7,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_component =
             components::verify_bitwise_xor_8::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8,
             interaction_claim.verify_bitwise_xor_8,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_b_component =
             components::verify_bitwise_xor_8_b::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8_b,
             interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
             interaction_claim.verify_bitwise_xor_9,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         CairoAir {
@@ -1060,37 +963,39 @@ pub struct CairoAir {
 pub impl CairoAirNewImpl of CairoAirNewTrait {
     fn new(
         cairo_claim: @CairoClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @CairoInteractionClaim,
         composition_log_degree_bound: u32,
     ) -> CairoAir {
         let opcode_components = OpcodeComponentsImpl::new(
-            cairo_claim.opcodes, interaction_elements, interaction_claim.opcodes,
+            cairo_claim.opcodes, common_lookup_elements, interaction_claim.opcodes,
         );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
+            cairo_claim.blake_context, common_lookup_elements, interaction_claim.blake_context,
         );
 
         let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
+            cairo_claim.builtins, common_lookup_elements, interaction_claim.builtins,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
+            cairo_claim.poseidon_context,
+            common_lookup_elements,
+            interaction_claim.poseidon_context,
         );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
             interaction_claim.verify_instruction,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let memory_address_to_id_component =
             components::memory_address_to_id::NewComponentImpl::new(
             cairo_claim.memory_address_to_id,
             interaction_claim.memory_address_to_id,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         assert!(
@@ -1110,7 +1015,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             memory_id_to_value_components
                 .append(
                     components::memory_id_to_big::NewBigComponentImpl::new(
-                        log_size, offset, claimed_sum, interaction_elements,
+                        log_size, offset, claimed_sum, common_lookup_elements,
                     ),
                 );
             offset = offset + pow2(log_size);
@@ -1122,46 +1027,46 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             components::memory_id_to_big::NewSmallComponentImpl::new(
             *cairo_claim.memory_id_to_value.small_log_size,
             *interaction_claim.memory_id_to_value.small_claimed_sum,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let range_checks_components = RangeChecksComponentsImpl::new(
-            cairo_claim.range_checks, interaction_elements, interaction_claim.range_checks,
+            cairo_claim.range_checks, common_lookup_elements, interaction_claim.range_checks,
         );
 
         let verify_bitwise_xor_4_component =
             components::verify_bitwise_xor_4::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_4,
             interaction_claim.verify_bitwise_xor_4,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_7_component =
             components::verify_bitwise_xor_7::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_7,
             interaction_claim.verify_bitwise_xor_7,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_component =
             components::verify_bitwise_xor_8::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8,
             interaction_claim.verify_bitwise_xor_8,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_8_b_component =
             components::verify_bitwise_xor_8_b::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_8_b,
             interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
             interaction_claim.verify_bitwise_xor_9,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         CairoAir {
