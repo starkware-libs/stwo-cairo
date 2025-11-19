@@ -8,7 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_20_c_lookup_elements: relations::RangeCheck_20_C,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -48,15 +48,16 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_531010560 = E::F::from(M31::from(531010560));
         let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_20".to_owned(),
         });
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_c_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity),
-            std::slice::from_ref(&seq_20),
+            &[M31_531010560.clone(), seq_20.clone()],
         ));
 
         eval.finalize_logup_in_pairs();
@@ -80,7 +81,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_20_c_lookup_elements: relations::RangeCheck_20_C::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

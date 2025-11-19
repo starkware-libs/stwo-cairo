@@ -16,8 +16,7 @@ pub fn read_small_evaluate(
     value_limb_2_col5: QM31,
     remainder_bits_col6: QM31,
     partial_limb_msb_col7: QM31,
-    memory_address_to_id_lookup_elements: @crate::MemoryAddressToIdElements,
-    memory_id_to_big_lookup_elements: @crate::MemoryIdToBigElements,
+    common_lookup_elements: @CommonLookupElements,
     ref memory_address_to_id_sum_0: QM31,
     ref memory_id_to_big_sum_1: QM31,
     ref sum: QM31,
@@ -28,7 +27,7 @@ pub fn read_small_evaluate(
     read_id_evaluate(
         read_small_input,
         id_col0,
-        memory_address_to_id_lookup_elements,
+        common_lookup_elements,
         ref memory_address_to_id_sum_0,
         ref sum,
         domain_vanishing_eval_inv,
@@ -41,20 +40,28 @@ pub fn read_small_evaluate(
         decode_small_sign_output_tmp_ceaaf_5_limb27,
     ] =
         decode_small_sign_evaluate(
-        [], msb_col1, mid_limbs_set_col2, ref sum, domain_vanishing_eval_inv, random_coeff,
+        [],
+        msb_col1,
+        mid_limbs_set_col2,
+        common_lookup_elements,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
     );
     cond_range_check_2_evaluate(
         [remainder_bits_col6, qm31_const::<1, 0, 0, 0>()],
         partial_limb_msb_col7,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
     );
 
-    memory_id_to_big_sum_1 = memory_id_to_big_lookup_elements
+    memory_id_to_big_sum_1 = common_lookup_elements
         .combine_qm31(
             [
-                id_col0, value_limb_0_col3, value_limb_1_col4, value_limb_2_col5,
+                qm31_const::<1662111297, 0, 0, 0>(), id_col0, value_limb_0_col3, value_limb_1_col4,
+                value_limb_2_col5,
                 (remainder_bits_col6 + decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits),
                 decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
                 decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
@@ -76,7 +83,8 @@ pub fn read_small_evaluate(
                 decode_small_sign_output_tmp_ceaaf_5_limb21, qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), decode_small_sign_output_tmp_ceaaf_5_limb27,
-            ],
+            ]
+                .span(),
         );
 
     (((((value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>()))

@@ -16,6 +16,7 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
     pub fn evaluate<E: EvalAtRow>(
         [range_check_last_limb_bits_in_ms_limb_2_input]: [E::F; 1],
         partial_limb_msb_col0: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
@@ -26,6 +27,7 @@ impl RangeCheckLastLimbBitsInMsLimb2 {
                 M31_1.clone(),
             ],
             partial_limb_msb_col0.clone(),
+            common_lookup_elements,
             eval,
         );
         []

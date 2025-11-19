@@ -7,7 +7,7 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedCo
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry};
 
-use crate::relations;
+use crate::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
 
 /// Split the (ID , Multiplicity) columns to shorter chunks. This is done to improve the performance
 /// during The merkle commitment and FRI, as this component is usually the tallest in the Cairo AIR.
@@ -32,13 +32,13 @@ pub type Component = FrameworkComponent<Eval>;
 pub struct Eval {
     // The log size of the component after split.
     pub log_size: u32,
-    pub lookup_elements: relations::MemoryAddressToId,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl Eval {
-    pub fn new(claim: Claim, lookup_elements: relations::MemoryAddressToId) -> Self {
+    pub fn new(claim: Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
             log_size: claim.log_size,
-            lookup_elements,
+            common_lookup_elements,
         }
     }
 }
@@ -62,9 +62,9 @@ impl FrameworkEval for Eval {
             let address =
                 seq_plus_one.clone() + E::F::from(M31((i * (1 << self.log_size())) as u32));
             eval.add_to_relation(RelationEntry::new(
-                &self.lookup_elements,
+                &self.common_lookup_elements,
                 E::EF::from(-multiplicity),
-                &[address, id],
+                &[E::F::from(MEMORY_ADDRESS_TO_ID_RELATION_ID), address, id],
             ));
         }
 
@@ -116,7 +116,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             log_size: 4,
-            lookup_elements: relations::MemoryAddressToId::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
 
         let expr_eval = eval.evaluate(ExprEvaluator::new());

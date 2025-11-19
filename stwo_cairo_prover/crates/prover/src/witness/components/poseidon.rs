@@ -1,7 +1,7 @@
-use cairo_air::air::CairoInteractionElements;
 use cairo_air::poseidon::air::{
     Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
 };
+use cairo_air::relations::CommonLookupElements;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -95,14 +95,6 @@ impl PoseidonContextClaimGenerator {
             );
         let (cube_252_claim, cube_252_interaction_gen) = self.cube_252_trace_generator.write_trace(
             tree_builder,
-            &range_checks_trace_generator.rc_20_trace_generator,
-            &range_checks_trace_generator.rc_20_b_trace_generator,
-            &range_checks_trace_generator.rc_20_c_trace_generator,
-            &range_checks_trace_generator.rc_20_d_trace_generator,
-            &range_checks_trace_generator.rc_20_e_trace_generator,
-            &range_checks_trace_generator.rc_20_f_trace_generator,
-            &range_checks_trace_generator.rc_20_g_trace_generator,
-            &range_checks_trace_generator.rc_20_h_trace_generator,
             &range_checks_trace_generator.rc_9_9_trace_generator,
             &range_checks_trace_generator.rc_9_9_b_trace_generator,
             &range_checks_trace_generator.rc_9_9_c_trace_generator,
@@ -111,6 +103,14 @@ impl PoseidonContextClaimGenerator {
             &range_checks_trace_generator.rc_9_9_f_trace_generator,
             &range_checks_trace_generator.rc_9_9_g_trace_generator,
             &range_checks_trace_generator.rc_9_9_h_trace_generator,
+            &range_checks_trace_generator.rc_20_trace_generator,
+            &range_checks_trace_generator.rc_20_b_trace_generator,
+            &range_checks_trace_generator.rc_20_c_trace_generator,
+            &range_checks_trace_generator.rc_20_d_trace_generator,
+            &range_checks_trace_generator.rc_20_e_trace_generator,
+            &range_checks_trace_generator.rc_20_f_trace_generator,
+            &range_checks_trace_generator.rc_20_g_trace_generator,
+            &range_checks_trace_generator.rc_20_h_trace_generator,
         );
         let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys_trace_generator
@@ -158,12 +158,12 @@ impl PoseidonContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
     ) -> PoseidonContextInteractionClaim {
         PoseidonContextInteractionClaim {
             claim: self
                 .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, interaction_elements)),
+                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
         }
     }
 }
@@ -182,78 +182,26 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
     ) -> InteractionClaim {
         let poseidon_aggregator_interaction_claim = self
             .poseidon_aggregator_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.poseidon_full_round_chain,
-                &interaction_elements.range_check_252_width_27,
-                &interaction_elements.cube_252,
-                &interaction_elements.range_checks.rc_3_3_3_3_3,
-                &interaction_elements.range_checks.rc_4_4_4_4,
-                &interaction_elements.range_checks.rc_4_4,
-                &interaction_elements.poseidon_3_partial_rounds_chain,
-                &interaction_elements.poseidon_aggregator,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let poseidon_3_partial_rounds_chain_interaction_claim = self
             .poseidon_3_partial_rounds_chain_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.poseidon_round_keys,
-                &interaction_elements.cube_252,
-                &interaction_elements.range_checks.rc_4_4_4_4,
-                &interaction_elements.range_checks.rc_4_4,
-                &interaction_elements.range_check_252_width_27,
-                &interaction_elements.poseidon_3_partial_rounds_chain,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let poseidon_full_round_chain_interaction_claim = self
             .poseidon_full_round_chain_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.cube_252,
-                &interaction_elements.poseidon_round_keys,
-                &interaction_elements.range_checks.rc_3_3_3_3_3,
-                &interaction_elements.poseidon_full_round_chain,
-            );
-        let cube_252_interaction_claim = self.cube_252_interaction_gen.write_interaction_trace(
-            tree_builder,
-            &interaction_elements.range_checks.rc_9_9,
-            &interaction_elements.range_checks.rc_9_9_b,
-            &interaction_elements.range_checks.rc_9_9_c,
-            &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
-            &interaction_elements.range_checks.rc_20,
-            &interaction_elements.range_checks.rc_20_b,
-            &interaction_elements.range_checks.rc_20_c,
-            &interaction_elements.range_checks.rc_20_d,
-            &interaction_elements.range_checks.rc_20_e,
-            &interaction_elements.range_checks.rc_20_f,
-            &interaction_elements.range_checks.rc_20_g,
-            &interaction_elements.range_checks.rc_20_h,
-            &interaction_elements.cube_252,
-        );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
+        let cube_252_interaction_claim = self
+            .cube_252_interaction_gen
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let poseidon_round_keys_interaction_claim = self
             .poseidon_round_keys_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.poseidon_round_keys);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let range_check_felt_252_width_27_interaction_claim = self
             .range_check_felt_252_width_27_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.range_checks.rc_9_9,
-                &interaction_elements.range_checks.rc_18,
-                &interaction_elements.range_checks.rc_9_9_b,
-                &interaction_elements.range_checks.rc_18_b,
-                &interaction_elements.range_checks.rc_9_9_c,
-                &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_check_252_width_27,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
 
         InteractionClaim {
             poseidon_aggregator: poseidon_aggregator_interaction_claim,
