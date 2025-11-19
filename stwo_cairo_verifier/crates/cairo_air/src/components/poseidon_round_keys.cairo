@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub poseidon_round_keys_lookup_elements: crate::PoseidonRoundKeysElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -54,7 +54,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            poseidon_round_keys_lookup_elements: interaction_elements.poseidon_round_keys.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -143,20 +143,22 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         poseidon_round_keys_sum_0 = self
-            .poseidon_round_keys_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    seq_6, poseidon_round_keys_0, poseidon_round_keys_1, poseidon_round_keys_2,
-                    poseidon_round_keys_3, poseidon_round_keys_4, poseidon_round_keys_5,
-                    poseidon_round_keys_6, poseidon_round_keys_7, poseidon_round_keys_8,
-                    poseidon_round_keys_9, poseidon_round_keys_10, poseidon_round_keys_11,
-                    poseidon_round_keys_12, poseidon_round_keys_13, poseidon_round_keys_14,
-                    poseidon_round_keys_15, poseidon_round_keys_16, poseidon_round_keys_17,
-                    poseidon_round_keys_18, poseidon_round_keys_19, poseidon_round_keys_20,
-                    poseidon_round_keys_21, poseidon_round_keys_22, poseidon_round_keys_23,
-                    poseidon_round_keys_24, poseidon_round_keys_25, poseidon_round_keys_26,
-                    poseidon_round_keys_27, poseidon_round_keys_28, poseidon_round_keys_29,
-                ],
+                    qm31_const::<1024310512, 0, 0, 0>(), seq_6, poseidon_round_keys_0,
+                    poseidon_round_keys_1, poseidon_round_keys_2, poseidon_round_keys_3,
+                    poseidon_round_keys_4, poseidon_round_keys_5, poseidon_round_keys_6,
+                    poseidon_round_keys_7, poseidon_round_keys_8, poseidon_round_keys_9,
+                    poseidon_round_keys_10, poseidon_round_keys_11, poseidon_round_keys_12,
+                    poseidon_round_keys_13, poseidon_round_keys_14, poseidon_round_keys_15,
+                    poseidon_round_keys_16, poseidon_round_keys_17, poseidon_round_keys_18,
+                    poseidon_round_keys_19, poseidon_round_keys_20, poseidon_round_keys_21,
+                    poseidon_round_keys_22, poseidon_round_keys_23, poseidon_round_keys_24,
+                    poseidon_round_keys_25, poseidon_round_keys_26, poseidon_round_keys_27,
+                    poseidon_round_keys_28, poseidon_round_keys_29,
+                ]
+                    .span(),
             );
 
         lookup_constraints(

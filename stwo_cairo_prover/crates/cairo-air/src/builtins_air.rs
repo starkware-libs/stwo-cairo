@@ -191,12 +191,7 @@ impl BuiltinComponents {
                 tree_span_provider,
                 add_mod_builtin::Eval {
                     claim: add_mod_builtin,
-                    memory_address_to_id_lookup_elements: interaction_elements
-                        .memory_address_to_id
-                        .clone(),
-                    memory_id_to_big_lookup_elements: interaction_elements
-                        .memory_id_to_value
-                        .clone(),
+                    common_lookup_elements: interaction_elements.common.clone(),
                 },
                 interaction_claim.add_mod_builtin.unwrap().claimed_sum,
             )
@@ -206,18 +201,7 @@ impl BuiltinComponents {
                 tree_span_provider,
                 bitwise_builtin::Eval {
                     claim: bitwise_builtin,
-                    memory_address_to_id_lookup_elements: interaction_elements
-                        .memory_address_to_id
-                        .clone(),
-                    memory_id_to_big_lookup_elements: interaction_elements
-                        .memory_id_to_value
-                        .clone(),
-                    verify_bitwise_xor_9_lookup_elements: interaction_elements
-                        .verify_bitwise_xor_9
-                        .clone(),
-                    verify_bitwise_xor_8_lookup_elements: interaction_elements
-                        .verify_bitwise_xor_8
-                        .clone(),
+                    common_lookup_elements: interaction_elements.common.clone(),
                 },
                 interaction_claim.bitwise_builtin.unwrap().claimed_sum,
             )
@@ -227,18 +211,7 @@ impl BuiltinComponents {
                 tree_span_provider,
                 mul_mod_builtin::Eval {
                     claim: mul_mod_builtin,
-                    memory_address_to_id_lookup_elements: interaction_elements
-                        .memory_address_to_id
-                        .clone(),
-                    memory_id_to_big_lookup_elements: interaction_elements
-                        .memory_id_to_value
-                        .clone(),
-                    range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
-                    range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
-                    range_check_3_6_6_3_lookup_elements: interaction_elements
-                        .range_checks
-                        .rc_3_6_6_3
-                        .clone(),
+                    common_lookup_elements: interaction_elements.common.clone(),
                 },
                 interaction_claim.mul_mod_builtin.unwrap().claimed_sum,
             )
@@ -248,12 +221,7 @@ impl BuiltinComponents {
                 tree_span_provider,
                 pedersen_builtin::Eval {
                     claim: pedersen_builtin,
-                    memory_address_to_id_lookup_elements: interaction_elements
-                        .memory_address_to_id
-                        .clone(),
-                    pedersen_aggregator_lookup_elements: interaction_elements
-                        .pedersen_aggregator
-                        .clone(),
+                    common_lookup_elements: interaction_elements.common.clone(),
                 },
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
@@ -263,12 +231,7 @@ impl BuiltinComponents {
                 tree_span_provider,
                 poseidon_builtin::Eval {
                     claim: poseidon_builtin,
-                    memory_address_to_id_lookup_elements: interaction_elements
-                        .memory_address_to_id
-                        .clone(),
-                    poseidon_aggregator_lookup_elements: interaction_elements
-                        .poseidon_aggregator
-                        .clone(),
+                    common_lookup_elements: interaction_elements.common.clone(),
                 },
                 interaction_claim.poseidon_builtin.unwrap().claimed_sum,
             )
@@ -279,16 +242,7 @@ impl BuiltinComponents {
                     tree_span_provider,
                     range_check_builtin_bits_96::Eval {
                         claim: range_check_96_builtin,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        range_check_6_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_6
-                            .clone(),
+                        common_lookup_elements: interaction_elements.common.clone(),
                     },
                     interaction_claim
                         .range_check_96_builtin
@@ -304,12 +258,7 @@ impl BuiltinComponents {
                         tree_span_provider,
                         range_check_builtin_bits_128::Eval {
                             claim: range_check_128_builtin,
-                            memory_address_to_id_lookup_elements: interaction_elements
-                                .memory_address_to_id
-                                .clone(),
-                            memory_id_to_big_lookup_elements: interaction_elements
-                                .memory_id_to_value
-                                .clone(),
+                            common_lookup_elements: interaction_elements.common.clone(),
                         },
                         interaction_claim
                             .range_check_128_builtin

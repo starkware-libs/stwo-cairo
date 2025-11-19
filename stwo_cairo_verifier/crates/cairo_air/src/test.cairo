@@ -86,6 +86,7 @@ fn test_public_data_logup_sum() {
 
 fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
     CairoInteractionElements {
+        common: LookupElementsDummyImpl::dummy(),
         opcodes: LookupElementsDummyImpl::dummy(),
         verify_instruction: LookupElementsDummyImpl::dummy(),
         blake_round: LookupElementsDummyImpl::dummy(),

@@ -53,11 +53,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_12_lookup_elements: crate::RangeCheck_12Elements,
-    pub range_check_3_6_6_3_lookup_elements: crate::RangeCheck_3_6_6_3Elements,
-    pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -72,14 +68,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
-            range_check_3_6_6_3_lookup_elements: interaction_elements
-                .range_checks
-                .rc_3_6_6_3
-                .clone(),
-            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -1547,8 +1536,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             c3_limb_8_col249,
             c3_limb_9_col250,
             c3_limb_10_col251,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
             ref memory_id_to_big_sum_1,
             ref memory_address_to_id_sum_2,
@@ -1608,132 +1596,196 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         range_check_12_sum_53 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_0_col252]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_0_col252].span(),
+            );
 
         range_check_12_sum_54 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_1_col253]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_1_col253].span(),
+            );
 
         range_check_12_sum_55 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_2_col254]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_2_col254].span(),
+            );
 
         range_check_12_sum_56 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_3_col255]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_3_col255].span(),
+            );
 
         range_check_12_sum_57 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_4_col256]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_4_col256].span(),
+            );
 
         range_check_12_sum_58 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_5_col257]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_5_col257].span(),
+            );
 
         range_check_12_sum_59 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_6_col258]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_6_col258].span(),
+            );
 
         range_check_12_sum_60 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_7_col259]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_7_col259].span(),
+            );
 
         range_check_12_sum_61 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_8_col260]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_8_col260].span(),
+            );
 
         range_check_12_sum_62 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_9_col261]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_9_col261].span(),
+            );
 
         range_check_12_sum_63 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_10_col262]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_10_col262].span(),
+            );
 
         range_check_12_sum_64 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_11_col263]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_11_col263].span(),
+            );
 
         range_check_12_sum_65 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_12_col264]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_12_col264].span(),
+            );
 
         range_check_12_sum_66 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_13_col265]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_13_col265].span(),
+            );
 
         range_check_12_sum_67 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_14_col266]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_14_col266].span(),
+            );
 
         range_check_12_sum_68 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_15_col267]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_15_col267].span(),
+            );
 
         range_check_12_sum_69 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_16_col268]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_16_col268].span(),
+            );
 
         range_check_12_sum_70 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_17_col269]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_17_col269].span(),
+            );
 
         range_check_12_sum_71 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_18_col270]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_18_col270].span(),
+            );
 
         range_check_12_sum_72 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_19_col271]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_19_col271].span(),
+            );
 
         range_check_12_sum_73 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_20_col272]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_20_col272].span(),
+            );
 
         range_check_12_sum_74 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_21_col273]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_21_col273].span(),
+            );
 
         range_check_12_sum_75 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_22_col274]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_22_col274].span(),
+            );
 
         range_check_12_sum_76 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_23_col275]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_23_col275].span(),
+            );
 
         range_check_12_sum_77 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_24_col276]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_24_col276].span(),
+            );
 
         range_check_12_sum_78 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_25_col277]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_25_col277].span(),
+            );
 
         range_check_12_sum_79 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_26_col278]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_26_col278].span(),
+            );
 
         range_check_12_sum_80 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_27_col279]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_27_col279].span(),
+            );
 
         range_check_12_sum_81 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_28_col280]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_28_col280].span(),
+            );
 
         range_check_12_sum_82 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_29_col281]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_29_col281].span(),
+            );
 
         range_check_12_sum_83 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_30_col282]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_30_col282].span(),
+            );
 
         range_check_12_sum_84 = self
-            .range_check_12_lookup_elements
-            .combine_qm31([ab_minus_c_div_p_limb_31_col283]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<941275232, 0, 0, 0>(), ab_minus_c_div_p_limb_31_col283].span(),
+            );
         let [
             mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_0,
             mod_words_to_12_bit_array_output_tmp_cf8b4_185_limb_1,
@@ -1770,7 +1822,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col291,
             limb6b_1_col292,
             limb9b_1_col293,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_85,
             ref range_check_3_6_6_3_sum_86,
             ref range_check_3_6_6_3_sum_87,
@@ -1816,7 +1868,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col301,
             limb6b_1_col302,
             limb9b_1_col303,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_90,
             ref range_check_3_6_6_3_sum_91,
             ref range_check_3_6_6_3_sum_92,
@@ -1863,7 +1915,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col311,
             limb6b_1_col312,
             limb9b_1_col313,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_95,
             ref range_check_3_6_6_3_sum_96,
             ref range_check_3_6_6_3_sum_97,
@@ -1910,7 +1962,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col321,
             limb6b_1_col322,
             limb9b_1_col323,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_100,
             ref range_check_3_6_6_3_sum_101,
             ref range_check_3_6_6_3_sum_102,
@@ -1957,7 +2009,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col331,
             limb6b_1_col332,
             limb9b_1_col333,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_105,
             ref range_check_3_6_6_3_sum_106,
             ref range_check_3_6_6_3_sum_107,
@@ -2004,7 +2056,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col341,
             limb6b_1_col342,
             limb9b_1_col343,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_110,
             ref range_check_3_6_6_3_sum_111,
             ref range_check_3_6_6_3_sum_112,
@@ -2051,7 +2103,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col351,
             limb6b_1_col352,
             limb9b_1_col353,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_115,
             ref range_check_3_6_6_3_sum_116,
             ref range_check_3_6_6_3_sum_117,
@@ -2098,7 +2150,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             limb5b_1_col361,
             limb6b_1_col362,
             limb9b_1_col363,
-            self.range_check_3_6_6_3_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_3_6_6_3_sum_120,
             ref range_check_3_6_6_3_sum_121,
             ref range_check_3_6_6_3_sum_122,
@@ -2240,6 +2292,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_14,
                 mod_words_to_12_bit_array_output_tmp_cf8b4_290_limb_15,
             ],
+            self.common_lookup_elements,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -2360,6 +2413,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_14,
                 mod_words_to_12_bit_array_output_tmp_cf8b4_206_limb_15,
             ],
+            self.common_lookup_elements,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
@@ -2375,8 +2429,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_125 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_0_col364 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_0_col364 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_1
         let constraint_quotient = ((carry_1_col365
@@ -2388,8 +2448,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_126 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_1_col365 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_1_col365 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_2
         let constraint_quotient = ((carry_2_col366
@@ -2401,8 +2467,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_127 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_2_col366 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_2_col366 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_3
         let constraint_quotient = ((carry_3_col367
@@ -2414,8 +2486,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_128 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_3_col367 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_3_col367 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_4
         let constraint_quotient = ((carry_4_col368
@@ -2427,8 +2505,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_129 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_4_col368 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_4_col368 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_5
         let constraint_quotient = ((carry_5_col369
@@ -2440,8 +2524,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_130 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_5_col369 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_5_col369 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_6
         let constraint_quotient = ((carry_6_col370
@@ -2453,8 +2543,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_131 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_6_col370 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_6_col370 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_7
         let constraint_quotient = ((carry_7_col371
@@ -2466,8 +2562,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_132 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_7_col371 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_7_col371 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_8
         let constraint_quotient = ((carry_8_col372
@@ -2479,8 +2581,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_133 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_8_col372 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_8_col372 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_9
         let constraint_quotient = ((carry_9_col373
@@ -2492,8 +2600,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_134 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_9_col373 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_9_col373 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_10
         let constraint_quotient = ((carry_10_col374
@@ -2505,8 +2619,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_135 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_10_col374 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_10_col374 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_11
         let constraint_quotient = ((carry_11_col375
@@ -2518,8 +2638,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_136 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_11_col375 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_11_col375 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_12
         let constraint_quotient = ((carry_12_col376
@@ -2531,8 +2657,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_137 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_12_col376 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_12_col376 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_13
         let constraint_quotient = ((carry_13_col377
@@ -2544,8 +2676,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_138 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_13_col377 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_13_col377 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_14
         let constraint_quotient = ((carry_14_col378
@@ -2557,8 +2695,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_139 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_14_col378 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_14_col378 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_15
         let constraint_quotient = ((carry_15_col379
@@ -2570,8 +2714,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_140 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_15_col379 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_15_col379 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_16
         let constraint_quotient = ((carry_16_col380
@@ -2583,8 +2733,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_141 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_16_col380 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_16_col380 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_17
         let constraint_quotient = ((carry_17_col381
@@ -2596,8 +2752,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_142 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_17_col381 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_17_col381 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_18
         let constraint_quotient = ((carry_18_col382
@@ -2609,8 +2771,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_143 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_18_col382 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_18_col382 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_19
         let constraint_quotient = ((carry_19_col383
@@ -2622,8 +2790,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_144 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_19_col383 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_19_col383 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_20
         let constraint_quotient = ((carry_20_col384
@@ -2635,8 +2809,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_145 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_20_col384 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_20_col384 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_21
         let constraint_quotient = ((carry_21_col385
@@ -2648,8 +2828,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_146 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_21_col385 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_21_col385 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_22
         let constraint_quotient = ((carry_22_col386
@@ -2661,8 +2847,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_147 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_22_col386 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_22_col386 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_23
         let constraint_quotient = ((carry_23_col387
@@ -2674,8 +2866,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_148 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_23_col387 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_23_col387 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_24
         let constraint_quotient = ((carry_24_col388
@@ -2687,8 +2885,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_149 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_24_col388 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_24_col388 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_25
         let constraint_quotient = ((carry_25_col389
@@ -2700,8 +2904,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_150 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_25_col389 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_25_col389 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_26
         let constraint_quotient = ((carry_26_col390
@@ -2713,8 +2923,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_151 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_26_col390 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_26_col390 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_27
         let constraint_quotient = ((carry_27_col391
@@ -2726,8 +2942,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_152 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_27_col391 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_27_col391 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_28
         let constraint_quotient = ((carry_28_col392
@@ -2739,8 +2961,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_153 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_28_col392 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_28_col392 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_29
         let constraint_quotient = ((carry_29_col393
@@ -2752,8 +2980,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_154 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_29_col393 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_29_col393 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_30
         let constraint_quotient = ((carry_30_col394
@@ -2765,8 +2999,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_155 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_30_col394 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_30_col394 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_31
         let constraint_quotient = ((carry_31_col395
@@ -2778,8 +3018,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_156 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_31_col395 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_31_col395 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_32
         let constraint_quotient = ((carry_32_col396
@@ -2791,8 +3037,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_157 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_32_col396 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_32_col396 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_33
         let constraint_quotient = ((carry_33_col397
@@ -2804,8 +3056,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_158 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_33_col397 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_33_col397 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_34
         let constraint_quotient = ((carry_34_col398
@@ -2817,8 +3075,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_159 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_34_col398 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_34_col398 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_35
         let constraint_quotient = ((carry_35_col399
@@ -2830,8 +3094,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_160 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_35_col399 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_35_col399 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_36
         let constraint_quotient = ((carry_36_col400
@@ -2843,8 +3113,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_161 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_36_col400 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_36_col400 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_37
         let constraint_quotient = ((carry_37_col401
@@ -2856,8 +3132,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_162 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_37_col401 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_37_col401 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_38
         let constraint_quotient = ((carry_38_col402
@@ -2869,8 +3151,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_163 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_38_col402 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_38_col402 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_39
         let constraint_quotient = ((carry_39_col403
@@ -2882,8 +3170,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_164 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_39_col403 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_39_col403 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_40
         let constraint_quotient = ((carry_40_col404
@@ -2895,8 +3189,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_165 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_40_col404 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_40_col404 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_41
         let constraint_quotient = ((carry_41_col405
@@ -2908,8 +3208,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_166 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_41_col405 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_41_col405 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_42
         let constraint_quotient = ((carry_42_col406
@@ -2921,8 +3227,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_167 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_42_col406 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_42_col406 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_43
         let constraint_quotient = ((carry_43_col407
@@ -2934,8 +3246,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_168 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_43_col407 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_43_col407 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_44
         let constraint_quotient = ((carry_44_col408
@@ -2947,8 +3265,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_169 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_44_col408 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_44_col408 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_45
         let constraint_quotient = ((carry_45_col409
@@ -2960,8 +3284,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_170 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_45_col409 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_45_col409 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_46
         let constraint_quotient = ((carry_46_col410
@@ -2973,8 +3303,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_171 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_46_col410 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_46_col410 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_47
         let constraint_quotient = ((carry_47_col411
@@ -2986,8 +3322,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_172 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_47_col411 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_47_col411 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_48
         let constraint_quotient = ((carry_48_col412
@@ -2999,8 +3341,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_173 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_48_col412 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_48_col412 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_49
         let constraint_quotient = ((carry_49_col413
@@ -3012,8 +3360,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_174 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_49_col413 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_49_col413 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_50
         let constraint_quotient = ((carry_50_col414
@@ -3025,8 +3379,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_175 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_50_col414 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_50_col414 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_51
         let constraint_quotient = ((carry_51_col415
@@ -3038,8 +3398,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_176 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_51_col415 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_51_col415 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_52
         let constraint_quotient = ((carry_52_col416
@@ -3051,8 +3417,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_177 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_52_col416 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_52_col416 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_53
         let constraint_quotient = ((carry_53_col417
@@ -3064,8 +3436,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_178 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_53_col417 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_53_col417 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_54
         let constraint_quotient = ((carry_54_col418
@@ -3077,8 +3455,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_179 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_54_col418 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_54_col418 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_55
         let constraint_quotient = ((carry_55_col419
@@ -3090,8 +3474,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_180 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_55_col419 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_55_col419 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_56
         let constraint_quotient = ((carry_56_col420
@@ -3103,8 +3493,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_181 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_56_col420 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_56_col420 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_57
         let constraint_quotient = ((carry_57_col421
@@ -3116,8 +3512,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_182 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_57_col421 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_57_col421 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_58
         let constraint_quotient = ((carry_58_col422
@@ -3129,8 +3531,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_183 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_58_col422 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_58_col422 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_59
         let constraint_quotient = ((carry_59_col423
@@ -3142,8 +3550,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_184 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_59_col423 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_59_col423 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_60
         let constraint_quotient = ((carry_60_col424
@@ -3155,8 +3569,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_185 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_60_col424 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_60_col424 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - carry_61
         let constraint_quotient = ((carry_61_col425
@@ -3168,8 +3588,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_18_sum_186 = self
-            .range_check_18_lookup_elements
-            .combine_qm31([(carry_61_col425 + qm31_const::<131072, 0, 0, 0>())]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (carry_61_col425 + qm31_const::<131072, 0, 0, 0>()),
+                ]
+                    .span(),
+            );
 
         // Constraint - final limb constraint
         let constraint_quotient = (((double_karatsuba_b1daa_output_tmp_cf8b4_350_limb_62
@@ -5579,25 +6005,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_address_to_id_lookup_elements: make_lookup_elements(
-                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
-                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
-            ),
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            range_check_12_lookup_elements: make_lookup_elements(
-                qm31_const::<310706656, 835312516, 1386373996, 1203016555>(),
-                qm31_const::<945822523, 1459470424, 1590559905, 112272303>(),
-            ),
-            range_check_18_lookup_elements: make_lookup_elements(
-                qm31_const::<245050921, 1103573213, 1520416965, 1202958302>(),
-                qm31_const::<120822322, 836122054, 943800857, 299339130>(),
-            ),
-            range_check_3_6_6_3_lookup_elements: make_lookup_elements(
-                qm31_const::<1089931097, 1370912410, 1177516183, 1244758171>(),
-                qm31_const::<221881731, 1007430148, 1857034075, 497178366>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

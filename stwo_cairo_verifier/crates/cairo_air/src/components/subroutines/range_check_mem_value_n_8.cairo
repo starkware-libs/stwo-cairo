@@ -5,10 +5,7 @@ use crate::prelude::*;
 
 pub fn range_check_mem_value_n_8_evaluate(
     input: [QM31; 8],
-    range_check_9_9_lookup_elements: @crate::RangeCheck_9_9Elements,
-    range_check_9_9_b_lookup_elements: @crate::RangeCheck_9_9_BElements,
-    range_check_9_9_c_lookup_elements: @crate::RangeCheck_9_9_CElements,
-    range_check_9_9_d_lookup_elements: @crate::RangeCheck_9_9_DElements,
+    common_lookup_elements: @crate::CommonElements,
     ref range_check_9_9_sum_0: QM31,
     ref range_check_9_9_b_sum_1: QM31,
     ref range_check_9_9_c_sum_2: QM31,
@@ -29,24 +26,40 @@ pub fn range_check_mem_value_n_8_evaluate(
     ] =
         input;
 
-    range_check_9_9_sum_0 = range_check_9_9_lookup_elements
+    range_check_9_9_sum_0 = common_lookup_elements
         .combine_qm31(
-            [range_check_mem_value_n_8_input_limb_0, range_check_mem_value_n_8_input_limb_1],
+            [
+                qm31_const::<517791011, 0, 0, 0>(), range_check_mem_value_n_8_input_limb_0,
+                range_check_mem_value_n_8_input_limb_1,
+            ]
+                .span(),
         );
 
-    range_check_9_9_b_sum_1 = range_check_9_9_b_lookup_elements
+    range_check_9_9_b_sum_1 = common_lookup_elements
         .combine_qm31(
-            [range_check_mem_value_n_8_input_limb_2, range_check_mem_value_n_8_input_limb_3],
+            [
+                qm31_const::<1897792095, 0, 0, 0>(), range_check_mem_value_n_8_input_limb_2,
+                range_check_mem_value_n_8_input_limb_3,
+            ]
+                .span(),
         );
 
-    range_check_9_9_c_sum_2 = range_check_9_9_c_lookup_elements
+    range_check_9_9_c_sum_2 = common_lookup_elements
         .combine_qm31(
-            [range_check_mem_value_n_8_input_limb_4, range_check_mem_value_n_8_input_limb_5],
+            [
+                qm31_const::<1881014476, 0, 0, 0>(), range_check_mem_value_n_8_input_limb_4,
+                range_check_mem_value_n_8_input_limb_5,
+            ]
+                .span(),
         );
 
-    range_check_9_9_d_sum_3 = range_check_9_9_d_lookup_elements
+    range_check_9_9_d_sum_3 = common_lookup_elements
         .combine_qm31(
-            [range_check_mem_value_n_8_input_limb_6, range_check_mem_value_n_8_input_limb_7],
+            [
+                qm31_const::<1864236857, 0, 0, 0>(), range_check_mem_value_n_8_input_limb_6,
+                range_check_mem_value_n_8_input_limb_7,
+            ]
+                .span(),
         );
 
     []

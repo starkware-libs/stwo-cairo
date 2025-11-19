@@ -50,8 +50,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -66,8 +65,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -160,8 +158,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_13_col14,
             value_limb_14_col15,
             partial_limb_msb_col16,
-            self.memory_address_to_id_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
             ref memory_id_to_big_sum_1,
             ref sum,
@@ -246,13 +243,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_address_to_id_lookup_elements: make_lookup_elements(
-                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
-                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
-            ),
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();
