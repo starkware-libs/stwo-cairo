@@ -26,10 +26,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub opcodes_lookup_elements: relations::Opcodes,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -77,6 +74,7 @@ impl FrameworkEval for Eval {
         let M31_134217728 = E::F::from(M31::from(134217728));
         let M31_2 = E::F::from(M31::from(2));
         let M31_262144 = E::F::from(M31::from(262144));
+        let M31_428564188 = E::F::from(M31::from(428564188));
         let M31_512 = E::F::from(M31::from(512));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
@@ -99,7 +97,7 @@ impl FrameworkEval for Eval {
 
         DecodeInstruction15A61::evaluate(
             [input_pc_col0.clone()],
-            &self.verify_instruction_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -110,8 +108,7 @@ impl FrameworkEval for Eval {
             next_pc_limb_2_col6.clone(),
             next_pc_limb_3_col7.clone(),
             partial_limb_msb_col8.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -122,14 +119,14 @@ impl FrameworkEval for Eval {
             next_fp_limb_2_col12.clone(),
             next_fp_limb_3_col13.clone(),
             partial_limb_msb_col14.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.opcodes_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
+                M31_428564188.clone(),
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
@@ -137,9 +134,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.opcodes_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
+                M31_428564188.clone(),
                 (((next_pc_limb_0_col4.clone() + (next_pc_limb_1_col5.clone() * M31_512.clone()))
                     + (next_pc_limb_2_col6.clone() * M31_262144.clone()))
                     + (next_pc_limb_3_col7.clone() * M31_134217728.clone())),
@@ -172,10 +170,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

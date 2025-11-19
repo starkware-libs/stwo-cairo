@@ -78,6 +78,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_648362599 = PackedM31::broadcast(M31::from(648362599));
     let bitwise_xor_12_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "bitwise_xor_12_0".to_owned(),
     });
@@ -95,8 +96,12 @@ fn write_trace_simd(
             let bitwise_xor_12_0 = bitwise_xor_12_0.packed_at(row_index);
             let bitwise_xor_12_1 = bitwise_xor_12_1.packed_at(row_index);
             let bitwise_xor_12_2 = bitwise_xor_12_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_12_0 =
-                [bitwise_xor_12_0, bitwise_xor_12_1, bitwise_xor_12_2];
+            *lookup_data.verify_bitwise_xor_12_0 = [
+                M31_648362599,
+                bitwise_xor_12_0,
+                bitwise_xor_12_1,
+                bitwise_xor_12_2,
+            ];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;
@@ -107,7 +112,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_12_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_12_0: Vec<[PackedM31; 4]>,
     mults: Vec<PackedM31>,
 }
 
@@ -118,7 +123,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_12: &relations::VerifyBitwiseXor_12,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -131,7 +136,7 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = verify_bitwise_xor_12.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

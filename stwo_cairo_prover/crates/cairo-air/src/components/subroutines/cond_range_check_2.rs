@@ -15,6 +15,7 @@ impl CondRangeCheck2 {
     pub fn evaluate<E: EvalAtRow>(
         [cond_range_check_2_input_limb_0, cond_range_check_2_input_limb_1]: [E::F; 2],
         partial_limb_msb_col0: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));

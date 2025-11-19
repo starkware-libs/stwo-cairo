@@ -9,7 +9,7 @@ use stwo_verifier_core::{ColumnSpan, TreeArray};
 use crate::cairo_component::CairoComponent;
 use crate::claim::ClaimTrait;
 use crate::prelude::*;
-use crate::{CairoInteractionElements, RelationUsesDict, accumulate_relation_uses};
+use crate::{RelationUsesDict, accumulate_relation_uses};
 use super::super::Invertible;
 use super::super::utils::UsizeImpl;
 
@@ -133,15 +133,7 @@ pub struct BigComponent {
     pub log_n_rows: u32,
     pub offset: u32,
     pub claimed_sum: QM31,
-    pub lookup_elements: super::super::MemoryIdToBigElements,
-    pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
-    pub range_9_9_b_lookup_elements: super::super::RangeCheck_9_9_BElements,
-    pub range_9_9_c_lookup_elements: super::super::RangeCheck_9_9_CElements,
-    pub range_9_9_d_lookup_elements: super::super::RangeCheck_9_9_DElements,
-    pub range_9_9_e_lookup_elements: super::super::RangeCheck_9_9_EElements,
-    pub range_9_9_f_lookup_elements: super::super::RangeCheck_9_9_FElements,
-    pub range_9_9_g_lookup_elements: super::super::RangeCheck_9_9_GElements,
-    pub range_9_9_h_lookup_elements: super::super::RangeCheck_9_9_HElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 #[generate_trait]
@@ -150,21 +142,13 @@ pub impl NewBigComponentImpl of NewBigComponent {
         log_n_rows: u32,
         offset: u32,
         claimed_sum: QM31,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> BigComponent {
         BigComponent {
             log_n_rows: log_n_rows,
             offset: offset,
             claimed_sum: claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -182,15 +166,7 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
             offset: (*self.offset).try_into().unwrap(),
-            range_check_9_9_lookup_elements: self.range_9_9_lookup_elements.clone(),
-            range_check_9_9_b_lookup_elements: self.range_9_9_b_lookup_elements.clone(),
-            range_check_9_9_c_lookup_elements: self.range_9_9_c_lookup_elements.clone(),
-            range_check_9_9_d_lookup_elements: self.range_9_9_d_lookup_elements.clone(),
-            range_check_9_9_e_lookup_elements: self.range_9_9_e_lookup_elements.clone(),
-            range_check_9_9_f_lookup_elements: self.range_9_9_f_lookup_elements.clone(),
-            range_check_9_9_g_lookup_elements: self.range_9_9_g_lookup_elements.clone(),
-            range_check_9_9_h_lookup_elements: self.range_9_9_h_lookup_elements.clone(),
-            memory_id_to_big_lookup_elements: self.lookup_elements.clone(),
+            common_lookup_elements: self.common_lookup_elements.clone(),
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
@@ -215,26 +191,18 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
 pub struct SmallComponent {
     pub log_n_rows: u32,
     pub claimed_sum: QM31,
-    pub lookup_elements: super::super::MemoryIdToBigElements,
-    pub range_9_9_lookup_elements: super::super::RangeCheck_9_9Elements,
-    pub range_9_9_b_lookup_elements: super::super::RangeCheck_9_9_BElements,
-    pub range_9_9_c_lookup_elements: super::super::RangeCheck_9_9_CElements,
-    pub range_9_9_d_lookup_elements: super::super::RangeCheck_9_9_DElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 #[generate_trait]
 pub impl NewSmallComponentImpl of NewSmallComponent {
     fn new(
-        log_n_rows: u32, claimed_sum: QM31, interaction_elements: @CairoInteractionElements,
+        log_n_rows: u32, claimed_sum: QM31, common_lookup_elements: @CommonLookupElements,
     ) -> SmallComponent {
         SmallComponent {
             log_n_rows: log_n_rows,
             claimed_sum: claimed_sum,
-            lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -251,11 +219,7 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
     ) {
         let params = constraints_small::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
-            range_check_9_9_lookup_elements: self.range_9_9_lookup_elements.clone(),
-            range_check_9_9_b_lookup_elements: self.range_9_9_b_lookup_elements.clone(),
-            range_check_9_9_c_lookup_elements: self.range_9_9_c_lookup_elements.clone(),
-            range_check_9_9_d_lookup_elements: self.range_9_9_d_lookup_elements.clone(),
-            memory_id_to_big_lookup_elements: self.lookup_elements.clone(),
+            common_lookup_elements: self.common_lookup_elements.clone(),
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),

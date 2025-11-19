@@ -7,9 +7,9 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -151,7 +151,7 @@ pub struct BlakeContextComponents {
 pub impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
     fn new(
         claim: @BlakeContextClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @BlakeContextInteractionClaim,
     ) -> BlakeContextComponents {
         if let Some(claim) = claim.claim {
@@ -159,7 +159,7 @@ pub impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
                 components: Some(
                     BlakeComponentsImpl::new(
                         claim,
-                        interaction_elements,
+                        common_lookup_elements,
                         interaction_claim.interaction_claim.as_snap().unwrap(),
                     ),
                 ),
@@ -205,30 +205,30 @@ pub struct BlakeComponents {
 pub impl BlakeComponentsImpl of BlakeComponentsTrait {
     fn new(
         claim: @BlakeClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @BlakeInteractionClaim,
     ) -> BlakeComponents {
         let blake_round_component = components::blake_round::NewComponentImpl::new(
-            claim.blake_round, interaction_claim.blake_round, interaction_elements,
+            claim.blake_round, interaction_claim.blake_round, common_lookup_elements,
         );
 
         let blake_g_component = components::blake_g::NewComponentImpl::new(
-            claim.blake_g, interaction_claim.blake_g, interaction_elements,
+            claim.blake_g, interaction_claim.blake_g, common_lookup_elements,
         );
 
         let blake_round_sigma_component = components::blake_round_sigma::NewComponentImpl::new(
-            claim.blake_round_sigma, interaction_claim.blake_round_sigma, interaction_elements,
+            claim.blake_round_sigma, interaction_claim.blake_round_sigma, common_lookup_elements,
         );
 
         let triple_xor_32_component = components::triple_xor_32::NewComponentImpl::new(
-            claim.triple_xor_32, interaction_claim.triple_xor_32, interaction_elements,
+            claim.triple_xor_32, interaction_claim.triple_xor_32, common_lookup_elements,
         );
 
         let verify_bitwise_xor_12_component =
             components::verify_bitwise_xor_12::NewComponentImpl::new(
             claim.verify_bitwise_xor_12,
             interaction_claim.verify_bitwise_xor_12,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         BlakeComponents {
