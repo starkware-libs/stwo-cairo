@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::Path;
@@ -14,6 +15,7 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
 use crate::air::{MemorySection, PublicMemory};
+use crate::verifier::RelationUse;
 use crate::CairoProof;
 
 mod json {
@@ -182,6 +184,22 @@ pub fn encode_felt_in_limbs(felt: [u32; 8]) -> Vec<u32> {
     }
 }
 
+pub type RelationUsesDict = HashMap<&'static str, u64>;
+
+/// Accumulates the number of uses of each relation in a map.
+pub fn accumulate_relation_uses<const N: usize>(
+    relation_uses: &mut RelationUsesDict,
+    relation_uses_per_row: [RelationUse; N],
+    log_size: u32,
+) {
+    let component_size = 1 << log_size;
+    for relation_use in relation_uses_per_row {
+        let relation_uses_in_component = relation_use.uses.checked_mul(component_size).unwrap();
+        let prev = relation_uses.entry(relation_use.relation_id).or_insert(0);
+        *prev = prev.checked_add(relation_uses_in_component).unwrap();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::utils::{construct_f252, encode_and_hash_memory_section, encode_felt_in_limbs};
@@ -247,11 +265,14 @@ mod tests {
 #[cfg(test)]
 #[cfg(feature = "slow-tests")]
 mod slow_tests {
+    use std::collections::HashMap;
+
     use dev_utils::utils::get_proof_file_path;
     use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
     use tempfile::NamedTempFile;
 
     use super::*;
+    use crate::verifier::RelationUse;
 
     #[test]
     fn test_serialize_and_deserialize_proof() {
@@ -308,5 +329,27 @@ mod slow_tests {
             final_json, original_json,
             "Final serialized proof should match the original proof"
         );
+    }
+
+    #[test]
+    fn test_accumulate_relation_uses() {
+        let mut relation_uses = HashMap::from([("relation_1", 4), ("relation_2", 10)]);
+        let log_size = 2;
+        let relation_uses_per_row = [
+            RelationUse {
+                relation_id: "relation_1",
+                uses: 2,
+            },
+            RelationUse {
+                relation_id: "relation_2",
+                uses: 4,
+            },
+        ];
+
+        accumulate_relation_uses(&mut relation_uses, relation_uses_per_row, log_size);
+
+        assert_eq!(relation_uses.len(), 2);
+        assert_eq!(relation_uses.get("relation_1"), Some(&12));
+        assert_eq!(relation_uses.get("relation_2"), Some(&26));
     }
 }

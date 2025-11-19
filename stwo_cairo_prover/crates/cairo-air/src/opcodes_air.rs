@@ -11,7 +11,6 @@ use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::air::CairoInteractionElements;
 use super::components::display_components;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
@@ -19,6 +18,7 @@ use crate::components::{
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode, mul_opcode_small,
     qm_31_add_mul_opcode, ret_opcode,
 };
+use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeClaim {

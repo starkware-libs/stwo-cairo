@@ -16,7 +16,9 @@ pub mod utils;
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
-pub use air::CairoProof;
+pub mod cairo_proof;
+pub mod public_data;
+pub use cairo_proof::CairoProof;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 /// The preprocessed trace used for the prover.

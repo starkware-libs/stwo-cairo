@@ -4,12 +4,13 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
+use crate::air::CairoInteractionElements;
 use crate::components::prelude::*;
 use crate::components::{
     cube_252, indented_component_display, poseidon_3_partial_rounds_chain, poseidon_aggregator,
     poseidon_full_round_chain, poseidon_round_keys, range_check_252_width_27,
 };
+use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonContextClaim {
