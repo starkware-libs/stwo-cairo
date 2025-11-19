@@ -154,40 +154,13 @@ impl InteractionClaimGenerator {
     ) -> InteractionClaim {
         let pedersen_aggregator_interaction_claim = self
             .pedersen_aggregator_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.range_checks.rc_5_4,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_checks.rc_8,
-                &interaction_elements.pedersen_points_table,
-                &interaction_elements.partial_ec_mul,
-                &interaction_elements.pedersen_aggregator,
-            );
-        let partial_ec_mul_interaction_claim =
-            self.partial_ec_mul_interaction_gen.write_interaction_trace(
-                tree_builder,
-                &interaction_elements.pedersen_points_table,
-                &interaction_elements.range_checks.rc_9_9,
-                &interaction_elements.range_checks.rc_9_9_b,
-                &interaction_elements.range_checks.rc_9_9_c,
-                &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_checks.rc_9_9_f,
-                &interaction_elements.range_checks.rc_9_9_g,
-                &interaction_elements.range_checks.rc_9_9_h,
-                &interaction_elements.range_checks.rc_20,
-                &interaction_elements.range_checks.rc_20_b,
-                &interaction_elements.range_checks.rc_20_c,
-                &interaction_elements.range_checks.rc_20_d,
-                &interaction_elements.range_checks.rc_20_e,
-                &interaction_elements.range_checks.rc_20_f,
-                &interaction_elements.range_checks.rc_20_g,
-                &interaction_elements.range_checks.rc_20_h,
-                &interaction_elements.partial_ec_mul,
-            );
+            .write_interaction_trace(tree_builder, &interaction_elements.common);
+        let partial_ec_mul_interaction_claim = self
+            .partial_ec_mul_interaction_gen
+            .write_interaction_trace(tree_builder, &interaction_elements.common);
         let pedersen_points_table_interaction_claim = self
             .pedersen_points_table_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.pedersen_points_table);
+            .write_interaction_trace(tree_builder, &interaction_elements.common);
 
         InteractionClaim {
             pedersen_aggregator: pedersen_aggregator_interaction_claim,

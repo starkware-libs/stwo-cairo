@@ -32,12 +32,13 @@ impl DecodeInstructionDf7A6 {
         opcode_call_col15: E::F,
         opcode_ret_col16: E::F,
         opcode_assert_eq_col17: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 3] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_16 = E::F::from(M31::from(16));
+        let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_2 = E::F::from(M31::from(2));
         let M31_256 = E::F::from(M31::from(256));
         let M31_32 = E::F::from(M31::from(32));
@@ -101,9 +102,10 @@ impl DecodeInstructionDf7A6 {
             (opcode_assert_eq_col17.clone() * (M31_1.clone() - opcode_assert_eq_col17.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            verify_instruction_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1719106205.clone(),
                 decode_instruction_df7a6_input_pc.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),

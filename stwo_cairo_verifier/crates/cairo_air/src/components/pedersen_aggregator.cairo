@@ -50,12 +50,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_5_4_lookup_elements: crate::RangeCheck_5_4Elements,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
-    pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
-    pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
-    pub pedersen_aggregator_lookup_elements: crate::PedersenAggregatorElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -70,14 +65,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
-                .clone(),
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_aggregator_lookup_elements: interaction_elements.pedersen_aggregator.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -1453,8 +1441,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_26_col29,
             ms_limb_low_col30,
             ms_limb_high_col31,
-            self.range_check_5_4_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_5_4_sum_0,
             ref memory_id_to_big_sum_1,
             ref sum,
@@ -1492,8 +1479,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_26_col58,
             ms_limb_low_col59,
             ms_limb_high_col60,
-            self.range_check_5_4_lookup_elements,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_5_4_sum_2,
             ref memory_id_to_big_sum_3,
             ref sum,
@@ -1514,7 +1500,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ms_limb_is_max_col61,
             ms_and_mid_limbs_are_max_col62,
             rc_input_col63,
-            self.range_check_8_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_8_sum_4,
             ref range_check_8_sum_5,
             ref sum,
@@ -1535,7 +1521,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ms_limb_is_max_col64,
             ms_and_mid_limbs_are_max_col65,
             rc_input_col66,
-            self.range_check_8_lookup_elements,
+            self.common_lookup_elements,
             ref range_check_8_sum_6,
             ref range_check_8_sum_7,
             ref sum,
@@ -1544,9 +1530,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         pedersen_points_table_sum_8 = self
-            .pedersen_points_table_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
+                    qm31_const::<1125747331, 0, 0, 0>(),
                     ((qm31_const::<7340032, 0, 0, 0>()
                         + (ms_limb_high_col60 * qm31_const::<16, 0, 0, 0>()))
                         + ms_limb_high_col31),
@@ -1606,15 +1593,17 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     pedersen_points_table_output_limb_53_col120,
                     pedersen_points_table_output_limb_54_col121,
                     pedersen_points_table_output_limb_55_col122,
-                ],
+                ]
+                    .span(),
             );
         let partial_ec_mul_chain_tmp_tmp_c48a1_15: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
 
         partial_ec_mul_sum_9 = self
-            .partial_ec_mul_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_c48a1_15, qm31_const::<0, 0, 0, 0>(),
+                    qm31_const::<979869365, 0, 0, 0>(), partial_ec_mul_chain_tmp_tmp_c48a1_15,
+                    qm31_const::<0, 0, 0, 0>(),
                     (value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col5 + (value_limb_3_col6 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_4_col7 + (value_limb_5_col8 * qm31_const::<512, 0, 0, 0>())),
@@ -1685,59 +1674,63 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     pedersen_points_table_output_limb_53_col120,
                     pedersen_points_table_output_limb_54_col121,
                     pedersen_points_table_output_limb_55_col122,
-                ],
+                ]
+                    .span(),
             );
 
         partial_ec_mul_sum_10 = self
-            .partial_ec_mul_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_c48a1_15, qm31_const::<14, 0, 0, 0>(),
-                    partial_ec_mul_output_limb_0_col123, partial_ec_mul_output_limb_1_col124,
-                    partial_ec_mul_output_limb_2_col125, partial_ec_mul_output_limb_3_col126,
-                    partial_ec_mul_output_limb_4_col127, partial_ec_mul_output_limb_5_col128,
-                    partial_ec_mul_output_limb_6_col129, partial_ec_mul_output_limb_7_col130,
-                    partial_ec_mul_output_limb_8_col131, partial_ec_mul_output_limb_9_col132,
-                    partial_ec_mul_output_limb_10_col133, partial_ec_mul_output_limb_11_col134,
-                    partial_ec_mul_output_limb_12_col135, partial_ec_mul_output_limb_13_col136,
-                    partial_ec_mul_output_limb_14_col137, partial_ec_mul_output_limb_15_col138,
-                    partial_ec_mul_output_limb_16_col139, partial_ec_mul_output_limb_17_col140,
-                    partial_ec_mul_output_limb_18_col141, partial_ec_mul_output_limb_19_col142,
-                    partial_ec_mul_output_limb_20_col143, partial_ec_mul_output_limb_21_col144,
-                    partial_ec_mul_output_limb_22_col145, partial_ec_mul_output_limb_23_col146,
-                    partial_ec_mul_output_limb_24_col147, partial_ec_mul_output_limb_25_col148,
-                    partial_ec_mul_output_limb_26_col149, partial_ec_mul_output_limb_27_col150,
-                    partial_ec_mul_output_limb_28_col151, partial_ec_mul_output_limb_29_col152,
-                    partial_ec_mul_output_limb_30_col153, partial_ec_mul_output_limb_31_col154,
-                    partial_ec_mul_output_limb_32_col155, partial_ec_mul_output_limb_33_col156,
-                    partial_ec_mul_output_limb_34_col157, partial_ec_mul_output_limb_35_col158,
-                    partial_ec_mul_output_limb_36_col159, partial_ec_mul_output_limb_37_col160,
-                    partial_ec_mul_output_limb_38_col161, partial_ec_mul_output_limb_39_col162,
-                    partial_ec_mul_output_limb_40_col163, partial_ec_mul_output_limb_41_col164,
-                    partial_ec_mul_output_limb_42_col165, partial_ec_mul_output_limb_43_col166,
-                    partial_ec_mul_output_limb_44_col167, partial_ec_mul_output_limb_45_col168,
-                    partial_ec_mul_output_limb_46_col169, partial_ec_mul_output_limb_47_col170,
-                    partial_ec_mul_output_limb_48_col171, partial_ec_mul_output_limb_49_col172,
-                    partial_ec_mul_output_limb_50_col173, partial_ec_mul_output_limb_51_col174,
-                    partial_ec_mul_output_limb_52_col175, partial_ec_mul_output_limb_53_col176,
-                    partial_ec_mul_output_limb_54_col177, partial_ec_mul_output_limb_55_col178,
-                    partial_ec_mul_output_limb_56_col179, partial_ec_mul_output_limb_57_col180,
-                    partial_ec_mul_output_limb_58_col181, partial_ec_mul_output_limb_59_col182,
-                    partial_ec_mul_output_limb_60_col183, partial_ec_mul_output_limb_61_col184,
-                    partial_ec_mul_output_limb_62_col185, partial_ec_mul_output_limb_63_col186,
-                    partial_ec_mul_output_limb_64_col187, partial_ec_mul_output_limb_65_col188,
-                    partial_ec_mul_output_limb_66_col189, partial_ec_mul_output_limb_67_col190,
-                    partial_ec_mul_output_limb_68_col191, partial_ec_mul_output_limb_69_col192,
-                ],
+                    qm31_const::<979869365, 0, 0, 0>(), partial_ec_mul_chain_tmp_tmp_c48a1_15,
+                    qm31_const::<14, 0, 0, 0>(), partial_ec_mul_output_limb_0_col123,
+                    partial_ec_mul_output_limb_1_col124, partial_ec_mul_output_limb_2_col125,
+                    partial_ec_mul_output_limb_3_col126, partial_ec_mul_output_limb_4_col127,
+                    partial_ec_mul_output_limb_5_col128, partial_ec_mul_output_limb_6_col129,
+                    partial_ec_mul_output_limb_7_col130, partial_ec_mul_output_limb_8_col131,
+                    partial_ec_mul_output_limb_9_col132, partial_ec_mul_output_limb_10_col133,
+                    partial_ec_mul_output_limb_11_col134, partial_ec_mul_output_limb_12_col135,
+                    partial_ec_mul_output_limb_13_col136, partial_ec_mul_output_limb_14_col137,
+                    partial_ec_mul_output_limb_15_col138, partial_ec_mul_output_limb_16_col139,
+                    partial_ec_mul_output_limb_17_col140, partial_ec_mul_output_limb_18_col141,
+                    partial_ec_mul_output_limb_19_col142, partial_ec_mul_output_limb_20_col143,
+                    partial_ec_mul_output_limb_21_col144, partial_ec_mul_output_limb_22_col145,
+                    partial_ec_mul_output_limb_23_col146, partial_ec_mul_output_limb_24_col147,
+                    partial_ec_mul_output_limb_25_col148, partial_ec_mul_output_limb_26_col149,
+                    partial_ec_mul_output_limb_27_col150, partial_ec_mul_output_limb_28_col151,
+                    partial_ec_mul_output_limb_29_col152, partial_ec_mul_output_limb_30_col153,
+                    partial_ec_mul_output_limb_31_col154, partial_ec_mul_output_limb_32_col155,
+                    partial_ec_mul_output_limb_33_col156, partial_ec_mul_output_limb_34_col157,
+                    partial_ec_mul_output_limb_35_col158, partial_ec_mul_output_limb_36_col159,
+                    partial_ec_mul_output_limb_37_col160, partial_ec_mul_output_limb_38_col161,
+                    partial_ec_mul_output_limb_39_col162, partial_ec_mul_output_limb_40_col163,
+                    partial_ec_mul_output_limb_41_col164, partial_ec_mul_output_limb_42_col165,
+                    partial_ec_mul_output_limb_43_col166, partial_ec_mul_output_limb_44_col167,
+                    partial_ec_mul_output_limb_45_col168, partial_ec_mul_output_limb_46_col169,
+                    partial_ec_mul_output_limb_47_col170, partial_ec_mul_output_limb_48_col171,
+                    partial_ec_mul_output_limb_49_col172, partial_ec_mul_output_limb_50_col173,
+                    partial_ec_mul_output_limb_51_col174, partial_ec_mul_output_limb_52_col175,
+                    partial_ec_mul_output_limb_53_col176, partial_ec_mul_output_limb_54_col177,
+                    partial_ec_mul_output_limb_55_col178, partial_ec_mul_output_limb_56_col179,
+                    partial_ec_mul_output_limb_57_col180, partial_ec_mul_output_limb_58_col181,
+                    partial_ec_mul_output_limb_59_col182, partial_ec_mul_output_limb_60_col183,
+                    partial_ec_mul_output_limb_61_col184, partial_ec_mul_output_limb_62_col185,
+                    partial_ec_mul_output_limb_63_col186, partial_ec_mul_output_limb_64_col187,
+                    partial_ec_mul_output_limb_65_col188, partial_ec_mul_output_limb_66_col189,
+                    partial_ec_mul_output_limb_67_col190, partial_ec_mul_output_limb_68_col191,
+                    partial_ec_mul_output_limb_69_col192,
+                ]
+                    .span(),
             );
         let partial_ec_mul_chain_id_tmp_c48a1_30: QM31 = (partial_ec_mul_chain_tmp_tmp_c48a1_15
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_sum_11 = self
-            .partial_ec_mul_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_30, qm31_const::<14, 0, 0, 0>(),
+                    qm31_const::<979869365, 0, 0, 0>(), partial_ec_mul_chain_id_tmp_c48a1_30,
+                    qm31_const::<14, 0, 0, 0>(),
                     (value_limb_0_col32 + (value_limb_1_col33 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col34 + (value_limb_3_col35 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_4_col36 + (value_limb_5_col37 * qm31_const::<512, 0, 0, 0>())),
@@ -1780,21 +1773,60 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_64_col187, partial_ec_mul_output_limb_65_col188,
                     partial_ec_mul_output_limb_66_col189, partial_ec_mul_output_limb_67_col190,
                     partial_ec_mul_output_limb_68_col191, partial_ec_mul_output_limb_69_col192,
-                ],
+                ]
+                    .span(),
             );
 
         partial_ec_mul_sum_12 = self
-            .partial_ec_mul_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_30, qm31_const::<28, 0, 0, 0>(),
-                    partial_ec_mul_output_limb_0_col193, partial_ec_mul_output_limb_1_col194,
-                    partial_ec_mul_output_limb_2_col195, partial_ec_mul_output_limb_3_col196,
-                    partial_ec_mul_output_limb_4_col197, partial_ec_mul_output_limb_5_col198,
-                    partial_ec_mul_output_limb_6_col199, partial_ec_mul_output_limb_7_col200,
-                    partial_ec_mul_output_limb_8_col201, partial_ec_mul_output_limb_9_col202,
-                    partial_ec_mul_output_limb_10_col203, partial_ec_mul_output_limb_11_col204,
-                    partial_ec_mul_output_limb_12_col205, partial_ec_mul_output_limb_13_col206,
+                    qm31_const::<979869365, 0, 0, 0>(), partial_ec_mul_chain_id_tmp_c48a1_30,
+                    qm31_const::<28, 0, 0, 0>(), partial_ec_mul_output_limb_0_col193,
+                    partial_ec_mul_output_limb_1_col194, partial_ec_mul_output_limb_2_col195,
+                    partial_ec_mul_output_limb_3_col196, partial_ec_mul_output_limb_4_col197,
+                    partial_ec_mul_output_limb_5_col198, partial_ec_mul_output_limb_6_col199,
+                    partial_ec_mul_output_limb_7_col200, partial_ec_mul_output_limb_8_col201,
+                    partial_ec_mul_output_limb_9_col202, partial_ec_mul_output_limb_10_col203,
+                    partial_ec_mul_output_limb_11_col204, partial_ec_mul_output_limb_12_col205,
+                    partial_ec_mul_output_limb_13_col206, partial_ec_mul_output_limb_14_col207,
+                    partial_ec_mul_output_limb_15_col208, partial_ec_mul_output_limb_16_col209,
+                    partial_ec_mul_output_limb_17_col210, partial_ec_mul_output_limb_18_col211,
+                    partial_ec_mul_output_limb_19_col212, partial_ec_mul_output_limb_20_col213,
+                    partial_ec_mul_output_limb_21_col214, partial_ec_mul_output_limb_22_col215,
+                    partial_ec_mul_output_limb_23_col216, partial_ec_mul_output_limb_24_col217,
+                    partial_ec_mul_output_limb_25_col218, partial_ec_mul_output_limb_26_col219,
+                    partial_ec_mul_output_limb_27_col220, partial_ec_mul_output_limb_28_col221,
+                    partial_ec_mul_output_limb_29_col222, partial_ec_mul_output_limb_30_col223,
+                    partial_ec_mul_output_limb_31_col224, partial_ec_mul_output_limb_32_col225,
+                    partial_ec_mul_output_limb_33_col226, partial_ec_mul_output_limb_34_col227,
+                    partial_ec_mul_output_limb_35_col228, partial_ec_mul_output_limb_36_col229,
+                    partial_ec_mul_output_limb_37_col230, partial_ec_mul_output_limb_38_col231,
+                    partial_ec_mul_output_limb_39_col232, partial_ec_mul_output_limb_40_col233,
+                    partial_ec_mul_output_limb_41_col234, partial_ec_mul_output_limb_42_col235,
+                    partial_ec_mul_output_limb_43_col236, partial_ec_mul_output_limb_44_col237,
+                    partial_ec_mul_output_limb_45_col238, partial_ec_mul_output_limb_46_col239,
+                    partial_ec_mul_output_limb_47_col240, partial_ec_mul_output_limb_48_col241,
+                    partial_ec_mul_output_limb_49_col242, partial_ec_mul_output_limb_50_col243,
+                    partial_ec_mul_output_limb_51_col244, partial_ec_mul_output_limb_52_col245,
+                    partial_ec_mul_output_limb_53_col246, partial_ec_mul_output_limb_54_col247,
+                    partial_ec_mul_output_limb_55_col248, partial_ec_mul_output_limb_56_col249,
+                    partial_ec_mul_output_limb_57_col250, partial_ec_mul_output_limb_58_col251,
+                    partial_ec_mul_output_limb_59_col252, partial_ec_mul_output_limb_60_col253,
+                    partial_ec_mul_output_limb_61_col254, partial_ec_mul_output_limb_62_col255,
+                    partial_ec_mul_output_limb_63_col256, partial_ec_mul_output_limb_64_col257,
+                    partial_ec_mul_output_limb_65_col258, partial_ec_mul_output_limb_66_col259,
+                    partial_ec_mul_output_limb_67_col260, partial_ec_mul_output_limb_68_col261,
+                    partial_ec_mul_output_limb_69_col262,
+                ]
+                    .span(),
+            );
+
+        memory_id_to_big_sum_13 = self
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1662111297, 0, 0, 0>(), input_limb_2_col2,
                     partial_ec_mul_output_limb_14_col207, partial_ec_mul_output_limb_15_col208,
                     partial_ec_mul_output_limb_16_col209, partial_ec_mul_output_limb_17_col210,
                     partial_ec_mul_output_limb_18_col211, partial_ec_mul_output_limb_19_col212,
@@ -1809,48 +1841,19 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_36_col229, partial_ec_mul_output_limb_37_col230,
                     partial_ec_mul_output_limb_38_col231, partial_ec_mul_output_limb_39_col232,
                     partial_ec_mul_output_limb_40_col233, partial_ec_mul_output_limb_41_col234,
-                    partial_ec_mul_output_limb_42_col235, partial_ec_mul_output_limb_43_col236,
-                    partial_ec_mul_output_limb_44_col237, partial_ec_mul_output_limb_45_col238,
-                    partial_ec_mul_output_limb_46_col239, partial_ec_mul_output_limb_47_col240,
-                    partial_ec_mul_output_limb_48_col241, partial_ec_mul_output_limb_49_col242,
-                    partial_ec_mul_output_limb_50_col243, partial_ec_mul_output_limb_51_col244,
-                    partial_ec_mul_output_limb_52_col245, partial_ec_mul_output_limb_53_col246,
-                    partial_ec_mul_output_limb_54_col247, partial_ec_mul_output_limb_55_col248,
-                    partial_ec_mul_output_limb_56_col249, partial_ec_mul_output_limb_57_col250,
-                    partial_ec_mul_output_limb_58_col251, partial_ec_mul_output_limb_59_col252,
-                    partial_ec_mul_output_limb_60_col253, partial_ec_mul_output_limb_61_col254,
-                    partial_ec_mul_output_limb_62_col255, partial_ec_mul_output_limb_63_col256,
-                    partial_ec_mul_output_limb_64_col257, partial_ec_mul_output_limb_65_col258,
-                    partial_ec_mul_output_limb_66_col259, partial_ec_mul_output_limb_67_col260,
-                    partial_ec_mul_output_limb_68_col261, partial_ec_mul_output_limb_69_col262,
-                ],
-            );
-
-        memory_id_to_big_sum_13 = self
-            .memory_id_to_big_lookup_elements
-            .combine_qm31(
-                [
-                    input_limb_2_col2, partial_ec_mul_output_limb_14_col207,
-                    partial_ec_mul_output_limb_15_col208, partial_ec_mul_output_limb_16_col209,
-                    partial_ec_mul_output_limb_17_col210, partial_ec_mul_output_limb_18_col211,
-                    partial_ec_mul_output_limb_19_col212, partial_ec_mul_output_limb_20_col213,
-                    partial_ec_mul_output_limb_21_col214, partial_ec_mul_output_limb_22_col215,
-                    partial_ec_mul_output_limb_23_col216, partial_ec_mul_output_limb_24_col217,
-                    partial_ec_mul_output_limb_25_col218, partial_ec_mul_output_limb_26_col219,
-                    partial_ec_mul_output_limb_27_col220, partial_ec_mul_output_limb_28_col221,
-                    partial_ec_mul_output_limb_29_col222, partial_ec_mul_output_limb_30_col223,
-                    partial_ec_mul_output_limb_31_col224, partial_ec_mul_output_limb_32_col225,
-                    partial_ec_mul_output_limb_33_col226, partial_ec_mul_output_limb_34_col227,
-                    partial_ec_mul_output_limb_35_col228, partial_ec_mul_output_limb_36_col229,
-                    partial_ec_mul_output_limb_37_col230, partial_ec_mul_output_limb_38_col231,
-                    partial_ec_mul_output_limb_39_col232, partial_ec_mul_output_limb_40_col233,
-                    partial_ec_mul_output_limb_41_col234,
-                ],
+                ]
+                    .span(),
             );
 
         pedersen_aggregator_sum_14 = self
-            .pedersen_aggregator_lookup_elements
-            .combine_qm31([input_limb_0_col0, input_limb_1_col1, input_limb_2_col2]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1996297333, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2,
+                ]
+                    .span(),
+            );
 
         lookup_constraints(
             ref sum,
@@ -2103,29 +2106,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            partial_ec_mul_lookup_elements: make_lookup_elements(
-                qm31_const::<1649646149, 853343631, 2092831524, 2004475967>(),
-                qm31_const::<566949925, 426542195, 926007664, 380048330>(),
-            ),
-            pedersen_aggregator_lookup_elements: make_lookup_elements(
-                qm31_const::<920417564, 1680486498, 1628630402, 353948678>(),
-                qm31_const::<846637634, 1325318444, 1529670858, 731974051>(),
-            ),
-            pedersen_points_table_lookup_elements: make_lookup_elements(
-                qm31_const::<1429392413, 324063524, 996177436, 120316387>(),
-                qm31_const::<607706587, 464765845, 1730008433, 812537185>(),
-            ),
-            range_check_5_4_lookup_elements: make_lookup_elements(
-                qm31_const::<339133534, 1445794846, 1889297274, 203428755>(),
-                qm31_const::<467149172, 1712217267, 220757056, 1395605078>(),
-            ),
-            range_check_8_lookup_elements: make_lookup_elements(
-                qm31_const::<1180316345, 706098445, 2005498950, 439840985>(),
-                qm31_const::<1338115896, 1708611778, 1362220287, 779911332>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

@@ -66,7 +66,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub lookup_elements: crate::MemoryAddressToIdElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -81,7 +81,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            lookup_elements: interaction_elements.memory_address_to_id.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -100,7 +100,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let params = constraints::ConstraintParams {
             column_size: pow2(log_size).try_into().unwrap(),
-            lookup_elements: self.lookup_elements,
+            common_lookup_elements: self.common_lookup_elements,
             seq: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(log_size)),
             claimed_sum: *self.interaction_claim.claimed_sum,
