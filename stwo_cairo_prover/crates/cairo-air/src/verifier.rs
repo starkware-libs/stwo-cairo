@@ -19,11 +19,12 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::air::{
-    lookup_sum, CairoClaim, CairoComponents, CairoInteractionElements, MemorySection, PublicData,
-    PublicMemory, PublicSegmentRanges, SegmentRange,
+    lookup_sum, CairoClaim, CairoComponents, MemorySection, PublicData, PublicMemory,
+    PublicSegmentRanges, SegmentRange,
 };
 use crate::builtins_air::BuiltinsClaim;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::relations::CommonLookupElements;
 use crate::{CairoProof, PreProcessedTraceVariant};
 
 fn verify_claim(claim: &CairoClaim) {
@@ -312,7 +313,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
         return Err(CairoVerificationError::ProofOfWork);
     }
     channel.mix_u64(interaction_pow);
-    let interaction_elements = CairoInteractionElements::draw(channel);
+    let interaction_elements = CommonLookupElements::draw(channel);
 
     // Verify lookup argument.
     if lookup_sum(&claim, &interaction_elements, &interaction_claim) != SecureField::zero() {

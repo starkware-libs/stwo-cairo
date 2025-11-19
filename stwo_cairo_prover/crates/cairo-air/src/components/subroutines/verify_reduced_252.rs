@@ -17,11 +17,12 @@ impl VerifyReduced252 {
         ms_limb_is_max_col0: E::F,
         ms_and_mid_limbs_are_max_col1: E::F,
         rc_input_col2: E::F,
-        range_check_8_lookup_elements: &relations::RangeCheck_8,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_120 = E::F::from(M31::from(120));
+        let M31_1420243005 = E::F::from(M31::from(1420243005));
 
         // ms_max is bit.
         eval.add_constraint(
@@ -33,11 +34,12 @@ impl VerifyReduced252 {
                 * (M31_1.clone() - ms_and_mid_limbs_are_max_col1.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_8_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(
-                &(verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
-            ),
+            &[
+                M31_1420243005.clone(),
+                (verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
+            ],
         ));
 
         // If the MS limb is max, high limbs should be 0.
@@ -57,9 +59,9 @@ impl VerifyReduced252 {
                         - ms_and_mid_limbs_are_max_col1.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_8_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(&rc_input_col2),
+            &[M31_1420243005.clone(), rc_input_col2.clone()],
         ));
 
         // If the MS and mid limbs are max, low limbs should be 0.

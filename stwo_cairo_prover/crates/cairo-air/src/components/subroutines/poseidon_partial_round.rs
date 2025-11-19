@@ -48,16 +48,17 @@ impl PoseidonPartialRound {
         combination_limb_8_col29: E::F,
         combination_limb_9_col30: E::F,
         p_coef_col31: E::F,
-        cube_252_lookup_elements: &relations::Cube252,
-        range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
-        range_check_4_4_lookup_elements: &relations::RangeCheck_4_4,
-        range_check_252_width_27_lookup_elements: &relations::RangeCheck252Width27,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1090315331 = E::F::from(M31::from(1090315331));
+        let M31_1987997202 = E::F::from(M31::from(1987997202));
+
         eval.add_to_relation(RelationEntry::new(
-            cube_252_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1987997202.clone(),
                 poseidon_partial_round_input_z2_limb_0.clone(),
                 poseidon_partial_round_input_z2_limb_1.clone(),
                 poseidon_partial_round_input_z2_limb_2.clone(),
@@ -155,14 +156,14 @@ impl PoseidonPartialRound {
             combination_limb_8_col18.clone(),
             combination_limb_9_col19.clone(),
             p_coef_col20.clone(),
-            range_check_4_4_4_4_lookup_elements,
-            range_check_4_4_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_252_width_27_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1090315331.clone(),
                 combination_limb_0_col10.clone(),
                 combination_limb_1_col11.clone(),
                 combination_limb_2_col12.clone(),
@@ -200,6 +201,7 @@ impl PoseidonPartialRound {
             combination_limb_8_col29.clone(),
             combination_limb_9_col30.clone(),
             p_coef_col31.clone(),
+            common_lookup_elements,
             eval,
         );
         []
