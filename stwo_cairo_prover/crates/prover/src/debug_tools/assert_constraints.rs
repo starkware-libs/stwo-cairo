@@ -1,4 +1,5 @@
 use std::ops::Deref;
+use std::sync::Arc;
 
 use cairo_air::air::{CairoComponents, CairoInteractionElements};
 use cairo_air::builtins_air::BuiltinComponents;
@@ -254,7 +255,7 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     }
 }
 
-pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProcessedTrace) {
+pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreProcessedTrace>) {
     let mut commitment_scheme = MockCommitmentScheme::default();
 
     // Preprocessed trace.
@@ -263,7 +264,7 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     tree_builder.finalize_interaction();
 
     // Base trace.
-    let cairo_claim_generator = CairoClaimGenerator::new(input);
+    let cairo_claim_generator = CairoClaimGenerator::new(input, Arc::clone(&preprocessed_trace));
     let mut tree_builder = commitment_scheme.tree_builder();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     tree_builder.finalize_interaction();
