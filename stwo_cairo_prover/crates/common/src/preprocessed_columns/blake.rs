@@ -1,6 +1,7 @@
 use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::column::BaseColumn;
+use stwo::prover::backend::simd::m31::PackedM31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
@@ -53,6 +54,14 @@ impl BlakeSigma {
 impl PreProcessedColumn for BlakeSigma {
     fn log_size(&self) -> u32 {
         LOG_N_ROWS
+    }
+
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        assert!(
+            vec_row == 0,
+            "Accessing BlakeSigma out of bounds row {vec_row}"
+        );
+        PackedM31::from_array(pad(sigma_m31, N_BLAKE_ROUNDS, self.col).try_into().unwrap())
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {

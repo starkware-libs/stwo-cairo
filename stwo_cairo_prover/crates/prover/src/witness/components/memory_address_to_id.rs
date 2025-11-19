@@ -18,7 +18,7 @@ use stwo::prover::backend::{Col, Column};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_adapter::memory::Memory;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
