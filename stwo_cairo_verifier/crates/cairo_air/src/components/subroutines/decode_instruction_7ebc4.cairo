@@ -6,7 +6,7 @@ use crate::prelude::*;
 pub fn decode_instruction_7ebc4_evaluate(
     input: QM31,
     ap_update_add_1_col0: QM31,
-    verify_instruction_lookup_elements: @crate::VerifyInstructionElements,
+    common_lookup_elements: @crate::CommonElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
@@ -20,15 +20,16 @@ pub fn decode_instruction_7ebc4_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    verify_instruction_sum_0 = verify_instruction_lookup_elements
+    verify_instruction_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                decode_instruction_7ebc4_input_pc, qm31_const::<32767, 0, 0, 0>(),
-                qm31_const::<32767, 0, 0, 0>(), qm31_const::<32769, 0, 0, 0>(),
-                qm31_const::<56, 0, 0, 0>(),
+                qm31_const::<1719106205, 0, 0, 0>(), decode_instruction_7ebc4_input_pc,
+                qm31_const::<32767, 0, 0, 0>(), qm31_const::<32767, 0, 0, 0>(),
+                qm31_const::<32769, 0, 0, 0>(), qm31_const::<56, 0, 0, 0>(),
                 (qm31_const::<4, 0, 0, 0>() + (ap_update_add_1_col0 * qm31_const::<32, 0, 0, 0>())),
                 qm31_const::<0, 0, 0, 0>(),
-            ],
+            ]
+                .span(),
         );
 
     []

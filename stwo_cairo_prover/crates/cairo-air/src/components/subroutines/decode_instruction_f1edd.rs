@@ -16,11 +16,12 @@ impl DecodeInstructionF1Edd {
         [decode_instruction_f1edd_input_pc]: [E::F; 1],
         offset2_col0: E::F,
         op1_base_fp_col1: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 2] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
+        let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_32768 = E::F::from(M31::from(32768));
         let M31_32769 = E::F::from(M31::from(32769));
         let M31_64 = E::F::from(M31::from(64));
@@ -31,9 +32,10 @@ impl DecodeInstructionF1Edd {
             (op1_base_fp_col1.clone() * (M31_1.clone() - op1_base_fp_col1.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            verify_instruction_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1719106205.clone(),
                 decode_instruction_f1edd_input_pc.clone(),
                 M31_32768.clone(),
                 M31_32769.clone(),

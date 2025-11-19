@@ -109,6 +109,8 @@ pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+pub type CommonElements = LookupElements<128>;
+
 /// Validates that every `mask_value` provided in the proof (in `sampled_values`) is used by at
 /// least one component.
 ///
@@ -305,6 +307,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
 #[derive(Drop)]
 pub struct CairoInteractionElements {
     pub opcodes: OpcodesElements,
+    pub common: CommonElements,
     pub verify_instruction: VerifyInstructionElements,
     pub blake_round: BlakeRoundElements,
     pub blake_g: BlakeGElements,
@@ -335,6 +338,7 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
     fn draw(ref channel: Channel) -> CairoInteractionElements {
         CairoInteractionElements {
             opcodes: LookupElementsImpl::draw(ref channel),
+            common: LookupElementsImpl::draw(ref channel),
             verify_instruction: LookupElementsImpl::draw(ref channel),
             blake_round: LookupElementsImpl::draw(ref channel),
             blake_g: LookupElementsImpl::draw(ref channel),

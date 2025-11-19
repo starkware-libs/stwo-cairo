@@ -557,294 +557,102 @@ impl OpcodesInteractionClaimGenerator {
         let add_interaction_claims = self
             .add
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let add_small_interaction_claims = self
             .add_small
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let add_ap_interaction_claims = self
             .add_ap
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_18,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let assert_eq_interaction_claims = self
             .assert_eq
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let assert_eq_imm_interaction_claims = self
             .assert_eq_imm
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let assert_eq_double_deref_interaction_claims = self
             .assert_eq_double_deref
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let blake_interaction_claims = self
             .blake
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_7_2_5,
-                    &interaction_elements.verify_bitwise_xor_8,
-                    &interaction_elements.blake_round,
-                    &interaction_elements.triple_xor_32,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let call_interaction_claims = self
             .call
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let call_rel_imm_interaction_claims = self
             .call_rel_imm
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let generic_opcode_interaction_claims = self
             .generic_opcode_interaction_gens
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_9_9,
-                    &interaction_elements.range_checks.rc_9_9_b,
-                    &interaction_elements.range_checks.rc_9_9_c,
-                    &interaction_elements.range_checks.rc_9_9_d,
-                    &interaction_elements.range_checks.rc_9_9_e,
-                    &interaction_elements.range_checks.rc_9_9_f,
-                    &interaction_elements.range_checks.rc_9_9_g,
-                    &interaction_elements.range_checks.rc_9_9_h,
-                    &interaction_elements.range_checks.rc_20,
-                    &interaction_elements.range_checks.rc_20_b,
-                    &interaction_elements.range_checks.rc_20_c,
-                    &interaction_elements.range_checks.rc_20_d,
-                    &interaction_elements.range_checks.rc_20_e,
-                    &interaction_elements.range_checks.rc_20_f,
-                    &interaction_elements.range_checks.rc_20_g,
-                    &interaction_elements.range_checks.rc_20_h,
-                    &interaction_elements.range_checks.rc_18,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jnz_interaction_claims = self
             .jnz
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jnz_taken_interaction_claims = self
             .jnz_taken
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jump_interaction_claims = self
             .jump
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jump_double_deref_interaction_claims = self
             .jump_double_deref
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jump_rel_interaction_claims = self
             .jump_rel
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let jump_rel_imm_interaction_claims = self
             .jump_rel_imm
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let mul_interaction_claims = self
             .mul
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_20,
-                    &interaction_elements.range_checks.rc_20_b,
-                    &interaction_elements.range_checks.rc_20_c,
-                    &interaction_elements.range_checks.rc_20_d,
-                    &interaction_elements.range_checks.rc_20_e,
-                    &interaction_elements.range_checks.rc_20_f,
-                    &interaction_elements.range_checks.rc_20_g,
-                    &interaction_elements.range_checks.rc_20_h,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let mul_small_interaction_claims = self
             .mul_small
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let qm31_interaction_claims = self
             .qm31
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_4_4_4_4,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
+            .map(|gen| gen.write_interaction_trace(tree_builder, &interaction_elements.common))
             .collect();
         OpcodeInteractionClaim {
             add: add_interaction_claims,

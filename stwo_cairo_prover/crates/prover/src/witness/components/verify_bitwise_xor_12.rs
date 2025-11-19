@@ -5,7 +5,8 @@ use std::simd::u32x16;
 use cairo_air::components::verify_bitwise_xor_12::{
     Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
 };
-use itertools::Itertools;
+use cairo_air::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
+use itertools::{chain, Itertools};
 
 use crate::witness::prelude::*;
 
@@ -71,7 +72,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_12: &relations::VerifyBitwiseXor_12,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -125,8 +126,12 @@ impl InteractionClaimGenerator {
                         )
                     };
 
-                    let p0: PackedQM31 = verify_bitwise_xor_12.combine(&v0);
-                    let p1: PackedQM31 = verify_bitwise_xor_12.combine(&v1);
+                    let p0: PackedQM31 = common_lookup_elements.combine(
+                        &chain!([VERIFY_BITWISE_XOR_12_RELATION_ID.into()], v0).collect_vec(),
+                    );
+                    let p1: PackedQM31 = common_lookup_elements.combine(
+                        &chain!([VERIFY_BITWISE_XOR_12_RELATION_ID.into()], v1).collect_vec(),
+                    );
                     writer.write_frac(p0 * (-mults1) + p1 * (-mults0), p1 * p0);
                 });
             col_gen.finalize_col();
