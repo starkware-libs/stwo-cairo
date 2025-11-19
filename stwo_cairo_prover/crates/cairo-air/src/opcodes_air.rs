@@ -9,7 +9,6 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use super::air::CairoInteractionElements;
 use super::components::display_components;
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
@@ -19,6 +18,7 @@ use crate::components::{
     jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode, mul_opcode_small,
     qm_31_add_mul_opcode, ret_opcode,
 };
+use crate::relations::CommonLookupElements;
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeClaim {
@@ -302,7 +302,7 @@ impl OpcodeComponents {
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
         claim: &OpcodeClaim,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
         interaction_claim: &OpcodeInteractionClaim,
     ) -> Self {
         let add_components = claim
@@ -314,16 +314,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -338,16 +329,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_opcode_small::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -362,24 +344,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     add_ap_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_11_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_11
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -394,13 +359,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -415,13 +374,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode_imm::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -436,16 +389,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     assert_eq_opcode_double_deref::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -460,25 +404,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     blake_compress_opcode::Eval {
                         claim,
-                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_7_2_5_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_7_2_5
-                            .clone(),
-                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
-                        verify_bitwise_xor_8_lookup_elements: interaction_elements
-                            .verify_bitwise_xor_8
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -493,16 +419,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     call_opcode_abs::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -517,16 +434,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     call_opcode_rel_imm::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -541,88 +449,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     generic_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_20_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20
-                            .clone(),
-                        range_check_20_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_b
-                            .clone(),
-                        range_check_20_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_c
-                            .clone(),
-                        range_check_20_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_d
-                            .clone(),
-                        range_check_20_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_e
-                            .clone(),
-                        range_check_20_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_f
-                            .clone(),
-                        range_check_20_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_g
-                            .clone(),
-                        range_check_20_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_h
-                            .clone(),
-                        range_check_9_9_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9
-                            .clone(),
-                        range_check_9_9_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_b
-                            .clone(),
-                        range_check_9_9_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_c
-                            .clone(),
-                        range_check_9_9_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_d
-                            .clone(),
-                        range_check_9_9_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_e
-                            .clone(),
-                        range_check_9_9_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_f
-                            .clone(),
-                        range_check_9_9_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_g
-                            .clone(),
-                        range_check_9_9_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_9_9_h
-                            .clone(),
-                        range_check_18_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_18
-                            .clone(),
-                        range_check_11_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_11
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -637,16 +464,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_non_taken::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -661,16 +479,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jnz_opcode_taken::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -685,16 +494,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_abs::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -709,16 +509,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_double_deref::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -733,16 +524,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_rel::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -757,16 +539,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     jump_opcode_rel_imm::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -781,48 +554,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     mul_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_20_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20
-                            .clone(),
-                        range_check_20_b_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_b
-                            .clone(),
-                        range_check_20_c_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_c
-                            .clone(),
-                        range_check_20_d_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_d
-                            .clone(),
-                        range_check_20_e_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_e
-                            .clone(),
-                        range_check_20_f_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_f
-                            .clone(),
-                        range_check_20_g_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_g
-                            .clone(),
-                        range_check_20_h_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_20_h
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -837,20 +569,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     mul_opcode_small::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_11_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_11
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -865,20 +584,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     qm_31_add_mul_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
-                        range_check_4_4_4_4_lookup_elements: interaction_elements
-                            .range_checks
-                            .rc_4_4_4_4
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )
@@ -893,16 +599,7 @@ impl OpcodeComponents {
                     tree_span_provider,
                     ret_opcode::Eval {
                         claim,
-                        memory_address_to_id_lookup_elements: interaction_elements
-                            .memory_address_to_id
-                            .clone(),
-                        memory_id_to_big_lookup_elements: interaction_elements
-                            .memory_id_to_value
-                            .clone(),
-                        verify_instruction_lookup_elements: interaction_elements
-                            .verify_instruction
-                            .clone(),
-                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        common_lookup_elements: common_lookup_elements.clone(),
                     },
                     interaction_claim.claimed_sum,
                 )

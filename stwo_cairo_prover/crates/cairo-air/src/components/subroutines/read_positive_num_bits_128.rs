@@ -33,14 +33,13 @@ impl ReadPositiveNumBits128 {
         value_limb_13_col14: E::F,
         value_limb_14_col15: E::F,
         partial_limb_msb_col16: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         ReadId::evaluate(
             [read_positive_num_bits_128_input.clone()],
             id_col0.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveKnownIdNumBits128::evaluate(
@@ -61,7 +60,7 @@ impl ReadPositiveNumBits128 {
             value_limb_13_col14.clone(),
             value_limb_14_col15.clone(),
             partial_limb_msb_col16.clone(),
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         []

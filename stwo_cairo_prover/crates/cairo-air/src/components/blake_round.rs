@@ -33,12 +33,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub blake_round_sigma_lookup_elements: relations::BlakeRoundSigma,
-    pub range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub blake_g_lookup_elements: relations::BlakeG,
-    pub blake_round_lookup_elements: relations::BlakeRound,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -83,6 +78,9 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_1139985212 = E::F::from(M31::from(1139985212));
+        let M31_1805967942 = E::F::from(M31::from(1805967942));
+        let M31_40528774 = E::F::from(M31::from(40528774));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -299,9 +297,10 @@ impl FrameworkEval for Eval {
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_round_sigma_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1805967942.clone(),
                 input_limb_1_col1.clone(),
                 blake_round_sigma_output_limb_0_col35.clone(),
                 blake_round_sigma_output_limb_1_col36.clone(),
@@ -330,9 +329,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col54.clone(),
             high_5_ms_bits_col55.clone(),
             message_word_0_id_col56.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -343,9 +340,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col60.clone(),
             high_5_ms_bits_col61.clone(),
             message_word_1_id_col62.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -356,9 +351,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col66.clone(),
             high_5_ms_bits_col67.clone(),
             message_word_2_id_col68.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -369,9 +362,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col72.clone(),
             high_5_ms_bits_col73.clone(),
             message_word_3_id_col74.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -382,9 +373,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col78.clone(),
             high_5_ms_bits_col79.clone(),
             message_word_4_id_col80.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -395,9 +384,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col84.clone(),
             high_5_ms_bits_col85.clone(),
             message_word_5_id_col86.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -408,9 +395,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col90.clone(),
             high_5_ms_bits_col91.clone(),
             message_word_6_id_col92.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -421,9 +406,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col96.clone(),
             high_5_ms_bits_col97.clone(),
             message_word_7_id_col98.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -434,9 +417,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col102.clone(),
             high_5_ms_bits_col103.clone(),
             message_word_8_id_col104.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -447,9 +428,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col108.clone(),
             high_5_ms_bits_col109.clone(),
             message_word_9_id_col110.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -460,9 +439,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col114.clone(),
             high_5_ms_bits_col115.clone(),
             message_word_10_id_col116.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -473,9 +450,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col120.clone(),
             high_5_ms_bits_col121.clone(),
             message_word_11_id_col122.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -486,9 +461,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col126.clone(),
             high_5_ms_bits_col127.clone(),
             message_word_12_id_col128.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -499,9 +472,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col132.clone(),
             high_5_ms_bits_col133.clone(),
             message_word_13_id_col134.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -512,9 +483,7 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col138.clone(),
             high_5_ms_bits_col139.clone(),
             message_word_14_id_col140.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadU32::evaluate(
@@ -525,15 +494,14 @@ impl FrameworkEval for Eval {
             high_14_ms_bits_col144.clone(),
             high_5_ms_bits_col145.clone(),
             message_word_15_id_col146.clone(),
-            &self.range_check_7_2_5_lookup_elements,
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 input_limb_2_col2.clone(),
                 input_limb_3_col3.clone(),
                 input_limb_10_col10.clone(),
@@ -558,9 +526,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 input_limb_4_col4.clone(),
                 input_limb_5_col5.clone(),
                 input_limb_12_col12.clone(),
@@ -585,9 +554,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 input_limb_6_col6.clone(),
                 input_limb_7_col7.clone(),
                 input_limb_14_col14.clone(),
@@ -612,9 +582,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 input_limb_8_col8.clone(),
                 input_limb_9_col9.clone(),
                 input_limb_16_col16.clone(),
@@ -639,9 +610,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 blake_g_output_limb_0_col147.clone(),
                 blake_g_output_limb_1_col148.clone(),
                 blake_g_output_limb_2_col157.clone(),
@@ -666,9 +638,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 blake_g_output_limb_0_col155.clone(),
                 blake_g_output_limb_1_col156.clone(),
                 blake_g_output_limb_2_col165.clone(),
@@ -693,9 +666,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 blake_g_output_limb_0_col163.clone(),
                 blake_g_output_limb_1_col164.clone(),
                 blake_g_output_limb_2_col173.clone(),
@@ -720,9 +694,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_g_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1139985212.clone(),
                 blake_g_output_limb_0_col171.clone(),
                 blake_g_output_limb_1_col172.clone(),
                 blake_g_output_limb_2_col149.clone(),
@@ -747,9 +722,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_round_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
+                M31_40528774.clone(),
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
                 input_limb_2_col2.clone(),
@@ -789,9 +765,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.blake_round_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
+                M31_40528774.clone(),
                 input_limb_0_col0.clone(),
                 (input_limb_1_col1.clone() + M31_1.clone()),
                 blake_g_output_limb_0_col179.clone(),
@@ -851,12 +828,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            blake_round_sigma_lookup_elements: relations::BlakeRoundSigma::dummy(),
-            range_check_7_2_5_lookup_elements: relations::RangeCheck_7_2_5::dummy(),
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            blake_g_lookup_elements: relations::BlakeG::dummy(),
-            blake_round_lookup_elements: relations::BlakeRound::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

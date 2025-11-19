@@ -9,8 +9,6 @@ use components::range_check_252_width_27::InteractionClaimImpl as RangeCheckFelt
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_cairo_air::CairoInteractionElements;
-#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::{RelationUsesDict, components, utils};
@@ -172,7 +170,7 @@ pub struct PoseidonContextComponents {
 pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
     fn new(
         claim: @PoseidonContextClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @PoseidonContextInteractionClaim,
     ) -> PoseidonContextComponents {
         if let Some(claim) = claim.claim {
@@ -180,7 +178,7 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
                 components: Some(
                     PoseidonComponentsImpl::new(
                         claim,
-                        interaction_elements,
+                        common_lookup_elements,
                         interaction_claim.interaction_claim.as_snap().unwrap(),
                     ),
                 ),
@@ -229,40 +227,44 @@ pub struct PoseidonComponents {
 pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
     fn new(
         claim: @PoseidonClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @PoseidonInteractionClaim,
     ) -> PoseidonComponents {
         let poseidon_aggregator_component = components::poseidon_aggregator::NewComponentImpl::new(
-            claim.poseidon_aggregator, interaction_claim.poseidon_aggregator, interaction_elements,
+            claim.poseidon_aggregator,
+            interaction_claim.poseidon_aggregator,
+            common_lookup_elements,
         );
 
         let poseidon_3_partial_rounds_chain_component =
             components::poseidon_3_partial_rounds_chain::NewComponentImpl::new(
             claim.poseidon_3_partial_rounds_chain,
             interaction_claim.poseidon_3_partial_rounds_chain,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let poseidon_full_round_chain_component =
             components::poseidon_full_round_chain::NewComponentImpl::new(
             claim.poseidon_full_round_chain,
             interaction_claim.poseidon_full_round_chain,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         let cube_252_component = components::cube_252::NewComponentImpl::new(
-            claim.cube_252, interaction_claim.cube_252, interaction_elements,
+            claim.cube_252, interaction_claim.cube_252, common_lookup_elements,
         );
 
         let poseidon_round_keys_component = components::poseidon_round_keys::NewComponentImpl::new(
-            claim.poseidon_round_keys, interaction_claim.poseidon_round_keys, interaction_elements,
+            claim.poseidon_round_keys,
+            interaction_claim.poseidon_round_keys,
+            common_lookup_elements,
         );
 
         let range_check_felt_252_width_27_component =
             components::range_check_252_width_27::NewComponentImpl::new(
             claim.range_check_252_width_27,
             interaction_claim.range_check_252_width_27,
-            interaction_elements,
+            common_lookup_elements,
         );
 
         PoseidonComponents {

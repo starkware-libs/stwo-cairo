@@ -21,5 +21,5 @@ pub use crate::claim::ClaimTrait;
 pub use crate::components::subroutines::*;
 pub use crate::preprocessed_columns::*;
 pub use crate::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, preprocessed_columns,
+    RelationUsesDict, accumulate_relation_uses, preprocessed_columns,
 };

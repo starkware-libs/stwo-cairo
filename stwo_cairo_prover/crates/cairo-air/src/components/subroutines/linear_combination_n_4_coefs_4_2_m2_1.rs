@@ -25,12 +25,13 @@ impl LinearCombinationN4Coefs42M21 {
         combination_limb_8_col8: E::F,
         combination_limb_9_col9: E::F,
         p_coef_col10: E::F,
-        range_check_4_4_4_4_lookup_elements: &relations::RangeCheck_4_4_4_4,
-        range_check_4_4_lookup_elements: &relations::RangeCheck_4_4,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1027333874 = E::F::from(M31::from(1027333874));
         let M31_136 = E::F::from(M31::from(136));
         let M31_16 = E::F::from(M31::from(16));
+        let M31_1651211826 = E::F::from(M31::from(1651211826));
         let M31_2 = E::F::from(M31::from(2));
         let M31_256 = E::F::from(M31::from(256));
         let M31_3 = E::F::from(M31::from(3));
@@ -151,9 +152,10 @@ impl LinearCombinationN4Coefs42M21 {
                 - (p_coef_col10.clone() * M31_256.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_4_4_4_4_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1027333874.clone(),
                 (p_coef_col10.clone() + M31_3.clone()),
                 (carry_0_tmp_57464_2.clone() + M31_3.clone()),
                 (carry_1_tmp_57464_3.clone() + M31_3.clone()),
@@ -162,9 +164,10 @@ impl LinearCombinationN4Coefs42M21 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_4_4_4_4_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1027333874.clone(),
                 (carry_3_tmp_57464_5.clone() + M31_3.clone()),
                 (carry_4_tmp_57464_6.clone() + M31_3.clone()),
                 (carry_5_tmp_57464_7.clone() + M31_3.clone()),
@@ -173,9 +176,10 @@ impl LinearCombinationN4Coefs42M21 {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_4_4_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1651211826.clone(),
                 (carry_7_tmp_57464_9.clone() + M31_3.clone()),
                 (carry_8_tmp_57464_10.clone() + M31_3.clone()),
             ],
