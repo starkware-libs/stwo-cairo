@@ -16,6 +16,7 @@ impl TripleSum32 {
         [triple_sum_32_input_a_limb_0, triple_sum_32_input_a_limb_1, triple_sum_32_input_b_limb_0, triple_sum_32_input_b_limb_1, triple_sum_32_input_c_limb_0, triple_sum_32_input_c_limb_1]: [E::F; 6],
         triple_sum32_res_limb_0_col0: E::F,
         triple_sum32_res_limb_1_col1: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));

@@ -16,19 +16,25 @@ impl MemVerifyEqual {
     pub fn evaluate<E: EvalAtRow>(
         [mem_verify_equal_input_address1, mem_verify_equal_input_address2]: [E::F; 2],
         id_col0: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1444891767 = E::F::from(M31::from(1444891767));
+
         ReadId::evaluate(
             [mem_verify_equal_input_address1.clone()],
             id_col0.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            &[mem_verify_equal_input_address2.clone(), id_col0.clone()],
+            &[
+                M31_1444891767.clone(),
+                mem_verify_equal_input_address2.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         []

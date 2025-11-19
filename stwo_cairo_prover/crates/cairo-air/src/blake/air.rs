@@ -196,17 +196,7 @@ impl Components {
             tree_span_provider,
             blake_round::Eval {
                 claim: claim.claim.as_ref().unwrap().blake_round,
-                blake_g_lookup_elements: interaction_elements.blake_g.clone(),
-                blake_round_lookup_elements: interaction_elements.blake_round.clone(),
-                blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
-                memory_address_to_id_lookup_elements: interaction_elements
-                    .memory_address_to_id
-                    .clone(),
-                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range_check_7_2_5_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_7_2_5
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.blake_round.claimed_sum,
         );
@@ -215,25 +205,7 @@ impl Components {
             tree_span_provider,
             blake_g::Eval {
                 claim: claim.claim.as_ref().unwrap().blake_g,
-                blake_g_lookup_elements: interaction_elements.blake_g.clone(),
-                verify_bitwise_xor_12_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_12
-                    .clone(),
-                verify_bitwise_xor_4_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_4
-                    .clone(),
-                verify_bitwise_xor_7_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_7
-                    .clone(),
-                verify_bitwise_xor_8_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8
-                    .clone(),
-                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8_b
-                    .clone(),
-                verify_bitwise_xor_9_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_9
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.blake_g.claimed_sum,
         );
@@ -242,7 +214,7 @@ impl Components {
             tree_span_provider,
             blake_round_sigma::Eval {
                 claim: claim.claim.as_ref().unwrap().blake_sigma,
-                blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.blake_sigma.claimed_sum,
         );
@@ -251,13 +223,7 @@ impl Components {
             tree_span_provider,
             triple_xor_32::Eval {
                 claim: claim.claim.as_ref().unwrap().triple_xor_32,
-                triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
-                verify_bitwise_xor_8_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8
-                    .clone(),
-                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8_b
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.triple_xor_32.claimed_sum,
         );
@@ -265,9 +231,7 @@ impl Components {
             tree_span_provider,
             verify_bitwise_xor_12::Eval {
                 claim: claim.claim.as_ref().unwrap().verify_bitwise_xor_12,
-                verify_bitwise_xor_12_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_12
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_12.claimed_sum,
         );
