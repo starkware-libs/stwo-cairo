@@ -16,8 +16,7 @@ pub fn xor_rot_32_r_16_evaluate(
     xor_col5: QM31,
     xor_col6: QM31,
     xor_col7: QM31,
-    verify_bitwise_xor_8_lookup_elements: @crate::VerifyBitwiseXor_8Elements,
-    verify_bitwise_xor_8_b_lookup_elements: @crate::VerifyBitwiseXor_8_BElements,
+    common_lookup_elements: @CommonLookupElements,
     ref verify_bitwise_xor_8_sum_0: QM31,
     ref verify_bitwise_xor_8_sum_1: QM31,
     ref verify_bitwise_xor_8_b_sum_2: QM31,
@@ -37,6 +36,7 @@ pub fn xor_rot_32_r_16_evaluate(
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_0,
         ms_8_bits_col0,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -45,6 +45,7 @@ pub fn xor_rot_32_r_16_evaluate(
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_1,
         ms_8_bits_col1,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -53,6 +54,7 @@ pub fn xor_rot_32_r_16_evaluate(
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_2,
         ms_8_bits_col2,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -61,6 +63,7 @@ pub fn xor_rot_32_r_16_evaluate(
         split_16_low_part_size_8_evaluate(
         xor_rot_32_r_16_input_limb_3,
         ms_8_bits_col3,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
@@ -71,7 +74,7 @@ pub fn xor_rot_32_r_16_evaluate(
             split_16_low_part_size_8_output_tmp_813a9_5_limb_0,
         ],
         xor_col4,
-        verify_bitwise_xor_8_lookup_elements,
+        common_lookup_elements,
         ref verify_bitwise_xor_8_sum_0,
         ref sum,
         domain_vanishing_eval_inv,
@@ -80,7 +83,7 @@ pub fn xor_rot_32_r_16_evaluate(
     bitwise_xor_num_bits_8_evaluate(
         [ms_8_bits_col0, ms_8_bits_col2],
         xor_col5,
-        verify_bitwise_xor_8_lookup_elements,
+        common_lookup_elements,
         ref verify_bitwise_xor_8_sum_1,
         ref sum,
         domain_vanishing_eval_inv,
@@ -92,7 +95,7 @@ pub fn xor_rot_32_r_16_evaluate(
             split_16_low_part_size_8_output_tmp_813a9_7_limb_0,
         ],
         xor_col6,
-        verify_bitwise_xor_8_b_lookup_elements,
+        common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_2,
         ref sum,
         domain_vanishing_eval_inv,
@@ -101,7 +104,7 @@ pub fn xor_rot_32_r_16_evaluate(
     bitwise_xor_num_bits_8_b_evaluate(
         [ms_8_bits_col1, ms_8_bits_col3],
         xor_col7,
-        verify_bitwise_xor_8_b_lookup_elements,
+        common_lookup_elements,
         ref verify_bitwise_xor_8_b_sum_3,
         ref sum,
         domain_vanishing_eval_inv,

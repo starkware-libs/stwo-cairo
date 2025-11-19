@@ -1,6 +1,6 @@
 pub use core::num::traits::Zero;
 pub use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 pub use stwo_verifier_core::channel::{Channel, ChannelTrait};
 pub use stwo_verifier_core::circle::{
@@ -20,6 +20,4 @@ pub use crate::cairo_component::{CairoComponent, NewComponent};
 pub use crate::claim::ClaimTrait;
 pub use crate::components::subroutines::*;
 pub use crate::preprocessed_columns::*;
-pub use crate::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, preprocessed_columns,
-};
+pub use crate::{RelationUsesDict, accumulate_relation_uses, preprocessed_columns};
