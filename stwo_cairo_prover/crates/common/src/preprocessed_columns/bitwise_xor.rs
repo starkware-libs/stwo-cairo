@@ -29,8 +29,14 @@ impl BitwiseXor {
         assert!(col_index < 3, "col_index must be in range 0..=2");
         Self { n_bits, col_index }
     }
+}
 
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
+impl PreProcessedColumn for BitwiseXor {
+    fn log_size(&self) -> u32 {
+        2 * self.n_bits
+    }
+
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let lhs = || -> u32x16 {
             (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32)) >> self.n_bits
         };
@@ -45,11 +51,6 @@ impl BitwiseXor {
             _ => unreachable!(),
         };
         unsafe { PackedM31::from_simd_unchecked(simd) }
-    }
-}
-impl PreProcessedColumn for BitwiseXor {
-    fn log_size(&self) -> u32 {
-        2 * self.n_bits
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
@@ -74,6 +75,7 @@ impl PreProcessedColumn for BitwiseXor {
 pub mod tests {
     const LOG_SIZE: u32 = 8;
     use crate::preprocessed_columns::bitwise_xor::BitwiseXor;
+    use crate::preprocessed_columns::preprocessed_trace::PreProcessedColumn;
     use crate::prover_types::simd::N_LANES;
 
     #[test]

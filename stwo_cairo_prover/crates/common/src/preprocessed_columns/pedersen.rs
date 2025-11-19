@@ -52,14 +52,6 @@ impl PedersenPoints {
     pub fn new(col: usize) -> Self {
         Self { index: col }
     }
-
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let array = PEDERSEN_TABLE.column_data[self.index]
-            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
-            .try_into()
-            .unwrap();
-        PackedM31::from_array(array)
-    }
 }
 
 impl PreProcessedColumn for PedersenPoints {
@@ -71,6 +63,14 @@ impl PreProcessedColumn for PedersenPoints {
         PreProcessedColumnId {
             id: format!("pedersen_points_{}", self.index),
         }
+    }
+
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let array = PEDERSEN_TABLE.column_data[self.index]
+            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+            .try_into()
+            .unwrap();
+        PackedM31::from_array(array)
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {

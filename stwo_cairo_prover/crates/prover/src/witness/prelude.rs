@@ -22,7 +22,7 @@ pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
 pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
-pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::Seq;
+pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
 pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};

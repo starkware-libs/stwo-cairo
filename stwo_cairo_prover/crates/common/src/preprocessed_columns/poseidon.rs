@@ -43,15 +43,15 @@ impl PoseidonRoundKeys {
             col,
         }
     }
-
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        self.packed_keys[vec_row]
-    }
 }
 
 impl PreProcessedColumn for PoseidonRoundKeys {
     fn log_size(&self) -> u32 {
         LOG_N_ROWS
+    }
+
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        self.packed_keys[vec_row]
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {

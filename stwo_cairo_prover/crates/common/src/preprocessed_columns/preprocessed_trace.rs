@@ -26,6 +26,7 @@ const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 
 pub trait PreProcessedColumn {
+    fn packed_at(&self, vec_row: usize) -> PackedM31;
     fn log_size(&self) -> u32;
     fn id(&self) -> PreProcessedColumnId;
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>;
@@ -162,15 +163,14 @@ impl Seq {
     pub const fn new(log_size: u32) -> Self {
         Self { log_size }
     }
-
-    pub fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        PackedM31::broadcast(M31::from(vec_row * N_LANES))
-            + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
-    }
 }
 impl PreProcessedColumn for Seq {
     fn log_size(&self) -> u32 {
         self.log_size
+    }
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        PackedM31::broadcast(M31::from(vec_row * N_LANES))
+            + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
     }
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         let col = Col::<SimdBackend, BaseField>::from_iter(
@@ -236,6 +236,14 @@ impl<const N: usize> RangeCheck<N> {
 impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
     fn log_size(&self) -> u32 {
         self.ranges.iter().sum()
+    }
+
+    fn packed_at(&self, vec_row: usize) -> PackedM31 {
+        let shift: u32 = self.ranges[(self.column_idx + 1)..].iter().sum();
+        let mask = Simd::splat((1 << self.ranges[self.column_idx]) - 1);
+        let simd_result =
+            ((SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32)) >> shift) & mask;
+        unsafe { PackedM31::from_simd_unchecked(simd_result) }
     }
 
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
