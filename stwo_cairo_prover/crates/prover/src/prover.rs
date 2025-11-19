@@ -623,6 +623,68 @@ pub mod tests {
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, testing_preprocessed_tree(20));
             }
+
+            #[test]
+            fn test_pedersen_aggregator() {
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig::default(),
+                    preprocessed_trace: PreProcessedTraceVariant::Canonical,
+                    channel_salt: None,
+                };
+
+                // Run pedersen builtin with 15 different instances.
+                let compiled_program_a =
+                    get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
+                let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
+                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let pedersen_builtin_size_a = 2u32.pow(
+                    proof_a
+                        .claim
+                        .builtins
+                        .pedersen_builtin
+                        .expect("Pedersen builtin is not present in the claim")
+                        .log_size,
+                );
+                assert!(pedersen_builtin_size_a == 16, "Expected program to contain 15 pedersen instances, which then padded to the next power of two");
+
+                let pedersen_aggregator_log_size_a = proof_a
+                    .claim
+                    .pedersen_context
+                    .claim
+                    .expect("Pedersen context is not present in the claim")
+                    .pedersen_aggregator
+                    .log_size;
+
+                // Run pedersen builtin with 15 different instances, each one 30 times.
+                let compiled_program_b =
+                    get_compiled_cairo_program_path("test_pedersen_aggregator");
+                let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
+                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let pedersen_builtin_size_b = 2u32.pow(
+                    proof_b
+                        .claim
+                        .builtins
+                        .pedersen_builtin
+                        .expect("Pedersen builtin is not present in the claim")
+                        .log_size,
+                );
+                assert!(pedersen_builtin_size_b == 512, "Expected program to contain 15*30 pedersen instances, which then padded to the next power of two");
+
+                let pedersen_aggregator_log_size_b = proof_b
+                    .claim
+                    .pedersen_context
+                    .claim
+                    .expect("Pedersen context is not present in the claim")
+                    .pedersen_aggregator
+                    .log_size;
+
+                assert_eq!(
+                    pedersen_aggregator_log_size_a,
+                    pedersen_aggregator_log_size_b,
+                    "Pedersen aggregator log size should be the same for both proof because it uses multiplicity"
+                );
+            }
         }
     }
 }
