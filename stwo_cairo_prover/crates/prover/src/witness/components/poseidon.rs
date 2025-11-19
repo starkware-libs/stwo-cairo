@@ -21,21 +21,17 @@ pub struct PoseidonContextClaimGenerator {
     pub poseidon_round_keys_trace_generator: poseidon_round_keys::ClaimGenerator,
     pub range_check_252_width_27_trace_generator: range_check_252_width_27::ClaimGenerator,
 }
-impl Default for PoseidonContextClaimGenerator {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl PoseidonContextClaimGenerator {
-    pub fn new() -> Self {
+    pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let poseidon_aggregator_trace_generator = poseidon_aggregator::ClaimGenerator::new();
         let poseidon_3_partial_rounds_chain_trace_generator =
             poseidon_3_partial_rounds_chain::ClaimGenerator::new();
         let poseidon_full_round_chain_trace_generator =
             poseidon_full_round_chain::ClaimGenerator::new();
         let cube_252_trace_generator = cube_252::ClaimGenerator::new();
-        let poseidon_round_keys_trace_generator = poseidon_round_keys::ClaimGenerator::new();
+        let poseidon_round_keys_trace_generator =
+            poseidon_round_keys::ClaimGenerator::new(preprocessed_trace);
         let range_check_252_width_27_trace_generator =
             range_check_252_width_27::ClaimGenerator::new();
 
