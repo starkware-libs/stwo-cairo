@@ -152,6 +152,15 @@ pub impl PackedUnreducedQM31Impl of PackedUnreducedQM31Trait {
         let WM31 { a: b, c: d } = self.bd.reduce();
         QM31 { a: CM31 { a: a, b: b }, b: CM31 { a: c, b: d } }
     }
+
+    #[inline]
+    fn packed_fused_mul_add(a: PackedUnreducedQM31, b: QM31, c: PackedUnreducedQM31) -> QM31 {
+        let a_mul_re_b = a.mul_cm31(b.a);
+        let a_mul_im_b = a.mul_cm31(b.b);
+        let a_mul_im_b_mul_u = pack_qm(mul_by_u(unpack_qm(a_mul_im_b + Self::large_zero())));
+
+        (a_mul_re_b + a_mul_im_b_mul_u + c).reduce()
+    }
 }
 
 pub impl PackedUnreducedQM31AddAssign of AddAssign<PackedUnreducedQM31, PackedUnreducedQM31> {
@@ -188,4 +197,41 @@ pub impl QM31IntoPackedUnreducedQM31 of Into<QM31, PackedUnreducedQM31> {
         let ((a, b), (c, d)) = ((self.a.a, self.a.b), (self.b.a, self.b.b));
         PackedUnreducedQM31 { ac: WM31 { a: a, c: c }.into(), bd: WM31 { a: b, c: d }.into() }
     }
+}
+
+#[inline]
+fn unpack_qm(packed: PackedUnreducedQM31) -> [u128; 4] {
+    let u256 { low: a, high: c } = packed.ac.inner.into();
+    let u256 { low: b, high: d } = packed.bd.inner.into();
+    [a, b, c, d]
+}
+
+#[inline]
+fn pack_qm(unpacked: [u128; 4]) -> PackedUnreducedQM31 {
+    let [a, b, c, d] = unpacked;
+    PackedUnreducedQM31 { ac: pack_wm([a, c]), bd: pack_wm([b, d]) }
+}
+
+#[inline]
+fn pack_wm(unpacked: [u128; 2]) -> PackedUnreducedWM31 {
+    const POW2_128: felt252 = 0x100000000000000000000000000000000;
+    let [a, c] = unpacked;
+    let a_felt: felt252 = a.into();
+    let c_felt: felt252 = c.into();
+    PackedUnreducedWM31 { inner: a_felt + c_felt * POW2_128 }
+}
+
+
+/// Multiplies an array `x = [x_1, x_i, x_u, x_iu]` representing the unreduced QM31 element
+/// `x_1 + x_i*i + x_u*u + x_iu*i*u` by u, returning the array representation of the result.
+/// Assumes that the entries are offset by large_zero-s, so that x_u + x_u - x_iu cannot underflow.
+#[inline]
+fn mul_by_u(x: [u128; 4]) -> [u128; 4] {
+    let [x_1, x_i, x_u, x_iu] = x;
+    let y_1 = x_u + x_u - x_iu; // 2*x_u - x_iu
+    let y_i = x_iu + x_iu + x_u; // 2*x_iu + x_u
+    let y_u = x_1;
+    let y_iu = x_i;
+
+    [y_1, y_i, y_u, y_iu]
 }

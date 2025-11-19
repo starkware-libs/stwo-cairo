@@ -34,6 +34,12 @@ fn test_fused_mul_add() {
     let res = QM31Trait::fused_mul_add(a, b, c);
 
     assert_eq!(res, a * b + c);
+
+    let packed_a: PackedUnreducedQM31 = a.into();
+    let packed_c: PackedUnreducedQM31 = c.into();
+    let res_packed = PackedUnreducedQM31Trait::packed_fused_mul_add(packed_a, b, packed_c);
+
+    assert_eq!(res_packed, res);
 }
 
 #[test]
