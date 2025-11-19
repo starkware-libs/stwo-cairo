@@ -186,7 +186,10 @@ impl BuiltinsClaimGenerator {
                 pedersen_builtin_trace_generator.write_trace(
                     tree_builder,
                     memory_address_to_id_trace_generator,
-                    &pedersen_context_trace_generator.pedersen_aggregator_trace_generator,
+                    &pedersen_context_trace_generator
+                        .pedersen_aggregator_trace_generator
+                        .as_ref()
+                        .expect("If has Pedersen builtin, should have Pedersen aggregator"),
                 )
             })
             .unzip();

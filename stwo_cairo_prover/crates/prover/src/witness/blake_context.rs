@@ -1,9 +1,12 @@
+use std::sync::Arc;
+
 use cairo_air::air::CairoInteractionElements;
 use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -22,10 +25,10 @@ pub struct BlakeContextClaimGenerator {
     pub verify_bitwise_xor_12: verify_bitwise_xor_12::ClaimGenerator,
 }
 impl BlakeContextClaimGenerator {
-    pub fn new(memory: Memory) -> Self {
+    pub fn new(memory: Memory, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let blake_round = blake_round::ClaimGenerator::new(memory);
         let blake_g = blake_g::ClaimGenerator::new();
-        let blake_sigma = blake_round_sigma::ClaimGenerator::new();
+        let blake_sigma = blake_round_sigma::ClaimGenerator::new(preprocessed_trace);
         let triple_xor_32 = triple_xor_32::ClaimGenerator::new();
         let verify_bitwise_xor_12 = verify_bitwise_xor_12::ClaimGenerator::new();
 
