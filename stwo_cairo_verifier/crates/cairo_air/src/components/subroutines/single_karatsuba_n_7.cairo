@@ -4,7 +4,11 @@ use crate::prelude::*;
 
 
 pub fn single_karatsuba_n_7_evaluate(
-    input: [QM31; 28], ref sum: QM31, domain_vanishing_eval_inv: QM31, random_coeff: QM31,
+    input: [QM31; 28],
+    common_lookup_elements: @crate::CommonElements,
+    ref sum: QM31,
+    domain_vanishing_eval_inv: QM31,
+    random_coeff: QM31,
 ) -> [QM31; 27] {
     let [
         single_karatsuba_n_7_input_limb_0,

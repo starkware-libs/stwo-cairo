@@ -15,13 +15,19 @@ impl ReadId {
     pub fn evaluate<E: EvalAtRow>(
         [read_id_input]: [E::F; 1],
         id_col0: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1444891767 = E::F::from(M31::from(1444891767));
+
         eval.add_to_relation(RelationEntry::new(
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            &[read_id_input.clone(), id_col0.clone()],
+            &[
+                M31_1444891767.clone(),
+                read_id_input.clone(),
+                id_col0.clone(),
+            ],
         ));
 
         []

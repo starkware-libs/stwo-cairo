@@ -15,6 +15,7 @@ impl DoubleKaratsuba1454B {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [double_karatsuba_1454b_input_limb_0, double_karatsuba_1454b_input_limb_1, double_karatsuba_1454b_input_limb_2, double_karatsuba_1454b_input_limb_3, double_karatsuba_1454b_input_limb_4, double_karatsuba_1454b_input_limb_5, double_karatsuba_1454b_input_limb_6, double_karatsuba_1454b_input_limb_7, double_karatsuba_1454b_input_limb_8, double_karatsuba_1454b_input_limb_9, double_karatsuba_1454b_input_limb_10, double_karatsuba_1454b_input_limb_11, double_karatsuba_1454b_input_limb_12, double_karatsuba_1454b_input_limb_13, double_karatsuba_1454b_input_limb_14, double_karatsuba_1454b_input_limb_15, double_karatsuba_1454b_input_limb_16, double_karatsuba_1454b_input_limb_17, double_karatsuba_1454b_input_limb_18, double_karatsuba_1454b_input_limb_19, double_karatsuba_1454b_input_limb_20, double_karatsuba_1454b_input_limb_21, double_karatsuba_1454b_input_limb_22, double_karatsuba_1454b_input_limb_23, double_karatsuba_1454b_input_limb_24, double_karatsuba_1454b_input_limb_25, double_karatsuba_1454b_input_limb_26, double_karatsuba_1454b_input_limb_27, double_karatsuba_1454b_input_limb_28, double_karatsuba_1454b_input_limb_29, double_karatsuba_1454b_input_limb_30, double_karatsuba_1454b_input_limb_31, double_karatsuba_1454b_input_limb_32, double_karatsuba_1454b_input_limb_33, double_karatsuba_1454b_input_limb_34, double_karatsuba_1454b_input_limb_35, double_karatsuba_1454b_input_limb_36, double_karatsuba_1454b_input_limb_37, double_karatsuba_1454b_input_limb_38, double_karatsuba_1454b_input_limb_39, double_karatsuba_1454b_input_limb_40, double_karatsuba_1454b_input_limb_41, double_karatsuba_1454b_input_limb_42, double_karatsuba_1454b_input_limb_43, double_karatsuba_1454b_input_limb_44, double_karatsuba_1454b_input_limb_45, double_karatsuba_1454b_input_limb_46, double_karatsuba_1454b_input_limb_47, double_karatsuba_1454b_input_limb_48, double_karatsuba_1454b_input_limb_49, double_karatsuba_1454b_input_limb_50, double_karatsuba_1454b_input_limb_51, double_karatsuba_1454b_input_limb_52, double_karatsuba_1454b_input_limb_53, double_karatsuba_1454b_input_limb_54, double_karatsuba_1454b_input_limb_55]: [E::F; 56],
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 55] {
         let [single_karatsuba_n_7_output_tmp_1454b_4_limb_0, single_karatsuba_n_7_output_tmp_1454b_4_limb_1, single_karatsuba_n_7_output_tmp_1454b_4_limb_2, single_karatsuba_n_7_output_tmp_1454b_4_limb_3, single_karatsuba_n_7_output_tmp_1454b_4_limb_4, single_karatsuba_n_7_output_tmp_1454b_4_limb_5, single_karatsuba_n_7_output_tmp_1454b_4_limb_6, single_karatsuba_n_7_output_tmp_1454b_4_limb_7, single_karatsuba_n_7_output_tmp_1454b_4_limb_8, single_karatsuba_n_7_output_tmp_1454b_4_limb_9, single_karatsuba_n_7_output_tmp_1454b_4_limb_10, single_karatsuba_n_7_output_tmp_1454b_4_limb_11, single_karatsuba_n_7_output_tmp_1454b_4_limb_12, single_karatsuba_n_7_output_tmp_1454b_4_limb_13, single_karatsuba_n_7_output_tmp_1454b_4_limb_14, single_karatsuba_n_7_output_tmp_1454b_4_limb_15, single_karatsuba_n_7_output_tmp_1454b_4_limb_16, single_karatsuba_n_7_output_tmp_1454b_4_limb_17, single_karatsuba_n_7_output_tmp_1454b_4_limb_18, single_karatsuba_n_7_output_tmp_1454b_4_limb_19, single_karatsuba_n_7_output_tmp_1454b_4_limb_20, single_karatsuba_n_7_output_tmp_1454b_4_limb_21, single_karatsuba_n_7_output_tmp_1454b_4_limb_22, single_karatsuba_n_7_output_tmp_1454b_4_limb_23, single_karatsuba_n_7_output_tmp_1454b_4_limb_24, single_karatsuba_n_7_output_tmp_1454b_4_limb_25, single_karatsuba_n_7_output_tmp_1454b_4_limb_26] =
@@ -49,6 +50,7 @@ impl DoubleKaratsuba1454B {
                     double_karatsuba_1454b_input_limb_40.clone(),
                     double_karatsuba_1454b_input_limb_41.clone(),
                 ],
+                common_lookup_elements,
                 eval,
             );
         let [single_karatsuba_n_7_output_tmp_1454b_9_limb_0, single_karatsuba_n_7_output_tmp_1454b_9_limb_1, single_karatsuba_n_7_output_tmp_1454b_9_limb_2, single_karatsuba_n_7_output_tmp_1454b_9_limb_3, single_karatsuba_n_7_output_tmp_1454b_9_limb_4, single_karatsuba_n_7_output_tmp_1454b_9_limb_5, single_karatsuba_n_7_output_tmp_1454b_9_limb_6, single_karatsuba_n_7_output_tmp_1454b_9_limb_7, single_karatsuba_n_7_output_tmp_1454b_9_limb_8, single_karatsuba_n_7_output_tmp_1454b_9_limb_9, single_karatsuba_n_7_output_tmp_1454b_9_limb_10, single_karatsuba_n_7_output_tmp_1454b_9_limb_11, single_karatsuba_n_7_output_tmp_1454b_9_limb_12, single_karatsuba_n_7_output_tmp_1454b_9_limb_13, single_karatsuba_n_7_output_tmp_1454b_9_limb_14, single_karatsuba_n_7_output_tmp_1454b_9_limb_15, single_karatsuba_n_7_output_tmp_1454b_9_limb_16, single_karatsuba_n_7_output_tmp_1454b_9_limb_17, single_karatsuba_n_7_output_tmp_1454b_9_limb_18, single_karatsuba_n_7_output_tmp_1454b_9_limb_19, single_karatsuba_n_7_output_tmp_1454b_9_limb_20, single_karatsuba_n_7_output_tmp_1454b_9_limb_21, single_karatsuba_n_7_output_tmp_1454b_9_limb_22, single_karatsuba_n_7_output_tmp_1454b_9_limb_23, single_karatsuba_n_7_output_tmp_1454b_9_limb_24, single_karatsuba_n_7_output_tmp_1454b_9_limb_25, single_karatsuba_n_7_output_tmp_1454b_9_limb_26] =
@@ -83,6 +85,7 @@ impl DoubleKaratsuba1454B {
                     double_karatsuba_1454b_input_limb_54.clone(),
                     double_karatsuba_1454b_input_limb_55.clone(),
                 ],
+                common_lookup_elements,
                 eval,
             );
         let x_sum_tmp_1454b_10_limb_0 = eval.add_intermediate(
@@ -229,6 +232,7 @@ impl DoubleKaratsuba1454B {
                     y_sum_tmp_1454b_11_limb_12.clone(),
                     y_sum_tmp_1454b_11_limb_13.clone(),
                 ],
+                common_lookup_elements,
                 eval,
             );
         [

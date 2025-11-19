@@ -1,8 +1,7 @@
 use std::sync::Arc;
 
-use cairo_air::range_checks_air::{
-    RangeChecksClaim, RangeChecksInteractionClaim, RangeChecksInteractionElements,
-};
+use cairo_air::range_checks_air::{RangeChecksClaim, RangeChecksInteractionClaim};
+use cairo_air::relations;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
@@ -295,92 +294,92 @@ impl RangeChecksInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &RangeChecksInteractionElements,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> RangeChecksInteractionClaim {
         let rc_6_interaction_claim = self
             .rc_6_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_6);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_8_interaction_claim = self
             .rc_8_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_8);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_11_interaction_claim = self
             .rc_11_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_11);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_12_interaction_claim = self
             .rc_12_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_12);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_18_interaction_claim = self
             .rc_18_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_18);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_18_b_interaction_claim = self
             .rc_18_b_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_18_b);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_interaction_claim = self
             .rc_20_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_b_interaction_claim = self
             .rc_20_b_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_b);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_c_interaction_claim = self
             .rc_20_c_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_c);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_d_interaction_claim = self
             .rc_20_d_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_d);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_e_interaction_claim = self
             .rc_20_e_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_e);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_f_interaction_claim = self
             .rc_20_f_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_f);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_g_interaction_claim = self
             .rc_20_g_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_g);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_20_h_interaction_claim = self
             .rc_20_h_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_20_h);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_4_3_interaction_claim = self
             .rc_4_3_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_4_3);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_4_4_interaction_claim = self
             .rc_4_4_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_4_4);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_interaction_claim = self
             .rc_9_9_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_b_interaction_claim = self
             .rc_9_9_b_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_b);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_c_interaction_claim = self
             .rc_9_9_c_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_c);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_d_interaction_claim = self
             .rc_9_9_d_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_d);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_e_interaction_claim = self
             .rc_9_9_e_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_e);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_f_interaction_claim = self
             .rc_9_9_f_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_f);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_g_interaction_claim = self
             .rc_9_9_g_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_g);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_9_9_h_interaction_claim = self
             .rc_9_9_h_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9_h);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_7_2_5_interaction_claim = self
             .rc_7_2_5_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_7_2_5);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_3_6_6_3_interaction_claim = self
             .rc_3_6_6_3_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_3_6_6_3);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_4_4_4_4_interaction_claim = self
             .rc_4_4_4_4_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_4_4_4_4);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_3_3_3_3_3_interaction_claim = self
             .rc_3_3_3_3_3_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_3_3_3_3_3);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         RangeChecksInteractionClaim {
             rc_6: rc_6_interaction_claim,
             rc_8: rc_8_interaction_claim,

@@ -7,6 +7,7 @@ pub fn decode_small_sign_evaluate(
     input: [QM31; 0],
     msb_col0: QM31,
     mid_limbs_set_col1: QM31,
+    common_lookup_elements: @crate::CommonElements,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
