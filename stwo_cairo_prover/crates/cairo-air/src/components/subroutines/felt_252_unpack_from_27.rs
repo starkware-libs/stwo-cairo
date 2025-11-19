@@ -32,6 +32,7 @@ impl Felt252UnpackFrom27 {
         unpacked_limb_22_col15: E::F,
         unpacked_limb_24_col16: E::F,
         unpacked_limb_25_col17: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 10] {
         let M31_512 = E::F::from(M31::from(512));

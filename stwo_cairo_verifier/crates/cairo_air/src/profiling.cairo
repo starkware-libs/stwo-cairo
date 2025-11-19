@@ -7,7 +7,7 @@ use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::fields::m31::M31Trait;
 use stwo_verifier_core::utils::ArrayImpl;
 use stwo_verifier_utils::encode_and_hash_memory_section;
-use super::test_utils::{dummy_interaction_lookup_elements, mock_public_memory_with_outputs};
+use super::test_utils::{LookupElementsDummyImpl, mock_public_memory_with_outputs};
 use super::{CasmState, PublicData, PublicDataImpl, PublicMemoryTrait};
 
 const REGISTERS_START: ConstValue<1000> = 1000;
@@ -38,6 +38,6 @@ fn test_output_logup_sum() {
         fp: M31Trait::new(upcast(REGISTERS_END)),
     };
     let public_data = PublicData { public_memory, initial_state, final_state };
-    let mut lookup_elements = dummy_interaction_lookup_elements();
+    let mut lookup_elements = LookupElementsDummyImpl::dummy();
     public_data.logup_sum(@lookup_elements);
 }
