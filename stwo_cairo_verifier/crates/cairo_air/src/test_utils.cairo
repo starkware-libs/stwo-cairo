@@ -1,18 +1,17 @@
 use core::num::traits::Zero;
 use core::num::traits::one::One;
-use stwo_cairo_air::range_checks::RangeChecksInteractionElements;
 use stwo_constraint_framework::{PreprocessedColumnIdx, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::fields::m31::M31;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Impl};
 use stwo_verifier_core::utils::ArrayImpl;
 use super::{
-    CairoInteractionElements, LookupElements, MemorySmallValue, PublicDataImpl, PublicMemory,
-    PublicSegmentRanges, SegmentRange, qm31_const,
+    LookupElements, MemorySmallValue, PublicDataImpl, PublicMemory, PublicSegmentRanges,
+    SegmentRange, qm31_const,
 };
 
 #[generate_trait]
-impl LookupElementsDummyImpl<const N: usize> of LookupElementsDummyTrait<N> {
+pub impl LookupElementsDummyImpl<const N: usize> of LookupElementsDummyTrait<N> {
     fn dummy() -> LookupElements<N> {
         LookupElements::<
             N,
@@ -54,64 +53,6 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
         },
         output: output.span(),
         safe_call_ids: [1, 2],
-    }
-}
-
-pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
-    CairoInteractionElements {
-        opcodes: LookupElementsDummyImpl::dummy(),
-        verify_instruction: LookupElementsDummyImpl::dummy(),
-        blake_round: LookupElementsDummyImpl::dummy(),
-        blake_g: LookupElementsDummyImpl::dummy(),
-        blake_round_sigma: LookupElementsDummyImpl::dummy(),
-        triple_xor_32: LookupElementsDummyImpl::dummy(),
-        poseidon_aggregator: LookupElementsDummyImpl::dummy(),
-        poseidon_3_partial_rounds_chain: LookupElementsDummyImpl::dummy(),
-        poseidon_full_round_chain: LookupElementsDummyImpl::dummy(),
-        cube_252: LookupElementsDummyImpl::dummy(),
-        poseidon_round_keys: LookupElementsDummyImpl::dummy(),
-        range_check_252_width_27: LookupElementsDummyImpl::dummy(),
-        pedersen_aggregator: LookupElementsDummyImpl::dummy(),
-        partial_ec_mul: LookupElementsDummyImpl::dummy(),
-        pedersen_points_table: LookupElementsDummyImpl::dummy(),
-        memory_address_to_id: LookupElementsDummyImpl::dummy(),
-        memory_id_to_value: LookupElementsDummyImpl::dummy(),
-        range_checks: RangeChecksInteractionElements {
-            rc_6: LookupElementsDummyImpl::dummy(),
-            rc_8: LookupElementsDummyImpl::dummy(),
-            rc_11: LookupElementsDummyImpl::dummy(),
-            rc_12: LookupElementsDummyImpl::dummy(),
-            rc_18: LookupElementsDummyImpl::dummy(),
-            rc_18_b: LookupElementsDummyImpl::dummy(),
-            rc_20: LookupElementsDummyImpl::dummy(),
-            rc_20_b: LookupElementsDummyImpl::dummy(),
-            rc_20_c: LookupElementsDummyImpl::dummy(),
-            rc_20_d: LookupElementsDummyImpl::dummy(),
-            rc_20_e: LookupElementsDummyImpl::dummy(),
-            rc_20_f: LookupElementsDummyImpl::dummy(),
-            rc_20_g: LookupElementsDummyImpl::dummy(),
-            rc_20_h: LookupElementsDummyImpl::dummy(),
-            rc_4_3: LookupElementsDummyImpl::dummy(),
-            rc_4_4: LookupElementsDummyImpl::dummy(),
-            rc_9_9: LookupElementsDummyImpl::dummy(),
-            rc_9_9_b: LookupElementsDummyImpl::dummy(),
-            rc_9_9_c: LookupElementsDummyImpl::dummy(),
-            rc_9_9_d: LookupElementsDummyImpl::dummy(),
-            rc_9_9_e: LookupElementsDummyImpl::dummy(),
-            rc_9_9_f: LookupElementsDummyImpl::dummy(),
-            rc_9_9_g: LookupElementsDummyImpl::dummy(),
-            rc_9_9_h: LookupElementsDummyImpl::dummy(),
-            rc_7_2_5: LookupElementsDummyImpl::dummy(),
-            rc_3_6_6_3: LookupElementsDummyImpl::dummy(),
-            rc_4_4_4_4: LookupElementsDummyImpl::dummy(),
-            rc_3_3_3_3_3: LookupElementsDummyImpl::dummy(),
-        },
-        verify_bitwise_xor_4: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_xor_7: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_xor_8: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_xor_8_b: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_xor_9: LookupElementsDummyImpl::dummy(),
-        verify_bitwise_xor_12: LookupElementsDummyImpl::dummy(),
     }
 }
 

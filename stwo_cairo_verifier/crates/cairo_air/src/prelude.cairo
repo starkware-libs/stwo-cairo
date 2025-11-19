@@ -20,6 +20,4 @@ pub use crate::cairo_component::{CairoComponent, NewComponent};
 pub use crate::claim::ClaimTrait;
 pub use crate::components::subroutines::*;
 pub use crate::preprocessed_columns::*;
-pub use crate::{
-    CairoInteractionElements, RelationUsesDict, accumulate_relation_uses, preprocessed_columns,
-};
+pub use crate::{RelationUsesDict, accumulate_relation_uses, preprocessed_columns};

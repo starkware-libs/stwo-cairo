@@ -48,14 +48,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
-    pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
-    pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
-    pub range_check_18_b_lookup_elements: crate::RangeCheck_18_BElements,
-    pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
-    pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
-    pub range_check_9_9_e_lookup_elements: crate::RangeCheck_9_9_EElements,
-    pub range_check_252_width_27_lookup_elements: crate::RangeCheck252Width27Elements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -65,21 +58,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_18_b_lookup_elements: interaction_elements.range_checks.rc_18_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_252_width_27_lookup_elements: interaction_elements
-                .range_check_252_width_27
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -177,87 +161,148 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         sum = sum * random_coeff + constraint_quotient;
 
         range_check_9_9_sum_0 = self
-            .range_check_9_9_lookup_elements
-            .combine_qm31([limb_0_high_part_col10, limb_1_low_part_col11]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<517791011, 0, 0, 0>(), limb_0_high_part_col10, limb_1_low_part_col11]
+                    .span(),
+            );
 
         range_check_18_sum_1 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [(input_limb_0_col0 - (limb_0_high_part_col10 * qm31_const::<262144, 0, 0, 0>()))],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (input_limb_0_col0
+                        - (limb_0_high_part_col10 * qm31_const::<262144, 0, 0, 0>())),
+                ]
+                    .span(),
             );
 
         range_check_18_sum_2 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [((input_limb_1_col1 - limb_1_low_part_col11) * qm31_const::<4194304, 0, 0, 0>())],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    ((input_limb_1_col1 - limb_1_low_part_col11)
+                        * qm31_const::<4194304, 0, 0, 0>()),
+                ]
+                    .span(),
             );
 
         range_check_9_9_b_sum_3 = self
-            .range_check_9_9_b_lookup_elements
-            .combine_qm31([limb_2_high_part_col12, limb_3_low_part_col13]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<1897792095, 0, 0, 0>(), limb_2_high_part_col12, limb_3_low_part_col13]
+                    .span(),
+            );
 
         range_check_18_b_sum_4 = self
-            .range_check_18_b_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [(input_limb_2_col2 - (limb_2_high_part_col12 * qm31_const::<262144, 0, 0, 0>()))],
+                [
+                    qm31_const::<1424798916, 0, 0, 0>(),
+                    (input_limb_2_col2
+                        - (limb_2_high_part_col12 * qm31_const::<262144, 0, 0, 0>())),
+                ]
+                    .span(),
             );
 
         range_check_18_sum_5 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [((input_limb_3_col3 - limb_3_low_part_col13) * qm31_const::<4194304, 0, 0, 0>())],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    ((input_limb_3_col3 - limb_3_low_part_col13)
+                        * qm31_const::<4194304, 0, 0, 0>()),
+                ]
+                    .span(),
             );
 
         range_check_9_9_c_sum_6 = self
-            .range_check_9_9_c_lookup_elements
-            .combine_qm31([limb_4_high_part_col14, limb_5_low_part_col15]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<1881014476, 0, 0, 0>(), limb_4_high_part_col14, limb_5_low_part_col15]
+                    .span(),
+            );
 
         range_check_18_sum_7 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [(input_limb_4_col4 - (limb_4_high_part_col14 * qm31_const::<262144, 0, 0, 0>()))],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (input_limb_4_col4
+                        - (limb_4_high_part_col14 * qm31_const::<262144, 0, 0, 0>())),
+                ]
+                    .span(),
             );
 
         range_check_18_sum_8 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [((input_limb_5_col5 - limb_5_low_part_col15) * qm31_const::<4194304, 0, 0, 0>())],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    ((input_limb_5_col5 - limb_5_low_part_col15)
+                        * qm31_const::<4194304, 0, 0, 0>()),
+                ]
+                    .span(),
             );
 
         range_check_9_9_d_sum_9 = self
-            .range_check_9_9_d_lookup_elements
-            .combine_qm31([limb_6_high_part_col16, limb_7_low_part_col17]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<1864236857, 0, 0, 0>(), limb_6_high_part_col16, limb_7_low_part_col17]
+                    .span(),
+            );
 
         range_check_18_b_sum_10 = self
-            .range_check_18_b_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [(input_limb_6_col6 - (limb_6_high_part_col16 * qm31_const::<262144, 0, 0, 0>()))],
+                [
+                    qm31_const::<1424798916, 0, 0, 0>(),
+                    (input_limb_6_col6
+                        - (limb_6_high_part_col16 * qm31_const::<262144, 0, 0, 0>())),
+                ]
+                    .span(),
             );
 
         range_check_18_sum_11 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [((input_limb_7_col7 - limb_7_low_part_col17) * qm31_const::<4194304, 0, 0, 0>())],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    ((input_limb_7_col7 - limb_7_low_part_col17)
+                        * qm31_const::<4194304, 0, 0, 0>()),
+                ]
+                    .span(),
             );
 
         range_check_9_9_e_sum_12 = self
-            .range_check_9_9_e_lookup_elements
-            .combine_qm31([limb_8_high_part_col18, input_limb_9_col9]);
+            .common_lookup_elements
+            .combine_qm31(
+                [qm31_const::<1847459238, 0, 0, 0>(), limb_8_high_part_col18, input_limb_9_col9]
+                    .span(),
+            );
 
         range_check_18_sum_13 = self
-            .range_check_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
-                [(input_limb_8_col8 - (limb_8_high_part_col18 * qm31_const::<262144, 0, 0, 0>()))],
+                [
+                    qm31_const::<1109051422, 0, 0, 0>(),
+                    (input_limb_8_col8
+                        - (limb_8_high_part_col18 * qm31_const::<262144, 0, 0, 0>())),
+                ]
+                    .span(),
             );
 
         range_check_252_width_27_sum_14 = self
-            .range_check_252_width_27_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
-                    input_limb_4_col4, input_limb_5_col5, input_limb_6_col6, input_limb_7_col7,
-                    input_limb_8_col8, input_limb_9_col9,
-                ],
+                    qm31_const::<1090315331, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
+                    input_limb_6_col6, input_limb_7_col7, input_limb_8_col8, input_limb_9_col9,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -511,37 +556,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            range_check_252_width_27_lookup_elements: make_lookup_elements(
-                qm31_const::<1766976110, 1642004522, 1010732433, 533565951>(),
-                qm31_const::<1621013403, 1559059729, 2135184329, 1791547987>(),
-            ),
-            range_check_18_lookup_elements: make_lookup_elements(
-                qm31_const::<245050921, 1103573213, 1520416965, 1202958302>(),
-                qm31_const::<120822322, 836122054, 943800857, 299339130>(),
-            ),
-            range_check_18_b_lookup_elements: make_lookup_elements(
-                qm31_const::<1246712024, 907747525, 1022838376, 2052084828>(),
-                qm31_const::<710233050, 213531256, 91248546, 1462652938>(),
-            ),
-            range_check_9_9_lookup_elements: make_lookup_elements(
-                qm31_const::<989827041, 1225728465, 1602128278, 85336129>(),
-                qm31_const::<1454375758, 8286589, 1713209810, 1602293816>(),
-            ),
-            range_check_9_9_b_lookup_elements: make_lookup_elements(
-                qm31_const::<676159317, 930503385, 1105489908, 1544380136>(),
-                qm31_const::<2129889251, 701815395, 1830411342, 2061777868>(),
-            ),
-            range_check_9_9_c_lookup_elements: make_lookup_elements(
-                qm31_const::<1260569667, 2138441994, 1709448741, 1544373155>(),
-                qm31_const::<1022885008, 826842007, 1709607881, 1909661957>(),
-            ),
-            range_check_9_9_d_lookup_elements: make_lookup_elements(
-                qm31_const::<1551136661, 662010924, 2044956999, 1544361134>(),
-                qm31_const::<2005146556, 852740197, 532387412, 1763320973>(),
-            ),
-            range_check_9_9_e_lookup_elements: make_lookup_elements(
-                qm31_const::<2135547011, 1869949533, 501432185, 1544354154>(),
-                qm31_const::<1771048649, 362596150, 1943805170, 690289666>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

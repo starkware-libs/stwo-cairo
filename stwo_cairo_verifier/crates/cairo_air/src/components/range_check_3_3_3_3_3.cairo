@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -49,15 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                .range_checks
-                .rc_3_3_3_3_3
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -95,13 +92,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         range_check_3_3_3_3_3_sum_0 = self
-            .range_check_3_3_3_3_3_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    range_check_3_3_3_3_3_column_0, range_check_3_3_3_3_3_column_1,
-                    range_check_3_3_3_3_3_column_2, range_check_3_3_3_3_3_column_3,
-                    range_check_3_3_3_3_3_column_4,
-                ],
+                    qm31_const::<502259093, 0, 0, 0>(), range_check_3_3_3_3_3_column_0,
+                    range_check_3_3_3_3_3_column_1, range_check_3_3_3_3_3_column_2,
+                    range_check_3_3_3_3_3_column_3, range_check_3_3_3_3_3_column_4,
+                ]
+                    .span(),
             );
 
         lookup_constraints(

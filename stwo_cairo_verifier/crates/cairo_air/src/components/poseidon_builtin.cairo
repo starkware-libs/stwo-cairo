@@ -50,8 +50,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub poseidon_aggregator_lookup_elements: crate::PoseidonAggregatorElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -61,13 +60,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            poseidon_aggregator_lookup_elements: interaction_elements.poseidon_aggregator.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -134,7 +132,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             instance_addr_tmp_51986_0,
             input_state_0_id_col0,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_0,
             ref sum,
             domain_vanishing_eval_inv,
@@ -143,7 +141,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             (instance_addr_tmp_51986_0 + qm31_const::<1, 0, 0, 0>()),
             input_state_1_id_col1,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_1,
             ref sum,
             domain_vanishing_eval_inv,
@@ -152,7 +150,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             (instance_addr_tmp_51986_0 + qm31_const::<2, 0, 0, 0>()),
             input_state_2_id_col2,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_2,
             ref sum,
             domain_vanishing_eval_inv,
@@ -161,7 +159,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             (instance_addr_tmp_51986_0 + qm31_const::<3, 0, 0, 0>()),
             output_state_0_id_col3,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_3,
             ref sum,
             domain_vanishing_eval_inv,
@@ -170,7 +168,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             (instance_addr_tmp_51986_0 + qm31_const::<4, 0, 0, 0>()),
             output_state_1_id_col4,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_4,
             ref sum,
             domain_vanishing_eval_inv,
@@ -179,7 +177,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         read_id_evaluate(
             (instance_addr_tmp_51986_0 + qm31_const::<5, 0, 0, 0>()),
             output_state_2_id_col5,
-            self.memory_address_to_id_lookup_elements,
+            self.common_lookup_elements,
             ref memory_address_to_id_sum_5,
             ref sum,
             domain_vanishing_eval_inv,
@@ -187,12 +185,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         poseidon_aggregator_sum_6 = self
-            .poseidon_aggregator_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_state_0_id_col0, input_state_1_id_col1, input_state_2_id_col2,
-                    output_state_0_id_col3, output_state_1_id_col4, output_state_2_id_col5,
-                ],
+                    qm31_const::<1551892206, 0, 0, 0>(), input_state_0_id_col0,
+                    input_state_1_id_col1, input_state_2_id_col2, output_state_0_id_col3,
+                    output_state_1_id_col4, output_state_2_id_col5,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -346,13 +346,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            memory_address_to_id_lookup_elements: make_lookup_elements(
-                qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
-                qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
-            ),
-            poseidon_aggregator_lookup_elements: make_lookup_elements(
-                qm31_const::<1205297475, 1632365367, 724373964, 1122759762>(),
-                qm31_const::<1682536330, 1446762744, 501541604, 1778350693>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

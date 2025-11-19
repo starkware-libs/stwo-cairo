@@ -6,7 +6,7 @@ use crate::prelude::*;
 pub fn read_id_evaluate(
     input: QM31,
     id_col0: QM31,
-    memory_address_to_id_lookup_elements: @crate::MemoryAddressToIdElements,
+    common_lookup_elements: @crate::CommonElements,
     ref memory_address_to_id_sum_0: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
@@ -14,8 +14,8 @@ pub fn read_id_evaluate(
 ) -> [QM31; 0] {
     let read_id_input = input;
 
-    memory_address_to_id_sum_0 = memory_address_to_id_lookup_elements
-        .combine_qm31([read_id_input, id_col0]);
+    memory_address_to_id_sum_0 = common_lookup_elements
+        .combine_qm31([qm31_const::<1444891767, 0, 0, 0>(), read_id_input, id_col0].span());
 
     []
 }

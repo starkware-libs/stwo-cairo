@@ -33,7 +33,7 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
@@ -311,93 +311,93 @@ pub struct RangeChecksComponents {
 pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     fn new(
         claim: @RangeChecksClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @crate::CommonElements,
         interaction_claim: @RangeChecksInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
             rc_6: components::range_check_6::NewComponentImpl::new(
-                claim.rc_6, interaction_claim.rc_6, interaction_elements,
+                claim.rc_6, interaction_claim.rc_6, common_lookup_elements,
             ),
             rc_8: components::range_check_8::NewComponentImpl::new(
-                claim.rc_8, interaction_claim.rc_8, interaction_elements,
+                claim.rc_8, interaction_claim.rc_8, common_lookup_elements,
             ),
             rc_11: components::range_check_11::NewComponentImpl::new(
-                claim.rc_11, interaction_claim.rc_11, interaction_elements,
+                claim.rc_11, interaction_claim.rc_11, common_lookup_elements,
             ),
             rc_12: components::range_check_12::NewComponentImpl::new(
-                claim.rc_12, interaction_claim.rc_12, interaction_elements,
+                claim.rc_12, interaction_claim.rc_12, common_lookup_elements,
             ),
             rc_18: components::range_check_18::NewComponentImpl::new(
-                claim.rc_18, interaction_claim.rc_18, interaction_elements,
+                claim.rc_18, interaction_claim.rc_18, common_lookup_elements,
             ),
             rc_18_b: components::range_check_18_b::NewComponentImpl::new(
-                claim.rc_18_b, interaction_claim.rc_18_b, interaction_elements,
+                claim.rc_18_b, interaction_claim.rc_18_b, common_lookup_elements,
             ),
             rc_20: components::range_check_20::NewComponentImpl::new(
-                claim.rc_20, interaction_claim.rc_20, interaction_elements,
+                claim.rc_20, interaction_claim.rc_20, common_lookup_elements,
             ),
             rc_20_b: components::range_check_20_b::NewComponentImpl::new(
-                claim.rc_20_b, interaction_claim.rc_20_b, interaction_elements,
+                claim.rc_20_b, interaction_claim.rc_20_b, common_lookup_elements,
             ),
             rc_20_c: components::range_check_20_c::NewComponentImpl::new(
-                claim.rc_20_c, interaction_claim.rc_20_c, interaction_elements,
+                claim.rc_20_c, interaction_claim.rc_20_c, common_lookup_elements,
             ),
             rc_20_d: components::range_check_20_d::NewComponentImpl::new(
-                claim.rc_20_d, interaction_claim.rc_20_d, interaction_elements,
+                claim.rc_20_d, interaction_claim.rc_20_d, common_lookup_elements,
             ),
             rc_20_e: components::range_check_20_e::NewComponentImpl::new(
-                claim.rc_20_e, interaction_claim.rc_20_e, interaction_elements,
+                claim.rc_20_e, interaction_claim.rc_20_e, common_lookup_elements,
             ),
             rc_20_f: components::range_check_20_f::NewComponentImpl::new(
-                claim.rc_20_f, interaction_claim.rc_20_f, interaction_elements,
+                claim.rc_20_f, interaction_claim.rc_20_f, common_lookup_elements,
             ),
             rc_20_g: components::range_check_20_g::NewComponentImpl::new(
-                claim.rc_20_g, interaction_claim.rc_20_g, interaction_elements,
+                claim.rc_20_g, interaction_claim.rc_20_g, common_lookup_elements,
             ),
             rc_20_h: components::range_check_20_h::NewComponentImpl::new(
-                claim.rc_20_h, interaction_claim.rc_20_h, interaction_elements,
+                claim.rc_20_h, interaction_claim.rc_20_h, common_lookup_elements,
             ),
             rc_4_3: components::range_check_4_3::NewComponentImpl::new(
-                claim.rc_4_3, interaction_claim.rc_4_3, interaction_elements,
+                claim.rc_4_3, interaction_claim.rc_4_3, common_lookup_elements,
             ),
             rc_4_4: components::range_check_4_4::NewComponentImpl::new(
-                claim.rc_4_4, interaction_claim.rc_4_4, interaction_elements,
+                claim.rc_4_4, interaction_claim.rc_4_4, common_lookup_elements,
             ),
             rc_9_9: components::range_check_9_9::NewComponentImpl::new(
-                claim.rc_9_9, interaction_claim.rc_9_9, interaction_elements,
+                claim.rc_9_9, interaction_claim.rc_9_9, common_lookup_elements,
             ),
             rc_9_9_b: components::range_check_9_9_b::NewComponentImpl::new(
-                claim.rc_9_9_b, interaction_claim.rc_9_9_b, interaction_elements,
+                claim.rc_9_9_b, interaction_claim.rc_9_9_b, common_lookup_elements,
             ),
             rc_9_9_c: components::range_check_9_9_c::NewComponentImpl::new(
-                claim.rc_9_9_c, interaction_claim.rc_9_9_c, interaction_elements,
+                claim.rc_9_9_c, interaction_claim.rc_9_9_c, common_lookup_elements,
             ),
             rc_9_9_d: components::range_check_9_9_d::NewComponentImpl::new(
-                claim.rc_9_9_d, interaction_claim.rc_9_9_d, interaction_elements,
+                claim.rc_9_9_d, interaction_claim.rc_9_9_d, common_lookup_elements,
             ),
             rc_9_9_e: components::range_check_9_9_e::NewComponentImpl::new(
-                claim.rc_9_9_e, interaction_claim.rc_9_9_e, interaction_elements,
+                claim.rc_9_9_e, interaction_claim.rc_9_9_e, common_lookup_elements,
             ),
             rc_9_9_f: components::range_check_9_9_f::NewComponentImpl::new(
-                claim.rc_9_9_f, interaction_claim.rc_9_9_f, interaction_elements,
+                claim.rc_9_9_f, interaction_claim.rc_9_9_f, common_lookup_elements,
             ),
             rc_9_9_g: components::range_check_9_9_g::NewComponentImpl::new(
-                claim.rc_9_9_g, interaction_claim.rc_9_9_g, interaction_elements,
+                claim.rc_9_9_g, interaction_claim.rc_9_9_g, common_lookup_elements,
             ),
             rc_9_9_h: components::range_check_9_9_h::NewComponentImpl::new(
-                claim.rc_9_9_h, interaction_claim.rc_9_9_h, interaction_elements,
+                claim.rc_9_9_h, interaction_claim.rc_9_9_h, common_lookup_elements,
             ),
             rc_7_2_5: components::range_check_7_2_5::NewComponentImpl::new(
-                claim.rc_7_2_5, interaction_claim.rc_7_2_5, interaction_elements,
+                claim.rc_7_2_5, interaction_claim.rc_7_2_5, common_lookup_elements,
             ),
             rc_3_6_6_3: components::range_check_3_6_6_3::NewComponentImpl::new(
-                claim.rc_3_6_6_3, interaction_claim.rc_3_6_6_3, interaction_elements,
+                claim.rc_3_6_6_3, interaction_claim.rc_3_6_6_3, common_lookup_elements,
             ),
             rc_4_4_4_4: components::range_check_4_4_4_4::NewComponentImpl::new(
-                claim.rc_4_4_4_4, interaction_claim.rc_4_4_4_4, interaction_elements,
+                claim.rc_4_4_4_4, interaction_claim.rc_4_4_4_4, common_lookup_elements,
             ),
             rc_3_3_3_3_3: components::range_check_3_3_3_3_3::NewComponentImpl::new(
-                claim.rc_3_3_3_3_3, interaction_claim.rc_3_3_3_3_3, interaction_elements,
+                claim.rc_3_3_3_3_3, interaction_claim.rc_3_3_3_3_3, common_lookup_elements,
             ),
         }
     }
