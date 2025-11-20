@@ -65,15 +65,13 @@ pub fn fri_answers(
             },
         };
 
-        let Some((sample_batches_by_point, n_columns_per_tree)) = sample_batches_for_log_size(
+        let (sample_batches_by_point, n_columns_per_tree) = sample_batches_for_log_size(
             columns_per_tree,
             sample_values_per_column_per_tree,
             oods_point,
             log_size,
             log_blowup_factor,
-        ) else {
-            continue;
-        };
+        );
 
         answers
             .append(
@@ -105,7 +103,7 @@ fn sample_batches_for_log_size(
     oods_point: CirclePoint<QM31>,
     log_size: u32,
     log_blowup_factor: u32,
-) -> Option<(Array<ColumnSampleBatch>, TreeArray<usize>)> {
+) -> (Array<ColumnSampleBatch>, TreeArray<usize>) {
     /// The (column index, evaluation) pairs at the out of domain point 'Z'.
     let mut indexed_evaluations_at_point = array![];
     /// The (column index, evaluation) pairs at the point `Z-g`.
@@ -138,10 +136,6 @@ fn sample_batches_for_log_size(
         n_columns_per_tree.append(columns.len());
     }
 
-    if index == 0 {
-        return Option::None;
-    }
-
     let mut sample_batches_by_point: Array<ColumnSampleBatch> = array![];
     if !indexed_evaluations_at_point.is_empty() {
         sample_batches_by_point
@@ -164,7 +158,7 @@ fn sample_batches_for_log_size(
             );
     }
 
-    Option::Some((sample_batches_by_point, n_columns_per_tree))
+    (sample_batches_by_point, n_columns_per_tree)
 }
 
 fn fri_answers_for_log_size(
