@@ -1,6 +1,8 @@
+pub use std::collections::HashMap;
 pub use std::iter::zip;
 pub use std::simd::Simd;
 pub use std::sync::atomic::{AtomicU32, Ordering};
+pub use std::sync::Arc;
 
 pub(crate) use cairo_air::relations;
 pub use dashmap::DashMap;
@@ -22,9 +24,12 @@ pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
 pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
-pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
+pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedColumn, PreProcessedTrace, Seq,
+};
 pub use stwo_cairo_common::prover_types::cpu::*;
 pub use stwo_cairo_common::prover_types::simd::*;
+pub use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 
 pub use crate::witness::fast_deduction::blake::{

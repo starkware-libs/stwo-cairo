@@ -1,7 +1,10 @@
+use std::sync::Arc;
+
 use cairo_air::range_checks_air::{
     RangeChecksClaim, RangeChecksInteractionClaim, RangeChecksInteractionElements,
 };
 use stwo::prover::backend::simd::SimdBackend;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_20,
@@ -44,44 +47,97 @@ pub struct RangeChecksClaimGenerator {
     pub rc_4_4_4_4_trace_generator: range_check_4_4_4_4::ClaimGenerator,
     pub rc_3_3_3_3_3_trace_generator: range_check_3_3_3_3_3::ClaimGenerator,
 }
-impl Default for RangeChecksClaimGenerator {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl RangeChecksClaimGenerator {
-    pub fn new() -> Self {
+    pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         Self {
-            rc_6_trace_generator: range_check_6::ClaimGenerator::new(),
-            rc_8_trace_generator: range_check_8::ClaimGenerator::new(),
-            rc_11_trace_generator: range_check_11::ClaimGenerator::new(),
-            rc_12_trace_generator: range_check_12::ClaimGenerator::new(),
-            rc_18_trace_generator: range_check_18::ClaimGenerator::new(),
-            rc_18_b_trace_generator: range_check_18_b::ClaimGenerator::new(),
-            rc_20_trace_generator: range_check_20::ClaimGenerator::new(),
-            rc_20_b_trace_generator: range_check_20_b::ClaimGenerator::new(),
-            rc_20_c_trace_generator: range_check_20_c::ClaimGenerator::new(),
-            rc_20_d_trace_generator: range_check_20_d::ClaimGenerator::new(),
-            rc_20_e_trace_generator: range_check_20_e::ClaimGenerator::new(),
-            rc_20_f_trace_generator: range_check_20_f::ClaimGenerator::new(),
-            rc_20_g_trace_generator: range_check_20_g::ClaimGenerator::new(),
-            rc_20_h_trace_generator: range_check_20_h::ClaimGenerator::new(),
-            rc_4_3_trace_generator: range_check_4_3::ClaimGenerator::new(),
-            rc_4_4_trace_generator: range_check_4_4::ClaimGenerator::new(),
-            rc_5_4_trace_generator: range_check_5_4::ClaimGenerator::new(),
-            rc_9_9_trace_generator: range_check_9_9::ClaimGenerator::new(),
-            rc_9_9_b_trace_generator: range_check_9_9_b::ClaimGenerator::new(),
-            rc_9_9_c_trace_generator: range_check_9_9_c::ClaimGenerator::new(),
-            rc_9_9_d_trace_generator: range_check_9_9_d::ClaimGenerator::new(),
-            rc_9_9_e_trace_generator: range_check_9_9_e::ClaimGenerator::new(),
-            rc_9_9_f_trace_generator: range_check_9_9_f::ClaimGenerator::new(),
-            rc_9_9_g_trace_generator: range_check_9_9_g::ClaimGenerator::new(),
-            rc_9_9_h_trace_generator: range_check_9_9_h::ClaimGenerator::new(),
-            rc_7_2_5_trace_generator: range_check_7_2_5::ClaimGenerator::new(),
-            rc_3_6_6_3_trace_generator: range_check_3_6_6_3::ClaimGenerator::new(),
-            rc_4_4_4_4_trace_generator: range_check_4_4_4_4::ClaimGenerator::new(),
-            rc_3_3_3_3_3_trace_generator: range_check_3_3_3_3_3::ClaimGenerator::new(),
+            rc_6_trace_generator: range_check_6::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_8_trace_generator: range_check_8::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_11_trace_generator: range_check_11::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_12_trace_generator: range_check_12::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_18_trace_generator: range_check_18::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_18_b_trace_generator: range_check_18_b::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_trace_generator: range_check_20::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_b_trace_generator: range_check_20_b::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_c_trace_generator: range_check_20_c::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_d_trace_generator: range_check_20_d::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_e_trace_generator: range_check_20_e::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_f_trace_generator: range_check_20_f::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_g_trace_generator: range_check_20_g::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_20_h_trace_generator: range_check_20_h::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_4_3_trace_generator: range_check_4_3::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_4_4_trace_generator: range_check_4_4::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_5_4_trace_generator: range_check_5_4::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_trace_generator: range_check_9_9::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_b_trace_generator: range_check_9_9_b::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_c_trace_generator: range_check_9_9_c::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_d_trace_generator: range_check_9_9_d::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_e_trace_generator: range_check_9_9_e::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_f_trace_generator: range_check_9_9_f::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_g_trace_generator: range_check_9_9_g::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_9_9_h_trace_generator: range_check_9_9_h::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_7_2_5_trace_generator: range_check_7_2_5::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_3_6_6_3_trace_generator: range_check_3_6_6_3::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_4_4_4_4_trace_generator: range_check_4_4_4_4::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
+            rc_3_3_3_3_3_trace_generator: range_check_3_3_3_3_3::ClaimGenerator::new(Arc::clone(
+                &preprocessed_trace,
+            )),
         }
     }
     pub fn write_trace(

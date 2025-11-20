@@ -1,4 +1,5 @@
 use std::array;
+use std::sync::Arc;
 
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
@@ -9,7 +10,9 @@ use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+    PreProcessedTrace, MAX_SEQUENCE_LOG_SIZE,
+};
 use tracing::{span, Level};
 
 use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
@@ -150,23 +153,32 @@ impl CairoClaimGenerator {
             public_segment_context,
             ..
         }: ProverInput,
+        preprocessed_trace: Arc<PreProcessedTrace>,
     ) -> Self {
         let initial_state = state_transitions.initial_state;
         let final_state = state_transitions.final_state;
         let opcodes = OpcodesClaimGenerator::new(state_transitions);
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
         let builtins = BuiltinsClaimGenerator::new(builtin_segments);
-        let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
-        let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
+        let pedersen_context_trace_generator =
+            PedersenContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let poseidon_context_trace_generator =
+            PoseidonContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&memory);
         let memory_id_to_value_trace_generator = memory_id_to_big::ClaimGenerator::new(&memory);
-        let range_checks_trace_generator = RangeChecksClaimGenerator::new();
-        let verify_bitwise_xor_4_trace_generator = verify_bitwise_xor_4::ClaimGenerator::new();
-        let verify_bitwise_xor_7_trace_generator = verify_bitwise_xor_7::ClaimGenerator::new();
-        let verify_bitwise_xor_8_trace_generator = verify_bitwise_xor_8::ClaimGenerator::new();
-        let verify_bitwise_xor_8_b_trace_generator = verify_bitwise_xor_8_b::ClaimGenerator::new();
-        let verify_bitwise_xor_9_trace_generator = verify_bitwise_xor_9::ClaimGenerator::new();
+        let range_checks_trace_generator =
+            RangeChecksClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let verify_bitwise_xor_4_trace_generator =
+            verify_bitwise_xor_4::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let verify_bitwise_xor_7_trace_generator =
+            verify_bitwise_xor_7::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let verify_bitwise_xor_8_trace_generator =
+            verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let verify_bitwise_xor_8_b_trace_generator =
+            verify_bitwise_xor_8_b::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let verify_bitwise_xor_9_trace_generator =
+            verify_bitwise_xor_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
 
         // Yield public memory.
         for addr in public_memory_addresses
@@ -197,7 +209,8 @@ impl CairoClaimGenerator {
             final_state,
         };
 
-        let blake_context_trace_generator = BlakeContextClaimGenerator::new(memory);
+        let blake_context_trace_generator =
+            BlakeContextClaimGenerator::new(memory, preprocessed_trace);
 
         Self {
             public_data,
