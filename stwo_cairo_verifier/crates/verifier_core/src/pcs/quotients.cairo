@@ -18,7 +18,8 @@ use crate::utils::{
     ArrayImpl as ArrayUtilImpl, ColumnsIndicesPerTreeByLogDegreeBound, SpanExTrait, SpanImpl,
     bit_reverse_index, pack_qm31,
 };
-use crate::{ColumnSpan, TreeArray, TreeSpan};
+use crate::{TreeArray, TreeSpan};
+use super::verifier::{QueriedValues, SampledValues};
 
 
 #[cfg(test)]
@@ -34,15 +35,15 @@ mod test;
 /// * `samples_per_column_per_tree`: OOD samples (i.e. point and eval) for each column in each tree.
 /// * `random_coeff`: Verifier randomness for folding multiple columns' quotients together.
 /// * `query_positions_per_log_size`: Query positions mapped by log commitment domain size.
-/// * `queried_values_per_tree`: For each tree, contains all queried trace values, ordered first
+/// * `queried_values_per_tree`: For each tree, contains all queried trace values.
 pub fn fri_answers(
     mut column_indices_per_tree_by_degree_bound: ColumnsIndicesPerTreeByLogDegreeBound,
     log_blowup_factor: u32,
     oods_point: CirclePoint<QM31>,
-    sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+    sample_values_per_column_per_tree: SampledValues,
     random_coeff: QM31,
     mut query_positions_per_log_size: Felt252Dict<Nullable<Span<usize>>>,
-    mut queried_values_per_tree: TreeSpan<Span<M31>>,
+    queried_values_per_tree: QueriedValues,
 ) -> Array<Span<QM31>> {
     // Note that `log_size` is equal to 1 + largest log size of a trace column (the additional 1
     // comes from calling `len()` on `column_indices_per_tree_by_degree_bound`).
@@ -51,6 +52,7 @@ pub fn fri_answers(
     assert!(log_size <= M31_CIRCLE_LOG_ORDER, "log_size is too large");
 
     let mut answers = array![];
+    let mut queried_values_per_tree = queried_values_per_tree.span();
     while let Some(columns_per_tree) = column_indices_per_tree_by_degree_bound.pop_back() {
         log_size = log_size - 1;
 
@@ -97,19 +99,9 @@ pub fn fri_answers(
 ///
 /// Returns `None` if there are no columns for this log size, otherwise returns
 /// `Some((sample_batches_by_point, n_columns_per_tree))`.
-///
-/// # Assumptions
-///
-/// Each column is sampled at one of the following sets of points:
-/// - `[]`
-/// - `[oods_point]`
-/// - `[oods_point - g, oods_point]`
-///
-/// where `g` is the trace generator corresponding to the given column.
-///
 fn sample_batches_for_log_size(
     columns_per_tree: @TreeSpan<Span<usize>>,
-    sample_values_per_column_per_tree: TreeSpan<ColumnSpan<Span<QM31>>>,
+    sample_values_per_column_per_tree: SampledValues,
     oods_point: CirclePoint<QM31>,
     log_size: u32,
     log_blowup_factor: u32,

@@ -90,8 +90,7 @@ fn test_fri_answers() {
     query_domain_per_log_size.insert(5, NullableTrait::new(col0_query_positions));
     query_domain_per_log_size.replace(7, NullableTrait::new(col1_query_positions));
     let empty_span = array![].span();
-    let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()]
-        .span();
+    let query_evals = array![empty_span, empty_span, array![m31(3), m31(7), m31(9), m31(2)].span()];
 
     let column_indices_per_tree_by_degree_bound =
         pad_and_transpose_columns_by_log_deg_bound_per_tree(
