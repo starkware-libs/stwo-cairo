@@ -2,7 +2,6 @@ use std::ops::Deref;
 
 use cairo_air::air::{CairoComponents, CairoInteractionElements};
 use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
@@ -51,22 +50,6 @@ pub fn assert_component<E: FrameworkEval + Sync>(
 // * `cairo_components` - The components constraints to check.
 fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &CairoComponents) {
     let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_8_b,
-        verify_bitwise_xor_9,
-    } = cairo_components;
-    let OpcodeComponents {
         add,
         add_small,
         add_ap,
@@ -87,7 +70,20 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         mul_small,
         qm31,
         ret,
-    } = opcodes;
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
+        verify_bitwise_xor_9,
+    } = cairo_components;
     let RangeChecksComponents {
         rc_6,
         rc_8,
@@ -119,26 +115,26 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_4_4_4_4,
         rc_3_3_3_3_3,
     } = range_checks;
-    assert_many(add, &trace);
-    assert_many(add_small, &trace);
-    assert_many(add_ap, &trace);
-    assert_many(assert_eq, &trace);
-    assert_many(assert_eq_imm, &trace);
-    assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
-    assert_many(call, &trace);
-    assert_many(call_rel_imm, &trace);
-    assert_many(generic, &trace);
-    assert_many(jnz, &trace);
-    assert_many(jnz_taken, &trace);
-    assert_many(jump, &trace);
-    assert_many(jump_double_deref, &trace);
-    assert_many(jump_rel, &trace);
-    assert_many(jump_rel_imm, &trace);
-    assert_many(mul, &trace);
-    assert_many(mul_small, &trace);
-    assert_many(qm31, &trace);
-    assert_many(ret, &trace);
+    assert_opt(add.as_ref(), &trace);
+    assert_opt(add_small.as_ref(), &trace);
+    assert_opt(add_ap.as_ref(), &trace);
+    assert_opt(assert_eq.as_ref(), &trace);
+    assert_opt(assert_eq_imm.as_ref(), &trace);
+    assert_opt(assert_eq_double_deref.as_ref(), &trace);
+    assert_opt(blake.as_ref(), &trace);
+    assert_opt(call.as_ref(), &trace);
+    assert_opt(call_rel_imm.as_ref(), &trace);
+    assert_opt(generic.as_ref(), &trace);
+    assert_opt(jnz.as_ref(), &trace);
+    assert_opt(jnz_taken.as_ref(), &trace);
+    assert_opt(jump.as_ref(), &trace);
+    assert_opt(jump_double_deref.as_ref(), &trace);
+    assert_opt(jump_rel.as_ref(), &trace);
+    assert_opt(jump_rel_imm.as_ref(), &trace);
+    assert_opt(mul.as_ref(), &trace);
+    assert_opt(mul_small.as_ref(), &trace);
+    assert_opt(qm31.as_ref(), &trace);
+    assert_opt(ret.as_ref(), &trace);
 
     assert_component(verify_instruction, &trace);
     assert_component(rc_6, &trace);
@@ -284,9 +280,8 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     assert_cairo_components(commitment_scheme.trace_domain_evaluations(), &components);
 }
 
-fn assert_many<E: FrameworkEval + Sync>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) {
-    components.iter().for_each(|x| assert_component(x, trace));
+fn assert_opt<E: FrameworkEval + Sync>(component: Option<&FrameworkComponent<E>>, trace: &TreeVec<Vec<&Vec<M31>>>) {
+    if let Some(component) = component {
+        assert_component(component, trace);
+    }
 }
