@@ -86,7 +86,9 @@ impl CairoDeserialize for LinePoly {
         let coeffs = Vec::<SecureField>::deserialize(data);
         let log_size: u32 = u32::deserialize(data);
 
-        let expected_len = 1usize << log_size;
+        let expected_len = 1usize
+            .checked_shl(log_size)
+            .expect("Invalid log_size for LinePoly");
         if coeffs.len() != expected_len {
             panic!("Invalid length for LinePoly");
         }
