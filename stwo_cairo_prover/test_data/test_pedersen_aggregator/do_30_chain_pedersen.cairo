@@ -18,7 +18,19 @@ func main{
     mul_mod_ptr,
 }() {
 
-    do_chain_pedersen(initialize=TRUE, chain_len=50);
+    // To test the aggregator we want to get identical Pedersen inputs; therefore, we duplicate the same chain 30 times.
+    do_chains_pedersen(chain_len = 15, n_chains = 30);
+    return ();
+}
 
+/// Do n_chains chains of pedersen, each one of chain_len size.
+func do_chains_pedersen{pedersen_ptr: HashBuiltin*}(chain_len: felt, n_chains: felt) {
+    if (n_chains == 0) {
+        return ();
+    }
+
+    do_chain_pedersen(initialize=TRUE, chain_len = 15);
+
+    do_chains_pedersen(chain_len = 15, n_chains = n_chains - 1);
     return ();
 }
