@@ -58,16 +58,16 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
     let composition_random_coeff = channel.draw_secure_felt();
 
-    let composition_log_size = air.composition_log_degree_bound();
+    let composition_log_degree_bound = air.composition_log_degree_bound();
+    let split_composition_log_degree_bound = composition_log_degree_bound
+        - LOG_COMPOSITION_SPLIT_FACTOR;
 
     // Read composition polynomial commitment, there are 8 columns, 4 columns for left,
     // and 4 columns for right, where composition(z) = left(z) + pi^{log_size-2} * right(z).
     commitment_scheme
         .commit(
             composition_commitment,
-            [
-                composition_log_size - LOG_COMPOSITION_SPLIT_FACTOR
-            ; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE]
+            [split_composition_log_degree_bound; COMPOSITION_SPLIT_FACTOR * QM31_EXTENSION_DEGREE]
                 .span(),
             ref channel,
             commitment_scheme_proof.config.fri_config.log_blowup_factor,
@@ -79,7 +79,7 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
     let composition_oods_eval = try_extract_composition_eval(
-        sampled_oods_values, ood_point, composition_log_size,
+        sampled_oods_values, ood_point, composition_log_degree_bound,
     )
         .unwrap_or_else(
             || panic!("{}", VerificationError::InvalidStructure('Invalid sampled_values')),
