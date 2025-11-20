@@ -18,32 +18,46 @@ use super::PcsConfig;
 /// Sanity check that the proof of work is not negligible.
 pub const MIN_POW_BITS: u32 = 20;
 
+/// Sampled mask values.
+///
+/// Each column is sampled at one of the following point sets:
+/// - `[]` (indicating an unused preprocessed column)
+/// - `[oods_point]`
+/// - `[oods_point - g, oods_point]`
+///   where `g` is the trace generator for that column.
+///
+/// `AIR::eval_composition_polynomial_at_point` ensures that each column has the correct
+/// number of samples, while `CommitmentSchemeVerifierTrait::verify_values` ensures that the sampled
+/// values themselves are valid.
+pub type SampledValues = TreeSpan<ColumnSpan<Span<QM31>>>;
+
+/// For each tree, stores all queried trace values, ordered first by descending column size,
+/// then by column index, and finally by query position.
+///
+/// For illustration:
+/// Suppose the first tree has two columns (c_1, c_3) with log degree bound 5,
+/// one column (c_2) with log degree bound 4, and the queries are at positions 5 and 122.
+///
+/// In this case, `queried_values[0]` would be:
+///
+/// [
+///     // size 5 columns
+///     c_1@5, c_3@5, c_1@122, c_3@122,
+///     // size 4 columns
+///     c_2@fold(5), c_2@fold(122),
+/// ],
+///
+/// where `c_1@5` denotes the value of column 1 at query position 5,
+/// and `fold(5)` denotes the folded position of query 5.
+pub type QueriedValues = TreeArray<Span<M31>>;
+
 #[derive(Drop, Serde)]
 pub struct CommitmentSchemeProof {
     pub config: PcsConfig,
     pub commitments: TreeSpan<Hash>,
-    /// Sampled mask values.
-    pub sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>,
+    pub sampled_values: SampledValues,
     pub decommitments: TreeArray<MerkleDecommitment<MerkleHasher>>,
-    /// For each tree, stores all queried trace values, ordered first by descending column size,
-    /// then by column index, and finally by query position.
-    ///
-    /// For illustration:
-    /// Suppose the first tree has two columns (c_1, c_3) with log degree bound 5,
-    /// one column (c_2) with log degree bound 4, and the queries are at positions 5 and 122.
-    ///
-    /// In this case, `queried_values[0]` would be:
-    ///
-    /// [
-    ///     // size 5 columns
-    ///     c_1@5, c_3@5, c_1@122, c_3@122,
-    ///     // size 4 columns
-    ///     c_2@fold(5), c_2@fold(122),
-    /// ],
-    ///
-    /// where `c_1@5` denotes the value of column 1 at query position 5,
-    /// and `fold(5)` denotes the folded position of query 5.
-    pub queried_values: TreeArray<Span<M31>>,
+    pub queried_values: QueriedValues,
     pub proof_of_work_nonce: u64,
     pub fri_proof: FriProof,
 }
@@ -106,12 +120,6 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
 
     /// Verifies that `proof.sampled_values` corresponds to the evaluations
     /// of the committed polynomials at `oods_point`.
-    /// Each column is sampled at one of the following sets of points:
-    /// - `[]`
-    /// - `[oods_point]`
-    /// - `[oods_point - g, oods_point]`
-    /// where `g` is the trace generator corresponding to the given column.
-    ///
     fn verify_values(
         self: CommitmentSchemeVerifier,
         oods_point: CirclePoint<QM31>,
@@ -178,7 +186,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             sampled_values,
             random_coeff,
             query_positions_by_log_size,
-            queried_values_per_tree.span(),
+            queried_values_per_tree,
         );
 
         fri_verifier.decommit(fri_answers, queries);
