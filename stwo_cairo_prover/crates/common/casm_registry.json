@@ -1,5 +1,5 @@
 {
-  "air_version": "236d08db",
+  "air_version": "a0331d33",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -1100,34 +1100,32 @@
       "max_instances_uses_limit": 178956970,
       "max_instances_rows_limit": 268435456
     },
-    "pedersen_builtin": {
-      "trace_type": "Builtin",
+    "pedersen_aggregator": {
+      "trace_type": "Component",
       "num_state_cols": 263,
       "use_lookup_cols": {
         "RangeCheck_5_4": 2,
-        "MemoryAddressToId": 3,
         "MemoryIdToBig": 3,
         "RangeCheck_8": 4,
         "PedersenPointsTable": 1,
         "PartialEcMul": 2
       },
       "yield_lookup_cols": {
-        "PartialEcMul": 2
+        "PartialEcMul": 2,
+        "PedersenAggregator": 1
       },
       "lookup_rows": {
         "range_check_5_4": 2,
-        "memory_address_to_id": 3,
         "memory_id_to_big": 3,
         "range_check_8": 4,
         "pedersen_points_table": 1,
         "partial_ec_mul": 28
       },
-      "padding_type": "None",
-      "total_num_trace_cols": 299,
-      "trace_cells_upper_bound": 18123,
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 296,
+      "trace_cells_upper_bound": 18120,
       "uses_upper_bound": {
         "range_check_5_4": 2,
-        "memory_address_to_id": 3,
         "range_check_9_9": 200,
         "range_check_9_9_b": 200,
         "range_check_9_9_c": 200,
@@ -1148,6 +1146,50 @@
         "range_check_20_h": 288
       },
       "rows_upper_bound": {
+        "partial_ec_mul": 28
+      },
+      "max_instances_uses_limit": 5592405,
+      "max_instances_rows_limit": 8388608
+    },
+    "pedersen_builtin": {
+      "trace_type": "Builtin",
+      "num_state_cols": 3,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 3,
+        "PedersenAggregator": 1
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "memory_address_to_id": 3,
+        "pedersen_aggregator": 1
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 11,
+      "trace_cells_upper_bound": 18131,
+      "uses_upper_bound": {
+        "memory_address_to_id": 3,
+        "range_check_5_4": 2,
+        "range_check_9_9": 200,
+        "range_check_9_9_b": 200,
+        "range_check_9_9_c": 200,
+        "range_check_9_9_d": 200,
+        "range_check_9_9_e": 200,
+        "range_check_9_9_f": 200,
+        "range_check_9_9_g": 100,
+        "range_check_9_9_h": 100,
+        "range_check_8": 4,
+        "pedersen_points_table": 33,
+        "range_check_20": 384,
+        "range_check_20_b": 384,
+        "range_check_20_c": 384,
+        "range_check_20_d": 384,
+        "range_check_20_e": 288,
+        "range_check_20_f": 288,
+        "range_check_20_g": 288,
+        "range_check_20_h": 288
+      },
+      "rows_upper_bound": {
+        "pedersen_aggregator": 1,
         "partial_ec_mul": 28
       },
       "max_instances_uses_limit": 5592405,

@@ -6,7 +6,9 @@ use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::prelude::*;
-use crate::components::{indented_component_display, partial_ec_mul, pedersen_points_table};
+use crate::components::{
+    indented_component_display, partial_ec_mul, pedersen_aggregator, pedersen_points_table,
+};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextClaim {
@@ -35,17 +37,20 @@ impl PedersenContextClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
+    pub pedersen_aggregator: pedersen_aggregator::Claim,
     pub partial_ec_mul: partial_ec_mul::Claim,
     pub pedersen_points_table: pedersen_points_table::Claim,
 }
 impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.pedersen_aggregator.mix_into(channel);
         self.partial_ec_mul.mix_into(channel);
         self.pedersen_points_table.mix_into(channel);
     }
 
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_sizes = [
+            self.pedersen_aggregator.log_sizes(),
             self.partial_ec_mul.log_sizes(),
             self.pedersen_points_table.log_sizes(),
         ]
@@ -56,12 +61,19 @@ impl Claim {
 
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
+            pedersen_aggregator,
             partial_ec_mul,
             pedersen_points_table: _,
         } = self;
 
         // NOTE: The following components do not USE relations:
         // - pedersen_points_table
+
+        accumulate_relation_uses(
+            relation_uses,
+            pedersen_aggregator::RELATION_USES_PER_ROW,
+            pedersen_aggregator.log_size,
+        );
 
         accumulate_relation_uses(
             relation_uses,
@@ -92,17 +104,20 @@ impl PedersenContextInteractionClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
+    pub pedersen_aggregator: pedersen_aggregator::InteractionClaim,
     pub partial_ec_mul: partial_ec_mul::InteractionClaim,
     pub pedersen_points_table: pedersen_points_table::InteractionClaim,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        self.pedersen_aggregator.mix_into(channel);
         self.partial_ec_mul.mix_into(channel);
         self.pedersen_points_table.mix_into(channel);
     }
 
     pub fn sum(&self) -> QM31 {
         let mut sum = QM31::zero();
+        sum += self.pedersen_aggregator.claimed_sum;
         sum += self.partial_ec_mul.claimed_sum;
         sum += self.pedersen_points_table.claimed_sum;
         sum
@@ -144,6 +159,7 @@ impl std::fmt::Display for PedersenContextComponents {
 }
 
 pub struct Components {
+    pub pedersen_aggregator: pedersen_aggregator::Component,
     pub partial_ec_mul: partial_ec_mul::Component,
     pub pedersen_points_table: pedersen_points_table::Component,
 }
@@ -154,6 +170,23 @@ impl Components {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &InteractionClaim,
     ) -> Self {
+        let pedersen_aggregator_component = pedersen_aggregator::Component::new(
+            tree_span_provider,
+            pedersen_aggregator::Eval {
+                claim: claim.claim.as_ref().unwrap().pedersen_aggregator,
+                pedersen_aggregator_lookup_elements: interaction_elements
+                    .pedersen_aggregator
+                    .clone(),
+                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
+                partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+                pedersen_points_table_lookup_elements: interaction_elements
+                    .pedersen_points_table
+                    .clone(),
+                range_check_5_4_lookup_elements: interaction_elements.range_checks.rc_5_4.clone(),
+                range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+            },
+            interaction_claim.pedersen_aggregator.claimed_sum,
+        );
         let partial_ec_mul_component = partial_ec_mul::Component::new(
             tree_span_provider,
             partial_ec_mul::Eval {
@@ -215,18 +248,28 @@ impl Components {
         );
 
         Self {
+            pedersen_aggregator: pedersen_aggregator_component,
             partial_ec_mul: partial_ec_mul_component,
             pedersen_points_table: pedersen_points_table_component,
         }
     }
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
-        vec![&self.partial_ec_mul, &self.pedersen_points_table]
+        vec![
+            &self.pedersen_aggregator,
+            &self.partial_ec_mul,
+            &self.pedersen_points_table,
+        ]
     }
 }
 
 impl std::fmt::Display for Components {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            f,
+            "PedersenAggregator: {}",
+            indented_component_display(&self.pedersen_aggregator)
+        )?;
         writeln!(
             f,
             "PartialEcMul: {}",

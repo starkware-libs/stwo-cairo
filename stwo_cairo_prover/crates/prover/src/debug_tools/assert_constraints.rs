@@ -227,10 +227,12 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         assert_component(rc_128, &trace);
     }
     if let Some(cairo_air::pedersen::air::Components {
+        pedersen_aggregator,
         partial_ec_mul,
         pedersen_points_table,
     }) = &pedersen_context.components
     {
+        assert_component(pedersen_aggregator, &trace);
         assert_component(partial_ec_mul, &trace);
         assert_component(pedersen_points_table, &trace);
     }
