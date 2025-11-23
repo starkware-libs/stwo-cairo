@@ -176,7 +176,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut memory_id_to_big_sum_71: QM31 = Zero::zero();
         let mut opcodes_sum_72: QM31 = Zero::zero();
         let mut opcodes_sum_73: QM31 = Zero::zero();
-        let seq = preprocessed_mask_values.get(seq_column_idx(*(self.claim.log_size)));
+        let seq = preprocessed_mask_values
+            .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
         let [
             input_pc_col0,
@@ -2111,7 +2112,9 @@ mod tests {
     #[allow(unused_imports)]
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
-    use stwo_constraint_framework::{LookupElements, PreprocessedMaskValues};
+    use stwo_constraint_framework::{
+        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+    };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
@@ -2167,9 +2170,7 @@ mod tests {
             y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
         };
 
-        let mut preprocessed_trace = PreprocessedMaskValues {
-            values: [Default::default(); NUM_PREPROCESSED_COLUMNS].span().into(),
-        };
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
         let mut preprocessed_trace = preprocessed_mask_add(
             preprocessed_trace,
             seq_column_idx(component.claim.log_size),
@@ -2404,6 +2405,7 @@ mod tests {
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
                 point,
             );
+        preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(BLAKE_COMPRESS_OPCODE_SAMPLE_EVAL_RESULT))
     }
 }

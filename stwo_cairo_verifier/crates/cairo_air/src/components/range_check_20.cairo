@@ -75,7 +75,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_20_sum_0: QM31 = Zero::zero();
-        let seq_20 = preprocessed_mask_values.get(SEQ_20_IDX);
+        let seq_20 = preprocessed_mask_values.get_and_mark_used(SEQ_20_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

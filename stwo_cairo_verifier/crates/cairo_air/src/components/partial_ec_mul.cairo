@@ -3311,7 +3311,9 @@ mod tests {
     #[allow(unused_imports)]
     use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, seq_column_idx};
     #[allow(unused_imports)]
-    use stwo_constraint_framework::{LookupElements, PreprocessedMaskValues};
+    use stwo_constraint_framework::{
+        LookupElements, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
+    };
     use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
@@ -3407,9 +3409,7 @@ mod tests {
             y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
         };
 
-        let mut preprocessed_trace = PreprocessedMaskValues {
-            values: [Default::default(); NUM_PREPROCESSED_COLUMNS].span().into(),
-        };
+        let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
 
         let mut trace_columns = [
             [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
@@ -3790,6 +3790,7 @@ mod tests {
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
                 point,
             );
+        preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(PARTIAL_EC_MUL_SAMPLE_EVAL_RESULT))
     }
 }
