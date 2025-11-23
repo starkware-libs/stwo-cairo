@@ -71,6 +71,8 @@ pub type MemoryIdToBigElements = LookupElements<29>;
 
 pub type OpcodesElements = LookupElements<3>;
 
+pub type PedersenAggregatorElements = LookupElements<3>;
+
 pub type PartialEcMulElements = LookupElements<72>;
 
 pub type PedersenPointsTableElements = LookupElements<57>;
@@ -291,14 +293,15 @@ pub struct CairoInteractionElements {
     pub blake_g: BlakeGElements,
     pub blake_round_sigma: BlakeRoundSigmaElements,
     pub triple_xor_32: TripleXor32Elements,
-    pub partial_ec_mul: PartialEcMulElements,
-    pub pedersen_points_table: PedersenPointsTableElements,
     pub poseidon_aggregator: PoseidonAggregatorElements,
     pub poseidon_3_partial_rounds_chain: Poseidon3PartialRoundsChainElements,
     pub poseidon_full_round_chain: PoseidonFullRoundChainElements,
     pub cube_252: Cube252Elements,
     pub poseidon_round_keys: PoseidonRoundKeysElements,
     pub range_check_252_width_27: RangeCheck252Width27Elements,
+    pub pedersen_aggregator: PedersenAggregatorElements,
+    pub partial_ec_mul: PartialEcMulElements,
+    pub pedersen_points_table: PedersenPointsTableElements,
     pub memory_address_to_id: MemoryAddressToIdElements,
     pub memory_id_to_value: MemoryIdToBigElements,
     pub range_checks: RangeChecksInteractionElements,
@@ -326,6 +329,7 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             cube_252: LookupElementsImpl::draw(ref channel),
             poseidon_round_keys: LookupElementsImpl::draw(ref channel),
             range_check_252_width_27: LookupElementsImpl::draw(ref channel),
+            pedersen_aggregator: LookupElementsImpl::draw(ref channel),
             partial_ec_mul: LookupElementsImpl::draw(ref channel),
             pedersen_points_table: LookupElementsImpl::draw(ref channel),
             memory_address_to_id: LookupElementsImpl::draw(ref channel),
