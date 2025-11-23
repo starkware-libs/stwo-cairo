@@ -79,13 +79,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let column_size = m31(pow2(log_size));
         let mut range_check_4_4_4_4_sum_0: QM31 = Zero::zero();
         let range_check_4_4_4_4_column_0 = preprocessed_mask_values
-            .get(RANGE_CHECK_4_4_4_4_COLUMN_0_IDX);
+            .get_and_mark_used(RANGE_CHECK_4_4_4_4_COLUMN_0_IDX);
         let range_check_4_4_4_4_column_1 = preprocessed_mask_values
-            .get(RANGE_CHECK_4_4_4_4_COLUMN_1_IDX);
+            .get_and_mark_used(RANGE_CHECK_4_4_4_4_COLUMN_1_IDX);
         let range_check_4_4_4_4_column_2 = preprocessed_mask_values
-            .get(RANGE_CHECK_4_4_4_4_COLUMN_2_IDX);
+            .get_and_mark_used(RANGE_CHECK_4_4_4_4_COLUMN_2_IDX);
         let range_check_4_4_4_4_column_3 = preprocessed_mask_values
-            .get(RANGE_CHECK_4_4_4_4_COLUMN_3_IDX);
+            .get_and_mark_used(RANGE_CHECK_4_4_4_4_COLUMN_3_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

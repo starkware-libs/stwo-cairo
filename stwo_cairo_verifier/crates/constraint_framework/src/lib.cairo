@@ -1,4 +1,4 @@
-use core::dict::{Felt252Dict, Felt252DictTrait};
+use core::dict::{Felt252Dict, Felt252DictEntryTrait, Felt252DictTrait, SquashedFelt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use core::num::traits::One;
 use stwo_verifier_core::ColumnSpan;
@@ -126,34 +126,57 @@ pub impl PreprocessedColumnSetImpl of PreprocessedColumnSetTrait {
     }
 }
 
-#[derive(Destruct)]
+#[derive(PanicDestruct)]
 pub struct PreprocessedMaskValues {
-    pub values: Array<Nullable<QM31>>,
+    /// Maps a preprocessed column index to a nullable value with the value of the column at the out
+    /// of domain point and a boolean indicating if the value was used in a constraint.
+    pub values: Felt252Dict<Nullable<(QM31, bool)>>,
 }
 
 #[generate_trait]
 pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
     fn new(mut preprocessed_mask_values: ColumnSpan<Span<QM31>>) -> PreprocessedMaskValues {
-        let mut values: Array<Nullable<QM31>> = array![];
+        let mut values: Felt252Dict<Nullable<(QM31, bool)>> = Default::default();
 
+        let mut idx = 0;
         for column_mask_values in preprocessed_mask_values.into_iter() {
             let mut desnapped = *column_mask_values;
 
-            if let Some(mask_value) = desnapped.pop_front() {
-                values.append(NullableTrait::new(*mask_value));
-
+            if let Some(boxed_mask_value) = desnapped.try_into() {
+                let [mask_value]: [QM31; 1] = (*boxed_mask_value).unbox();
+                values.insert(idx, NullableTrait::new((mask_value, false)));
+            } else {
                 // Preprocessed columns should have at most one mask item.
                 assert!(desnapped.is_empty());
-            } else {
-                values.append(Default::default());
             }
+            idx += 1;
         }
 
         PreprocessedMaskValues { values }
     }
 
-    fn get(ref self: PreprocessedMaskValues, idx: PreprocessedColumnIdx) -> QM31 {
-        (*self.values.at(idx)).deref()
+    fn get_and_mark_used(ref self: PreprocessedMaskValues, idx: PreprocessedColumnIdx) -> QM31 {
+        let (entry, nullable_value) = self.values.entry(idx.into());
+        let (value, used) = nullable_value.deref();
+
+        let used_value = if used {
+            nullable_value
+        } else {
+            NullableTrait::new((value, true))
+        };
+        self.values = entry.finalize(used_value);
+
+        value
+    }
+
+
+    /// Validates that all the preprocessed_mask_values that were sent in the proof were used by at
+    /// least one component.
+    fn validate_usage(self: PreprocessedMaskValues) {
+        for (_, _, nullable_value) in self.values.squash().into_entries() {
+            let (_value, used) = nullable_value.deref();
+            assert!(used);
+        }
     }
 }
 

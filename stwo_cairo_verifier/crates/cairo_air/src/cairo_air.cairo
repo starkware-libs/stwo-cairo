@@ -688,6 +688,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
+        preprocessed_mask_values.validate_usage();
         sum
     }
 }
@@ -1002,6 +1004,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
+        preprocessed_mask_values.validate_usage();
         sum
     }
 }
@@ -1332,6 +1336,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
+        preprocessed_mask_values.validate_usage();
         sum
     }
 }
