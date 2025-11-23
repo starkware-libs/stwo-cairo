@@ -164,5 +164,5 @@ pub fn preprocessed_mask_add(
         }
     }
 
-    PreprocessedMaskValues { values: new_values }
+    PreprocessedMaskValues { values: new_values, used_columns: array![] }
 }

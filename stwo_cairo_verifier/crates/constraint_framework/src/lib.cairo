@@ -1,3 +1,4 @@
+use bool::True;
 use core::dict::{Felt252Dict, Felt252DictTrait};
 use core::nullable::{Nullable, NullableTrait};
 use core::num::traits::One;
@@ -5,6 +6,7 @@ use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, MulByM31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
+
 
 #[cfg(test)]
 mod test;
@@ -126,9 +128,12 @@ pub impl PreprocessedColumnSetImpl of PreprocessedColumnSetTrait {
     }
 }
 
-#[derive(Destruct)]
+#[derive(PanicDestruct)]
 pub struct PreprocessedMaskValues {
     pub values: Array<Nullable<QM31>>,
+    // The set of columns that were used by at least one componenet.
+    // Note that we can't use a dict here because it is not panic destructible.
+    pub used_columns: Array<PreprocessedColumnIdx>,
 }
 
 #[generate_trait]
@@ -149,11 +154,34 @@ pub impl PreprocessedMaskValuesImpl of PreprocessedMaskValuesTrait {
             }
         }
 
-        PreprocessedMaskValues { values }
+        PreprocessedMaskValues { values, used_columns: array![] }
     }
 
     fn get(ref self: PreprocessedMaskValues, idx: PreprocessedColumnIdx) -> QM31 {
+        self.used_columns.append(idx);
         (*self.values.at(idx)).deref()
+    }
+
+
+    /// Validates that all the preprocessed_mask_values that were sent in the proof were used by at
+    /// least one componenet.
+    fn validate_usage(self: PreprocessedMaskValues) {
+        let PreprocessedMaskValues { values, used_columns } = self;
+
+        let mut used_column_set: Felt252Dict<bool> = Default::default();
+        for idx in used_columns.into_iter() {
+            used_column_set.insert(idx.into(), true);
+        }
+
+        for (idx, value) in values.into_iter().enumerate() {
+            if value.is_null() {
+                continue;
+            }
+
+            // If the values of the preprocessed columns was sent in the proof, it must be in the
+            // set of used columns.
+            assert!(used_column_set.get(idx.into()));
+        }
     }
 }
 

@@ -17,6 +17,7 @@ use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::opcodes::*;
+use stwo_constraint_framework::PreprocessedMaskValuesTrait;
 use crate::P_U32;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -684,6 +685,9 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
+
+        preprocessed_mask_values.validate_usage()
+
         sum
     }
 }
