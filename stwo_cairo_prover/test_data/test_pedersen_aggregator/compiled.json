@@ -55,11 +55,11 @@
         "0x208b7fff7fff7ffe",
         "0x480a7ff47fff8000",
         "0x480680017fff8000",
-        "0x1",
-        "0x480680017fff8000",
         "0xf",
+        "0x480680017fff8000",
+        "0x1e",
         "0x1104800180018000",
-        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffdc",
+        "0xe",
         "0x480a7ff37fff8000",
         "0x48127ffe7fff8000",
         "0x480a7ff57fff8000",
@@ -71,6 +71,24 @@
         "0x480a7ffb7fff8000",
         "0x480a7ffc7fff8000",
         "0x480a7ffd7fff8000",
+        "0x208b7fff7fff7ffe",
+        "0x20780017fff7ffd",
+        "0x4",
+        "0x480a7ffb7fff8000",
+        "0x208b7fff7fff7ffe",
+        "0x480a7ffb7fff8000",
+        "0x480680017fff8000",
+        "0x1",
+        "0x480680017fff8000",
+        "0xf",
+        "0x1104800180018000",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffc5",
+        "0x480680017fff8000",
+        "0xf",
+        "0x482680017ffd8000",
+        "0x800000000000011000000000000000000000000000000000000000000000000",
+        "0x1104800180018000",
+        "0x800000000000010fffffffffffffffffffffffffffffffffffffffffffffff2",
         "0x208b7fff7fff7ffe"
     ],
     "debug_info": {
@@ -824,29 +842,29 @@
                     "end_col": 31,
                     "end_line": 9,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
-                            "end_col": 50,
-                            "end_line": 7,
+                            "end_col": 51,
+                            "end_line": 27,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/do_chain_pedersen.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
-                                    "end_col": 53,
-                                    "end_line": 21,
+                                    "end_col": 54,
+                                    "end_line": 22,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 21
+                                    "start_line": 22
                                 },
                                 "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
                             ],
-                            "start_col": 24,
-                            "start_line": 7
+                            "start_col": 25,
+                            "start_line": 27
                         },
                         "While expanding the reference 'pedersen_ptr' in:"
                     ],
@@ -881,12 +899,12 @@
                 "hints": [],
                 "inst": {
                     "end_col": 38,
-                    "end_line": 21,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
-                    "start_col": 34,
-                    "start_line": 21
+                    "start_col": 36,
+                    "start_line": 22
                 }
             },
             "41": {
@@ -915,13 +933,13 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 52,
-                    "end_line": 21,
+                    "end_col": 53,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
-                    "start_col": 50,
-                    "start_line": 21
+                    "start_col": 51,
+                    "start_line": 22
                 }
             },
             "43": {
@@ -950,13 +968,13 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 53,
-                    "end_line": 21,
+                    "end_col": 54,
+                    "end_line": 22,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 21
+                    "start_line": 22
                 }
             },
             "45": {
@@ -988,21 +1006,21 @@
                     "end_col": 15,
                     "end_line": 8,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 15,
                             "end_line": 8,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1044,31 +1062,31 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 50,
-                    "end_line": 7,
+                    "end_col": 51,
+                    "end_line": 27,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/do_chain_pedersen.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
-                            "end_col": 53,
-                            "end_line": 21,
+                            "end_col": 54,
+                            "end_line": 22,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 31,
                                     "end_line": 9,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "parent_location": [
                                         {
                                             "end_col": 15,
                                             "end_line": 23,
                                             "input_file": {
-                                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                             },
                                             "start_col": 5,
                                             "start_line": 23
@@ -1081,12 +1099,12 @@
                                 "While expanding the reference 'pedersen_ptr' in:"
                             ],
                             "start_col": 5,
-                            "start_line": 21
+                            "start_line": 22
                         },
                         "While trying to update the implicit return value 'pedersen_ptr' in:"
                     ],
-                    "start_col": 24,
-                    "start_line": 7
+                    "start_col": 25,
+                    "start_line": 27
                 }
             },
             "47": {
@@ -1118,21 +1136,21 @@
                     "end_col": 20,
                     "end_line": 10,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 20,
                             "end_line": 10,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1177,21 +1195,21 @@
                     "end_col": 14,
                     "end_line": 11,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
                             "end_line": 11,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1236,21 +1254,21 @@
                     "end_col": 16,
                     "end_line": 12,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
                             "end_line": 12,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1295,21 +1313,21 @@
                     "end_col": 14,
                     "end_line": 13,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 14,
                             "end_line": 13,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1354,21 +1372,21 @@
                     "end_col": 15,
                     "end_line": 14,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 15,
                             "end_line": 14,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1413,21 +1431,21 @@
                     "end_col": 17,
                     "end_line": 15,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 17,
                             "end_line": 15,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1472,21 +1490,21 @@
                     "end_col": 22,
                     "end_line": 16,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 22,
                             "end_line": 16,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1531,21 +1549,21 @@
                     "end_col": 16,
                     "end_line": 17,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
                             "end_line": 17,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1590,21 +1608,21 @@
                     "end_col": 16,
                     "end_line": 18,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "parent_location": [
                         {
                             "end_col": 16,
                             "end_line": 18,
                             "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                             },
                             "parent_location": [
                                 {
                                     "end_col": 15,
                                     "end_line": 23,
                                     "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                                     },
                                     "start_col": 5,
                                     "start_line": 23
@@ -1649,10 +1667,355 @@
                     "end_col": 15,
                     "end_line": 23,
                     "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/test_prove_verify_pedersen_builtin.cairo"
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
                     },
                     "start_col": 5,
                     "start_line": 23
+                }
+            },
+            "57": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 7,
+                    "end_line": 28,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 28
+                }
+            },
+            "59": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 51,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 51,
+                            "end_line": 27,
+                            "input_file": {
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 19,
+                                    "end_line": 29,
+                                    "input_file": {
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                                    },
+                                    "start_col": 9,
+                                    "start_line": 29
+                                },
+                                "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
+                            ],
+                            "start_col": 25,
+                            "start_line": 27
+                        },
+                        "While expanding the reference 'pedersen_ptr' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 27
+                }
+            },
+            "60": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 19,
+                    "end_line": 29,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 9,
+                    "start_line": 29
+                }
+            },
+            "61": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 51,
+                    "end_line": 27,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "parent_location": [
+                        {
+                            "end_col": 50,
+                            "end_line": 7,
+                            "input_file": {
+                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_pedersen_builtin/do_chain_pedersen.cairo"
+                            },
+                            "parent_location": [
+                                {
+                                    "end_col": 55,
+                                    "end_line": 32,
+                                    "input_file": {
+                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                                    },
+                                    "start_col": 5,
+                                    "start_line": 32
+                                },
+                                "While trying to retrieve the implicit argument 'pedersen_ptr' in:"
+                            ],
+                            "start_col": 24,
+                            "start_line": 7
+                        },
+                        "While expanding the reference 'pedersen_ptr' in:"
+                    ],
+                    "start_col": 25,
+                    "start_line": 27
+                }
+            },
+            "62": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 38,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 34,
+                    "start_line": 32
+                }
+            },
+            "64": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 54,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 52,
+                    "start_line": 32
+                }
+            },
+            "66": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 7,
+                        "offset": 3
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 26
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 55,
+                    "end_line": 32,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 32
+                }
+            },
+            "68": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 27
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 38,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 36,
+                    "start_line": 34
+                }
+            },
+            "70": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 1
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 27
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 63,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 51,
+                    "start_line": 34
+                }
+            },
+            "72": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 8,
+                        "offset": 2
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 27
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 64,
+                    "end_line": 34,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 34
+                }
+            },
+            "74": {
+                "accessible_scopes": [
+                    "__main__",
+                    "__main__.do_chains_pedersen"
+                ],
+                "flow_tracking_data": {
+                    "ap_tracking": {
+                        "group": 9,
+                        "offset": 0
+                    },
+                    "reference_ids": {
+                        "__main__.do_chains_pedersen.chain_len": 24,
+                        "__main__.do_chains_pedersen.n_chains": 25,
+                        "__main__.do_chains_pedersen.pedersen_ptr": 28
+                    }
+                },
+                "hints": [],
+                "inst": {
+                    "end_col": 15,
+                    "end_line": 35,
+                    "input_file": {
+                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_pedersen_aggregator/do_30_chain_pedersen.cairo"
+                    },
+                    "start_col": 5,
+                    "start_line": 35
                 }
             }
         }
@@ -1682,6 +2045,106 @@
         "__main__.do_chain_pedersen": {
             "destination": "stwo_cairo_prover.test_data.test_prove_verify_pedersen_builtin.do_chain_pedersen.do_chain_pedersen",
             "type": "alias"
+        },
+        "__main__.do_chains_pedersen": {
+            "decorators": [],
+            "pc": 57,
+            "type": "function"
+        },
+        "__main__.do_chains_pedersen.Args": {
+            "full_name": "__main__.do_chains_pedersen.Args",
+            "members": {
+                "chain_len": {
+                    "cairo_type": "felt",
+                    "offset": 0
+                },
+                "n_chains": {
+                    "cairo_type": "felt",
+                    "offset": 1
+                }
+            },
+            "size": 2,
+            "type": "struct"
+        },
+        "__main__.do_chains_pedersen.ImplicitArgs": {
+            "full_name": "__main__.do_chains_pedersen.ImplicitArgs",
+            "members": {
+                "pedersen_ptr": {
+                    "cairo_type": "starkware.cairo.common.cairo_builtins.HashBuiltin*",
+                    "offset": 0
+                }
+            },
+            "size": 1,
+            "type": "struct"
+        },
+        "__main__.do_chains_pedersen.Return": {
+            "cairo_type": "()",
+            "type": "type_definition"
+        },
+        "__main__.do_chains_pedersen.SIZEOF_LOCALS": {
+            "type": "const",
+            "value": 0
+        },
+        "__main__.do_chains_pedersen.chain_len": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_chains_pedersen.chain_len",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 57,
+                    "value": "[cast(fp + (-4), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_chains_pedersen.n_chains": {
+            "cairo_type": "felt",
+            "full_name": "__main__.do_chains_pedersen.n_chains",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 57,
+                    "value": "[cast(fp + (-3), felt*)]"
+                }
+            ],
+            "type": "reference"
+        },
+        "__main__.do_chains_pedersen.pedersen_ptr": {
+            "cairo_type": "starkware.cairo.common.cairo_builtins.HashBuiltin*",
+            "full_name": "__main__.do_chains_pedersen.pedersen_ptr",
+            "references": [
+                {
+                    "ap_tracking_data": {
+                        "group": 7,
+                        "offset": 0
+                    },
+                    "pc": 57,
+                    "value": "[cast(fp + (-5), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 8,
+                        "offset": 0
+                    },
+                    "pc": 68,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+                },
+                {
+                    "ap_tracking_data": {
+                        "group": 9,
+                        "offset": 0
+                    },
+                    "pc": 74,
+                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+                }
+            ],
+            "type": "reference"
         },
         "__main__.main": {
             "decorators": [],
@@ -2591,6 +3054,46 @@
                     "offset": 0
                 },
                 "pc": 45,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 57,
+                "value": "[cast(fp + (-4), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 57,
+                "value": "[cast(fp + (-3), felt*)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 7,
+                    "offset": 0
+                },
+                "pc": 57,
+                "value": "[cast(fp + (-5), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 8,
+                    "offset": 0
+                },
+                "pc": 68,
+                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
+            },
+            {
+                "ap_tracking_data": {
+                    "group": 9,
+                    "offset": 0
+                },
+                "pc": 74,
                 "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.HashBuiltin**)]"
             }
         ]

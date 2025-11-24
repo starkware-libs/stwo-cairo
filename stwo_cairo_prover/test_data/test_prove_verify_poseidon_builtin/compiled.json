@@ -18,7 +18,7 @@
         "0x40780017fff7fff",
         "0xb",
         "0x1104800180018000",
-        "0x36",
+        "0x2f",
         "0x10780017fff7fff",
         "0x0",
         "0x20780017fff7ffd",
@@ -28,7 +28,7 @@
         "0x482680017ffc8000",
         "0x800000000000011000000000000000000000000000000000000000000000000",
         "0x20680017fff7fff",
-        "0x1d",
+        "0x16",
         "0x480680017fff8000",
         "0x0",
         "0x400280007ffb7fff",
@@ -47,15 +47,8 @@
         "0x480680017fff8000",
         "0x3241fe256bea8c2e2fa69098127e17e4020dc42158e61fd3e6dc236e0c0cac",
         "0x400280057ffb7fff",
-        "0x482680017ffb8000",
-        "0x6",
-        "0x480680017fff8000",
-        "0x0",
-        "0x482680017ffd8000",
-        "0x800000000000011000000000000000000000000000000000000000000000000",
-        "0x1104800180018000",
-        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffe1",
-        "0x208b7fff7fff7ffe",
+        "0x10780017fff7fff",
+        "0x8",
         "0x48027ffd7ffb8000",
         "0x400280007ffb7fff",
         "0x48027ffe7ffb8000",
@@ -69,7 +62,7 @@
         "0x482680017ffd8000",
         "0x800000000000011000000000000000000000000000000000000000000000000",
         "0x1104800180018000",
-        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffd2",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffd9",
         "0x208b7fff7fff7ffe",
         "0x480a7ffa7fff8000",
         "0x480680017fff8000",
@@ -77,7 +70,7 @@
         "0x480680017fff8000",
         "0xf",
         "0x1104800180018000",
-        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffca",
+        "0x800000000000010ffffffffffffffffffffffffffffffffffffffffffffffd1",
         "0x480a7ff37fff8000",
         "0x480a7ff47fff8000",
         "0x480a7ff57fff8000",
@@ -714,181 +707,21 @@
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp6": 9,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 10
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
                     }
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 63,
-                    "end_line": 22,
+                    "end_col": 7,
+                    "end_line": 14,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "parent_location": [
-                        {
-                            "end_col": 54,
-                            "end_line": 8,
-                            "input_file": {
-                                "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                            },
-                            "parent_location": [
-                                {
-                                    "end_col": 73,
-                                    "end_line": 23,
-                                    "input_file": {
-                                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                                    },
-                                    "start_col": 9,
-                                    "start_line": 23
-                                },
-                                "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
-                            ],
-                            "start_col": 24,
-                            "start_line": 8
-                        },
-                        "While expanding the reference 'poseidon_ptr' in:"
-                    ],
-                    "start_col": 28,
-                    "start_line": 22
+                    "start_col": 5,
+                    "start_line": 14
                 }
             },
             "34": {
-                "accessible_scopes": [
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 2,
-                        "offset": 8
-                    },
-                    "reference_ids": {
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp1": 4,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp2": 5,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp3": 6,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp4": 7,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp5": 8,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp6": 9,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 10
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 45,
-                    "end_line": 23,
-                    "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                    },
-                    "start_col": 40,
-                    "start_line": 23
-                }
-            },
-            "36": {
-                "accessible_scopes": [
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 2,
-                        "offset": 9
-                    },
-                    "reference_ids": {
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp1": 4,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp2": 5,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp3": 6,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp4": 7,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp5": 8,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp6": 9,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 10
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 72,
-                    "end_line": 23,
-                    "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                    },
-                    "start_col": 59,
-                    "start_line": 23
-                }
-            },
-            "38": {
-                "accessible_scopes": [
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 2,
-                        "offset": 10
-                    },
-                    "reference_ids": {
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp1": 4,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp2": 5,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp3": 6,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp4": 7,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp5": 8,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp6": 9,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 10
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 73,
-                    "end_line": 23,
-                    "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                    },
-                    "start_col": 9,
-                    "start_line": 23
-                }
-            },
-            "40": {
-                "accessible_scopes": [
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
-                    "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
-                ],
-                "flow_tracking_data": {
-                    "ap_tracking": {
-                        "group": 3,
-                        "offset": 0
-                    },
-                    "reference_ids": {
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp1": 4,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp2": 5,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp3": 6,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp4": 7,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp5": 8,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp6": 9,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 11
-                    }
-                },
-                "hints": [],
-                "inst": {
-                    "end_col": 19,
-                    "end_line": 24,
-                    "input_file": {
-                        "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
-                    },
-                    "start_col": 9,
-                    "start_line": 24
-                }
-            },
-            "41": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -907,16 +740,16 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 65,
-                    "end_line": 28,
+                    "end_col": 69,
+                    "end_line": 23,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 39,
-                    "start_line": 28
+                    "start_col": 43,
+                    "start_line": 23
                 }
             },
-            "42": {
+            "35": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -928,7 +761,7 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 10,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
@@ -936,16 +769,16 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 66,
-                    "end_line": 28,
+                    "end_col": 70,
+                    "end_line": 23,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 5,
-                    "start_line": 28
+                    "start_col": 9,
+                    "start_line": 23
                 }
             },
-            "43": {
+            "36": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -957,7 +790,7 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 10,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
@@ -965,16 +798,16 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 65,
-                    "end_line": 29,
+                    "end_col": 69,
+                    "end_line": 24,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 39,
-                    "start_line": 29
+                    "start_col": 43,
+                    "start_line": 24
                 }
             },
-            "44": {
+            "37": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -986,8 +819,8 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 10,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 11,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
@@ -995,16 +828,16 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 66,
-                    "end_line": 29,
+                    "end_col": 70,
+                    "end_line": 24,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 5,
-                    "start_line": 29
+                    "start_col": 9,
+                    "start_line": 24
                 }
             },
-            "45": {
+            "38": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -1016,8 +849,8 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 10,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 11,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
@@ -1025,16 +858,16 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 65,
-                    "end_line": 30,
+                    "end_col": 69,
+                    "end_line": 25,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 39,
-                    "start_line": 30
+                    "start_col": 43,
+                    "start_line": 25
                 }
             },
-            "46": {
+            "39": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -1046,9 +879,9 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 10,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 11,
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 12,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 2
@@ -1056,39 +889,36 @@
                 },
                 "hints": [],
                 "inst": {
-                    "end_col": 66,
-                    "end_line": 30,
+                    "end_col": 70,
+                    "end_line": 25,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
-                    "start_col": 5,
-                    "start_line": 30
+                    "start_col": 9,
+                    "start_line": 25
                 }
             },
-            "47": {
+            "40": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 2,
-                        "offset": 4
+                        "group": 3,
+                        "offset": 0
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 15
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 13
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 59,
-                    "end_line": 32,
+                    "end_line": 28,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
@@ -1102,12 +932,12 @@
                             "parent_location": [
                                 {
                                     "end_col": 69,
-                                    "end_line": 34,
+                                    "end_line": 29,
                                     "input_file": {
                                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                                     },
                                     "start_col": 5,
-                                    "start_line": 34
+                                    "start_line": 29
                                 },
                                 "While trying to retrieve the implicit argument 'poseidon_ptr' in:"
                             ],
@@ -1117,103 +947,94 @@
                         "While expanding the reference 'poseidon_ptr' in:"
                     ],
                     "start_col": 24,
-                    "start_line": 32
+                    "start_line": 28
                 }
             },
-            "49": {
+            "42": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 2,
-                        "offset": 5
+                        "group": 3,
+                        "offset": 1
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 15
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 13
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 41,
-                    "end_line": 34,
+                    "end_line": 29,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
                     "start_col": 36,
-                    "start_line": 34
+                    "start_line": 29
                 }
             },
-            "51": {
+            "44": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 2,
-                        "offset": 6
+                        "group": 3,
+                        "offset": 2
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 15
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 13
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 68,
-                    "end_line": 34,
+                    "end_line": 29,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
                     "start_col": 55,
-                    "start_line": 34
+                    "start_line": 29
                 }
             },
-            "53": {
+            "46": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
                 ],
                 "flow_tracking_data": {
                     "ap_tracking": {
-                        "group": 2,
-                        "offset": 7
+                        "group": 3,
+                        "offset": 3
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 15
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 13
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 69,
-                    "end_line": 34,
+                    "end_line": 29,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 34
+                    "start_line": 29
                 }
             },
-            "55": {
+            "48": {
                 "accessible_scopes": [
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon",
                     "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon"
@@ -1225,26 +1046,23 @@
                     },
                     "reference_ids": {
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp0": 3,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp7": 12,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp8": 13,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.__temp9": 14,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.chain_len": 1,
                         "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.initialize": 0,
-                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 16
+                        "stwo_cairo_prover.test_data.test_prove_verify_poseidon_builtin.do_chain_poseidon.do_chain_poseidon.poseidon_ptr": 14
                     }
                 },
                 "hints": [],
                 "inst": {
                     "end_col": 15,
-                    "end_line": 35,
+                    "end_line": 30,
                     "input_file": {
                         "filename": "/home/stav/Stwo-Cairo/stwo-cairo/stwo_cairo_prover/test_data/test_prove_verify_poseidon_builtin/do_chain_poseidon.cairo"
                     },
                     "start_col": 5,
-                    "start_line": 35
+                    "start_line": 30
                 }
             },
-            "56": {
+            "49": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1255,17 +1073,17 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 24,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 22,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1303,7 +1121,7 @@
                     "start_line": 18
                 }
             },
-            "57": {
+            "50": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1314,17 +1132,17 @@
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 24,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 22,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1338,7 +1156,7 @@
                     "start_line": 24
                 }
             },
-            "59": {
+            "52": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1349,17 +1167,17 @@
                         "offset": 2
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 24,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 22,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1373,7 +1191,7 @@
                     "start_line": 24
                 }
             },
-            "61": {
+            "54": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1384,17 +1202,17 @@
                         "offset": 3
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 24,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 22,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1408,7 +1226,7 @@
                     "start_line": 24
                 }
             },
-            "63": {
+            "56": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1419,17 +1237,17 @@
                         "offset": 0
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1467,7 +1285,7 @@
                     "start_line": 11
                 }
             },
-            "64": {
+            "57": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1478,17 +1296,17 @@
                         "offset": 1
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1526,7 +1344,7 @@
                     "start_line": 12
                 }
             },
-            "65": {
+            "58": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1537,17 +1355,17 @@
                         "offset": 2
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1585,7 +1403,7 @@
                     "start_line": 13
                 }
             },
-            "66": {
+            "59": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1596,17 +1414,17 @@
                         "offset": 3
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1644,7 +1462,7 @@
                     "start_line": 14
                 }
             },
-            "67": {
+            "60": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1655,17 +1473,17 @@
                         "offset": 4
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1703,7 +1521,7 @@
                     "start_line": 15
                 }
             },
-            "68": {
+            "61": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1714,17 +1532,17 @@
                         "offset": 5
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1762,7 +1580,7 @@
                     "start_line": 16
                 }
             },
-            "69": {
+            "62": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1773,17 +1591,17 @@
                         "offset": 6
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1821,7 +1639,7 @@
                     "start_line": 17
                 }
             },
-            "70": {
+            "63": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1832,17 +1650,17 @@
                         "offset": 7
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1892,7 +1710,7 @@
                     "start_line": 8
                 }
             },
-            "71": {
+            "64": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1903,17 +1721,17 @@
                         "offset": 8
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -1951,7 +1769,7 @@
                     "start_line": 19
                 }
             },
-            "72": {
+            "65": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -1962,17 +1780,17 @@
                         "offset": 9
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -2010,7 +1828,7 @@
                     "start_line": 20
                 }
             },
-            "73": {
+            "66": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -2021,17 +1839,17 @@
                         "offset": 10
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -2069,7 +1887,7 @@
                     "start_line": 21
                 }
             },
-            "74": {
+            "67": {
                 "accessible_scopes": [
                     "__main__",
                     "__main__.main"
@@ -2080,17 +1898,17 @@
                         "offset": 11
                     },
                     "reference_ids": {
-                        "__main__.main.add_mod_ptr": 26,
-                        "__main__.main.bitwise_ptr": 21,
-                        "__main__.main.ec_op_ptr": 22,
-                        "__main__.main.ecdsa_ptr": 20,
-                        "__main__.main.keccak_ptr": 23,
-                        "__main__.main.mul_mod_ptr": 27,
-                        "__main__.main.output_ptr": 17,
-                        "__main__.main.pedersen_ptr": 18,
-                        "__main__.main.poseidon_ptr": 28,
-                        "__main__.main.range_check96_ptr": 25,
-                        "__main__.main.range_check_ptr": 19
+                        "__main__.main.add_mod_ptr": 24,
+                        "__main__.main.bitwise_ptr": 19,
+                        "__main__.main.ec_op_ptr": 20,
+                        "__main__.main.ecdsa_ptr": 18,
+                        "__main__.main.keccak_ptr": 21,
+                        "__main__.main.mul_mod_ptr": 25,
+                        "__main__.main.output_ptr": 15,
+                        "__main__.main.pedersen_ptr": 16,
+                        "__main__.main.poseidon_ptr": 26,
+                        "__main__.main.range_check96_ptr": 23,
+                        "__main__.main.range_check_ptr": 17
                     }
                 },
                 "hints": [],
@@ -2138,7 +1956,7 @@
         },
         "__main__.main": {
             "decorators": [],
-            "pc": 56,
+            "pc": 49,
             "type": "function"
         },
         "__main__.main.Args": {
@@ -2215,7 +2033,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-4), felt*)]"
                 }
             ],
@@ -2230,7 +2048,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-9), felt*)]"
                 }
             ],
@@ -2245,7 +2063,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-8), felt*)]"
                 }
             ],
@@ -2260,7 +2078,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-10), felt*)]"
                 }
             ],
@@ -2275,7 +2093,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-7), felt*)]"
                 }
             ],
@@ -2290,7 +2108,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-3), felt*)]"
                 }
             ],
@@ -2305,7 +2123,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-13), felt*)]"
                 }
             ],
@@ -2320,7 +2138,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-12), felt*)]"
                 }
             ],
@@ -2335,7 +2153,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-6), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
                 },
                 {
@@ -2343,7 +2161,7 @@
                         "group": 6,
                         "offset": 0
                     },
-                    "pc": 63,
+                    "pc": 56,
                     "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
                 }
             ],
@@ -2358,7 +2176,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-5), felt*)]"
                 }
             ],
@@ -2373,7 +2191,7 @@
                         "group": 5,
                         "offset": 0
                     },
-                    "pc": 56,
+                    "pc": 49,
                     "value": "[cast(fp + (-11), felt*)]"
                 }
             ],
@@ -2801,7 +2619,7 @@
                         "group": 2,
                         "offset": 2
                     },
-                    "pc": 42,
+                    "pc": 35,
                     "value": "[cast(ap + (-1), felt*)]"
                 }
             ],
@@ -2816,7 +2634,7 @@
                         "group": 2,
                         "offset": 3
                     },
-                    "pc": 44,
+                    "pc": 37,
                     "value": "[cast(ap + (-1), felt*)]"
                 }
             ],
@@ -2831,7 +2649,7 @@
                         "group": 2,
                         "offset": 4
                     },
-                    "pc": 46,
+                    "pc": 39,
                     "value": "[cast(ap + (-1), felt*)]"
                 }
             ],
@@ -2881,26 +2699,10 @@
                 },
                 {
                     "ap_tracking_data": {
-                        "group": 2,
-                        "offset": 7
-                    },
-                    "pc": 32,
-                    "value": "cast([fp + (-5)] + 6, starkware.cairo.common.cairo_builtins.PoseidonBuiltin*)"
-                },
-                {
-                    "ap_tracking_data": {
                         "group": 3,
                         "offset": 0
                     },
                     "pc": 40,
-                    "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
-                },
-                {
-                    "ap_tracking_data": {
-                        "group": 2,
-                        "offset": 4
-                    },
-                    "pc": 47,
                     "value": "cast([fp + (-5)] + 6, starkware.cairo.common.cairo_builtins.PoseidonBuiltin*)"
                 },
                 {
@@ -2908,7 +2710,7 @@
                         "group": 4,
                         "offset": 0
                     },
-                    "pc": 55,
+                    "pc": 48,
                     "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
                 }
             ],
@@ -3002,25 +2804,9 @@
             {
                 "ap_tracking_data": {
                     "group": 2,
-                    "offset": 7
-                },
-                "pc": 32,
-                "value": "cast([fp + (-5)] + 6, starkware.cairo.common.cairo_builtins.PoseidonBuiltin*)"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 3,
-                    "offset": 0
-                },
-                "pc": 40,
-                "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
-            },
-            {
-                "ap_tracking_data": {
-                    "group": 2,
                     "offset": 2
                 },
-                "pc": 42,
+                "pc": 35,
                 "value": "[cast(ap + (-1), felt*)]"
             },
             {
@@ -3028,7 +2814,7 @@
                     "group": 2,
                     "offset": 3
                 },
-                "pc": 44,
+                "pc": 37,
                 "value": "[cast(ap + (-1), felt*)]"
             },
             {
@@ -3036,15 +2822,15 @@
                     "group": 2,
                     "offset": 4
                 },
-                "pc": 46,
+                "pc": 39,
                 "value": "[cast(ap + (-1), felt*)]"
             },
             {
                 "ap_tracking_data": {
-                    "group": 2,
-                    "offset": 4
+                    "group": 3,
+                    "offset": 0
                 },
-                "pc": 47,
+                "pc": 40,
                 "value": "cast([fp + (-5)] + 6, starkware.cairo.common.cairo_builtins.PoseidonBuiltin*)"
             },
             {
@@ -3052,7 +2838,7 @@
                     "group": 4,
                     "offset": 0
                 },
-                "pc": 55,
+                "pc": 48,
                 "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
             },
             {
@@ -3060,7 +2846,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-13), felt*)]"
             },
             {
@@ -3068,7 +2854,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-12), felt*)]"
             },
             {
@@ -3076,7 +2862,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-11), felt*)]"
             },
             {
@@ -3084,7 +2870,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-10), felt*)]"
             },
             {
@@ -3092,7 +2878,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-9), felt*)]"
             },
             {
@@ -3100,7 +2886,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-8), felt*)]"
             },
             {
@@ -3108,7 +2894,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-7), felt*)]"
             },
             {
@@ -3116,7 +2902,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-6), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
             },
             {
@@ -3124,7 +2910,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-5), felt*)]"
             },
             {
@@ -3132,7 +2918,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-4), felt*)]"
             },
             {
@@ -3140,7 +2926,7 @@
                     "group": 5,
                     "offset": 0
                 },
-                "pc": 56,
+                "pc": 49,
                 "value": "[cast(fp + (-3), felt*)]"
             },
             {
@@ -3148,7 +2934,7 @@
                     "group": 6,
                     "offset": 0
                 },
-                "pc": 63,
+                "pc": 56,
                 "value": "[cast(ap + (-1), starkware.cairo.common.cairo_builtins.PoseidonBuiltin**)]"
             }
         ]

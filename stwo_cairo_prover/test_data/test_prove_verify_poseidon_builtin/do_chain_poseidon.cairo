@@ -18,19 +18,14 @@ func do_chain_poseidon{poseidon_ptr: PoseidonBuiltin*}(initialize: felt, chain_l
             s1=0x30b51bb39c4e74544fc2576ac2a3cf44485ad135802c6ac1246659ad34f241f,
             s2=0x3241fe256bea8c2e2fa69098127e17e4020dc42158e61fd3e6dc236e0c0cac,
         );
-
-        let poseidon_ptr = poseidon_ptr + PoseidonBuiltin.SIZE;
-        do_chain_poseidon(initialize = FALSE, chain_len = chain_len - 1);
-        return ();
+    } else {
+        // Set the input to the output of the previous instance.
+        assert poseidon_ptr[0].input.s0 = poseidon_ptr[-1].output.s0;
+        assert poseidon_ptr[0].input.s1 = poseidon_ptr[-1].output.s1;
+        assert poseidon_ptr[0].input.s2 = poseidon_ptr[-1].output.s2;
     }
 
-    // Set the input to the output of the previous instance.
-    assert poseidon_ptr[0].input.s0 = poseidon_ptr[-1].output.s0;
-    assert poseidon_ptr[0].input.s1 = poseidon_ptr[-1].output.s1;
-    assert poseidon_ptr[0].input.s2 = poseidon_ptr[-1].output.s2;
-
     let poseidon_ptr = poseidon_ptr + PoseidonBuiltin.SIZE;
-
     do_chain_poseidon(initialize = FALSE, chain_len = chain_len - 1);
     return ();
 }
