@@ -49,6 +49,7 @@ where
         channel_salt,
         pcs_config,
         preprocessed_trace,
+        store_polynomials_coefficients,
     } = prover_params;
     let twiddles = SimdBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
@@ -64,7 +65,9 @@ where
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
         CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
-
+    if store_polynomials_coefficients {
+        commitment_scheme.set_store_polynomials_coefficients();
+    }
     // Preprocessed trace.
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
     let mut tree_builder = commitment_scheme.tree_builder();
@@ -160,6 +163,9 @@ pub struct ProverParameters {
     pub pcs_config: PcsConfig,
     /// Preprocessed trace.
     pub preprocessed_trace: PreProcessedTraceVariant,
+    /// Whether or not to store the polynomials coefficients. Affects runtime-memory usage
+    /// trade-off. Default is `false`.
+    pub store_polynomials_coefficients: bool,
 }
 
 /// The hash function used for commitments, for the prover-verifier channel,
@@ -207,6 +213,7 @@ pub fn create_and_serialize_proof(
                 },
             },
             preprocessed_trace: PreProcessedTraceVariant::Canonical,
+            store_polynomials_coefficients: false,
         }
     };
 
@@ -283,6 +290,7 @@ pub mod tests {
                 },
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: Some(42),
+                store_polynomials_coefficients: false,
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
@@ -381,6 +389,7 @@ pub mod tests {
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: None,
+                store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
@@ -400,6 +409,7 @@ pub mod tests {
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: None,
+                store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
 
@@ -461,6 +471,7 @@ pub mod tests {
                 },
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: None,
+                store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
 
@@ -500,6 +511,7 @@ pub mod tests {
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::Canonical,
                 channel_salt: None,
+                store_polynomials_coefficients: false,
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
@@ -559,6 +571,7 @@ pub mod tests {
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: None,
+                    store_polynomials_coefficients: false,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
@@ -631,6 +644,7 @@ pub mod tests {
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: None,
+                    store_polynomials_coefficients: false,
                 };
 
                 // Run poseidon builtin with 15 different instances.
@@ -693,6 +707,7 @@ pub mod tests {
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: None,
+                    store_polynomials_coefficients: false,
                 };
 
                 // Run pedersen builtin with 15 different instances.
