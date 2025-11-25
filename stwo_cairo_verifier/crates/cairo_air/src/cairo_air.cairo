@@ -52,7 +52,8 @@ use stwo_cairo_air::range_checks::{
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValuesImpl,
+    LookupElements, LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValues,
+    PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -109,6 +110,26 @@ pub type VerifyBitwiseXor_9Elements = LookupElements<3>;
 
 pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 
+/// Validates that every `mask_value` provided in the proof (in `sampled_values`) is used by at
+/// least one component.
+///
+/// Since `eval_composition_polynomial_at_point` is responsible for validating the *structure*
+/// of `sampled_values` in the proof, it needs to ensure that all sampled preprocessed
+/// mask values are actually used. Otherwise, the prover would have the freedom to
+/// send a sample of a column even if it is unused, adding another term to the FRI quotients.
+///
+/// Additionally, we check that the trace and interaction-trace mask values are empty.
+/// If we don't, the prover could send samples for non-existent columns. This would be caught
+/// later by the Merkle verifier, but we perform the check here as a sanity guard.
+fn validate_mask_usage(
+    preprocessed_mask_values: PreprocessedMaskValues,
+    trace_mask_values: ColumnSpan<Span<QM31>>,
+    interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
+) {
+    preprocessed_mask_values.validate_usage();
+    assert!(trace_mask_values.is_empty());
+    assert!(interaction_trace_mask_values.is_empty());
+}
 
 #[derive(Drop, Serde)]
 pub struct CairoClaim {
@@ -689,7 +710,9 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        preprocessed_mask_values.validate_usage();
+        validate_mask_usage(
+            preprocessed_mask_values, trace_mask_values, interaction_trace_mask_values,
+        );
         sum
     }
 }
@@ -1005,10 +1028,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        preprocessed_mask_values.validate_usage();
+        validate_mask_usage(
+            preprocessed_mask_values, trace_mask_values, interaction_trace_mask_values,
+        );
         sum
     }
 }
+
 
 #[derive(Drop)]
 #[cfg(and(feature: "poseidon252_verifier", feature: "poseidon_outputs_packing"))]
@@ -1337,7 +1363,9 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
 
-        preprocessed_mask_values.validate_usage();
+        validate_mask_usage(
+            preprocessed_mask_values, trace_mask_values, interaction_trace_mask_values,
+        );
         sum
     }
 }
