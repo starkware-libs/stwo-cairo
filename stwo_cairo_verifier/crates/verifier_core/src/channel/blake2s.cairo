@@ -142,7 +142,7 @@ pub impl Blake2sChannelImpl of ChannelTrait {
         const POW_PREFIX: u32 = 0x12345678;
         let [d0, d1, d2, d3, d4, d5, d6, d7] = self.digest.hash.unbox();
         // Compute `POW_PREFIX || zeros  || digest || n_bits`.
-        //          1 u32      || 6 u32s || 8 u32  || 1 u32.
+        //          1 u32      || 3 u32s || 8 u32  || 1 u32.
         let msg = BoxImpl::new(
             [POW_PREFIX, 0, 0, 0, d0, d1, d2, d3, d4, d5, d6, d7, n_bits, 0, 0, 0],
         );
@@ -182,6 +182,7 @@ fn check_leading_zeros(digest: Blake2sHash, n_bits: u32) -> bool {
 
 fn update_digest(ref channel: Blake2sChannel, new_digest: Blake2sHash) {
     channel.digest = new_digest;
+    // TODO(audit): consider resetting the counter when mixing a commitment.
     channel.n_draws = 0;
 }
 

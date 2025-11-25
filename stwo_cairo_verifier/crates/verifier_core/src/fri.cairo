@@ -141,6 +141,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         self.decommit_on_queries(queries, first_layer_query_evals)
     }
 
+// TODO(audit); remove this function.
     #[inline]
     fn decommit_on_queries(
         self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,

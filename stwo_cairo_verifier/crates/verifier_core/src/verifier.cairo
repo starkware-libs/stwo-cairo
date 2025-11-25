@@ -61,9 +61,10 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     let composition_log_degree_bound = air.composition_log_degree_bound();
     let split_composition_log_degree_bound = composition_log_degree_bound
         - LOG_COMPOSITION_SPLIT_FACTOR;
-
+    // TODO(audit): what is log_size why -2?
     // Read composition polynomial commitment, there are 8 columns, 4 columns for left,
-    // and 4 columns for right, where composition(z) = left(z) + pi^{log_size-2} * right(z).
+    // and 4 columns for right, where composition(z) = left(z) + pi^{log_size-2}(z)* right(z).
+
     commitment_scheme
         .commit(
             composition_commitment,
@@ -78,6 +79,8 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
 
     let sampled_oods_values = commitment_scheme_proof.sampled_values;
 
+
+    // TODO(audit): Pass split_composition_log_degree_bound to try_extract_composition_eval.
     let composition_oods_eval = try_extract_composition_eval(
         sampled_oods_values, ood_point, composition_log_degree_bound,
     )
