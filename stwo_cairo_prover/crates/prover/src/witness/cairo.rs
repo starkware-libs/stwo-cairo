@@ -34,26 +34,26 @@ use crate::witness::utils::TreeBuilder;
 pub struct CairoClaimGenerator {
     public_data: PublicData,
 
-    add: Vec<add_opcode::ClaimGenerator>,
-    add_small: Vec<add_opcode_small::ClaimGenerator>,
-    add_ap: Vec<add_ap_opcode::ClaimGenerator>,
-    assert_eq: Vec<assert_eq_opcode::ClaimGenerator>,
-    assert_eq_imm: Vec<assert_eq_opcode_imm::ClaimGenerator>,
-    assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::ClaimGenerator>,
-    blake: Vec<blake_compress_opcode::ClaimGenerator>,
-    call: Vec<call_opcode_abs::ClaimGenerator>,
-    call_rel_imm: Vec<call_opcode_rel_imm::ClaimGenerator>,
-    generic: Vec<generic_opcode::ClaimGenerator>,
-    jnz: Vec<jnz_opcode_non_taken::ClaimGenerator>,
-    jnz_taken: Vec<jnz_opcode_taken::ClaimGenerator>,
-    jump: Vec<jump_opcode_abs::ClaimGenerator>,
-    jump_double_deref: Vec<jump_opcode_double_deref::ClaimGenerator>,
-    jump_rel: Vec<jump_opcode_rel::ClaimGenerator>,
-    jump_rel_imm: Vec<jump_opcode_rel_imm::ClaimGenerator>,
-    mul: Vec<mul_opcode::ClaimGenerator>,
-    mul_small: Vec<mul_opcode_small::ClaimGenerator>,
-    qm31: Vec<qm_31_add_mul_opcode::ClaimGenerator>,
-    ret: Vec<ret_opcode::ClaimGenerator>,
+    add: Option<add_opcode::ClaimGenerator>,
+    add_small: Option<add_opcode_small::ClaimGenerator>,
+    add_ap: Option<add_ap_opcode::ClaimGenerator>,
+    assert_eq: Option<assert_eq_opcode::ClaimGenerator>,
+    assert_eq_imm: Option<assert_eq_opcode_imm::ClaimGenerator>,
+    assert_eq_double_deref: Option<assert_eq_opcode_double_deref::ClaimGenerator>,
+    blake: Option<blake_compress_opcode::ClaimGenerator>,
+    call: Option<call_opcode_abs::ClaimGenerator>,
+    call_rel_imm: Option<call_opcode_rel_imm::ClaimGenerator>,
+    generic: Option<generic_opcode::ClaimGenerator>,
+    jnz: Option<jnz_opcode_non_taken::ClaimGenerator>,
+    jnz_taken: Option<jnz_opcode_taken::ClaimGenerator>,
+    jump: Option<jump_opcode_abs::ClaimGenerator>,
+    jump_double_deref: Option<jump_opcode_double_deref::ClaimGenerator>,
+    jump_rel: Option<jump_opcode_rel::ClaimGenerator>,
+    jump_rel_imm: Option<jump_opcode_rel_imm::ClaimGenerator>,
+    mul: Option<mul_opcode::ClaimGenerator>,
+    mul_small: Option<mul_opcode_small::ClaimGenerator>,
+    qm31: Option<qm_31_add_mul_opcode::ClaimGenerator>,
+    ret: Option<ret_opcode::ClaimGenerator>,
 
     // Internal components.
     verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
@@ -84,212 +84,187 @@ impl CairoClaimGenerator {
     ) -> Self {
         let initial_state = state_transitions.initial_state;
         let final_state = state_transitions.final_state;
-        let mut add = vec![];
-        let mut add_small = vec![];
-        let mut add_ap = vec![];
-        let mut assert_eq = vec![];
-        let mut assert_eq_imm = vec![];
-        let mut assert_eq_double_deref = vec![];
-        let mut blake = vec![];
-        let mut call = vec![];
-        let mut call_rel_imm = vec![];
-        let mut generic = vec![];
-        let mut jnz = vec![];
-        let mut jnz_taken = vec![];
-        let mut jump = vec![];
-        let mut jump_double_deref = vec![];
-        let mut jump_rel = vec![];
-        let mut jump_rel_imm = vec![];
-        let mut mul = vec![];
-        let mut mul_small = vec![];
-        let mut qm31 = vec![];
-        let mut ret = vec![];
-        if !state_transitions
+
+        let add = (!state_transitions
             .casm_states_by_opcode
             .add_opcode
-            .is_empty()
-        {
-            add.push(add_opcode::ClaimGenerator::new(
-                state_transitions.casm_states_by_opcode.add_opcode,
-            ));
-        }
-        if !state_transitions
+            .is_empty())
+        .then(|| {
+            add_opcode::ClaimGenerator::new(state_transitions.casm_states_by_opcode.add_opcode)
+        });
+        let add_small = (!state_transitions
             .casm_states_by_opcode
             .add_opcode_small
-            .is_empty()
-        {
-            add_small.push(add_opcode_small::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            add_opcode_small::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.add_opcode_small,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let add_ap = (!state_transitions
             .casm_states_by_opcode
             .add_ap_opcode
-            .is_empty()
-        {
-            add_ap.push(add_ap_opcode::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            add_ap_opcode::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.add_ap_opcode,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let assert_eq = (!state_transitions
             .casm_states_by_opcode
             .assert_eq_opcode
-            .is_empty()
-        {
-            assert_eq.push(assert_eq_opcode::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            assert_eq_opcode::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.assert_eq_opcode,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let assert_eq_imm = (!state_transitions
             .casm_states_by_opcode
             .assert_eq_opcode_imm
-            .is_empty()
-        {
-            assert_eq_imm.push(assert_eq_opcode_imm::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            assert_eq_opcode_imm::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.assert_eq_opcode_imm,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let assert_eq_double_deref = (!state_transitions
             .casm_states_by_opcode
             .assert_eq_opcode_double_deref
-            .is_empty()
-        {
-            assert_eq_double_deref.push(assert_eq_opcode_double_deref::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            assert_eq_opcode_double_deref::ClaimGenerator::new(
                 state_transitions
                     .casm_states_by_opcode
                     .assert_eq_opcode_double_deref,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let blake = (!state_transitions
             .casm_states_by_opcode
             .blake_compress_opcode
-            .is_empty()
-        {
-            blake.push(blake_compress_opcode::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            blake_compress_opcode::ClaimGenerator::new(
                 state_transitions
                     .casm_states_by_opcode
                     .blake_compress_opcode,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let call = (!state_transitions
             .casm_states_by_opcode
             .call_opcode_abs
-            .is_empty()
-        {
-            call.push(call_opcode_abs::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            call_opcode_abs::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.call_opcode_abs,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let call_rel_imm = (!state_transitions
             .casm_states_by_opcode
             .call_opcode_rel_imm
-            .is_empty()
-        {
-            call_rel_imm.push(call_opcode_rel_imm::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            call_opcode_rel_imm::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.call_opcode_rel_imm,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let generic = (!state_transitions
             .casm_states_by_opcode
             .generic_opcode
-            .is_empty()
-        {
-            generic.push(generic_opcode::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            generic_opcode::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.generic_opcode,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jnz = (!state_transitions
             .casm_states_by_opcode
             .jnz_opcode_non_taken
-            .is_empty()
-        {
-            jnz.push(jnz_opcode_non_taken::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jnz_opcode_non_taken::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.jnz_opcode_non_taken,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jnz_taken = (!state_transitions
             .casm_states_by_opcode
             .jnz_opcode_taken
-            .is_empty()
-        {
-            jnz_taken.push(jnz_opcode_taken::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jnz_opcode_taken::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.jnz_opcode_taken,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jump = (!state_transitions
             .casm_states_by_opcode
             .jump_opcode_abs
-            .is_empty()
-        {
-            jump.push(jump_opcode_abs::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jump_opcode_abs::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.jump_opcode_abs,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jump_double_deref = (!state_transitions
             .casm_states_by_opcode
             .jump_opcode_double_deref
-            .is_empty()
-        {
-            jump_double_deref.push(jump_opcode_double_deref::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jump_opcode_double_deref::ClaimGenerator::new(
                 state_transitions
                     .casm_states_by_opcode
                     .jump_opcode_double_deref,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jump_rel = (!state_transitions
             .casm_states_by_opcode
             .jump_opcode_rel
-            .is_empty()
-        {
-            jump_rel.push(jump_opcode_rel::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jump_opcode_rel::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.jump_opcode_rel,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let jump_rel_imm = (!state_transitions
             .casm_states_by_opcode
             .jump_opcode_rel_imm
-            .is_empty()
-        {
-            jump_rel_imm.push(jump_opcode_rel_imm::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            jump_opcode_rel_imm::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.jump_opcode_rel_imm,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let mul = (!state_transitions
             .casm_states_by_opcode
             .mul_opcode
-            .is_empty()
-        {
-            mul.push(mul_opcode::ClaimGenerator::new(
-                state_transitions.casm_states_by_opcode.mul_opcode,
-            ));
-        }
-        if !state_transitions
+            .is_empty())
+        .then(|| {
+            mul_opcode::ClaimGenerator::new(state_transitions.casm_states_by_opcode.mul_opcode)
+        });
+        let mul_small = (!state_transitions
             .casm_states_by_opcode
             .mul_opcode_small
-            .is_empty()
-        {
-            mul_small.push(mul_opcode_small::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            mul_opcode_small::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.mul_opcode_small,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let qm31 = (!state_transitions
             .casm_states_by_opcode
             .qm_31_add_mul_opcode
-            .is_empty()
-        {
-            qm31.push(qm_31_add_mul_opcode::ClaimGenerator::new(
+            .is_empty())
+        .then(|| {
+            qm_31_add_mul_opcode::ClaimGenerator::new(
                 state_transitions.casm_states_by_opcode.qm_31_add_mul_opcode,
-            ));
-        }
-        if !state_transitions
+            )
+        });
+        let ret = (!state_transitions
             .casm_states_by_opcode
             .ret_opcode
-            .is_empty()
-        {
-            ret.push(ret_opcode::ClaimGenerator::new(
-                state_transitions.casm_states_by_opcode.ret_opcode,
-            ));
-        }
+            .is_empty())
+        .then(|| {
+            ret_opcode::ClaimGenerator::new(state_transitions.casm_states_by_opcode.ret_opcode)
+        });
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
         let builtins = BuiltinsClaimGenerator::new(builtin_segments);
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
@@ -366,7 +341,6 @@ impl CairoClaimGenerator {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (add, add_interaction_gens) = self
             .add
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -378,7 +352,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (add_small, add_small_interaction_gens) = self
             .add_small
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -390,7 +363,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (add_ap, add_ap_interaction_gens) = self
             .add_ap
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -404,7 +376,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (assert_eq, assert_eq_interaction_gens) = self
             .assert_eq
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -416,7 +387,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (assert_eq_imm, assert_eq_imm_interaction_gens) = self
             .assert_eq_imm
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -428,7 +398,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (assert_eq_double_deref, assert_eq_double_deref_interaction_gens) = self
             .assert_eq_double_deref
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -440,7 +409,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (blake, blake_interaction_gens) = self
             .blake
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -456,7 +424,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (call, call_interaction_gens) = self
             .call
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -468,7 +435,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (call_rel_imm, call_rel_imm_interaction_gens) = self
             .call_rel_imm
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -480,7 +446,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (generic, generic_opcode_interaction_gens) = self
             .generic
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -510,7 +475,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jnz, jnz_interaction_gens) = self
             .jnz
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -522,7 +486,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jnz_taken, jnz_taken_interaction_gens) = self
             .jnz_taken
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -534,7 +497,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jump, jump_interaction_gens) = self
             .jump
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -546,7 +508,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jump_double_deref, jump_double_deref_interaction_gens) = self
             .jump_double_deref
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -558,7 +519,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jump_rel, jump_rel_interaction_gens) = self
             .jump_rel
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -570,7 +530,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (jump_rel_imm, jump_rel_imm_interaction_gens) = self
             .jump_rel_imm
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -582,7 +541,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (mul, mul_interaction_gens) = self
             .mul
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -602,7 +560,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (mul_small, mul_small_interaction_gens) = self
             .mul_small
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -615,7 +572,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (qm31, qm31_interaction_gens) = self
             .qm31
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -628,7 +584,6 @@ impl CairoClaimGenerator {
             .unzip();
         let (ret, ret_interaction_gens) = self
             .ret
-            .into_iter()
             .map(|gen| {
                 gen.write_trace(
                     tree_builder,
@@ -798,26 +753,26 @@ impl CairoClaimGenerator {
 }
 
 pub struct CairoInteractionClaimGenerator {
-    add: Vec<add_opcode::InteractionClaimGenerator>,
-    add_small: Vec<add_opcode_small::InteractionClaimGenerator>,
-    add_ap: Vec<add_ap_opcode::InteractionClaimGenerator>,
-    assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
-    assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
-    assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
-    blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
-    call: Vec<call_opcode_abs::InteractionClaimGenerator>,
-    call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaimGenerator>,
-    generic_opcode_interaction_gens: Vec<generic_opcode::InteractionClaimGenerator>,
-    jnz: Vec<jnz_opcode_non_taken::InteractionClaimGenerator>,
-    jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
-    jump: Vec<jump_opcode_abs::InteractionClaimGenerator>,
-    jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
-    jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
-    jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
-    mul: Vec<mul_opcode::InteractionClaimGenerator>,
-    mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
-    qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
-    ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
+    add: Option<add_opcode::InteractionClaimGenerator>,
+    add_small: Option<add_opcode_small::InteractionClaimGenerator>,
+    add_ap: Option<add_ap_opcode::InteractionClaimGenerator>,
+    assert_eq: Option<assert_eq_opcode::InteractionClaimGenerator>,
+    assert_eq_imm: Option<assert_eq_opcode_imm::InteractionClaimGenerator>,
+    assert_eq_double_deref: Option<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    blake: Option<blake_compress_opcode::InteractionClaimGenerator>,
+    call: Option<call_opcode_abs::InteractionClaimGenerator>,
+    call_rel_imm: Option<call_opcode_rel_imm::InteractionClaimGenerator>,
+    generic_opcode_interaction_gens: Option<generic_opcode::InteractionClaimGenerator>,
+    jnz: Option<jnz_opcode_non_taken::InteractionClaimGenerator>,
+    jnz_taken: Option<jnz_opcode_taken::InteractionClaimGenerator>,
+    jump: Option<jump_opcode_abs::InteractionClaimGenerator>,
+    jump_double_deref: Option<jump_opcode_double_deref::InteractionClaimGenerator>,
+    jump_rel: Option<jump_opcode_rel::InteractionClaimGenerator>,
+    jump_rel_imm: Option<jump_opcode_rel_imm::InteractionClaimGenerator>,
+    mul: Option<mul_opcode::InteractionClaimGenerator>,
+    mul_small: Option<mul_opcode_small::InteractionClaimGenerator>,
+    qm31: Option<qm_31_add_mul_opcode::InteractionClaimGenerator>,
+    ret_interaction_gens: Option<ret_opcode::InteractionClaimGenerator>,
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
     blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
@@ -839,298 +794,218 @@ impl CairoInteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> CairoInteractionClaim {
-        let add = self
-            .add
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let add_small = self
-            .add_small
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let add_ap = self
-            .add_ap
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_18,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let assert_eq = self
-            .assert_eq
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let assert_eq_imm = self
-            .assert_eq_imm
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let assert_eq_double_deref = self
-            .assert_eq_double_deref
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let blake = self
-            .blake
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_7_2_5,
-                    &interaction_elements.verify_bitwise_xor_8,
-                    &interaction_elements.blake_round,
-                    &interaction_elements.triple_xor_32,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let call = self
-            .call
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let call_rel_imm = self
-            .call_rel_imm
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let generic = self
-            .generic_opcode_interaction_gens
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_9_9,
-                    &interaction_elements.range_checks.rc_9_9_b,
-                    &interaction_elements.range_checks.rc_9_9_c,
-                    &interaction_elements.range_checks.rc_9_9_d,
-                    &interaction_elements.range_checks.rc_9_9_e,
-                    &interaction_elements.range_checks.rc_9_9_f,
-                    &interaction_elements.range_checks.rc_9_9_g,
-                    &interaction_elements.range_checks.rc_9_9_h,
-                    &interaction_elements.range_checks.rc_20,
-                    &interaction_elements.range_checks.rc_20_b,
-                    &interaction_elements.range_checks.rc_20_c,
-                    &interaction_elements.range_checks.rc_20_d,
-                    &interaction_elements.range_checks.rc_20_e,
-                    &interaction_elements.range_checks.rc_20_f,
-                    &interaction_elements.range_checks.rc_20_g,
-                    &interaction_elements.range_checks.rc_20_h,
-                    &interaction_elements.range_checks.rc_18,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jnz = self
-            .jnz
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jnz_taken = self
-            .jnz_taken
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jump = self
-            .jump
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jump_double_deref = self
-            .jump_double_deref
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jump_rel = self
-            .jump_rel
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let jump_rel_imm = self
-            .jump_rel_imm
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let mul = self
-            .mul
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_20,
-                    &interaction_elements.range_checks.rc_20_b,
-                    &interaction_elements.range_checks.rc_20_c,
-                    &interaction_elements.range_checks.rc_20_d,
-                    &interaction_elements.range_checks.rc_20_e,
-                    &interaction_elements.range_checks.rc_20_f,
-                    &interaction_elements.range_checks.rc_20_g,
-                    &interaction_elements.range_checks.rc_20_h,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let mul_small = self
-            .mul_small
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_11,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let qm31 = self
-            .qm31
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.range_checks.rc_4_4_4_4,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
-        let ret = self
-            .ret_interaction_gens
-            .into_iter()
-            .map(|gen| {
-                gen.write_interaction_trace(
-                    tree_builder,
-                    &interaction_elements.verify_instruction,
-                    &interaction_elements.memory_address_to_id,
-                    &interaction_elements.memory_id_to_value,
-                    &interaction_elements.opcodes,
-                )
-            })
-            .collect();
+        let add = self.add.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let add_small = self.add_small.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let add_ap = self.add_ap.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_18,
+                &interaction_elements.range_checks.rc_11,
+                &interaction_elements.opcodes,
+            )
+        });
+        let assert_eq = self.assert_eq.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.opcodes,
+            )
+        });
+        let assert_eq_imm = self.assert_eq_imm.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.opcodes,
+            )
+        });
+        let assert_eq_double_deref = self.assert_eq_double_deref.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let blake = self.blake.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_7_2_5,
+                &interaction_elements.verify_bitwise_xor_8,
+                &interaction_elements.blake_round,
+                &interaction_elements.triple_xor_32,
+                &interaction_elements.opcodes,
+            )
+        });
+        let call = self.call.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let call_rel_imm = self.call_rel_imm.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let generic = self.generic_opcode_interaction_gens.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_9_9,
+                &interaction_elements.range_checks.rc_9_9_b,
+                &interaction_elements.range_checks.rc_9_9_c,
+                &interaction_elements.range_checks.rc_9_9_d,
+                &interaction_elements.range_checks.rc_9_9_e,
+                &interaction_elements.range_checks.rc_9_9_f,
+                &interaction_elements.range_checks.rc_9_9_g,
+                &interaction_elements.range_checks.rc_9_9_h,
+                &interaction_elements.range_checks.rc_20,
+                &interaction_elements.range_checks.rc_20_b,
+                &interaction_elements.range_checks.rc_20_c,
+                &interaction_elements.range_checks.rc_20_d,
+                &interaction_elements.range_checks.rc_20_e,
+                &interaction_elements.range_checks.rc_20_f,
+                &interaction_elements.range_checks.rc_20_g,
+                &interaction_elements.range_checks.rc_20_h,
+                &interaction_elements.range_checks.rc_18,
+                &interaction_elements.range_checks.rc_11,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jnz = self.jnz.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jnz_taken = self.jnz_taken.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jump = self.jump.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jump_double_deref = self.jump_double_deref.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jump_rel = self.jump_rel.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let jump_rel_imm = self.jump_rel_imm.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
+        let mul = self.mul.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_20,
+                &interaction_elements.range_checks.rc_20_b,
+                &interaction_elements.range_checks.rc_20_c,
+                &interaction_elements.range_checks.rc_20_d,
+                &interaction_elements.range_checks.rc_20_e,
+                &interaction_elements.range_checks.rc_20_f,
+                &interaction_elements.range_checks.rc_20_g,
+                &interaction_elements.range_checks.rc_20_h,
+                &interaction_elements.opcodes,
+            )
+        });
+        let mul_small = self.mul_small.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_11,
+                &interaction_elements.opcodes,
+            )
+        });
+        let qm31 = self.qm31.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_4_4_4_4,
+                &interaction_elements.opcodes,
+            )
+        });
+        let ret = self.ret_interaction_gens.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_instruction,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.opcodes,
+            )
+        });
         let verify_instruction_interaction_claim = self
             .verify_instruction_interaction_gen
             .write_interaction_trace(
