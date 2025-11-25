@@ -101,7 +101,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let params = constraints::ConstraintParams {
             column_size: pow2(log_size).try_into().unwrap(),
             lookup_elements: self.lookup_elements,
-            seq: preprocessed_mask_values.get(preprocessed_columns::seq_column_idx(log_size)),
+            seq: preprocessed_mask_values
+                .get_and_mark_used(preprocessed_columns::seq_column_idx(log_size)),
             claimed_sum: *self.interaction_claim.claimed_sum,
         };
 

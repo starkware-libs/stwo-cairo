@@ -75,37 +75,67 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut poseidon_round_keys_sum_0: QM31 = Zero::zero();
-        let seq_6 = preprocessed_mask_values.get(SEQ_6_IDX);
-        let poseidon_round_keys_0 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_0_IDX);
-        let poseidon_round_keys_1 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_1_IDX);
-        let poseidon_round_keys_2 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_2_IDX);
-        let poseidon_round_keys_3 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_3_IDX);
-        let poseidon_round_keys_4 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_4_IDX);
-        let poseidon_round_keys_5 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_5_IDX);
-        let poseidon_round_keys_6 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_6_IDX);
-        let poseidon_round_keys_7 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_7_IDX);
-        let poseidon_round_keys_8 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_8_IDX);
-        let poseidon_round_keys_9 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_9_IDX);
-        let poseidon_round_keys_10 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_10_IDX);
-        let poseidon_round_keys_11 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_11_IDX);
-        let poseidon_round_keys_12 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_12_IDX);
-        let poseidon_round_keys_13 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_13_IDX);
-        let poseidon_round_keys_14 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_14_IDX);
-        let poseidon_round_keys_15 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_15_IDX);
-        let poseidon_round_keys_16 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_16_IDX);
-        let poseidon_round_keys_17 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_17_IDX);
-        let poseidon_round_keys_18 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_18_IDX);
-        let poseidon_round_keys_19 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_19_IDX);
-        let poseidon_round_keys_20 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_20_IDX);
-        let poseidon_round_keys_21 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_21_IDX);
-        let poseidon_round_keys_22 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_22_IDX);
-        let poseidon_round_keys_23 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_23_IDX);
-        let poseidon_round_keys_24 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_24_IDX);
-        let poseidon_round_keys_25 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_25_IDX);
-        let poseidon_round_keys_26 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_26_IDX);
-        let poseidon_round_keys_27 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_27_IDX);
-        let poseidon_round_keys_28 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_28_IDX);
-        let poseidon_round_keys_29 = preprocessed_mask_values.get(POSEIDON_ROUND_KEYS_29_IDX);
+        let seq_6 = preprocessed_mask_values.get_and_mark_used(SEQ_6_IDX);
+        let poseidon_round_keys_0 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_0_IDX);
+        let poseidon_round_keys_1 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_1_IDX);
+        let poseidon_round_keys_2 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_2_IDX);
+        let poseidon_round_keys_3 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_3_IDX);
+        let poseidon_round_keys_4 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_4_IDX);
+        let poseidon_round_keys_5 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_5_IDX);
+        let poseidon_round_keys_6 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_6_IDX);
+        let poseidon_round_keys_7 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_7_IDX);
+        let poseidon_round_keys_8 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_8_IDX);
+        let poseidon_round_keys_9 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_9_IDX);
+        let poseidon_round_keys_10 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_10_IDX);
+        let poseidon_round_keys_11 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_11_IDX);
+        let poseidon_round_keys_12 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_12_IDX);
+        let poseidon_round_keys_13 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_13_IDX);
+        let poseidon_round_keys_14 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_14_IDX);
+        let poseidon_round_keys_15 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_15_IDX);
+        let poseidon_round_keys_16 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_16_IDX);
+        let poseidon_round_keys_17 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_17_IDX);
+        let poseidon_round_keys_18 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_18_IDX);
+        let poseidon_round_keys_19 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_19_IDX);
+        let poseidon_round_keys_20 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_20_IDX);
+        let poseidon_round_keys_21 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_21_IDX);
+        let poseidon_round_keys_22 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_22_IDX);
+        let poseidon_round_keys_23 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_23_IDX);
+        let poseidon_round_keys_24 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_24_IDX);
+        let poseidon_round_keys_25 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_25_IDX);
+        let poseidon_round_keys_26 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_26_IDX);
+        let poseidon_round_keys_27 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_27_IDX);
+        let poseidon_round_keys_28 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_28_IDX);
+        let poseidon_round_keys_29 = preprocessed_mask_values
+            .get_and_mark_used(POSEIDON_ROUND_KEYS_29_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();

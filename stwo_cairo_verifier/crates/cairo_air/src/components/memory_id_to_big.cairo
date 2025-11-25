@@ -322,7 +322,7 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
             RangeCheck_9_9_h_z: *self.range_9_9_h_lookup_elements.z,
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
-                .get(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
+                .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
@@ -440,7 +440,7 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
             RangeCheck_9_9_d_z: *self.range_9_9_d_lookup_elements.z,
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
-                .get(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
+                .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
         let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);

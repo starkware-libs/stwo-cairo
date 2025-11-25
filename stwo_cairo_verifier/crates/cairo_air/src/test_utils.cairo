@@ -153,17 +153,8 @@ pub fn make_interaction_trace(values: Array<QM31>, last_row_sum: QM31) -> Column
 }
 
 pub fn preprocessed_mask_add(
-    mask_values: PreprocessedMaskValues, column_idx: PreprocessedColumnIdx, value: QM31,
+    mut mask_values: PreprocessedMaskValues, column_idx: PreprocessedColumnIdx, value: QM31,
 ) -> PreprocessedMaskValues {
-    let mut new_values: Array<Nullable<QM31>> = array![];
-
-    for (i, column_mask_values) in mask_values.values.into_iter().enumerate() {
-        if i == column_idx {
-            new_values.append(NullableTrait::new(value));
-        } else {
-            new_values.append(column_mask_values);
-        }
-    }
-
-    PreprocessedMaskValues { values: new_values }
+    mask_values.values.insert(column_idx.into(), NullableTrait::new((value, false)));
+    mask_values
 }
