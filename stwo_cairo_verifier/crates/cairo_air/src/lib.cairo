@@ -105,8 +105,6 @@ use blake::BlakeContextInteractionClaimImpl;
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
 
-pub mod opcodes;
-use opcodes::OpcodeInteractionClaimImpl;
 
 pub mod range_checks;
 use range_checks::RangeChecksInteractionClaimImpl;
