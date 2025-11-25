@@ -116,27 +116,36 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_4_4_4_4,
         rc_3_3_3_3_3,
     } = range_checks;
-    assert_many(add, &trace);
-    assert_many(add_small, &trace);
-    assert_many(add_ap, &trace);
-    assert_many(assert_eq, &trace);
-    assert_many(assert_eq_imm, &trace);
-    assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
-    assert_many(call, &trace);
-    assert_many(call_rel_imm, &trace);
-    assert_many(generic, &trace);
-    assert_many(jnz, &trace);
-    assert_many(jnz_taken, &trace);
-    assert_many(jump, &trace);
-    assert_many(jump_double_deref, &trace);
-    assert_many(jump_rel, &trace);
-    assert_many(jump_rel_imm, &trace);
-    assert_many(mul, &trace);
-    assert_many(mul_small, &trace);
-    assert_many(qm31, &trace);
-    assert_many(ret, &trace);
-
+    add.as_ref().inspect(|c| assert_component(c, &trace));
+    add_small.as_ref().inspect(|c| assert_component(c, &trace));
+    add_ap.as_ref().inspect(|c| assert_component(c, &trace));
+    assert_eq.as_ref().inspect(|c| assert_component(c, &trace));
+    assert_eq_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    assert_eq_double_deref
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    blake.as_ref().inspect(|c| assert_component(c, &trace));
+    call.as_ref().inspect(|c| assert_component(c, &trace));
+    call_rel_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    generic.as_ref().inspect(|c| assert_component(c, &trace));
+    jnz.as_ref().inspect(|c| assert_component(c, &trace));
+    jnz_taken.as_ref().inspect(|c| assert_component(c, &trace));
+    jump.as_ref().inspect(|c| assert_component(c, &trace));
+    jump_double_deref
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    jump_rel.as_ref().inspect(|c| assert_component(c, &trace));
+    jump_rel_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    mul.as_ref().inspect(|c| assert_component(c, &trace));
+    mul_small.as_ref().inspect(|c| assert_component(c, &trace));
+    qm31.as_ref().inspect(|c| assert_component(c, &trace));
+    ret.as_ref().inspect(|c| assert_component(c, &trace));
     assert_component(verify_instruction, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
@@ -279,11 +288,4 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     );
 
     assert_cairo_components(commitment_scheme.trace_domain_evaluations(), &components);
-}
-
-fn assert_many<E: FrameworkEval + Sync>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) {
-    components.iter().for_each(|x| assert_component(x, trace));
 }

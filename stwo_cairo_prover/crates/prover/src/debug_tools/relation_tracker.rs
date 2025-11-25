@@ -167,26 +167,26 @@ fn cairo_relation_entries(
     } = range_checks;
 
     let mut entries = chain!(
-        add_to_relation_entries_many(add, trace),
-        add_to_relation_entries_many(add_small, trace),
-        add_to_relation_entries_many(add_ap, trace),
-        add_to_relation_entries_many(assert_eq, trace),
-        add_to_relation_entries_many(assert_eq_imm, trace),
-        add_to_relation_entries_many(assert_eq_double_deref, trace),
-        add_to_relation_entries_many(blake, trace),
-        add_to_relation_entries_many(call, trace),
-        add_to_relation_entries_many(call_rel_imm, trace),
-        add_to_relation_entries_many(generic, trace),
-        add_to_relation_entries_many(jnz, trace),
-        add_to_relation_entries_many(jnz_taken, trace),
-        add_to_relation_entries_many(jump, trace),
-        add_to_relation_entries_many(jump_double_deref, trace),
-        add_to_relation_entries_many(jump_rel, trace),
-        add_to_relation_entries_many(jump_rel_imm, trace),
-        add_to_relation_entries_many(mul, trace),
-        add_to_relation_entries_many(mul_small, trace),
-        add_to_relation_entries_many(qm31, trace),
-        add_to_relation_entries_many(ret, trace),
+        add_to_relation_option(add, trace),
+        add_to_relation_option(add_small, trace),
+        add_to_relation_option(add_ap, trace),
+        add_to_relation_option(assert_eq, trace),
+        add_to_relation_option(assert_eq_imm, trace),
+        add_to_relation_option(assert_eq_double_deref, trace),
+        add_to_relation_option(blake, trace),
+        add_to_relation_option(call, trace),
+        add_to_relation_option(call_rel_imm, trace),
+        add_to_relation_option(generic, trace),
+        add_to_relation_option(jnz, trace),
+        add_to_relation_option(jnz_taken, trace),
+        add_to_relation_option(jump, trace),
+        add_to_relation_option(jump_double_deref, trace),
+        add_to_relation_option(jump_rel, trace),
+        add_to_relation_option(jump_rel_imm, trace),
+        add_to_relation_option(mul, trace),
+        add_to_relation_option(mul_small, trace),
+        add_to_relation_option(qm31, trace),
+        add_to_relation_option(ret, trace),
         add_to_relation_entries(verify_instruction, trace),
         add_to_relation_entries(rc_6, trace),
         add_to_relation_entries(rc_8, trace),
@@ -318,6 +318,16 @@ fn add_to_relation_entries_many<E: FrameworkEval>(
         .iter()
         .flat_map(|x| add_to_relation_entries(x, trace))
         .collect()
+}
+
+fn add_to_relation_option<E: FrameworkEval>(
+    component: &Option<FrameworkComponent<E>>,
+    trace: &TreeVec<Vec<&Vec<M31>>>,
+) -> Vec<RelationTrackerEntry> {
+    component
+        .as_ref()
+        .map(|c| add_to_relation_entries(c, trace))
+        .unwrap_or_default()
 }
 
 /// Reduces the polynomial to a minimal degree polynomial that evaluates to the same values.
