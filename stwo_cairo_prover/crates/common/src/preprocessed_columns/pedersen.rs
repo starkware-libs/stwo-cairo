@@ -167,7 +167,8 @@ fn create_p1_and_p3_section() -> Vec<SimpleAffinePoint> {
 }
 
 fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
-    let start_point = ProjectivePoint::new(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
+    let start_point =
+        ProjectivePoint::new_unchecked(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
     (0..NUM_WINDOWS)
         .into_par_iter()
         .map(|window| {
