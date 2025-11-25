@@ -2,7 +2,6 @@ use std::ops::Deref;
 
 use cairo_air::air::{CairoComponents, CairoInteractionElements};
 use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
@@ -51,22 +50,6 @@ pub fn assert_component<E: FrameworkEval + Sync>(
 // * `cairo_components` - The components constraints to check.
 fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &CairoComponents) {
     let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_8_b,
-        verify_bitwise_xor_9,
-    } = cairo_components;
-    let OpcodeComponents {
         add,
         add_small,
         add_ap,
@@ -87,7 +70,20 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         mul_small,
         qm31,
         ret,
-    } = opcodes;
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
+        verify_bitwise_xor_9,
+    } = cairo_components;
     let RangeChecksComponents {
         rc_6,
         rc_8,

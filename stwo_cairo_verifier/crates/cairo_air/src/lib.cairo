@@ -102,8 +102,6 @@ use blake::BlakeContextInteractionClaimImpl;
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
 
-pub mod opcodes;
-use opcodes::OpcodeInteractionClaimImpl;
 
 pub mod range_checks;
 use range_checks::RangeChecksInteractionClaimImpl;
@@ -282,7 +280,26 @@ pub fn lookup_sum(
 
     // TODO(Andrew): double check this is correct order.
     let CairoInteractionClaim {
-        opcodes,
+        add,
+        add_small,
+        add_ap,
+        assert_eq,
+        assert_eq_imm,
+        assert_eq_double_deref,
+        blake,
+        call,
+        call_rel_imm,
+        generic,
+        jnz,
+        jnz_taken,
+        jump,
+        jump_double_deref,
+        jump_rel,
+        jump_rel_imm,
+        mul,
+        mul_small,
+        qm31,
+        ret,
         verify_instruction,
         blake_context,
         builtins,
@@ -298,7 +315,66 @@ pub fn lookup_sum(
         verify_bitwise_xor_9,
     } = interaction_claim;
 
-    sum += opcodes.sum();
+    for interaction_claim in add.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in add_small.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in add_ap.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in assert_eq.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in assert_eq_imm.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in assert_eq_double_deref.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in blake.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in call.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in call_rel_imm.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in generic.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jnz.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jnz_taken.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jump.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jump_double_deref.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jump_rel.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in jump_rel_imm.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in mul.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in mul_small.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in qm31.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
+    for interaction_claim in ret.span() {
+        sum += *interaction_claim.claimed_sum;
+    }
     sum += *verify_instruction.claimed_sum;
     sum += blake_context.sum();
     sum += builtins.sum();
