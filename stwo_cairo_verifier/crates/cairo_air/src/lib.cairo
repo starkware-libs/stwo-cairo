@@ -315,64 +315,64 @@ pub fn lookup_sum(
         verify_bitwise_xor_9,
     } = interaction_claim;
 
-    for interaction_claim in add.span() {
+    if let Option::Some(interaction_claim) = add {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in add_small.span() {
+    if let Option::Some(interaction_claim) = add_small {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in add_ap.span() {
+    if let Option::Some(interaction_claim) = add_ap {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq.span() {
+    if let Option::Some(interaction_claim) = assert_eq {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq_imm.span() {
+    if let Option::Some(interaction_claim) = assert_eq_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq_double_deref.span() {
+    if let Option::Some(interaction_claim) = assert_eq_double_deref {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in blake.span() {
+    if let Option::Some(interaction_claim) = blake {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in call.span() {
+    if let Option::Some(interaction_claim) = call {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in call_rel_imm.span() {
+    if let Option::Some(interaction_claim) = call_rel_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in generic.span() {
+    if let Option::Some(interaction_claim) = generic {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jnz.span() {
+    if let Option::Some(interaction_claim) = jnz {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jnz_taken.span() {
+    if let Option::Some(interaction_claim) = jnz_taken {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump.span() {
+    if let Option::Some(interaction_claim) = jump {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_double_deref.span() {
+    if let Option::Some(interaction_claim) = jump_double_deref {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_rel.span() {
+    if let Option::Some(interaction_claim) = jump_rel {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_rel_imm.span() {
+    if let Option::Some(interaction_claim) = jump_rel_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in mul.span() {
+    if let Option::Some(interaction_claim) = mul {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in mul_small.span() {
+    if let Option::Some(interaction_claim) = mul_small {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in qm31.span() {
+    if let Option::Some(interaction_claim) = qm31 {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in ret.span() {
+    if let Option::Some(interaction_claim) = ret {
         sum += *interaction_claim.claimed_sum;
     }
     sum += *verify_instruction.claimed_sum;
@@ -982,4 +982,3 @@ impl CairoVerificationErrorDisplay of core::fmt::Display<CairoVerificationError>
         }
     }
 }
-
