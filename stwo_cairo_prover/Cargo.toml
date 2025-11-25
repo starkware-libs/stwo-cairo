@@ -19,13 +19,13 @@ edition = "2021"
 bincode = "1.3"
 bzip2 = { version = "0.5.0", default-features = false, features = ["libbz2-rs-sys"] }
 bytemuck = { version = "1.20.0", features = ["derive"] }
-cairo-lang-casm = { version = "2.12.4-dev.1" }
-cairo-lang-runner = { version = "2.12.4-dev.1" }
-cairo-lang-executable = { version = "2.12.4-dev.1" }
-cairo-lang-utils = { version = "2.12.4-dev.1" }
+cairo-lang-casm = { version = "2.14.1-dev.0" }
+cairo-lang-runner = { version = "2.14.1-dev.0" }
+cairo-lang-executable = { version = "2.14.1-dev.0" }
+cairo-lang-utils = { version = "2.14.1-dev.0" }
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { version = "3.0.0-rc.3", features = [
+cairo-vm = { version = "3.0.0", features = [
     "extensive_hints",
     "mod_builtin",
     "clap",
@@ -44,7 +44,7 @@ serde_json = "1.0.1"
 sonic-rs = "0.3.17"
 starknet-curve = "0.6.0"
 starknet-ff = "0.3.7"
-starknet-types-core = { version = "=0.2.0", features = [
+starknet-types-core = { version = "=0.2.4", features = [
     "hash",
     "prime-bigint",
     "serde",
