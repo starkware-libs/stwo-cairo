@@ -690,6 +690,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             );
 
         preprocessed_mask_values.validate_usage();
+        assert!(trace_mask_values.is_empty());
+        assert!(interaction_trace_mask_values.is_empty());
         sum
     }
 }
@@ -1006,6 +1008,9 @@ pub impl CairoAirImpl of Air<CairoAir> {
             );
 
         preprocessed_mask_values.validate_usage();
+        assert!(trace_mask_values.is_empty());
+        assert!(interaction_trace_mask_values.is_empty());
+
         sum
     }
 }
@@ -1338,6 +1343,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             );
 
         preprocessed_mask_values.validate_usage();
+        assert!(trace_mask_values.is_empty());
+        assert!(interaction_trace_mask_values.is_empty());
         sum
     }
 }
