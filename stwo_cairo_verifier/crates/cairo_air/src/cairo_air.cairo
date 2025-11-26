@@ -168,18 +168,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
 
         // Overwrite the preprocessed trace log sizes.
         let _invalid_preprocessed_trace_log_sizes = aggregated_log_sizes.pop_front();
-
-        let mut preprocessed_trace_log_sizes = array![];
-
-        for log_size in PREPROCESSED_COLUMN_LOG_SIZE.span() {
-            preprocessed_trace_log_sizes.append(*log_size);
-        }
-
         let trace_log_sizes = aggregated_log_sizes.pop_front().unwrap();
         let interaction_log_sizes = aggregated_log_sizes.pop_front().unwrap();
         assert!(aggregated_log_sizes.is_empty());
 
-        array![preprocessed_trace_log_sizes.span(), trace_log_sizes, interaction_log_sizes]
+        array![PREPROCESSED_COLUMN_LOG_SIZE.span(), trace_log_sizes, interaction_log_sizes]
     }
 
     fn mix_into(self: @CairoClaim, ref channel: Channel) {
