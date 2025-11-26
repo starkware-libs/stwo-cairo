@@ -56,15 +56,6 @@ pub fn fri_answers(
     while let Some(columns_per_tree) = column_indices_per_tree_by_degree_bound.pop_back() {
         log_size = log_size - 1;
 
-        let queries_for_log_size =
-            match match_nullable(query_positions_per_log_size.get(log_size.into())) {
-            FromNullableResult::NotNull(value) => value.unbox(),
-            FromNullableResult::Null => {
-                // Skip processing this log size if it does not have any associated queries.
-                continue;
-            },
-        };
-
         let (sample_batches_by_point, n_columns_per_tree) = sample_batches_for_log_size(
             columns_per_tree,
             sample_values_per_column_per_tree,
@@ -72,6 +63,21 @@ pub fn fri_answers(
             log_size,
             log_blowup_factor,
         );
+
+        let queries_for_log_size =
+            match match_nullable(query_positions_per_log_size.get(log_size.into())) {
+            FromNullableResult::NotNull(value) => value.unbox(),
+            FromNullableResult::Null => {
+                // If there are no queries for this log size, we also cannot have any samples for
+                // it.
+                assert!(sample_batches_by_point.is_empty());
+                // If queries existed, they would need to be consumed by `fri_answers_for_log_size`
+                // even when there are no samples.
+
+                // Skip answers generation for this log size.
+                continue;
+            },
+        };
 
         answers
             .append(
