@@ -8,7 +8,7 @@ use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::Relation;
 
-use crate::air::CairoInteractionElements;
+use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::relations;
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]

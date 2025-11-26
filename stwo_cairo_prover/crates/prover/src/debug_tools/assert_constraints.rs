@@ -1,7 +1,8 @@
 use std::ops::Deref;
 
-use cairo_air::air::{CairoComponents, CairoInteractionElements};
+use cairo_air::air::CairoComponents;
 use cairo_air::builtins_air::BuiltinComponents;
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;

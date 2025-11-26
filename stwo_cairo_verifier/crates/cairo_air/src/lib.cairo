@@ -59,6 +59,9 @@ use hash_imports::*;
 pub mod cairo_air;
 use cairo_air::*;
 
+pub mod cairo_interaction_elements;
+pub use cairo_interaction_elements::{CairoInteractionElements, CairoInteractionElementsImpl};
+
 pub mod cairo_component;
 pub mod components;
 
@@ -267,52 +270,6 @@ pub fn verify_cairo(proof: CairoProof) {
         SECURITY_BITS,
         composition_commitment,
     );
-}
-
-
-pub fn lookup_sum(
-    claim: @CairoClaim,
-    elements: @CairoInteractionElements,
-    interaction_claim: @CairoInteractionClaim,
-) -> QM31 {
-    let mut sum = claim.public_data.logup_sum(elements);
-    // If the table is padded, take the sum of the non-padded values.
-    // Otherwise, the claimed_sum is the total_sum.
-    // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
-
-    // TODO(Andrew): double check this is correct order.
-    let CairoInteractionClaim {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_8_b,
-        verify_bitwise_xor_9,
-    } = interaction_claim;
-
-    sum += opcodes.sum();
-    sum += *verify_instruction.claimed_sum;
-    sum += blake_context.sum();
-    sum += builtins.sum();
-    sum += pedersen_context.sum();
-    sum += poseidon_context.sum();
-    sum += *memory_address_to_id.claimed_sum;
-    sum += memory_id_to_value.sum();
-    sum += range_checks.sum();
-    sum += *verify_bitwise_xor_4.claimed_sum;
-    sum += *verify_bitwise_xor_7.claimed_sum;
-    sum += *verify_bitwise_xor_8.claimed_sum;
-    sum += *verify_bitwise_xor_8_b.claimed_sum;
-    sum += *verify_bitwise_xor_9.claimed_sum;
-    sum
 }
 
 /// Verifies the claim of the Cairo proof.
@@ -906,4 +863,3 @@ impl CairoVerificationErrorDisplay of core::fmt::Display<CairoVerificationError>
         }
     }
 }
-
