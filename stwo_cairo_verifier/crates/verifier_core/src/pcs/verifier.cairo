@@ -189,7 +189,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             queried_values_per_tree,
         );
 
-        fri_verifier.decommit(fri_answers, queries);
+        fri_verifier.decommit(queries, fri_answers);
     }
 }
 

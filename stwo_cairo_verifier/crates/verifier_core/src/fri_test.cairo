@@ -42,7 +42,7 @@ fn valid_proof_passes_verification() {
     let mut channel: Channel = Default::default();
     let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals);
+    verifier.decommit(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -78,7 +78,7 @@ fn valid_proof_with_constant_last_layer_passes_verification() {
     let mut channel: Channel = Default::default();
     let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals);
+    verifier.decommit(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -149,7 +149,7 @@ fn valid_mixed_degree_proof_passes_verification() {
     let mut channel: Channel = Default::default();
     let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals_by_column);
+    verifier.decommit(queries, query_evals_by_column);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -243,7 +243,7 @@ fn mixed_degree_proof_with_queries_sampled_from_channel_passes_verification() {
     let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
     let (_query_positions_by_log_size, queries) = verifier.sample_query_positions(ref channel);
 
-    verifier.decommit(query_evals_by_column, queries);
+    verifier.decommit(queries, query_evals_by_column);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -295,7 +295,7 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
     let mut channel: Channel = Default::default();
     let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals);
+    verifier.decommit(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -468,7 +468,7 @@ fn proof_with_invalid_last_layer_fails_verification() {
     let mut channel: Channel = Default::default();
     let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(queries, query_evals);
+    verifier.decommit(queries, query_evals);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -504,5 +504,5 @@ fn decommit_queries_on_invalid_domain_fails_verification() {
     let mut channel: Channel = Default::default();
     let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
 
-    verifier.decommit_on_queries(invalid_queries, query_evals);
+    verifier.decommit(invalid_queries, query_evals);
 }
