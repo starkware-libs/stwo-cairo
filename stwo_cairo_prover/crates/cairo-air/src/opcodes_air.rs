@@ -9,8 +9,8 @@ use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use super::air::CairoInteractionElements;
 use super::components::display_components;
+use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,

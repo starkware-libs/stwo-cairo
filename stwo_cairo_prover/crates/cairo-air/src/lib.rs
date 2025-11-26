@@ -16,6 +16,7 @@ pub mod utils;
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
+pub mod cairo_interaction_elements;
 pub mod cairo_proof;
 pub mod public_data;
 pub use cairo_proof::CairoProof;

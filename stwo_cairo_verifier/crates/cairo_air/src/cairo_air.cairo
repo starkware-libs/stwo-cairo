@@ -15,6 +15,7 @@ use core::num::traits::Zero;
 use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
+use stwo_cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::opcodes::*;
 use crate::P_U32;
@@ -47,8 +48,7 @@ use stwo_cairo_air::poseidon::{
 use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, PREPROCESSED_COLUMN_LOG_SIZE};
 use stwo_cairo_air::range_checks::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
-    RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
-    RangeChecksInteractionElementsImpl,
+    RangeChecksInteractionClaimImpl, RangeChecksInteractionElementsImpl,
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
@@ -283,64 +283,50 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
     }
 }
 
-#[derive(Drop)]
-pub struct CairoInteractionElements {
-    pub opcodes: OpcodesElements,
-    pub verify_instruction: VerifyInstructionElements,
-    pub blake_round: BlakeRoundElements,
-    pub blake_g: BlakeGElements,
-    pub blake_round_sigma: BlakeRoundSigmaElements,
-    pub triple_xor_32: TripleXor32Elements,
-    pub partial_ec_mul: PartialEcMulElements,
-    pub pedersen_points_table: PedersenPointsTableElements,
-    pub poseidon_aggregator: PoseidonAggregatorElements,
-    pub poseidon_3_partial_rounds_chain: Poseidon3PartialRoundsChainElements,
-    pub poseidon_full_round_chain: PoseidonFullRoundChainElements,
-    pub cube_252: Cube252Elements,
-    pub poseidon_round_keys: PoseidonRoundKeysElements,
-    pub range_check_252_width_27: RangeCheck252Width27Elements,
-    pub memory_address_to_id: MemoryAddressToIdElements,
-    pub memory_id_to_value: MemoryIdToBigElements,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: VerifyBitwiseXor_4Elements,
-    pub verify_bitwise_xor_7: VerifyBitwiseXor_7Elements,
-    pub verify_bitwise_xor_8: VerifyBitwiseXor_8Elements,
-    pub verify_bitwise_xor_8_b: VerifyBitwiseXor_8_BElements,
-    pub verify_bitwise_xor_9: VerifyBitwiseXor_9Elements,
-    pub verify_bitwise_xor_12: VerifyBitwiseXor_12Elements,
-}
+pub fn lookup_sum(
+    claim: @CairoClaim,
+    elements: @CairoInteractionElements,
+    interaction_claim: @CairoInteractionClaim,
+) -> QM31 {
+    let mut sum = claim.public_data.logup_sum(elements);
+    // If the table is padded, take the sum of the non-padded values.
+    // Otherwise, the claimed_sum is the total_sum.
+    // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
 
-#[generate_trait]
-pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
-    fn draw(ref channel: Channel) -> CairoInteractionElements {
-        CairoInteractionElements {
-            opcodes: LookupElementsImpl::draw(ref channel),
-            verify_instruction: LookupElementsImpl::draw(ref channel),
-            blake_round: LookupElementsImpl::draw(ref channel),
-            blake_g: LookupElementsImpl::draw(ref channel),
-            blake_round_sigma: LookupElementsImpl::draw(ref channel),
-            triple_xor_32: LookupElementsImpl::draw(ref channel),
-            poseidon_aggregator: LookupElementsImpl::draw(ref channel),
-            poseidon_3_partial_rounds_chain: LookupElementsImpl::draw(ref channel),
-            poseidon_full_round_chain: LookupElementsImpl::draw(ref channel),
-            cube_252: LookupElementsImpl::draw(ref channel),
-            poseidon_round_keys: LookupElementsImpl::draw(ref channel),
-            range_check_252_width_27: LookupElementsImpl::draw(ref channel),
-            partial_ec_mul: LookupElementsImpl::draw(ref channel),
-            pedersen_points_table: LookupElementsImpl::draw(ref channel),
-            memory_address_to_id: LookupElementsImpl::draw(ref channel),
-            memory_id_to_value: LookupElementsImpl::draw(ref channel),
-            range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),
-            verify_bitwise_xor_4: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_7: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_8: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_8_b: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_9: LookupElementsImpl::draw(ref channel),
-            verify_bitwise_xor_12: LookupElementsImpl::draw(ref channel),
-        }
-    }
-}
+    // TODO(Andrew): double check this is correct order.
+    let CairoInteractionClaim {
+        opcodes,
+        verify_instruction,
+        blake_context,
+        builtins,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_8_b,
+        verify_bitwise_xor_9,
+    } = interaction_claim;
 
+    sum += opcodes.sum();
+    sum += *verify_instruction.claimed_sum;
+    sum += blake_context.sum();
+    sum += builtins.sum();
+    sum += pedersen_context.sum();
+    sum += poseidon_context.sum();
+    sum += *memory_address_to_id.claimed_sum;
+    sum += memory_id_to_value.sum();
+    sum += range_checks.sum();
+    sum += *verify_bitwise_xor_4.claimed_sum;
+    sum += *verify_bitwise_xor_7.claimed_sum;
+    sum += *verify_bitwise_xor_8.claimed_sum;
+    sum += *verify_bitwise_xor_8_b.claimed_sum;
+    sum += *verify_bitwise_xor_9.claimed_sum;
+    sum
+}
 
 #[derive(Drop)]
 #[cfg(not(feature: "poseidon252_verifier"))]

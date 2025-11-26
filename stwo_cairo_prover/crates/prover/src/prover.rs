@@ -2,7 +2,8 @@ use std::fs::read_to_string;
 use std::path::PathBuf;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::air::{lookup_sum, CairoComponents};
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
