@@ -30,7 +30,8 @@ use crate::components::{
     verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
 };
 pub use crate::public_data::{
-    MemorySection, MemorySmallValue, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
+    create_public_data, extract_sections_from_memory, MemorySection, MemorySmallValue, PublicData,
+    PublicMemory, PublicSegmentRanges, SegmentRange,
 };
 use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
