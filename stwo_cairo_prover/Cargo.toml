@@ -25,7 +25,7 @@ cairo-lang-executable = { version = "2.14.1-dev.0" }
 cairo-lang-utils = { version = "2.14.1-dev.0" }
 # TODO(yuval): Use an official version, not a specific commit.
 # Note: This revision does not originate from the main branch but from 'starkware-development'.
-cairo-vm = { version = "3.0.0", features = [
+cairo-vm = { git = "https://github.com/m-kus/cairo-vm", rev = "c9aa51b9360a6c89389cf88c93ac30b5213e64a7", features = [
     "extensive_hints",
     "mod_builtin",
     "clap",

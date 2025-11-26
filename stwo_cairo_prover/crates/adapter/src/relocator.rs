@@ -113,7 +113,7 @@ impl Relocator {
                     panic!("Builtin {builtin_name} is not supported in Stwo")
                 }
                 // Not builtins.
-                BuiltinName::segment_arena => {}
+                _ => {}
             };
         }
         res
