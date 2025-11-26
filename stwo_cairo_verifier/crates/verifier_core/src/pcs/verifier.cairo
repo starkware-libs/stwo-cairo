@@ -78,7 +78,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn column_indices_per_tree_by_degree_bound(
         self: @CommitmentSchemeVerifier,
     ) -> ColumnsIndicesPerTreeByLogDegreeBound {
-        let mut columns_by_deg_bound_per_tree = array![];
+        let mut columns_by_log_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
             columns_by_deg_bound_per_tree.append(*tree.column_indices_by_deg_bound);
         }
@@ -141,8 +141,13 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let random_coeff = channel.draw_secure_felt();
         let fri_config = config.fri_config;
 
+	/// TODO(audit): Move next to usage.
         let column_indices_per_tree_by_degree_bound = self
             .column_indices_per_tree_by_degree_bound();
+
+
+
+	// TODO(Audit): Consider doing this based on the intraction trace.
 
         // For flat AIRs (with split composition polynomial), the FRI column log degree bounds can
         // be derived solely from the trace log degree bounds, since these bounds encompass the
@@ -215,6 +220,7 @@ fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref chan
 pub fn get_trace_lde_log_size(
     commitment_scheme_trees: @TreeArray<MerkleVerifier<MerkleHasher>>,
 ) -> u32 {
+    // TODO(audit): consider unpacking the tree array.
     let trace_lde_log_size = *commitment_scheme_trees[1].tree_height;
     assert!(trace_lde_log_size == *commitment_scheme_trees[2].tree_height);
     trace_lde_log_size
@@ -225,9 +231,9 @@ pub fn get_trace_lde_log_size(
 fn get_column_log_degree_bounds(
     mut column_indices_by_deg_bound: ColumnsIndicesByDegreeBound,
 ) -> Array<u32> {
-    let mut degree_bounds = array![];
-    let mut degree_bound = column_indices_by_deg_bound.len();
-    while let Some(columns_of_degree_bound_per_tree) = column_indices_by_deg_bound.pop_back() {
+    let mut log_degree_bounds = array![];
+    let mut degree_bound = column_indices_by_log_deg_bound.len();
+    while let Some(columns_of_log_degree_bounds) = column_indices_by_deg_bound.pop_back() {
         degree_bound -= 1;
 
         if !columns_of_degree_bound_per_tree.is_empty() {
