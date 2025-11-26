@@ -197,7 +197,7 @@ pub type LogDegreeBoundSpan<T> = Span<T>;
 /// bound `degree_bound`.
 /// The indices in each tree are 0-based.
 ///
-pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
+pub type ColumnsIndicesByLogDegreeBound = LogDegreeBoundSpan<Span<usize>>;
 
 /// Given a span of column log degree bounds, Return a span of the column indices grouped by their
 /// log degree bound.
@@ -212,7 +212,7 @@ pub type ColumnsIndicesByDegreeBound = LogDegreeBoundSpan<Span<usize>>;
 /// of size 2**i.
 pub fn group_columns_by_degree_bound(
     log_degree_bound_by_column: ColumnSpan<u32>,
-) -> ColumnsIndicesByDegreeBound {
+) -> ColumnsIndicesByLogDegreeBound {
     let mut column_by_degree_bound: Felt252Dict<Nullable<Array<u32>>> = Default::default();
     let mut col_index = 0_usize;
     for column_log_degree_bound in log_degree_bound_by_column {
@@ -259,20 +259,21 @@ pub type ColumnsIndicesPerTreeByLogDegreeBound = LogDegreeBoundSpan<TreeSpan<Spa
 ///
 /// * `columns_per_tree_by_log_degree_bound`: The columns per tree by log degree bound.
 pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
-    mut columns_by_deg_bound_per_tree: TreeSpan<ColumnsIndicesByDegreeBound>,
+    mut columns_by_log_deg_bound_per_tree: TreeSpan<ColumnsIndicesByLogDegreeBound>,
 ) -> ColumnsIndicesPerTreeByLogDegreeBound {
     let mut columns_per_tree_by_log_deg_bound = array![];
 
     loop {
         // In each iteration we pop the the columns corresponding to `log_degree_bound` from each
-        // tree, so we need to prepare `next_columns_by_deg_bound_per_tree` for the next iteration.
-        let mut next_columns_by_deg_bound_per_tree = array![];
+        // tree, so we need to prepare `next_columns_by_log_deg_bound_per_tree` for the next
+        // iteration.
+        let mut next_columns_by_log_deg_bound_per_tree = array![];
 
         let mut done = true;
         let mut columns_per_tree = array![];
-        for columns_by_deg_bound in columns_by_deg_bound_per_tree {
-            let mut columns_by_deg_bound = *columns_by_deg_bound;
-            let column_indices = match columns_by_deg_bound.pop_front() {
+        for columns_by_log_deg_bound in columns_by_log_deg_bound_per_tree {
+            let mut columns_by_log_deg_bound = *columns_by_log_deg_bound;
+            let column_indices = match columns_by_log_deg_bound.pop_front() {
                 Some(column_indices) => {
                     done = false;
                     *column_indices
@@ -281,14 +282,14 @@ pub fn pad_and_transpose_columns_by_log_deg_bound_per_tree(
             };
             columns_per_tree.append(column_indices);
 
-            next_columns_by_deg_bound_per_tree.append(columns_by_deg_bound);
+            next_columns_by_log_deg_bound_per_tree.append(columns_by_log_deg_bound);
         }
 
         if done {
             break;
         }
 
-        columns_by_deg_bound_per_tree = next_columns_by_deg_bound_per_tree.span();
+        columns_by_log_deg_bound_per_tree = next_columns_by_log_deg_bound_per_tree.span();
         columns_per_tree_by_log_deg_bound.append(columns_per_tree.span());
     }
 

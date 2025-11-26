@@ -4,7 +4,7 @@ use core::fmt::{Debug, Error, Formatter};
 use core::nullable::NullableTrait;
 use core::option::OptionTrait;
 use crate::BaseField;
-use crate::utils::{ColumnsIndicesByDegreeBound, SpanExTrait};
+use crate::utils::{ColumnsIndicesByLogDegreeBound, SpanExTrait};
 use crate::vcs::hasher::MerkleHasher;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
@@ -61,15 +61,15 @@ pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
     // The height of the Merkle tree.
     //
-    // The height can be computed as log_blowup_factor + column_indices_by_deg_bound.len() - 1.
+    // The height can be computed as log_blowup_factor + column_indices_by_log_deg_bound.len() - 1.
     pub tree_height: u32,
     /// Indices of columns, grouped by their associated degree bound.
     ///
     /// While the MerkleVerifier itself only needs to know the number of columns for each degree
     /// bound, we store the full list of indices here because the Polynomial Commitment Scheme (PCS)
     /// verifier requires access to the actual indices. Keeping this information here avoids the
-    /// need to save us computing 'n_column_by_deg_bound' when creating the MerkleVerifier.
-    pub column_indices_by_deg_bound: ColumnsIndicesByDegreeBound,
+    /// need to save us computing 'n_column_by_log_deg_bound' when creating the MerkleVerifier.
+    pub column_indices_by_log_deg_bound: ColumnsIndicesByLogDegreeBound,
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
@@ -118,11 +118,11 @@ impl MerkleVerifierImpl<
     ) {
         let MerkleDecommitment { mut hash_witness, mut column_witness } = decommitment;
 
-        let mut column_indices_by_deg_bound = *self.column_indices_by_deg_bound;
+        let mut column_indices_by_log_deg_bound = *self.column_indices_by_log_deg_bound;
         let mut layer_log_size: felt252 = (*self.tree_height).into();
         let mut prev_layer_hashes: Array<(usize, H::Hash)> = array![];
 
-        let layer_cols = column_indices_by_deg_bound.pop_back().unwrap();
+        let layer_cols = column_indices_by_log_deg_bound.pop_back().unwrap();
         let layer_column_queries = queries_per_log_size
             .get(layer_log_size)
             .deref_or(array![].span());
@@ -138,7 +138,7 @@ impl MerkleVerifierImpl<
         while layer_log_size != 0 {
             layer_log_size -= 1;
             // `None` happens only in the last `log_blowup_factor` layers.
-            let n_columns_in_layer = match column_indices_by_deg_bound.pop_back() {
+            let n_columns_in_layer = match column_indices_by_log_deg_bound.pop_back() {
                 Some(layer_cols) => layer_cols.len(),
                 None => 0,
             };

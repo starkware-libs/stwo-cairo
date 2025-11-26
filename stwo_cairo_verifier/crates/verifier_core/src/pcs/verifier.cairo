@@ -6,7 +6,7 @@ use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::fri_answers;
 use crate::utils::{
-    ArrayImpl, ColumnsIndicesByDegreeBound, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl,
+    ArrayImpl, ColumnsIndicesByLogDegreeBound, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl,
     group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree,
 };
 use crate::vcs::MerkleHasher;
@@ -78,12 +78,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
     fn column_indices_per_tree_by_degree_bound(
         self: @CommitmentSchemeVerifier,
     ) -> ColumnsIndicesPerTreeByLogDegreeBound {
-        let mut columns_by_deg_bound_per_tree = array![];
+        let mut columns_by_log_deg_bound_per_tree = array![];
         for tree in self.trees.span() {
-            columns_by_deg_bound_per_tree.append(*tree.column_indices_by_deg_bound);
+            columns_by_log_deg_bound_per_tree.append(*tree.column_indices_by_log_deg_bound);
         }
 
-        pad_and_transpose_columns_by_log_deg_bound_per_tree(columns_by_deg_bound_per_tree.span())
+        pad_and_transpose_columns_by_log_deg_bound_per_tree(
+            columns_by_log_deg_bound_per_tree.span(),
+        )
     }
 
     /// Reads a Merkle root commitment for a set of columns from the prover and registers it with
@@ -106,14 +108,14 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Mix the commitment root into the Fiat-Shamir channel.
         channel.mix_commitment(commitment);
 
-        let column_indices_by_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
+        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(degree_bound_by_column);
         self
             .trees
             .append(
                 MerkleVerifier {
                     root: commitment,
-                    tree_height: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
-                    column_indices_by_deg_bound,
+                    tree_height: log_blowup_factor + column_indices_by_log_deg_bound.len() - 1,
+                    column_indices_by_log_deg_bound,
                 },
             );
     }
@@ -141,14 +143,11 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let random_coeff = channel.draw_secure_felt();
         let fri_config = config.fri_config;
 
-        let column_indices_per_tree_by_degree_bound = self
-            .column_indices_per_tree_by_degree_bound();
-
         // For flat AIRs (with split composition polynomial), the FRI column log degree bounds can
         // be derived solely from the trace log degree bounds, since these bounds encompass the
         // bounds of both the interaction trace and the composition trace.
         let column_log_degree_bounds = get_column_log_degree_bounds(
-            *self.trees[1].column_indices_by_deg_bound,
+            *self.trees[1].column_indices_by_log_deg_bound,
         )
             .span();
 
@@ -180,7 +179,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Answer FRI queries.
 
         let fri_answers = fri_answers(
-            column_indices_per_tree_by_degree_bound,
+            self.column_indices_per_tree_by_degree_bound(),
             fri_config.log_blowup_factor,
             oods_point,
             sampled_values,
@@ -215,25 +214,34 @@ fn mix_sampled_values(sampled_values: TreeSpan<ColumnSpan<Span<QM31>>>, ref chan
 pub fn get_trace_lde_log_size(
     commitment_scheme_trees: @TreeArray<MerkleVerifier<MerkleHasher>>,
 ) -> u32 {
-    let trace_lde_log_size = *commitment_scheme_trees[1].tree_height;
-    assert!(trace_lde_log_size == *commitment_scheme_trees[2].tree_height);
+    let boxed_triplet: @Box<[MerkleVerifier<MerkleHasher>; 3]> = commitment_scheme_trees
+        .span()
+        .try_into()
+        .unwrap();
+    let [_preprocessed_merkle_verifier, trace_merkle_verifier, interaction_trace_merkle_verifier] =
+        boxed_triplet
+        .as_snapshot()
+        .unbox();
+
+    let trace_lde_log_size = *trace_merkle_verifier.tree_height;
+    assert!(trace_lde_log_size == *interaction_trace_merkle_verifier.tree_height);
     trace_lde_log_size
 }
 
 /// Returns all column log bounds sorted in descending order.
 #[inline]
 fn get_column_log_degree_bounds(
-    mut column_indices_by_deg_bound: ColumnsIndicesByDegreeBound,
+    mut column_indices_by_log_deg_bound: ColumnsIndicesByLogDegreeBound,
 ) -> Array<u32> {
-    let mut degree_bounds = array![];
-    let mut degree_bound = column_indices_by_deg_bound.len();
-    while let Some(columns_of_degree_bound_per_tree) = column_indices_by_deg_bound.pop_back() {
-        degree_bound -= 1;
+    let mut log_degree_bounds = array![];
+    let mut log_degree_bound = column_indices_by_log_deg_bound.len();
+    while let Some(columns_of_degree_bound_per_tree) = column_indices_by_log_deg_bound.pop_back() {
+        log_degree_bound -= 1;
 
         if !columns_of_degree_bound_per_tree.is_empty() {
-            degree_bounds.append(degree_bound);
+            log_degree_bounds.append(log_degree_bound);
         }
     }
 
-    degree_bounds
+    log_degree_bounds
 }

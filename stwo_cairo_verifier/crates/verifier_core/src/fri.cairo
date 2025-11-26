@@ -384,13 +384,13 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             fri_witness.next().is_none(), "{}", FriVerificationError::FirstLayerEvaluationsInvalid,
         );
 
-        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
             degree_bound_by_column.span(),
         );
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
             tree_height: max_column_log_size,
-            column_indices_by_deg_bound,
+            column_indices_by_log_deg_bound,
         };
 
         merkle_verifier
@@ -453,13 +453,13 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         let degree_bound_by_column = ArrayImpl::new_repeated(
             n: QM31_EXTENSION_DEGREE, v: *self.log_degree_bound,
         );
-        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
             degree_bound_by_column.span(),
         );
         let merkle_verifier = MerkleVerifier {
             root: **self.proof.commitment,
             tree_height: column_log_size,
-            column_indices_by_deg_bound,
+            column_indices_by_log_deg_bound,
         };
 
         let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =
