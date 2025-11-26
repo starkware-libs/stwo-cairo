@@ -38,14 +38,14 @@ mod PoseidonTest {
         ]
             .span();
 
-        let column_indices_by_deg_bound = group_columns_by_degree_bound(
+        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
             degree_bound_by_column.span(),
         );
-        assert_eq!(log_blowup_factor + column_indices_by_deg_bound.len() - 1, 4);
+        assert_eq!(log_blowup_factor + column_indices_by_log_deg_bound.len() - 1, 4);
         MerkleVerifier {
             root,
-            tree_height: log_blowup_factor + column_indices_by_deg_bound.len() - 1,
-            column_indices_by_deg_bound,
+            tree_height: log_blowup_factor + column_indices_by_log_deg_bound.len() - 1,
+            column_indices_by_log_deg_bound,
         }
             .verify(ref queries_per_log_size, queried_values, decommitment);
     }
