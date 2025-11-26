@@ -166,11 +166,14 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             ],
         );
 
-        // Overwrite the preprocessed trace log sizes.
-        let _invalid_preprocessed_trace_log_sizes = aggregated_log_sizes.pop_front();
-        let trace_log_sizes = aggregated_log_sizes.pop_front().unwrap();
-        let interaction_log_sizes = aggregated_log_sizes.pop_front().unwrap();
-        assert!(aggregated_log_sizes.is_empty());
+        // Override the preprocessed trace log sizes, since they come from a global setting
+        // rather than computed by concatenating preprocessed log sizes of the individual
+        // components.
+        // TODO(ilya): consider removing the generation of `_invalid_preprocessed_trace_log_sizes`.
+        let boxed_triplet: Box<[Span<u32>; 3]> = *aggregated_log_sizes.span().try_into().unwrap();
+        let [_invalid_preprocessed_trace_log_sizes, trace_log_sizes, interaction_log_sizes] =
+            boxed_triplet
+            .unbox();
 
         array![PREPROCESSED_COLUMN_LOG_SIZE.span(), trace_log_sizes, interaction_log_sizes]
     }
