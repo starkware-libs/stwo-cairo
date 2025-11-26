@@ -6,9 +6,6 @@ use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::fields::m31::{M31, MulByM31Trait};
 use stwo_verifier_core::fields::qm31::QM31;
 
-#[cfg(test)]
-mod test;
-
 /// Represents the value of the prefix sum column at some index.
 /// Should be used to eliminate padded rows for the logup sum.
 // Copied from:
@@ -105,24 +102,6 @@ pub impl LookupElementsImpl<const N: usize> of LookupElementsTrait<N> {
         }
 
         sum
-    }
-}
-
-
-#[derive(Destruct, Default)]
-pub struct PreprocessedColumnSet {
-    /// Map indicating if a preprocessed column is already in the set.
-    pub contains: Felt252Dict<bool>,
-}
-
-#[generate_trait]
-pub impl PreprocessedColumnSetImpl of PreprocessedColumnSetTrait {
-    fn insert(ref self: PreprocessedColumnSet, idx: PreprocessedColumnIdx) {
-        self.contains.insert(idx.into(), true);
-    }
-
-    fn contains(ref self: PreprocessedColumnSet, idx: PreprocessedColumnIdx) -> bool {
-        self.contains.get(idx.into())
     }
 }
 

@@ -1,7 +1,6 @@
 pub use core::num::traits::Zero;
 pub use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedColumnSet, PreprocessedColumnSetImpl, PreprocessedMaskValues,
-    PreprocessedMaskValuesImpl,
+    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 pub use stwo_verifier_core::channel::{Channel, ChannelTrait};
 pub use stwo_verifier_core::circle::{

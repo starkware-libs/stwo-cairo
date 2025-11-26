@@ -44,7 +44,7 @@ use stwo_cairo_air::pedersen::{
 use stwo_cairo_air::poseidon::{
     PoseidonContextClaim, PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
 };
-use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, PREPROCESSED_COLUMN_LOG_SIZE};
+use stwo_cairo_air::preprocessed_columns::PREPROCESSED_COLUMN_LOG_SIZE;
 use stwo_cairo_air::range_checks::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksComponentsImpl, RangeChecksInteractionClaim,
     RangeChecksInteractionClaimImpl, RangeChecksInteractionElements,
@@ -52,8 +52,7 @@ use stwo_cairo_air::range_checks::{
 };
 use stwo_cairo_air::{PublicData, PublicDataImpl, RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElements, LookupElementsImpl, PreprocessedColumnSet, PreprocessedMaskValues,
-    PreprocessedMaskValuesImpl,
+    LookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -61,7 +60,7 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
-use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
+use stwo_verifier_core::{ColumnSpan, TreeArray, TreeSpan};
 
 
 pub type Cube252Elements = LookupElements<20>;
@@ -1369,24 +1368,4 @@ pub impl CairoAirImpl of Air<CairoAir> {
         );
         sum
     }
-}
-
-fn preprocessed_trace_mask_points(
-    preprocessed_column_set: PreprocessedColumnSet, point: CirclePoint<QM31>,
-) -> ColumnArray<Array<CirclePoint<QM31>>> {
-    let mut mask_points = array![];
-
-    let PreprocessedColumnSet { mut contains } = preprocessed_column_set;
-
-    for idx in 0..NUM_PREPROCESSED_COLUMNS {
-        if contains.get(idx.into()) {
-            mask_points.append(array![point]);
-            // Remove the item from the set.
-            contains.insert(idx.into(), false);
-        } else {
-            mask_points.append(array![]);
-        }
-    }
-
-    mask_points
 }
