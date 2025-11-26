@@ -134,15 +134,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 
     /// Verifies the decommitment stage of FRI.
     ///
-    /// The query evals need to be provided in the same order as their commitment.
+    /// The first layer query evals need to be provided in the same order as their commitment.
     fn decommit(
-        self: FriVerifier, first_layer_query_evals: ColumnArray<Span<QM31>>, queries: Queries,
-    ) {
-        self.decommit_on_queries(queries, first_layer_query_evals)
-    }
-
-    #[inline]
-    fn decommit_on_queries(
         self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
     ) {
         let first_layer_sparse_evals = decommit_first_layer(
