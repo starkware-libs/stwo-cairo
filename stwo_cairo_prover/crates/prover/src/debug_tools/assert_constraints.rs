@@ -72,7 +72,11 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         qm31,
         ret,
         verify_instruction,
-        blake_context,
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
         builtins,
         pedersen_context,
         poseidon_context,
@@ -217,18 +221,19 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     }
     assert_component(&memory_id_to_value.1, &trace);
 
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
+    if let Some(blake_round) = blake_round.as_ref() {
         assert_component(blake_round, &trace);
+    }
+    if let Some(blake_g) = blake_g.as_ref() {
         assert_component(blake_g, &trace);
+    }
+    if let Some(blake_sigma) = blake_sigma.as_ref() {
         assert_component(blake_sigma, &trace);
+    }
+    if let Some(triple_xor_32) = triple_xor_32.as_ref() {
         assert_component(triple_xor_32, &trace);
+    }
+    if let Some(verify_bitwise_xor_12) = verify_bitwise_xor_12.as_ref() {
         assert_component(verify_bitwise_xor_12, &trace);
     }
 

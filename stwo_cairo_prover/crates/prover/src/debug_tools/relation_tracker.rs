@@ -122,7 +122,11 @@ fn cairo_relation_entries(
         qm31,
         ret,
         verify_instruction,
-        blake_context,
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
         builtins,
         memory_address_to_id,
         memory_id_to_value,
@@ -227,25 +231,13 @@ fn cairo_relation_entries(
         add_to_relation_entries(memory_address_to_id, trace),
         add_to_relation_entries_many(&memory_id_to_value.0, trace),
         add_to_relation_entries(&memory_id_to_value.1, trace),
+        add_to_relation_entries_many(blake_round.as_ref(), trace),
+        add_to_relation_entries_many(blake_g.as_ref(), trace),
+        add_to_relation_entries_many(blake_sigma.as_ref(), trace),
+        add_to_relation_entries_many(triple_xor_32.as_ref(), trace),
+        add_to_relation_entries_many(verify_bitwise_xor_12.as_ref(), trace),
     )
     .collect_vec();
-
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(blake_round, trace),
-            add_to_relation_entries(blake_g, trace),
-            add_to_relation_entries(blake_sigma, trace),
-            add_to_relation_entries(triple_xor_32, trace),
-            add_to_relation_entries(verify_bitwise_xor_12, trace),
-        ));
-    }
 
     // Builtins
     let BuiltinComponents {
