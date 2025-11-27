@@ -6,5 +6,6 @@ pub mod fast_deduction;
 pub mod opcodes;
 pub mod prelude;
 pub mod preprocessed_trace;
+pub mod public_data;
 pub mod range_checks;
 pub mod utils;
