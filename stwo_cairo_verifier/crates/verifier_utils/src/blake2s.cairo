@@ -108,43 +108,32 @@ pub fn encode_felt_in_limbs_to_array(felt: [u32; 8], ref array: Array<u32>) {
     }
 }
 
-fn hash_u32s(mut section: Span<u32>) -> Box<[u32; 8]> {
+fn hash_u32s(mut values: Span<u32>) -> Box<[u32; 8]> {
     let mut state = BoxTrait::new(BLAKE2S_256_INITIAL_STATE);
-
-    // Fill msg with the first 16 values.
-    // TODO(Gali): Use `let ... else ...` when supported.
-    let mut msg = if let Some(head) = section.multi_pop_front::<16>() {
-        *head
-    } else {
-        // Append values to msg and pad to blake hash message size.
-        let mut msg = array![];
-        msg.append_span(section);
-        let i = section.len();
-        for _ in i..16 {
-            msg.append(0);
-        }
-        return blake2s_finalize(state, byte_count: i * 4, msg: *msg.span().try_into().unwrap());
-    };
-
-    let mut byte_count = 64;
-
-    while let Some(head) = section.multi_pop_front::<16>() {
-        // Compress and re-fill msg.
-        state = blake2s_compress(state, byte_count, msg);
-        msg = *head;
+    let mut byte_count = 0;
+    if let Some(mut msg) = values.multi_pop_front::<16>() {
         byte_count += 64;
+        while let Some(head) = values.multi_pop_front::<16>() {
+            // Compress and re-fill msg.
+            state = blake2s_compress(state, byte_count, *msg);
+            msg = head;
+            byte_count += 64;
+        }
+
+        // Here `msg` is the last full 16-element block, if there are no remaining values, we can
+        // finalize the hash and return the result.
+        if values.is_empty() {
+            return blake2s_finalize(state, byte_count, *msg);
+        }
+
+        // Otherwise, update the state and handle the remaining values.
+        state = blake2s_compress(state, byte_count, *msg);
     }
 
-    if section.is_empty() {
-        return blake2s_finalize(state, byte_count, msg);
-    }
-
-    // Compress, append remaining values to msg and pad to blake hash message size.
-    state = blake2s_compress(state, byte_count, msg);
-
+    /// pad the remaining values to a full 16-element block and hash them as a final block.
     let mut msg = array![];
-    let i = section.len();
-    msg.append_span(section);
+    let i = values.len();
+    msg.append_span(values);
     for _ in i..16 {
         msg.append(0);
     }
