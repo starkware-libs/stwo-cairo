@@ -11,7 +11,6 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextInteractionClaim};
 use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
 use super::components::indented_component_display;
 use super::pedersen::air::{
@@ -26,12 +25,12 @@ use super::range_checks_air::{
 use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
-    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
-    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
-    memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_8_b,
-    verify_bitwise_xor_9, verify_instruction,
+    assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
+    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
+    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode,
+    ret_opcode, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7,
+    verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
 };
 pub use crate::public_data::{
     MemorySection, MemorySmallValue, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -62,7 +61,11 @@ pub struct CairoClaim {
     pub qm31: Option<qm_31_add_mul_opcode::Claim>,
     pub ret: Option<ret_opcode::Claim>,
     pub verify_instruction: verify_instruction::Claim,
-    pub blake_context: BlakeContextClaim,
+    pub blake_round: Option<blake_round::Claim>,
+    pub blake_g: Option<blake_g::Claim>,
+    pub blake_sigma: Option<blake_round_sigma::Claim>,
+    pub triple_xor_32: Option<triple_xor_32::Claim>,
+    pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::Claim>,
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
@@ -102,7 +105,11 @@ impl CairoClaim {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -178,7 +185,12 @@ impl CairoClaim {
         ret.inspect(|c| c.mix_into(channel));
 
         verify_instruction.mix_into(channel);
-        blake_context.mix_into(channel);
+        blake_round.map(|c| c.mix_into(channel));
+        blake_g.map(|c| c.mix_into(channel));
+        blake_sigma.map(|c| c.mix_into(channel));
+        triple_xor_32.map(|c| c.mix_into(channel));
+        verify_bitwise_xor_12.map(|c| c.mix_into(channel));
+
         builtins.mix_into(channel);
         pedersen_context.mix_into(channel);
         poseidon_context.mix_into(channel);
@@ -227,7 +239,15 @@ impl CairoClaim {
         self.qm31.inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.ret.inspect(|c| log_sizes_list.push(c.log_sizes()));
         log_sizes_list.push(self.verify_instruction.log_sizes());
-        log_sizes_list.push(self.blake_context.log_sizes());
+        self.blake_round
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_g.inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.blake_sigma
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.triple_xor_32
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.verify_bitwise_xor_12
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         log_sizes_list.push(self.builtins.log_sizes());
         log_sizes_list.push(self.pedersen_context.log_sizes());
         log_sizes_list.push(self.poseidon_context.log_sizes());
@@ -266,7 +286,11 @@ impl CairoClaim {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_sigma: _,
+            triple_xor_32,
+            verify_bitwise_xor_12: _,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -414,7 +438,25 @@ impl CairoClaim {
         });
 
         builtins.accumulate_relation_uses(relation_uses);
-        blake_context.accumulate_relation_uses(relation_uses);
+
+        blake_round.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                blake_round::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        blake_g.iter().for_each(|c| {
+            accumulate_relation_uses(relation_uses, blake_g::RELATION_USES_PER_ROW, c.log_size)
+        });
+        triple_xor_32.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                triple_xor_32::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+
         pedersen_context.accumulate_relation_uses(relation_uses);
         poseidon_context.accumulate_relation_uses(relation_uses);
         accumulate_relation_uses(
@@ -463,7 +505,11 @@ pub struct CairoInteractionClaim {
     pub qm31: Option<qm_31_add_mul_opcode::InteractionClaim>,
     pub ret: Option<ret_opcode::InteractionClaim>,
     pub verify_instruction: verify_instruction::InteractionClaim,
-    pub blake_context: BlakeContextInteractionClaim,
+    pub blake_round: Option<blake_round::InteractionClaim>,
+    pub blake_g: Option<blake_g::InteractionClaim>,
+    pub blake_sigma: Option<blake_round_sigma::InteractionClaim>,
+    pub triple_xor_32: Option<triple_xor_32::InteractionClaim>,
+    pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::InteractionClaim>,
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
@@ -499,7 +545,13 @@ impl CairoInteractionClaim {
         self.qm31.inspect(|c| c.mix_into(channel));
         self.ret.inspect(|c| c.mix_into(channel));
         self.verify_instruction.mix_into(channel);
-        self.blake_context.mix_into(channel);
+        self.blake_round.as_ref().inspect(|c| c.mix_into(channel));
+        self.blake_g.as_ref().inspect(|c| c.mix_into(channel));
+        self.blake_sigma.as_ref().inspect(|c| c.mix_into(channel));
+        self.triple_xor_32.as_ref().inspect(|c| c.mix_into(channel));
+        self.verify_bitwise_xor_12
+            .as_ref()
+            .inspect(|c| c.mix_into(channel));
         self.builtins.mix_into(channel);
         self.pedersen_context.mix_into(channel);
         self.poseidon_context.mix_into(channel);
@@ -567,7 +619,26 @@ pub fn lookup_sum(
     interaction_claim.qm31.inspect(|ic| sum += ic.claimed_sum);
     interaction_claim.ret.inspect(|ic| sum += ic.claimed_sum);
     sum += interaction_claim.verify_instruction.claimed_sum;
-    sum += interaction_claim.blake_context.sum();
+    interaction_claim
+        .blake_round
+        .as_ref()
+        .inspect(|ic| sum += ic.claimed_sum);
+    interaction_claim
+        .blake_g
+        .as_ref()
+        .inspect(|ic| sum += ic.claimed_sum);
+    interaction_claim
+        .blake_sigma
+        .as_ref()
+        .inspect(|ic| sum += ic.claimed_sum);
+    interaction_claim
+        .triple_xor_32
+        .as_ref()
+        .inspect(|ic| sum += ic.claimed_sum);
+    interaction_claim
+        .verify_bitwise_xor_12
+        .as_ref()
+        .inspect(|ic| sum += ic.claimed_sum);
     sum += interaction_claim.builtins.sum();
     sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
@@ -605,7 +676,11 @@ pub struct CairoComponents {
     pub qm31: Option<qm_31_add_mul_opcode::Component>,
     pub ret: Option<ret_opcode::Component>,
     pub verify_instruction: verify_instruction::Component,
-    pub blake_context: BlakeContextComponents,
+    pub blake_round: Option<blake_round::Component>,
+    pub blake_g: Option<blake_g::Component>,
+    pub blake_sigma: Option<blake_round_sigma::Component>,
+    pub triple_xor_32: Option<triple_xor_32::Component>,
+    pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::Component>,
     pub builtins: BuiltinComponents,
     pub pedersen_context: PedersenContextComponents,
     pub poseidon_context: PoseidonContextComponents,
@@ -1154,12 +1229,99 @@ impl CairoComponents {
             interaction_claim.verify_instruction.claimed_sum,
         );
 
-        let blake_context = BlakeContextComponents::new(
-            tree_span_provider,
-            &cairo_claim.blake_context,
-            interaction_elements,
-            &interaction_claim.blake_context,
-        );
+        let blake_round_component = cairo_claim.blake_round.map(|claim| {
+            let interaction_claim = interaction_claim.blake_round.unwrap();
+            blake_round::Component::new(
+                tree_span_provider,
+                blake_round::Eval {
+                    claim,
+                    blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+                    blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+                    blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    range_check_7_2_5_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_7_2_5
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let blake_g_component = cairo_claim.blake_g.map(|claim| {
+            let interaction_claim = interaction_claim.blake_g.unwrap();
+            blake_g::Component::new(
+                tree_span_provider,
+                blake_g::Eval {
+                    claim,
+                    blake_g_lookup_elements: interaction_elements.blake_g.clone(),
+                    verify_bitwise_xor_12_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_12
+                        .clone(),
+                    verify_bitwise_xor_4_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_4
+                        .clone(),
+                    verify_bitwise_xor_7_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_7
+                        .clone(),
+                    verify_bitwise_xor_8_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8
+                        .clone(),
+                    verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8_b
+                        .clone(),
+                    verify_bitwise_xor_9_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_9
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let blake_sigma_component = cairo_claim.blake_sigma.map(|claim| {
+            let interaction_claim = interaction_claim.blake_sigma.unwrap();
+            blake_round_sigma::Component::new(
+                tree_span_provider,
+                blake_round_sigma::Eval {
+                    claim,
+                    blake_round_sigma_lookup_elements: interaction_elements.blake_sigma.clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let triple_xor_32_component = cairo_claim.triple_xor_32.map(|claim| {
+            let interaction_claim = interaction_claim.triple_xor_32.unwrap();
+            triple_xor_32::Component::new(
+                tree_span_provider,
+                triple_xor_32::Eval {
+                    claim,
+                    triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+                    verify_bitwise_xor_8_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8
+                        .clone(),
+                    verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8_b
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let verify_bitwise_xor_12_component = cairo_claim.verify_bitwise_xor_12.map(|claim| {
+            let interaction_claim = interaction_claim.verify_bitwise_xor_12.unwrap();
+            verify_bitwise_xor_12::Component::new(
+                tree_span_provider,
+                verify_bitwise_xor_12::Eval {
+                    claim,
+                    verify_bitwise_xor_12_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_12
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
         let builtin_components = BuiltinComponents::new(
             tree_span_provider,
             &cairo_claim.builtins,
@@ -1293,7 +1455,11 @@ impl CairoComponents {
             qm31,
             ret,
             verify_instruction: verify_instruction_component,
-            blake_context,
+            blake_round: blake_round_component,
+            blake_g: blake_g_component,
+            blake_sigma: blake_sigma_component,
+            triple_xor_32: triple_xor_32_component,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtin_components,
             pedersen_context,
             poseidon_context,
@@ -1374,7 +1540,21 @@ impl CairoComponents {
                 .iter()
                 .map(|c| c as &dyn ComponentProver<SimdBackend>),
             [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
-            self.blake_context.provers(),
+            self.blake_round
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.blake_g
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.blake_sigma
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.triple_xor_32
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.verify_bitwise_xor_12
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
             self.builtins.provers(),
             self.pedersen_context.provers(),
             self.poseidon_context.provers(),
@@ -1548,7 +1728,46 @@ impl std::fmt::Display for CairoComponents {
             "VerifyInstruction: {}",
             indented_component_display(&self.verify_instruction)
         )?;
-        writeln!(f, "BlakeContext: {}", self.blake_context)?;
+        writeln!(
+            f,
+            "BlakeRound: {}",
+            self.blake_round
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "BlakeG: {}",
+            self.blake_g
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "BlakeSigma: {}",
+            self.blake_sigma
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "TripleXor32: {}",
+            self.triple_xor_32
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "VerifyBitwiseXor12: {}",
+            self.verify_bitwise_xor_12
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
         writeln!(f, "Builtins: {}", self.builtins)?;
         writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
