@@ -5,6 +5,9 @@ use components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteract
 use components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
 use components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
 use components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
+use components::blake_g::InteractionClaimImpl as BlakeGInteractionClaimImpl;
+use components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimImpl;
+use components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl;
 use components::call_opcode_abs::InteractionClaimImpl as CallOpcodeAbsInteractionClaimImpl;
 use components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelImmInteractionClaimImpl;
 use components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
@@ -32,17 +35,16 @@ use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9I
 use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-use stwo_cairo_air::blake::*;
 use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
-    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
-    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode, mul_opcode_small,
-    qm_31_add_mul_opcode, ret_opcode,
+    assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
+    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
+    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode,
+    mul_opcode_small, qm_31_add_mul_opcode, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
 };
 use crate::P_U32;
 
@@ -58,10 +60,6 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
-use stwo_cairo_air::blake::{
-    BlakeContextClaim, BlakeContextComponents, BlakeContextComponentsImpl,
-    BlakeContextInteractionClaim, BlakeContextInteractionClaimImpl,
-};
 use stwo_cairo_air::builtins::{
     BuiltinsClaim, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
 };
@@ -158,7 +156,11 @@ pub struct CairoClaim {
     pub qm31: Option<qm_31_add_mul_opcode::Claim>,
     pub ret: Option<ret_opcode::Claim>,
     pub verify_instruction: components::verify_instruction::Claim,
-    pub blake_context: BlakeContextClaim,
+    pub blake_round: Option<components::blake_round::Claim>,
+    pub blake_g: Option<components::blake_g::Claim>,
+    pub blake_round_sigma: Option<components::blake_round_sigma::Claim>,
+    pub triple_xor_32: Option<components::triple_xor_32::Claim>,
+    pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Claim>,
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
@@ -238,7 +240,23 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         }
 
         log_sizes_list.append(self.verify_instruction.log_sizes());
-        log_sizes_list.append(self.blake_context.log_sizes());
+
+        if let Some(claim) = self.blake_round {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_g {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.blake_round_sigma {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.triple_xor_32 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.verify_bitwise_xor_12 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+
         log_sizes_list.append(self.builtins.log_sizes());
         log_sizes_list.append(self.pedersen_context.log_sizes());
         log_sizes_list.append(self.poseidon_context.log_sizes());
@@ -293,7 +311,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -450,7 +472,21 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         }
 
         verify_instruction.mix_into(ref channel);
-        blake_context.mix_into(ref channel);
+        if let Some(claim) = blake_round {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = blake_g {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = blake_round_sigma {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = triple_xor_32 {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = verify_bitwise_xor_12 {
+            claim.mix_into(ref channel);
+        }
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
@@ -488,7 +524,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma: _,
+            triple_xor_32,
+            verify_bitwise_xor_12: _,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -566,7 +606,15 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         if let Some(claim) = ret {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        blake_context.accumulate_relation_uses(ref relation_uses);
+        if let Some(claim) = blake_round {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = blake_g {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = triple_xor_32 {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
         poseidon_context.accumulate_relation_uses(ref relation_uses);
@@ -599,7 +647,11 @@ pub struct CairoInteractionClaim {
     pub qm31: Option<qm_31_add_mul_opcode::InteractionClaim>,
     pub ret: Option<ret_opcode::InteractionClaim>,
     pub verify_instruction: components::verify_instruction::InteractionClaim,
-    pub blake_context: BlakeContextInteractionClaim,
+    pub blake_round: Option<components::blake_round::InteractionClaim>,
+    pub blake_g: Option<components::blake_g::InteractionClaim>,
+    pub blake_round_sigma: Option<components::blake_round_sigma::InteractionClaim>,
+    pub triple_xor_32: Option<components::triple_xor_32::InteractionClaim>,
+    pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::InteractionClaim>,
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
@@ -638,7 +690,11 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -713,7 +769,21 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             interaction_claim.mix_into(ref channel);
         }
         verify_instruction.mix_into(ref channel);
-        blake_context.mix_into(ref channel);
+        if let Some(claim) = blake_round {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = blake_g {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = blake_round_sigma {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = triple_xor_32 {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = verify_bitwise_xor_12 {
+            claim.mix_into(ref channel);
+        }
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
@@ -761,7 +831,11 @@ pub fn lookup_sum(
         qm31,
         ret,
         verify_instruction,
-        blake_context,
+        blake_round,
+        blake_g,
+        blake_round_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
         builtins,
         pedersen_context,
         poseidon_context,
@@ -837,7 +911,21 @@ pub fn lookup_sum(
     }
 
     sum += *verify_instruction.claimed_sum;
-    sum += blake_context.sum();
+    if let Some(interaction_claim) = blake_round {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = blake_g {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = blake_round_sigma {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = triple_xor_32 {
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = verify_bitwise_xor_12 {
+        sum += *interaction_claim.claimed_sum;
+    }
     sum += builtins.sum();
     sum += pedersen_context.sum();
     sum += poseidon_context.sum();
@@ -876,7 +964,11 @@ pub struct CairoAir {
     qm31: Option<qm_31_add_mul_opcode::Component>,
     ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
-    blake_context: BlakeContextComponents,
+    blake_round: Option<components::blake_round::Component>,
+    blake_g: Option<components::blake_g::Component>,
+    blake_round_sigma: Option<components::blake_round_sigma::Component>,
+    triple_xor_32: Option<components::triple_xor_32::Component>,
+    verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
     builtins: BuiltinComponents,
     pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
@@ -1170,9 +1262,58 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
-        );
+        let blake_round_component = cairo_claim
+            .blake_round
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round.unwrap();
+                    blake_round::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let blake_g_component = cairo_claim
+            .blake_g
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_g.unwrap();
+                    blake_g::NewComponentImpl::new(@claim, @interaction_claim, interaction_elements)
+                },
+            );
+
+        let blake_round_sigma_component = cairo_claim
+            .blake_round_sigma
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round_sigma.unwrap();
+                    blake_round_sigma::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let triple_xor_32_component = cairo_claim
+            .triple_xor_32
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.triple_xor_32.unwrap();
+                    triple_xor_32::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let verify_bitwise_xor_12_component = cairo_claim
+            .verify_bitwise_xor_12
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.verify_bitwise_xor_12.unwrap();
+                    verify_bitwise_xor_12::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
@@ -1292,7 +1433,11 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             qm31: qm31_component,
             ret: ret_component,
             verify_instruction: verifyinstruction_component,
-            blake_context: blake_context_component,
+            blake_round: blake_round_component,
+            blake_g: blake_g_component,
+            blake_round_sigma: blake_round_sigma_component,
+            triple_xor_32: triple_xor_32_component,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtins_components,
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
@@ -1359,7 +1504,11 @@ pub impl CairoAirImpl of Air<CairoAir> {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             pedersen_context,
             poseidon_context,
@@ -1603,15 +1752,61 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        blake_context
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = blake_round {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_g {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_round_sigma {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = triple_xor_32 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = verify_bitwise_xor_12 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         builtins
             .evaluate_constraints_at_point(
                 ref sum,
@@ -1751,7 +1946,11 @@ pub struct CairoAir {
     qm31: Option<qm_31_add_mul_opcode::Component>,
     ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
-    blake_context: BlakeContextComponents,
+    blake_round: Option<components::blake_round::Component>,
+    blake_g: Option<components::blake_g::Component>,
+    blake_round_sigma: Option<components::blake_round_sigma::Component>,
+    triple_xor_32: Option<components::triple_xor_32::Component>,
+    verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
     builtins: BuiltinComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
@@ -2035,9 +2234,58 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
-        );
+        let blake_round_component = cairo_claim
+            .blake_round
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round.unwrap();
+                    blake_round::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let blake_g_component = cairo_claim
+            .blake_g
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_g.unwrap();
+                    blake_g::NewComponentImpl::new(@claim, @interaction_claim, interaction_elements)
+                },
+            );
+
+        let blake_round_sigma_component = cairo_claim
+            .blake_round_sigma
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round_sigma.unwrap();
+                    blake_round_sigma::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let triple_xor_32_component = cairo_claim
+            .triple_xor_32
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.triple_xor_32.unwrap();
+                    triple_xor_32::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let verify_bitwise_xor_12_component = cairo_claim
+            .verify_bitwise_xor_12
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.verify_bitwise_xor_12.unwrap();
+                    verify_bitwise_xor_12::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
@@ -2148,7 +2396,11 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             qm31: qm31_components,
             ret: ret_components,
             verify_instruction: verifyinstruction_component,
-            blake_context: blake_context_component,
+            blake_round: blake_round_component,
+            blake_g: blake_g_component,
+            blake_round_sigma: blake_round_sigma_component,
+            triple_xor_32: triple_xor_32_component,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtins_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
@@ -2213,7 +2465,11 @@ pub impl CairoAirImpl of Air<CairoAir> {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             memory_address_to_id,
             memory_id_to_value,
@@ -2444,15 +2700,61 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        blake_context
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = blake_round {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_g {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_round_sigma {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = triple_xor_32 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = verify_bitwise_xor_12 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         builtins
             .evaluate_constraints_at_point(
                 ref sum,
@@ -2573,7 +2875,11 @@ pub struct CairoAir {
     qm31: Option<qm_31_add_mul_opcode::Component>,
     ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
-    blake_context: BlakeContextComponents,
+    blake_round: Option<components::blake_round::Component>,
+    blake_g: Option<components::blake_g::Component>,
+    blake_round_sigma: Option<components::blake_round_sigma::Component>,
+    triple_xor_32: Option<components::triple_xor_32::Component>,
+    verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
     builtins: BuiltinComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
@@ -2858,9 +3164,58 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let blake_context_component = BlakeContextComponentsImpl::new(
-            cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
-        );
+        let blake_round_component = cairo_claim
+            .blake_round
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round.unwrap();
+                    blake_round::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let blake_g_component = cairo_claim
+            .blake_g
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_g.unwrap();
+                    blake_g::NewComponentImpl::new(@claim, @interaction_claim, interaction_elements)
+                },
+            );
+
+        let blake_round_sigma_component = cairo_claim
+            .blake_round_sigma
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.blake_round_sigma.unwrap();
+                    blake_round_sigma::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let triple_xor_32_component = cairo_claim
+            .triple_xor_32
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.triple_xor_32.unwrap();
+                    triple_xor_32::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let verify_bitwise_xor_12_component = cairo_claim
+            .verify_bitwise_xor_12
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.verify_bitwise_xor_12.unwrap();
+                    verify_bitwise_xor_12::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let builtins_components = BuiltinComponentsImpl::new(
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
@@ -2975,7 +3330,11 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             qm31: qm31_components,
             ret: ret_components,
             verify_instruction: verifyinstruction_component,
-            blake_context: blake_context_component,
+            blake_round: blake_round_component,
+            blake_g: blake_g_component,
+            blake_round_sigma: blake_round_sigma_component,
+            triple_xor_32: triple_xor_32_component,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtins_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
@@ -3041,7 +3400,11 @@ pub impl CairoAirImpl of Air<CairoAir> {
             qm31,
             ret,
             verify_instruction,
-            blake_context,
+            blake_round,
+            blake_g,
+            blake_round_sigma,
+            triple_xor_32,
+            verify_bitwise_xor_12,
             builtins,
             poseidon_context,
             memory_address_to_id,
@@ -3273,15 +3636,61 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        blake_context
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = blake_round {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_g {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = blake_round_sigma {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = triple_xor_32 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = verify_bitwise_xor_12 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         builtins
             .evaluate_constraints_at_point(
                 ref sum,
