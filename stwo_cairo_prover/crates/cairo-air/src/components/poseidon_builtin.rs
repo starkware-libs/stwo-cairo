@@ -78,61 +78,42 @@ impl FrameworkEval for Eval {
         let output_state_1_id_col4 = eval.next_trace_mask();
         let output_state_2_id_col5 = eval.next_trace_mask();
 
+        let instance_addr_tmp_51986_0 = eval.add_intermediate(
+            ((seq.clone() * M31_6.clone())
+                + E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))),
+        );
         ReadId::evaluate(
-            [
-                (E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone())),
-            ],
+            [instance_addr_tmp_51986_0.clone()],
             input_state_0_id_col0.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_1.clone()),
-            ],
+            [(instance_addr_tmp_51986_0.clone() + M31_1.clone())],
             input_state_1_id_col1.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_2.clone()),
-            ],
+            [(instance_addr_tmp_51986_0.clone() + M31_2.clone())],
             input_state_2_id_col2.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_3.clone()),
-            ],
+            [(instance_addr_tmp_51986_0.clone() + M31_3.clone())],
             output_state_0_id_col3.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_4.clone()),
-            ],
+            [(instance_addr_tmp_51986_0.clone() + M31_4.clone())],
             output_state_1_id_col4.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [
-                ((E::F::from(M31::from(self.claim.poseidon_builtin_segment_start))
-                    + (seq.clone() * M31_6.clone()))
-                    + M31_5.clone()),
-            ],
+            [(instance_addr_tmp_51986_0.clone() + M31_5.clone())],
             output_state_2_id_col5.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,

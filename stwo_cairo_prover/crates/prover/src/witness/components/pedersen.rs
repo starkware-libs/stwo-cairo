@@ -16,17 +16,13 @@ pub struct PedersenContextClaimGenerator {
     pub partial_ec_mul_trace_generator: partial_ec_mul::ClaimGenerator,
     pub pedersen_points_table_trace_generator: pedersen_points_table::ClaimGenerator,
 }
-impl Default for PedersenContextClaimGenerator {
-    fn default() -> Self {
-        Self::new()
-    }
-}
 
 impl PedersenContextClaimGenerator {
-    pub fn new() -> Self {
+    pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let pedersen_aggregator_trace_generator = pedersen_aggregator::ClaimGenerator::new();
         let partial_ec_mul_trace_generator = partial_ec_mul::ClaimGenerator::new();
-        let pedersen_points_table_trace_generator = pedersen_points_table::ClaimGenerator::new();
+        let pedersen_points_table_trace_generator =
+            pedersen_points_table::ClaimGenerator::new(preprocessed_trace);
 
         Self {
             pedersen_aggregator_trace_generator,

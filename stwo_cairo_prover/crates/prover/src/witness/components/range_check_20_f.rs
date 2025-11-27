@@ -1,34 +1,24 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::verify_bitwise_xor_7::{
-    Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
-};
+use cairo_air::components::range_check_20_f::{Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS};
 
 use crate::witness::prelude::*;
 
-pub type InputType = [M31; 3];
-pub type PackedInputType = [PackedM31; 3];
+pub type InputType = [M31; 1];
+pub type PackedInputType = [PackedM31; 1];
 
 pub struct ClaimGenerator {
     pub mults: AtomicMultiplicityColumn,
-    input_to_row: HashMap<[M31; 3], usize>,
+    input_to_row: HashMap<[M31; 1], usize>,
     preprocessed_trace: Arc<PreProcessedTrace>,
 }
 
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
-        let column_ids = [
-            PreProcessedColumnId {
-                id: "bitwise_xor_7_0".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_7_1".to_owned(),
-            },
-            PreProcessedColumnId {
-                id: "bitwise_xor_7_2".to_owned(),
-            },
-        ];
+        let column_ids = [PreProcessedColumnId {
+            id: "seq_20".to_owned(),
+        }];
         Self {
             mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
             input_to_row: make_input_to_row(&preprocessed_trace, column_ids),
@@ -78,25 +68,16 @@ fn write_trace_simd(
         )
     };
 
-    let bitwise_xor_7_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_0".to_owned(),
-    });
-    let bitwise_xor_7_1 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_1".to_owned(),
-    });
-    let bitwise_xor_7_2 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "bitwise_xor_7_2".to_owned(),
+    let seq_20 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "seq_20".to_owned(),
     });
 
     (trace.par_iter_mut(), lookup_data.par_iter_mut())
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
-            let bitwise_xor_7_0 = bitwise_xor_7_0.packed_at(row_index);
-            let bitwise_xor_7_1 = bitwise_xor_7_1.packed_at(row_index);
-            let bitwise_xor_7_2 = bitwise_xor_7_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_7_0 =
-                [bitwise_xor_7_0, bitwise_xor_7_1, bitwise_xor_7_2];
+            let seq_20 = seq_20.packed_at(row_index);
+            *lookup_data.range_check_20_f_0 = [seq_20];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;
@@ -107,7 +88,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_7_0: Vec<[PackedM31; 3]>,
+    range_check_20_f_0: Vec<[PackedM31; 1]>,
     mults: Vec<PackedM31>,
 }
 
@@ -118,7 +99,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_7: &relations::VerifyBitwiseXor_7,
+        range_check_20_f: &relations::RangeCheck_20_F,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -126,12 +107,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.verify_bitwise_xor_7_0,
+            &self.lookup_data.range_check_20_f_0,
             self.lookup_data.mults,
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = verify_bitwise_xor_7.combine(values);
+                let denom = range_check_20_f.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

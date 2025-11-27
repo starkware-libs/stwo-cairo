@@ -75,10 +75,12 @@ impl<B: Backend> TreeBuilder<B> for MockTreeBuilder<'_> {
 mod tests {
     use std::array;
     use std::simd::u32x16;
+    use std::sync::Arc;
 
     use cairo_air::relations;
     use rand::rngs::SmallRng;
     use rand::{Rng, SeedableRng};
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
     use stwo_cairo_common::prover_types::simd::PackedUInt32;
 
     use super::MockCommitmentScheme;
@@ -90,8 +92,11 @@ mod tests {
         let input = array::from_fn(|_| array::from_fn(|_| rng.gen()))
             .map(u32x16::from_array)
             .map(PackedUInt32::from_simd);
-        let veirfy_bitwise_xor_8_trace_gen = &verify_bitwise_xor_8::ClaimGenerator::new();
-        let veirfy_bitwise_xor_8_b_trace_gen = &verify_bitwise_xor_8_b::ClaimGenerator::new();
+        let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
+        let veirfy_bitwise_xor_8_trace_gen =
+            &verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let veirfy_bitwise_xor_8_b_trace_gen =
+            &verify_bitwise_xor_8_b::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let mut triple_xor_32_trace_gen = triple_xor_32::ClaimGenerator::new();
         triple_xor_32_trace_gen.add_packed_inputs(&[input]);
         let triple_xor_relation = relations::TripleXor32::dummy();
