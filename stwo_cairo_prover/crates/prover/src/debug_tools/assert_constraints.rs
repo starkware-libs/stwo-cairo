@@ -116,27 +116,66 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_4_4_4_4,
         rc_3_3_3_3_3,
     } = range_checks;
-    assert_many(add, &trace);
-    assert_many(add_small, &trace);
-    assert_many(add_ap, &trace);
-    assert_many(assert_eq, &trace);
-    assert_many(assert_eq_imm, &trace);
-    assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
-    assert_many(call, &trace);
-    assert_many(call_rel_imm, &trace);
-    assert_many(generic, &trace);
-    assert_many(jnz, &trace);
-    assert_many(jnz_taken, &trace);
-    assert_many(jump, &trace);
-    assert_many(jump_double_deref, &trace);
-    assert_many(jump_rel, &trace);
-    assert_many(jump_rel_imm, &trace);
-    assert_many(mul, &trace);
-    assert_many(mul_small, &trace);
-    assert_many(qm31, &trace);
-    assert_many(ret, &trace);
-
+    if let Some(add) = add.as_ref() {
+        assert_component(add, &trace);
+    }
+    if let Some(add_small) = add_small.as_ref() {
+        assert_component(add_small, &trace);
+    }
+    if let Some(add_ap) = add_ap.as_ref() {
+        assert_component(add_ap, &trace);
+    }
+    if let Some(assert_eq) = assert_eq.as_ref() {
+        assert_component(assert_eq, &trace);
+    }
+    if let Some(assert_eq_imm) = assert_eq_imm.as_ref() {
+        assert_component(assert_eq_imm, &trace);
+    }
+    if let Some(assert_eq_double_deref) = assert_eq_double_deref.as_ref() {
+        assert_component(assert_eq_double_deref, &trace);
+    }
+    if let Some(blake) = blake.as_ref() {
+        assert_component(blake, &trace);
+    }
+    if let Some(call) = call.as_ref() {
+        assert_component(call, &trace);
+    }
+    if let Some(call_rel_imm) = call_rel_imm.as_ref() {
+        assert_component(call_rel_imm, &trace);
+    }
+    if let Some(generic) = generic.as_ref() {
+        assert_component(generic, &trace);
+    }
+    if let Some(jnz) = jnz.as_ref() {
+        assert_component(jnz, &trace);
+    }
+    if let Some(jnz_taken) = jnz_taken.as_ref() {
+        assert_component(jnz_taken, &trace);
+    }
+    if let Some(jump) = jump.as_ref() {
+        assert_component(jump, &trace);
+    }
+    if let Some(jump_double_deref) = jump_double_deref.as_ref() {
+        assert_component(jump_double_deref, &trace);
+    }
+    if let Some(jump_rel) = jump_rel.as_ref() {
+        assert_component(jump_rel, &trace);
+    }
+    if let Some(jump_rel_imm) = jump_rel_imm.as_ref() {
+        assert_component(jump_rel_imm, &trace);
+    }
+    if let Some(mul) = mul.as_ref() {
+        assert_component(mul, &trace);
+    }
+    if let Some(mul_small) = mul_small.as_ref() {
+        assert_component(mul_small, &trace);
+    }
+    if let Some(qm31) = qm31.as_ref() {
+        assert_component(qm31, &trace);
+    }
+    if let Some(ret) = ret.as_ref() {
+        assert_component(ret, &trace);
+    }
     assert_component(verify_instruction, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
@@ -279,11 +318,4 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProce
     );
 
     assert_cairo_components(commitment_scheme.trace_domain_evaluations(), &components);
-}
-
-fn assert_many<E: FrameworkEval + Sync>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) {
-    components.iter().for_each(|x| assert_component(x, trace));
 }

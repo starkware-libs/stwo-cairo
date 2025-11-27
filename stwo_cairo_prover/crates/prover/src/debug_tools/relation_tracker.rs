@@ -1,3 +1,5 @@
+use std::borrow::Borrow;
+
 use cairo_air::air::{CairoComponents, PublicData};
 use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
@@ -167,26 +169,26 @@ fn cairo_relation_entries(
     } = range_checks;
 
     let mut entries = chain!(
-        add_to_relation_entries_many(add, trace),
-        add_to_relation_entries_many(add_small, trace),
-        add_to_relation_entries_many(add_ap, trace),
-        add_to_relation_entries_many(assert_eq, trace),
-        add_to_relation_entries_many(assert_eq_imm, trace),
-        add_to_relation_entries_many(assert_eq_double_deref, trace),
-        add_to_relation_entries_many(blake, trace),
-        add_to_relation_entries_many(call, trace),
-        add_to_relation_entries_many(call_rel_imm, trace),
-        add_to_relation_entries_many(generic, trace),
-        add_to_relation_entries_many(jnz, trace),
-        add_to_relation_entries_many(jnz_taken, trace),
-        add_to_relation_entries_many(jump, trace),
-        add_to_relation_entries_many(jump_double_deref, trace),
-        add_to_relation_entries_many(jump_rel, trace),
-        add_to_relation_entries_many(jump_rel_imm, trace),
-        add_to_relation_entries_many(mul, trace),
-        add_to_relation_entries_many(mul_small, trace),
-        add_to_relation_entries_many(qm31, trace),
-        add_to_relation_entries_many(ret, trace),
+        add_to_relation_entries_many(add.as_ref(), trace),
+        add_to_relation_entries_many(add_small.as_ref(), trace),
+        add_to_relation_entries_many(add_ap.as_ref(), trace),
+        add_to_relation_entries_many(assert_eq.as_ref(), trace),
+        add_to_relation_entries_many(assert_eq_imm.as_ref(), trace),
+        add_to_relation_entries_many(assert_eq_double_deref.as_ref(), trace),
+        add_to_relation_entries_many(blake.as_ref(), trace),
+        add_to_relation_entries_many(call.as_ref(), trace),
+        add_to_relation_entries_many(call_rel_imm.as_ref(), trace),
+        add_to_relation_entries_many(generic.as_ref(), trace),
+        add_to_relation_entries_many(jnz.as_ref(), trace),
+        add_to_relation_entries_many(jnz_taken.as_ref(), trace),
+        add_to_relation_entries_many(jump.as_ref(), trace),
+        add_to_relation_entries_many(jump_double_deref.as_ref(), trace),
+        add_to_relation_entries_many(jump_rel.as_ref(), trace),
+        add_to_relation_entries_many(jump_rel_imm.as_ref(), trace),
+        add_to_relation_entries_many(mul.as_ref(), trace),
+        add_to_relation_entries_many(mul_small.as_ref(), trace),
+        add_to_relation_entries_many(qm31.as_ref(), trace),
+        add_to_relation_entries_many(ret.as_ref(), trace),
         add_to_relation_entries(verify_instruction, trace),
         add_to_relation_entries(rc_6, trace),
         add_to_relation_entries(rc_8, trace),
@@ -310,13 +312,18 @@ fn cairo_relation_entries(
     entries
 }
 
-fn add_to_relation_entries_many<E: FrameworkEval>(
-    components: &[FrameworkComponent<E>],
+fn add_to_relation_entries_many<E, I>(
+    components: I,
     trace: &TreeVec<Vec<&Vec<M31>>>,
-) -> Vec<RelationTrackerEntry> {
+) -> Vec<RelationTrackerEntry>
+where
+    E: FrameworkEval,
+    I: IntoIterator,
+    I::Item: Borrow<FrameworkComponent<E>>,
+{
     components
-        .iter()
-        .flat_map(|x| add_to_relation_entries(x, trace))
+        .into_iter()
+        .flat_map(|x| add_to_relation_entries(x.borrow(), trace))
         .collect()
 }
 
