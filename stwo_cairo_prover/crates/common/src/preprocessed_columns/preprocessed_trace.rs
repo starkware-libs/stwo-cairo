@@ -18,7 +18,7 @@ use super::blake::{BlakeSigma, N_BLAKE_SIGMA_COLS};
 use super::pedersen::{PedersenPoints, PEDERSEN_TABLE_N_COLUMNS};
 use super::poseidon::{PoseidonRoundKeys, N_WORDS as POSEIDON_N_WORDS};
 use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
-use crate::prover_types::simd::LOG_N_LANES;
+use crate::prover_types::simd_lanes::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];

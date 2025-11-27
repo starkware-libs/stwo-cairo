@@ -3,6 +3,10 @@ name = "stwo-cairo-common"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["prover"]
+prover = ["dep:stwo-constraint-framework", "dep:stwo-cairo-serialize", "stwo/parallel", "stwo/prover", "stwo-constraint-framework/parallel", "stwo-constraint-framework/prover"]
+
 [dependencies]
 bytemuck.workspace = true
 itertools.workspace = true
@@ -10,9 +14,9 @@ ruint.workspace = true
 serde.workspace = true
 starknet-ff.workspace = true
 starknet-types-core.workspace = true
-stwo-cairo-serialize = { path = "../cairo-serialize" }
-stwo.workspace = true
-stwo-constraint-framework.workspace = true
+stwo-cairo-serialize = { path = "../cairo-serialize", optional = true }
+stwo = { workspace = true }
+stwo-constraint-framework = { workspace = true, optional = true }
 serde_arrays.workspace = true
 starknet-curve.workspace = true
 rayon.workspace = true

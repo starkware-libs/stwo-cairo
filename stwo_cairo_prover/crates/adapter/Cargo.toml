@@ -17,10 +17,10 @@ itertools.workspace = true
 log.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-stwo-cairo-common.workspace = true
+stwo-cairo-common = { workspace = true, default-features = false }
 tracing.workspace = true
 thiserror.workspace = true
-stwo.workspace = true
+stwo = { workspace = true }
 memmap2 = "0.9.5"
 bincode = { version = "2.0.1", features = ["serde"] }
 dashmap.workspace = true

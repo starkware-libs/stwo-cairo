@@ -10,7 +10,7 @@ use stwo_cairo_common::builtins::{
     KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, OUTPUT_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
     POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
 };
-use stwo_cairo_common::prover_types::simd::N_LANES;
+use stwo_cairo_common::prover_types::simd_lanes::N_LANES;
 use tracing::{info, span, Level};
 
 use super::memory::MemoryBuilder;

@@ -11,7 +11,7 @@ use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::preprocessed_trace::PreProcessedColumn;
 use super::preprocessed_utils::SIMD_ENUMERATION_0;
-use crate::prover_types::simd::{LOG_N_LANES, N_LANES};
+use crate::prover_types::simd_lanes::{LOG_N_LANES, N_LANES};
 
 /// A table of a,b,c, where a,b,c are integers and a ^ b = c.
 ///
@@ -76,7 +76,7 @@ pub mod tests {
     const LOG_SIZE: u32 = 8;
     use crate::preprocessed_columns::bitwise_xor::BitwiseXor;
     use crate::preprocessed_columns::preprocessed_trace::PreProcessedColumn;
-    use crate::prover_types::simd::N_LANES;
+    use crate::prover_types::simd_lanes::N_LANES;
 
     #[test]
     fn test_packed_at_bitwise_xor() {
