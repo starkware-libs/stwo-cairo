@@ -6,7 +6,6 @@ pub mod air;
 pub mod blake;
 pub mod builtins_air;
 pub mod components;
-pub mod opcodes_air;
 pub mod pedersen;
 pub mod poseidon;
 pub mod range_checks_air;
