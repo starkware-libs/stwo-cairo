@@ -106,7 +106,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_20_h,
         rc_4_3,
         rc_4_4,
-        rc_5_4,
         rc_9_9,
         rc_9_9_b,
         rc_9_9_c,
@@ -158,7 +157,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(rc_20_h, &trace);
     assert_component(rc_4_3, &trace);
     assert_component(rc_4_4, &trace);
-    assert_component(rc_5_4, &trace);
     assert_component(rc_9_9, &trace);
     assert_component(rc_9_9_b, &trace);
     assert_component(rc_9_9_c, &trace);

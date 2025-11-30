@@ -706,9 +706,9 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_92 = res_limb_27_col224.eq(M31_256);let msb_col228 = msb_tmp_57455_92.as_m31();
             *row[228] = msb_col228;let mid_limbs_set_tmp_57455_93 = ((res_limb_20_col217.eq(M31_511)) & (msb_tmp_57455_92));let mid_limbs_set_col229 = mid_limbs_set_tmp_57455_93.as_m31();
-            *row[229] = mid_limbs_set_col229;let decode_small_sign_output_tmp_57455_94 = [msb_col228, mid_limbs_set_col229];
+            *row[229] = mid_limbs_set_col229;let decode_small_sign_output_tmp_57455_94 = [msb_col228, mid_limbs_set_col229, ((mid_limbs_set_col229) * (M31_508)), ((mid_limbs_set_col229) * (M31_511)), ((((msb_col228) * (M31_136))) - (mid_limbs_set_col229)), ((msb_col228) * (M31_256))];
 
-            let remainder_bits_tmp_57455_95 = ((res_limb_3_col200) - (((mid_limbs_set_col229) * (M31_508))));
+            let remainder_bits_tmp_57455_95 = ((res_limb_3_col200) - (decode_small_sign_output_tmp_57455_94[2]));
 
             // Cond Range Check 2.
 
@@ -728,9 +728,9 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_104 = op1_limb_27_col111.eq(M31_256);let msb_col234 = msb_tmp_57455_104.as_m31();
             *row[234] = msb_col234;let mid_limbs_set_tmp_57455_105 = ((op1_limb_20_col104.eq(M31_511)) & (msb_tmp_57455_104));let mid_limbs_set_col235 = mid_limbs_set_tmp_57455_105.as_m31();
-            *row[235] = mid_limbs_set_col235;let decode_small_sign_output_tmp_57455_106 = [msb_col234, mid_limbs_set_col235];
+            *row[235] = mid_limbs_set_col235;let decode_small_sign_output_tmp_57455_106 = [msb_col234, mid_limbs_set_col235, ((mid_limbs_set_col235) * (M31_508)), ((mid_limbs_set_col235) * (M31_511)), ((((msb_col234) * (M31_136))) - (mid_limbs_set_col235)), ((msb_col234) * (M31_256))];
 
-            let remainder_bits_tmp_57455_107 = ((op1_limb_3_col87) - (((mid_limbs_set_col235) * (M31_508))));
+            let remainder_bits_tmp_57455_107 = ((op1_limb_3_col87) - (decode_small_sign_output_tmp_57455_106[2]));
 
             // Cond Range Check 2.
 

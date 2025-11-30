@@ -1,4 +1,4 @@
-// AIR version 65baf470
+// AIR version 30a2c71e
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -117,8 +117,8 @@ pub const PARTIAL_EC_MUL_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1296059504 },
 ];
 pub const PEDERSEN_AGGREGATOR_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1451304528 }, M31 { inner: 172826799 }, M31 { inner: 1160500410 },
-    M31 { inner: 2049267089 },
+    M31 { inner: 610049255 }, M31 { inner: 1946332123 }, M31 { inner: 1196408088 },
+    M31 { inner: 1804726845 },
 ];
 pub const PEDERSEN_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 315661575 }, M31 { inner: 1611684037 }, M31 { inner: 1536329558 },
@@ -223,10 +223,6 @@ pub const RANGE_CHECK_4_4_4_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
 pub const RANGE_CHECK_4_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1985334387 }, M31 { inner: 1651402533 }, M31 { inner: 1064643828 },
     M31 { inner: 1880260984 },
-];
-pub const RANGE_CHECK_5_4_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1402219487 }, M31 { inner: 1810151449 }, M31 { inner: 1616645015 },
-    M31 { inner: 870408202 },
 ];
 pub const RANGE_CHECK_6_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 113813698 }, M31 { inner: 244206315 }, M31 { inner: 678462287 },
