@@ -168,7 +168,6 @@ pub mod range_check_trace_generators {
     generate_range_check_witness!([20], h, H);
     generate_range_check_witness!([4, 3]);
     generate_range_check_witness!([4, 4]);
-    generate_range_check_witness!([5, 4]);
     generate_range_check_witness!([9, 9]);
     generate_range_check_witness!([9, 9], b, B);
     generate_range_check_witness!([9, 9], c, C);

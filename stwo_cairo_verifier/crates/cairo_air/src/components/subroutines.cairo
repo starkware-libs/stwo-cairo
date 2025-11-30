@@ -77,7 +77,6 @@ pub mod read_positive_num_bits_72;
 pub mod read_positive_num_bits_96;
 pub mod read_positive_num_bits_99;
 pub mod read_small;
-pub mod read_split;
 pub mod read_u_32;
 pub mod single_karatsuba_n_7;
 pub mod single_karatsuba_n_8;

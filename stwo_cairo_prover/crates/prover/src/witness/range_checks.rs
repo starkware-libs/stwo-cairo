@@ -7,9 +7,9 @@ use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_18_b, range_check_20,
     range_check_20_b, range_check_20_c, range_check_20_d, range_check_20_e, range_check_20_f,
     range_check_20_g, range_check_20_h, range_check_3_3_3_3_3, range_check_3_6_6_3,
-    range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4, range_check_6,
-    range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
-    range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
+    range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6, range_check_7_2_5,
+    range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c, range_check_9_9_d,
+    range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -30,7 +30,6 @@ pub struct RangeChecksClaimGenerator {
     pub rc_20_h_trace_generator: range_check_20_h::ClaimGenerator,
     pub rc_4_3_trace_generator: range_check_4_3::ClaimGenerator,
     pub rc_4_4_trace_generator: range_check_4_4::ClaimGenerator,
-    pub rc_5_4_trace_generator: range_check_5_4::ClaimGenerator,
     pub rc_9_9_trace_generator: range_check_9_9::ClaimGenerator,
     pub rc_9_9_b_trace_generator: range_check_9_9_b::ClaimGenerator,
     pub rc_9_9_c_trace_generator: range_check_9_9_c::ClaimGenerator,
@@ -69,7 +68,6 @@ impl RangeChecksClaimGenerator {
             rc_20_h_trace_generator: range_check_20_h::ClaimGenerator::new(),
             rc_4_3_trace_generator: range_check_4_3::ClaimGenerator::new(),
             rc_4_4_trace_generator: range_check_4_4::ClaimGenerator::new(),
-            rc_5_4_trace_generator: range_check_5_4::ClaimGenerator::new(),
             rc_9_9_trace_generator: range_check_9_9::ClaimGenerator::new(),
             rc_9_9_b_trace_generator: range_check_9_9_b::ClaimGenerator::new(),
             rc_9_9_c_trace_generator: range_check_9_9_c::ClaimGenerator::new(),
@@ -120,8 +118,6 @@ impl RangeChecksClaimGenerator {
             self.rc_4_3_trace_generator.write_trace(tree_builder);
         let (rc_4_4_claim, rc_4_4_interaction_gen) =
             self.rc_4_4_trace_generator.write_trace(tree_builder);
-        let (rc_5_4_claim, rc_5_4_interaction_gen) =
-            self.rc_5_4_trace_generator.write_trace(tree_builder);
         let (rc_9_9_claim, rc_9_9_interaction_gen) =
             self.rc_9_9_trace_generator.write_trace(tree_builder);
         let (rc_9_9_b_claim, rc_9_9_b_interaction_gen) =
@@ -164,7 +160,6 @@ impl RangeChecksClaimGenerator {
                 rc_20_h: rc_20_h_claim,
                 rc_4_3: rc_4_3_claim,
                 rc_4_4: rc_4_4_claim,
-                rc_5_4: rc_5_4_claim,
                 rc_9_9: rc_9_9_claim,
                 rc_9_9_b: rc_9_9_b_claim,
                 rc_9_9_c: rc_9_9_c_claim,
@@ -195,7 +190,6 @@ impl RangeChecksClaimGenerator {
                 rc_20_h_interaction_gen,
                 rc_4_3_interaction_gen,
                 rc_4_4_interaction_gen,
-                rc_5_4_interaction_gen,
                 rc_9_9_interaction_gen,
                 rc_9_9_b_interaction_gen,
                 rc_9_9_c_interaction_gen,
@@ -230,7 +224,6 @@ pub struct RangeChecksInteractionClaimGenerator {
     rc_20_h_interaction_gen: range_check_20_h::InteractionClaimGenerator,
     rc_4_3_interaction_gen: range_check_4_3::InteractionClaimGenerator,
     rc_4_4_interaction_gen: range_check_4_4::InteractionClaimGenerator,
-    rc_5_4_interaction_gen: range_check_5_4::InteractionClaimGenerator,
     rc_9_9_interaction_gen: range_check_9_9::InteractionClaimGenerator,
     rc_9_9_b_interaction_gen: range_check_9_9_b::InteractionClaimGenerator,
     rc_9_9_c_interaction_gen: range_check_9_9_c::InteractionClaimGenerator,
@@ -298,9 +291,6 @@ impl RangeChecksInteractionClaimGenerator {
         let rc_4_4_interaction_claim = self
             .rc_4_4_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_4_4);
-        let rc_5_4_interaction_claim = self
-            .rc_5_4_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.rc_5_4);
         let rc_9_9_interaction_claim = self
             .rc_9_9_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.rc_9_9);
@@ -354,7 +344,6 @@ impl RangeChecksInteractionClaimGenerator {
             rc_20_h: rc_20_h_interaction_claim,
             rc_4_3: rc_4_3_interaction_claim,
             rc_4_4: rc_4_4_interaction_claim,
-            rc_5_4: rc_5_4_interaction_claim,
             rc_9_9: rc_9_9_interaction_claim,
             rc_9_9_b: rc_9_9_b_interaction_claim,
             rc_9_9_c: rc_9_9_c_interaction_claim,

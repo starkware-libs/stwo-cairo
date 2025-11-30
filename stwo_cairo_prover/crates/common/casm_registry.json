@@ -1,5 +1,5 @@
 {
-  "air_version": "aa47044d",
+  "air_version": "b4e13e0f",
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
@@ -981,22 +981,6 @@
       "max_instances_uses_limit": 1657008,
       "max_instances_rows_limit": 2097152
     },
-    "range_check_5_4": {
-      "trace_type": "Component",
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_5_4": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
     "range_check_8": {
       "trace_type": "Component",
       "num_state_cols": 0,
@@ -1102,12 +1086,10 @@
     },
     "pedersen_aggregator": {
       "trace_type": "Component",
-      "num_state_cols": 263,
+      "num_state_cols": 205,
       "use_lookup_cols": {
-        "RangeCheck_5_4": 2,
         "MemoryIdToBig": 3,
         "RangeCheck_8": 4,
-        "PedersenPointsTable": 1,
         "PartialEcMul": 2
       },
       "yield_lookup_cols": {
@@ -1115,17 +1097,14 @@
         "PedersenAggregator": 1
       },
       "lookup_rows": {
-        "range_check_5_4": 2,
         "memory_id_to_big": 3,
         "range_check_8": 4,
-        "pedersen_points_table": 1,
         "partial_ec_mul": 28
       },
       "padding_type": "Multiplicity",
-      "total_num_trace_cols": 296,
-      "trace_cells_upper_bound": 18120,
+      "total_num_trace_cols": 230,
+      "trace_cells_upper_bound": 18054,
       "uses_upper_bound": {
-        "range_check_5_4": 2,
         "range_check_9_9": 200,
         "range_check_9_9_b": 200,
         "range_check_9_9_c": 200,
@@ -1135,7 +1114,7 @@
         "range_check_9_9_g": 100,
         "range_check_9_9_h": 100,
         "range_check_8": 4,
-        "pedersen_points_table": 33,
+        "pedersen_points_table": 32,
         "range_check_20": 384,
         "range_check_20_b": 384,
         "range_check_20_c": 384,
@@ -1165,10 +1144,9 @@
       },
       "padding_type": "None",
       "total_num_trace_cols": 11,
-      "trace_cells_upper_bound": 18131,
+      "trace_cells_upper_bound": 18065,
       "uses_upper_bound": {
         "memory_address_to_id": 3,
-        "range_check_5_4": 2,
         "range_check_9_9": 200,
         "range_check_9_9_b": 200,
         "range_check_9_9_c": 200,
@@ -1178,7 +1156,7 @@
         "range_check_9_9_g": 100,
         "range_check_9_9_h": 100,
         "range_check_8": 4,
-        "pedersen_points_table": 33,
+        "pedersen_points_table": 32,
         "range_check_20": 384,
         "range_check_20_b": 384,
         "range_check_20_c": 384,
