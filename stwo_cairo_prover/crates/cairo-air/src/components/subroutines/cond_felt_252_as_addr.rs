@@ -22,125 +22,34 @@ impl CondFelt252AsAddr {
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
 
-        // Address limb 4 equals 0.
+        // When the condition holds, the high limbs must be zero for an address.
         eval.add_constraint(
             (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_4.clone()),
-        );
-        // Address limb 5 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_5.clone()),
-        );
-        // Address limb 6 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_6.clone()),
-        );
-        // Address limb 7 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_7.clone()),
-        );
-        // Address limb 8 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_8.clone()),
-        );
-        // Address limb 9 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_9.clone()),
-        );
-        // Address limb 10 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_10.clone()),
-        );
-        // Address limb 11 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_11.clone()),
-        );
-        // Address limb 12 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_12.clone()),
-        );
-        // Address limb 13 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_13.clone()),
-        );
-        // Address limb 14 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_14.clone()),
-        );
-        // Address limb 15 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_15.clone()),
-        );
-        // Address limb 16 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_16.clone()),
-        );
-        // Address limb 17 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_17.clone()),
-        );
-        // Address limb 18 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_18.clone()),
-        );
-        // Address limb 19 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_19.clone()),
-        );
-        // Address limb 20 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_20.clone()),
-        );
-        // Address limb 21 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_21.clone()),
-        );
-        // Address limb 22 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_22.clone()),
-        );
-        // Address limb 23 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_23.clone()),
-        );
-        // Address limb 24 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_24.clone()),
-        );
-        // Address limb 25 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_25.clone()),
-        );
-        // Address limb 26 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_26.clone()),
-        );
-        // Address limb 27 equals 0.
-        eval.add_constraint(
-            (cond_felt_252_as_addr_input_limb_28.clone()
-                * cond_felt_252_as_addr_input_limb_27.clone()),
+                * (((((((((((((((((((((((cond_felt_252_as_addr_input_limb_4
+                    .clone()
+                    + cond_felt_252_as_addr_input_limb_5.clone())
+                    + cond_felt_252_as_addr_input_limb_6.clone())
+                    + cond_felt_252_as_addr_input_limb_7.clone())
+                    + cond_felt_252_as_addr_input_limb_8.clone())
+                    + cond_felt_252_as_addr_input_limb_9.clone())
+                    + cond_felt_252_as_addr_input_limb_10.clone())
+                    + cond_felt_252_as_addr_input_limb_11.clone())
+                    + cond_felt_252_as_addr_input_limb_12.clone())
+                    + cond_felt_252_as_addr_input_limb_13.clone())
+                    + cond_felt_252_as_addr_input_limb_14.clone())
+                    + cond_felt_252_as_addr_input_limb_15.clone())
+                    + cond_felt_252_as_addr_input_limb_16.clone())
+                    + cond_felt_252_as_addr_input_limb_17.clone())
+                    + cond_felt_252_as_addr_input_limb_18.clone())
+                    + cond_felt_252_as_addr_input_limb_19.clone())
+                    + cond_felt_252_as_addr_input_limb_20.clone())
+                    + cond_felt_252_as_addr_input_limb_21.clone())
+                    + cond_felt_252_as_addr_input_limb_22.clone())
+                    + cond_felt_252_as_addr_input_limb_23.clone())
+                    + cond_felt_252_as_addr_input_limb_24.clone())
+                    + cond_felt_252_as_addr_input_limb_25.clone())
+                    + cond_felt_252_as_addr_input_limb_26.clone())
+                    + cond_felt_252_as_addr_input_limb_27.clone())),
         );
         CondRangeCheck2::evaluate(
             [
