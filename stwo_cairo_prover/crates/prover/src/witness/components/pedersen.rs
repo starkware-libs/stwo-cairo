@@ -77,9 +77,7 @@ impl PedersenContextClaimGenerator {
             pedersen_aggregator_trace_generator.write_trace(
                 tree_builder,
                 memory_id_to_big_state,
-                &range_checks_trace_generator.rc_5_4_trace_generator,
                 &range_checks_trace_generator.rc_8_trace_generator,
-                &pedersen_points_table_trace_generator,
                 &mut partial_ec_mul_trace_generator,
             );
         let (partial_ec_mul_claim, partial_ec_mul_interaction_gen) = partial_ec_mul_trace_generator
@@ -156,10 +154,8 @@ impl InteractionClaimGenerator {
             .pedersen_aggregator_interaction_gen
             .write_interaction_trace(
                 tree_builder,
-                &interaction_elements.range_checks.rc_5_4,
                 &interaction_elements.memory_id_to_value,
                 &interaction_elements.range_checks.rc_8,
-                &interaction_elements.pedersen_points_table,
                 &interaction_elements.partial_ec_mul,
                 &interaction_elements.pedersen_aggregator,
             );
