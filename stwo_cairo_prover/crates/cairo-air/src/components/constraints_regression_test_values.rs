@@ -85,7 +85,7 @@ pub const MUL_OPCODE: Expect = expect![[r#"
     (1765238355 + 567102279i) + (1303576643 + 132743394i)u
 "#]];
 pub const PEDERSEN_AGGREGATOR: Expect = expect![[r#"
-    (327144683 + 1605581620i) + (1304969682 + 1548859344i)u
+    (1935068275 + 861457484i) + (903392461 + 608363705i)u
 "#]];
 pub const PARTIAL_EC_MUL: Expect = expect![[r#"
     (895051799 + 1568254972i) + (1038712019 + 2090679041i)u
@@ -170,9 +170,6 @@ pub const RANGE_CHECK_4_3: Expect = expect![[r#"
 "#]];
 pub const RANGE_CHECK_4_4: Expect = expect![[r#"
     (1164138582 + 762844355i) + (1425321120 + 1242804536i)u
-"#]];
-pub const RANGE_CHECK_5_4: Expect = expect![[r#"
-    (916248735 + 2087615263i) + (41966646 + 1245971620i)u
 "#]];
 pub const RANGE_CHECK_9_9: Expect = expect![[r#"
     (1894767386 + 1545920395i) + (422922350 + 1060532858i)u

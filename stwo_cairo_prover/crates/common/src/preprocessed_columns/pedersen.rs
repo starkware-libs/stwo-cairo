@@ -29,11 +29,12 @@ pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 pub const BITS_PER_WINDOW: usize = 18;
 pub const NUM_WINDOWS: usize = 252usize.div_ceil(BITS_PER_WINDOW);
 pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
+pub const BITS_IN_LAST_WINDOW: usize = 14;
+pub const ROWS_IN_LAST_WINDOW: usize = 1 << BITS_IN_LAST_WINDOW;
 
 pub const P_0_SECTION_START: usize = 0;
 pub const P_2_SECTION_START: usize = P_0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const P_13_SECTION_START: usize = P_2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const PEDERSEN_TABLE_N_ROWS: usize = P_13_SECTION_START + 16 * 16;
+pub const PEDERSEN_TABLE_N_ROWS: usize = P_2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
 
 // We don't use starknet_types_core::curve::AffinePoint because, as of 10/2025,
 // its .x() and .y() getters are slow.
@@ -81,11 +82,14 @@ impl PreProcessedColumn for PedersenPoints {
     }
 }
 
-// A table with 2**23 rows, each containing a point on the Stark curve.
-// The table is divided into 3 sections:
-// 1. First 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_0
-// 2. Next 14 blocks of 2 ** 18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
-// 3. Next 256 rows: Row k + (16 * l) contains 29 * P_shift + k * P_1 + l * P_3
+// A table with 2**23 rows, each containing a point on the Pedersen elliptic curve.
+// The table is divided into 2 sections:
+// 1a. First 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_0
+// 1b. The 14th block of 2**18 rows: Row k + (l << 14) contains
+//       -P_shift + 2**(18*13) * k * P_0 + l * P_1
+// 2a. Next 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
+// 2b. The last block of 2**18 rows: Row k + (l << 14) contains
+//       -P_shift + 2**(18*13) * k * P_2 + l * P_3
 pub struct PedersenPointsTable {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
@@ -147,29 +151,10 @@ fn create_block(
         .collect()
 }
 
-fn create_p1_and_p3_section() -> Vec<SimpleAffinePoint> {
-    let first_start_point = &ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y())
-        .expect("SHIFT_POINT is on curve")
-        * (2 * NUM_WINDOWS + 1);
-    let p1 =
-        ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve");
-    let p3 =
-        ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve");
-    (0..16)
-        .into_par_iter()
-        .map(|window: u32| {
-            let start_point = first_start_point.clone() + (&p3 * window);
-            create_block(&start_point, &p1, 16)
-        })
-        .collect::<Vec<_>>()
-        .into_iter()
-        .concat()
-}
-
-fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
+fn create_low_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
     let start_point =
         ProjectivePoint::new_unchecked(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
-    (0..NUM_WINDOWS)
+    (0..(NUM_WINDOWS - 1))
         .into_par_iter()
         .map(|window| {
             let mut base_point = point.clone();
@@ -183,15 +168,41 @@ fn create_p0_or_p2_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
         .concat()
 }
 
+fn create_high_section(
+    low_point: &ProjectivePoint,
+    high_point: &ProjectivePoint,
+) -> Vec<SimpleAffinePoint> {
+    let mut raised_low_point = low_point.clone();
+    for _ in 0..((NUM_WINDOWS - 1) * BITS_PER_WINDOW) {
+        raised_low_point = raised_low_point.double();
+    }
+    let first_start_point =
+        &ProjectivePoint::new_unchecked(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
+    (0..16)
+        .into_par_iter()
+        .map(|window: u32| {
+            let start_point = first_start_point.clone() + (high_point * window);
+            create_block(&start_point.clone(), &raised_low_point, ROWS_IN_LAST_WINDOW)
+        })
+        .collect::<Vec<_>>()
+        .into_iter()
+        .concat()
+}
+
 fn create_table_rows() -> Vec<SimpleAffinePoint> {
     let mut rows = vec![];
-    rows.extend(create_p0_or_p2_section(
+    let points = [
         &ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
-    ));
-    rows.extend(create_p0_or_p2_section(
+        &ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve"),
         &ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).expect("P2 is on curve"),
-    ));
-    rows.extend(create_p1_and_p3_section());
+        &ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve"),
+    ];
+    rows.extend(create_low_section(points[0]));
+    rows.extend(create_high_section(points[0], points[1]));
+    rows.extend(create_low_section(points[2]));
+    rows.extend(create_high_section(points[2], points[3]));
+
+    assert!(rows.len() == ((2 * 14) << 18));
 
     let padded_size = rows.len().next_power_of_two();
     for _ in 0..(padded_size - rows.len()) {

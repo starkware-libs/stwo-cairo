@@ -6,7 +6,7 @@ use stwo_verifier_core::Hash;
 // trace declaration. If the function changes, this array must be updated to stay in sync.
 // https://github.com/starkware-libs/stwo-cairo/blob/d8b2aff6ac7c4e991b9e91140ff20d6e0d9ea0b3/stwo_cairo_prover/crates/common/src/preprocessed_columns/preprocessed_trace.rs#L43
 
-pub const NUM_PREPROCESSED_COLUMNS: u32 = 163;
+pub const NUM_PREPROCESSED_COLUMNS: u32 = 161;
 
 pub const PREPROCESSED_COLUMN_LOG_SIZE: [u32; NUM_PREPROCESSED_COLUMNS] = [
     25, // Seq(25)
@@ -112,8 +112,6 @@ pub const PREPROCESSED_COLUMN_LOG_SIZE: [u32; NUM_PREPROCESSED_COLUMNS] = [
     11, // Seq(11)
     10, // Seq(10)
     9, // Seq(9)
-    9, // RangeCheck2(([5, 4], 0))
-    9, // RangeCheck2(([5, 4], 1))
     8, // Seq(8)
     8, // BitwiseXor((4, 0))
     8, // BitwiseXor((4, 1))
@@ -277,66 +275,64 @@ pub const SEQ_12_IDX: u32 = 99; // Seq(12)
 pub const SEQ_11_IDX: u32 = 100; // Seq(11)
 pub const SEQ_10_IDX: u32 = 101; // Seq(10)
 pub const SEQ_9_IDX: u32 = 102; // Seq(9)
-pub const RANGE_CHECK_5_4_COLUMN_0_IDX: u32 = 103; // RangeCheck2(([5, 4], 0))
-pub const RANGE_CHECK_5_4_COLUMN_1_IDX: u32 = 104; // RangeCheck2(([5, 4], 1))
-pub const SEQ_8_IDX: u32 = 105; // Seq(8)
-pub const BITWISE_XOR_4_0_IDX: u32 = 106; // BitwiseXor((4, 0))
-pub const BITWISE_XOR_4_1_IDX: u32 = 107; // BitwiseXor((4, 1))
-pub const BITWISE_XOR_4_2_IDX: u32 = 108; // BitwiseXor((4, 2))
-pub const RANGE_CHECK_4_4_COLUMN_0_IDX: u32 = 109; // RangeCheck2(([4, 4], 0))
-pub const RANGE_CHECK_4_4_COLUMN_1_IDX: u32 = 110; // RangeCheck2(([4, 4], 1))
-pub const SEQ_7_IDX: u32 = 111; // Seq(7)
-pub const RANGE_CHECK_4_3_COLUMN_0_IDX: u32 = 112; // RangeCheck2(([4, 3], 0))
-pub const RANGE_CHECK_4_3_COLUMN_1_IDX: u32 = 113; // RangeCheck2(([4, 3], 1))
-pub const SEQ_6_IDX: u32 = 114; // Seq(6)
-pub const POSEIDON_ROUND_KEYS_0_IDX: u32 = 115; // PoseidonRoundKeys(0)
-pub const POSEIDON_ROUND_KEYS_1_IDX: u32 = 116; // PoseidonRoundKeys(1)
-pub const POSEIDON_ROUND_KEYS_2_IDX: u32 = 117; // PoseidonRoundKeys(2)
-pub const POSEIDON_ROUND_KEYS_3_IDX: u32 = 118; // PoseidonRoundKeys(3)
-pub const POSEIDON_ROUND_KEYS_4_IDX: u32 = 119; // PoseidonRoundKeys(4)
-pub const POSEIDON_ROUND_KEYS_5_IDX: u32 = 120; // PoseidonRoundKeys(5)
-pub const POSEIDON_ROUND_KEYS_6_IDX: u32 = 121; // PoseidonRoundKeys(6)
-pub const POSEIDON_ROUND_KEYS_7_IDX: u32 = 122; // PoseidonRoundKeys(7)
-pub const POSEIDON_ROUND_KEYS_8_IDX: u32 = 123; // PoseidonRoundKeys(8)
-pub const POSEIDON_ROUND_KEYS_9_IDX: u32 = 124; // PoseidonRoundKeys(9)
-pub const POSEIDON_ROUND_KEYS_10_IDX: u32 = 125; // PoseidonRoundKeys(10)
-pub const POSEIDON_ROUND_KEYS_11_IDX: u32 = 126; // PoseidonRoundKeys(11)
-pub const POSEIDON_ROUND_KEYS_12_IDX: u32 = 127; // PoseidonRoundKeys(12)
-pub const POSEIDON_ROUND_KEYS_13_IDX: u32 = 128; // PoseidonRoundKeys(13)
-pub const POSEIDON_ROUND_KEYS_14_IDX: u32 = 129; // PoseidonRoundKeys(14)
-pub const POSEIDON_ROUND_KEYS_15_IDX: u32 = 130; // PoseidonRoundKeys(15)
-pub const POSEIDON_ROUND_KEYS_16_IDX: u32 = 131; // PoseidonRoundKeys(16)
-pub const POSEIDON_ROUND_KEYS_17_IDX: u32 = 132; // PoseidonRoundKeys(17)
-pub const POSEIDON_ROUND_KEYS_18_IDX: u32 = 133; // PoseidonRoundKeys(18)
-pub const POSEIDON_ROUND_KEYS_19_IDX: u32 = 134; // PoseidonRoundKeys(19)
-pub const POSEIDON_ROUND_KEYS_20_IDX: u32 = 135; // PoseidonRoundKeys(20)
-pub const POSEIDON_ROUND_KEYS_21_IDX: u32 = 136; // PoseidonRoundKeys(21)
-pub const POSEIDON_ROUND_KEYS_22_IDX: u32 = 137; // PoseidonRoundKeys(22)
-pub const POSEIDON_ROUND_KEYS_23_IDX: u32 = 138; // PoseidonRoundKeys(23)
-pub const POSEIDON_ROUND_KEYS_24_IDX: u32 = 139; // PoseidonRoundKeys(24)
-pub const POSEIDON_ROUND_KEYS_25_IDX: u32 = 140; // PoseidonRoundKeys(25)
-pub const POSEIDON_ROUND_KEYS_26_IDX: u32 = 141; // PoseidonRoundKeys(26)
-pub const POSEIDON_ROUND_KEYS_27_IDX: u32 = 142; // PoseidonRoundKeys(27)
-pub const POSEIDON_ROUND_KEYS_28_IDX: u32 = 143; // PoseidonRoundKeys(28)
-pub const POSEIDON_ROUND_KEYS_29_IDX: u32 = 144; // PoseidonRoundKeys(29)
-pub const SEQ_5_IDX: u32 = 145; // Seq(5)
-pub const SEQ_4_IDX: u32 = 146; // Seq(4)
-pub const BLAKE_SIGMA_0_IDX: u32 = 147; // BlakeSigma(0)
-pub const BLAKE_SIGMA_1_IDX: u32 = 148; // BlakeSigma(1)
-pub const BLAKE_SIGMA_2_IDX: u32 = 149; // BlakeSigma(2)
-pub const BLAKE_SIGMA_3_IDX: u32 = 150; // BlakeSigma(3)
-pub const BLAKE_SIGMA_4_IDX: u32 = 151; // BlakeSigma(4)
-pub const BLAKE_SIGMA_5_IDX: u32 = 152; // BlakeSigma(5)
-pub const BLAKE_SIGMA_6_IDX: u32 = 153; // BlakeSigma(6)
-pub const BLAKE_SIGMA_7_IDX: u32 = 154; // BlakeSigma(7)
-pub const BLAKE_SIGMA_8_IDX: u32 = 155; // BlakeSigma(8)
-pub const BLAKE_SIGMA_9_IDX: u32 = 156; // BlakeSigma(9)
-pub const BLAKE_SIGMA_10_IDX: u32 = 157; // BlakeSigma(10)
-pub const BLAKE_SIGMA_11_IDX: u32 = 158; // BlakeSigma(11)
-pub const BLAKE_SIGMA_12_IDX: u32 = 159; // BlakeSigma(12)
-pub const BLAKE_SIGMA_13_IDX: u32 = 160; // BlakeSigma(13)
-pub const BLAKE_SIGMA_14_IDX: u32 = 161; // BlakeSigma(14)
-pub const BLAKE_SIGMA_15_IDX: u32 = 162; // BlakeSigma(15)
+pub const SEQ_8_IDX: u32 = 103; // Seq(8)
+pub const BITWISE_XOR_4_0_IDX: u32 = 104; // BitwiseXor((4, 0))
+pub const BITWISE_XOR_4_1_IDX: u32 = 105; // BitwiseXor((4, 1))
+pub const BITWISE_XOR_4_2_IDX: u32 = 106; // BitwiseXor((4, 2))
+pub const RANGE_CHECK_4_4_COLUMN_0_IDX: u32 = 107; // RangeCheck2(([4, 4], 0))
+pub const RANGE_CHECK_4_4_COLUMN_1_IDX: u32 = 108; // RangeCheck2(([4, 4], 1))
+pub const SEQ_7_IDX: u32 = 109; // Seq(7)
+pub const RANGE_CHECK_4_3_COLUMN_0_IDX: u32 = 110; // RangeCheck2(([4, 3], 0))
+pub const RANGE_CHECK_4_3_COLUMN_1_IDX: u32 = 111; // RangeCheck2(([4, 3], 1))
+pub const SEQ_6_IDX: u32 = 112; // Seq(6)
+pub const POSEIDON_ROUND_KEYS_0_IDX: u32 = 113; // PoseidonRoundKeys(0)
+pub const POSEIDON_ROUND_KEYS_1_IDX: u32 = 114; // PoseidonRoundKeys(1)
+pub const POSEIDON_ROUND_KEYS_2_IDX: u32 = 115; // PoseidonRoundKeys(2)
+pub const POSEIDON_ROUND_KEYS_3_IDX: u32 = 116; // PoseidonRoundKeys(3)
+pub const POSEIDON_ROUND_KEYS_4_IDX: u32 = 117; // PoseidonRoundKeys(4)
+pub const POSEIDON_ROUND_KEYS_5_IDX: u32 = 118; // PoseidonRoundKeys(5)
+pub const POSEIDON_ROUND_KEYS_6_IDX: u32 = 119; // PoseidonRoundKeys(6)
+pub const POSEIDON_ROUND_KEYS_7_IDX: u32 = 120; // PoseidonRoundKeys(7)
+pub const POSEIDON_ROUND_KEYS_8_IDX: u32 = 121; // PoseidonRoundKeys(8)
+pub const POSEIDON_ROUND_KEYS_9_IDX: u32 = 122; // PoseidonRoundKeys(9)
+pub const POSEIDON_ROUND_KEYS_10_IDX: u32 = 123; // PoseidonRoundKeys(10)
+pub const POSEIDON_ROUND_KEYS_11_IDX: u32 = 124; // PoseidonRoundKeys(11)
+pub const POSEIDON_ROUND_KEYS_12_IDX: u32 = 125; // PoseidonRoundKeys(12)
+pub const POSEIDON_ROUND_KEYS_13_IDX: u32 = 126; // PoseidonRoundKeys(13)
+pub const POSEIDON_ROUND_KEYS_14_IDX: u32 = 127; // PoseidonRoundKeys(14)
+pub const POSEIDON_ROUND_KEYS_15_IDX: u32 = 128; // PoseidonRoundKeys(15)
+pub const POSEIDON_ROUND_KEYS_16_IDX: u32 = 129; // PoseidonRoundKeys(16)
+pub const POSEIDON_ROUND_KEYS_17_IDX: u32 = 130; // PoseidonRoundKeys(17)
+pub const POSEIDON_ROUND_KEYS_18_IDX: u32 = 131; // PoseidonRoundKeys(18)
+pub const POSEIDON_ROUND_KEYS_19_IDX: u32 = 132; // PoseidonRoundKeys(19)
+pub const POSEIDON_ROUND_KEYS_20_IDX: u32 = 133; // PoseidonRoundKeys(20)
+pub const POSEIDON_ROUND_KEYS_21_IDX: u32 = 134; // PoseidonRoundKeys(21)
+pub const POSEIDON_ROUND_KEYS_22_IDX: u32 = 135; // PoseidonRoundKeys(22)
+pub const POSEIDON_ROUND_KEYS_23_IDX: u32 = 136; // PoseidonRoundKeys(23)
+pub const POSEIDON_ROUND_KEYS_24_IDX: u32 = 137; // PoseidonRoundKeys(24)
+pub const POSEIDON_ROUND_KEYS_25_IDX: u32 = 138; // PoseidonRoundKeys(25)
+pub const POSEIDON_ROUND_KEYS_26_IDX: u32 = 139; // PoseidonRoundKeys(26)
+pub const POSEIDON_ROUND_KEYS_27_IDX: u32 = 140; // PoseidonRoundKeys(27)
+pub const POSEIDON_ROUND_KEYS_28_IDX: u32 = 141; // PoseidonRoundKeys(28)
+pub const POSEIDON_ROUND_KEYS_29_IDX: u32 = 142; // PoseidonRoundKeys(29)
+pub const SEQ_5_IDX: u32 = 143; // Seq(5)
+pub const SEQ_4_IDX: u32 = 144; // Seq(4)
+pub const BLAKE_SIGMA_0_IDX: u32 = 145; // BlakeSigma(0)
+pub const BLAKE_SIGMA_1_IDX: u32 = 146; // BlakeSigma(1)
+pub const BLAKE_SIGMA_2_IDX: u32 = 147; // BlakeSigma(2)
+pub const BLAKE_SIGMA_3_IDX: u32 = 148; // BlakeSigma(3)
+pub const BLAKE_SIGMA_4_IDX: u32 = 149; // BlakeSigma(4)
+pub const BLAKE_SIGMA_5_IDX: u32 = 150; // BlakeSigma(5)
+pub const BLAKE_SIGMA_6_IDX: u32 = 151; // BlakeSigma(6)
+pub const BLAKE_SIGMA_7_IDX: u32 = 152; // BlakeSigma(7)
+pub const BLAKE_SIGMA_8_IDX: u32 = 153; // BlakeSigma(8)
+pub const BLAKE_SIGMA_9_IDX: u32 = 154; // BlakeSigma(9)
+pub const BLAKE_SIGMA_10_IDX: u32 = 155; // BlakeSigma(10)
+pub const BLAKE_SIGMA_11_IDX: u32 = 156; // BlakeSigma(11)
+pub const BLAKE_SIGMA_12_IDX: u32 = 157; // BlakeSigma(12)
+pub const BLAKE_SIGMA_13_IDX: u32 = 158; // BlakeSigma(13)
+pub const BLAKE_SIGMA_14_IDX: u32 = 159; // BlakeSigma(14)
+pub const BLAKE_SIGMA_15_IDX: u32 = 160; // BlakeSigma(15)
 
 pub fn seq_column_idx(log_size: u32) -> PreprocessedColumnIdx {
     match log_size {
@@ -373,16 +369,16 @@ pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
         0 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xa7e4ed57, 0xdfae42b4, 0xa669cd01, 0x094a86f8, 0x91f39aaa, 0x20ad98e3,
-                    0xa82ebfed, 0xc771c404,
+                    0x5c3cfb9a, 0xc7deb419, 0x4c5117b1, 0x21ffd9f1, 0xde28d640, 0x301f7642,
+                    0xeb2442d5, 0xc56304c2,
                 ],
             ),
         },
         1 => Hash {
             hash: BoxImpl::new(
                 [
-                    0xf6889ffd, 0x695f7abc, 0xd498d674, 0x522bb6d6, 0x52dd6e27, 0x1edfbacb,
-                    0x34e72017, 0x1990f2fa,
+                    0xaf1c4ebc, 0x5d83e5ab, 0x06e2489a, 0xf5e0e1bf, 0x9717a2fa, 0x9a3d9e4f,
+                    0x9487da4f, 0xb68087d3,
                 ],
             ),
         },

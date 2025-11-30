@@ -43,7 +43,6 @@ generate_range_check_constraints!([20], g, G);
 generate_range_check_constraints!([20], h, H);
 generate_range_check_constraints!([4, 3]);
 generate_range_check_constraints!([4, 4]);
-generate_range_check_constraints!([5, 4]);
 generate_range_check_constraints!([9, 9]);
 generate_range_check_constraints!([9, 9], b, B);
 generate_range_check_constraints!([9, 9], c, C);
