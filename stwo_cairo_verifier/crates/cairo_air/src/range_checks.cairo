@@ -16,7 +16,6 @@ use components::range_check_3_6_6_3::InteractionClaimImpl as RangeCheck_3_6_6_3I
 use components::range_check_4_3::InteractionClaimImpl as RangeCheck_4_3InteractionClaimImpl;
 use components::range_check_4_4::InteractionClaimImpl as RangeCheck_4_4InteractionClaimImpl;
 use components::range_check_4_4_4_4::InteractionClaimImpl as RangeCheck_4_4_4_4InteractionClaimImpl;
-use components::range_check_5_4::InteractionClaimImpl as RangeCheck_5_4InteractionClaimImpl;
 use components::range_check_6::InteractionClaimImpl as RangeCheck_6InteractionClaimImpl;
 use components::range_check_7_2_5::InteractionClaimImpl as RangeCheck_7_2_5InteractionClaimImpl;
 use components::range_check_8::InteractionClaimImpl as RangeCheck_8InteractionClaimImpl;
@@ -80,8 +79,6 @@ pub mod range_check_elements {
 
     pub type RangeCheck_4_4Elements = LookupElements<2>;
 
-    pub type RangeCheck_5_4Elements = LookupElements<2>;
-
     pub type RangeCheck_7_2_5Elements = LookupElements<3>;
 
     pub type RangeCheck_3_6_6_3Elements = LookupElements<4>;
@@ -111,7 +108,6 @@ pub struct RangeChecksClaim {
     pub rc_20_h: components::range_check_20_h::Claim,
     pub rc_4_3: components::range_check_4_3::Claim,
     pub rc_4_4: components::range_check_4_4::Claim,
-    pub rc_5_4: components::range_check_5_4::Claim,
     pub rc_9_9: components::range_check_9_9::Claim,
     pub rc_9_9_b: components::range_check_9_9_b::Claim,
     pub rc_9_9_c: components::range_check_9_9_c::Claim,
@@ -144,7 +140,6 @@ pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
         self.rc_20_h.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
-        self.rc_5_4.mix_into(ref channel);
         self.rc_9_9.mix_into(ref channel);
         self.rc_9_9_b.mix_into(ref channel);
         self.rc_9_9_c.mix_into(ref channel);
@@ -167,11 +162,11 @@ pub impl RangeChecksClaimImpl of ClaimTrait<RangeChecksClaim> {
                 self.rc_20.log_sizes(), self.rc_20_b.log_sizes(), self.rc_20_c.log_sizes(),
                 self.rc_20_d.log_sizes(), self.rc_20_e.log_sizes(), self.rc_20_f.log_sizes(),
                 self.rc_20_g.log_sizes(), self.rc_20_h.log_sizes(), self.rc_4_3.log_sizes(),
-                self.rc_4_4.log_sizes(), self.rc_5_4.log_sizes(), self.rc_9_9.log_sizes(),
-                self.rc_9_9_b.log_sizes(), self.rc_9_9_c.log_sizes(), self.rc_9_9_d.log_sizes(),
-                self.rc_9_9_e.log_sizes(), self.rc_9_9_f.log_sizes(), self.rc_9_9_g.log_sizes(),
-                self.rc_9_9_h.log_sizes(), self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(),
-                self.rc_4_4_4_4.log_sizes(), self.rc_3_3_3_3_3.log_sizes(),
+                self.rc_4_4.log_sizes(), self.rc_9_9.log_sizes(), self.rc_9_9_b.log_sizes(),
+                self.rc_9_9_c.log_sizes(), self.rc_9_9_d.log_sizes(), self.rc_9_9_e.log_sizes(),
+                self.rc_9_9_f.log_sizes(), self.rc_9_9_g.log_sizes(), self.rc_9_9_h.log_sizes(),
+                self.rc_7_2_5.log_sizes(), self.rc_3_6_6_3.log_sizes(), self.rc_4_4_4_4.log_sizes(),
+                self.rc_3_3_3_3_3.log_sizes(),
             ],
         )
     }
@@ -198,7 +193,6 @@ pub struct RangeChecksInteractionClaim {
     pub rc_20_h: components::range_check_20_h::InteractionClaim,
     pub rc_4_3: components::range_check_4_3::InteractionClaim,
     pub rc_4_4: components::range_check_4_4::InteractionClaim,
-    pub rc_5_4: components::range_check_5_4::InteractionClaim,
     pub rc_9_9: components::range_check_9_9::InteractionClaim,
     pub rc_9_9_b: components::range_check_9_9_b::InteractionClaim,
     pub rc_9_9_c: components::range_check_9_9_c::InteractionClaim,
@@ -232,7 +226,6 @@ pub impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         self.rc_20_h.mix_into(ref channel);
         self.rc_4_3.mix_into(ref channel);
         self.rc_4_4.mix_into(ref channel);
-        self.rc_5_4.mix_into(ref channel);
         self.rc_9_9.mix_into(ref channel);
         self.rc_9_9_b.mix_into(ref channel);
         self.rc_9_9_c.mix_into(ref channel);
@@ -265,7 +258,6 @@ pub impl RangeChecksInteractionClaimImpl of RangeChecksInteractionClaimTrait {
         sum += *self.rc_20_h.claimed_sum;
         sum += *self.rc_4_3.claimed_sum;
         sum += *self.rc_4_4.claimed_sum;
-        sum += *self.rc_5_4.claimed_sum;
         sum += *self.rc_9_9.claimed_sum;
         sum += *self.rc_9_9_b.claimed_sum;
         sum += *self.rc_9_9_c.claimed_sum;
@@ -301,7 +293,6 @@ pub struct RangeChecksComponents {
     rc_20_h: components::range_check_20_h::Component,
     rc_4_3: components::range_check_4_3::Component,
     rc_4_4: components::range_check_4_4::Component,
-    rc_5_4: components::range_check_5_4::Component,
     rc_9_9: components::range_check_9_9::Component,
     rc_9_9_b: components::range_check_9_9_b::Component,
     rc_9_9_c: components::range_check_9_9_c::Component,
@@ -371,9 +362,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
             ),
             rc_4_4: components::range_check_4_4::NewComponentImpl::new(
                 claim.rc_4_4, interaction_claim.rc_4_4, interaction_elements,
-            ),
-            rc_5_4: components::range_check_5_4::NewComponentImpl::new(
-                claim.rc_5_4, interaction_claim.rc_5_4, interaction_elements,
             ),
             rc_9_9: components::range_check_9_9::NewComponentImpl::new(
                 claim.rc_9_9, interaction_claim.rc_9_9, interaction_elements,
@@ -584,16 +572,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 point,
             );
         self
-            .rc_5_4
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        self
             .rc_9_9
             .evaluate_constraints_at_point(
                 ref sum,
@@ -735,7 +713,6 @@ pub struct RangeChecksInteractionElements {
     pub rc_20_h: RangeCheck_20Elements,
     pub rc_4_3: RangeCheck_4_3Elements,
     pub rc_4_4: RangeCheck_4_4Elements,
-    pub rc_5_4: RangeCheck_5_4Elements,
     pub rc_9_9: RangeCheck_9_9Elements,
     pub rc_9_9_b: RangeCheck_9_9Elements,
     pub rc_9_9_c: RangeCheck_9_9Elements,
@@ -770,7 +747,6 @@ pub impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTra
             rc_20_h: LookupElementsImpl::draw(ref channel),
             rc_4_3: LookupElementsImpl::draw(ref channel),
             rc_4_4: LookupElementsImpl::draw(ref channel),
-            rc_5_4: LookupElementsImpl::draw(ref channel),
             rc_9_9: LookupElementsImpl::draw(ref channel),
             rc_9_9_b: LookupElementsImpl::draw(ref channel),
             rc_9_9_c: LookupElementsImpl::draw(ref channel),
