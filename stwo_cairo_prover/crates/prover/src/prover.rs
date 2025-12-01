@@ -19,7 +19,7 @@ use tracing::{event, span, Level};
 use crate::witness::cairo::CairoClaimGenerator;
 use crate::witness::utils::witness_trace_cells;
 
-pub(crate) const LOG_MAX_ROWS: u32 = 26;
+pub(crate) const LOG_MAX_ROWS: u32 = 25;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
