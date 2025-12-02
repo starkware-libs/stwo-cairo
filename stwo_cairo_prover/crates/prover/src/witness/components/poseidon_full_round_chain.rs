@@ -45,19 +45,19 @@ impl ClaimGenerator {
             range_check_3_3_3_3_3_state,
         );
         sub_component_inputs.cube_252.iter().for_each(|inputs| {
-            cube_252_state.add_packed_inputs(inputs);
+            cube_252_state.add_packed_inputs(inputs, 0);
         });
         sub_component_inputs
             .poseidon_round_keys
             .iter()
             .for_each(|inputs| {
-                poseidon_round_keys_state.add_packed_inputs(inputs);
+                poseidon_round_keys_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_3_3_3_3_3
             .iter()
             .for_each(|inputs| {
-                range_check_3_3_3_3_3_state.add_packed_inputs(inputs);
+                range_check_3_3_3_3_3_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -71,7 +71,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
         self.packed_inputs.extend(inputs);
     }
 }

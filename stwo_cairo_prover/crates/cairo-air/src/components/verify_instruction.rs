@@ -91,7 +91,7 @@ impl FrameworkEval for Eval {
         let offset2_mid_col13 = eval.next_trace_mask();
         let offset2_high_col14 = eval.next_trace_mask();
         let instruction_id_col15 = eval.next_trace_mask();
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         #[allow(clippy::unused_unit)]
         #[allow(unused_variables)]
@@ -153,7 +153,7 @@ impl FrameworkEval for Eval {
         );
         eval.add_to_relation(RelationEntry::new(
             &self.verify_instruction_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             &[
                 input_pc_col0.clone(),
                 input_offset0_col1.clone(),

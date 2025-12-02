@@ -68,31 +68,31 @@ impl ClaimGenerator {
             .range_check_5_4
             .iter()
             .for_each(|inputs| {
-                range_check_5_4_state.add_packed_inputs(inputs);
+                range_check_5_4_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_8
             .iter()
             .for_each(|inputs| {
-                range_check_8_state.add_packed_inputs(inputs);
+                range_check_8_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .pedersen_points_table
             .iter()
             .for_each(|inputs| {
-                pedersen_points_table_state.add_packed_inputs(inputs);
+                pedersen_points_table_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .partial_ec_mul
             .iter()
             .for_each(|inputs| {
-                partial_ec_mul_state.add_packed_inputs(inputs);
+                partial_ec_mul_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -105,17 +105,17 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_input(&self, input: &InputType) {
+    pub fn add_input(&self, input: &InputType, _relation_index: usize) {
         self.mults
             .entry(*input)
             .or_insert_with(|| AtomicU32::new(0))
             .fetch_add(1, Ordering::Relaxed);
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input);
+                self.add_input(&input, relation_index);
             });
         });
     }
@@ -3061,7 +3061,7 @@ fn write_trace_simd(
                     [input_limb_0_col0, input_limb_1_col1, input_limb_2_col2];
                 let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
                 *row[263] = mult_at_row;
-                *lookup_data.mults = mult_at_row;
+                *lookup_data.mults_0 = mult_at_row;
             },
         );
 
@@ -3085,7 +3085,7 @@ struct LookupData {
     range_check_8_1: Vec<[PackedM31; 1]>,
     range_check_8_2: Vec<[PackedM31; 1]>,
     range_check_8_3: Vec<[PackedM31; 1]>,
-    mults: Vec<PackedM31>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -3209,12 +3209,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.pedersen_aggregator_0,
-            self.lookup_data.mults,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mults)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = pedersen_aggregator.combine(values);
-                writer.write_frac(-PackedQM31::one() * mults, denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

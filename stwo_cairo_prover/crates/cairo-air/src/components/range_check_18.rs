@@ -2,13 +2,14 @@
 
 use crate::components::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;
+pub const N_TRACE_COLUMNS: usize = 2;
 pub const LOG_SIZE: u32 = 18;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
     pub range_check_18_lookup_elements: relations::RangeCheck_18,
+    pub range_check_18_b_lookup_elements: relations::RangeCheck_18_B,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -51,11 +52,18 @@ impl FrameworkEval for Eval {
         let seq_18 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_18".to_owned(),
         });
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_1 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_18_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
+            std::slice::from_ref(&seq_18),
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.range_check_18_b_lookup_elements,
+            -E::EF::from(multiplicity_1),
             std::slice::from_ref(&seq_18),
         ));
 
@@ -81,6 +89,7 @@ mod tests {
         let eval = Eval {
             claim: Claim {},
             range_check_18_lookup_elements: relations::RangeCheck_18::dummy(),
+            range_check_18_b_lookup_elements: relations::RangeCheck_18_B::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
