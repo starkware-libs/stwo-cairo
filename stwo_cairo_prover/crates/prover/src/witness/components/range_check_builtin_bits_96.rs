@@ -43,19 +43,19 @@ impl ClaimGenerator {
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         sub_component_inputs
             .range_check_6
             .iter()
             .for_each(|inputs| {
-                range_check_6_state.add_packed_inputs(inputs);
+                range_check_6_state.add_packed_inputs(inputs, "RangeCheck_6");
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, "MemoryIdToBig");
             });
         tree_builder.extend_evals(trace.to_evals());
 

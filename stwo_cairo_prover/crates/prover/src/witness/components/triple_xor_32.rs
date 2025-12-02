@@ -3,7 +3,7 @@
 #![allow(unused_parens)]
 use cairo_air::components::triple_xor_32::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::{verify_bitwise_xor_8, verify_bitwise_xor_8_b};
+use crate::witness::components::verify_bitwise_xor_8;
 use crate::witness::prelude::*;
 
 pub type PackedInputType = [PackedUInt32; 3];
@@ -26,7 +26,6 @@ impl ClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-        verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -36,23 +35,19 @@ impl ClaimGenerator {
         self.packed_inputs
             .resize(packed_size, *self.packed_inputs.first().unwrap());
 
-        let (trace, lookup_data, sub_component_inputs) = write_trace_simd(
-            self.packed_inputs,
-            n_rows,
-            verify_bitwise_xor_8_state,
-            verify_bitwise_xor_8_b_state,
-        );
+        let (trace, lookup_data, sub_component_inputs) =
+            write_trace_simd(self.packed_inputs, n_rows, verify_bitwise_xor_8_state);
         sub_component_inputs
             .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, "VerifyBitwiseXor_8");
             });
         sub_component_inputs
             .verify_bitwise_xor_8_b
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_b_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, "VerifyBitwiseXor_8_B");
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -66,7 +61,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_name: &str) {
         self.packed_inputs.extend(inputs);
     }
 }
@@ -74,7 +69,7 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
-    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8_b::PackedInputType>; 4],
+    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -85,7 +80,6 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-    verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

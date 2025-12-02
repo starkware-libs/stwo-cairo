@@ -55,40 +55,40 @@ impl ClaimGenerator {
             .verify_instruction
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs);
+                verify_instruction_state.add_packed_inputs(inputs, "VerifyInstruction");
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, "MemoryIdToBig");
             });
         sub_component_inputs
             .range_check_7_2_5
             .iter()
             .for_each(|inputs| {
-                range_check_7_2_5_state.add_packed_inputs(inputs);
+                range_check_7_2_5_state.add_packed_inputs(inputs, "RangeCheck_7_2_5");
             });
         sub_component_inputs
             .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, "VerifyBitwiseXor_8");
             });
         sub_component_inputs.blake_round.iter().for_each(|inputs| {
-            blake_round_state.add_packed_inputs(inputs);
+            blake_round_state.add_packed_inputs(inputs, "BlakeRound");
         });
         sub_component_inputs
             .triple_xor_32
             .iter()
             .for_each(|inputs| {
-                triple_xor_32_state.add_packed_inputs(inputs);
+                triple_xor_32_state.add_packed_inputs(inputs, "TripleXor32");
             });
         tree_builder.extend_evals(trace.to_evals());
 

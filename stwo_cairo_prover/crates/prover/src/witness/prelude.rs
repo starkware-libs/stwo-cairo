@@ -1,3 +1,4 @@
+pub use std::array::from_fn;
 pub use std::collections::HashMap;
 pub use std::iter::zip;
 pub use std::simd::Simd;

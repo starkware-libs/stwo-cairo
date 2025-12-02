@@ -75,46 +75,47 @@ impl ClaimGenerator {
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, "MemoryIdToBig");
             });
         sub_component_inputs
             .poseidon_full_round_chain
             .iter()
             .for_each(|inputs| {
-                poseidon_full_round_chain_state.add_packed_inputs(inputs);
+                poseidon_full_round_chain_state.add_packed_inputs(inputs, "PoseidonFullRoundChain");
             });
         sub_component_inputs
             .range_check_252_width_27
             .iter()
             .for_each(|inputs| {
-                range_check_252_width_27_state.add_packed_inputs(inputs);
+                range_check_252_width_27_state.add_packed_inputs(inputs, "RangeCheck252Width27");
             });
         sub_component_inputs.cube_252.iter().for_each(|inputs| {
-            cube_252_state.add_packed_inputs(inputs);
+            cube_252_state.add_packed_inputs(inputs, "Cube252");
         });
         sub_component_inputs
             .range_check_3_3_3_3_3
             .iter()
             .for_each(|inputs| {
-                range_check_3_3_3_3_3_state.add_packed_inputs(inputs);
+                range_check_3_3_3_3_3_state.add_packed_inputs(inputs, "RangeCheck_3_3_3_3_3");
             });
         sub_component_inputs
             .range_check_4_4_4_4
             .iter()
             .for_each(|inputs| {
-                range_check_4_4_4_4_state.add_packed_inputs(inputs);
+                range_check_4_4_4_4_state.add_packed_inputs(inputs, "RangeCheck_4_4_4_4");
             });
         sub_component_inputs
             .range_check_4_4
             .iter()
             .for_each(|inputs| {
-                range_check_4_4_state.add_packed_inputs(inputs);
+                range_check_4_4_state.add_packed_inputs(inputs, "RangeCheck_4_4");
             });
         sub_component_inputs
             .poseidon_3_partial_rounds_chain
             .iter()
             .for_each(|inputs| {
-                poseidon_3_partial_rounds_chain_state.add_packed_inputs(inputs);
+                poseidon_3_partial_rounds_chain_state
+                    .add_packed_inputs(inputs, "Poseidon3PartialRoundsChain");
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -127,17 +128,17 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_input(&self, input: &InputType) {
+    pub fn add_input(&self, input: &InputType, _relation_name: &str) {
         self.mults
             .entry(*input)
             .or_insert_with(|| AtomicU32::new(0))
             .fetch_add(1, Ordering::Relaxed);
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_name: &str) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input);
+                self.add_input(&input, relation_name);
             });
         });
     }
@@ -880,7 +881,7 @@ fn write_trace_simd(
                 input_limb_5_col5;
             *lookup_data.memory_id_to_big_5 = [input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(2), unpacked_limb_3_col325, unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(5), unpacked_limb_6_col327, unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(8), unpacked_limb_9_col329, unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(11), unpacked_limb_12_col331, unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(14), unpacked_limb_15_col333, unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(17), unpacked_limb_18_col335, unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(20), unpacked_limb_21_col337, unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(23), unpacked_limb_24_col339, unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_34cc4_166.get_m31(26), poseidon_full_round_chain_output_limb_29_col286];*lookup_data.poseidon_aggregator_0 = [input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5];let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[341] = mult_at_row;
-            *lookup_data.mults = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -916,7 +917,7 @@ struct LookupData {
     range_check_4_4_4_4_3: Vec<[PackedM31; 4]>,
     range_check_4_4_4_4_4: Vec<[PackedM31; 4]>,
     range_check_4_4_4_4_5: Vec<[PackedM31; 4]>,
-    mults: Vec<PackedM31>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -1127,13 +1128,13 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_5,
             &self.lookup_data.poseidon_aggregator_0,
-            self.lookup_data.mults,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mults)| {
+            .for_each(|(writer, values0, values1, mults_0)| {
                 let denom0: PackedQM31 = memory_id_to_big.combine(values0);
                 let denom1: PackedQM31 = poseidon_aggregator.combine(values1);
-                writer.write_frac(denom1 - denom0 * mults, denom0 * denom1);
+                writer.write_frac(denom1 - denom0 * mults_0, denom0 * denom1);
             });
         col_gen.finalize_col();
 

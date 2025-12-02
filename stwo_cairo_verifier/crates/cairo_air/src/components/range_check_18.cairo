@@ -40,6 +40,7 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub range_check_18_lookup_elements: crate::RangeCheck_18Elements,
+    pub range_check_18_b_lookup_elements: crate::RangeCheck_18_BElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -55,6 +56,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
             claim: *claim,
             interaction_claim: *interaction_claim,
             range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+            range_check_18_b_lookup_elements: interaction_elements.range_checks.rc_18_b.clone(),
         }
     }
 }
@@ -75,6 +77,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_18_sum_0: QM31 = Zero::zero();
+        let mut range_check_18_b_sum_1: QM31 = Zero::zero();
         let seq_18 = preprocessed_mask_values.get_and_mark_used(SEQ_18_IDX);
 
         let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
@@ -83,6 +86,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         range_check_18_sum_0 = self.range_check_18_lookup_elements.combine_qm31([seq_18]);
+
+        range_check_18_b_sum_1 = self.range_check_18_b_lookup_elements.combine_qm31([seq_18]);
 
         lookup_constraints(
             ref sum,
@@ -93,6 +98,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             column_size,
             ref interaction_trace_mask_values,
             range_check_18_sum_0,
+            range_check_18_b_sum_1,
         );
     }
 }
@@ -107,6 +113,7 @@ fn lookup_constraints(
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_18_sum_0: QM31,
+    range_check_18_b_sum_1: QM31,
 ) {
     let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
         (*interaction_trace_mask_values
@@ -128,8 +135,10 @@ fn lookup_constraints(
             [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * range_check_18_sum_0)
-        + enabler)
+        * range_check_18_sum_0
+        * range_check_18_b_sum_1)
+        + (range_check_18_sum_0 * enabler)
+        + range_check_18_b_sum_1)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
