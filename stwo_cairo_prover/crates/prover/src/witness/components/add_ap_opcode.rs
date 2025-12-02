@@ -314,6 +314,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col14 = partial_limb_msb_tmp_c921e_14.as_m31();
                 *row[14] = partial_limb_msb_col14;
 
+                let mid_limb_value_tmp_c921e_16 = ((mid_limbs_set_col9) * (M31_511));
                 *sub_component_inputs.memory_id_to_big[0] = op1_id_col7;
                 *lookup_data.memory_id_to_big_0 = [
                     op1_id_col7,
@@ -321,23 +322,23 @@ fn write_trace_simd(
                     op1_limb_1_col11,
                     op1_limb_2_col12,
                     ((remainder_bits_col13) + ((mid_limbs_set_col9) * (M31_508))),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
-                    ((mid_limbs_set_col9) * (M31_511)),
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
+                    mid_limb_value_tmp_c921e_16,
                     (((M31_136) * (msb_col8)) - (mid_limbs_set_col9)),
                     M31_0,
                     M31_0,
@@ -346,7 +347,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col8) * (M31_256)),
                 ];
-                let read_small_output_tmp_c921e_16 = (
+                let read_small_output_tmp_c921e_17 = (
                     ((((((op1_limb_0_col10) + ((op1_limb_1_col11) * (M31_512)))
                         + ((op1_limb_2_col12) * (M31_262144)))
                         + ((remainder_bits_col13) * (M31_134217728)))
@@ -355,19 +356,19 @@ fn write_trace_simd(
                     op1_id_col7,
                 );
 
-                let next_ap_tmp_c921e_17 = ((input_ap_col1) + (read_small_output_tmp_c921e_16.0));
+                let next_ap_tmp_c921e_18 = ((input_ap_col1) + (read_small_output_tmp_c921e_17.0));
 
                 // Range Check Ap.
 
-                let range_check_ap_bot11bits_u32_tmp_c921e_18 =
-                    ((PackedUInt32::from_m31(next_ap_tmp_c921e_17)) & (UInt32_2047));
+                let range_check_ap_bot11bits_u32_tmp_c921e_19 =
+                    ((PackedUInt32::from_m31(next_ap_tmp_c921e_18)) & (UInt32_2047));
                 let range_check_ap_bot11bits_col15 =
-                    range_check_ap_bot11bits_u32_tmp_c921e_18.low().as_m31();
+                    range_check_ap_bot11bits_u32_tmp_c921e_19.low().as_m31();
                 *row[15] = range_check_ap_bot11bits_col15;
-                *sub_component_inputs.range_check_18[0] = [(((next_ap_tmp_c921e_17)
+                *sub_component_inputs.range_check_18[0] = [(((next_ap_tmp_c921e_18)
                     - (range_check_ap_bot11bits_col15))
                     * (M31_1048576))];
-                *lookup_data.range_check_18_0 = [(((next_ap_tmp_c921e_17)
+                *lookup_data.range_check_18_0 = [(((next_ap_tmp_c921e_18)
                     - (range_check_ap_bot11bits_col15))
                     * (M31_1048576))];
                 *sub_component_inputs.range_check_11[0] = [range_check_ap_bot11bits_col15];
@@ -376,7 +377,7 @@ fn write_trace_simd(
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
                     ((input_pc_col0) + ((M31_1) + (op1_imm_col4))),
-                    next_ap_tmp_c921e_17,
+                    next_ap_tmp_c921e_18,
                     input_fp_col2,
                 ];
                 *row[16] = enabler_col.packed_at(row_index);
