@@ -12,7 +12,7 @@ use tracing::{span, Level};
 use crate::witness::components::{
     blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
-    verify_bitwise_xor_8_b, verify_bitwise_xor_9,
+    verify_bitwise_xor_9,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
@@ -68,7 +68,6 @@ impl BlakeContextClaimGenerator {
         verify_bitwise_xor_4_trace_generator: &verify_bitwise_xor_4::ClaimGenerator,
         verify_bitwise_xor_7_trace_generator: &verify_bitwise_xor_7::ClaimGenerator,
         verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
-        verify_bitwise_xor_8_b_trace_generator: &verify_bitwise_xor_8_b::ClaimGenerator,
         verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
     ) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write blake context trace").entered();
@@ -104,7 +103,6 @@ impl BlakeContextClaimGenerator {
         let (blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
             tree_builder,
             verify_bitwise_xor_8_trace_generator,
-            verify_bitwise_xor_8_b_trace_generator,
             &verify_bitwise_xor_12,
             verify_bitwise_xor_4_trace_generator,
             verify_bitwise_xor_7_trace_generator,
@@ -112,11 +110,8 @@ impl BlakeContextClaimGenerator {
         );
         let (blake_sigma_claim, blake_sigma_interaction_gen) =
             blake_sigma.write_trace(tree_builder);
-        let (triple_xor_32_claim, triple_xor_32_interaction_gen) = triple_xor_32.write_trace(
-            tree_builder,
-            verify_bitwise_xor_8_trace_generator,
-            verify_bitwise_xor_8_b_trace_generator,
-        );
+        let (triple_xor_32_claim, triple_xor_32_interaction_gen) =
+            triple_xor_32.write_trace(tree_builder, verify_bitwise_xor_8_trace_generator);
         let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
             verify_bitwise_xor_12.write_trace(tree_builder);
         span.exit();

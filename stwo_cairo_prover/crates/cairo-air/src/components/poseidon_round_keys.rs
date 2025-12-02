@@ -141,11 +141,11 @@ impl FrameworkEval for Eval {
         let poseidon_round_keys_29 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "poseidon_round_keys_29".to_owned(),
         });
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_round_keys_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             &[
                 seq_6.clone(),
                 poseidon_round_keys_0.clone(),

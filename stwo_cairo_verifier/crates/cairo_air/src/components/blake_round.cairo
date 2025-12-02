@@ -366,7 +366,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             blake_g_output_limb_5_col208,
             blake_g_output_limb_6_col209,
             blake_g_output_limb_7_col210,
-            enabler,
+            blake_round_multiplicity,
         ]: [Span<QM31>; 212] =
             (*trace_mask_values
             .multi_pop_front()
@@ -891,11 +891,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [blake_round_multiplicity]: [QM31; 1] = (*blake_round_multiplicity.try_into().unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (blake_round_multiplicity * blake_round_multiplicity
+            - blake_round_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         blake_round_sigma_sum_0 = self
@@ -1369,7 +1372,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            blake_round_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             blake_round_sigma_sum_0,
@@ -1441,7 +1444,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    blake_round_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     blake_round_sigma_sum_0: QM31,
@@ -2121,7 +2124,7 @@ fn lookup_constraints(
         ))
         * blake_g_sum_56
         * blake_round_sum_57)
-        - (blake_g_sum_56 * enabler)
+        - (blake_g_sum_56 * blake_round_multiplicity)
         - blake_round_sum_57)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -2137,7 +2140,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * blake_round_sum_58)
-        + enabler)
+        + blake_round_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
