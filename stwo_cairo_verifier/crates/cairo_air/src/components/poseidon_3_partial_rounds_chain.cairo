@@ -289,7 +289,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             combination_limb_8_col165,
             combination_limb_9_col166,
             p_coef_col167,
-            enabler,
+            poseidon_3_partial_rounds_chain_multiplicity,
         ]: [Span<QM31>; 169] =
             (*trace_mask_values
             .multi_pop_front()
@@ -819,11 +819,18 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unwrap())
             .unbox();
         let [p_coef_col167]: [QM31; 1] = (*p_coef_col167.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [poseidon_3_partial_rounds_chain_multiplicity]: [QM31; 1] =
+            (*poseidon_3_partial_rounds_chain_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (poseidon_3_partial_rounds_chain_multiplicity
+            * poseidon_3_partial_rounds_chain_multiplicity
+            - poseidon_3_partial_rounds_chain_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         poseidon_round_keys_sum_0 = self
@@ -1113,7 +1120,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            poseidon_3_partial_rounds_chain_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             poseidon_round_keys_sum_0,
@@ -1144,7 +1151,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    poseidon_3_partial_rounds_chain_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     poseidon_round_keys_sum_0: QM31,
@@ -1357,8 +1364,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * poseidon_3_partial_rounds_chain_sum_16
         * poseidon_3_partial_rounds_chain_sum_17)
-        + (poseidon_3_partial_rounds_chain_sum_16 * enabler)
-        - (poseidon_3_partial_rounds_chain_sum_17 * enabler))
+        + (poseidon_3_partial_rounds_chain_sum_16 * poseidon_3_partial_rounds_chain_multiplicity)
+        - (poseidon_3_partial_rounds_chain_sum_17 * poseidon_3_partial_rounds_chain_multiplicity))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
