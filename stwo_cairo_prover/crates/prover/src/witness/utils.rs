@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
 use cairo_air::air::CairoClaim;
@@ -16,6 +17,8 @@ use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
+use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 
 use crate::witness::preprocessed_trace::generate_preprocessed_commitment_root;
@@ -182,6 +185,48 @@ pub fn export_preprocessed_roots() {
             );
         });
     }
+}
+
+/// Create the input_to_row map used in const-size components.
+///
+/// `preprocessed_trace` - The preprocessed trace.
+/// `column_ids` - PreProcessedColumnId for each input column of the component.
+///
+/// Returns a mapping from input tuple to its row number. Used to find
+/// out which multiplicity value to update for a given input.
+pub fn make_input_to_row<const N: usize>(
+    preprocessed_trace: &PreProcessedTrace,
+    column_ids: [PreProcessedColumnId; N],
+) -> HashMap<[M31; N], usize> {
+    let mut result: HashMap<[M31; N], usize> = HashMap::new();
+
+    let columns = column_ids
+        .iter()
+        .map(|id| preprocessed_trace.get_column(id))
+        .collect_vec();
+    let log_size = columns[0].log_size();
+    assert!(
+        columns.iter().all(|c| c.log_size() == log_size),
+        "input_to_row columns of different sizes"
+    );
+
+    for packed_row in 0..(1 << (log_size - LOG_N_LANES)) {
+        let packed_values = columns
+            .iter()
+            .map(|c| c.packed_at(packed_row).to_array())
+            .collect_vec();
+        for i in 0..N_LANES {
+            let key: [M31; N] = packed_values
+                .iter()
+                .map(|pv| pv[i])
+                .collect_vec()
+                .try_into()
+                .expect("Unexpected number of column values");
+            result.insert(key, packed_row * N_LANES + i);
+        }
+    }
+
+    result
 }
 
 #[cfg(test)]
