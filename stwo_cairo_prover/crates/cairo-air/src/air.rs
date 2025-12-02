@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::once;
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;
@@ -31,13 +32,12 @@ use super::poseidon::air::{
 };
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksInteractionClaim,
-    RangeChecksInteractionElements,
 };
 use crate::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
 };
-use crate::relations;
+use crate::relations::{self, OPCODES_RELATION_ID};
 use crate::verifier::RelationUse;
 
 #[derive(Serialize, Deserialize)]
@@ -270,15 +270,25 @@ impl PublicData {
                 ));
             });
 
+        let final_state_tuple = once(OPCODES_RELATION_ID)
+            .chain(self.final_state.values().into_iter())
+            .collect_vec();
+        let initial_state_tuple = once(OPCODES_RELATION_ID)
+            .chain(self.initial_state.values().into_iter())
+            .collect_vec();
         // Yield initial state and use the final.
-        values_to_inverse.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
-            &lookup_elements.opcodes,
-            &self.final_state.values(),
-        ));
-        values_to_inverse.push(-<relations::Opcodes as Relation<M31, QM31>>::combine(
-            &lookup_elements.opcodes,
-            &self.initial_state.values(),
-        ));
+        values_to_inverse.push(
+            <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                &lookup_elements.common,
+                &final_state_tuple,
+            ),
+        );
+        values_to_inverse.push(
+            -<relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                &lookup_elements.common,
+                &initial_state_tuple,
+            ),
+        );
 
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
@@ -577,58 +587,12 @@ impl PublicMemory {
 }
 
 pub struct CairoInteractionElements {
-    pub opcodes: relations::Opcodes,
-    pub verify_instruction: relations::VerifyInstruction,
-    pub blake_round: relations::BlakeRound,
-    pub blake_g: relations::BlakeG,
-    pub blake_sigma: relations::BlakeRoundSigma,
-    pub triple_xor_32: relations::TripleXor32,
-    pub poseidon_aggregator: relations::PoseidonAggregator,
-    pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
-    pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
-    pub cube_252: relations::Cube252,
-    pub poseidon_round_keys: relations::PoseidonRoundKeys,
-    pub range_check_252_width_27: relations::RangeCheck252Width27,
-    pub pedersen_aggregator: relations::PedersenAggregator,
-    pub partial_ec_mul: relations::PartialEcMul,
-    pub pedersen_points_table: relations::PedersenPointsTable,
-    pub memory_address_to_id: relations::MemoryAddressToId,
-    pub memory_id_to_value: relations::MemoryIdToBig,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: relations::VerifyBitwiseXor_4,
-    pub verify_bitwise_xor_7: relations::VerifyBitwiseXor_7,
-    pub verify_bitwise_xor_8: relations::VerifyBitwiseXor_8,
-    pub verify_bitwise_xor_8_b: relations::VerifyBitwiseXor_8_B,
-    pub verify_bitwise_xor_9: relations::VerifyBitwiseXor_9,
-    pub verify_bitwise_xor_12: relations::VerifyBitwiseXor_12,
+    pub common: relations::CommonLookupElements,
 }
 impl CairoInteractionElements {
     pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
         CairoInteractionElements {
-            opcodes: relations::Opcodes::draw(channel),
-            verify_instruction: relations::VerifyInstruction::draw(channel),
-            blake_round: relations::BlakeRound::draw(channel),
-            blake_g: relations::BlakeG::draw(channel),
-            blake_sigma: relations::BlakeRoundSigma::draw(channel),
-            triple_xor_32: relations::TripleXor32::draw(channel),
-            poseidon_aggregator: relations::PoseidonAggregator::draw(channel),
-            poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain::draw(channel),
-            poseidon_full_round_chain: relations::PoseidonFullRoundChain::draw(channel),
-            cube_252: relations::Cube252::draw(channel),
-            poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
-            range_check_252_width_27: relations::RangeCheck252Width27::draw(channel),
-            pedersen_aggregator: relations::PedersenAggregator::draw(channel),
-            partial_ec_mul: relations::PartialEcMul::draw(channel),
-            pedersen_points_table: relations::PedersenPointsTable::draw(channel),
-            memory_address_to_id: relations::MemoryAddressToId::draw(channel),
-            memory_id_to_value: relations::MemoryIdToBig::draw(channel),
-            range_checks: RangeChecksInteractionElements::draw(channel),
-            verify_bitwise_xor_4: relations::VerifyBitwiseXor_4::draw(channel),
-            verify_bitwise_xor_7: relations::VerifyBitwiseXor_7::draw(channel),
-            verify_bitwise_xor_8: relations::VerifyBitwiseXor_8::draw(channel),
-            verify_bitwise_xor_8_b: relations::VerifyBitwiseXor_8_B::draw(channel),
-            verify_bitwise_xor_9: relations::VerifyBitwiseXor_9::draw(channel),
-            verify_bitwise_xor_12: relations::VerifyBitwiseXor_12::draw(channel),
+            common: relations::CommonLookupElements::draw(channel),
         }
     }
 }
@@ -739,16 +703,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_instruction::Eval {
                 claim: cairo_claim.verify_instruction,
-                memory_address_to_id_lookup_elements: interaction_elements
-                    .memory_address_to_id
-                    .clone(),
-                verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-                range_check_7_2_5_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_7_2_5
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_instruction.claimed_sum,
         );
@@ -817,16 +772,14 @@ impl CairoComponents {
         );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
-            &interaction_elements.range_checks,
+            &interaction_elements.common,
             &interaction_claim.range_checks,
         );
         let verify_bitwise_xor_4_component = verify_bitwise_xor_4::Component::new(
             tree_span_provider,
             verify_bitwise_xor_4::Eval {
                 claim: cairo_claim.verify_bitwise_xor_4,
-                verify_bitwise_xor_4_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_4
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_4.claimed_sum,
         );
@@ -834,9 +787,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_7::Eval {
                 claim: cairo_claim.verify_bitwise_xor_7,
-                verify_bitwise_xor_7_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_7
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_7.claimed_sum,
         );
@@ -844,9 +795,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_8::Eval {
                 claim: cairo_claim.verify_bitwise_xor_8,
-                verify_bitwise_xor_8_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_8.claimed_sum,
         );
@@ -854,9 +803,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_8_b::Eval {
                 claim: cairo_claim.verify_bitwise_xor_8_b,
-                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8_b
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_8_b.claimed_sum,
         );
@@ -864,9 +811,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_9::Eval {
                 claim: cairo_claim.verify_bitwise_xor_9,
-                verify_bitwise_xor_9_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_9
-                    .clone(),
+                common_lookup_elements: interaction_elements.common.clone(),
             },
             interaction_claim.verify_bitwise_xor_9.claimed_sum,
         );

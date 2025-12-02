@@ -70,6 +70,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_1024310512 = PackedM31::broadcast(M31::from(1024310512));
     let seq_6 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "seq_6".to_owned(),
     });
@@ -200,6 +201,7 @@ fn write_trace_simd(
             let poseidon_round_keys_28 = poseidon_round_keys_28.packed_at(row_index);
             let poseidon_round_keys_29 = poseidon_round_keys_29.packed_at(row_index);
             *lookup_data.poseidon_round_keys_0 = [
+                M31_1024310512,
                 seq_6,
                 poseidon_round_keys_0,
                 poseidon_round_keys_1,
@@ -242,7 +244,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    poseidon_round_keys_0: Vec<[PackedM31; 31]>,
+    poseidon_round_keys_0: Vec<[PackedM31; 32]>,
     mults: Vec<PackedM31>,
 }
 

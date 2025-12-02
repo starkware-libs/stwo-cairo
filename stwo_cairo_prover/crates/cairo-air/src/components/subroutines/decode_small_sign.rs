@@ -16,6 +16,7 @@ impl DecodeSmallSign {
         []: [E::F; 0],
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));

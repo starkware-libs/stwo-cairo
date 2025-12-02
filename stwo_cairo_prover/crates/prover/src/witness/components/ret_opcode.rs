@@ -107,12 +107,16 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_130 = PackedM31::broadcast(M31::from(130));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
+    let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
+    let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
+    let M31_1719106205 = PackedM31::broadcast(M31::from(1719106205));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_2147483645 = PackedM31::broadcast(M31::from(2147483645));
     let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
     let M31_32766 = PackedM31::broadcast(M31::from(32766));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
+    let M31_428564188 = PackedM31::broadcast(M31::from(428564188));
     let M31_512 = PackedM31::broadcast(M31::from(512));
     let M31_88 = PackedM31::broadcast(M31::from(88));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
@@ -149,6 +153,7 @@ fn write_trace_simd(
                     M31_0,
                 );
                 *lookup_data.verify_instruction_0 = [
+                    M31_1719106205,
                     input_pc_col0,
                     M31_32766,
                     M31_32767,
@@ -176,7 +181,7 @@ fn write_trace_simd(
                 *row[3] = next_pc_id_col3;
                 *sub_component_inputs.memory_address_to_id[0] = ((input_fp_col2) - (M31_1));
                 *lookup_data.memory_address_to_id_0 =
-                    [((input_fp_col2) - (M31_1)), next_pc_id_col3];
+                    [M31_1444891767, ((input_fp_col2) - (M31_1)), next_pc_id_col3];
 
                 // Read Positive Known Id Num Bits 29.
 
@@ -202,6 +207,7 @@ fn write_trace_simd(
 
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col3;
                 *lookup_data.memory_id_to_big_0 = [
+                    M31_1662111297,
                     next_pc_id_col3,
                     next_pc_limb_0_col4,
                     next_pc_limb_1_col5,
@@ -279,7 +285,7 @@ fn write_trace_simd(
                 *row[9] = next_fp_id_col9;
                 *sub_component_inputs.memory_address_to_id[1] = ((input_fp_col2) - (M31_2));
                 *lookup_data.memory_address_to_id_1 =
-                    [((input_fp_col2) - (M31_2)), next_fp_id_col9];
+                    [M31_1444891767, ((input_fp_col2) - (M31_2)), next_fp_id_col9];
 
                 // Read Positive Known Id Num Bits 29.
 
@@ -305,6 +311,7 @@ fn write_trace_simd(
 
                 *sub_component_inputs.memory_id_to_big[1] = next_fp_id_col9;
                 *lookup_data.memory_id_to_big_1 = [
+                    M31_1662111297,
                     next_fp_id_col9,
                     next_fp_limb_0_col10,
                     next_fp_limb_1_col11,
@@ -372,8 +379,10 @@ fn write_trace_simd(
                     next_fp_id_col9,
                 );
 
-                *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
+                *lookup_data.opcodes_0 =
+                    [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
+                    M31_428564188,
                     ((((next_pc_limb_0_col4) + ((next_pc_limb_1_col5) * (M31_512)))
                         + ((next_pc_limb_2_col6) * (M31_262144)))
                         + ((next_pc_limb_3_col7) * (M31_134217728))),
@@ -391,13 +400,13 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
-    memory_id_to_big_1: Vec<[PackedM31; 29]>,
-    opcodes_0: Vec<[PackedM31; 3]>,
-    opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 7]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_address_to_id_1: Vec<[PackedM31; 3]>,
+    memory_id_to_big_0: Vec<[PackedM31; 30]>,
+    memory_id_to_big_1: Vec<[PackedM31; 30]>,
+    opcodes_0: Vec<[PackedM31; 4]>,
+    opcodes_1: Vec<[PackedM31; 4]>,
+    verify_instruction_0: Vec<[PackedM31; 8]>,
 }
 
 pub struct InteractionClaimGenerator {

@@ -99,12 +99,15 @@ fn write_trace_simd(
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_128 = PackedM31::broadcast(M31::from(128));
+    let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
     let M31_16 = PackedM31::broadcast(M31::from(16));
+    let M31_1719106205 = PackedM31::broadcast(M31::from(1719106205));
     let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_32767 = PackedM31::broadcast(M31::from(32767));
     let M31_32768 = PackedM31::broadcast(M31::from(32768));
+    let M31_428564188 = PackedM31::broadcast(M31::from(428564188));
     let M31_64 = PackedM31::broadcast(M31::from(64));
     let M31_8 = PackedM31::broadcast(M31::from(8));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
@@ -205,6 +208,7 @@ fn write_trace_simd(
                     M31_0,
                 );
                 *lookup_data.verify_instruction_0 = [
+                    M31_1719106205,
                     input_pc_col0,
                     offset0_col3,
                     M31_32767,
@@ -261,19 +265,23 @@ fn write_trace_simd(
                 *sub_component_inputs.memory_address_to_id[0] =
                     ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7.0[0]));
                 *lookup_data.memory_address_to_id_0 = [
-                    ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7.0[0])),
+                    M31_1444891767,
+                    ((mem_dst_base_col8) + (decode_instruction_fe864_output_tmp_d6f03_7_offset0)),
                     dst_id_col10,
                 ];
 
                 *sub_component_inputs.memory_address_to_id[1] =
                     ((mem1_base_col9) + (decode_instruction_fe864_output_tmp_d6f03_7.0[2]));
                 *lookup_data.memory_address_to_id_1 = [
-                    ((mem1_base_col9) + (decode_instruction_fe864_output_tmp_d6f03_7.0[2])),
+                    M31_1444891767,
+                    ((mem1_base_col9) + (decode_instruction_fe864_output_tmp_d6f03_7_offset2)),
                     dst_id_col10,
                 ];
 
-                *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
+                *lookup_data.opcodes_0 =
+                    [M31_428564188, input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
+                    M31_428564188,
                     ((input_pc_col0) + (M31_1)),
                     ((input_ap_col1) + (ap_update_add_1_col7)),
                     input_fp_col2,
@@ -287,11 +295,11 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_address_to_id_1: Vec<[PackedM31; 2]>,
-    opcodes_0: Vec<[PackedM31; 3]>,
-    opcodes_1: Vec<[PackedM31; 3]>,
-    verify_instruction_0: Vec<[PackedM31; 7]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_address_to_id_1: Vec<[PackedM31; 3]>,
+    opcodes_0: Vec<[PackedM31; 4]>,
+    opcodes_1: Vec<[PackedM31; 4]>,
+    verify_instruction_0: Vec<[PackedM31; 8]>,
 }
 
 pub struct InteractionClaimGenerator {

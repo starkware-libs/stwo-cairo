@@ -113,13 +113,17 @@ fn write_trace_simd(
     let Felt252_2_0_0_0 = PackedFelt252::broadcast(Felt252::from([2, 0, 0, 0]));
     let Felt252_3_0_0_0 = PackedFelt252::broadcast(Felt252::from([3, 0, 0, 0]));
     let M31_1 = PackedM31::broadcast(M31::from(1));
+    let M31_1024310512 = PackedM31::broadcast(M31::from(1024310512));
     let M31_134217729 = PackedM31::broadcast(M31::from(134217729));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_1480369132 = PackedM31::broadcast(M31::from(1480369132));
     let M31_16 = PackedM31::broadcast(M31::from(16));
+    let M31_1987997202 = PackedM31::broadcast(M31::from(1987997202));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_268435458 = PackedM31::broadcast(M31::from(268435458));
     let M31_3 = PackedM31::broadcast(M31::from(3));
     let M31_402653187 = PackedM31::broadcast(M31::from(402653187));
+    let M31_502259093 = PackedM31::broadcast(M31::from(502259093));
     let enabler_col = Enabler::new(n_rows);
 
     (
@@ -223,6 +227,7 @@ fn write_trace_simd(
                 let cube_252_output_limb_9_col41 = cube_252_output_tmp_f9fbc_0.get_m31(9);
                 *row[41] = cube_252_output_limb_9_col41;
                 *lookup_data.cube_252_0 = [
+                    M31_1987997202,
                     input_limb_2_col2,
                     input_limb_3_col3,
                     input_limb_4_col4,
@@ -268,6 +273,7 @@ fn write_trace_simd(
                 let cube_252_output_limb_9_col51 = cube_252_output_tmp_f9fbc_1.get_m31(9);
                 *row[51] = cube_252_output_limb_9_col51;
                 *lookup_data.cube_252_1 = [
+                    M31_1987997202,
                     input_limb_12_col12,
                     input_limb_13_col13,
                     input_limb_14_col14,
@@ -313,6 +319,7 @@ fn write_trace_simd(
                 let cube_252_output_limb_9_col61 = cube_252_output_tmp_f9fbc_2.get_m31(9);
                 *row[61] = cube_252_output_limb_9_col61;
                 *lookup_data.cube_252_2 = [
+                    M31_1987997202,
                     input_limb_22_col22,
                     input_limb_23_col23,
                     input_limb_24_col24,
@@ -428,6 +435,7 @@ fn write_trace_simd(
                     poseidon_round_keys_output_tmp_f9fbc_3[2].get_m31(9);
                 *row[91] = poseidon_round_keys_output_limb_29_col91;
                 *lookup_data.poseidon_round_keys_0 = [
+                    M31_1024310512,
                     input_limb_1_col1,
                     poseidon_round_keys_output_limb_0_col62,
                     poseidon_round_keys_output_limb_1_col63,
@@ -585,6 +593,7 @@ fn write_trace_simd(
                     ((carry_3_tmp_f9fbc_9) + (M31_1)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_0 = [
+                    M31_502259093,
                     ((p_coef_col102) + (M31_1)),
                     ((carry_0_tmp_f9fbc_6) + (M31_1)),
                     ((carry_1_tmp_f9fbc_7) + (M31_1)),
@@ -599,6 +608,7 @@ fn write_trace_simd(
                     ((carry_8_tmp_f9fbc_14) + (M31_1)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_1 = [
+                    M31_502259093,
                     ((carry_4_tmp_f9fbc_10) + (M31_1)),
                     ((carry_5_tmp_f9fbc_11) + (M31_1)),
                     ((carry_6_tmp_f9fbc_12) + (M31_1)),
@@ -731,6 +741,7 @@ fn write_trace_simd(
                     ((carry_3_tmp_f9fbc_21) + (M31_2)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_2 = [
+                    M31_502259093,
                     ((p_coef_col113) + (M31_2)),
                     ((carry_0_tmp_f9fbc_18) + (M31_2)),
                     ((carry_1_tmp_f9fbc_19) + (M31_2)),
@@ -745,6 +756,7 @@ fn write_trace_simd(
                     ((carry_8_tmp_f9fbc_26) + (M31_2)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_3 = [
+                    M31_502259093,
                     ((carry_4_tmp_f9fbc_22) + (M31_2)),
                     ((carry_5_tmp_f9fbc_23) + (M31_2)),
                     ((carry_6_tmp_f9fbc_24) + (M31_2)),
@@ -877,6 +889,7 @@ fn write_trace_simd(
                     ((carry_3_tmp_f9fbc_33) + (M31_3)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_4 = [
+                    M31_502259093,
                     ((p_coef_col124) + (M31_3)),
                     ((carry_0_tmp_f9fbc_30) + (M31_3)),
                     ((carry_1_tmp_f9fbc_31) + (M31_3)),
@@ -891,6 +904,7 @@ fn write_trace_simd(
                     ((carry_8_tmp_f9fbc_38) + (M31_3)),
                 ];
                 *lookup_data.range_check_3_3_3_3_3_5 = [
+                    M31_502259093,
                     ((carry_4_tmp_f9fbc_34) + (M31_3)),
                     ((carry_5_tmp_f9fbc_35) + (M31_3)),
                     ((carry_6_tmp_f9fbc_36) + (M31_3)),
@@ -901,6 +915,7 @@ fn write_trace_simd(
                     combination_tmp_f9fbc_28;
 
                 *lookup_data.poseidon_full_round_chain_0 = [
+                    M31_1480369132,
                     input_limb_0_col0,
                     input_limb_1_col1,
                     input_limb_2_col2,
@@ -935,6 +950,7 @@ fn write_trace_simd(
                     input_limb_31_col31,
                 ];
                 *lookup_data.poseidon_full_round_chain_1 = [
+                    M31_1480369132,
                     input_limb_0_col0,
                     ((input_limb_1_col1) + (M31_1)),
                     combination_limb_0_col92,
@@ -977,18 +993,18 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    cube_252_0: Vec<[PackedM31; 20]>,
-    cube_252_1: Vec<[PackedM31; 20]>,
-    cube_252_2: Vec<[PackedM31; 20]>,
-    poseidon_full_round_chain_0: Vec<[PackedM31; 32]>,
-    poseidon_full_round_chain_1: Vec<[PackedM31; 32]>,
-    poseidon_round_keys_0: Vec<[PackedM31; 31]>,
-    range_check_3_3_3_3_3_0: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_1: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_2: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_3: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_4: Vec<[PackedM31; 5]>,
-    range_check_3_3_3_3_3_5: Vec<[PackedM31; 5]>,
+    cube_252_0: Vec<[PackedM31; 21]>,
+    cube_252_1: Vec<[PackedM31; 21]>,
+    cube_252_2: Vec<[PackedM31; 21]>,
+    poseidon_full_round_chain_0: Vec<[PackedM31; 33]>,
+    poseidon_full_round_chain_1: Vec<[PackedM31; 33]>,
+    poseidon_round_keys_0: Vec<[PackedM31; 32]>,
+    range_check_3_3_3_3_3_0: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_1: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_2: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_3: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_4: Vec<[PackedM31; 6]>,
+    range_check_3_3_3_3_3_5: Vec<[PackedM31; 6]>,
 }
 
 pub struct InteractionClaimGenerator {

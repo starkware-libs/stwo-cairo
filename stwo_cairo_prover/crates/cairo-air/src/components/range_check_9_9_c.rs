@@ -8,7 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -48,6 +48,7 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1881014476 = E::F::from(M31::from(1881014476));
         let range_check_9_9_column_0 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "range_check_9_9_column_0".to_owned(),
         });
@@ -57,9 +58,10 @@ impl FrameworkEval for Eval {
         let multiplicity = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_c_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity),
             &[
+                M31_1881014476.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
@@ -86,7 +88,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
