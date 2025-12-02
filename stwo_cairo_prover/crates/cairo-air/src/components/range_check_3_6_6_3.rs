@@ -60,11 +60,11 @@ impl FrameworkEval for Eval {
         let range_check_3_6_6_3_column_3 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "range_check_3_6_6_3_column_3".to_owned(),
         });
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_3_6_6_3_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             &[
                 range_check_3_6_6_3_column_0.clone(),
                 range_check_3_6_6_3_column_1.clone(),

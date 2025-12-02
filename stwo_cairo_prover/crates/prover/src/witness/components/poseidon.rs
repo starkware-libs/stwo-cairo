@@ -95,22 +95,8 @@ impl PoseidonContextClaimGenerator {
             );
         let (cube_252_claim, cube_252_interaction_gen) = self.cube_252_trace_generator.write_trace(
             tree_builder,
-            &range_checks_trace_generator.rc_20_trace_generator,
-            &range_checks_trace_generator.rc_20_b_trace_generator,
-            &range_checks_trace_generator.rc_20_c_trace_generator,
-            &range_checks_trace_generator.rc_20_d_trace_generator,
-            &range_checks_trace_generator.rc_20_e_trace_generator,
-            &range_checks_trace_generator.rc_20_f_trace_generator,
-            &range_checks_trace_generator.rc_20_g_trace_generator,
-            &range_checks_trace_generator.rc_20_h_trace_generator,
             &range_checks_trace_generator.rc_9_9_trace_generator,
-            &range_checks_trace_generator.rc_9_9_b_trace_generator,
-            &range_checks_trace_generator.rc_9_9_c_trace_generator,
-            &range_checks_trace_generator.rc_9_9_d_trace_generator,
-            &range_checks_trace_generator.rc_9_9_e_trace_generator,
-            &range_checks_trace_generator.rc_9_9_f_trace_generator,
-            &range_checks_trace_generator.rc_9_9_g_trace_generator,
-            &range_checks_trace_generator.rc_9_9_h_trace_generator,
+            &range_checks_trace_generator.rc_20_trace_generator,
         );
         let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
             .poseidon_round_keys_trace_generator
@@ -120,11 +106,6 @@ impl PoseidonContextClaimGenerator {
                 tree_builder,
                 &range_checks_trace_generator.rc_9_9_trace_generator,
                 &range_checks_trace_generator.rc_18_trace_generator,
-                &range_checks_trace_generator.rc_9_9_b_trace_generator,
-                &range_checks_trace_generator.rc_18_b_trace_generator,
-                &range_checks_trace_generator.rc_9_9_c_trace_generator,
-                &range_checks_trace_generator.rc_9_9_d_trace_generator,
-                &range_checks_trace_generator.rc_9_9_e_trace_generator,
             );
         span.exit();
 

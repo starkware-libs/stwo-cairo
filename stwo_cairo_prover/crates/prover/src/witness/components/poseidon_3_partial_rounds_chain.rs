@@ -56,28 +56,28 @@ impl ClaimGenerator {
             .poseidon_round_keys
             .iter()
             .for_each(|inputs| {
-                poseidon_round_keys_state.add_packed_inputs(inputs);
+                poseidon_round_keys_state.add_packed_inputs(inputs, "PoseidonRoundKeys");
             });
         sub_component_inputs.cube_252.iter().for_each(|inputs| {
-            cube_252_state.add_packed_inputs(inputs);
+            cube_252_state.add_packed_inputs(inputs, "Cube252");
         });
         sub_component_inputs
             .range_check_4_4_4_4
             .iter()
             .for_each(|inputs| {
-                range_check_4_4_4_4_state.add_packed_inputs(inputs);
+                range_check_4_4_4_4_state.add_packed_inputs(inputs, "RangeCheck_4_4_4_4");
             });
         sub_component_inputs
             .range_check_4_4
             .iter()
             .for_each(|inputs| {
-                range_check_4_4_state.add_packed_inputs(inputs);
+                range_check_4_4_state.add_packed_inputs(inputs, "RangeCheck_4_4");
             });
         sub_component_inputs
             .range_check_252_width_27
             .iter()
             .for_each(|inputs| {
-                range_check_252_width_27_state.add_packed_inputs(inputs);
+                range_check_252_width_27_state.add_packed_inputs(inputs, "RangeCheck252Width27");
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -91,7 +91,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_name: &str) {
         self.packed_inputs.extend(inputs);
     }
 }

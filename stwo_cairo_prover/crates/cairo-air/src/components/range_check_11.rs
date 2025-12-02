@@ -51,11 +51,11 @@ impl FrameworkEval for Eval {
         let seq_11 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_11".to_owned(),
         });
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.range_check_11_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             std::slice::from_ref(&seq_11),
         ));
 

@@ -44,13 +44,13 @@ impl ClaimGenerator {
             .verify_instruction
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs);
+                verify_instruction_state.add_packed_inputs(inputs, "VerifyInstruction");
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         tree_builder.extend_evals(trace.to_evals());
 

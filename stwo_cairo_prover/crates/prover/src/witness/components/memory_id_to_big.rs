@@ -14,10 +14,7 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATIO
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-use crate::witness::components::{
-    range_check_9_9, range_check_9_9_b, range_check_9_9_c, range_check_9_9_d, range_check_9_9_e,
-    range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
-};
+use crate::witness::components::range_check_9_9;
 use crate::witness::prelude::*;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
@@ -86,7 +83,7 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_name: &str) {
         inputs.into_par_iter().for_each(|input| {
             self.add_packed_m31(input);
         });
@@ -115,13 +112,6 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
-        range_check_9_9_b_trace_generator: &range_check_9_9_b::ClaimGenerator,
-        range_check_9_9_c_trace_generator: &range_check_9_9_c::ClaimGenerator,
-        range_check_9_9_d_trace_generator: &range_check_9_9_d::ClaimGenerator,
-        range_check_9_9_e_trace_generator: &range_check_9_9_e::ClaimGenerator,
-        range_check_9_9_f_trace_generator: &range_check_9_9_f::ClaimGenerator,
-        range_check_9_9_g_trace_generator: &range_check_9_9_g::ClaimGenerator,
-        range_check_9_9_h_trace_generator: &range_check_9_9_h::ClaimGenerator,
         log_max_big_size: u32,
     ) -> (Claim, InteractionClaimGenerator) {
         let big_table_traces = gen_big_memory_traces(
@@ -153,49 +143,57 @@ impl ClaimGenerator {
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9");
                         }),
                     1 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_b_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_B");
                         }),
                     2 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_c_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_C");
                         }),
                     3 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_d_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_D");
                         }),
                     4 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_e_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_E");
                         }),
                     5 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_f_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_F");
                         }),
                     6 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_g_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_G");
                         }),
                     7 => col0
                         .par_iter()
                         .zip(col1.par_iter())
                         .for_each(|(val0, val1)| {
-                            range_check_9_9_h_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                            range_check_9_9_trace_generator
+                                .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_H");
                         }),
                     _ => {
                         unreachable!("There are only 8 possible values for i % 8.",)
@@ -210,25 +208,29 @@ impl ClaimGenerator {
                     .par_iter()
                     .zip(col1.par_iter())
                     .for_each(|(val0, val1)| {
-                        range_check_9_9_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                        range_check_9_9_trace_generator
+                            .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9");
                     }),
                 1 => col0
                     .par_iter()
                     .zip(col1.par_iter())
                     .for_each(|(val0, val1)| {
-                        range_check_9_9_b_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                        range_check_9_9_trace_generator
+                            .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_B");
                     }),
                 2 => col0
                     .par_iter()
                     .zip(col1.par_iter())
                     .for_each(|(val0, val1)| {
-                        range_check_9_9_c_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                        range_check_9_9_trace_generator
+                            .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_C");
                     }),
                 3 => col0
                     .par_iter()
                     .zip(col1.par_iter())
                     .for_each(|(val0, val1)| {
-                        range_check_9_9_d_trace_generator.add_packed_inputs(&[[*val0, *val1]]);
+                        range_check_9_9_trace_generator
+                            .add_packed_inputs(&[[*val0, *val1]], "RangeCheck_9_9_D");
                     }),
                 _ => {
                     unreachable!("There are only 4 possible values for i % 4.",)
@@ -606,11 +608,7 @@ mod tests {
 
     use crate::debug_tools::assert_constraints::assert_component;
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
-    use crate::witness::components::{
-        memory_address_to_id, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
-        range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g,
-        range_check_9_9_h,
-    };
+    use crate::witness::components::{memory_address_to_id, range_check_9_9};
 
     #[test]
     fn test_memory_constraints() {
@@ -646,32 +644,8 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
         let id_to_big = super::ClaimGenerator::new(&memory);
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_b =
-            range_check_9_9_b::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_c =
-            range_check_9_9_c::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_d =
-            range_check_9_9_d::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_e =
-            range_check_9_9_e::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_f =
-            range_check_9_9_f::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_g =
-            range_check_9_9_g::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_h =
-            range_check_9_9_h::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let (claim, interaction_generator) = id_to_big.write_trace(
-            &mut tree_builder,
-            &range_check_9_9,
-            &range_check_9_9_b,
-            &range_check_9_9_c,
-            &range_check_9_9_d,
-            &range_check_9_9_e,
-            &range_check_9_9_f,
-            &range_check_9_9_g,
-            &range_check_9_9_h,
-            log_max_seq_size,
-        );
+        let (claim, interaction_generator) =
+            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
         tree_builder.finalize_interaction();
 
         // Interaction trace.
@@ -751,20 +725,6 @@ mod tests {
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
         let id_to_big = super::ClaimGenerator::new(&memory);
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_b =
-            range_check_9_9_b::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_c =
-            range_check_9_9_c::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_d =
-            range_check_9_9_d::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_e =
-            range_check_9_9_e::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_f =
-            range_check_9_9_f::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_g =
-            range_check_9_9_g::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let range_check_9_9_h =
-            range_check_9_9_h::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let expected_small_log_size = log_max_seq_size;
         let expected_first_big_log_size = log_max_seq_size;
         let big_value_overflow = n_large_values - (1 << log_max_seq_size);
@@ -775,18 +735,8 @@ mod tests {
         let expected_big_log_sizes =
             vec![expected_first_big_log_size, expected_second_big_log_size];
 
-        let (claim, ..) = id_to_big.write_trace(
-            &mut tree_builder,
-            &range_check_9_9,
-            &range_check_9_9_b,
-            &range_check_9_9_c,
-            &range_check_9_9_d,
-            &range_check_9_9_e,
-            &range_check_9_9_f,
-            &range_check_9_9_g,
-            &range_check_9_9_h,
-            log_max_seq_size,
-        );
+        let (claim, ..) =
+            id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
 
         assert_eq!(claim.small_log_size, expected_small_log_size);
         assert_eq!(claim.big_log_sizes, expected_big_log_sizes);

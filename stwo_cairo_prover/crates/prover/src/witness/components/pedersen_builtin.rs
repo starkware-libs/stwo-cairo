@@ -39,13 +39,13 @@ impl ClaimGenerator {
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         sub_component_inputs
             .pedersen_aggregator
             .iter()
             .for_each(|inputs| {
-                pedersen_aggregator_state.add_packed_inputs(inputs);
+                pedersen_aggregator_state.add_packed_inputs(inputs, "PedersenAggregator");
             });
         tree_builder.extend_evals(trace.to_evals());
 

@@ -100,7 +100,7 @@ impl ClaimGenerator {
         }
     }
 
-    pub fn add_packed_inputs(&self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_name: &str) {
         inputs.into_par_iter().for_each(|input| {
             self.add_packed_m31(input);
         });

@@ -56,28 +56,28 @@ impl ClaimGenerator {
             .blake_round_sigma
             .iter()
             .for_each(|inputs| {
-                blake_round_sigma_state.add_packed_inputs(inputs);
+                blake_round_sigma_state.add_packed_inputs(inputs, "BlakeRoundSigma");
             });
         sub_component_inputs
             .range_check_7_2_5
             .iter()
             .for_each(|inputs| {
-                range_check_7_2_5_state.add_packed_inputs(inputs);
+                range_check_7_2_5_state.add_packed_inputs(inputs, "RangeCheck_7_2_5");
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, "MemoryIdToBig");
             });
         sub_component_inputs.blake_g.iter().for_each(|inputs| {
-            blake_g_state.add_packed_inputs(inputs);
+            blake_g_state.add_packed_inputs(inputs, "BlakeG");
         });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -91,7 +91,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_name: &str) {
         self.packed_inputs.extend(inputs);
     }
 

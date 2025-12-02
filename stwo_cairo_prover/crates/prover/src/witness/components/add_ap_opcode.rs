@@ -50,31 +50,31 @@ impl ClaimGenerator {
             .verify_instruction
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs);
+                verify_instruction_state.add_packed_inputs(inputs, "VerifyInstruction");
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, "MemoryAddressToId");
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, "MemoryIdToBig");
             });
         sub_component_inputs
             .range_check_18
             .iter()
             .for_each(|inputs| {
-                range_check_18_state.add_packed_inputs(inputs);
+                range_check_18_state.add_packed_inputs(inputs, "RangeCheck_18");
             });
         sub_component_inputs
             .range_check_11
             .iter()
             .for_each(|inputs| {
-                range_check_11_state.add_packed_inputs(inputs);
+                range_check_11_state.add_packed_inputs(inputs, "RangeCheck_11");
             });
         tree_builder.extend_evals(trace.to_evals());
 
