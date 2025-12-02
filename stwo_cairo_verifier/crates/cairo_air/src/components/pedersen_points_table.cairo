@@ -135,8 +135,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let pedersen_points_54 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_54_IDX);
         let pedersen_points_55 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_55_IDX);
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [pedersen_points_table_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_multiplicity]: [QM31; 1] = (*pedersen_points_table_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -167,7 +173,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            pedersen_points_table_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             pedersen_points_table_sum_0,
@@ -181,7 +187,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    pedersen_points_table_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     pedersen_points_table_sum_0: QM31,
@@ -207,7 +213,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * pedersen_points_table_sum_0)
-        + enabler)
+        + pedersen_points_table_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

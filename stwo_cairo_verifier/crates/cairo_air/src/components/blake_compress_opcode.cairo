@@ -353,7 +353,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             high_14_ms_bits_col170,
             high_5_ms_bits_col171,
             new_state_7_id_col172,
-            enabler,
+            opcodes_multiplicity,
         ]: [Span<QM31>; 174] =
             (*trace_mask_values
             .multi_pop_front()
@@ -716,11 +716,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unbox();
         let [new_state_7_id_col172]: [QM31; 1] = (*new_state_7_id_col172.try_into().unwrap())
             .unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [opcodes_multiplicity]: [QM31; 1] = (*opcodes_multiplicity.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
+            - opcodes_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_blake_opcode_output_tmp_53f39_42_limb_0,
@@ -1154,7 +1156,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            opcodes_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_instruction_sum_0,
@@ -1241,7 +1243,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    opcodes_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_instruction_sum_0: QM31,
@@ -2100,8 +2102,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_72
         * opcodes_sum_73)
-        + (opcodes_sum_72 * enabler)
-        - (opcodes_sum_73 * enabler))
+        + (opcodes_sum_72 * opcodes_multiplicity)
+        - (opcodes_sum_73 * opcodes_multiplicity))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

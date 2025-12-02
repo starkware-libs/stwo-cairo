@@ -122,7 +122,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             xor_col17,
             xor_col18,
             xor_col19,
-            enabler,
+            triple_xor_32_multiplicity,
         ]: [Span<QM31>; 21] =
             (*trace_mask_values
             .multi_pop_front()
@@ -148,11 +148,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [xor_col17]: [QM31; 1] = (*xor_col17.try_into().unwrap()).unbox();
         let [xor_col18]: [QM31; 1] = (*xor_col18.try_into().unwrap()).unbox();
         let [xor_col19]: [QM31; 1] = (*xor_col19.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [triple_xor_32_multiplicity]: [QM31; 1] = (*triple_xor_32_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (triple_xor_32_multiplicity * triple_xor_32_multiplicity
+            - triple_xor_32_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let split_16_low_part_size_8_output_tmp_298db_1_limb_0: QM31 =
             split_16_low_part_size_8_evaluate(
@@ -276,7 +281,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            triple_xor_32_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_8_sum_0,
@@ -298,7 +303,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    triple_xor_32_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_8_sum_0: QM31,
@@ -417,7 +422,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * triple_xor_32_sum_8)
-        + enabler)
+        + triple_xor_32_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

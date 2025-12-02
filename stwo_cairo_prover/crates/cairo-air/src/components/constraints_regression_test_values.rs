@@ -136,34 +136,10 @@ pub const RANGE_CHECK_12: Expect = expect![[r#"
     (2029705150 + 1702041781i) + (1878593402 + 1237923315i)u
 "#]];
 pub const RANGE_CHECK_18: Expect = expect![[r#"
-    (160488628 + 2118914040i) + (1869606781 + 508250040i)u
-"#]];
-pub const RANGE_CHECK_18_B: Expect = expect![[r#"
-    (1126909938 + 539712512i) + (1216260146 + 1641955472i)u
+    (879202200 + 1041935930i) + (627046766 + 1207731371i)u
 "#]];
 pub const RANGE_CHECK_20: Expect = expect![[r#"
-    (2122387686 + 601703841i) + (1337777990 + 798093234i)u
-"#]];
-pub const RANGE_CHECK_20_B: Expect = expect![[r#"
-    (1750683522 + 735596686i) + (932209867 + 2008567134i)u
-"#]];
-pub const RANGE_CHECK_20_C: Expect = expect![[r#"
-    (384076396 + 1768156010i) + (1484275430 + 485343528i)u
-"#]];
-pub const RANGE_CHECK_20_D: Expect = expect![[r#"
-    (254671167 + 395899282i) + (373228075 + 1496510398i)u
-"#]];
-pub const RANGE_CHECK_20_E: Expect = expect![[r#"
-    (6510971 + 1149614552i) + (1361811617 + 1101923040i)u
-"#]];
-pub const RANGE_CHECK_20_F: Expect = expect![[r#"
-    (554078208 + 679512120i) + (524960571 + 926052850i)u
-"#]];
-pub const RANGE_CHECK_20_G: Expect = expect![[r#"
-    (328860761 + 1123074187i) + (414876115 + 1500283142i)u
-"#]];
-pub const RANGE_CHECK_20_H: Expect = expect![[r#"
-    (1758447057 + 1998677685i) + (715836841 + 1935980491i)u
+    (132433986 + 929791686i) + (719321861 + 603794429i)u
 "#]];
 pub const RANGE_CHECK_4_3: Expect = expect![[r#"
     (1196459453 + 1634762104i) + (400394686 + 2114180246i)u
@@ -175,28 +151,7 @@ pub const RANGE_CHECK_5_4: Expect = expect![[r#"
     (916248735 + 2087615263i) + (41966646 + 1245971620i)u
 "#]];
 pub const RANGE_CHECK_9_9: Expect = expect![[r#"
-    (1894767386 + 1545920395i) + (422922350 + 1060532858i)u
-"#]];
-pub const RANGE_CHECK_9_9_B: Expect = expect![[r#"
-    (585472465 + 1122981599i) + (1529832123 + 1274783238i)u
-"#]];
-pub const RANGE_CHECK_9_9_C: Expect = expect![[r#"
-    (844476746 + 1741856661i) + (767852240 + 942622466i)u
-"#]];
-pub const RANGE_CHECK_9_9_D: Expect = expect![[r#"
-    (69786489 + 333218744i) + (836747973 + 998566994i)u
-"#]];
-pub const RANGE_CHECK_9_9_E: Expect = expect![[r#"
-    (88454528 + 640150751i) + (1382441742 + 790447637i)u
-"#]];
-pub const RANGE_CHECK_9_9_F: Expect = expect![[r#"
-    (1171221004 + 1553893836i) + (1129837900 + 1283188870i)u
-"#]];
-pub const RANGE_CHECK_9_9_G: Expect = expect![[r#"
-    (1715980107 + 27165241i) + (550545665 + 1064755391i)u
-"#]];
-pub const RANGE_CHECK_9_9_H: Expect = expect![[r#"
-    (254154311 + 1123666793i) + (510987174 + 1285681520i)u
+    (1982132292 + 2089235785i) + (358419016 + 1940121199i)u
 "#]];
 pub const RANGE_CHECK_7_2_5: Expect = expect![[r#"
     (2147119250 + 839921636i) + (589036134 + 149935499i)u
@@ -223,10 +178,7 @@ pub const VERIFY_BITWISE_XOR_7: Expect = expect![[r#"
     (1901363990 + 1932874508i) + (1322897748 + 1124138466i)u
 "#]];
 pub const VERIFY_BITWISE_XOR_8: Expect = expect![[r#"
-    (1416721714 + 1935377988i) + (780566669 + 98173027i)u
-"#]];
-pub const VERIFY_BITWISE_XOR_8_B: Expect = expect![[r#"
-    (1709985905 + 1138783253i) + (748520460 + 24386273i)u
+    (603902742 + 1751375822i) + (1335533187 + 1410219767i)u
 "#]];
 pub const VERIFY_BITWISE_XOR_9: Expect = expect![[r#"
     (1084186033 + 1944126042i) + (1899018540 + 496255699i)u
