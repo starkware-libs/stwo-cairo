@@ -44,29 +44,19 @@ pub fn read_small_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
+    let mid_limb_value_tmp_ceaaf_9: QM31 = (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>());
 
     memory_id_to_big_sum_1 = memory_id_to_big_lookup_elements
         .combine_qm31(
             [
                 id_col0, value_limb_0_col3, value_limb_1_col4, value_limb_2_col5,
                 (remainder_bits_col6 + (mid_limbs_set_col2 * qm31_const::<508, 0, 0, 0>())),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
+                mid_limb_value_tmp_ceaaf_9, mid_limb_value_tmp_ceaaf_9,
                 ((qm31_const::<136, 0, 0, 0>() * msb_col1) - mid_limbs_set_col2),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),

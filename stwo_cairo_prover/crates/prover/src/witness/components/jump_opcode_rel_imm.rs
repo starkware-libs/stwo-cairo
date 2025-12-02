@@ -242,6 +242,7 @@ fn write_trace_simd(
                 let partial_limb_msb_col11 = partial_limb_msb_tmp_81a39_11.as_m31();
                 *row[11] = partial_limb_msb_col11;
 
+                let mid_limb_value_tmp_81a39_13 = ((mid_limbs_set_col6) * (M31_511));
                 *sub_component_inputs.memory_id_to_big[0] = next_pc_id_col4;
                 *lookup_data.memory_id_to_big_0 = [
                     next_pc_id_col4,
@@ -249,23 +250,23 @@ fn write_trace_simd(
                     next_pc_limb_1_col8,
                     next_pc_limb_2_col9,
                     ((remainder_bits_col10) + ((mid_limbs_set_col6) * (M31_508))),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
-                    ((mid_limbs_set_col6) * (M31_511)),
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
+                    mid_limb_value_tmp_81a39_13,
                     (((M31_136) * (msb_col5)) - (mid_limbs_set_col6)),
                     M31_0,
                     M31_0,
@@ -274,7 +275,7 @@ fn write_trace_simd(
                     M31_0,
                     ((msb_col5) * (M31_256)),
                 ];
-                let read_small_output_tmp_81a39_13 = (
+                let read_small_output_tmp_81a39_14 = (
                     ((((((next_pc_limb_0_col7) + ((next_pc_limb_1_col8) * (M31_512)))
                         + ((next_pc_limb_2_col9) * (M31_262144)))
                         + ((remainder_bits_col10) * (M31_134217728)))
@@ -285,7 +286,7 @@ fn write_trace_simd(
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_81a39_13.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_81a39_14.0)),
                     ((input_ap_col1) + (ap_update_add_1_col3)),
                     input_fp_col2,
                 ];
