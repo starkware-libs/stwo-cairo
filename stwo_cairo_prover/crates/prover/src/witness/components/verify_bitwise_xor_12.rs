@@ -50,7 +50,7 @@ impl ClaimGenerator {
         self.mults[column_index as usize].increase_at(row_index);
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], _relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input);

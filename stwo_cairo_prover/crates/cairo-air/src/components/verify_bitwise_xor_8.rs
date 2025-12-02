@@ -2,13 +2,14 @@
 
 use crate::components::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;
+pub const N_TRACE_COLUMNS: usize = 2;
 pub const LOG_SIZE: u32 = 16;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
     pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -57,11 +58,22 @@ impl FrameworkEval for Eval {
         let bitwise_xor_8_2 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "bitwise_xor_8_2".to_owned(),
         });
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
+        let multiplicity_1 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
             &self.verify_bitwise_xor_8_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
+            &[
+                bitwise_xor_8_0.clone(),
+                bitwise_xor_8_1.clone(),
+                bitwise_xor_8_2.clone(),
+            ],
+        ));
+
+        eval.add_to_relation(RelationEntry::new(
+            &self.verify_bitwise_xor_8_b_lookup_elements,
+            -E::EF::from(multiplicity_1),
             &[
                 bitwise_xor_8_0.clone(),
                 bitwise_xor_8_1.clone(),
@@ -91,6 +103,7 @@ mod tests {
         let eval = Eval {
             claim: Claim {},
             verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

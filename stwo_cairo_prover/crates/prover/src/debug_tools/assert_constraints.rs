@@ -64,7 +64,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_4,
         verify_bitwise_xor_7,
         verify_bitwise_xor_8,
-        verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
     } = cairo_components;
     let OpcodeComponents {
@@ -95,26 +94,11 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_11,
         rc_12,
         rc_18,
-        rc_18_b,
         rc_20,
-        rc_20_b,
-        rc_20_c,
-        rc_20_d,
-        rc_20_e,
-        rc_20_f,
-        rc_20_g,
-        rc_20_h,
         rc_4_3,
         rc_4_4,
         rc_5_4,
         rc_9_9,
-        rc_9_9_b,
-        rc_9_9_c,
-        rc_9_9_d,
-        rc_9_9_e,
-        rc_9_9_f,
-        rc_9_9_g,
-        rc_9_9_h,
         rc_7_2_5,
         rc_3_6_6_3,
         rc_4_4_4_4,
@@ -147,26 +131,11 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(rc_11, &trace);
     assert_component(rc_12, &trace);
     assert_component(rc_18, &trace);
-    assert_component(rc_18_b, &trace);
     assert_component(rc_20, &trace);
-    assert_component(rc_20_b, &trace);
-    assert_component(rc_20_c, &trace);
-    assert_component(rc_20_d, &trace);
-    assert_component(rc_20_e, &trace);
-    assert_component(rc_20_f, &trace);
-    assert_component(rc_20_g, &trace);
-    assert_component(rc_20_h, &trace);
     assert_component(rc_4_3, &trace);
     assert_component(rc_4_4, &trace);
     assert_component(rc_5_4, &trace);
     assert_component(rc_9_9, &trace);
-    assert_component(rc_9_9_b, &trace);
-    assert_component(rc_9_9_c, &trace);
-    assert_component(rc_9_9_d, &trace);
-    assert_component(rc_9_9_e, &trace);
-    assert_component(rc_9_9_f, &trace);
-    assert_component(rc_9_9_g, &trace);
-    assert_component(rc_9_9_h, &trace);
     assert_component(rc_7_2_5, &trace);
     assert_component(rc_3_6_6_3, &trace);
     assert_component(rc_4_4_4_4, &trace);
@@ -174,7 +143,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     assert_component(verify_bitwise_xor_4, &trace);
     assert_component(verify_bitwise_xor_7, &trace);
     assert_component(verify_bitwise_xor_8, &trace);
-    assert_component(verify_bitwise_xor_8_b, &trace);
     assert_component(verify_bitwise_xor_9, &trace);
     assert_component(memory_address_to_id, &trace);
     for component in &memory_id_to_value.0 {
