@@ -242,7 +242,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_bc3cd_output_tmp_756b7_11_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_756b7_21_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_22_limb_0: QM31 = read_small_evaluate(
             (mem_dst_base_col11 + decode_instruction_bc3cd_output_tmp_756b7_11_offset0),
             dst_id_col14,
             msb_col15,
@@ -260,7 +260,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_31_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_33_limb_0: QM31 = read_small_evaluate(
             (mem0_base_col12 + decode_instruction_bc3cd_output_tmp_756b7_11_offset1),
             op0_id_col22,
             msb_col23,
@@ -278,7 +278,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let read_small_output_tmp_756b7_41_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_756b7_44_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col13 + decode_instruction_bc3cd_output_tmp_756b7_11_offset2),
             op1_id_col30,
             msb_col31,
@@ -298,8 +298,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         );
 
         // Constraint - dst equals op0 + op1
-        let constraint_quotient = ((read_small_output_tmp_756b7_21_limb_0
-            - (read_small_output_tmp_756b7_31_limb_0 + read_small_output_tmp_756b7_41_limb_0)))
+        let constraint_quotient = ((read_small_output_tmp_756b7_22_limb_0
+            - (read_small_output_tmp_756b7_33_limb_0 + read_small_output_tmp_756b7_44_limb_0)))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
