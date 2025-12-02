@@ -270,8 +270,7 @@ impl ModUtils {
         c3_limb_8_col249: E::F,
         c3_limb_9_col250: E::F,
         c3_limb_10_col251: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
@@ -315,8 +314,7 @@ impl ModUtils {
             p0_limb_8_col10.clone(),
             p0_limb_9_col11.clone(),
             p0_limb_10_col12.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -333,8 +331,7 @@ impl ModUtils {
             p1_limb_8_col22.clone(),
             p1_limb_9_col23.clone(),
             p1_limb_10_col24.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -351,8 +348,7 @@ impl ModUtils {
             p2_limb_8_col34.clone(),
             p2_limb_9_col35.clone(),
             p2_limb_10_col36.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -369,8 +365,7 @@ impl ModUtils {
             p3_limb_8_col46.clone(),
             p3_limb_9_col47.clone(),
             p3_limb_10_col48.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -381,8 +376,7 @@ impl ModUtils {
             values_ptr_limb_2_col52.clone(),
             values_ptr_limb_3_col53.clone(),
             partial_limb_msb_col54.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -393,8 +387,7 @@ impl ModUtils {
             offsets_ptr_limb_2_col58.clone(),
             offsets_ptr_limb_3_col59.clone(),
             partial_limb_msb_col60.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -405,8 +398,7 @@ impl ModUtils {
             offsets_ptr_prev_limb_2_col64.clone(),
             offsets_ptr_prev_limb_3_col65.clone(),
             partial_limb_msb_col66.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -417,8 +409,7 @@ impl ModUtils {
             n_limb_2_col70.clone(),
             n_limb_3_col71.clone(),
             partial_limb_msb_col72.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -429,8 +420,7 @@ impl ModUtils {
             n_prev_limb_2_col76.clone(),
             n_prev_limb_3_col77.clone(),
             partial_limb_msb_col78.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let n_prev_minus_1_tmp_7b599_59 = eval.add_intermediate(
@@ -472,7 +462,7 @@ impl ModUtils {
                 block_reset_condition_tmp_7b599_61.clone(),
             ],
             values_ptr_prev_id_col79.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         MemCondVerifyEqualKnownId::evaluate(
@@ -482,7 +472,7 @@ impl ModUtils {
                 block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev0_id_col80.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         MemCondVerifyEqualKnownId::evaluate(
@@ -492,7 +482,7 @@ impl ModUtils {
                 block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev1_id_col81.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         MemCondVerifyEqualKnownId::evaluate(
@@ -502,7 +492,7 @@ impl ModUtils {
                 block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev2_id_col82.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         MemCondVerifyEqualKnownId::evaluate(
@@ -512,7 +502,7 @@ impl ModUtils {
                 block_reset_condition_tmp_7b599_61.clone(),
             ],
             p_prev3_id_col83.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [read_small_output_tmp_7b599_81_limb_0] = ReadSmall::evaluate(
@@ -525,8 +515,7 @@ impl ModUtils {
             offsets_a_limb_2_col89.clone(),
             remainder_bits_col90.clone(),
             partial_limb_msb_col91.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [read_small_output_tmp_7b599_91_limb_0] = ReadSmall::evaluate(
@@ -539,8 +528,7 @@ impl ModUtils {
             offsets_b_limb_2_col97.clone(),
             remainder_bits_col98.clone(),
             partial_limb_msb_col99.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [read_small_output_tmp_7b599_101_limb_0] = ReadSmall::evaluate(
@@ -553,8 +541,7 @@ impl ModUtils {
             offsets_c_limb_2_col105.clone(),
             remainder_bits_col106.clone(),
             partial_limb_msb_col107.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let values_ptr_tmp_7b599_102 = eval.add_intermediate(
@@ -577,8 +564,7 @@ impl ModUtils {
             a0_limb_8_col117.clone(),
             a0_limb_9_col118.clone(),
             a0_limb_10_col119.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -599,8 +585,7 @@ impl ModUtils {
             a1_limb_8_col129.clone(),
             a1_limb_9_col130.clone(),
             a1_limb_10_col131.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -621,8 +606,7 @@ impl ModUtils {
             a2_limb_8_col141.clone(),
             a2_limb_9_col142.clone(),
             a2_limb_10_col143.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -643,8 +627,7 @@ impl ModUtils {
             a3_limb_8_col153.clone(),
             a3_limb_9_col154.clone(),
             a3_limb_10_col155.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -661,8 +644,7 @@ impl ModUtils {
             b0_limb_8_col165.clone(),
             b0_limb_9_col166.clone(),
             b0_limb_10_col167.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -683,8 +665,7 @@ impl ModUtils {
             b1_limb_8_col177.clone(),
             b1_limb_9_col178.clone(),
             b1_limb_10_col179.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -705,8 +686,7 @@ impl ModUtils {
             b2_limb_8_col189.clone(),
             b2_limb_9_col190.clone(),
             b2_limb_10_col191.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -727,8 +707,7 @@ impl ModUtils {
             b3_limb_8_col201.clone(),
             b3_limb_9_col202.clone(),
             b3_limb_10_col203.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -745,8 +724,7 @@ impl ModUtils {
             c0_limb_8_col213.clone(),
             c0_limb_9_col214.clone(),
             c0_limb_10_col215.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -767,8 +745,7 @@ impl ModUtils {
             c1_limb_8_col225.clone(),
             c1_limb_9_col226.clone(),
             c1_limb_10_col227.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -789,8 +766,7 @@ impl ModUtils {
             c2_limb_8_col237.clone(),
             c2_limb_9_col238.clone(),
             c2_limb_10_col239.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits99::evaluate(
@@ -811,8 +787,7 @@ impl ModUtils {
             c3_limb_8_col249.clone(),
             c3_limb_9_col250.clone(),
             c3_limb_10_col251.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         []

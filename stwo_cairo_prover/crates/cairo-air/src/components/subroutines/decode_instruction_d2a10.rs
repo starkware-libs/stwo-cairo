@@ -17,12 +17,13 @@ impl DecodeInstructionD2A10 {
         offset2_col0: E::F,
         op1_imm_col1: E::F,
         op1_base_fp_col2: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 2] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_16 = E::F::from(M31::from(16));
+        let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_24 = E::F::from(M31::from(24));
         let M31_32 = E::F::from(M31::from(32));
         let M31_32767 = E::F::from(M31::from(32767));
@@ -42,9 +43,10 @@ impl DecodeInstructionD2A10 {
             (op1_base_ap_tmp_d2a10_5.clone() * (M31_1.clone() - op1_base_ap_tmp_d2a10_5.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            verify_instruction_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1719106205.clone(),
                 decode_instruction_d2a10_input_pc.clone(),
                 M31_32767.clone(),
                 M31_32767.clone(),

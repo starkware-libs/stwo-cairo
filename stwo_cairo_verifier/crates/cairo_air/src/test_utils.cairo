@@ -60,6 +60,7 @@ pub fn mock_public_memory_with_outputs(output_len: u32) -> PublicMemory {
 pub fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
     CairoInteractionElements {
         opcodes: LookupElementsDummyImpl::dummy(),
+        common: LookupElementsDummyImpl::dummy(),
         verify_instruction: LookupElementsDummyImpl::dummy(),
         blake_round: LookupElementsDummyImpl::dummy(),
         blake_g: LookupElementsDummyImpl::dummy(),

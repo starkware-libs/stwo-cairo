@@ -19,6 +19,7 @@ impl CondFelt252AsRelImm {
         msb_col0: E::F,
         mid_limbs_set_col1: E::F,
         partial_limb_msb_col2: E::F,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 1] {
         let M31_134217728 = E::F::from(M31::from(134217728));
@@ -30,7 +31,13 @@ impl CondFelt252AsRelImm {
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
 
-        DecodeSmallSign::evaluate([], msb_col0.clone(), mid_limbs_set_col1.clone(), eval);
+        DecodeSmallSign::evaluate(
+            [],
+            msb_col0.clone(),
+            mid_limbs_set_col1.clone(),
+            common_lookup_elements,
+            eval,
+        );
         let remainder_bits_tmp_1e9bf_3 = eval.add_intermediate(
             (cond_felt_252_as_rel_imm_input_limb_3.clone()
                 - (mid_limbs_set_col1.clone() * M31_508.clone())),
@@ -41,6 +48,7 @@ impl CondFelt252AsRelImm {
                 cond_felt_252_as_rel_imm_input_limb_28.clone(),
             ],
             partial_limb_msb_col2.clone(),
+            common_lookup_elements,
             eval,
         );
         // rel_imm limb 4 is fixed.

@@ -78,6 +78,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_371240602 = PackedM31::broadcast(M31::from(371240602));
     let range_check_7_2_5_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "range_check_7_2_5_column_0".to_owned(),
     });
@@ -96,6 +97,7 @@ fn write_trace_simd(
             let range_check_7_2_5_column_1 = range_check_7_2_5_column_1.packed_at(row_index);
             let range_check_7_2_5_column_2 = range_check_7_2_5_column_2.packed_at(row_index);
             *lookup_data.range_check_7_2_5_0 = [
+                M31_371240602,
                 range_check_7_2_5_column_0,
                 range_check_7_2_5_column_1,
                 range_check_7_2_5_column_2,
@@ -110,7 +112,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    range_check_7_2_5_0: Vec<[PackedM31; 3]>,
+    range_check_7_2_5_0: Vec<[PackedM31; 4]>,
     mults: Vec<PackedM31>,
 }
 

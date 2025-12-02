@@ -21,9 +21,7 @@ impl ReadU32 {
         high_14_ms_bits_col3: E::F,
         high_5_ms_bits_col4: E::F,
         id_col5: E::F,
-        range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         VerifyU32::evaluate(
@@ -36,9 +34,7 @@ impl ReadU32 {
             high_14_ms_bits_col3.clone(),
             high_5_ms_bits_col4.clone(),
             id_col5.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         []

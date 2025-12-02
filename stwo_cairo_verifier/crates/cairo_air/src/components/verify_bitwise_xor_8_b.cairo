@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub verify_bitwise_xor_8_b_lookup_elements: crate::VerifyBitwiseXor_8_BElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -54,9 +54,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            verify_bitwise_xor_8_b_lookup_elements: interaction_elements
-                .verify_bitwise_xor_8_b
-                .clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -87,8 +85,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         verify_bitwise_xor_8_b_sum_0 = self
-            .verify_bitwise_xor_8_b_lookup_elements
-            .combine_qm31([bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<521092554, 0, 0, 0>(), bitwise_xor_8_0, bitwise_xor_8_1,
+                    bitwise_xor_8_2,
+                ]
+                    .span(),
+            );
 
         lookup_constraints(
             ref sum,

@@ -46,13 +46,14 @@ pub trait LookupElementsTrait<const N: usize> {
     /// We use horner evaluation here regardless of the qm31_opcode feature flag as it is faster in
     /// both cases.
     fn combine_qm31<impl IntoSpan: ToSpanTrait<[QM31; N], QM31>>(
-        self: @LookupElements<N>, values: [QM31; N],
+        self: @LookupElements<N>, values: Span<QM31>,
     ) -> QM31 {
+        assert!(values.len() <= N);
         let alpha = *self.alpha;
-        let mut values_span = IntoSpan::span(@values);
-        let mut sum = *values_span.pop_back().unwrap();
+        let mut values = values;
+        let mut sum = values.pop_back().unwrap().clone();
 
-        while let Some(value) = values_span.pop_back() {
+        while let Some(value) = values.pop_back() {
             sum = sum * alpha + *value;
         }
 

@@ -26,10 +26,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_instruction_lookup_elements: relations::VerifyInstruction,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub opcodes_lookup_elements: relations::Opcodes,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -74,6 +71,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_428564188 = E::F::from(M31::from(428564188));
         let input_pc_col0 = eval.next_trace_mask();
         let input_ap_col1 = eval.next_trace_mask();
         let input_fp_col2 = eval.next_trace_mask();
@@ -93,7 +91,7 @@ impl FrameworkEval for Eval {
         DecodeInstruction7Ebc4::evaluate(
             [input_pc_col0.clone()],
             ap_update_add_1_col3.clone(),
-            &self.verify_instruction_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         #[allow(clippy::unused_unit)]
@@ -108,14 +106,14 @@ impl FrameworkEval for Eval {
             next_pc_limb_2_col9.clone(),
             remainder_bits_col10.clone(),
             partial_limb_msb_col11.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.opcodes_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
+                M31_428564188.clone(),
                 input_pc_col0.clone(),
                 input_ap_col1.clone(),
                 input_fp_col2.clone(),
@@ -123,9 +121,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.opcodes_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
+                M31_428564188.clone(),
                 (input_pc_col0.clone() + read_small_output_tmp_81a39_13_limb_0.clone()),
                 (input_ap_col1.clone() + ap_update_add_1_col3.clone()),
                 input_fp_col2.clone(),
@@ -153,10 +152,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            verify_instruction_lookup_elements: relations::VerifyInstruction::dummy(),
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            opcodes_lookup_elements: relations::Opcodes::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

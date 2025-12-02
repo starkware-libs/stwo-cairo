@@ -144,11 +144,18 @@ fn write_trace_simd(
         )
     };
 
+    let M31_112558620 = PackedM31::broadcast(M31::from(112558620));
+    let M31_1139985212 = PackedM31::broadcast(M31::from(1139985212));
     let M31_128 = PackedM31::broadcast(M31::from(128));
     let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_4096 = PackedM31::broadcast(M31::from(4096));
+    let M31_45448144 = PackedM31::broadcast(M31::from(45448144));
     let M31_512 = PackedM31::broadcast(M31::from(512));
+    let M31_521092554 = PackedM31::broadcast(M31::from(521092554));
+    let M31_62225763 = PackedM31::broadcast(M31::from(62225763));
+    let M31_648362599 = PackedM31::broadcast(M31::from(648362599));
+    let M31_95781001 = PackedM31::broadcast(M31::from(95781001));
     let UInt16_12 = PackedUInt16::broadcast(UInt16::from(12));
     let UInt16_7 = PackedUInt16::broadcast(UInt16::from(7));
     let UInt16_8 = PackedUInt16::broadcast(UInt16::from(8));
@@ -257,8 +264,9 @@ fn write_trace_simd(
                     xor_col18,
                 ];
                 *lookup_data.verify_bitwise_xor_8_0 = [
-                    split_16_low_part_size_8_output_tmp_f72c8_5[0],
-                    split_16_low_part_size_8_output_tmp_f72c8_9[0],
+                    M31_112558620,
+                    split_16_low_part_size_8_output_tmp_f72c8_5_limb_0,
+                    split_16_low_part_size_8_output_tmp_f72c8_9_limb_0,
                     xor_col18,
                 ];
 
@@ -270,7 +278,8 @@ fn write_trace_simd(
                 *row[19] = xor_col19;
                 *sub_component_inputs.verify_bitwise_xor_8[1] =
                     [ms_8_bits_col14, ms_8_bits_col16, xor_col19];
-                *lookup_data.verify_bitwise_xor_8_1 = [ms_8_bits_col14, ms_8_bits_col16, xor_col19];
+                *lookup_data.verify_bitwise_xor_8_1 =
+                    [M31_112558620, ms_8_bits_col14, ms_8_bits_col16, xor_col19];
 
                 // Bitwise Xor Num Bits 8 B.
 
@@ -287,8 +296,9 @@ fn write_trace_simd(
                     xor_col20,
                 ];
                 *lookup_data.verify_bitwise_xor_8_b_0 = [
-                    split_16_low_part_size_8_output_tmp_f72c8_7[0],
-                    split_16_low_part_size_8_output_tmp_f72c8_11[0],
+                    M31_521092554,
+                    split_16_low_part_size_8_output_tmp_f72c8_7_limb_0,
+                    split_16_low_part_size_8_output_tmp_f72c8_11_limb_0,
                     xor_col20,
                 ];
 
@@ -301,7 +311,7 @@ fn write_trace_simd(
                 *sub_component_inputs.verify_bitwise_xor_8_b[1] =
                     [ms_8_bits_col15, ms_8_bits_col17, xor_col21];
                 *lookup_data.verify_bitwise_xor_8_b_1 =
-                    [ms_8_bits_col15, ms_8_bits_col17, xor_col21];
+                    [M31_521092554, ms_8_bits_col15, ms_8_bits_col17, xor_col21];
 
                 let xor_rot_16_output_tmp_f72c8_20 = PackedUInt32::from_limbs([
                     ((xor_col20) + ((xor_col21) * (M31_256))),
@@ -378,8 +388,9 @@ fn write_trace_simd(
                     xor_col28,
                 ];
                 *lookup_data.verify_bitwise_xor_12_0 = [
-                    split_16_low_part_size_12_output_tmp_f72c8_27[0],
-                    split_16_low_part_size_12_output_tmp_f72c8_31[0],
+                    M31_648362599,
+                    split_16_low_part_size_12_output_tmp_f72c8_27_limb_0,
+                    split_16_low_part_size_12_output_tmp_f72c8_31_limb_0,
                     xor_col28,
                 ];
 
@@ -391,7 +402,8 @@ fn write_trace_simd(
                 *row[29] = xor_col29;
                 *sub_component_inputs.verify_bitwise_xor_4[0] =
                     [ms_4_bits_col24, ms_4_bits_col26, xor_col29];
-                *lookup_data.verify_bitwise_xor_4_0 = [ms_4_bits_col24, ms_4_bits_col26, xor_col29];
+                *lookup_data.verify_bitwise_xor_4_0 =
+                    [M31_45448144, ms_4_bits_col24, ms_4_bits_col26, xor_col29];
 
                 // Bitwise Xor Num Bits 12.
 
@@ -408,8 +420,9 @@ fn write_trace_simd(
                     xor_col30,
                 ];
                 *lookup_data.verify_bitwise_xor_12_1 = [
-                    split_16_low_part_size_12_output_tmp_f72c8_29[0],
-                    split_16_low_part_size_12_output_tmp_f72c8_33[0],
+                    M31_648362599,
+                    split_16_low_part_size_12_output_tmp_f72c8_29_limb_0,
+                    split_16_low_part_size_12_output_tmp_f72c8_33_limb_0,
                     xor_col30,
                 ];
 
@@ -421,7 +434,8 @@ fn write_trace_simd(
                 *row[31] = xor_col31;
                 *sub_component_inputs.verify_bitwise_xor_4[1] =
                     [ms_4_bits_col25, ms_4_bits_col27, xor_col31];
-                *lookup_data.verify_bitwise_xor_4_1 = [ms_4_bits_col25, ms_4_bits_col27, xor_col31];
+                *lookup_data.verify_bitwise_xor_4_1 =
+                    [M31_45448144, ms_4_bits_col25, ms_4_bits_col27, xor_col31];
 
                 let xor_rot_12_output_tmp_f72c8_42 = PackedUInt32::from_limbs([
                     ((xor_col29) + ((xor_col30) * (M31_16))),
@@ -503,8 +517,9 @@ fn write_trace_simd(
                     xor_col38,
                 ];
                 *lookup_data.verify_bitwise_xor_8_2 = [
-                    split_16_low_part_size_8_output_tmp_f72c8_49[0],
-                    split_16_low_part_size_8_output_tmp_f72c8_53[0],
+                    M31_112558620,
+                    split_16_low_part_size_8_output_tmp_f72c8_49_limb_0,
+                    split_16_low_part_size_8_output_tmp_f72c8_53_limb_0,
                     xor_col38,
                 ];
 
@@ -516,7 +531,8 @@ fn write_trace_simd(
                 *row[39] = xor_col39;
                 *sub_component_inputs.verify_bitwise_xor_8[3] =
                     [ms_8_bits_col34, ms_8_bits_col36, xor_col39];
-                *lookup_data.verify_bitwise_xor_8_3 = [ms_8_bits_col34, ms_8_bits_col36, xor_col39];
+                *lookup_data.verify_bitwise_xor_8_3 =
+                    [M31_112558620, ms_8_bits_col34, ms_8_bits_col36, xor_col39];
 
                 // Bitwise Xor Num Bits 8 B.
 
@@ -533,8 +549,9 @@ fn write_trace_simd(
                     xor_col40,
                 ];
                 *lookup_data.verify_bitwise_xor_8_b_2 = [
-                    split_16_low_part_size_8_output_tmp_f72c8_51[0],
-                    split_16_low_part_size_8_output_tmp_f72c8_55[0],
+                    M31_521092554,
+                    split_16_low_part_size_8_output_tmp_f72c8_51_limb_0,
+                    split_16_low_part_size_8_output_tmp_f72c8_55_limb_0,
                     xor_col40,
                 ];
 
@@ -547,7 +564,7 @@ fn write_trace_simd(
                 *sub_component_inputs.verify_bitwise_xor_8_b[3] =
                     [ms_8_bits_col35, ms_8_bits_col37, xor_col41];
                 *lookup_data.verify_bitwise_xor_8_b_3 =
-                    [ms_8_bits_col35, ms_8_bits_col37, xor_col41];
+                    [M31_521092554, ms_8_bits_col35, ms_8_bits_col37, xor_col41];
 
                 let xor_rot_8_output_tmp_f72c8_64 = PackedUInt32::from_limbs([
                     ((xor_col39) + ((xor_col40) * (M31_256))),
@@ -629,8 +646,9 @@ fn write_trace_simd(
                     xor_col48,
                 ];
                 *lookup_data.verify_bitwise_xor_7_0 = [
-                    split_16_low_part_size_7_output_tmp_f72c8_71[0],
-                    split_16_low_part_size_7_output_tmp_f72c8_75[0],
+                    M31_62225763,
+                    split_16_low_part_size_7_output_tmp_f72c8_71_limb_0,
+                    split_16_low_part_size_7_output_tmp_f72c8_75_limb_0,
                     xor_col48,
                 ];
 
@@ -642,7 +660,8 @@ fn write_trace_simd(
                 *row[49] = xor_col49;
                 *sub_component_inputs.verify_bitwise_xor_9[0] =
                     [ms_9_bits_col44, ms_9_bits_col46, xor_col49];
-                *lookup_data.verify_bitwise_xor_9_0 = [ms_9_bits_col44, ms_9_bits_col46, xor_col49];
+                *lookup_data.verify_bitwise_xor_9_0 =
+                    [M31_95781001, ms_9_bits_col44, ms_9_bits_col46, xor_col49];
 
                 // Bitwise Xor Num Bits 7.
 
@@ -659,8 +678,9 @@ fn write_trace_simd(
                     xor_col50,
                 ];
                 *lookup_data.verify_bitwise_xor_7_1 = [
-                    split_16_low_part_size_7_output_tmp_f72c8_73[0],
-                    split_16_low_part_size_7_output_tmp_f72c8_77[0],
+                    M31_62225763,
+                    split_16_low_part_size_7_output_tmp_f72c8_73_limb_0,
+                    split_16_low_part_size_7_output_tmp_f72c8_77_limb_0,
                     xor_col50,
                 ];
 
@@ -672,7 +692,8 @@ fn write_trace_simd(
                 *row[51] = xor_col51;
                 *sub_component_inputs.verify_bitwise_xor_9[1] =
                     [ms_9_bits_col45, ms_9_bits_col47, xor_col51];
-                *lookup_data.verify_bitwise_xor_9_1 = [ms_9_bits_col45, ms_9_bits_col47, xor_col51];
+                *lookup_data.verify_bitwise_xor_9_1 =
+                    [M31_95781001, ms_9_bits_col45, ms_9_bits_col47, xor_col51];
 
                 let xor_rot_7_output_tmp_f72c8_86 = PackedUInt32::from_limbs([
                     ((xor_col49) + ((xor_col50) * (M31_512))),
@@ -681,6 +702,7 @@ fn write_trace_simd(
                 let xor_rot_32_r_7_output_tmp_f72c8_87 = xor_rot_7_output_tmp_f72c8_86;
 
                 *lookup_data.blake_g_0 = [
+                    M31_1139985212,
                     input_limb_0_col0,
                     input_limb_1_col1,
                     input_limb_2_col2,
@@ -695,12 +717,12 @@ fn write_trace_simd(
                     input_limb_11_col11,
                     triple_sum32_res_limb_0_col32,
                     triple_sum32_res_limb_1_col33,
-                    xor_rot_7_output_tmp_f72c8_86.low().as_m31(),
-                    xor_rot_7_output_tmp_f72c8_86.high().as_m31(),
+                    xor_rot_32_r_7_output_tmp_f72c8_87_limb_0,
+                    xor_rot_32_r_7_output_tmp_f72c8_87_limb_1,
                     triple_sum32_res_limb_0_col42,
                     triple_sum32_res_limb_1_col43,
-                    xor_rot_8_output_tmp_f72c8_64.low().as_m31(),
-                    xor_rot_8_output_tmp_f72c8_64.high().as_m31(),
+                    xor_rot_32_r_8_output_tmp_f72c8_65_limb_0,
+                    xor_rot_32_r_8_output_tmp_f72c8_65_limb_1,
                 ];
                 *row[52] = enabler_col.packed_at(row_index);
             },
@@ -711,23 +733,23 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    blake_g_0: Vec<[PackedM31; 20]>,
-    verify_bitwise_xor_12_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_12_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_4_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_4_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_7_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_7_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_2: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_3: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_b_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_b_1: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_b_2: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_b_3: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_9_1: Vec<[PackedM31; 3]>,
+    blake_g_0: Vec<[PackedM31; 21]>,
+    verify_bitwise_xor_12_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_12_1: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_4_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_4_1: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_7_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_7_1: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_1: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_2: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_3: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_b_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_b_1: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_b_2: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_b_3: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_9_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_9_1: Vec<[PackedM31; 4]>,
 }
 
 pub struct InteractionClaimGenerator {

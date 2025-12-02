@@ -22,13 +22,16 @@ impl ReadPositiveKnownIdNumBits72 {
         value_limb_5_col5: E::F,
         value_limb_6_col6: E::F,
         value_limb_7_col7: E::F,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
+
         eval.add_to_relation(RelationEntry::new(
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1662111297.clone(),
                 read_positive_known_id_num_bits_72_input.clone(),
                 value_limb_0_col0.clone(),
                 value_limb_1_col1.clone(),

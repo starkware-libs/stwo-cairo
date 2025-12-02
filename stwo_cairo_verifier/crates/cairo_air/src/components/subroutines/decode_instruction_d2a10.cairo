@@ -8,7 +8,7 @@ pub fn decode_instruction_d2a10_evaluate(
     offset2_col0: QM31,
     op1_imm_col1: QM31,
     op1_base_fp_col2: QM31,
-    verify_instruction_lookup_elements: @crate::VerifyInstructionElements,
+    common_lookup_elements: @crate::CommonElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
@@ -34,16 +34,17 @@ pub fn decode_instruction_d2a10_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    verify_instruction_sum_0 = verify_instruction_lookup_elements
+    verify_instruction_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                decode_instruction_d2a10_input_pc, qm31_const::<32767, 0, 0, 0>(),
-                qm31_const::<32767, 0, 0, 0>(), offset2_col0,
+                qm31_const::<1719106205, 0, 0, 0>(), decode_instruction_d2a10_input_pc,
+                qm31_const::<32767, 0, 0, 0>(), qm31_const::<32767, 0, 0, 0>(), offset2_col0,
                 (((qm31_const::<24, 0, 0, 0>() + (op1_imm_col1 * qm31_const::<32, 0, 0, 0>()))
                     + (op1_base_fp_col2 * qm31_const::<64, 0, 0, 0>()))
                     + (op1_base_ap_tmp_d2a10_5 * qm31_const::<128, 0, 0, 0>())),
                 qm31_const::<16, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-            ],
+            ]
+                .span(),
         );
 
     [(offset2_col0 - qm31_const::<32768, 0, 0, 0>()), op1_base_ap_tmp_d2a10_5]

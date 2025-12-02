@@ -21,7 +21,7 @@ pub fn create_blake_output_evaluate(
     triple_xor_32_output_limb_1_col13: QM31,
     triple_xor_32_output_limb_0_col14: QM31,
     triple_xor_32_output_limb_1_col15: QM31,
-    triple_xor_32_lookup_elements: @crate::TripleXor32Elements,
+    common_lookup_elements: @crate::CommonElements,
     ref triple_xor_32_sum_0: QM31,
     ref triple_xor_32_sum_1: QM31,
     ref triple_xor_32_sum_2: QM31,
@@ -86,84 +86,100 @@ pub fn create_blake_output_evaluate(
     ] =
         input;
 
-    triple_xor_32_sum_0 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_16, create_blake_output_input_limb_17,
-                create_blake_output_input_limb_32, create_blake_output_input_limb_33,
-                create_blake_output_input_limb_0, create_blake_output_input_limb_1,
-                triple_xor_32_output_limb_0_col0, triple_xor_32_output_limb_1_col1,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_16,
+                create_blake_output_input_limb_17, create_blake_output_input_limb_32,
+                create_blake_output_input_limb_33, create_blake_output_input_limb_0,
+                create_blake_output_input_limb_1, triple_xor_32_output_limb_0_col0,
+                triple_xor_32_output_limb_1_col1,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_1 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_1 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_18, create_blake_output_input_limb_19,
-                create_blake_output_input_limb_34, create_blake_output_input_limb_35,
-                create_blake_output_input_limb_2, create_blake_output_input_limb_3,
-                triple_xor_32_output_limb_0_col2, triple_xor_32_output_limb_1_col3,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_18,
+                create_blake_output_input_limb_19, create_blake_output_input_limb_34,
+                create_blake_output_input_limb_35, create_blake_output_input_limb_2,
+                create_blake_output_input_limb_3, triple_xor_32_output_limb_0_col2,
+                triple_xor_32_output_limb_1_col3,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_2 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_2 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_20, create_blake_output_input_limb_21,
-                create_blake_output_input_limb_36, create_blake_output_input_limb_37,
-                create_blake_output_input_limb_4, create_blake_output_input_limb_5,
-                triple_xor_32_output_limb_0_col4, triple_xor_32_output_limb_1_col5,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_20,
+                create_blake_output_input_limb_21, create_blake_output_input_limb_36,
+                create_blake_output_input_limb_37, create_blake_output_input_limb_4,
+                create_blake_output_input_limb_5, triple_xor_32_output_limb_0_col4,
+                triple_xor_32_output_limb_1_col5,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_3 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_3 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_22, create_blake_output_input_limb_23,
-                create_blake_output_input_limb_38, create_blake_output_input_limb_39,
-                create_blake_output_input_limb_6, create_blake_output_input_limb_7,
-                triple_xor_32_output_limb_0_col6, triple_xor_32_output_limb_1_col7,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_22,
+                create_blake_output_input_limb_23, create_blake_output_input_limb_38,
+                create_blake_output_input_limb_39, create_blake_output_input_limb_6,
+                create_blake_output_input_limb_7, triple_xor_32_output_limb_0_col6,
+                triple_xor_32_output_limb_1_col7,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_4 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_24, create_blake_output_input_limb_25,
-                create_blake_output_input_limb_40, create_blake_output_input_limb_41,
-                create_blake_output_input_limb_8, create_blake_output_input_limb_9,
-                triple_xor_32_output_limb_0_col8, triple_xor_32_output_limb_1_col9,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_24,
+                create_blake_output_input_limb_25, create_blake_output_input_limb_40,
+                create_blake_output_input_limb_41, create_blake_output_input_limb_8,
+                create_blake_output_input_limb_9, triple_xor_32_output_limb_0_col8,
+                triple_xor_32_output_limb_1_col9,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_5 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_5 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_26, create_blake_output_input_limb_27,
-                create_blake_output_input_limb_42, create_blake_output_input_limb_43,
-                create_blake_output_input_limb_10, create_blake_output_input_limb_11,
-                triple_xor_32_output_limb_0_col10, triple_xor_32_output_limb_1_col11,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_26,
+                create_blake_output_input_limb_27, create_blake_output_input_limb_42,
+                create_blake_output_input_limb_43, create_blake_output_input_limb_10,
+                create_blake_output_input_limb_11, triple_xor_32_output_limb_0_col10,
+                triple_xor_32_output_limb_1_col11,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_6 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_6 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_28, create_blake_output_input_limb_29,
-                create_blake_output_input_limb_44, create_blake_output_input_limb_45,
-                create_blake_output_input_limb_12, create_blake_output_input_limb_13,
-                triple_xor_32_output_limb_0_col12, triple_xor_32_output_limb_1_col13,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_28,
+                create_blake_output_input_limb_29, create_blake_output_input_limb_44,
+                create_blake_output_input_limb_45, create_blake_output_input_limb_12,
+                create_blake_output_input_limb_13, triple_xor_32_output_limb_0_col12,
+                triple_xor_32_output_limb_1_col13,
+            ]
+                .span(),
         );
 
-    triple_xor_32_sum_7 = triple_xor_32_lookup_elements
+    triple_xor_32_sum_7 = common_lookup_elements
         .combine_qm31(
             [
-                create_blake_output_input_limb_30, create_blake_output_input_limb_31,
-                create_blake_output_input_limb_46, create_blake_output_input_limb_47,
-                create_blake_output_input_limb_14, create_blake_output_input_limb_15,
-                triple_xor_32_output_limb_0_col14, triple_xor_32_output_limb_1_col15,
-            ],
+                qm31_const::<990559919, 0, 0, 0>(), create_blake_output_input_limb_30,
+                create_blake_output_input_limb_31, create_blake_output_input_limb_46,
+                create_blake_output_input_limb_47, create_blake_output_input_limb_14,
+                create_blake_output_input_limb_15, triple_xor_32_output_limb_0_col14,
+                triple_xor_32_output_limb_1_col15,
+            ]
+                .span(),
         );
 
     []

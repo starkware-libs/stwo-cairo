@@ -13,8 +13,7 @@ pub fn encode_offsets_evaluate(
     offset2_low_col5: QM31,
     offset2_mid_col6: QM31,
     offset2_high_col7: QM31,
-    range_check_7_2_5_lookup_elements: @crate::RangeCheck_7_2_5Elements,
-    range_check_4_3_lookup_elements: @crate::RangeCheck_4_3Elements,
+    common_lookup_elements: @crate::CommonElements,
     ref range_check_7_2_5_sum_0: QM31,
     ref range_check_4_3_sum_1: QM31,
     ref sum: QM31,
@@ -47,11 +46,19 @@ pub fn encode_offsets_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    range_check_7_2_5_sum_0 = range_check_7_2_5_lookup_elements
-        .combine_qm31([offset0_mid_col1, offset1_low_col2, offset1_high_col4]);
+    range_check_7_2_5_sum_0 = common_lookup_elements
+        .combine_qm31(
+            [
+                qm31_const::<371240602, 0, 0, 0>(), offset0_mid_col1, offset1_low_col2,
+                offset1_high_col4,
+            ]
+                .span(),
+        );
 
-    range_check_4_3_sum_1 = range_check_4_3_lookup_elements
-        .combine_qm31([offset2_low_col5, offset2_high_col7]);
+    range_check_4_3_sum_1 = common_lookup_elements
+        .combine_qm31(
+            [qm31_const::<1567323731, 0, 0, 0>(), offset2_low_col5, offset2_high_col7].span(),
+        );
 
     [
         (offset0_mid_col1 + (offset1_low_col2 * qm31_const::<128, 0, 0, 0>())),

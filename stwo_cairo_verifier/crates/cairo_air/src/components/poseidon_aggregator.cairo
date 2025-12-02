@@ -1,3 +1,5 @@
+// This file was created by the AIR team.
+
 use crate::components::subroutines::felt_252_unpack_from_27::felt_252_unpack_from_27_evaluate;
 use crate::components::subroutines::poseidon_hades_permutation::poseidon_hades_permutation_evaluate;
 use crate::components::subroutines::read_positive_known_id_num_bits_252::read_positive_known_id_num_bits_252_evaluate;
@@ -50,15 +52,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
-    pub poseidon_full_round_chain_lookup_elements: crate::PoseidonFullRoundChainElements,
-    pub range_check_252_width_27_lookup_elements: crate::RangeCheck252Width27Elements,
-    pub cube_252_lookup_elements: crate::Cube252Elements,
-    pub range_check_3_3_3_3_3_lookup_elements: crate::RangeCheck_3_3_3_3_3Elements,
-    pub range_check_4_4_4_4_lookup_elements: crate::RangeCheck_4_4_4_4Elements,
-    pub range_check_4_4_lookup_elements: crate::RangeCheck_4_4Elements,
-    pub poseidon_3_partial_rounds_chain_lookup_elements: crate::Poseidon3PartialRoundsChainElements,
-    pub poseidon_aggregator_lookup_elements: crate::PoseidonAggregatorElements,
+    pub common_lookup_elements: crate::CommonElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -73,27 +67,7 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-            poseidon_full_round_chain_lookup_elements: interaction_elements
-                .poseidon_full_round_chain
-                .clone(),
-            range_check_252_width_27_lookup_elements: interaction_elements
-                .range_check_252_width_27
-                .clone(),
-            cube_252_lookup_elements: interaction_elements.cube_252.clone(),
-            range_check_3_3_3_3_3_lookup_elements: interaction_elements
-                .range_checks
-                .rc_3_3_3_3_3
-                .clone(),
-            range_check_4_4_4_4_lookup_elements: interaction_elements
-                .range_checks
-                .rc_4_4_4_4
-                .clone(),
-            range_check_4_4_lookup_elements: interaction_elements.range_checks.rc_4_4.clone(),
-            poseidon_3_partial_rounds_chain_lookup_elements: interaction_elements
-                .poseidon_3_partial_rounds_chain
-                .clone(),
-            poseidon_aggregator_lookup_elements: interaction_elements.poseidon_aggregator.clone(),
+            common_lookup_elements: interaction_elements.common.clone(),
         }
     }
 }
@@ -1571,7 +1545,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_25_col31,
             value_limb_26_col32,
             value_limb_27_col33,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_id_to_big_sum_0,
             ref sum,
             domain_vanishing_eval_inv,
@@ -1634,7 +1608,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_25_col59,
             value_limb_26_col60,
             value_limb_27_col61,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_id_to_big_sum_1,
             ref sum,
             domain_vanishing_eval_inv,
@@ -1697,7 +1671,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_25_col87,
             value_limb_26_col88,
             value_limb_27_col89,
-            self.memory_id_to_big_lookup_elements,
+            self.common_lookup_elements,
             ref memory_id_to_big_sum_2,
             ref sum,
             domain_vanishing_eval_inv,
@@ -1945,13 +1919,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             poseidon_full_round_chain_output_limb_27_col284,
             poseidon_full_round_chain_output_limb_28_col285,
             poseidon_full_round_chain_output_limb_29_col286,
-            self.poseidon_full_round_chain_lookup_elements,
-            self.range_check_252_width_27_lookup_elements,
-            self.cube_252_lookup_elements,
-            self.range_check_3_3_3_3_3_lookup_elements,
-            self.range_check_4_4_4_4_lookup_elements,
-            self.range_check_4_4_lookup_elements,
-            self.poseidon_3_partial_rounds_chain_lookup_elements,
+            self.common_lookup_elements,
             seq,
             ref poseidon_full_round_chain_sum_3,
             ref poseidon_full_round_chain_sum_4,
@@ -2021,31 +1989,33 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             unpacked_limb_22_col302,
             unpacked_limb_24_col303,
             unpacked_limb_25_col304,
+            self.common_lookup_elements,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
 
         memory_id_to_big_sum_24 = self
-            .memory_id_to_big_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_3_col3, unpacked_limb_0_col287, unpacked_limb_1_col288,
-                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_2, unpacked_limb_3_col289,
-                    unpacked_limb_4_col290, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_5,
-                    unpacked_limb_6_col291, unpacked_limb_7_col292,
-                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_8, unpacked_limb_9_col293,
-                    unpacked_limb_10_col294, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_11,
-                    unpacked_limb_12_col295, unpacked_limb_13_col296,
-                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_14, unpacked_limb_15_col297,
-                    unpacked_limb_16_col298, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_17,
-                    unpacked_limb_18_col299, unpacked_limb_19_col300,
-                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_20, unpacked_limb_21_col301,
-                    unpacked_limb_22_col302, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_23,
-                    unpacked_limb_24_col303, unpacked_limb_25_col304,
-                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_26,
+                    qm31_const::<1662111297, 0, 0, 0>(), input_limb_3_col3, unpacked_limb_0_col287,
+                    unpacked_limb_1_col288, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_2,
+                    unpacked_limb_3_col289, unpacked_limb_4_col290,
+                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_5, unpacked_limb_6_col291,
+                    unpacked_limb_7_col292, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_8,
+                    unpacked_limb_9_col293, unpacked_limb_10_col294,
+                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_11, unpacked_limb_12_col295,
+                    unpacked_limb_13_col296, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_14,
+                    unpacked_limb_15_col297, unpacked_limb_16_col298,
+                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_17, unpacked_limb_18_col299,
+                    unpacked_limb_19_col300, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_20,
+                    unpacked_limb_21_col301, unpacked_limb_22_col302,
+                    felt_252_unpack_from_27_output_tmp_34cc4_162_limb_23, unpacked_limb_24_col303,
+                    unpacked_limb_25_col304, felt_252_unpack_from_27_output_tmp_34cc4_162_limb_26,
                     poseidon_full_round_chain_output_limb_9_col266,
-                ],
+                ]
+                    .span(),
             );
         let [
             felt_252_unpack_from_27_output_tmp_34cc4_164_limb_2,
@@ -2090,31 +2060,33 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             unpacked_limb_22_col320,
             unpacked_limb_24_col321,
             unpacked_limb_25_col322,
+            self.common_lookup_elements,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
 
         memory_id_to_big_sum_25 = self
-            .memory_id_to_big_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_4_col4, unpacked_limb_0_col305, unpacked_limb_1_col306,
-                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_2, unpacked_limb_3_col307,
-                    unpacked_limb_4_col308, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_5,
-                    unpacked_limb_6_col309, unpacked_limb_7_col310,
-                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_8, unpacked_limb_9_col311,
-                    unpacked_limb_10_col312, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_11,
-                    unpacked_limb_12_col313, unpacked_limb_13_col314,
-                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_14, unpacked_limb_15_col315,
-                    unpacked_limb_16_col316, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_17,
-                    unpacked_limb_18_col317, unpacked_limb_19_col318,
-                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_20, unpacked_limb_21_col319,
-                    unpacked_limb_22_col320, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_23,
-                    unpacked_limb_24_col321, unpacked_limb_25_col322,
-                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_26,
+                    qm31_const::<1662111297, 0, 0, 0>(), input_limb_4_col4, unpacked_limb_0_col305,
+                    unpacked_limb_1_col306, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_2,
+                    unpacked_limb_3_col307, unpacked_limb_4_col308,
+                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_5, unpacked_limb_6_col309,
+                    unpacked_limb_7_col310, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_8,
+                    unpacked_limb_9_col311, unpacked_limb_10_col312,
+                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_11, unpacked_limb_12_col313,
+                    unpacked_limb_13_col314, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_14,
+                    unpacked_limb_15_col315, unpacked_limb_16_col316,
+                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_17, unpacked_limb_18_col317,
+                    unpacked_limb_19_col318, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_20,
+                    unpacked_limb_21_col319, unpacked_limb_22_col320,
+                    felt_252_unpack_from_27_output_tmp_34cc4_164_limb_23, unpacked_limb_24_col321,
+                    unpacked_limb_25_col322, felt_252_unpack_from_27_output_tmp_34cc4_164_limb_26,
                     poseidon_full_round_chain_output_limb_19_col276,
-                ],
+                ]
+                    .span(),
             );
         let [
             felt_252_unpack_from_27_output_tmp_34cc4_166_limb_2,
@@ -2159,40 +2131,43 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             unpacked_limb_22_col338,
             unpacked_limb_24_col339,
             unpacked_limb_25_col340,
+            self.common_lookup_elements,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
 
         memory_id_to_big_sum_26 = self
-            .memory_id_to_big_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_5_col5, unpacked_limb_0_col323, unpacked_limb_1_col324,
-                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_2, unpacked_limb_3_col325,
-                    unpacked_limb_4_col326, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_5,
-                    unpacked_limb_6_col327, unpacked_limb_7_col328,
-                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_8, unpacked_limb_9_col329,
-                    unpacked_limb_10_col330, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_11,
-                    unpacked_limb_12_col331, unpacked_limb_13_col332,
-                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_14, unpacked_limb_15_col333,
-                    unpacked_limb_16_col334, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_17,
-                    unpacked_limb_18_col335, unpacked_limb_19_col336,
-                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_20, unpacked_limb_21_col337,
-                    unpacked_limb_22_col338, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_23,
-                    unpacked_limb_24_col339, unpacked_limb_25_col340,
-                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_26,
+                    qm31_const::<1662111297, 0, 0, 0>(), input_limb_5_col5, unpacked_limb_0_col323,
+                    unpacked_limb_1_col324, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_2,
+                    unpacked_limb_3_col325, unpacked_limb_4_col326,
+                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_5, unpacked_limb_6_col327,
+                    unpacked_limb_7_col328, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_8,
+                    unpacked_limb_9_col329, unpacked_limb_10_col330,
+                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_11, unpacked_limb_12_col331,
+                    unpacked_limb_13_col332, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_14,
+                    unpacked_limb_15_col333, unpacked_limb_16_col334,
+                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_17, unpacked_limb_18_col335,
+                    unpacked_limb_19_col336, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_20,
+                    unpacked_limb_21_col337, unpacked_limb_22_col338,
+                    felt_252_unpack_from_27_output_tmp_34cc4_166_limb_23, unpacked_limb_24_col339,
+                    unpacked_limb_25_col340, felt_252_unpack_from_27_output_tmp_34cc4_166_limb_26,
                     poseidon_full_round_chain_output_limb_29_col286,
-                ],
+                ]
+                    .span(),
             );
 
         poseidon_aggregator_sum_27 = self
-            .poseidon_aggregator_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
-                    input_limb_4_col4, input_limb_5_col5,
-                ],
+                    qm31_const::<1551892206, 0, 0, 0>(), input_limb_0_col0, input_limb_1_col1,
+                    input_limb_2_col2, input_limb_3_col3, input_limb_4_col4, input_limb_5_col5,
+                ]
+                    .span(),
             );
 
         lookup_constraints(
@@ -2600,41 +2575,9 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            cube_252_lookup_elements: make_lookup_elements(
-                qm31_const::<1939233655, 1619044840, 261113095, 1630075268>(),
-                qm31_const::<755723700, 1754586089, 2095994220, 802306310>(),
-            ),
-            memory_id_to_big_lookup_elements: make_lookup_elements(
-                qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
-                qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
-            ),
-            poseidon_3_partial_rounds_chain_lookup_elements: make_lookup_elements(
-                qm31_const::<1265984379, 223536818, 1988649152, 175825912>(),
-                qm31_const::<997798997, 922606469, 1449515478, 800796555>(),
-            ),
-            poseidon_aggregator_lookup_elements: make_lookup_elements(
-                qm31_const::<1205297475, 1632365367, 724373964, 1122759762>(),
-                qm31_const::<1682536330, 1446762744, 501541604, 1778350693>(),
-            ),
-            poseidon_full_round_chain_lookup_elements: make_lookup_elements(
-                qm31_const::<1798946566, 1261761511, 1965396494, 909844132>(),
-                qm31_const::<1128133586, 1523205859, 844911885, 1669479084>(),
-            ),
-            range_check_252_width_27_lookup_elements: make_lookup_elements(
-                qm31_const::<1766976110, 1642004522, 1010732433, 533565951>(),
-                qm31_const::<1621013403, 1559059729, 2135184329, 1791547987>(),
-            ),
-            range_check_3_3_3_3_3_lookup_elements: make_lookup_elements(
-                qm31_const::<1556236254, 464721654, 752948676, 101024730>(),
-                qm31_const::<1064120346, 1019909923, 1735446893, 2115040738>(),
-            ),
-            range_check_4_4_lookup_elements: make_lookup_elements(
-                qm31_const::<2109537056, 514420282, 1964554770, 1279886790>(),
-                qm31_const::<1851926098, 1341372286, 1213340645, 1793573750>(),
-            ),
-            range_check_4_4_4_4_lookup_elements: make_lookup_elements(
-                qm31_const::<1567357276, 319373706, 1264973503, 1452870775>(),
-                qm31_const::<1913173613, 210440268, 1727163070, 476182963>(),
+            common_lookup_elements: make_lookup_elements(
+                qm31_const::<445623802, 202571636, 1360224996, 131355117>(),
+                qm31_const::<476823935, 939223384, 62486082, 122423602>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();

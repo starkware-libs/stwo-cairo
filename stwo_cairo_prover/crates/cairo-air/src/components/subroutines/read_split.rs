@@ -43,22 +43,28 @@ impl ReadSplit {
         value_limb_26_col26: E::F,
         ms_limb_low_col27: E::F,
         ms_limb_high_col28: E::F,
-        range_check_5_4_lookup_elements: &relations::RangeCheck_5_4,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 1] {
+        let M31_132340541 = E::F::from(M31::from(132340541));
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
         let M31_32 = E::F::from(M31::from(32));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_5_4_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
-            &[ms_limb_low_col27.clone(), ms_limb_high_col28.clone()],
+            &[
+                M31_132340541.clone(),
+                ms_limb_low_col27.clone(),
+                ms_limb_high_col28.clone(),
+            ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1662111297.clone(),
                 read_split_input_id.clone(),
                 value_limb_0_col0.clone(),
                 value_limb_1_col1.clone(),

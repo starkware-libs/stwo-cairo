@@ -14,6 +14,7 @@ impl SingleKaratsubaN8 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [single_karatsuba_n_8_input_limb_0, single_karatsuba_n_8_input_limb_1, single_karatsuba_n_8_input_limb_2, single_karatsuba_n_8_input_limb_3, single_karatsuba_n_8_input_limb_4, single_karatsuba_n_8_input_limb_5, single_karatsuba_n_8_input_limb_6, single_karatsuba_n_8_input_limb_7, single_karatsuba_n_8_input_limb_8, single_karatsuba_n_8_input_limb_9, single_karatsuba_n_8_input_limb_10, single_karatsuba_n_8_input_limb_11, single_karatsuba_n_8_input_limb_12, single_karatsuba_n_8_input_limb_13, single_karatsuba_n_8_input_limb_14, single_karatsuba_n_8_input_limb_15, single_karatsuba_n_8_input_limb_16, single_karatsuba_n_8_input_limb_17, single_karatsuba_n_8_input_limb_18, single_karatsuba_n_8_input_limb_19, single_karatsuba_n_8_input_limb_20, single_karatsuba_n_8_input_limb_21, single_karatsuba_n_8_input_limb_22, single_karatsuba_n_8_input_limb_23, single_karatsuba_n_8_input_limb_24, single_karatsuba_n_8_input_limb_25, single_karatsuba_n_8_input_limb_26, single_karatsuba_n_8_input_limb_27, single_karatsuba_n_8_input_limb_28, single_karatsuba_n_8_input_limb_29, single_karatsuba_n_8_input_limb_30, single_karatsuba_n_8_input_limb_31]: [E::F; 32],
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 31] {
         let z0_tmp_87f53_0_limb_0 = eval.add_intermediate(

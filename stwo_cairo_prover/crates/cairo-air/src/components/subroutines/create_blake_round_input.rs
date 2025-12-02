@@ -71,10 +71,7 @@ impl CreateBlakeRoundInput {
         xor_col51: E::F,
         xor_col52: E::F,
         xor_col53: E::F,
-        range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
-        verify_bitwise_xor_8_lookup_elements: &relations::VerifyBitwiseXor_8,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 4] {
         let M31_1 = E::F::from(M31::from(1));
@@ -102,9 +99,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col3.clone(),
             high_5_ms_bits_col4.clone(),
             state_0_id_col5.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -115,9 +110,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col9.clone(),
             high_5_ms_bits_col10.clone(),
             state_1_id_col11.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -128,9 +121,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col15.clone(),
             high_5_ms_bits_col16.clone(),
             state_2_id_col17.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -141,9 +132,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col21.clone(),
             high_5_ms_bits_col22.clone(),
             state_3_id_col23.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -154,9 +143,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col27.clone(),
             high_5_ms_bits_col28.clone(),
             state_4_id_col29.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -167,9 +154,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col33.clone(),
             high_5_ms_bits_col34.clone(),
             state_5_id_col35.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -180,9 +165,7 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col39.clone(),
             high_5_ms_bits_col40.clone(),
             state_6_id_col41.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadU32::evaluate(
@@ -193,19 +176,19 @@ impl CreateBlakeRoundInput {
             high_14_ms_bits_col45.clone(),
             high_5_ms_bits_col46.clone(),
             state_7_id_col47.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [split_16_low_part_size_8_output_tmp_f95c3_89_limb_0] = Split16LowPartSize8::evaluate(
             [create_blake_round_input_input_limb_1.clone()],
             ms_8_bits_col48.clone(),
+            common_lookup_elements,
             eval,
         );
         let [split_16_low_part_size_8_output_tmp_f95c3_91_limb_0] = Split16LowPartSize8::evaluate(
             [create_blake_round_input_input_limb_2.clone()],
             ms_8_bits_col49.clone(),
+            common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8::evaluate(
@@ -214,13 +197,13 @@ impl CreateBlakeRoundInput {
                 M31_127.clone(),
             ],
             xor_col50.clone(),
-            verify_bitwise_xor_8_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col48.clone(), M31_82.clone()],
             xor_col51.clone(),
-            verify_bitwise_xor_8_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8::evaluate(
@@ -229,13 +212,13 @@ impl CreateBlakeRoundInput {
                 M31_14.clone(),
             ],
             xor_col52.clone(),
-            verify_bitwise_xor_8_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         BitwiseXorNumBits8::evaluate(
             [ms_8_bits_col49.clone(), M31_81.clone()],
             xor_col53.clone(),
-            verify_bitwise_xor_8_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         [

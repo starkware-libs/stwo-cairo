@@ -78,6 +78,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_95781001 = PackedM31::broadcast(M31::from(95781001));
     let bitwise_xor_9_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "bitwise_xor_9_0".to_owned(),
     });
@@ -95,8 +96,12 @@ fn write_trace_simd(
             let bitwise_xor_9_0 = bitwise_xor_9_0.packed_at(row_index);
             let bitwise_xor_9_1 = bitwise_xor_9_1.packed_at(row_index);
             let bitwise_xor_9_2 = bitwise_xor_9_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_9_0 =
-                [bitwise_xor_9_0, bitwise_xor_9_1, bitwise_xor_9_2];
+            *lookup_data.verify_bitwise_xor_9_0 = [
+                M31_95781001,
+                bitwise_xor_9_0,
+                bitwise_xor_9_1,
+                bitwise_xor_9_2,
+            ];
             let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
             *lookup_data.mults = mult_at_row;
@@ -107,7 +112,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_9_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_9_0: Vec<[PackedM31; 4]>,
     mults: Vec<PackedM31>,
 }
 

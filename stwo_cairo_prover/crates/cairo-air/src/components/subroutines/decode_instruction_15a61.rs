@@ -14,18 +14,20 @@ impl DecodeInstruction15A61 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [decode_instruction_15a61_input_pc]: [E::F; 1],
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_130 = E::F::from(M31::from(130));
+        let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_32766 = E::F::from(M31::from(32766));
         let M31_32767 = E::F::from(M31::from(32767));
         let M31_88 = E::F::from(M31::from(88));
 
         eval.add_to_relation(RelationEntry::new(
-            verify_instruction_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1719106205.clone(),
                 decode_instruction_15a61_input_pc.clone(),
                 M31_32766.clone(),
                 M31_32767.clone(),

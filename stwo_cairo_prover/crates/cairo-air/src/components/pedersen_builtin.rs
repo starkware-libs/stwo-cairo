@@ -17,8 +17,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub pedersen_aggregator_lookup_elements: relations::PedersenAggregator,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -65,6 +64,7 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_1996297333 = E::F::from(M31::from(1996297333));
         let M31_2 = E::F::from(M31::from(2));
         let M31_3 = E::F::from(M31::from(3));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
@@ -79,25 +79,26 @@ impl FrameworkEval for Eval {
         ReadId::evaluate(
             [instance_addr_tmp_d00c6_0.clone()],
             input_state_0_id_col0.clone(),
-            &self.memory_address_to_id_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
             [(instance_addr_tmp_d00c6_0.clone() + M31_1.clone())],
             input_state_1_id_col1.clone(),
-            &self.memory_address_to_id_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
             [(instance_addr_tmp_d00c6_0.clone() + M31_2.clone())],
             output_state_id_col2.clone(),
-            &self.memory_address_to_id_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_aggregator_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1996297333.clone(),
                 input_state_0_id_col0.clone(),
                 input_state_1_id_col1.clone(),
                 output_state_id_col2.clone(),
@@ -128,8 +129,7 @@ mod tests {
                 log_size: 4,
                 pedersen_builtin_segment_start: rng.gen::<u32>(),
             },
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            pedersen_aggregator_lookup_elements: relations::PedersenAggregator::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

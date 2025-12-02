@@ -10,6 +10,7 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
     msb_col0: QM31,
     mid_limbs_set_col1: QM31,
     partial_limb_msb_col2: QM31,
+    common_lookup_elements: @crate::CommonElements,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -47,13 +48,20 @@ pub fn cond_felt_252_as_rel_imm_evaluate(
     ] =
         input;
     decode_small_sign_evaluate(
-        [], msb_col0, mid_limbs_set_col1, ref sum, domain_vanishing_eval_inv, random_coeff,
+        [],
+        msb_col0,
+        mid_limbs_set_col1,
+        common_lookup_elements,
+        ref sum,
+        domain_vanishing_eval_inv,
+        random_coeff,
     );
     let remainder_bits_tmp_1e9bf_3: QM31 = (cond_felt_252_as_rel_imm_input_limb_3
         - (mid_limbs_set_col1 * qm31_const::<508, 0, 0, 0>()));
     cond_range_check_2_evaluate(
         [remainder_bits_tmp_1e9bf_3, cond_felt_252_as_rel_imm_input_limb_28],
         partial_limb_msb_col2,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
