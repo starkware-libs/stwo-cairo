@@ -35,6 +35,7 @@ stwo.workspace = true
 stwo-constraint-framework = { workspace = true, features = ["parallel"] }
 tracing.workspace = true
 dashmap.workspace = true
+generic-tests = "0.1.3"
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
 sonic-rs.workspace = true

@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
+    pub pedersen_points_table_bits_per_window_18_lookup_elements: crate::PedersenPointsTableBitsPerWindow18Elements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -54,8 +54,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
+            pedersen_points_table_bits_per_window_18_lookup_elements: interaction_elements
+                .pedersen_points_table_bits_per_window_18
                 .clone(),
         }
     }
@@ -76,7 +76,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut pedersen_points_table_sum_0: QM31 = Zero::zero();
+        let mut pedersen_points_table_bits_per_window_18_sum_0: QM31 = Zero::zero();
         let seq_23 = preprocessed_mask_values.get_and_mark_used(SEQ_23_IDX);
         let pedersen_points_0 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_0_IDX);
         let pedersen_points_1 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_1_IDX);
@@ -135,19 +135,21 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let pedersen_points_54 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_54_IDX);
         let pedersen_points_55 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_55_IDX);
 
-        let [pedersen_points_table_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
+        let [pedersen_points_table_bits_per_window_18_multiplicity]: [Span<QM31>; 1] =
+            (*trace_mask_values
             .multi_pop_front()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_multiplicity]: [QM31; 1] = (*pedersen_points_table_multiplicity
+        let [pedersen_points_table_bits_per_window_18_multiplicity]: [QM31; 1] =
+            (*pedersen_points_table_bits_per_window_18_multiplicity
             .try_into()
             .unwrap())
             .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        pedersen_points_table_sum_0 = self
-            .pedersen_points_table_lookup_elements
+        pedersen_points_table_bits_per_window_18_sum_0 = self
+            .pedersen_points_table_bits_per_window_18_lookup_elements
             .combine_qm31(
                 [
                     seq_23, pedersen_points_0, pedersen_points_1, pedersen_points_2,
@@ -173,10 +175,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            pedersen_points_table_multiplicity,
+            pedersen_points_table_bits_per_window_18_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
-            pedersen_points_table_sum_0,
+            pedersen_points_table_bits_per_window_18_sum_0,
         );
     }
 }
@@ -187,10 +189,10 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    pedersen_points_table_multiplicity: QM31,
+    pedersen_points_table_bits_per_window_18_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    pedersen_points_table_sum_0: QM31,
+    pedersen_points_table_bits_per_window_18_sum_0: QM31,
 ) {
     let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
         (*interaction_trace_mask_values
@@ -212,8 +214,8 @@ fn lookup_constraints(
             [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * pedersen_points_table_sum_0)
-        + pedersen_points_table_multiplicity)
+        * pedersen_points_table_bits_per_window_18_sum_0)
+        + pedersen_points_table_bits_per_window_18_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

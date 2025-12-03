@@ -3,12 +3,13 @@
 use crate::components::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 23;
+pub const LOG_SIZE: u32 = 15;
 pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub pedersen_points_table_lookup_elements: relations::PedersenPointsTable,
+    pub pedersen_points_table_bits_per_window_9_lookup_elements:
+        relations::PedersenPointsTableBitsPerWindow9,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -48,8 +49,8 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let seq_23 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "seq_23".to_owned(),
+        let seq_15 = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "seq_15".to_owned(),
         });
         let pedersen_points_0 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "pedersen_points_0".to_owned(),
@@ -222,10 +223,10 @@ impl FrameworkEval for Eval {
         let multiplicity_0 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_points_table_lookup_elements,
+            &self.pedersen_points_table_bits_per_window_9_lookup_elements,
             -E::EF::from(multiplicity_0),
             &[
-                seq_23.clone(),
+                seq_15.clone(),
                 pedersen_points_0.clone(),
                 pedersen_points_1.clone(),
                 pedersen_points_2.clone(),
@@ -299,14 +300,15 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PEDERSEN_POINTS_TABLE;
+    use crate::components::constraints_regression_test_values::PEDERSEN_POINTS_TABLE_BITS_PER_WINDOW_9;
 
     #[test]
-    fn pedersen_points_table_constraints_regression() {
+    fn pedersen_points_table_bits_per_window_9_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
+            pedersen_points_table_bits_per_window_9_lookup_elements:
+                relations::PedersenPointsTableBitsPerWindow9::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -316,6 +318,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        PEDERSEN_POINTS_TABLE.assert_debug_eq(&sum);
+        PEDERSEN_POINTS_TABLE_BITS_PER_WINDOW_9.assert_debug_eq(&sum);
     }
 }

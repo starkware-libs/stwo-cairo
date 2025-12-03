@@ -6,11 +6,11 @@ use crate::components::subroutines::ec_add::EcAdd;
 pub const N_TRACE_COLUMNS: usize = 297;
 pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
     RelationUse {
-        relation_id: "PartialEcMul",
+        relation_id: "PartialEcMulBitsPerWindow18",
         uses: 1,
     },
     RelationUse {
-        relation_id: "PedersenPointsTable",
+        relation_id: "PedersenPointsTableBitsPerWindow18",
         uses: 1,
     },
     RelationUse {
@@ -81,7 +81,8 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 18] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub pedersen_points_table_lookup_elements: relations::PedersenPointsTable,
+    pub pedersen_points_table_bits_per_window_18_lookup_elements:
+        relations::PedersenPointsTableBitsPerWindow18,
     pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
     pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
     pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
@@ -98,7 +99,7 @@ pub struct Eval {
     pub range_check_20_f_lookup_elements: relations::RangeCheck_20_F,
     pub range_check_20_g_lookup_elements: relations::RangeCheck_20_G,
     pub range_check_20_h_lookup_elements: relations::RangeCheck_20_H,
-    pub partial_ec_mul_lookup_elements: relations::PartialEcMul,
+    pub partial_ec_mul_bits_per_window_18_lookup_elements: relations::PartialEcMulBitsPerWindow18,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -217,62 +218,62 @@ impl FrameworkEval for Eval {
         let input_limb_69_col69 = eval.next_trace_mask();
         let input_limb_70_col70 = eval.next_trace_mask();
         let input_limb_71_col71 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_0_col72 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_1_col73 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_2_col74 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_3_col75 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_4_col76 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_5_col77 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_6_col78 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_7_col79 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_8_col80 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_9_col81 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_10_col82 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_11_col83 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_12_col84 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_13_col85 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_14_col86 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_15_col87 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_16_col88 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_17_col89 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_18_col90 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_19_col91 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_20_col92 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_21_col93 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_22_col94 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_23_col95 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_24_col96 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_25_col97 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_26_col98 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_27_col99 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_28_col100 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_29_col101 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_30_col102 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_31_col103 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_32_col104 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_33_col105 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_34_col106 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_35_col107 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_36_col108 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_37_col109 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_38_col110 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_39_col111 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_40_col112 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_41_col113 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_42_col114 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_43_col115 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_44_col116 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_45_col117 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_46_col118 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_47_col119 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_48_col120 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_49_col121 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_50_col122 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_51_col123 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_52_col124 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_53_col125 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_54_col126 = eval.next_trace_mask();
-        let pedersen_points_table_output_limb_55_col127 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_0_col72 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_1_col73 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_2_col74 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_3_col75 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_4_col76 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_5_col77 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_6_col78 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_7_col79 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_8_col80 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_9_col81 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_10_col82 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_11_col83 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_12_col84 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_13_col85 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_14_col86 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_15_col87 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_16_col88 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_17_col89 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_18_col90 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_19_col91 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_20_col92 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_21_col93 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_22_col94 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_23_col95 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_24_col96 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_25_col97 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_26_col98 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_27_col99 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_28_col100 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_29_col101 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_30_col102 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_31_col103 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_32_col104 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_33_col105 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_34_col106 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_35_col107 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_36_col108 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_37_col109 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_38_col110 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_39_col111 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_40_col112 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_41_col113 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_42_col114 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_43_col115 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_44_col116 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_45_col117 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_46_col118 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_47_col119 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_48_col120 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_49_col121 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_50_col122 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_51_col123 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_52_col124 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_53_col125 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_54_col126 = eval.next_trace_mask();
+        let pedersen_points_table_bits_per_window_18_output_limb_55_col127 = eval.next_trace_mask();
         let slope_limb_0_col128 = eval.next_trace_mask();
         let slope_limb_1_col129 = eval.next_trace_mask();
         let slope_limb_2_col130 = eval.next_trace_mask();
@@ -446,66 +447,66 @@ impl FrameworkEval for Eval {
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_points_table_lookup_elements,
+            &self.pedersen_points_table_bits_per_window_18_lookup_elements,
             E::EF::one(),
             &[
                 ((M31_262144.clone() * input_limb_1_col1.clone()) + input_limb_2_col2.clone()),
-                pedersen_points_table_output_limb_0_col72.clone(),
-                pedersen_points_table_output_limb_1_col73.clone(),
-                pedersen_points_table_output_limb_2_col74.clone(),
-                pedersen_points_table_output_limb_3_col75.clone(),
-                pedersen_points_table_output_limb_4_col76.clone(),
-                pedersen_points_table_output_limb_5_col77.clone(),
-                pedersen_points_table_output_limb_6_col78.clone(),
-                pedersen_points_table_output_limb_7_col79.clone(),
-                pedersen_points_table_output_limb_8_col80.clone(),
-                pedersen_points_table_output_limb_9_col81.clone(),
-                pedersen_points_table_output_limb_10_col82.clone(),
-                pedersen_points_table_output_limb_11_col83.clone(),
-                pedersen_points_table_output_limb_12_col84.clone(),
-                pedersen_points_table_output_limb_13_col85.clone(),
-                pedersen_points_table_output_limb_14_col86.clone(),
-                pedersen_points_table_output_limb_15_col87.clone(),
-                pedersen_points_table_output_limb_16_col88.clone(),
-                pedersen_points_table_output_limb_17_col89.clone(),
-                pedersen_points_table_output_limb_18_col90.clone(),
-                pedersen_points_table_output_limb_19_col91.clone(),
-                pedersen_points_table_output_limb_20_col92.clone(),
-                pedersen_points_table_output_limb_21_col93.clone(),
-                pedersen_points_table_output_limb_22_col94.clone(),
-                pedersen_points_table_output_limb_23_col95.clone(),
-                pedersen_points_table_output_limb_24_col96.clone(),
-                pedersen_points_table_output_limb_25_col97.clone(),
-                pedersen_points_table_output_limb_26_col98.clone(),
-                pedersen_points_table_output_limb_27_col99.clone(),
-                pedersen_points_table_output_limb_28_col100.clone(),
-                pedersen_points_table_output_limb_29_col101.clone(),
-                pedersen_points_table_output_limb_30_col102.clone(),
-                pedersen_points_table_output_limb_31_col103.clone(),
-                pedersen_points_table_output_limb_32_col104.clone(),
-                pedersen_points_table_output_limb_33_col105.clone(),
-                pedersen_points_table_output_limb_34_col106.clone(),
-                pedersen_points_table_output_limb_35_col107.clone(),
-                pedersen_points_table_output_limb_36_col108.clone(),
-                pedersen_points_table_output_limb_37_col109.clone(),
-                pedersen_points_table_output_limb_38_col110.clone(),
-                pedersen_points_table_output_limb_39_col111.clone(),
-                pedersen_points_table_output_limb_40_col112.clone(),
-                pedersen_points_table_output_limb_41_col113.clone(),
-                pedersen_points_table_output_limb_42_col114.clone(),
-                pedersen_points_table_output_limb_43_col115.clone(),
-                pedersen_points_table_output_limb_44_col116.clone(),
-                pedersen_points_table_output_limb_45_col117.clone(),
-                pedersen_points_table_output_limb_46_col118.clone(),
-                pedersen_points_table_output_limb_47_col119.clone(),
-                pedersen_points_table_output_limb_48_col120.clone(),
-                pedersen_points_table_output_limb_49_col121.clone(),
-                pedersen_points_table_output_limb_50_col122.clone(),
-                pedersen_points_table_output_limb_51_col123.clone(),
-                pedersen_points_table_output_limb_52_col124.clone(),
-                pedersen_points_table_output_limb_53_col125.clone(),
-                pedersen_points_table_output_limb_54_col126.clone(),
-                pedersen_points_table_output_limb_55_col127.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_0_col72.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_1_col73.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_2_col74.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_3_col75.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_4_col76.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_5_col77.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_6_col78.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_7_col79.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_8_col80.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_9_col81.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_10_col82.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_11_col83.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_12_col84.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_13_col85.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_14_col86.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_15_col87.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_16_col88.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_17_col89.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_18_col90.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_19_col91.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_20_col92.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_21_col93.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_22_col94.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_23_col95.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_24_col96.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_25_col97.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_26_col98.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_27_col99.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_28_col100.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_29_col101.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_30_col102.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_31_col103.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_32_col104.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_33_col105.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_34_col106.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_35_col107.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_36_col108.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_37_col109.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_38_col110.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_39_col111.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_40_col112.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_41_col113.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_42_col114.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_43_col115.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_44_col116.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_45_col117.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_46_col118.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_47_col119.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_48_col120.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_49_col121.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_50_col122.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_51_col123.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_52_col124.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_53_col125.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_54_col126.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_55_col127.clone(),
             ],
         ));
 
@@ -567,62 +568,62 @@ impl FrameworkEval for Eval {
                 input_limb_69_col69.clone(),
                 input_limb_70_col70.clone(),
                 input_limb_71_col71.clone(),
-                pedersen_points_table_output_limb_0_col72.clone(),
-                pedersen_points_table_output_limb_1_col73.clone(),
-                pedersen_points_table_output_limb_2_col74.clone(),
-                pedersen_points_table_output_limb_3_col75.clone(),
-                pedersen_points_table_output_limb_4_col76.clone(),
-                pedersen_points_table_output_limb_5_col77.clone(),
-                pedersen_points_table_output_limb_6_col78.clone(),
-                pedersen_points_table_output_limb_7_col79.clone(),
-                pedersen_points_table_output_limb_8_col80.clone(),
-                pedersen_points_table_output_limb_9_col81.clone(),
-                pedersen_points_table_output_limb_10_col82.clone(),
-                pedersen_points_table_output_limb_11_col83.clone(),
-                pedersen_points_table_output_limb_12_col84.clone(),
-                pedersen_points_table_output_limb_13_col85.clone(),
-                pedersen_points_table_output_limb_14_col86.clone(),
-                pedersen_points_table_output_limb_15_col87.clone(),
-                pedersen_points_table_output_limb_16_col88.clone(),
-                pedersen_points_table_output_limb_17_col89.clone(),
-                pedersen_points_table_output_limb_18_col90.clone(),
-                pedersen_points_table_output_limb_19_col91.clone(),
-                pedersen_points_table_output_limb_20_col92.clone(),
-                pedersen_points_table_output_limb_21_col93.clone(),
-                pedersen_points_table_output_limb_22_col94.clone(),
-                pedersen_points_table_output_limb_23_col95.clone(),
-                pedersen_points_table_output_limb_24_col96.clone(),
-                pedersen_points_table_output_limb_25_col97.clone(),
-                pedersen_points_table_output_limb_26_col98.clone(),
-                pedersen_points_table_output_limb_27_col99.clone(),
-                pedersen_points_table_output_limb_28_col100.clone(),
-                pedersen_points_table_output_limb_29_col101.clone(),
-                pedersen_points_table_output_limb_30_col102.clone(),
-                pedersen_points_table_output_limb_31_col103.clone(),
-                pedersen_points_table_output_limb_32_col104.clone(),
-                pedersen_points_table_output_limb_33_col105.clone(),
-                pedersen_points_table_output_limb_34_col106.clone(),
-                pedersen_points_table_output_limb_35_col107.clone(),
-                pedersen_points_table_output_limb_36_col108.clone(),
-                pedersen_points_table_output_limb_37_col109.clone(),
-                pedersen_points_table_output_limb_38_col110.clone(),
-                pedersen_points_table_output_limb_39_col111.clone(),
-                pedersen_points_table_output_limb_40_col112.clone(),
-                pedersen_points_table_output_limb_41_col113.clone(),
-                pedersen_points_table_output_limb_42_col114.clone(),
-                pedersen_points_table_output_limb_43_col115.clone(),
-                pedersen_points_table_output_limb_44_col116.clone(),
-                pedersen_points_table_output_limb_45_col117.clone(),
-                pedersen_points_table_output_limb_46_col118.clone(),
-                pedersen_points_table_output_limb_47_col119.clone(),
-                pedersen_points_table_output_limb_48_col120.clone(),
-                pedersen_points_table_output_limb_49_col121.clone(),
-                pedersen_points_table_output_limb_50_col122.clone(),
-                pedersen_points_table_output_limb_51_col123.clone(),
-                pedersen_points_table_output_limb_52_col124.clone(),
-                pedersen_points_table_output_limb_53_col125.clone(),
-                pedersen_points_table_output_limb_54_col126.clone(),
-                pedersen_points_table_output_limb_55_col127.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_0_col72.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_1_col73.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_2_col74.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_3_col75.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_4_col76.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_5_col77.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_6_col78.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_7_col79.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_8_col80.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_9_col81.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_10_col82.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_11_col83.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_12_col84.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_13_col85.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_14_col86.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_15_col87.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_16_col88.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_17_col89.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_18_col90.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_19_col91.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_20_col92.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_21_col93.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_22_col94.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_23_col95.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_24_col96.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_25_col97.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_26_col98.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_27_col99.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_28_col100.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_29_col101.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_30_col102.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_31_col103.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_32_col104.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_33_col105.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_34_col106.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_35_col107.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_36_col108.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_37_col109.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_38_col110.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_39_col111.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_40_col112.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_41_col113.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_42_col114.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_43_col115.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_44_col116.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_45_col117.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_46_col118.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_47_col119.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_48_col120.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_49_col121.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_50_col122.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_51_col123.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_52_col124.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_53_col125.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_54_col126.clone(),
+                pedersen_points_table_bits_per_window_18_output_limb_55_col127.clone(),
             ],
             slope_limb_0_col128.clone(),
             slope_limb_1_col129.clone(),
@@ -811,7 +812,7 @@ impl FrameworkEval for Eval {
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.partial_ec_mul_bits_per_window_18_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
@@ -890,7 +891,7 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.partial_ec_mul_bits_per_window_18_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
                 input_limb_0_col0.clone(),
@@ -982,14 +983,15 @@ mod tests {
     use stwo_constraint_framework::expr::ExprEvaluator;
 
     use super::*;
-    use crate::components::constraints_regression_test_values::PARTIAL_EC_MUL;
+    use crate::components::constraints_regression_test_values::PARTIAL_EC_MUL_BITS_PER_WINDOW_18;
 
     #[test]
-    fn partial_ec_mul_constraints_regression() {
+    fn partial_ec_mul_bits_per_window_18_constraints_regression() {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            pedersen_points_table_lookup_elements: relations::PedersenPointsTable::dummy(),
+            pedersen_points_table_bits_per_window_18_lookup_elements:
+                relations::PedersenPointsTableBitsPerWindow18::dummy(),
             range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
             range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
             range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
@@ -1006,7 +1008,8 @@ mod tests {
             range_check_20_f_lookup_elements: relations::RangeCheck_20_F::dummy(),
             range_check_20_g_lookup_elements: relations::RangeCheck_20_G::dummy(),
             range_check_20_h_lookup_elements: relations::RangeCheck_20_H::dummy(),
-            partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
+            partial_ec_mul_bits_per_window_18_lookup_elements:
+                relations::PartialEcMulBitsPerWindow18::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
@@ -1016,6 +1019,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        PARTIAL_EC_MUL.assert_debug_eq(&sum);
+        PARTIAL_EC_MUL_BITS_PER_WINDOW_18.assert_debug_eq(&sum);
     }
 }
