@@ -135,103 +135,102 @@ fn write_trace_simd(
         )
     };
 
-    let Felt252_15078781199387521180_7290787951512770967_8332093602989199897_317979597309161923 =
+    let Felt252_5023856819317721596_7516658885453710123_15097688927504477480_448193959547877160 =
         PackedFelt252::broadcast(Felt252::from([
-            15078781199387521180,
-            7290787951512770967,
-            8332093602989199897,
-            317979597309161923,
+            5023856819317721596,
+            7516658885453710123,
+            15097688927504477480,
+            448193959547877160,
         ]));
-    let Felt252_2796306760980396030_6142433350943679003_9786206818587032316_455457488062799560 =
+    let Felt252_5749711404561791915_10856295172949913030_14404130126786501252_477102089234220869 =
         PackedFelt252::broadcast(Felt252::from([
-            2796306760980396030,
-            6142433350943679003,
-            9786206818587032316,
-            455457488062799560,
+            5749711404561791915,
+            10856295172949913030,
+            14404130126786501252,
+            477102089234220869,
         ]));
     let M31_0 = PackedM31::broadcast(M31::from(0));
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_10 = PackedM31::broadcast(M31::from(10));
-    let M31_101 = PackedM31::broadcast(M31::from(101));
-    let M31_108 = PackedM31::broadcast(M31::from(108));
     let M31_11 = PackedM31::broadcast(M31::from(11));
-    let M31_115 = PackedM31::broadcast(M31::from(115));
     let M31_12 = PackedM31::broadcast(M31::from(12));
     let M31_120 = PackedM31::broadcast(M31::from(120));
-    let M31_124 = PackedM31::broadcast(M31::from(124));
+    let M31_126 = PackedM31::broadcast(M31::from(126));
     let M31_13 = PackedM31::broadcast(M31::from(13));
-    let M31_135 = PackedM31::broadcast(M31::from(135));
+    let M31_131 = PackedM31::broadcast(M31::from(131));
+    let M31_134 = PackedM31::broadcast(M31::from(134));
     let M31_136 = PackedM31::broadcast(M31::from(136));
     let M31_14 = PackedM31::broadcast(M31::from(14));
-    let M31_140 = PackedM31::broadcast(M31::from(140));
-    let M31_141 = PackedM31::broadcast(M31::from(141));
+    let M31_148 = PackedM31::broadcast(M31::from(148));
     let M31_15 = PackedM31::broadcast(M31::from(15));
-    let M31_155 = PackedM31::broadcast(M31::from(155));
-    let M31_156 = PackedM31::broadcast(M31::from(156));
     let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_160 = PackedM31::broadcast(M31::from(160));
-    let M31_162 = PackedM31::broadcast(M31::from(162));
-    let M31_169 = PackedM31::broadcast(M31::from(169));
+    let M31_161 = PackedM31::broadcast(M31::from(161));
+    let M31_167 = PackedM31::broadcast(M31::from(167));
     let M31_17 = PackedM31::broadcast(M31::from(17));
     let M31_18 = PackedM31::broadcast(M31::from(18));
+    let M31_181 = PackedM31::broadcast(M31::from(181));
+    let M31_184 = PackedM31::broadcast(M31::from(184));
     let M31_19 = PackedM31::broadcast(M31::from(19));
-    let M31_191 = PackedM31::broadcast(M31::from(191));
     let M31_199 = PackedM31::broadcast(M31::from(199));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_20 = PackedM31::broadcast(M31::from(20));
-    let M31_202 = PackedM31::broadcast(M31::from(202));
-    let M31_208 = PackedM31::broadcast(M31::from(208));
+    let M31_206 = PackedM31::broadcast(M31::from(206));
     let M31_21 = PackedM31::broadcast(M31::from(21));
-    let M31_213 = PackedM31::broadcast(M31::from(213));
+    let M31_211 = PackedM31::broadcast(M31::from(211));
     let M31_22 = PackedM31::broadcast(M31::from(22));
-    let M31_222 = PackedM31::broadcast(M31::from(222));
-    let M31_223 = PackedM31::broadcast(M31::from(223));
-    let M31_225 = PackedM31::broadcast(M31::from(225));
+    let M31_220 = PackedM31::broadcast(M31::from(220));
     let M31_23 = PackedM31::broadcast(M31::from(23));
+    let M31_233 = PackedM31::broadcast(M31::from(233));
     let M31_24 = PackedM31::broadcast(M31::from(24));
     let M31_25 = PackedM31::broadcast(M31::from(25));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_26 = PackedM31::broadcast(M31::from(26));
+    let M31_260 = PackedM31::broadcast(M31::from(260));
+    let M31_261 = PackedM31::broadcast(M31::from(261));
+    let M31_264 = PackedM31::broadcast(M31::from(264));
     let M31_27 = PackedM31::broadcast(M31::from(27));
+    let M31_278 = PackedM31::broadcast(M31::from(278));
     let M31_28 = PackedM31::broadcast(M31::from(28));
-    let M31_297 = PackedM31::broadcast(M31::from(297));
+    let M31_280 = PackedM31::broadcast(M31::from(280));
+    let M31_283 = PackedM31::broadcast(M31::from(283));
+    let M31_29 = PackedM31::broadcast(M31::from(29));
     let M31_3 = PackedM31::broadcast(M31::from(3));
-    let M31_303 = PackedM31::broadcast(M31::from(303));
-    let M31_314 = PackedM31::broadcast(M31::from(314));
-    let M31_315 = PackedM31::broadcast(M31::from(315));
-    let M31_325 = PackedM31::broadcast(M31::from(325));
-    let M31_334 = PackedM31::broadcast(M31::from(334));
-    let M31_373 = PackedM31::broadcast(M31::from(373));
-    let M31_377 = PackedM31::broadcast(M31::from(377));
-    let M31_379 = PackedM31::broadcast(M31::from(379));
-    let M31_389 = PackedM31::broadcast(M31::from(389));
+    let M31_301 = PackedM31::broadcast(M31::from(301));
+    let M31_306 = PackedM31::broadcast(M31::from(306));
+    let M31_309 = PackedM31::broadcast(M31::from(309));
+    let M31_319 = PackedM31::broadcast(M31::from(319));
+    let M31_320 = PackedM31::broadcast(M31::from(320));
+    let M31_322 = PackedM31::broadcast(M31::from(322));
+    let M31_326 = PackedM31::broadcast(M31::from(326));
+    let M31_342 = PackedM31::broadcast(M31::from(342));
+    let M31_346 = PackedM31::broadcast(M31::from(346));
+    let M31_374 = PackedM31::broadcast(M31::from(374));
+    let M31_378 = PackedM31::broadcast(M31::from(378));
+    let M31_381 = PackedM31::broadcast(M31::from(381));
+    let M31_396 = PackedM31::broadcast(M31::from(396));
     let M31_4 = PackedM31::broadcast(M31::from(4));
-    let M31_418 = PackedM31::broadcast(M31::from(418));
+    let M31_411 = PackedM31::broadcast(M31::from(411));
+    let M31_412 = PackedM31::broadcast(M31::from(412));
     let M31_420 = PackedM31::broadcast(M31::from(420));
-    let M31_428 = PackedM31::broadcast(M31::from(428));
-    let M31_449 = PackedM31::broadcast(M31::from(449));
-    let M31_464 = PackedM31::broadcast(M31::from(464));
-    let M31_466 = PackedM31::broadcast(M31::from(466));
-    let M31_473 = PackedM31::broadcast(M31::from(473));
-    let M31_480 = PackedM31::broadcast(M31::from(480));
+    let M31_427 = PackedM31::broadcast(M31::from(427));
+    let M31_429 = PackedM31::broadcast(M31::from(429));
+    let M31_448 = PackedM31::broadcast(M31::from(448));
+    let M31_450 = PackedM31::broadcast(M31::from(450));
+    let M31_46 = PackedM31::broadcast(M31::from(46));
+    let M31_478 = PackedM31::broadcast(M31::from(478));
     let M31_484 = PackedM31::broadcast(M31::from(484));
-    let M31_49 = PackedM31::broadcast(M31::from(49));
-    let M31_497 = PackedM31::broadcast(M31::from(497));
-    let M31_498 = PackedM31::broadcast(M31::from(498));
     let M31_5 = PackedM31::broadcast(M31::from(5));
-    let M31_510 = PackedM31::broadcast(M31::from(510));
+    let M31_508 = PackedM31::broadcast(M31::from(508));
     let M31_512 = PackedM31::broadcast(M31::from(512));
-    let M31_54 = PackedM31::broadcast(M31::from(54));
+    let M31_52 = PackedM31::broadcast(M31::from(52));
+    let M31_59 = PackedM31::broadcast(M31::from(59));
     let M31_6 = PackedM31::broadcast(M31::from(6));
-    let M31_64 = PackedM31::broadcast(M31::from(64));
-    let M31_68 = PackedM31::broadcast(M31::from(68));
     let M31_7 = PackedM31::broadcast(M31::from(7));
-    let M31_72 = PackedM31::broadcast(M31::from(72));
-    let M31_79 = PackedM31::broadcast(M31::from(79));
     let M31_8 = PackedM31::broadcast(M31::from(8));
+    let M31_86 = PackedM31::broadcast(M31::from(86));
+    let M31_88 = PackedM31::broadcast(M31::from(88));
     let M31_9 = PackedM31::broadcast(M31::from(9));
-    let M31_97 = PackedM31::broadcast(M31::from(97));
-    let M31_98 = PackedM31::broadcast(M31::from(98));
     let seq = Seq::new(log_size);
 
     (trace.par_iter_mut(),
@@ -335,9 +334,9 @@ fn write_trace_simd(
                 [rc_input_col64];
             *lookup_data.range_check_8_3 = [rc_input_col64];
 
-            let partial_ec_mul_chain_tmp_tmp_c48a1_8 = ((seq) * (M31_2));*lookup_data.partial_ec_mul_0 = [partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512)))), M31_510, M31_315, M31_208, M31_480, M31_418, M31_115, M31_155, M31_54, M31_162, M31_449, M31_428, M31_466, M31_484, M31_169, M31_497, M31_373, M31_98, M31_64, M31_464, M31_498, M31_124, M31_68, M31_379, M31_140, M31_26, M31_22, M31_135, M31_202, M31_156, M31_120, M31_213, M31_389, M31_377, M31_20, M31_325, M31_303, M31_473, M31_334, M31_223, M31_160, M31_225, M31_297, M31_101, M31_420, M31_377, M31_72, M31_191, M31_49, M31_314, M31_27, M31_199, M31_222, M31_79, M31_97, M31_108, M31_141];*sub_component_inputs.partial_ec_mul[0] =
-                (partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ([((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512))))], [Felt252_2796306760980396030_6142433350943679003_9786206818587032316_455457488062799560, Felt252_15078781199387521180_7290787951512770967_8332093602989199897_317979597309161923]));
-            let partial_ec_mul_output_round_0_tmp_c48a1_9 = PackedPartialEcMul::deduce_output((partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ([((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512))))], [Felt252_2796306760980396030_6142433350943679003_9786206818587032316_455457488062799560, Felt252_15078781199387521180_7290787951512770967_8332093602989199897_317979597309161923])));*sub_component_inputs.partial_ec_mul[1] =
+            let partial_ec_mul_chain_tmp_tmp_c48a1_8 = ((seq) * (M31_2));*lookup_data.partial_ec_mul_0 = [partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512)))), M31_427, M31_381, M31_378, M31_484, M31_320, M31_88, M31_319, M31_396, M31_429, M31_59, M31_52, M31_478, M31_148, M31_181, M31_18, M31_309, M31_412, M31_88, M31_2, M31_184, M31_126, M31_46, M31_29, M31_206, M31_134, M31_233, M31_448, M31_211, M31_508, M31_420, M31_374, M31_283, M31_306, M31_450, M31_278, M31_86, M31_131, M31_160, M31_411, M31_301, M31_264, M31_322, M31_161, M31_346, M31_320, M31_342, M31_261, M31_184, M31_280, M31_326, M31_220, M31_167, M31_21, M31_260, M31_19, M31_199];*sub_component_inputs.partial_ec_mul[0] =
+                (partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ([((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512))))], [Felt252_5749711404561791915_10856295172949913030_14404130126786501252_477102089234220869, Felt252_5023856819317721596_7516658885453710123_15097688927504477480_448193959547877160]));
+            let partial_ec_mul_output_round_0_tmp_c48a1_9 = PackedPartialEcMul::deduce_output((partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_0, ([((value_limb_0_col3) + (((value_limb_1_col4) * (M31_512)))), ((value_limb_2_col5) + (((value_limb_3_col6) * (M31_512)))), ((value_limb_4_col7) + (((value_limb_5_col8) * (M31_512)))), ((value_limb_6_col9) + (((value_limb_7_col10) * (M31_512)))), ((value_limb_8_col11) + (((value_limb_9_col12) * (M31_512)))), ((value_limb_10_col13) + (((value_limb_11_col14) * (M31_512)))), ((value_limb_12_col15) + (((value_limb_13_col16) * (M31_512)))), ((value_limb_14_col17) + (((value_limb_15_col18) * (M31_512)))), ((value_limb_16_col19) + (((value_limb_17_col20) * (M31_512)))), ((value_limb_18_col21) + (((value_limb_19_col22) * (M31_512)))), ((value_limb_20_col23) + (((value_limb_21_col24) * (M31_512)))), ((value_limb_22_col25) + (((value_limb_23_col26) * (M31_512)))), ((value_limb_24_col27) + (((value_limb_25_col28) * (M31_512)))), ((value_limb_26_col29) + (((value_limb_27_col30) * (M31_512))))], [Felt252_5749711404561791915_10856295172949913030_14404130126786501252_477102089234220869, Felt252_5023856819317721596_7516658885453710123_15097688927504477480_448193959547877160])));*sub_component_inputs.partial_ec_mul[1] =
                 (partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_1, ([partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[0], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[1], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[2], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[3], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[4], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[5], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[6], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[7], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[8], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[9], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[10], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[11], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[12], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[13]], [partial_ec_mul_output_round_0_tmp_c48a1_9.2.1[0], partial_ec_mul_output_round_0_tmp_c48a1_9.2.1[1]]));
             let partial_ec_mul_output_round_1_tmp_c48a1_10 = PackedPartialEcMul::deduce_output((partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_1, ([partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[0], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[1], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[2], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[3], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[4], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[5], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[6], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[7], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[8], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[9], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[10], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[11], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[12], partial_ec_mul_output_round_0_tmp_c48a1_9.2.0[13]], [partial_ec_mul_output_round_0_tmp_c48a1_9.2.1[0], partial_ec_mul_output_round_0_tmp_c48a1_9.2.1[1]])));*sub_component_inputs.partial_ec_mul[2] =
                 (partial_ec_mul_chain_tmp_tmp_c48a1_8, M31_2, ([partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[0], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[1], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[2], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[3], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[4], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[5], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[6], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[7], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[8], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[9], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[10], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[11], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[12], partial_ec_mul_output_round_1_tmp_c48a1_10.2.0[13]], [partial_ec_mul_output_round_1_tmp_c48a1_10.2.1[0], partial_ec_mul_output_round_1_tmp_c48a1_10.2.1[1]]));
