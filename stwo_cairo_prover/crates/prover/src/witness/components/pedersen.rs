@@ -5,16 +5,19 @@ use cairo_air::pedersen::air::{
 use tracing::{span, Level};
 
 use crate::witness::components::{
-    memory_id_to_big, partial_ec_mul, pedersen_aggregator, pedersen_points_table,
+    memory_id_to_big, partial_ec_mul_window_bits_18, pedersen_aggregator_window_bits_18,
+    pedersen_points_table_window_bits_18,
 };
 use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
 use crate::witness::utils::TreeBuilder;
 
 pub struct PedersenContextClaimGenerator {
-    pub pedersen_aggregator_trace_generator: Option<pedersen_aggregator::ClaimGenerator>,
-    pub partial_ec_mul_trace_generator: Option<partial_ec_mul::ClaimGenerator>,
-    pub pedersen_points_table_trace_generator: Option<pedersen_points_table::ClaimGenerator>,
+    pub pedersen_aggregator_trace_generator:
+        Option<pedersen_aggregator_window_bits_18::ClaimGenerator>,
+    pub partial_ec_mul_trace_generator: Option<partial_ec_mul_window_bits_18::ClaimGenerator>,
+    pub pedersen_points_table_trace_generator:
+        Option<pedersen_points_table_window_bits_18::ClaimGenerator>,
 }
 
 impl PedersenContextClaimGenerator {
@@ -30,10 +33,11 @@ impl PedersenContextClaimGenerator {
                 pedersen_points_table_trace_generator: None,
             };
         }
-        let pedersen_aggregator_trace_generator = pedersen_aggregator::ClaimGenerator::new();
-        let partial_ec_mul_trace_generator = partial_ec_mul::ClaimGenerator::new();
+        let pedersen_aggregator_trace_generator =
+            pedersen_aggregator_window_bits_18::ClaimGenerator::new();
+        let partial_ec_mul_trace_generator = partial_ec_mul_window_bits_18::ClaimGenerator::new();
         let pedersen_points_table_trace_generator =
-            pedersen_points_table::ClaimGenerator::new(preprocessed_trace);
+            pedersen_points_table_window_bits_18::ClaimGenerator::new(preprocessed_trace);
 
         Self {
             pedersen_aggregator_trace_generator: Some(pedersen_aggregator_trace_generator),
@@ -126,9 +130,11 @@ impl PedersenContextInteractionClaimGenerator {
 }
 
 struct InteractionClaimGenerator {
-    pedersen_aggregator_interaction_gen: pedersen_aggregator::InteractionClaimGenerator,
-    partial_ec_mul_interaction_gen: partial_ec_mul::InteractionClaimGenerator,
-    pedersen_points_table_interaction_gen: pedersen_points_table::InteractionClaimGenerator,
+    pedersen_aggregator_interaction_gen:
+        pedersen_aggregator_window_bits_18::InteractionClaimGenerator,
+    partial_ec_mul_interaction_gen: partial_ec_mul_window_bits_18::InteractionClaimGenerator,
+    pedersen_points_table_interaction_gen:
+        pedersen_points_table_window_bits_18::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
@@ -142,13 +148,13 @@ impl InteractionClaimGenerator {
                 tree_builder,
                 &interaction_elements.memory_id_to_value,
                 &interaction_elements.range_checks.rc_8,
-                &interaction_elements.partial_ec_mul,
-                &interaction_elements.pedersen_aggregator,
+                &interaction_elements.partial_ec_mul_window_bits_18,
+                &interaction_elements.pedersen_aggregator_window_bits_18,
             );
         let partial_ec_mul_interaction_claim =
             self.partial_ec_mul_interaction_gen.write_interaction_trace(
                 tree_builder,
-                &interaction_elements.pedersen_points_table,
+                &interaction_elements.pedersen_points_table_window_bits_18,
                 &interaction_elements.range_checks.rc_9_9,
                 &interaction_elements.range_checks.rc_9_9_b,
                 &interaction_elements.range_checks.rc_9_9_c,
@@ -165,11 +171,14 @@ impl InteractionClaimGenerator {
                 &interaction_elements.range_checks.rc_20_f,
                 &interaction_elements.range_checks.rc_20_g,
                 &interaction_elements.range_checks.rc_20_h,
-                &interaction_elements.partial_ec_mul,
+                &interaction_elements.partial_ec_mul_window_bits_18,
             );
         let pedersen_points_table_interaction_claim = self
             .pedersen_points_table_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.pedersen_points_table);
+            .write_interaction_trace(
+                tree_builder,
+                &interaction_elements.pedersen_points_table_window_bits_18,
+            );
 
         InteractionClaim {
             pedersen_aggregator: pedersen_aggregator_interaction_claim,
