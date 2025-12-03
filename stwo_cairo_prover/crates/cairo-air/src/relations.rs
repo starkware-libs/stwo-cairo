@@ -33,7 +33,6 @@ relation!(RangeCheck_3_6, 2);
 relation!(RangeCheck_4_3, 2);
 relation!(RangeCheck_4_4_4_4, 4);
 relation!(RangeCheck_4_4, 2);
-relation!(RangeCheck_5_4, 2);
 relation!(RangeCheck_6, 1);
 relation!(RangeCheck_7_2_5, 3);
 relation!(RangeCheck_8, 1);
