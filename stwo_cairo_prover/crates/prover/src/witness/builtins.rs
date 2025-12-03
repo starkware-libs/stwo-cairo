@@ -304,7 +304,7 @@ impl BuiltinsInteractionClaimGenerator {
                     pedersen_builtin_interaction_gen.write_interaction_trace(
                         tree_builder,
                         &interaction_elements.memory_address_to_id,
-                        &interaction_elements.pedersen_aggregator,
+                        &interaction_elements.pedersen_aggregator_window_bits_18,
                     )
                 });
         let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(

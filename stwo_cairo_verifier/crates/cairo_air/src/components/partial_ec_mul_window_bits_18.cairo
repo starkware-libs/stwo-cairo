@@ -5,12 +5,12 @@ use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 297;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 18] = [
-    ('PedersenPointsTable', 1), ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6),
+    ('PedersenPointsTableWindowBits18', 1), ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6),
     ('RangeCheck_9_9_C', 6), ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6),
     ('RangeCheck_9_9_F', 6), ('RangeCheck_9_9_G', 3), ('RangeCheck_9_9_H', 3),
     ('RangeCheck_20', 12), ('RangeCheck_20_B', 12), ('RangeCheck_20_C', 12),
     ('RangeCheck_20_D', 12), ('RangeCheck_20_E', 9), ('RangeCheck_20_F', 9), ('RangeCheck_20_G', 9),
-    ('RangeCheck_20_H', 9), ('PartialEcMul', 1),
+    ('RangeCheck_20_H', 9), ('PartialEcMulWindowBits18', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -53,7 +53,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
+    pub pedersen_points_table_window_bits_18_lookup_elements: crate::PedersenPointsTableWindowBits18Elements,
     pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
     pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
     pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
@@ -70,7 +70,7 @@ pub struct Component {
     pub range_check_20_f_lookup_elements: crate::RangeCheck_20_FElements,
     pub range_check_20_g_lookup_elements: crate::RangeCheck_20_GElements,
     pub range_check_20_h_lookup_elements: crate::RangeCheck_20_HElements,
-    pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
+    pub partial_ec_mul_window_bits_18_lookup_elements: crate::PartialEcMulWindowBits18Elements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -85,8 +85,8 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            pedersen_points_table_lookup_elements: interaction_elements
-                .pedersen_points_table
+            pedersen_points_table_window_bits_18_lookup_elements: interaction_elements
+                .pedersen_points_table_window_bits_18
                 .clone(),
             range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
             range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
@@ -104,7 +104,9 @@ pub impl NewComponentImpl of NewComponent<Component> {
             range_check_20_f_lookup_elements: interaction_elements.range_checks.rc_20_f.clone(),
             range_check_20_g_lookup_elements: interaction_elements.range_checks.rc_20_g.clone(),
             range_check_20_h_lookup_elements: interaction_elements.range_checks.rc_20_h.clone(),
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+            partial_ec_mul_window_bits_18_lookup_elements: interaction_elements
+                .partial_ec_mul_window_bits_18
+                .clone(),
         }
     }
 }
@@ -124,7 +126,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut pedersen_points_table_sum_0: QM31 = Zero::zero();
+        let mut pedersen_points_table_window_bits_18_sum_0: QM31 = Zero::zero();
         let mut range_check_9_9_sum_1: QM31 = Zero::zero();
         let mut range_check_9_9_b_sum_2: QM31 = Zero::zero();
         let mut range_check_9_9_c_sum_3: QM31 = Zero::zero();
@@ -251,8 +253,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_20_b_sum_124: QM31 = Zero::zero();
         let mut range_check_20_c_sum_125: QM31 = Zero::zero();
         let mut range_check_20_d_sum_126: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_127: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_128: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_127: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_128: QM31 = Zero::zero();
 
         let [
             input_limb_0_col0,
@@ -327,62 +329,62 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             input_limb_69_col69,
             input_limb_70_col70,
             input_limb_71_col71,
-            pedersen_points_table_output_limb_0_col72,
-            pedersen_points_table_output_limb_1_col73,
-            pedersen_points_table_output_limb_2_col74,
-            pedersen_points_table_output_limb_3_col75,
-            pedersen_points_table_output_limb_4_col76,
-            pedersen_points_table_output_limb_5_col77,
-            pedersen_points_table_output_limb_6_col78,
-            pedersen_points_table_output_limb_7_col79,
-            pedersen_points_table_output_limb_8_col80,
-            pedersen_points_table_output_limb_9_col81,
-            pedersen_points_table_output_limb_10_col82,
-            pedersen_points_table_output_limb_11_col83,
-            pedersen_points_table_output_limb_12_col84,
-            pedersen_points_table_output_limb_13_col85,
-            pedersen_points_table_output_limb_14_col86,
-            pedersen_points_table_output_limb_15_col87,
-            pedersen_points_table_output_limb_16_col88,
-            pedersen_points_table_output_limb_17_col89,
-            pedersen_points_table_output_limb_18_col90,
-            pedersen_points_table_output_limb_19_col91,
-            pedersen_points_table_output_limb_20_col92,
-            pedersen_points_table_output_limb_21_col93,
-            pedersen_points_table_output_limb_22_col94,
-            pedersen_points_table_output_limb_23_col95,
-            pedersen_points_table_output_limb_24_col96,
-            pedersen_points_table_output_limb_25_col97,
-            pedersen_points_table_output_limb_26_col98,
-            pedersen_points_table_output_limb_27_col99,
-            pedersen_points_table_output_limb_28_col100,
-            pedersen_points_table_output_limb_29_col101,
-            pedersen_points_table_output_limb_30_col102,
-            pedersen_points_table_output_limb_31_col103,
-            pedersen_points_table_output_limb_32_col104,
-            pedersen_points_table_output_limb_33_col105,
-            pedersen_points_table_output_limb_34_col106,
-            pedersen_points_table_output_limb_35_col107,
-            pedersen_points_table_output_limb_36_col108,
-            pedersen_points_table_output_limb_37_col109,
-            pedersen_points_table_output_limb_38_col110,
-            pedersen_points_table_output_limb_39_col111,
-            pedersen_points_table_output_limb_40_col112,
-            pedersen_points_table_output_limb_41_col113,
-            pedersen_points_table_output_limb_42_col114,
-            pedersen_points_table_output_limb_43_col115,
-            pedersen_points_table_output_limb_44_col116,
-            pedersen_points_table_output_limb_45_col117,
-            pedersen_points_table_output_limb_46_col118,
-            pedersen_points_table_output_limb_47_col119,
-            pedersen_points_table_output_limb_48_col120,
-            pedersen_points_table_output_limb_49_col121,
-            pedersen_points_table_output_limb_50_col122,
-            pedersen_points_table_output_limb_51_col123,
-            pedersen_points_table_output_limb_52_col124,
-            pedersen_points_table_output_limb_53_col125,
-            pedersen_points_table_output_limb_54_col126,
-            pedersen_points_table_output_limb_55_col127,
+            pedersen_points_table_window_bits_18_output_limb_0_col72,
+            pedersen_points_table_window_bits_18_output_limb_1_col73,
+            pedersen_points_table_window_bits_18_output_limb_2_col74,
+            pedersen_points_table_window_bits_18_output_limb_3_col75,
+            pedersen_points_table_window_bits_18_output_limb_4_col76,
+            pedersen_points_table_window_bits_18_output_limb_5_col77,
+            pedersen_points_table_window_bits_18_output_limb_6_col78,
+            pedersen_points_table_window_bits_18_output_limb_7_col79,
+            pedersen_points_table_window_bits_18_output_limb_8_col80,
+            pedersen_points_table_window_bits_18_output_limb_9_col81,
+            pedersen_points_table_window_bits_18_output_limb_10_col82,
+            pedersen_points_table_window_bits_18_output_limb_11_col83,
+            pedersen_points_table_window_bits_18_output_limb_12_col84,
+            pedersen_points_table_window_bits_18_output_limb_13_col85,
+            pedersen_points_table_window_bits_18_output_limb_14_col86,
+            pedersen_points_table_window_bits_18_output_limb_15_col87,
+            pedersen_points_table_window_bits_18_output_limb_16_col88,
+            pedersen_points_table_window_bits_18_output_limb_17_col89,
+            pedersen_points_table_window_bits_18_output_limb_18_col90,
+            pedersen_points_table_window_bits_18_output_limb_19_col91,
+            pedersen_points_table_window_bits_18_output_limb_20_col92,
+            pedersen_points_table_window_bits_18_output_limb_21_col93,
+            pedersen_points_table_window_bits_18_output_limb_22_col94,
+            pedersen_points_table_window_bits_18_output_limb_23_col95,
+            pedersen_points_table_window_bits_18_output_limb_24_col96,
+            pedersen_points_table_window_bits_18_output_limb_25_col97,
+            pedersen_points_table_window_bits_18_output_limb_26_col98,
+            pedersen_points_table_window_bits_18_output_limb_27_col99,
+            pedersen_points_table_window_bits_18_output_limb_28_col100,
+            pedersen_points_table_window_bits_18_output_limb_29_col101,
+            pedersen_points_table_window_bits_18_output_limb_30_col102,
+            pedersen_points_table_window_bits_18_output_limb_31_col103,
+            pedersen_points_table_window_bits_18_output_limb_32_col104,
+            pedersen_points_table_window_bits_18_output_limb_33_col105,
+            pedersen_points_table_window_bits_18_output_limb_34_col106,
+            pedersen_points_table_window_bits_18_output_limb_35_col107,
+            pedersen_points_table_window_bits_18_output_limb_36_col108,
+            pedersen_points_table_window_bits_18_output_limb_37_col109,
+            pedersen_points_table_window_bits_18_output_limb_38_col110,
+            pedersen_points_table_window_bits_18_output_limb_39_col111,
+            pedersen_points_table_window_bits_18_output_limb_40_col112,
+            pedersen_points_table_window_bits_18_output_limb_41_col113,
+            pedersen_points_table_window_bits_18_output_limb_42_col114,
+            pedersen_points_table_window_bits_18_output_limb_43_col115,
+            pedersen_points_table_window_bits_18_output_limb_44_col116,
+            pedersen_points_table_window_bits_18_output_limb_45_col117,
+            pedersen_points_table_window_bits_18_output_limb_46_col118,
+            pedersen_points_table_window_bits_18_output_limb_47_col119,
+            pedersen_points_table_window_bits_18_output_limb_48_col120,
+            pedersen_points_table_window_bits_18_output_limb_49_col121,
+            pedersen_points_table_window_bits_18_output_limb_50_col122,
+            pedersen_points_table_window_bits_18_output_limb_51_col123,
+            pedersen_points_table_window_bits_18_output_limb_52_col124,
+            pedersen_points_table_window_bits_18_output_limb_53_col125,
+            pedersen_points_table_window_bits_18_output_limb_54_col126,
+            pedersen_points_table_window_bits_18_output_limb_55_col127,
             slope_limb_0_col128,
             slope_limb_1_col129,
             slope_limb_2_col130,
@@ -551,7 +553,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_24_col293,
             carry_25_col294,
             carry_26_col295,
-            partial_ec_mul_multiplicity,
+            partial_ec_mul_window_bits_18_multiplicity,
         ]: [Span<QM31>; 297] =
             (*trace_mask_values
             .multi_pop_front()
@@ -629,283 +631,283 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [input_limb_69_col69]: [QM31; 1] = (*input_limb_69_col69.try_into().unwrap()).unbox();
         let [input_limb_70_col70]: [QM31; 1] = (*input_limb_70_col70.try_into().unwrap()).unbox();
         let [input_limb_71_col71]: [QM31; 1] = (*input_limb_71_col71.try_into().unwrap()).unbox();
-        let [pedersen_points_table_output_limb_0_col72]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_0_col72
+        let [pedersen_points_table_window_bits_18_output_limb_0_col72]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_0_col72
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_1_col73]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_1_col73
+        let [pedersen_points_table_window_bits_18_output_limb_1_col73]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_1_col73
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_2_col74]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_2_col74
+        let [pedersen_points_table_window_bits_18_output_limb_2_col74]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_2_col74
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_3_col75]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_3_col75
+        let [pedersen_points_table_window_bits_18_output_limb_3_col75]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_3_col75
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_4_col76]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_4_col76
+        let [pedersen_points_table_window_bits_18_output_limb_4_col76]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_4_col76
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_5_col77]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_5_col77
+        let [pedersen_points_table_window_bits_18_output_limb_5_col77]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_5_col77
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_6_col78]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_6_col78
+        let [pedersen_points_table_window_bits_18_output_limb_6_col78]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_6_col78
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_7_col79]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_7_col79
+        let [pedersen_points_table_window_bits_18_output_limb_7_col79]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_7_col79
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_8_col80]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_8_col80
+        let [pedersen_points_table_window_bits_18_output_limb_8_col80]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_8_col80
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_9_col81]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_9_col81
+        let [pedersen_points_table_window_bits_18_output_limb_9_col81]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_9_col81
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_10_col82]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_10_col82
+        let [pedersen_points_table_window_bits_18_output_limb_10_col82]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_10_col82
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_11_col83]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_11_col83
+        let [pedersen_points_table_window_bits_18_output_limb_11_col83]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_11_col83
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_12_col84]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_12_col84
+        let [pedersen_points_table_window_bits_18_output_limb_12_col84]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_12_col84
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_13_col85]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_13_col85
+        let [pedersen_points_table_window_bits_18_output_limb_13_col85]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_13_col85
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_14_col86]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_14_col86
+        let [pedersen_points_table_window_bits_18_output_limb_14_col86]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_14_col86
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_15_col87]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_15_col87
+        let [pedersen_points_table_window_bits_18_output_limb_15_col87]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_15_col87
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_16_col88]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_16_col88
+        let [pedersen_points_table_window_bits_18_output_limb_16_col88]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_16_col88
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_17_col89]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_17_col89
+        let [pedersen_points_table_window_bits_18_output_limb_17_col89]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_17_col89
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_18_col90]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_18_col90
+        let [pedersen_points_table_window_bits_18_output_limb_18_col90]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_18_col90
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_19_col91]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_19_col91
+        let [pedersen_points_table_window_bits_18_output_limb_19_col91]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_19_col91
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_20_col92]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_20_col92
+        let [pedersen_points_table_window_bits_18_output_limb_20_col92]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_20_col92
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_21_col93]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_21_col93
+        let [pedersen_points_table_window_bits_18_output_limb_21_col93]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_21_col93
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_22_col94]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_22_col94
+        let [pedersen_points_table_window_bits_18_output_limb_22_col94]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_22_col94
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_23_col95]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_23_col95
+        let [pedersen_points_table_window_bits_18_output_limb_23_col95]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_23_col95
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_24_col96]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_24_col96
+        let [pedersen_points_table_window_bits_18_output_limb_24_col96]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_24_col96
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_25_col97]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_25_col97
+        let [pedersen_points_table_window_bits_18_output_limb_25_col97]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_25_col97
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_26_col98]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_26_col98
+        let [pedersen_points_table_window_bits_18_output_limb_26_col98]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_26_col98
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_27_col99]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_27_col99
+        let [pedersen_points_table_window_bits_18_output_limb_27_col99]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_27_col99
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_28_col100]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_28_col100
+        let [pedersen_points_table_window_bits_18_output_limb_28_col100]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_28_col100
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_29_col101]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_29_col101
+        let [pedersen_points_table_window_bits_18_output_limb_29_col101]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_29_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_30_col102]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_30_col102
+        let [pedersen_points_table_window_bits_18_output_limb_30_col102]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_30_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_31_col103]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_31_col103
+        let [pedersen_points_table_window_bits_18_output_limb_31_col103]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_31_col103
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_32_col104]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_32_col104
+        let [pedersen_points_table_window_bits_18_output_limb_32_col104]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_32_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_33_col105]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_33_col105
+        let [pedersen_points_table_window_bits_18_output_limb_33_col105]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_33_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_34_col106]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_34_col106
+        let [pedersen_points_table_window_bits_18_output_limb_34_col106]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_34_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_35_col107]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_35_col107
+        let [pedersen_points_table_window_bits_18_output_limb_35_col107]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_35_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_36_col108]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_36_col108
+        let [pedersen_points_table_window_bits_18_output_limb_36_col108]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_36_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_37_col109]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_37_col109
+        let [pedersen_points_table_window_bits_18_output_limb_37_col109]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_37_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_38_col110]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_38_col110
+        let [pedersen_points_table_window_bits_18_output_limb_38_col110]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_38_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_39_col111]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_39_col111
+        let [pedersen_points_table_window_bits_18_output_limb_39_col111]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_39_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_40_col112]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_40_col112
+        let [pedersen_points_table_window_bits_18_output_limb_40_col112]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_40_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_41_col113]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_41_col113
+        let [pedersen_points_table_window_bits_18_output_limb_41_col113]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_41_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_42_col114]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_42_col114
+        let [pedersen_points_table_window_bits_18_output_limb_42_col114]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_42_col114
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_43_col115]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_43_col115
+        let [pedersen_points_table_window_bits_18_output_limb_43_col115]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_43_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_44_col116]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_44_col116
+        let [pedersen_points_table_window_bits_18_output_limb_44_col116]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_44_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_45_col117]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_45_col117
+        let [pedersen_points_table_window_bits_18_output_limb_45_col117]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_45_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_46_col118]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_46_col118
+        let [pedersen_points_table_window_bits_18_output_limb_46_col118]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_46_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_47_col119]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_47_col119
+        let [pedersen_points_table_window_bits_18_output_limb_47_col119]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_47_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_48_col120]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_48_col120
+        let [pedersen_points_table_window_bits_18_output_limb_48_col120]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_48_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_49_col121]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_49_col121
+        let [pedersen_points_table_window_bits_18_output_limb_49_col121]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_49_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_50_col122]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_50_col122
+        let [pedersen_points_table_window_bits_18_output_limb_50_col122]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_50_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_51_col123]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_51_col123
+        let [pedersen_points_table_window_bits_18_output_limb_51_col123]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_51_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_52_col124]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_52_col124
+        let [pedersen_points_table_window_bits_18_output_limb_52_col124]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_52_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_53_col125]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_53_col125
+        let [pedersen_points_table_window_bits_18_output_limb_53_col125]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_53_col125
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_54_col126]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_54_col126
+        let [pedersen_points_table_window_bits_18_output_limb_54_col126]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_54_col126
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_55_col127]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_55_col127
+        let [pedersen_points_table_window_bits_18_output_limb_55_col127]: [QM31; 1] =
+            (*pedersen_points_table_window_bits_18_output_limb_55_col127
             .try_into()
             .unwrap())
             .unbox();
@@ -1133,79 +1135,81 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [carry_24_col293]: [QM31; 1] = (*carry_24_col293.try_into().unwrap()).unbox();
         let [carry_25_col294]: [QM31; 1] = (*carry_25_col294.try_into().unwrap()).unbox();
         let [carry_26_col295]: [QM31; 1] = (*carry_26_col295.try_into().unwrap()).unbox();
-        let [partial_ec_mul_multiplicity]: [QM31; 1] = (*partial_ec_mul_multiplicity
+        let [partial_ec_mul_window_bits_18_multiplicity]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_multiplicity
             .try_into()
             .unwrap())
             .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (partial_ec_mul_multiplicity * partial_ec_mul_multiplicity
-            - partial_ec_mul_multiplicity)
+        let constraint_quotient = (partial_ec_mul_window_bits_18_multiplicity
+            * partial_ec_mul_window_bits_18_multiplicity
+            - partial_ec_mul_window_bits_18_multiplicity)
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
-        pedersen_points_table_sum_0 = self
-            .pedersen_points_table_lookup_elements
+        pedersen_points_table_window_bits_18_sum_0 = self
+            .pedersen_points_table_window_bits_18_lookup_elements
             .combine_qm31(
                 [
                     ((qm31_const::<262144, 0, 0, 0>() * input_limb_1_col1) + input_limb_2_col2),
-                    pedersen_points_table_output_limb_0_col72,
-                    pedersen_points_table_output_limb_1_col73,
-                    pedersen_points_table_output_limb_2_col74,
-                    pedersen_points_table_output_limb_3_col75,
-                    pedersen_points_table_output_limb_4_col76,
-                    pedersen_points_table_output_limb_5_col77,
-                    pedersen_points_table_output_limb_6_col78,
-                    pedersen_points_table_output_limb_7_col79,
-                    pedersen_points_table_output_limb_8_col80,
-                    pedersen_points_table_output_limb_9_col81,
-                    pedersen_points_table_output_limb_10_col82,
-                    pedersen_points_table_output_limb_11_col83,
-                    pedersen_points_table_output_limb_12_col84,
-                    pedersen_points_table_output_limb_13_col85,
-                    pedersen_points_table_output_limb_14_col86,
-                    pedersen_points_table_output_limb_15_col87,
-                    pedersen_points_table_output_limb_16_col88,
-                    pedersen_points_table_output_limb_17_col89,
-                    pedersen_points_table_output_limb_18_col90,
-                    pedersen_points_table_output_limb_19_col91,
-                    pedersen_points_table_output_limb_20_col92,
-                    pedersen_points_table_output_limb_21_col93,
-                    pedersen_points_table_output_limb_22_col94,
-                    pedersen_points_table_output_limb_23_col95,
-                    pedersen_points_table_output_limb_24_col96,
-                    pedersen_points_table_output_limb_25_col97,
-                    pedersen_points_table_output_limb_26_col98,
-                    pedersen_points_table_output_limb_27_col99,
-                    pedersen_points_table_output_limb_28_col100,
-                    pedersen_points_table_output_limb_29_col101,
-                    pedersen_points_table_output_limb_30_col102,
-                    pedersen_points_table_output_limb_31_col103,
-                    pedersen_points_table_output_limb_32_col104,
-                    pedersen_points_table_output_limb_33_col105,
-                    pedersen_points_table_output_limb_34_col106,
-                    pedersen_points_table_output_limb_35_col107,
-                    pedersen_points_table_output_limb_36_col108,
-                    pedersen_points_table_output_limb_37_col109,
-                    pedersen_points_table_output_limb_38_col110,
-                    pedersen_points_table_output_limb_39_col111,
-                    pedersen_points_table_output_limb_40_col112,
-                    pedersen_points_table_output_limb_41_col113,
-                    pedersen_points_table_output_limb_42_col114,
-                    pedersen_points_table_output_limb_43_col115,
-                    pedersen_points_table_output_limb_44_col116,
-                    pedersen_points_table_output_limb_45_col117,
-                    pedersen_points_table_output_limb_46_col118,
-                    pedersen_points_table_output_limb_47_col119,
-                    pedersen_points_table_output_limb_48_col120,
-                    pedersen_points_table_output_limb_49_col121,
-                    pedersen_points_table_output_limb_50_col122,
-                    pedersen_points_table_output_limb_51_col123,
-                    pedersen_points_table_output_limb_52_col124,
-                    pedersen_points_table_output_limb_53_col125,
-                    pedersen_points_table_output_limb_54_col126,
-                    pedersen_points_table_output_limb_55_col127,
+                    pedersen_points_table_window_bits_18_output_limb_0_col72,
+                    pedersen_points_table_window_bits_18_output_limb_1_col73,
+                    pedersen_points_table_window_bits_18_output_limb_2_col74,
+                    pedersen_points_table_window_bits_18_output_limb_3_col75,
+                    pedersen_points_table_window_bits_18_output_limb_4_col76,
+                    pedersen_points_table_window_bits_18_output_limb_5_col77,
+                    pedersen_points_table_window_bits_18_output_limb_6_col78,
+                    pedersen_points_table_window_bits_18_output_limb_7_col79,
+                    pedersen_points_table_window_bits_18_output_limb_8_col80,
+                    pedersen_points_table_window_bits_18_output_limb_9_col81,
+                    pedersen_points_table_window_bits_18_output_limb_10_col82,
+                    pedersen_points_table_window_bits_18_output_limb_11_col83,
+                    pedersen_points_table_window_bits_18_output_limb_12_col84,
+                    pedersen_points_table_window_bits_18_output_limb_13_col85,
+                    pedersen_points_table_window_bits_18_output_limb_14_col86,
+                    pedersen_points_table_window_bits_18_output_limb_15_col87,
+                    pedersen_points_table_window_bits_18_output_limb_16_col88,
+                    pedersen_points_table_window_bits_18_output_limb_17_col89,
+                    pedersen_points_table_window_bits_18_output_limb_18_col90,
+                    pedersen_points_table_window_bits_18_output_limb_19_col91,
+                    pedersen_points_table_window_bits_18_output_limb_20_col92,
+                    pedersen_points_table_window_bits_18_output_limb_21_col93,
+                    pedersen_points_table_window_bits_18_output_limb_22_col94,
+                    pedersen_points_table_window_bits_18_output_limb_23_col95,
+                    pedersen_points_table_window_bits_18_output_limb_24_col96,
+                    pedersen_points_table_window_bits_18_output_limb_25_col97,
+                    pedersen_points_table_window_bits_18_output_limb_26_col98,
+                    pedersen_points_table_window_bits_18_output_limb_27_col99,
+                    pedersen_points_table_window_bits_18_output_limb_28_col100,
+                    pedersen_points_table_window_bits_18_output_limb_29_col101,
+                    pedersen_points_table_window_bits_18_output_limb_30_col102,
+                    pedersen_points_table_window_bits_18_output_limb_31_col103,
+                    pedersen_points_table_window_bits_18_output_limb_32_col104,
+                    pedersen_points_table_window_bits_18_output_limb_33_col105,
+                    pedersen_points_table_window_bits_18_output_limb_34_col106,
+                    pedersen_points_table_window_bits_18_output_limb_35_col107,
+                    pedersen_points_table_window_bits_18_output_limb_36_col108,
+                    pedersen_points_table_window_bits_18_output_limb_37_col109,
+                    pedersen_points_table_window_bits_18_output_limb_38_col110,
+                    pedersen_points_table_window_bits_18_output_limb_39_col111,
+                    pedersen_points_table_window_bits_18_output_limb_40_col112,
+                    pedersen_points_table_window_bits_18_output_limb_41_col113,
+                    pedersen_points_table_window_bits_18_output_limb_42_col114,
+                    pedersen_points_table_window_bits_18_output_limb_43_col115,
+                    pedersen_points_table_window_bits_18_output_limb_44_col116,
+                    pedersen_points_table_window_bits_18_output_limb_45_col117,
+                    pedersen_points_table_window_bits_18_output_limb_46_col118,
+                    pedersen_points_table_window_bits_18_output_limb_47_col119,
+                    pedersen_points_table_window_bits_18_output_limb_48_col120,
+                    pedersen_points_table_window_bits_18_output_limb_49_col121,
+                    pedersen_points_table_window_bits_18_output_limb_50_col122,
+                    pedersen_points_table_window_bits_18_output_limb_51_col123,
+                    pedersen_points_table_window_bits_18_output_limb_52_col124,
+                    pedersen_points_table_window_bits_18_output_limb_53_col125,
+                    pedersen_points_table_window_bits_18_output_limb_54_col126,
+                    pedersen_points_table_window_bits_18_output_limb_55_col127,
                 ],
             );
         ec_add_evaluate(
@@ -1224,62 +1228,62 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 input_limb_60_col60, input_limb_61_col61, input_limb_62_col62, input_limb_63_col63,
                 input_limb_64_col64, input_limb_65_col65, input_limb_66_col66, input_limb_67_col67,
                 input_limb_68_col68, input_limb_69_col69, input_limb_70_col70, input_limb_71_col71,
-                pedersen_points_table_output_limb_0_col72,
-                pedersen_points_table_output_limb_1_col73,
-                pedersen_points_table_output_limb_2_col74,
-                pedersen_points_table_output_limb_3_col75,
-                pedersen_points_table_output_limb_4_col76,
-                pedersen_points_table_output_limb_5_col77,
-                pedersen_points_table_output_limb_6_col78,
-                pedersen_points_table_output_limb_7_col79,
-                pedersen_points_table_output_limb_8_col80,
-                pedersen_points_table_output_limb_9_col81,
-                pedersen_points_table_output_limb_10_col82,
-                pedersen_points_table_output_limb_11_col83,
-                pedersen_points_table_output_limb_12_col84,
-                pedersen_points_table_output_limb_13_col85,
-                pedersen_points_table_output_limb_14_col86,
-                pedersen_points_table_output_limb_15_col87,
-                pedersen_points_table_output_limb_16_col88,
-                pedersen_points_table_output_limb_17_col89,
-                pedersen_points_table_output_limb_18_col90,
-                pedersen_points_table_output_limb_19_col91,
-                pedersen_points_table_output_limb_20_col92,
-                pedersen_points_table_output_limb_21_col93,
-                pedersen_points_table_output_limb_22_col94,
-                pedersen_points_table_output_limb_23_col95,
-                pedersen_points_table_output_limb_24_col96,
-                pedersen_points_table_output_limb_25_col97,
-                pedersen_points_table_output_limb_26_col98,
-                pedersen_points_table_output_limb_27_col99,
-                pedersen_points_table_output_limb_28_col100,
-                pedersen_points_table_output_limb_29_col101,
-                pedersen_points_table_output_limb_30_col102,
-                pedersen_points_table_output_limb_31_col103,
-                pedersen_points_table_output_limb_32_col104,
-                pedersen_points_table_output_limb_33_col105,
-                pedersen_points_table_output_limb_34_col106,
-                pedersen_points_table_output_limb_35_col107,
-                pedersen_points_table_output_limb_36_col108,
-                pedersen_points_table_output_limb_37_col109,
-                pedersen_points_table_output_limb_38_col110,
-                pedersen_points_table_output_limb_39_col111,
-                pedersen_points_table_output_limb_40_col112,
-                pedersen_points_table_output_limb_41_col113,
-                pedersen_points_table_output_limb_42_col114,
-                pedersen_points_table_output_limb_43_col115,
-                pedersen_points_table_output_limb_44_col116,
-                pedersen_points_table_output_limb_45_col117,
-                pedersen_points_table_output_limb_46_col118,
-                pedersen_points_table_output_limb_47_col119,
-                pedersen_points_table_output_limb_48_col120,
-                pedersen_points_table_output_limb_49_col121,
-                pedersen_points_table_output_limb_50_col122,
-                pedersen_points_table_output_limb_51_col123,
-                pedersen_points_table_output_limb_52_col124,
-                pedersen_points_table_output_limb_53_col125,
-                pedersen_points_table_output_limb_54_col126,
-                pedersen_points_table_output_limb_55_col127,
+                pedersen_points_table_window_bits_18_output_limb_0_col72,
+                pedersen_points_table_window_bits_18_output_limb_1_col73,
+                pedersen_points_table_window_bits_18_output_limb_2_col74,
+                pedersen_points_table_window_bits_18_output_limb_3_col75,
+                pedersen_points_table_window_bits_18_output_limb_4_col76,
+                pedersen_points_table_window_bits_18_output_limb_5_col77,
+                pedersen_points_table_window_bits_18_output_limb_6_col78,
+                pedersen_points_table_window_bits_18_output_limb_7_col79,
+                pedersen_points_table_window_bits_18_output_limb_8_col80,
+                pedersen_points_table_window_bits_18_output_limb_9_col81,
+                pedersen_points_table_window_bits_18_output_limb_10_col82,
+                pedersen_points_table_window_bits_18_output_limb_11_col83,
+                pedersen_points_table_window_bits_18_output_limb_12_col84,
+                pedersen_points_table_window_bits_18_output_limb_13_col85,
+                pedersen_points_table_window_bits_18_output_limb_14_col86,
+                pedersen_points_table_window_bits_18_output_limb_15_col87,
+                pedersen_points_table_window_bits_18_output_limb_16_col88,
+                pedersen_points_table_window_bits_18_output_limb_17_col89,
+                pedersen_points_table_window_bits_18_output_limb_18_col90,
+                pedersen_points_table_window_bits_18_output_limb_19_col91,
+                pedersen_points_table_window_bits_18_output_limb_20_col92,
+                pedersen_points_table_window_bits_18_output_limb_21_col93,
+                pedersen_points_table_window_bits_18_output_limb_22_col94,
+                pedersen_points_table_window_bits_18_output_limb_23_col95,
+                pedersen_points_table_window_bits_18_output_limb_24_col96,
+                pedersen_points_table_window_bits_18_output_limb_25_col97,
+                pedersen_points_table_window_bits_18_output_limb_26_col98,
+                pedersen_points_table_window_bits_18_output_limb_27_col99,
+                pedersen_points_table_window_bits_18_output_limb_28_col100,
+                pedersen_points_table_window_bits_18_output_limb_29_col101,
+                pedersen_points_table_window_bits_18_output_limb_30_col102,
+                pedersen_points_table_window_bits_18_output_limb_31_col103,
+                pedersen_points_table_window_bits_18_output_limb_32_col104,
+                pedersen_points_table_window_bits_18_output_limb_33_col105,
+                pedersen_points_table_window_bits_18_output_limb_34_col106,
+                pedersen_points_table_window_bits_18_output_limb_35_col107,
+                pedersen_points_table_window_bits_18_output_limb_36_col108,
+                pedersen_points_table_window_bits_18_output_limb_37_col109,
+                pedersen_points_table_window_bits_18_output_limb_38_col110,
+                pedersen_points_table_window_bits_18_output_limb_39_col111,
+                pedersen_points_table_window_bits_18_output_limb_40_col112,
+                pedersen_points_table_window_bits_18_output_limb_41_col113,
+                pedersen_points_table_window_bits_18_output_limb_42_col114,
+                pedersen_points_table_window_bits_18_output_limb_43_col115,
+                pedersen_points_table_window_bits_18_output_limb_44_col116,
+                pedersen_points_table_window_bits_18_output_limb_45_col117,
+                pedersen_points_table_window_bits_18_output_limb_46_col118,
+                pedersen_points_table_window_bits_18_output_limb_47_col119,
+                pedersen_points_table_window_bits_18_output_limb_48_col120,
+                pedersen_points_table_window_bits_18_output_limb_49_col121,
+                pedersen_points_table_window_bits_18_output_limb_50_col122,
+                pedersen_points_table_window_bits_18_output_limb_51_col123,
+                pedersen_points_table_window_bits_18_output_limb_52_col124,
+                pedersen_points_table_window_bits_18_output_limb_53_col125,
+                pedersen_points_table_window_bits_18_output_limb_54_col126,
+                pedersen_points_table_window_bits_18_output_limb_55_col127,
             ],
             slope_limb_0_col128,
             slope_limb_1_col129,
@@ -1596,8 +1600,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        partial_ec_mul_sum_127 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_127 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
                     input_limb_0_col0, input_limb_1_col1, input_limb_2_col2, input_limb_3_col3,
@@ -1626,8 +1630,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        partial_ec_mul_sum_128 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_128 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
                     input_limb_0_col0, (input_limb_1_col1 + qm31_const::<1, 0, 0, 0>()),
@@ -1662,10 +1666,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            partial_ec_mul_multiplicity,
+            partial_ec_mul_window_bits_18_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
-            pedersen_points_table_sum_0,
+            pedersen_points_table_window_bits_18_sum_0,
             range_check_9_9_sum_1,
             range_check_9_9_b_sum_2,
             range_check_9_9_c_sum_3,
@@ -1792,8 +1796,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_20_b_sum_124,
             range_check_20_c_sum_125,
             range_check_20_d_sum_126,
-            partial_ec_mul_sum_127,
-            partial_ec_mul_sum_128,
+            partial_ec_mul_window_bits_18_sum_127,
+            partial_ec_mul_window_bits_18_sum_128,
         );
     }
 }
@@ -1804,10 +1808,10 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    partial_ec_mul_multiplicity: QM31,
+    partial_ec_mul_window_bits_18_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    pedersen_points_table_sum_0: QM31,
+    pedersen_points_table_window_bits_18_sum_0: QM31,
     range_check_9_9_sum_1: QM31,
     range_check_9_9_b_sum_2: QM31,
     range_check_9_9_c_sum_3: QM31,
@@ -1934,8 +1938,8 @@ fn lookup_constraints(
     range_check_20_b_sum_124: QM31,
     range_check_20_c_sum_125: QM31,
     range_check_20_d_sum_126: QM31,
-    partial_ec_mul_sum_127: QM31,
-    partial_ec_mul_sum_128: QM31,
+    partial_ec_mul_window_bits_18_sum_127: QM31,
+    partial_ec_mul_window_bits_18_sum_128: QM31,
 ) {
     let [
         trace_2_col0,
@@ -2474,9 +2478,9 @@ fn lookup_constraints(
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
     ))
-        * pedersen_points_table_sum_0
+        * pedersen_points_table_window_bits_18_sum_0
         * range_check_9_9_sum_1)
-        - pedersen_points_table_sum_0
+        - pedersen_points_table_window_bits_18_sum_0
         - range_check_9_9_sum_1)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -3288,9 +3292,9 @@ fn lookup_constraints(
             [trace_2_col248, trace_2_col249, trace_2_col250, trace_2_col251],
         ))
         * range_check_20_d_sum_126
-        * partial_ec_mul_sum_127)
-        - (range_check_20_d_sum_126 * partial_ec_mul_multiplicity)
-        - partial_ec_mul_sum_127)
+        * partial_ec_mul_window_bits_18_sum_127)
+        - (range_check_20_d_sum_126 * partial_ec_mul_window_bits_18_multiplicity)
+        - partial_ec_mul_window_bits_18_sum_127)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3304,8 +3308,8 @@ fn lookup_constraints(
             [trace_2_col256_neg1, trace_2_col257_neg1, trace_2_col258_neg1, trace_2_col259_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * partial_ec_mul_sum_128)
-        + partial_ec_mul_multiplicity)
+        * partial_ec_mul_window_bits_18_sum_128)
+        + partial_ec_mul_window_bits_18_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
@@ -3335,13 +3339,13 @@ mod tests {
             interaction_claim: InteractionClaim {
                 claimed_sum: qm31_const::<1398335417, 314974026, 1722107152, 821933968>(),
             },
-            partial_ec_mul_lookup_elements: make_lookup_elements(
-                qm31_const::<1649646149, 853343631, 2092831524, 2004475967>(),
-                qm31_const::<566949925, 426542195, 926007664, 380048330>(),
+            partial_ec_mul_window_bits_18_lookup_elements: make_lookup_elements(
+                qm31_const::<988200946, 1873843224, 641198928, 576035559>(),
+                qm31_const::<1864137340, 1005634624, 1852501099, 1044452943>(),
             ),
-            pedersen_points_table_lookup_elements: make_lookup_elements(
-                qm31_const::<1429392413, 324063524, 996177436, 120316387>(),
-                qm31_const::<607706587, 464765845, 1730008433, 812537185>(),
+            pedersen_points_table_window_bits_18_lookup_elements: make_lookup_elements(
+                qm31_const::<1761580700, 1915368651, 807149434, 2021732045>(),
+                qm31_const::<710492777, 1973007098, 120928062, 26943913>(),
             ),
             range_check_20_lookup_elements: make_lookup_elements(
                 qm31_const::<1932860727, 18341367, 2045797860, 1199128296>(),
@@ -3796,6 +3800,8 @@ mod tests {
                 point,
             );
         preprocessed_trace.validate_usage();
-        assert_eq!(sum, QM31Trait::from_fixed_array(PARTIAL_EC_MUL_SAMPLE_EVAL_RESULT))
+        assert_eq!(
+            sum, QM31Trait::from_fixed_array(PARTIAL_EC_MUL_BITS_PER_WINDOW_18_SAMPLE_EVAL_RESULT),
+        )
     }
 }

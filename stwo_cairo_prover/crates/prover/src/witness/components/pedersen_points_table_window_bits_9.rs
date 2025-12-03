@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::pedersen_points_table::{
+use cairo_air::components::pedersen_points_table_window_bits_9::{
     Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS,
 };
 
@@ -20,7 +20,7 @@ impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
         let column_ids = [PreProcessedColumnId {
-            id: "seq_23".to_owned(),
+            id: "seq_15".to_owned(),
         }];
 
         Self {
@@ -76,8 +76,8 @@ fn write_trace_simd(
         )
     };
 
-    let seq_23 = preprocessed_trace.get_column(&PreProcessedColumnId {
-        id: "seq_23".to_owned(),
+    let seq_15 = preprocessed_trace.get_column(&PreProcessedColumnId {
+        id: "seq_15".to_owned(),
     });
     let pedersen_points_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "pedersen_points_0".to_owned(),
@@ -252,7 +252,7 @@ fn write_trace_simd(
         .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
-            let seq_23 = seq_23.packed_at(row_index);
+            let seq_15 = seq_15.packed_at(row_index);
             let pedersen_points_0 = pedersen_points_0.packed_at(row_index);
             let pedersen_points_1 = pedersen_points_1.packed_at(row_index);
             let pedersen_points_2 = pedersen_points_2.packed_at(row_index);
@@ -309,8 +309,8 @@ fn write_trace_simd(
             let pedersen_points_53 = pedersen_points_53.packed_at(row_index);
             let pedersen_points_54 = pedersen_points_54.packed_at(row_index);
             let pedersen_points_55 = pedersen_points_55.packed_at(row_index);
-            *lookup_data.pedersen_points_table_0 = [
-                seq_23,
+            *lookup_data.pedersen_points_table_window_bits_9_0 = [
+                seq_15,
                 pedersen_points_0,
                 pedersen_points_1,
                 pedersen_points_2,
@@ -379,7 +379,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    pedersen_points_table_0: Vec<[PackedM31; 57]>,
+    pedersen_points_table_window_bits_9_0: Vec<[PackedM31; 57]>,
     mults_0: Vec<PackedM31>,
 }
 
@@ -390,7 +390,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        pedersen_points_table: &relations::PedersenPointsTable,
+        pedersen_points_table_window_bits_9: &relations::PedersenPointsTableWindowBits9,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -398,12 +398,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.pedersen_points_table_0,
+            &self.lookup_data.pedersen_points_table_window_bits_9_0,
             self.lookup_data.mults_0,
         )
             .into_par_iter()
             .for_each(|(writer, values, mults_0)| {
-                let denom = pedersen_points_table.combine(values);
+                let denom = pedersen_points_table_window_bits_9.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
