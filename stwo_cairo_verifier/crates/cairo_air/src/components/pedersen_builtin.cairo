@@ -5,7 +5,7 @@ use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 3;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 2] = [
-    ('MemoryAddressToId', 3), ('PedersenAggregator', 1),
+    ('MemoryAddressToId', 3), ('PedersenAggregatorWindowBits18', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -51,7 +51,7 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub memory_address_to_id_lookup_elements: crate::MemoryAddressToIdElements,
-    pub pedersen_aggregator_lookup_elements: crate::PedersenAggregatorElements,
+    pub pedersen_aggregator_window_bits_18_lookup_elements: crate::PedersenAggregatorWindowBits18Elements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -67,7 +67,9 @@ pub impl NewComponentImpl of NewComponent<Component> {
             claim: *claim,
             interaction_claim: *interaction_claim,
             memory_address_to_id_lookup_elements: interaction_elements.memory_address_to_id.clone(),
-            pedersen_aggregator_lookup_elements: interaction_elements.pedersen_aggregator.clone(),
+            pedersen_aggregator_window_bits_18_lookup_elements: interaction_elements
+                .pedersen_aggregator_window_bits_18
+                .clone(),
         }
     }
 }
@@ -95,7 +97,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut memory_address_to_id_sum_0: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_1: QM31 = Zero::zero();
         let mut memory_address_to_id_sum_2: QM31 = Zero::zero();
-        let mut pedersen_aggregator_sum_3: QM31 = Zero::zero();
+        let mut pedersen_aggregator_window_bits_18_sum_3: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -112,10 +114,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         core::internal::revoke_ap_tracking();
 
-        let instance_addr_tmp_d00c6_0: QM31 = ((seq * qm31_const::<3, 0, 0, 0>())
+        let instance_addr_tmp_3bd90_0: QM31 = ((seq * qm31_const::<3, 0, 0, 0>())
             + pedersen_builtin_segment_start);
         read_id_evaluate(
-            instance_addr_tmp_d00c6_0,
+            instance_addr_tmp_3bd90_0,
             input_state_0_id_col0,
             self.memory_address_to_id_lookup_elements,
             ref memory_address_to_id_sum_0,
@@ -124,7 +126,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         read_id_evaluate(
-            (instance_addr_tmp_d00c6_0 + qm31_const::<1, 0, 0, 0>()),
+            (instance_addr_tmp_3bd90_0 + qm31_const::<1, 0, 0, 0>()),
             input_state_1_id_col1,
             self.memory_address_to_id_lookup_elements,
             ref memory_address_to_id_sum_1,
@@ -133,7 +135,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         read_id_evaluate(
-            (instance_addr_tmp_d00c6_0 + qm31_const::<2, 0, 0, 0>()),
+            (instance_addr_tmp_3bd90_0 + qm31_const::<2, 0, 0, 0>()),
             output_state_id_col2,
             self.memory_address_to_id_lookup_elements,
             ref memory_address_to_id_sum_2,
@@ -142,8 +144,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
 
-        pedersen_aggregator_sum_3 = self
-            .pedersen_aggregator_lookup_elements
+        pedersen_aggregator_window_bits_18_sum_3 = self
+            .pedersen_aggregator_window_bits_18_lookup_elements
             .combine_qm31([input_state_0_id_col0, input_state_1_id_col1, output_state_id_col2]);
 
         lookup_constraints(
@@ -156,7 +158,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             memory_address_to_id_sum_0,
             memory_address_to_id_sum_1,
             memory_address_to_id_sum_2,
-            pedersen_aggregator_sum_3,
+            pedersen_aggregator_window_bits_18_sum_3,
         );
     }
 }
@@ -172,7 +174,7 @@ fn lookup_constraints(
     memory_address_to_id_sum_0: QM31,
     memory_address_to_id_sum_1: QM31,
     memory_address_to_id_sum_2: QM31,
-    pedersen_aggregator_sum_3: QM31,
+    pedersen_aggregator_window_bits_18_sum_3: QM31,
 ) {
     let [
         trace_2_col0,
@@ -219,9 +221,9 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * memory_address_to_id_sum_2
-        * pedersen_aggregator_sum_3)
+        * pedersen_aggregator_window_bits_18_sum_3)
         - memory_address_to_id_sum_2
-        - pedersen_aggregator_sum_3)
+        - pedersen_aggregator_window_bits_18_sum_3)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
@@ -255,9 +257,9 @@ mod tests {
                 qm31_const::<1842771211, 1960835386, 1582137647, 1333140033>(),
                 qm31_const::<1360491305, 950648792, 556642685, 2096522554>(),
             ),
-            pedersen_aggregator_lookup_elements: make_lookup_elements(
-                qm31_const::<920417564, 1680486498, 1628630402, 353948678>(),
-                qm31_const::<846637634, 1325318444, 1529670858, 731974051>(),
+            pedersen_aggregator_window_bits_18_lookup_elements: make_lookup_elements(
+                qm31_const::<989342410, 1557514986, 1593463493, 412909928>(),
+                qm31_const::<142248599, 1510521029, 22359969, 507780239>(),
             ),
         };
         let mut sum: QM31 = Zero::zero();
