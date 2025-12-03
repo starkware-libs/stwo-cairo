@@ -3,14 +3,14 @@
 use crate::components::subroutines::ec_add::ec_add_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 297;
+pub const N_TRACE_COLUMNS: usize = 522;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 18] = [
-    ('PedersenPointsTable', 1), ('RangeCheck_9_9', 6), ('RangeCheck_9_9_B', 6),
-    ('RangeCheck_9_9_C', 6), ('RangeCheck_9_9_D', 6), ('RangeCheck_9_9_E', 6),
-    ('RangeCheck_9_9_F', 6), ('RangeCheck_9_9_G', 3), ('RangeCheck_9_9_H', 3),
-    ('RangeCheck_20', 12), ('RangeCheck_20_B', 12), ('RangeCheck_20_C', 12),
-    ('RangeCheck_20_D', 12), ('RangeCheck_20_E', 9), ('RangeCheck_20_F', 9), ('RangeCheck_20_G', 9),
-    ('RangeCheck_20_H', 9), ('PartialEcMul', 1),
+    ('RangeCheck_9_9', 13), ('PedersenPointsTable', 2), ('RangeCheck_9_9_B', 12),
+    ('RangeCheck_9_9_C', 12), ('RangeCheck_9_9_D', 12), ('RangeCheck_9_9_E', 12),
+    ('RangeCheck_9_9_F', 12), ('RangeCheck_9_9_G', 6), ('RangeCheck_9_9_H', 6),
+    ('RangeCheck_20', 24), ('RangeCheck_20_B', 24), ('RangeCheck_20_C', 24),
+    ('RangeCheck_20_D', 24), ('RangeCheck_20_E', 18), ('RangeCheck_20_F', 18),
+    ('RangeCheck_20_G', 18), ('RangeCheck_20_H', 18), ('PartialEcMul', 1),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -23,7 +23,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 260].span();
+        let interaction_log_sizes = [log_size; 516].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -53,8 +53,8 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
     pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
+    pub pedersen_points_table_lookup_elements: crate::PedersenPointsTableElements,
     pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
     pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
     pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
@@ -85,10 +85,10 @@ pub impl NewComponentImpl of NewComponent<Component> {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
+            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
             pedersen_points_table_lookup_elements: interaction_elements
                 .pedersen_points_table
                 .clone(),
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
             range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
             range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
             range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
@@ -124,135 +124,263 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
-        let mut pedersen_points_table_sum_0: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_1: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_2: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_3: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_4: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_5: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_6: QM31 = Zero::zero();
-        let mut range_check_9_9_g_sum_7: QM31 = Zero::zero();
-        let mut range_check_9_9_h_sum_8: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_9: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_10: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_11: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_12: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_13: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_14: QM31 = Zero::zero();
-        let mut range_check_20_sum_15: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_16: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_17: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_18: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_19: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_20: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_21: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_22: QM31 = Zero::zero();
-        let mut range_check_20_sum_23: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_24: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_25: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_26: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_27: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_28: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_29: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_30: QM31 = Zero::zero();
-        let mut range_check_20_sum_31: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_32: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_33: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_34: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_35: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_36: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_37: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_38: QM31 = Zero::zero();
-        let mut range_check_20_sum_39: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_40: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_41: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_42: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_43: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_44: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_45: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_46: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_47: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_48: QM31 = Zero::zero();
-        let mut range_check_9_9_g_sum_49: QM31 = Zero::zero();
-        let mut range_check_9_9_h_sum_50: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_51: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_52: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_53: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_54: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_55: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_56: QM31 = Zero::zero();
-        let mut range_check_20_sum_57: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_58: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_59: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_60: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_61: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_62: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_63: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_64: QM31 = Zero::zero();
-        let mut range_check_20_sum_65: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_66: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_67: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_68: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_69: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_70: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_71: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_72: QM31 = Zero::zero();
-        let mut range_check_20_sum_73: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_74: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_75: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_76: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_77: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_78: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_79: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_80: QM31 = Zero::zero();
-        let mut range_check_20_sum_81: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_82: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_83: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_84: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_85: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_86: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_87: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_88: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_89: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_90: QM31 = Zero::zero();
-        let mut range_check_9_9_g_sum_91: QM31 = Zero::zero();
-        let mut range_check_9_9_h_sum_92: QM31 = Zero::zero();
-        let mut range_check_9_9_sum_93: QM31 = Zero::zero();
-        let mut range_check_9_9_b_sum_94: QM31 = Zero::zero();
-        let mut range_check_9_9_c_sum_95: QM31 = Zero::zero();
-        let mut range_check_9_9_d_sum_96: QM31 = Zero::zero();
-        let mut range_check_9_9_e_sum_97: QM31 = Zero::zero();
-        let mut range_check_9_9_f_sum_98: QM31 = Zero::zero();
-        let mut range_check_20_sum_99: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_100: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_101: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_102: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_103: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_104: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_105: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_106: QM31 = Zero::zero();
-        let mut range_check_20_sum_107: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_108: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_109: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_110: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_111: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_112: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_113: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_114: QM31 = Zero::zero();
-        let mut range_check_20_sum_115: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_116: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_117: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_118: QM31 = Zero::zero();
-        let mut range_check_20_e_sum_119: QM31 = Zero::zero();
-        let mut range_check_20_f_sum_120: QM31 = Zero::zero();
-        let mut range_check_20_g_sum_121: QM31 = Zero::zero();
-        let mut range_check_20_h_sum_122: QM31 = Zero::zero();
-        let mut range_check_20_sum_123: QM31 = Zero::zero();
-        let mut range_check_20_b_sum_124: QM31 = Zero::zero();
-        let mut range_check_20_c_sum_125: QM31 = Zero::zero();
-        let mut range_check_20_d_sum_126: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_127: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_128: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_0: QM31 = Zero::zero();
+        let mut pedersen_points_table_sum_1: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_2: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_3: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_4: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_5: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_6: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_7: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_8: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_9: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_10: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_11: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_12: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_13: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_14: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_15: QM31 = Zero::zero();
+        let mut range_check_20_sum_16: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_17: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_18: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_19: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_20: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_21: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_22: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_23: QM31 = Zero::zero();
+        let mut range_check_20_sum_24: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_25: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_26: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_27: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_28: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_29: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_30: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_31: QM31 = Zero::zero();
+        let mut range_check_20_sum_32: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_33: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_34: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_35: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_36: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_37: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_38: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_39: QM31 = Zero::zero();
+        let mut range_check_20_sum_40: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_41: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_42: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_43: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_44: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_45: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_46: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_47: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_48: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_49: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_50: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_51: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_52: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_53: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_54: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_55: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_56: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_57: QM31 = Zero::zero();
+        let mut range_check_20_sum_58: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_59: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_60: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_61: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_62: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_63: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_64: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_65: QM31 = Zero::zero();
+        let mut range_check_20_sum_66: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_67: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_68: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_69: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_70: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_71: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_72: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_73: QM31 = Zero::zero();
+        let mut range_check_20_sum_74: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_75: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_76: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_77: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_78: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_79: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_80: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_81: QM31 = Zero::zero();
+        let mut range_check_20_sum_82: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_83: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_84: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_85: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_86: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_87: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_88: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_89: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_90: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_91: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_92: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_93: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_94: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_95: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_96: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_97: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_98: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_99: QM31 = Zero::zero();
+        let mut range_check_20_sum_100: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_101: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_102: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_103: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_104: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_105: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_106: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_107: QM31 = Zero::zero();
+        let mut range_check_20_sum_108: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_109: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_110: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_111: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_112: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_113: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_114: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_115: QM31 = Zero::zero();
+        let mut range_check_20_sum_116: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_117: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_118: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_119: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_120: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_121: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_122: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_123: QM31 = Zero::zero();
+        let mut range_check_20_sum_124: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_125: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_126: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_127: QM31 = Zero::zero();
+        let mut pedersen_points_table_sum_128: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_129: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_130: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_131: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_132: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_133: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_134: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_135: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_136: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_137: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_138: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_139: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_140: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_141: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_142: QM31 = Zero::zero();
+        let mut range_check_20_sum_143: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_144: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_145: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_146: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_147: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_148: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_149: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_150: QM31 = Zero::zero();
+        let mut range_check_20_sum_151: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_152: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_153: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_154: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_155: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_156: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_157: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_158: QM31 = Zero::zero();
+        let mut range_check_20_sum_159: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_160: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_161: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_162: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_163: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_164: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_165: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_166: QM31 = Zero::zero();
+        let mut range_check_20_sum_167: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_168: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_169: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_170: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_171: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_172: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_173: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_174: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_175: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_176: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_177: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_178: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_179: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_180: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_181: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_182: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_183: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_184: QM31 = Zero::zero();
+        let mut range_check_20_sum_185: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_186: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_187: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_188: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_189: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_190: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_191: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_192: QM31 = Zero::zero();
+        let mut range_check_20_sum_193: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_194: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_195: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_196: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_197: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_198: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_199: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_200: QM31 = Zero::zero();
+        let mut range_check_20_sum_201: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_202: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_203: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_204: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_205: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_206: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_207: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_208: QM31 = Zero::zero();
+        let mut range_check_20_sum_209: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_210: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_211: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_212: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_213: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_214: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_215: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_216: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_217: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_218: QM31 = Zero::zero();
+        let mut range_check_9_9_g_sum_219: QM31 = Zero::zero();
+        let mut range_check_9_9_h_sum_220: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_221: QM31 = Zero::zero();
+        let mut range_check_9_9_b_sum_222: QM31 = Zero::zero();
+        let mut range_check_9_9_c_sum_223: QM31 = Zero::zero();
+        let mut range_check_9_9_d_sum_224: QM31 = Zero::zero();
+        let mut range_check_9_9_e_sum_225: QM31 = Zero::zero();
+        let mut range_check_9_9_f_sum_226: QM31 = Zero::zero();
+        let mut range_check_20_sum_227: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_228: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_229: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_230: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_231: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_232: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_233: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_234: QM31 = Zero::zero();
+        let mut range_check_20_sum_235: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_236: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_237: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_238: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_239: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_240: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_241: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_242: QM31 = Zero::zero();
+        let mut range_check_20_sum_243: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_244: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_245: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_246: QM31 = Zero::zero();
+        let mut range_check_20_e_sum_247: QM31 = Zero::zero();
+        let mut range_check_20_f_sum_248: QM31 = Zero::zero();
+        let mut range_check_20_g_sum_249: QM31 = Zero::zero();
+        let mut range_check_20_h_sum_250: QM31 = Zero::zero();
+        let mut range_check_20_sum_251: QM31 = Zero::zero();
+        let mut range_check_20_b_sum_252: QM31 = Zero::zero();
+        let mut range_check_20_c_sum_253: QM31 = Zero::zero();
+        let mut range_check_20_d_sum_254: QM31 = Zero::zero();
+        let mut partial_ec_mul_sum_255: QM31 = Zero::zero();
+        let mut partial_ec_mul_sum_256: QM31 = Zero::zero();
 
         let [
             input_limb_0_col0,
@@ -327,232 +455,457 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             input_limb_69_col69,
             input_limb_70_col70,
             input_limb_71_col71,
-            pedersen_points_table_output_limb_0_col72,
-            pedersen_points_table_output_limb_1_col73,
-            pedersen_points_table_output_limb_2_col74,
-            pedersen_points_table_output_limb_3_col75,
-            pedersen_points_table_output_limb_4_col76,
-            pedersen_points_table_output_limb_5_col77,
-            pedersen_points_table_output_limb_6_col78,
-            pedersen_points_table_output_limb_7_col79,
-            pedersen_points_table_output_limb_8_col80,
-            pedersen_points_table_output_limb_9_col81,
-            pedersen_points_table_output_limb_10_col82,
-            pedersen_points_table_output_limb_11_col83,
-            pedersen_points_table_output_limb_12_col84,
-            pedersen_points_table_output_limb_13_col85,
-            pedersen_points_table_output_limb_14_col86,
-            pedersen_points_table_output_limb_15_col87,
-            pedersen_points_table_output_limb_16_col88,
-            pedersen_points_table_output_limb_17_col89,
-            pedersen_points_table_output_limb_18_col90,
-            pedersen_points_table_output_limb_19_col91,
-            pedersen_points_table_output_limb_20_col92,
-            pedersen_points_table_output_limb_21_col93,
-            pedersen_points_table_output_limb_22_col94,
-            pedersen_points_table_output_limb_23_col95,
-            pedersen_points_table_output_limb_24_col96,
-            pedersen_points_table_output_limb_25_col97,
-            pedersen_points_table_output_limb_26_col98,
-            pedersen_points_table_output_limb_27_col99,
-            pedersen_points_table_output_limb_28_col100,
-            pedersen_points_table_output_limb_29_col101,
-            pedersen_points_table_output_limb_30_col102,
-            pedersen_points_table_output_limb_31_col103,
-            pedersen_points_table_output_limb_32_col104,
-            pedersen_points_table_output_limb_33_col105,
-            pedersen_points_table_output_limb_34_col106,
-            pedersen_points_table_output_limb_35_col107,
-            pedersen_points_table_output_limb_36_col108,
-            pedersen_points_table_output_limb_37_col109,
-            pedersen_points_table_output_limb_38_col110,
-            pedersen_points_table_output_limb_39_col111,
-            pedersen_points_table_output_limb_40_col112,
-            pedersen_points_table_output_limb_41_col113,
-            pedersen_points_table_output_limb_42_col114,
-            pedersen_points_table_output_limb_43_col115,
-            pedersen_points_table_output_limb_44_col116,
-            pedersen_points_table_output_limb_45_col117,
-            pedersen_points_table_output_limb_46_col118,
-            pedersen_points_table_output_limb_47_col119,
-            pedersen_points_table_output_limb_48_col120,
-            pedersen_points_table_output_limb_49_col121,
-            pedersen_points_table_output_limb_50_col122,
-            pedersen_points_table_output_limb_51_col123,
-            pedersen_points_table_output_limb_52_col124,
-            pedersen_points_table_output_limb_53_col125,
-            pedersen_points_table_output_limb_54_col126,
-            pedersen_points_table_output_limb_55_col127,
-            slope_limb_0_col128,
-            slope_limb_1_col129,
-            slope_limb_2_col130,
-            slope_limb_3_col131,
-            slope_limb_4_col132,
-            slope_limb_5_col133,
-            slope_limb_6_col134,
-            slope_limb_7_col135,
-            slope_limb_8_col136,
-            slope_limb_9_col137,
-            slope_limb_10_col138,
-            slope_limb_11_col139,
-            slope_limb_12_col140,
-            slope_limb_13_col141,
-            slope_limb_14_col142,
-            slope_limb_15_col143,
-            slope_limb_16_col144,
-            slope_limb_17_col145,
-            slope_limb_18_col146,
-            slope_limb_19_col147,
-            slope_limb_20_col148,
-            slope_limb_21_col149,
-            slope_limb_22_col150,
-            slope_limb_23_col151,
-            slope_limb_24_col152,
-            slope_limb_25_col153,
-            slope_limb_26_col154,
-            slope_limb_27_col155,
-            k_col156,
-            carry_0_col157,
-            carry_1_col158,
-            carry_2_col159,
-            carry_3_col160,
-            carry_4_col161,
-            carry_5_col162,
-            carry_6_col163,
-            carry_7_col164,
-            carry_8_col165,
-            carry_9_col166,
-            carry_10_col167,
-            carry_11_col168,
-            carry_12_col169,
-            carry_13_col170,
-            carry_14_col171,
-            carry_15_col172,
-            carry_16_col173,
-            carry_17_col174,
-            carry_18_col175,
-            carry_19_col176,
-            carry_20_col177,
-            carry_21_col178,
-            carry_22_col179,
-            carry_23_col180,
-            carry_24_col181,
-            carry_25_col182,
-            carry_26_col183,
-            result_x_limb_0_col184,
-            result_x_limb_1_col185,
-            result_x_limb_2_col186,
-            result_x_limb_3_col187,
-            result_x_limb_4_col188,
-            result_x_limb_5_col189,
-            result_x_limb_6_col190,
-            result_x_limb_7_col191,
-            result_x_limb_8_col192,
-            result_x_limb_9_col193,
-            result_x_limb_10_col194,
-            result_x_limb_11_col195,
-            result_x_limb_12_col196,
-            result_x_limb_13_col197,
-            result_x_limb_14_col198,
-            result_x_limb_15_col199,
-            result_x_limb_16_col200,
-            result_x_limb_17_col201,
-            result_x_limb_18_col202,
-            result_x_limb_19_col203,
-            result_x_limb_20_col204,
-            result_x_limb_21_col205,
-            result_x_limb_22_col206,
-            result_x_limb_23_col207,
-            result_x_limb_24_col208,
-            result_x_limb_25_col209,
-            result_x_limb_26_col210,
-            result_x_limb_27_col211,
-            k_col212,
-            carry_0_col213,
-            carry_1_col214,
-            carry_2_col215,
-            carry_3_col216,
-            carry_4_col217,
-            carry_5_col218,
-            carry_6_col219,
-            carry_7_col220,
-            carry_8_col221,
-            carry_9_col222,
-            carry_10_col223,
-            carry_11_col224,
-            carry_12_col225,
-            carry_13_col226,
-            carry_14_col227,
-            carry_15_col228,
-            carry_16_col229,
-            carry_17_col230,
-            carry_18_col231,
-            carry_19_col232,
-            carry_20_col233,
-            carry_21_col234,
-            carry_22_col235,
-            carry_23_col236,
-            carry_24_col237,
-            carry_25_col238,
-            carry_26_col239,
-            result_y_limb_0_col240,
-            result_y_limb_1_col241,
-            result_y_limb_2_col242,
-            result_y_limb_3_col243,
-            result_y_limb_4_col244,
-            result_y_limb_5_col245,
-            result_y_limb_6_col246,
-            result_y_limb_7_col247,
-            result_y_limb_8_col248,
-            result_y_limb_9_col249,
-            result_y_limb_10_col250,
-            result_y_limb_11_col251,
-            result_y_limb_12_col252,
-            result_y_limb_13_col253,
-            result_y_limb_14_col254,
-            result_y_limb_15_col255,
-            result_y_limb_16_col256,
-            result_y_limb_17_col257,
-            result_y_limb_18_col258,
-            result_y_limb_19_col259,
-            result_y_limb_20_col260,
-            result_y_limb_21_col261,
-            result_y_limb_22_col262,
-            result_y_limb_23_col263,
-            result_y_limb_24_col264,
-            result_y_limb_25_col265,
-            result_y_limb_26_col266,
-            result_y_limb_27_col267,
-            k_col268,
-            carry_0_col269,
-            carry_1_col270,
-            carry_2_col271,
-            carry_3_col272,
-            carry_4_col273,
-            carry_5_col274,
-            carry_6_col275,
-            carry_7_col276,
-            carry_8_col277,
-            carry_9_col278,
-            carry_10_col279,
-            carry_11_col280,
-            carry_12_col281,
-            carry_13_col282,
-            carry_14_col283,
-            carry_15_col284,
-            carry_16_col285,
-            carry_17_col286,
-            carry_18_col287,
-            carry_19_col288,
-            carry_20_col289,
-            carry_21_col290,
-            carry_22_col291,
-            carry_23_col292,
-            carry_24_col293,
-            carry_25_col294,
-            carry_26_col295,
+            window_low_col72,
+            pedersen_points_table_output_limb_0_col73,
+            pedersen_points_table_output_limb_1_col74,
+            pedersen_points_table_output_limb_2_col75,
+            pedersen_points_table_output_limb_3_col76,
+            pedersen_points_table_output_limb_4_col77,
+            pedersen_points_table_output_limb_5_col78,
+            pedersen_points_table_output_limb_6_col79,
+            pedersen_points_table_output_limb_7_col80,
+            pedersen_points_table_output_limb_8_col81,
+            pedersen_points_table_output_limb_9_col82,
+            pedersen_points_table_output_limb_10_col83,
+            pedersen_points_table_output_limb_11_col84,
+            pedersen_points_table_output_limb_12_col85,
+            pedersen_points_table_output_limb_13_col86,
+            pedersen_points_table_output_limb_14_col87,
+            pedersen_points_table_output_limb_15_col88,
+            pedersen_points_table_output_limb_16_col89,
+            pedersen_points_table_output_limb_17_col90,
+            pedersen_points_table_output_limb_18_col91,
+            pedersen_points_table_output_limb_19_col92,
+            pedersen_points_table_output_limb_20_col93,
+            pedersen_points_table_output_limb_21_col94,
+            pedersen_points_table_output_limb_22_col95,
+            pedersen_points_table_output_limb_23_col96,
+            pedersen_points_table_output_limb_24_col97,
+            pedersen_points_table_output_limb_25_col98,
+            pedersen_points_table_output_limb_26_col99,
+            pedersen_points_table_output_limb_27_col100,
+            pedersen_points_table_output_limb_28_col101,
+            pedersen_points_table_output_limb_29_col102,
+            pedersen_points_table_output_limb_30_col103,
+            pedersen_points_table_output_limb_31_col104,
+            pedersen_points_table_output_limb_32_col105,
+            pedersen_points_table_output_limb_33_col106,
+            pedersen_points_table_output_limb_34_col107,
+            pedersen_points_table_output_limb_35_col108,
+            pedersen_points_table_output_limb_36_col109,
+            pedersen_points_table_output_limb_37_col110,
+            pedersen_points_table_output_limb_38_col111,
+            pedersen_points_table_output_limb_39_col112,
+            pedersen_points_table_output_limb_40_col113,
+            pedersen_points_table_output_limb_41_col114,
+            pedersen_points_table_output_limb_42_col115,
+            pedersen_points_table_output_limb_43_col116,
+            pedersen_points_table_output_limb_44_col117,
+            pedersen_points_table_output_limb_45_col118,
+            pedersen_points_table_output_limb_46_col119,
+            pedersen_points_table_output_limb_47_col120,
+            pedersen_points_table_output_limb_48_col121,
+            pedersen_points_table_output_limb_49_col122,
+            pedersen_points_table_output_limb_50_col123,
+            pedersen_points_table_output_limb_51_col124,
+            pedersen_points_table_output_limb_52_col125,
+            pedersen_points_table_output_limb_53_col126,
+            pedersen_points_table_output_limb_54_col127,
+            pedersen_points_table_output_limb_55_col128,
+            slope_limb_0_col129,
+            slope_limb_1_col130,
+            slope_limb_2_col131,
+            slope_limb_3_col132,
+            slope_limb_4_col133,
+            slope_limb_5_col134,
+            slope_limb_6_col135,
+            slope_limb_7_col136,
+            slope_limb_8_col137,
+            slope_limb_9_col138,
+            slope_limb_10_col139,
+            slope_limb_11_col140,
+            slope_limb_12_col141,
+            slope_limb_13_col142,
+            slope_limb_14_col143,
+            slope_limb_15_col144,
+            slope_limb_16_col145,
+            slope_limb_17_col146,
+            slope_limb_18_col147,
+            slope_limb_19_col148,
+            slope_limb_20_col149,
+            slope_limb_21_col150,
+            slope_limb_22_col151,
+            slope_limb_23_col152,
+            slope_limb_24_col153,
+            slope_limb_25_col154,
+            slope_limb_26_col155,
+            slope_limb_27_col156,
+            k_col157,
+            carry_0_col158,
+            carry_1_col159,
+            carry_2_col160,
+            carry_3_col161,
+            carry_4_col162,
+            carry_5_col163,
+            carry_6_col164,
+            carry_7_col165,
+            carry_8_col166,
+            carry_9_col167,
+            carry_10_col168,
+            carry_11_col169,
+            carry_12_col170,
+            carry_13_col171,
+            carry_14_col172,
+            carry_15_col173,
+            carry_16_col174,
+            carry_17_col175,
+            carry_18_col176,
+            carry_19_col177,
+            carry_20_col178,
+            carry_21_col179,
+            carry_22_col180,
+            carry_23_col181,
+            carry_24_col182,
+            carry_25_col183,
+            carry_26_col184,
+            result_x_limb_0_col185,
+            result_x_limb_1_col186,
+            result_x_limb_2_col187,
+            result_x_limb_3_col188,
+            result_x_limb_4_col189,
+            result_x_limb_5_col190,
+            result_x_limb_6_col191,
+            result_x_limb_7_col192,
+            result_x_limb_8_col193,
+            result_x_limb_9_col194,
+            result_x_limb_10_col195,
+            result_x_limb_11_col196,
+            result_x_limb_12_col197,
+            result_x_limb_13_col198,
+            result_x_limb_14_col199,
+            result_x_limb_15_col200,
+            result_x_limb_16_col201,
+            result_x_limb_17_col202,
+            result_x_limb_18_col203,
+            result_x_limb_19_col204,
+            result_x_limb_20_col205,
+            result_x_limb_21_col206,
+            result_x_limb_22_col207,
+            result_x_limb_23_col208,
+            result_x_limb_24_col209,
+            result_x_limb_25_col210,
+            result_x_limb_26_col211,
+            result_x_limb_27_col212,
+            k_col213,
+            carry_0_col214,
+            carry_1_col215,
+            carry_2_col216,
+            carry_3_col217,
+            carry_4_col218,
+            carry_5_col219,
+            carry_6_col220,
+            carry_7_col221,
+            carry_8_col222,
+            carry_9_col223,
+            carry_10_col224,
+            carry_11_col225,
+            carry_12_col226,
+            carry_13_col227,
+            carry_14_col228,
+            carry_15_col229,
+            carry_16_col230,
+            carry_17_col231,
+            carry_18_col232,
+            carry_19_col233,
+            carry_20_col234,
+            carry_21_col235,
+            carry_22_col236,
+            carry_23_col237,
+            carry_24_col238,
+            carry_25_col239,
+            carry_26_col240,
+            result_y_limb_0_col241,
+            result_y_limb_1_col242,
+            result_y_limb_2_col243,
+            result_y_limb_3_col244,
+            result_y_limb_4_col245,
+            result_y_limb_5_col246,
+            result_y_limb_6_col247,
+            result_y_limb_7_col248,
+            result_y_limb_8_col249,
+            result_y_limb_9_col250,
+            result_y_limb_10_col251,
+            result_y_limb_11_col252,
+            result_y_limb_12_col253,
+            result_y_limb_13_col254,
+            result_y_limb_14_col255,
+            result_y_limb_15_col256,
+            result_y_limb_16_col257,
+            result_y_limb_17_col258,
+            result_y_limb_18_col259,
+            result_y_limb_19_col260,
+            result_y_limb_20_col261,
+            result_y_limb_21_col262,
+            result_y_limb_22_col263,
+            result_y_limb_23_col264,
+            result_y_limb_24_col265,
+            result_y_limb_25_col266,
+            result_y_limb_26_col267,
+            result_y_limb_27_col268,
+            k_col269,
+            carry_0_col270,
+            carry_1_col271,
+            carry_2_col272,
+            carry_3_col273,
+            carry_4_col274,
+            carry_5_col275,
+            carry_6_col276,
+            carry_7_col277,
+            carry_8_col278,
+            carry_9_col279,
+            carry_10_col280,
+            carry_11_col281,
+            carry_12_col282,
+            carry_13_col283,
+            carry_14_col284,
+            carry_15_col285,
+            carry_16_col286,
+            carry_17_col287,
+            carry_18_col288,
+            carry_19_col289,
+            carry_20_col290,
+            carry_21_col291,
+            carry_22_col292,
+            carry_23_col293,
+            carry_24_col294,
+            carry_25_col295,
+            carry_26_col296,
+            pedersen_points_table_output_limb_0_col297,
+            pedersen_points_table_output_limb_1_col298,
+            pedersen_points_table_output_limb_2_col299,
+            pedersen_points_table_output_limb_3_col300,
+            pedersen_points_table_output_limb_4_col301,
+            pedersen_points_table_output_limb_5_col302,
+            pedersen_points_table_output_limb_6_col303,
+            pedersen_points_table_output_limb_7_col304,
+            pedersen_points_table_output_limb_8_col305,
+            pedersen_points_table_output_limb_9_col306,
+            pedersen_points_table_output_limb_10_col307,
+            pedersen_points_table_output_limb_11_col308,
+            pedersen_points_table_output_limb_12_col309,
+            pedersen_points_table_output_limb_13_col310,
+            pedersen_points_table_output_limb_14_col311,
+            pedersen_points_table_output_limb_15_col312,
+            pedersen_points_table_output_limb_16_col313,
+            pedersen_points_table_output_limb_17_col314,
+            pedersen_points_table_output_limb_18_col315,
+            pedersen_points_table_output_limb_19_col316,
+            pedersen_points_table_output_limb_20_col317,
+            pedersen_points_table_output_limb_21_col318,
+            pedersen_points_table_output_limb_22_col319,
+            pedersen_points_table_output_limb_23_col320,
+            pedersen_points_table_output_limb_24_col321,
+            pedersen_points_table_output_limb_25_col322,
+            pedersen_points_table_output_limb_26_col323,
+            pedersen_points_table_output_limb_27_col324,
+            pedersen_points_table_output_limb_28_col325,
+            pedersen_points_table_output_limb_29_col326,
+            pedersen_points_table_output_limb_30_col327,
+            pedersen_points_table_output_limb_31_col328,
+            pedersen_points_table_output_limb_32_col329,
+            pedersen_points_table_output_limb_33_col330,
+            pedersen_points_table_output_limb_34_col331,
+            pedersen_points_table_output_limb_35_col332,
+            pedersen_points_table_output_limb_36_col333,
+            pedersen_points_table_output_limb_37_col334,
+            pedersen_points_table_output_limb_38_col335,
+            pedersen_points_table_output_limb_39_col336,
+            pedersen_points_table_output_limb_40_col337,
+            pedersen_points_table_output_limb_41_col338,
+            pedersen_points_table_output_limb_42_col339,
+            pedersen_points_table_output_limb_43_col340,
+            pedersen_points_table_output_limb_44_col341,
+            pedersen_points_table_output_limb_45_col342,
+            pedersen_points_table_output_limb_46_col343,
+            pedersen_points_table_output_limb_47_col344,
+            pedersen_points_table_output_limb_48_col345,
+            pedersen_points_table_output_limb_49_col346,
+            pedersen_points_table_output_limb_50_col347,
+            pedersen_points_table_output_limb_51_col348,
+            pedersen_points_table_output_limb_52_col349,
+            pedersen_points_table_output_limb_53_col350,
+            pedersen_points_table_output_limb_54_col351,
+            pedersen_points_table_output_limb_55_col352,
+            slope_limb_0_col353,
+            slope_limb_1_col354,
+            slope_limb_2_col355,
+            slope_limb_3_col356,
+            slope_limb_4_col357,
+            slope_limb_5_col358,
+            slope_limb_6_col359,
+            slope_limb_7_col360,
+            slope_limb_8_col361,
+            slope_limb_9_col362,
+            slope_limb_10_col363,
+            slope_limb_11_col364,
+            slope_limb_12_col365,
+            slope_limb_13_col366,
+            slope_limb_14_col367,
+            slope_limb_15_col368,
+            slope_limb_16_col369,
+            slope_limb_17_col370,
+            slope_limb_18_col371,
+            slope_limb_19_col372,
+            slope_limb_20_col373,
+            slope_limb_21_col374,
+            slope_limb_22_col375,
+            slope_limb_23_col376,
+            slope_limb_24_col377,
+            slope_limb_25_col378,
+            slope_limb_26_col379,
+            slope_limb_27_col380,
+            k_col381,
+            carry_0_col382,
+            carry_1_col383,
+            carry_2_col384,
+            carry_3_col385,
+            carry_4_col386,
+            carry_5_col387,
+            carry_6_col388,
+            carry_7_col389,
+            carry_8_col390,
+            carry_9_col391,
+            carry_10_col392,
+            carry_11_col393,
+            carry_12_col394,
+            carry_13_col395,
+            carry_14_col396,
+            carry_15_col397,
+            carry_16_col398,
+            carry_17_col399,
+            carry_18_col400,
+            carry_19_col401,
+            carry_20_col402,
+            carry_21_col403,
+            carry_22_col404,
+            carry_23_col405,
+            carry_24_col406,
+            carry_25_col407,
+            carry_26_col408,
+            result_x_limb_0_col409,
+            result_x_limb_1_col410,
+            result_x_limb_2_col411,
+            result_x_limb_3_col412,
+            result_x_limb_4_col413,
+            result_x_limb_5_col414,
+            result_x_limb_6_col415,
+            result_x_limb_7_col416,
+            result_x_limb_8_col417,
+            result_x_limb_9_col418,
+            result_x_limb_10_col419,
+            result_x_limb_11_col420,
+            result_x_limb_12_col421,
+            result_x_limb_13_col422,
+            result_x_limb_14_col423,
+            result_x_limb_15_col424,
+            result_x_limb_16_col425,
+            result_x_limb_17_col426,
+            result_x_limb_18_col427,
+            result_x_limb_19_col428,
+            result_x_limb_20_col429,
+            result_x_limb_21_col430,
+            result_x_limb_22_col431,
+            result_x_limb_23_col432,
+            result_x_limb_24_col433,
+            result_x_limb_25_col434,
+            result_x_limb_26_col435,
+            result_x_limb_27_col436,
+            k_col437,
+            carry_0_col438,
+            carry_1_col439,
+            carry_2_col440,
+            carry_3_col441,
+            carry_4_col442,
+            carry_5_col443,
+            carry_6_col444,
+            carry_7_col445,
+            carry_8_col446,
+            carry_9_col447,
+            carry_10_col448,
+            carry_11_col449,
+            carry_12_col450,
+            carry_13_col451,
+            carry_14_col452,
+            carry_15_col453,
+            carry_16_col454,
+            carry_17_col455,
+            carry_18_col456,
+            carry_19_col457,
+            carry_20_col458,
+            carry_21_col459,
+            carry_22_col460,
+            carry_23_col461,
+            carry_24_col462,
+            carry_25_col463,
+            carry_26_col464,
+            result_y_limb_0_col465,
+            result_y_limb_1_col466,
+            result_y_limb_2_col467,
+            result_y_limb_3_col468,
+            result_y_limb_4_col469,
+            result_y_limb_5_col470,
+            result_y_limb_6_col471,
+            result_y_limb_7_col472,
+            result_y_limb_8_col473,
+            result_y_limb_9_col474,
+            result_y_limb_10_col475,
+            result_y_limb_11_col476,
+            result_y_limb_12_col477,
+            result_y_limb_13_col478,
+            result_y_limb_14_col479,
+            result_y_limb_15_col480,
+            result_y_limb_16_col481,
+            result_y_limb_17_col482,
+            result_y_limb_18_col483,
+            result_y_limb_19_col484,
+            result_y_limb_20_col485,
+            result_y_limb_21_col486,
+            result_y_limb_22_col487,
+            result_y_limb_23_col488,
+            result_y_limb_24_col489,
+            result_y_limb_25_col490,
+            result_y_limb_26_col491,
+            result_y_limb_27_col492,
+            k_col493,
+            carry_0_col494,
+            carry_1_col495,
+            carry_2_col496,
+            carry_3_col497,
+            carry_4_col498,
+            carry_5_col499,
+            carry_6_col500,
+            carry_7_col501,
+            carry_8_col502,
+            carry_9_col503,
+            carry_10_col504,
+            carry_11_col505,
+            carry_12_col506,
+            carry_13_col507,
+            carry_14_col508,
+            carry_15_col509,
+            carry_16_col510,
+            carry_17_col511,
+            carry_18_col512,
+            carry_19_col513,
+            carry_20_col514,
+            carry_21_col515,
+            carry_22_col516,
+            carry_23_col517,
+            carry_24_col518,
+            carry_25_col519,
+            carry_26_col520,
             enabler,
-        ]: [Span<QM31>; 297] =
+        ]: [Span<QM31>; 522] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -629,578 +982,1091 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [input_limb_69_col69]: [QM31; 1] = (*input_limb_69_col69.try_into().unwrap()).unbox();
         let [input_limb_70_col70]: [QM31; 1] = (*input_limb_70_col70.try_into().unwrap()).unbox();
         let [input_limb_71_col71]: [QM31; 1] = (*input_limb_71_col71.try_into().unwrap()).unbox();
-        let [pedersen_points_table_output_limb_0_col72]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_0_col72
+        let [window_low_col72]: [QM31; 1] = (*window_low_col72.try_into().unwrap()).unbox();
+        let [pedersen_points_table_output_limb_0_col73]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_0_col73
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_1_col73]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_1_col73
+        let [pedersen_points_table_output_limb_1_col74]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_1_col74
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_2_col74]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_2_col74
+        let [pedersen_points_table_output_limb_2_col75]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_2_col75
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_3_col75]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_3_col75
+        let [pedersen_points_table_output_limb_3_col76]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_3_col76
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_4_col76]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_4_col76
+        let [pedersen_points_table_output_limb_4_col77]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_4_col77
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_5_col77]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_5_col77
+        let [pedersen_points_table_output_limb_5_col78]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_5_col78
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_6_col78]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_6_col78
+        let [pedersen_points_table_output_limb_6_col79]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_6_col79
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_7_col79]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_7_col79
+        let [pedersen_points_table_output_limb_7_col80]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_7_col80
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_8_col80]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_8_col80
+        let [pedersen_points_table_output_limb_8_col81]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_8_col81
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_9_col81]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_9_col81
+        let [pedersen_points_table_output_limb_9_col82]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_9_col82
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_10_col82]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_10_col82
+        let [pedersen_points_table_output_limb_10_col83]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_10_col83
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_11_col83]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_11_col83
+        let [pedersen_points_table_output_limb_11_col84]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_11_col84
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_12_col84]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_12_col84
+        let [pedersen_points_table_output_limb_12_col85]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_12_col85
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_13_col85]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_13_col85
+        let [pedersen_points_table_output_limb_13_col86]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_13_col86
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_14_col86]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_14_col86
+        let [pedersen_points_table_output_limb_14_col87]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_14_col87
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_15_col87]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_15_col87
+        let [pedersen_points_table_output_limb_15_col88]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_15_col88
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_16_col88]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_16_col88
+        let [pedersen_points_table_output_limb_16_col89]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_16_col89
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_17_col89]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_17_col89
+        let [pedersen_points_table_output_limb_17_col90]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_17_col90
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_18_col90]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_18_col90
+        let [pedersen_points_table_output_limb_18_col91]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_18_col91
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_19_col91]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_19_col91
+        let [pedersen_points_table_output_limb_19_col92]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_19_col92
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_20_col92]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_20_col92
+        let [pedersen_points_table_output_limb_20_col93]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_20_col93
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_21_col93]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_21_col93
+        let [pedersen_points_table_output_limb_21_col94]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_21_col94
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_22_col94]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_22_col94
+        let [pedersen_points_table_output_limb_22_col95]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_22_col95
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_23_col95]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_23_col95
+        let [pedersen_points_table_output_limb_23_col96]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_23_col96
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_24_col96]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_24_col96
+        let [pedersen_points_table_output_limb_24_col97]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_24_col97
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_25_col97]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_25_col97
+        let [pedersen_points_table_output_limb_25_col98]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_25_col98
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_26_col98]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_26_col98
+        let [pedersen_points_table_output_limb_26_col99]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_26_col99
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_27_col99]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_27_col99
+        let [pedersen_points_table_output_limb_27_col100]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_27_col100
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_28_col100]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_28_col100
+        let [pedersen_points_table_output_limb_28_col101]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_28_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_29_col101]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_29_col101
+        let [pedersen_points_table_output_limb_29_col102]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_29_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_30_col102]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_30_col102
+        let [pedersen_points_table_output_limb_30_col103]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_30_col103
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_31_col103]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_31_col103
+        let [pedersen_points_table_output_limb_31_col104]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_31_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_32_col104]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_32_col104
+        let [pedersen_points_table_output_limb_32_col105]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_32_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_33_col105]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_33_col105
+        let [pedersen_points_table_output_limb_33_col106]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_33_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_34_col106]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_34_col106
+        let [pedersen_points_table_output_limb_34_col107]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_34_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_35_col107]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_35_col107
+        let [pedersen_points_table_output_limb_35_col108]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_35_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_36_col108]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_36_col108
+        let [pedersen_points_table_output_limb_36_col109]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_36_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_37_col109]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_37_col109
+        let [pedersen_points_table_output_limb_37_col110]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_37_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_38_col110]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_38_col110
+        let [pedersen_points_table_output_limb_38_col111]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_38_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_39_col111]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_39_col111
+        let [pedersen_points_table_output_limb_39_col112]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_39_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_40_col112]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_40_col112
+        let [pedersen_points_table_output_limb_40_col113]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_40_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_41_col113]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_41_col113
+        let [pedersen_points_table_output_limb_41_col114]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_41_col114
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_42_col114]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_42_col114
+        let [pedersen_points_table_output_limb_42_col115]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_42_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_43_col115]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_43_col115
+        let [pedersen_points_table_output_limb_43_col116]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_43_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_44_col116]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_44_col116
+        let [pedersen_points_table_output_limb_44_col117]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_44_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_45_col117]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_45_col117
+        let [pedersen_points_table_output_limb_45_col118]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_45_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_46_col118]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_46_col118
+        let [pedersen_points_table_output_limb_46_col119]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_46_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_47_col119]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_47_col119
+        let [pedersen_points_table_output_limb_47_col120]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_47_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_48_col120]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_48_col120
+        let [pedersen_points_table_output_limb_48_col121]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_48_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_49_col121]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_49_col121
+        let [pedersen_points_table_output_limb_49_col122]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_49_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_50_col122]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_50_col122
+        let [pedersen_points_table_output_limb_50_col123]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_50_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_51_col123]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_51_col123
+        let [pedersen_points_table_output_limb_51_col124]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_51_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_52_col124]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_52_col124
+        let [pedersen_points_table_output_limb_52_col125]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_52_col125
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_53_col125]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_53_col125
+        let [pedersen_points_table_output_limb_53_col126]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_53_col126
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_54_col126]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_54_col126
+        let [pedersen_points_table_output_limb_54_col127]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_54_col127
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_points_table_output_limb_55_col127]: [QM31; 1] =
-            (*pedersen_points_table_output_limb_55_col127
+        let [pedersen_points_table_output_limb_55_col128]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_55_col128
             .try_into()
             .unwrap())
             .unbox();
-        let [slope_limb_0_col128]: [QM31; 1] = (*slope_limb_0_col128.try_into().unwrap()).unbox();
-        let [slope_limb_1_col129]: [QM31; 1] = (*slope_limb_1_col129.try_into().unwrap()).unbox();
-        let [slope_limb_2_col130]: [QM31; 1] = (*slope_limb_2_col130.try_into().unwrap()).unbox();
-        let [slope_limb_3_col131]: [QM31; 1] = (*slope_limb_3_col131.try_into().unwrap()).unbox();
-        let [slope_limb_4_col132]: [QM31; 1] = (*slope_limb_4_col132.try_into().unwrap()).unbox();
-        let [slope_limb_5_col133]: [QM31; 1] = (*slope_limb_5_col133.try_into().unwrap()).unbox();
-        let [slope_limb_6_col134]: [QM31; 1] = (*slope_limb_6_col134.try_into().unwrap()).unbox();
-        let [slope_limb_7_col135]: [QM31; 1] = (*slope_limb_7_col135.try_into().unwrap()).unbox();
-        let [slope_limb_8_col136]: [QM31; 1] = (*slope_limb_8_col136.try_into().unwrap()).unbox();
-        let [slope_limb_9_col137]: [QM31; 1] = (*slope_limb_9_col137.try_into().unwrap()).unbox();
-        let [slope_limb_10_col138]: [QM31; 1] = (*slope_limb_10_col138.try_into().unwrap()).unbox();
-        let [slope_limb_11_col139]: [QM31; 1] = (*slope_limb_11_col139.try_into().unwrap()).unbox();
-        let [slope_limb_12_col140]: [QM31; 1] = (*slope_limb_12_col140.try_into().unwrap()).unbox();
-        let [slope_limb_13_col141]: [QM31; 1] = (*slope_limb_13_col141.try_into().unwrap()).unbox();
-        let [slope_limb_14_col142]: [QM31; 1] = (*slope_limb_14_col142.try_into().unwrap()).unbox();
-        let [slope_limb_15_col143]: [QM31; 1] = (*slope_limb_15_col143.try_into().unwrap()).unbox();
-        let [slope_limb_16_col144]: [QM31; 1] = (*slope_limb_16_col144.try_into().unwrap()).unbox();
-        let [slope_limb_17_col145]: [QM31; 1] = (*slope_limb_17_col145.try_into().unwrap()).unbox();
-        let [slope_limb_18_col146]: [QM31; 1] = (*slope_limb_18_col146.try_into().unwrap()).unbox();
-        let [slope_limb_19_col147]: [QM31; 1] = (*slope_limb_19_col147.try_into().unwrap()).unbox();
-        let [slope_limb_20_col148]: [QM31; 1] = (*slope_limb_20_col148.try_into().unwrap()).unbox();
-        let [slope_limb_21_col149]: [QM31; 1] = (*slope_limb_21_col149.try_into().unwrap()).unbox();
-        let [slope_limb_22_col150]: [QM31; 1] = (*slope_limb_22_col150.try_into().unwrap()).unbox();
-        let [slope_limb_23_col151]: [QM31; 1] = (*slope_limb_23_col151.try_into().unwrap()).unbox();
-        let [slope_limb_24_col152]: [QM31; 1] = (*slope_limb_24_col152.try_into().unwrap()).unbox();
-        let [slope_limb_25_col153]: [QM31; 1] = (*slope_limb_25_col153.try_into().unwrap()).unbox();
-        let [slope_limb_26_col154]: [QM31; 1] = (*slope_limb_26_col154.try_into().unwrap()).unbox();
-        let [slope_limb_27_col155]: [QM31; 1] = (*slope_limb_27_col155.try_into().unwrap()).unbox();
-        let [k_col156]: [QM31; 1] = (*k_col156.try_into().unwrap()).unbox();
-        let [carry_0_col157]: [QM31; 1] = (*carry_0_col157.try_into().unwrap()).unbox();
-        let [carry_1_col158]: [QM31; 1] = (*carry_1_col158.try_into().unwrap()).unbox();
-        let [carry_2_col159]: [QM31; 1] = (*carry_2_col159.try_into().unwrap()).unbox();
-        let [carry_3_col160]: [QM31; 1] = (*carry_3_col160.try_into().unwrap()).unbox();
-        let [carry_4_col161]: [QM31; 1] = (*carry_4_col161.try_into().unwrap()).unbox();
-        let [carry_5_col162]: [QM31; 1] = (*carry_5_col162.try_into().unwrap()).unbox();
-        let [carry_6_col163]: [QM31; 1] = (*carry_6_col163.try_into().unwrap()).unbox();
-        let [carry_7_col164]: [QM31; 1] = (*carry_7_col164.try_into().unwrap()).unbox();
-        let [carry_8_col165]: [QM31; 1] = (*carry_8_col165.try_into().unwrap()).unbox();
-        let [carry_9_col166]: [QM31; 1] = (*carry_9_col166.try_into().unwrap()).unbox();
-        let [carry_10_col167]: [QM31; 1] = (*carry_10_col167.try_into().unwrap()).unbox();
-        let [carry_11_col168]: [QM31; 1] = (*carry_11_col168.try_into().unwrap()).unbox();
-        let [carry_12_col169]: [QM31; 1] = (*carry_12_col169.try_into().unwrap()).unbox();
-        let [carry_13_col170]: [QM31; 1] = (*carry_13_col170.try_into().unwrap()).unbox();
-        let [carry_14_col171]: [QM31; 1] = (*carry_14_col171.try_into().unwrap()).unbox();
-        let [carry_15_col172]: [QM31; 1] = (*carry_15_col172.try_into().unwrap()).unbox();
-        let [carry_16_col173]: [QM31; 1] = (*carry_16_col173.try_into().unwrap()).unbox();
-        let [carry_17_col174]: [QM31; 1] = (*carry_17_col174.try_into().unwrap()).unbox();
-        let [carry_18_col175]: [QM31; 1] = (*carry_18_col175.try_into().unwrap()).unbox();
-        let [carry_19_col176]: [QM31; 1] = (*carry_19_col176.try_into().unwrap()).unbox();
-        let [carry_20_col177]: [QM31; 1] = (*carry_20_col177.try_into().unwrap()).unbox();
-        let [carry_21_col178]: [QM31; 1] = (*carry_21_col178.try_into().unwrap()).unbox();
-        let [carry_22_col179]: [QM31; 1] = (*carry_22_col179.try_into().unwrap()).unbox();
-        let [carry_23_col180]: [QM31; 1] = (*carry_23_col180.try_into().unwrap()).unbox();
-        let [carry_24_col181]: [QM31; 1] = (*carry_24_col181.try_into().unwrap()).unbox();
-        let [carry_25_col182]: [QM31; 1] = (*carry_25_col182.try_into().unwrap()).unbox();
-        let [carry_26_col183]: [QM31; 1] = (*carry_26_col183.try_into().unwrap()).unbox();
-        let [result_x_limb_0_col184]: [QM31; 1] = (*result_x_limb_0_col184.try_into().unwrap())
+        let [slope_limb_0_col129]: [QM31; 1] = (*slope_limb_0_col129.try_into().unwrap()).unbox();
+        let [slope_limb_1_col130]: [QM31; 1] = (*slope_limb_1_col130.try_into().unwrap()).unbox();
+        let [slope_limb_2_col131]: [QM31; 1] = (*slope_limb_2_col131.try_into().unwrap()).unbox();
+        let [slope_limb_3_col132]: [QM31; 1] = (*slope_limb_3_col132.try_into().unwrap()).unbox();
+        let [slope_limb_4_col133]: [QM31; 1] = (*slope_limb_4_col133.try_into().unwrap()).unbox();
+        let [slope_limb_5_col134]: [QM31; 1] = (*slope_limb_5_col134.try_into().unwrap()).unbox();
+        let [slope_limb_6_col135]: [QM31; 1] = (*slope_limb_6_col135.try_into().unwrap()).unbox();
+        let [slope_limb_7_col136]: [QM31; 1] = (*slope_limb_7_col136.try_into().unwrap()).unbox();
+        let [slope_limb_8_col137]: [QM31; 1] = (*slope_limb_8_col137.try_into().unwrap()).unbox();
+        let [slope_limb_9_col138]: [QM31; 1] = (*slope_limb_9_col138.try_into().unwrap()).unbox();
+        let [slope_limb_10_col139]: [QM31; 1] = (*slope_limb_10_col139.try_into().unwrap()).unbox();
+        let [slope_limb_11_col140]: [QM31; 1] = (*slope_limb_11_col140.try_into().unwrap()).unbox();
+        let [slope_limb_12_col141]: [QM31; 1] = (*slope_limb_12_col141.try_into().unwrap()).unbox();
+        let [slope_limb_13_col142]: [QM31; 1] = (*slope_limb_13_col142.try_into().unwrap()).unbox();
+        let [slope_limb_14_col143]: [QM31; 1] = (*slope_limb_14_col143.try_into().unwrap()).unbox();
+        let [slope_limb_15_col144]: [QM31; 1] = (*slope_limb_15_col144.try_into().unwrap()).unbox();
+        let [slope_limb_16_col145]: [QM31; 1] = (*slope_limb_16_col145.try_into().unwrap()).unbox();
+        let [slope_limb_17_col146]: [QM31; 1] = (*slope_limb_17_col146.try_into().unwrap()).unbox();
+        let [slope_limb_18_col147]: [QM31; 1] = (*slope_limb_18_col147.try_into().unwrap()).unbox();
+        let [slope_limb_19_col148]: [QM31; 1] = (*slope_limb_19_col148.try_into().unwrap()).unbox();
+        let [slope_limb_20_col149]: [QM31; 1] = (*slope_limb_20_col149.try_into().unwrap()).unbox();
+        let [slope_limb_21_col150]: [QM31; 1] = (*slope_limb_21_col150.try_into().unwrap()).unbox();
+        let [slope_limb_22_col151]: [QM31; 1] = (*slope_limb_22_col151.try_into().unwrap()).unbox();
+        let [slope_limb_23_col152]: [QM31; 1] = (*slope_limb_23_col152.try_into().unwrap()).unbox();
+        let [slope_limb_24_col153]: [QM31; 1] = (*slope_limb_24_col153.try_into().unwrap()).unbox();
+        let [slope_limb_25_col154]: [QM31; 1] = (*slope_limb_25_col154.try_into().unwrap()).unbox();
+        let [slope_limb_26_col155]: [QM31; 1] = (*slope_limb_26_col155.try_into().unwrap()).unbox();
+        let [slope_limb_27_col156]: [QM31; 1] = (*slope_limb_27_col156.try_into().unwrap()).unbox();
+        let [k_col157]: [QM31; 1] = (*k_col157.try_into().unwrap()).unbox();
+        let [carry_0_col158]: [QM31; 1] = (*carry_0_col158.try_into().unwrap()).unbox();
+        let [carry_1_col159]: [QM31; 1] = (*carry_1_col159.try_into().unwrap()).unbox();
+        let [carry_2_col160]: [QM31; 1] = (*carry_2_col160.try_into().unwrap()).unbox();
+        let [carry_3_col161]: [QM31; 1] = (*carry_3_col161.try_into().unwrap()).unbox();
+        let [carry_4_col162]: [QM31; 1] = (*carry_4_col162.try_into().unwrap()).unbox();
+        let [carry_5_col163]: [QM31; 1] = (*carry_5_col163.try_into().unwrap()).unbox();
+        let [carry_6_col164]: [QM31; 1] = (*carry_6_col164.try_into().unwrap()).unbox();
+        let [carry_7_col165]: [QM31; 1] = (*carry_7_col165.try_into().unwrap()).unbox();
+        let [carry_8_col166]: [QM31; 1] = (*carry_8_col166.try_into().unwrap()).unbox();
+        let [carry_9_col167]: [QM31; 1] = (*carry_9_col167.try_into().unwrap()).unbox();
+        let [carry_10_col168]: [QM31; 1] = (*carry_10_col168.try_into().unwrap()).unbox();
+        let [carry_11_col169]: [QM31; 1] = (*carry_11_col169.try_into().unwrap()).unbox();
+        let [carry_12_col170]: [QM31; 1] = (*carry_12_col170.try_into().unwrap()).unbox();
+        let [carry_13_col171]: [QM31; 1] = (*carry_13_col171.try_into().unwrap()).unbox();
+        let [carry_14_col172]: [QM31; 1] = (*carry_14_col172.try_into().unwrap()).unbox();
+        let [carry_15_col173]: [QM31; 1] = (*carry_15_col173.try_into().unwrap()).unbox();
+        let [carry_16_col174]: [QM31; 1] = (*carry_16_col174.try_into().unwrap()).unbox();
+        let [carry_17_col175]: [QM31; 1] = (*carry_17_col175.try_into().unwrap()).unbox();
+        let [carry_18_col176]: [QM31; 1] = (*carry_18_col176.try_into().unwrap()).unbox();
+        let [carry_19_col177]: [QM31; 1] = (*carry_19_col177.try_into().unwrap()).unbox();
+        let [carry_20_col178]: [QM31; 1] = (*carry_20_col178.try_into().unwrap()).unbox();
+        let [carry_21_col179]: [QM31; 1] = (*carry_21_col179.try_into().unwrap()).unbox();
+        let [carry_22_col180]: [QM31; 1] = (*carry_22_col180.try_into().unwrap()).unbox();
+        let [carry_23_col181]: [QM31; 1] = (*carry_23_col181.try_into().unwrap()).unbox();
+        let [carry_24_col182]: [QM31; 1] = (*carry_24_col182.try_into().unwrap()).unbox();
+        let [carry_25_col183]: [QM31; 1] = (*carry_25_col183.try_into().unwrap()).unbox();
+        let [carry_26_col184]: [QM31; 1] = (*carry_26_col184.try_into().unwrap()).unbox();
+        let [result_x_limb_0_col185]: [QM31; 1] = (*result_x_limb_0_col185.try_into().unwrap())
             .unbox();
-        let [result_x_limb_1_col185]: [QM31; 1] = (*result_x_limb_1_col185.try_into().unwrap())
+        let [result_x_limb_1_col186]: [QM31; 1] = (*result_x_limb_1_col186.try_into().unwrap())
             .unbox();
-        let [result_x_limb_2_col186]: [QM31; 1] = (*result_x_limb_2_col186.try_into().unwrap())
+        let [result_x_limb_2_col187]: [QM31; 1] = (*result_x_limb_2_col187.try_into().unwrap())
             .unbox();
-        let [result_x_limb_3_col187]: [QM31; 1] = (*result_x_limb_3_col187.try_into().unwrap())
+        let [result_x_limb_3_col188]: [QM31; 1] = (*result_x_limb_3_col188.try_into().unwrap())
             .unbox();
-        let [result_x_limb_4_col188]: [QM31; 1] = (*result_x_limb_4_col188.try_into().unwrap())
+        let [result_x_limb_4_col189]: [QM31; 1] = (*result_x_limb_4_col189.try_into().unwrap())
             .unbox();
-        let [result_x_limb_5_col189]: [QM31; 1] = (*result_x_limb_5_col189.try_into().unwrap())
+        let [result_x_limb_5_col190]: [QM31; 1] = (*result_x_limb_5_col190.try_into().unwrap())
             .unbox();
-        let [result_x_limb_6_col190]: [QM31; 1] = (*result_x_limb_6_col190.try_into().unwrap())
+        let [result_x_limb_6_col191]: [QM31; 1] = (*result_x_limb_6_col191.try_into().unwrap())
             .unbox();
-        let [result_x_limb_7_col191]: [QM31; 1] = (*result_x_limb_7_col191.try_into().unwrap())
+        let [result_x_limb_7_col192]: [QM31; 1] = (*result_x_limb_7_col192.try_into().unwrap())
             .unbox();
-        let [result_x_limb_8_col192]: [QM31; 1] = (*result_x_limb_8_col192.try_into().unwrap())
+        let [result_x_limb_8_col193]: [QM31; 1] = (*result_x_limb_8_col193.try_into().unwrap())
             .unbox();
-        let [result_x_limb_9_col193]: [QM31; 1] = (*result_x_limb_9_col193.try_into().unwrap())
+        let [result_x_limb_9_col194]: [QM31; 1] = (*result_x_limb_9_col194.try_into().unwrap())
             .unbox();
-        let [result_x_limb_10_col194]: [QM31; 1] = (*result_x_limb_10_col194.try_into().unwrap())
+        let [result_x_limb_10_col195]: [QM31; 1] = (*result_x_limb_10_col195.try_into().unwrap())
             .unbox();
-        let [result_x_limb_11_col195]: [QM31; 1] = (*result_x_limb_11_col195.try_into().unwrap())
+        let [result_x_limb_11_col196]: [QM31; 1] = (*result_x_limb_11_col196.try_into().unwrap())
             .unbox();
-        let [result_x_limb_12_col196]: [QM31; 1] = (*result_x_limb_12_col196.try_into().unwrap())
+        let [result_x_limb_12_col197]: [QM31; 1] = (*result_x_limb_12_col197.try_into().unwrap())
             .unbox();
-        let [result_x_limb_13_col197]: [QM31; 1] = (*result_x_limb_13_col197.try_into().unwrap())
+        let [result_x_limb_13_col198]: [QM31; 1] = (*result_x_limb_13_col198.try_into().unwrap())
             .unbox();
-        let [result_x_limb_14_col198]: [QM31; 1] = (*result_x_limb_14_col198.try_into().unwrap())
+        let [result_x_limb_14_col199]: [QM31; 1] = (*result_x_limb_14_col199.try_into().unwrap())
             .unbox();
-        let [result_x_limb_15_col199]: [QM31; 1] = (*result_x_limb_15_col199.try_into().unwrap())
+        let [result_x_limb_15_col200]: [QM31; 1] = (*result_x_limb_15_col200.try_into().unwrap())
             .unbox();
-        let [result_x_limb_16_col200]: [QM31; 1] = (*result_x_limb_16_col200.try_into().unwrap())
+        let [result_x_limb_16_col201]: [QM31; 1] = (*result_x_limb_16_col201.try_into().unwrap())
             .unbox();
-        let [result_x_limb_17_col201]: [QM31; 1] = (*result_x_limb_17_col201.try_into().unwrap())
+        let [result_x_limb_17_col202]: [QM31; 1] = (*result_x_limb_17_col202.try_into().unwrap())
             .unbox();
-        let [result_x_limb_18_col202]: [QM31; 1] = (*result_x_limb_18_col202.try_into().unwrap())
+        let [result_x_limb_18_col203]: [QM31; 1] = (*result_x_limb_18_col203.try_into().unwrap())
             .unbox();
-        let [result_x_limb_19_col203]: [QM31; 1] = (*result_x_limb_19_col203.try_into().unwrap())
+        let [result_x_limb_19_col204]: [QM31; 1] = (*result_x_limb_19_col204.try_into().unwrap())
             .unbox();
-        let [result_x_limb_20_col204]: [QM31; 1] = (*result_x_limb_20_col204.try_into().unwrap())
+        let [result_x_limb_20_col205]: [QM31; 1] = (*result_x_limb_20_col205.try_into().unwrap())
             .unbox();
-        let [result_x_limb_21_col205]: [QM31; 1] = (*result_x_limb_21_col205.try_into().unwrap())
+        let [result_x_limb_21_col206]: [QM31; 1] = (*result_x_limb_21_col206.try_into().unwrap())
             .unbox();
-        let [result_x_limb_22_col206]: [QM31; 1] = (*result_x_limb_22_col206.try_into().unwrap())
+        let [result_x_limb_22_col207]: [QM31; 1] = (*result_x_limb_22_col207.try_into().unwrap())
             .unbox();
-        let [result_x_limb_23_col207]: [QM31; 1] = (*result_x_limb_23_col207.try_into().unwrap())
+        let [result_x_limb_23_col208]: [QM31; 1] = (*result_x_limb_23_col208.try_into().unwrap())
             .unbox();
-        let [result_x_limb_24_col208]: [QM31; 1] = (*result_x_limb_24_col208.try_into().unwrap())
+        let [result_x_limb_24_col209]: [QM31; 1] = (*result_x_limb_24_col209.try_into().unwrap())
             .unbox();
-        let [result_x_limb_25_col209]: [QM31; 1] = (*result_x_limb_25_col209.try_into().unwrap())
+        let [result_x_limb_25_col210]: [QM31; 1] = (*result_x_limb_25_col210.try_into().unwrap())
             .unbox();
-        let [result_x_limb_26_col210]: [QM31; 1] = (*result_x_limb_26_col210.try_into().unwrap())
+        let [result_x_limb_26_col211]: [QM31; 1] = (*result_x_limb_26_col211.try_into().unwrap())
             .unbox();
-        let [result_x_limb_27_col211]: [QM31; 1] = (*result_x_limb_27_col211.try_into().unwrap())
+        let [result_x_limb_27_col212]: [QM31; 1] = (*result_x_limb_27_col212.try_into().unwrap())
             .unbox();
-        let [k_col212]: [QM31; 1] = (*k_col212.try_into().unwrap()).unbox();
-        let [carry_0_col213]: [QM31; 1] = (*carry_0_col213.try_into().unwrap()).unbox();
-        let [carry_1_col214]: [QM31; 1] = (*carry_1_col214.try_into().unwrap()).unbox();
-        let [carry_2_col215]: [QM31; 1] = (*carry_2_col215.try_into().unwrap()).unbox();
-        let [carry_3_col216]: [QM31; 1] = (*carry_3_col216.try_into().unwrap()).unbox();
-        let [carry_4_col217]: [QM31; 1] = (*carry_4_col217.try_into().unwrap()).unbox();
-        let [carry_5_col218]: [QM31; 1] = (*carry_5_col218.try_into().unwrap()).unbox();
-        let [carry_6_col219]: [QM31; 1] = (*carry_6_col219.try_into().unwrap()).unbox();
-        let [carry_7_col220]: [QM31; 1] = (*carry_7_col220.try_into().unwrap()).unbox();
-        let [carry_8_col221]: [QM31; 1] = (*carry_8_col221.try_into().unwrap()).unbox();
-        let [carry_9_col222]: [QM31; 1] = (*carry_9_col222.try_into().unwrap()).unbox();
-        let [carry_10_col223]: [QM31; 1] = (*carry_10_col223.try_into().unwrap()).unbox();
-        let [carry_11_col224]: [QM31; 1] = (*carry_11_col224.try_into().unwrap()).unbox();
-        let [carry_12_col225]: [QM31; 1] = (*carry_12_col225.try_into().unwrap()).unbox();
-        let [carry_13_col226]: [QM31; 1] = (*carry_13_col226.try_into().unwrap()).unbox();
-        let [carry_14_col227]: [QM31; 1] = (*carry_14_col227.try_into().unwrap()).unbox();
-        let [carry_15_col228]: [QM31; 1] = (*carry_15_col228.try_into().unwrap()).unbox();
-        let [carry_16_col229]: [QM31; 1] = (*carry_16_col229.try_into().unwrap()).unbox();
-        let [carry_17_col230]: [QM31; 1] = (*carry_17_col230.try_into().unwrap()).unbox();
-        let [carry_18_col231]: [QM31; 1] = (*carry_18_col231.try_into().unwrap()).unbox();
-        let [carry_19_col232]: [QM31; 1] = (*carry_19_col232.try_into().unwrap()).unbox();
-        let [carry_20_col233]: [QM31; 1] = (*carry_20_col233.try_into().unwrap()).unbox();
-        let [carry_21_col234]: [QM31; 1] = (*carry_21_col234.try_into().unwrap()).unbox();
-        let [carry_22_col235]: [QM31; 1] = (*carry_22_col235.try_into().unwrap()).unbox();
-        let [carry_23_col236]: [QM31; 1] = (*carry_23_col236.try_into().unwrap()).unbox();
-        let [carry_24_col237]: [QM31; 1] = (*carry_24_col237.try_into().unwrap()).unbox();
-        let [carry_25_col238]: [QM31; 1] = (*carry_25_col238.try_into().unwrap()).unbox();
-        let [carry_26_col239]: [QM31; 1] = (*carry_26_col239.try_into().unwrap()).unbox();
-        let [result_y_limb_0_col240]: [QM31; 1] = (*result_y_limb_0_col240.try_into().unwrap())
+        let [k_col213]: [QM31; 1] = (*k_col213.try_into().unwrap()).unbox();
+        let [carry_0_col214]: [QM31; 1] = (*carry_0_col214.try_into().unwrap()).unbox();
+        let [carry_1_col215]: [QM31; 1] = (*carry_1_col215.try_into().unwrap()).unbox();
+        let [carry_2_col216]: [QM31; 1] = (*carry_2_col216.try_into().unwrap()).unbox();
+        let [carry_3_col217]: [QM31; 1] = (*carry_3_col217.try_into().unwrap()).unbox();
+        let [carry_4_col218]: [QM31; 1] = (*carry_4_col218.try_into().unwrap()).unbox();
+        let [carry_5_col219]: [QM31; 1] = (*carry_5_col219.try_into().unwrap()).unbox();
+        let [carry_6_col220]: [QM31; 1] = (*carry_6_col220.try_into().unwrap()).unbox();
+        let [carry_7_col221]: [QM31; 1] = (*carry_7_col221.try_into().unwrap()).unbox();
+        let [carry_8_col222]: [QM31; 1] = (*carry_8_col222.try_into().unwrap()).unbox();
+        let [carry_9_col223]: [QM31; 1] = (*carry_9_col223.try_into().unwrap()).unbox();
+        let [carry_10_col224]: [QM31; 1] = (*carry_10_col224.try_into().unwrap()).unbox();
+        let [carry_11_col225]: [QM31; 1] = (*carry_11_col225.try_into().unwrap()).unbox();
+        let [carry_12_col226]: [QM31; 1] = (*carry_12_col226.try_into().unwrap()).unbox();
+        let [carry_13_col227]: [QM31; 1] = (*carry_13_col227.try_into().unwrap()).unbox();
+        let [carry_14_col228]: [QM31; 1] = (*carry_14_col228.try_into().unwrap()).unbox();
+        let [carry_15_col229]: [QM31; 1] = (*carry_15_col229.try_into().unwrap()).unbox();
+        let [carry_16_col230]: [QM31; 1] = (*carry_16_col230.try_into().unwrap()).unbox();
+        let [carry_17_col231]: [QM31; 1] = (*carry_17_col231.try_into().unwrap()).unbox();
+        let [carry_18_col232]: [QM31; 1] = (*carry_18_col232.try_into().unwrap()).unbox();
+        let [carry_19_col233]: [QM31; 1] = (*carry_19_col233.try_into().unwrap()).unbox();
+        let [carry_20_col234]: [QM31; 1] = (*carry_20_col234.try_into().unwrap()).unbox();
+        let [carry_21_col235]: [QM31; 1] = (*carry_21_col235.try_into().unwrap()).unbox();
+        let [carry_22_col236]: [QM31; 1] = (*carry_22_col236.try_into().unwrap()).unbox();
+        let [carry_23_col237]: [QM31; 1] = (*carry_23_col237.try_into().unwrap()).unbox();
+        let [carry_24_col238]: [QM31; 1] = (*carry_24_col238.try_into().unwrap()).unbox();
+        let [carry_25_col239]: [QM31; 1] = (*carry_25_col239.try_into().unwrap()).unbox();
+        let [carry_26_col240]: [QM31; 1] = (*carry_26_col240.try_into().unwrap()).unbox();
+        let [result_y_limb_0_col241]: [QM31; 1] = (*result_y_limb_0_col241.try_into().unwrap())
             .unbox();
-        let [result_y_limb_1_col241]: [QM31; 1] = (*result_y_limb_1_col241.try_into().unwrap())
+        let [result_y_limb_1_col242]: [QM31; 1] = (*result_y_limb_1_col242.try_into().unwrap())
             .unbox();
-        let [result_y_limb_2_col242]: [QM31; 1] = (*result_y_limb_2_col242.try_into().unwrap())
+        let [result_y_limb_2_col243]: [QM31; 1] = (*result_y_limb_2_col243.try_into().unwrap())
             .unbox();
-        let [result_y_limb_3_col243]: [QM31; 1] = (*result_y_limb_3_col243.try_into().unwrap())
+        let [result_y_limb_3_col244]: [QM31; 1] = (*result_y_limb_3_col244.try_into().unwrap())
             .unbox();
-        let [result_y_limb_4_col244]: [QM31; 1] = (*result_y_limb_4_col244.try_into().unwrap())
+        let [result_y_limb_4_col245]: [QM31; 1] = (*result_y_limb_4_col245.try_into().unwrap())
             .unbox();
-        let [result_y_limb_5_col245]: [QM31; 1] = (*result_y_limb_5_col245.try_into().unwrap())
+        let [result_y_limb_5_col246]: [QM31; 1] = (*result_y_limb_5_col246.try_into().unwrap())
             .unbox();
-        let [result_y_limb_6_col246]: [QM31; 1] = (*result_y_limb_6_col246.try_into().unwrap())
+        let [result_y_limb_6_col247]: [QM31; 1] = (*result_y_limb_6_col247.try_into().unwrap())
             .unbox();
-        let [result_y_limb_7_col247]: [QM31; 1] = (*result_y_limb_7_col247.try_into().unwrap())
+        let [result_y_limb_7_col248]: [QM31; 1] = (*result_y_limb_7_col248.try_into().unwrap())
             .unbox();
-        let [result_y_limb_8_col248]: [QM31; 1] = (*result_y_limb_8_col248.try_into().unwrap())
+        let [result_y_limb_8_col249]: [QM31; 1] = (*result_y_limb_8_col249.try_into().unwrap())
             .unbox();
-        let [result_y_limb_9_col249]: [QM31; 1] = (*result_y_limb_9_col249.try_into().unwrap())
+        let [result_y_limb_9_col250]: [QM31; 1] = (*result_y_limb_9_col250.try_into().unwrap())
             .unbox();
-        let [result_y_limb_10_col250]: [QM31; 1] = (*result_y_limb_10_col250.try_into().unwrap())
+        let [result_y_limb_10_col251]: [QM31; 1] = (*result_y_limb_10_col251.try_into().unwrap())
             .unbox();
-        let [result_y_limb_11_col251]: [QM31; 1] = (*result_y_limb_11_col251.try_into().unwrap())
+        let [result_y_limb_11_col252]: [QM31; 1] = (*result_y_limb_11_col252.try_into().unwrap())
             .unbox();
-        let [result_y_limb_12_col252]: [QM31; 1] = (*result_y_limb_12_col252.try_into().unwrap())
+        let [result_y_limb_12_col253]: [QM31; 1] = (*result_y_limb_12_col253.try_into().unwrap())
             .unbox();
-        let [result_y_limb_13_col253]: [QM31; 1] = (*result_y_limb_13_col253.try_into().unwrap())
+        let [result_y_limb_13_col254]: [QM31; 1] = (*result_y_limb_13_col254.try_into().unwrap())
             .unbox();
-        let [result_y_limb_14_col254]: [QM31; 1] = (*result_y_limb_14_col254.try_into().unwrap())
+        let [result_y_limb_14_col255]: [QM31; 1] = (*result_y_limb_14_col255.try_into().unwrap())
             .unbox();
-        let [result_y_limb_15_col255]: [QM31; 1] = (*result_y_limb_15_col255.try_into().unwrap())
+        let [result_y_limb_15_col256]: [QM31; 1] = (*result_y_limb_15_col256.try_into().unwrap())
             .unbox();
-        let [result_y_limb_16_col256]: [QM31; 1] = (*result_y_limb_16_col256.try_into().unwrap())
+        let [result_y_limb_16_col257]: [QM31; 1] = (*result_y_limb_16_col257.try_into().unwrap())
             .unbox();
-        let [result_y_limb_17_col257]: [QM31; 1] = (*result_y_limb_17_col257.try_into().unwrap())
+        let [result_y_limb_17_col258]: [QM31; 1] = (*result_y_limb_17_col258.try_into().unwrap())
             .unbox();
-        let [result_y_limb_18_col258]: [QM31; 1] = (*result_y_limb_18_col258.try_into().unwrap())
+        let [result_y_limb_18_col259]: [QM31; 1] = (*result_y_limb_18_col259.try_into().unwrap())
             .unbox();
-        let [result_y_limb_19_col259]: [QM31; 1] = (*result_y_limb_19_col259.try_into().unwrap())
+        let [result_y_limb_19_col260]: [QM31; 1] = (*result_y_limb_19_col260.try_into().unwrap())
             .unbox();
-        let [result_y_limb_20_col260]: [QM31; 1] = (*result_y_limb_20_col260.try_into().unwrap())
+        let [result_y_limb_20_col261]: [QM31; 1] = (*result_y_limb_20_col261.try_into().unwrap())
             .unbox();
-        let [result_y_limb_21_col261]: [QM31; 1] = (*result_y_limb_21_col261.try_into().unwrap())
+        let [result_y_limb_21_col262]: [QM31; 1] = (*result_y_limb_21_col262.try_into().unwrap())
             .unbox();
-        let [result_y_limb_22_col262]: [QM31; 1] = (*result_y_limb_22_col262.try_into().unwrap())
+        let [result_y_limb_22_col263]: [QM31; 1] = (*result_y_limb_22_col263.try_into().unwrap())
             .unbox();
-        let [result_y_limb_23_col263]: [QM31; 1] = (*result_y_limb_23_col263.try_into().unwrap())
+        let [result_y_limb_23_col264]: [QM31; 1] = (*result_y_limb_23_col264.try_into().unwrap())
             .unbox();
-        let [result_y_limb_24_col264]: [QM31; 1] = (*result_y_limb_24_col264.try_into().unwrap())
+        let [result_y_limb_24_col265]: [QM31; 1] = (*result_y_limb_24_col265.try_into().unwrap())
             .unbox();
-        let [result_y_limb_25_col265]: [QM31; 1] = (*result_y_limb_25_col265.try_into().unwrap())
+        let [result_y_limb_25_col266]: [QM31; 1] = (*result_y_limb_25_col266.try_into().unwrap())
             .unbox();
-        let [result_y_limb_26_col266]: [QM31; 1] = (*result_y_limb_26_col266.try_into().unwrap())
+        let [result_y_limb_26_col267]: [QM31; 1] = (*result_y_limb_26_col267.try_into().unwrap())
             .unbox();
-        let [result_y_limb_27_col267]: [QM31; 1] = (*result_y_limb_27_col267.try_into().unwrap())
+        let [result_y_limb_27_col268]: [QM31; 1] = (*result_y_limb_27_col268.try_into().unwrap())
             .unbox();
-        let [k_col268]: [QM31; 1] = (*k_col268.try_into().unwrap()).unbox();
-        let [carry_0_col269]: [QM31; 1] = (*carry_0_col269.try_into().unwrap()).unbox();
-        let [carry_1_col270]: [QM31; 1] = (*carry_1_col270.try_into().unwrap()).unbox();
-        let [carry_2_col271]: [QM31; 1] = (*carry_2_col271.try_into().unwrap()).unbox();
-        let [carry_3_col272]: [QM31; 1] = (*carry_3_col272.try_into().unwrap()).unbox();
-        let [carry_4_col273]: [QM31; 1] = (*carry_4_col273.try_into().unwrap()).unbox();
-        let [carry_5_col274]: [QM31; 1] = (*carry_5_col274.try_into().unwrap()).unbox();
-        let [carry_6_col275]: [QM31; 1] = (*carry_6_col275.try_into().unwrap()).unbox();
-        let [carry_7_col276]: [QM31; 1] = (*carry_7_col276.try_into().unwrap()).unbox();
-        let [carry_8_col277]: [QM31; 1] = (*carry_8_col277.try_into().unwrap()).unbox();
-        let [carry_9_col278]: [QM31; 1] = (*carry_9_col278.try_into().unwrap()).unbox();
-        let [carry_10_col279]: [QM31; 1] = (*carry_10_col279.try_into().unwrap()).unbox();
-        let [carry_11_col280]: [QM31; 1] = (*carry_11_col280.try_into().unwrap()).unbox();
-        let [carry_12_col281]: [QM31; 1] = (*carry_12_col281.try_into().unwrap()).unbox();
-        let [carry_13_col282]: [QM31; 1] = (*carry_13_col282.try_into().unwrap()).unbox();
-        let [carry_14_col283]: [QM31; 1] = (*carry_14_col283.try_into().unwrap()).unbox();
-        let [carry_15_col284]: [QM31; 1] = (*carry_15_col284.try_into().unwrap()).unbox();
-        let [carry_16_col285]: [QM31; 1] = (*carry_16_col285.try_into().unwrap()).unbox();
-        let [carry_17_col286]: [QM31; 1] = (*carry_17_col286.try_into().unwrap()).unbox();
-        let [carry_18_col287]: [QM31; 1] = (*carry_18_col287.try_into().unwrap()).unbox();
-        let [carry_19_col288]: [QM31; 1] = (*carry_19_col288.try_into().unwrap()).unbox();
-        let [carry_20_col289]: [QM31; 1] = (*carry_20_col289.try_into().unwrap()).unbox();
-        let [carry_21_col290]: [QM31; 1] = (*carry_21_col290.try_into().unwrap()).unbox();
-        let [carry_22_col291]: [QM31; 1] = (*carry_22_col291.try_into().unwrap()).unbox();
-        let [carry_23_col292]: [QM31; 1] = (*carry_23_col292.try_into().unwrap()).unbox();
-        let [carry_24_col293]: [QM31; 1] = (*carry_24_col293.try_into().unwrap()).unbox();
-        let [carry_25_col294]: [QM31; 1] = (*carry_25_col294.try_into().unwrap()).unbox();
-        let [carry_26_col295]: [QM31; 1] = (*carry_26_col295.try_into().unwrap()).unbox();
+        let [k_col269]: [QM31; 1] = (*k_col269.try_into().unwrap()).unbox();
+        let [carry_0_col270]: [QM31; 1] = (*carry_0_col270.try_into().unwrap()).unbox();
+        let [carry_1_col271]: [QM31; 1] = (*carry_1_col271.try_into().unwrap()).unbox();
+        let [carry_2_col272]: [QM31; 1] = (*carry_2_col272.try_into().unwrap()).unbox();
+        let [carry_3_col273]: [QM31; 1] = (*carry_3_col273.try_into().unwrap()).unbox();
+        let [carry_4_col274]: [QM31; 1] = (*carry_4_col274.try_into().unwrap()).unbox();
+        let [carry_5_col275]: [QM31; 1] = (*carry_5_col275.try_into().unwrap()).unbox();
+        let [carry_6_col276]: [QM31; 1] = (*carry_6_col276.try_into().unwrap()).unbox();
+        let [carry_7_col277]: [QM31; 1] = (*carry_7_col277.try_into().unwrap()).unbox();
+        let [carry_8_col278]: [QM31; 1] = (*carry_8_col278.try_into().unwrap()).unbox();
+        let [carry_9_col279]: [QM31; 1] = (*carry_9_col279.try_into().unwrap()).unbox();
+        let [carry_10_col280]: [QM31; 1] = (*carry_10_col280.try_into().unwrap()).unbox();
+        let [carry_11_col281]: [QM31; 1] = (*carry_11_col281.try_into().unwrap()).unbox();
+        let [carry_12_col282]: [QM31; 1] = (*carry_12_col282.try_into().unwrap()).unbox();
+        let [carry_13_col283]: [QM31; 1] = (*carry_13_col283.try_into().unwrap()).unbox();
+        let [carry_14_col284]: [QM31; 1] = (*carry_14_col284.try_into().unwrap()).unbox();
+        let [carry_15_col285]: [QM31; 1] = (*carry_15_col285.try_into().unwrap()).unbox();
+        let [carry_16_col286]: [QM31; 1] = (*carry_16_col286.try_into().unwrap()).unbox();
+        let [carry_17_col287]: [QM31; 1] = (*carry_17_col287.try_into().unwrap()).unbox();
+        let [carry_18_col288]: [QM31; 1] = (*carry_18_col288.try_into().unwrap()).unbox();
+        let [carry_19_col289]: [QM31; 1] = (*carry_19_col289.try_into().unwrap()).unbox();
+        let [carry_20_col290]: [QM31; 1] = (*carry_20_col290.try_into().unwrap()).unbox();
+        let [carry_21_col291]: [QM31; 1] = (*carry_21_col291.try_into().unwrap()).unbox();
+        let [carry_22_col292]: [QM31; 1] = (*carry_22_col292.try_into().unwrap()).unbox();
+        let [carry_23_col293]: [QM31; 1] = (*carry_23_col293.try_into().unwrap()).unbox();
+        let [carry_24_col294]: [QM31; 1] = (*carry_24_col294.try_into().unwrap()).unbox();
+        let [carry_25_col295]: [QM31; 1] = (*carry_25_col295.try_into().unwrap()).unbox();
+        let [carry_26_col296]: [QM31; 1] = (*carry_26_col296.try_into().unwrap()).unbox();
+        let [pedersen_points_table_output_limb_0_col297]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_0_col297
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_1_col298]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_1_col298
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_2_col299]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_2_col299
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_3_col300]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_3_col300
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_4_col301]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_4_col301
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_5_col302]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_5_col302
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_6_col303]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_6_col303
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_7_col304]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_7_col304
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_8_col305]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_8_col305
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_9_col306]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_9_col306
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_10_col307]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_10_col307
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_11_col308]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_11_col308
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_12_col309]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_12_col309
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_13_col310]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_13_col310
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_14_col311]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_14_col311
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_15_col312]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_15_col312
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_16_col313]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_16_col313
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_17_col314]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_17_col314
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_18_col315]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_18_col315
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_19_col316]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_19_col316
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_20_col317]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_20_col317
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_21_col318]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_21_col318
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_22_col319]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_22_col319
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_23_col320]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_23_col320
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_24_col321]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_24_col321
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_25_col322]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_25_col322
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_26_col323]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_26_col323
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_27_col324]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_27_col324
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_28_col325]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_28_col325
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_29_col326]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_29_col326
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_30_col327]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_30_col327
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_31_col328]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_31_col328
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_32_col329]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_32_col329
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_33_col330]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_33_col330
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_34_col331]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_34_col331
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_35_col332]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_35_col332
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_36_col333]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_36_col333
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_37_col334]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_37_col334
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_38_col335]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_38_col335
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_39_col336]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_39_col336
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_40_col337]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_40_col337
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_41_col338]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_41_col338
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_42_col339]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_42_col339
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_43_col340]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_43_col340
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_44_col341]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_44_col341
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_45_col342]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_45_col342
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_46_col343]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_46_col343
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_47_col344]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_47_col344
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_48_col345]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_48_col345
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_49_col346]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_49_col346
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_50_col347]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_50_col347
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_51_col348]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_51_col348
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_52_col349]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_52_col349
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_53_col350]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_53_col350
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_54_col351]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_54_col351
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [pedersen_points_table_output_limb_55_col352]: [QM31; 1] =
+            (*pedersen_points_table_output_limb_55_col352
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [slope_limb_0_col353]: [QM31; 1] = (*slope_limb_0_col353.try_into().unwrap()).unbox();
+        let [slope_limb_1_col354]: [QM31; 1] = (*slope_limb_1_col354.try_into().unwrap()).unbox();
+        let [slope_limb_2_col355]: [QM31; 1] = (*slope_limb_2_col355.try_into().unwrap()).unbox();
+        let [slope_limb_3_col356]: [QM31; 1] = (*slope_limb_3_col356.try_into().unwrap()).unbox();
+        let [slope_limb_4_col357]: [QM31; 1] = (*slope_limb_4_col357.try_into().unwrap()).unbox();
+        let [slope_limb_5_col358]: [QM31; 1] = (*slope_limb_5_col358.try_into().unwrap()).unbox();
+        let [slope_limb_6_col359]: [QM31; 1] = (*slope_limb_6_col359.try_into().unwrap()).unbox();
+        let [slope_limb_7_col360]: [QM31; 1] = (*slope_limb_7_col360.try_into().unwrap()).unbox();
+        let [slope_limb_8_col361]: [QM31; 1] = (*slope_limb_8_col361.try_into().unwrap()).unbox();
+        let [slope_limb_9_col362]: [QM31; 1] = (*slope_limb_9_col362.try_into().unwrap()).unbox();
+        let [slope_limb_10_col363]: [QM31; 1] = (*slope_limb_10_col363.try_into().unwrap()).unbox();
+        let [slope_limb_11_col364]: [QM31; 1] = (*slope_limb_11_col364.try_into().unwrap()).unbox();
+        let [slope_limb_12_col365]: [QM31; 1] = (*slope_limb_12_col365.try_into().unwrap()).unbox();
+        let [slope_limb_13_col366]: [QM31; 1] = (*slope_limb_13_col366.try_into().unwrap()).unbox();
+        let [slope_limb_14_col367]: [QM31; 1] = (*slope_limb_14_col367.try_into().unwrap()).unbox();
+        let [slope_limb_15_col368]: [QM31; 1] = (*slope_limb_15_col368.try_into().unwrap()).unbox();
+        let [slope_limb_16_col369]: [QM31; 1] = (*slope_limb_16_col369.try_into().unwrap()).unbox();
+        let [slope_limb_17_col370]: [QM31; 1] = (*slope_limb_17_col370.try_into().unwrap()).unbox();
+        let [slope_limb_18_col371]: [QM31; 1] = (*slope_limb_18_col371.try_into().unwrap()).unbox();
+        let [slope_limb_19_col372]: [QM31; 1] = (*slope_limb_19_col372.try_into().unwrap()).unbox();
+        let [slope_limb_20_col373]: [QM31; 1] = (*slope_limb_20_col373.try_into().unwrap()).unbox();
+        let [slope_limb_21_col374]: [QM31; 1] = (*slope_limb_21_col374.try_into().unwrap()).unbox();
+        let [slope_limb_22_col375]: [QM31; 1] = (*slope_limb_22_col375.try_into().unwrap()).unbox();
+        let [slope_limb_23_col376]: [QM31; 1] = (*slope_limb_23_col376.try_into().unwrap()).unbox();
+        let [slope_limb_24_col377]: [QM31; 1] = (*slope_limb_24_col377.try_into().unwrap()).unbox();
+        let [slope_limb_25_col378]: [QM31; 1] = (*slope_limb_25_col378.try_into().unwrap()).unbox();
+        let [slope_limb_26_col379]: [QM31; 1] = (*slope_limb_26_col379.try_into().unwrap()).unbox();
+        let [slope_limb_27_col380]: [QM31; 1] = (*slope_limb_27_col380.try_into().unwrap()).unbox();
+        let [k_col381]: [QM31; 1] = (*k_col381.try_into().unwrap()).unbox();
+        let [carry_0_col382]: [QM31; 1] = (*carry_0_col382.try_into().unwrap()).unbox();
+        let [carry_1_col383]: [QM31; 1] = (*carry_1_col383.try_into().unwrap()).unbox();
+        let [carry_2_col384]: [QM31; 1] = (*carry_2_col384.try_into().unwrap()).unbox();
+        let [carry_3_col385]: [QM31; 1] = (*carry_3_col385.try_into().unwrap()).unbox();
+        let [carry_4_col386]: [QM31; 1] = (*carry_4_col386.try_into().unwrap()).unbox();
+        let [carry_5_col387]: [QM31; 1] = (*carry_5_col387.try_into().unwrap()).unbox();
+        let [carry_6_col388]: [QM31; 1] = (*carry_6_col388.try_into().unwrap()).unbox();
+        let [carry_7_col389]: [QM31; 1] = (*carry_7_col389.try_into().unwrap()).unbox();
+        let [carry_8_col390]: [QM31; 1] = (*carry_8_col390.try_into().unwrap()).unbox();
+        let [carry_9_col391]: [QM31; 1] = (*carry_9_col391.try_into().unwrap()).unbox();
+        let [carry_10_col392]: [QM31; 1] = (*carry_10_col392.try_into().unwrap()).unbox();
+        let [carry_11_col393]: [QM31; 1] = (*carry_11_col393.try_into().unwrap()).unbox();
+        let [carry_12_col394]: [QM31; 1] = (*carry_12_col394.try_into().unwrap()).unbox();
+        let [carry_13_col395]: [QM31; 1] = (*carry_13_col395.try_into().unwrap()).unbox();
+        let [carry_14_col396]: [QM31; 1] = (*carry_14_col396.try_into().unwrap()).unbox();
+        let [carry_15_col397]: [QM31; 1] = (*carry_15_col397.try_into().unwrap()).unbox();
+        let [carry_16_col398]: [QM31; 1] = (*carry_16_col398.try_into().unwrap()).unbox();
+        let [carry_17_col399]: [QM31; 1] = (*carry_17_col399.try_into().unwrap()).unbox();
+        let [carry_18_col400]: [QM31; 1] = (*carry_18_col400.try_into().unwrap()).unbox();
+        let [carry_19_col401]: [QM31; 1] = (*carry_19_col401.try_into().unwrap()).unbox();
+        let [carry_20_col402]: [QM31; 1] = (*carry_20_col402.try_into().unwrap()).unbox();
+        let [carry_21_col403]: [QM31; 1] = (*carry_21_col403.try_into().unwrap()).unbox();
+        let [carry_22_col404]: [QM31; 1] = (*carry_22_col404.try_into().unwrap()).unbox();
+        let [carry_23_col405]: [QM31; 1] = (*carry_23_col405.try_into().unwrap()).unbox();
+        let [carry_24_col406]: [QM31; 1] = (*carry_24_col406.try_into().unwrap()).unbox();
+        let [carry_25_col407]: [QM31; 1] = (*carry_25_col407.try_into().unwrap()).unbox();
+        let [carry_26_col408]: [QM31; 1] = (*carry_26_col408.try_into().unwrap()).unbox();
+        let [result_x_limb_0_col409]: [QM31; 1] = (*result_x_limb_0_col409.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_1_col410]: [QM31; 1] = (*result_x_limb_1_col410.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_2_col411]: [QM31; 1] = (*result_x_limb_2_col411.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_3_col412]: [QM31; 1] = (*result_x_limb_3_col412.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_4_col413]: [QM31; 1] = (*result_x_limb_4_col413.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_5_col414]: [QM31; 1] = (*result_x_limb_5_col414.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_6_col415]: [QM31; 1] = (*result_x_limb_6_col415.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_7_col416]: [QM31; 1] = (*result_x_limb_7_col416.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_8_col417]: [QM31; 1] = (*result_x_limb_8_col417.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_9_col418]: [QM31; 1] = (*result_x_limb_9_col418.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_10_col419]: [QM31; 1] = (*result_x_limb_10_col419.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_11_col420]: [QM31; 1] = (*result_x_limb_11_col420.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_12_col421]: [QM31; 1] = (*result_x_limb_12_col421.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_13_col422]: [QM31; 1] = (*result_x_limb_13_col422.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_14_col423]: [QM31; 1] = (*result_x_limb_14_col423.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_15_col424]: [QM31; 1] = (*result_x_limb_15_col424.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_16_col425]: [QM31; 1] = (*result_x_limb_16_col425.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_17_col426]: [QM31; 1] = (*result_x_limb_17_col426.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_18_col427]: [QM31; 1] = (*result_x_limb_18_col427.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_19_col428]: [QM31; 1] = (*result_x_limb_19_col428.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_20_col429]: [QM31; 1] = (*result_x_limb_20_col429.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_21_col430]: [QM31; 1] = (*result_x_limb_21_col430.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_22_col431]: [QM31; 1] = (*result_x_limb_22_col431.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_23_col432]: [QM31; 1] = (*result_x_limb_23_col432.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_24_col433]: [QM31; 1] = (*result_x_limb_24_col433.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_25_col434]: [QM31; 1] = (*result_x_limb_25_col434.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_26_col435]: [QM31; 1] = (*result_x_limb_26_col435.try_into().unwrap())
+            .unbox();
+        let [result_x_limb_27_col436]: [QM31; 1] = (*result_x_limb_27_col436.try_into().unwrap())
+            .unbox();
+        let [k_col437]: [QM31; 1] = (*k_col437.try_into().unwrap()).unbox();
+        let [carry_0_col438]: [QM31; 1] = (*carry_0_col438.try_into().unwrap()).unbox();
+        let [carry_1_col439]: [QM31; 1] = (*carry_1_col439.try_into().unwrap()).unbox();
+        let [carry_2_col440]: [QM31; 1] = (*carry_2_col440.try_into().unwrap()).unbox();
+        let [carry_3_col441]: [QM31; 1] = (*carry_3_col441.try_into().unwrap()).unbox();
+        let [carry_4_col442]: [QM31; 1] = (*carry_4_col442.try_into().unwrap()).unbox();
+        let [carry_5_col443]: [QM31; 1] = (*carry_5_col443.try_into().unwrap()).unbox();
+        let [carry_6_col444]: [QM31; 1] = (*carry_6_col444.try_into().unwrap()).unbox();
+        let [carry_7_col445]: [QM31; 1] = (*carry_7_col445.try_into().unwrap()).unbox();
+        let [carry_8_col446]: [QM31; 1] = (*carry_8_col446.try_into().unwrap()).unbox();
+        let [carry_9_col447]: [QM31; 1] = (*carry_9_col447.try_into().unwrap()).unbox();
+        let [carry_10_col448]: [QM31; 1] = (*carry_10_col448.try_into().unwrap()).unbox();
+        let [carry_11_col449]: [QM31; 1] = (*carry_11_col449.try_into().unwrap()).unbox();
+        let [carry_12_col450]: [QM31; 1] = (*carry_12_col450.try_into().unwrap()).unbox();
+        let [carry_13_col451]: [QM31; 1] = (*carry_13_col451.try_into().unwrap()).unbox();
+        let [carry_14_col452]: [QM31; 1] = (*carry_14_col452.try_into().unwrap()).unbox();
+        let [carry_15_col453]: [QM31; 1] = (*carry_15_col453.try_into().unwrap()).unbox();
+        let [carry_16_col454]: [QM31; 1] = (*carry_16_col454.try_into().unwrap()).unbox();
+        let [carry_17_col455]: [QM31; 1] = (*carry_17_col455.try_into().unwrap()).unbox();
+        let [carry_18_col456]: [QM31; 1] = (*carry_18_col456.try_into().unwrap()).unbox();
+        let [carry_19_col457]: [QM31; 1] = (*carry_19_col457.try_into().unwrap()).unbox();
+        let [carry_20_col458]: [QM31; 1] = (*carry_20_col458.try_into().unwrap()).unbox();
+        let [carry_21_col459]: [QM31; 1] = (*carry_21_col459.try_into().unwrap()).unbox();
+        let [carry_22_col460]: [QM31; 1] = (*carry_22_col460.try_into().unwrap()).unbox();
+        let [carry_23_col461]: [QM31; 1] = (*carry_23_col461.try_into().unwrap()).unbox();
+        let [carry_24_col462]: [QM31; 1] = (*carry_24_col462.try_into().unwrap()).unbox();
+        let [carry_25_col463]: [QM31; 1] = (*carry_25_col463.try_into().unwrap()).unbox();
+        let [carry_26_col464]: [QM31; 1] = (*carry_26_col464.try_into().unwrap()).unbox();
+        let [result_y_limb_0_col465]: [QM31; 1] = (*result_y_limb_0_col465.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_1_col466]: [QM31; 1] = (*result_y_limb_1_col466.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_2_col467]: [QM31; 1] = (*result_y_limb_2_col467.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_3_col468]: [QM31; 1] = (*result_y_limb_3_col468.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_4_col469]: [QM31; 1] = (*result_y_limb_4_col469.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_5_col470]: [QM31; 1] = (*result_y_limb_5_col470.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_6_col471]: [QM31; 1] = (*result_y_limb_6_col471.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_7_col472]: [QM31; 1] = (*result_y_limb_7_col472.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_8_col473]: [QM31; 1] = (*result_y_limb_8_col473.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_9_col474]: [QM31; 1] = (*result_y_limb_9_col474.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_10_col475]: [QM31; 1] = (*result_y_limb_10_col475.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_11_col476]: [QM31; 1] = (*result_y_limb_11_col476.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_12_col477]: [QM31; 1] = (*result_y_limb_12_col477.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_13_col478]: [QM31; 1] = (*result_y_limb_13_col478.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_14_col479]: [QM31; 1] = (*result_y_limb_14_col479.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_15_col480]: [QM31; 1] = (*result_y_limb_15_col480.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_16_col481]: [QM31; 1] = (*result_y_limb_16_col481.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_17_col482]: [QM31; 1] = (*result_y_limb_17_col482.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_18_col483]: [QM31; 1] = (*result_y_limb_18_col483.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_19_col484]: [QM31; 1] = (*result_y_limb_19_col484.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_20_col485]: [QM31; 1] = (*result_y_limb_20_col485.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_21_col486]: [QM31; 1] = (*result_y_limb_21_col486.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_22_col487]: [QM31; 1] = (*result_y_limb_22_col487.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_23_col488]: [QM31; 1] = (*result_y_limb_23_col488.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_24_col489]: [QM31; 1] = (*result_y_limb_24_col489.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_25_col490]: [QM31; 1] = (*result_y_limb_25_col490.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_26_col491]: [QM31; 1] = (*result_y_limb_26_col491.try_into().unwrap())
+            .unbox();
+        let [result_y_limb_27_col492]: [QM31; 1] = (*result_y_limb_27_col492.try_into().unwrap())
+            .unbox();
+        let [k_col493]: [QM31; 1] = (*k_col493.try_into().unwrap()).unbox();
+        let [carry_0_col494]: [QM31; 1] = (*carry_0_col494.try_into().unwrap()).unbox();
+        let [carry_1_col495]: [QM31; 1] = (*carry_1_col495.try_into().unwrap()).unbox();
+        let [carry_2_col496]: [QM31; 1] = (*carry_2_col496.try_into().unwrap()).unbox();
+        let [carry_3_col497]: [QM31; 1] = (*carry_3_col497.try_into().unwrap()).unbox();
+        let [carry_4_col498]: [QM31; 1] = (*carry_4_col498.try_into().unwrap()).unbox();
+        let [carry_5_col499]: [QM31; 1] = (*carry_5_col499.try_into().unwrap()).unbox();
+        let [carry_6_col500]: [QM31; 1] = (*carry_6_col500.try_into().unwrap()).unbox();
+        let [carry_7_col501]: [QM31; 1] = (*carry_7_col501.try_into().unwrap()).unbox();
+        let [carry_8_col502]: [QM31; 1] = (*carry_8_col502.try_into().unwrap()).unbox();
+        let [carry_9_col503]: [QM31; 1] = (*carry_9_col503.try_into().unwrap()).unbox();
+        let [carry_10_col504]: [QM31; 1] = (*carry_10_col504.try_into().unwrap()).unbox();
+        let [carry_11_col505]: [QM31; 1] = (*carry_11_col505.try_into().unwrap()).unbox();
+        let [carry_12_col506]: [QM31; 1] = (*carry_12_col506.try_into().unwrap()).unbox();
+        let [carry_13_col507]: [QM31; 1] = (*carry_13_col507.try_into().unwrap()).unbox();
+        let [carry_14_col508]: [QM31; 1] = (*carry_14_col508.try_into().unwrap()).unbox();
+        let [carry_15_col509]: [QM31; 1] = (*carry_15_col509.try_into().unwrap()).unbox();
+        let [carry_16_col510]: [QM31; 1] = (*carry_16_col510.try_into().unwrap()).unbox();
+        let [carry_17_col511]: [QM31; 1] = (*carry_17_col511.try_into().unwrap()).unbox();
+        let [carry_18_col512]: [QM31; 1] = (*carry_18_col512.try_into().unwrap()).unbox();
+        let [carry_19_col513]: [QM31; 1] = (*carry_19_col513.try_into().unwrap()).unbox();
+        let [carry_20_col514]: [QM31; 1] = (*carry_20_col514.try_into().unwrap()).unbox();
+        let [carry_21_col515]: [QM31; 1] = (*carry_21_col515.try_into().unwrap()).unbox();
+        let [carry_22_col516]: [QM31; 1] = (*carry_22_col516.try_into().unwrap()).unbox();
+        let [carry_23_col517]: [QM31; 1] = (*carry_23_col517.try_into().unwrap()).unbox();
+        let [carry_24_col518]: [QM31; 1] = (*carry_24_col518.try_into().unwrap()).unbox();
+        let [carry_25_col519]: [QM31; 1] = (*carry_25_col519.try_into().unwrap()).unbox();
+        let [carry_26_col520]: [QM31; 1] = (*carry_26_col520.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
         let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
+        let window_high_tmp_71feb_1: QM31 = ((input_limb_2_col2 - window_low_col72)
+            * qm31_const::<4194304, 0, 0, 0>());
 
-        pedersen_points_table_sum_0 = self
+        range_check_9_9_sum_0 = self
+            .range_check_9_9_lookup_elements
+            .combine_qm31([window_low_col72, window_high_tmp_71feb_1]);
+
+        pedersen_points_table_sum_1 = self
             .pedersen_points_table_lookup_elements
             .combine_qm31(
                 [
-                    ((qm31_const::<262144, 0, 0, 0>() * input_limb_1_col1) + input_limb_2_col2),
-                    pedersen_points_table_output_limb_0_col72,
-                    pedersen_points_table_output_limb_1_col73,
-                    pedersen_points_table_output_limb_2_col74,
-                    pedersen_points_table_output_limb_3_col75,
-                    pedersen_points_table_output_limb_4_col76,
-                    pedersen_points_table_output_limb_5_col77,
-                    pedersen_points_table_output_limb_6_col78,
-                    pedersen_points_table_output_limb_7_col79,
-                    pedersen_points_table_output_limb_8_col80,
-                    pedersen_points_table_output_limb_9_col81,
-                    pedersen_points_table_output_limb_10_col82,
-                    pedersen_points_table_output_limb_11_col83,
-                    pedersen_points_table_output_limb_12_col84,
-                    pedersen_points_table_output_limb_13_col85,
-                    pedersen_points_table_output_limb_14_col86,
-                    pedersen_points_table_output_limb_15_col87,
-                    pedersen_points_table_output_limb_16_col88,
-                    pedersen_points_table_output_limb_17_col89,
-                    pedersen_points_table_output_limb_18_col90,
-                    pedersen_points_table_output_limb_19_col91,
-                    pedersen_points_table_output_limb_20_col92,
-                    pedersen_points_table_output_limb_21_col93,
-                    pedersen_points_table_output_limb_22_col94,
-                    pedersen_points_table_output_limb_23_col95,
-                    pedersen_points_table_output_limb_24_col96,
-                    pedersen_points_table_output_limb_25_col97,
-                    pedersen_points_table_output_limb_26_col98,
-                    pedersen_points_table_output_limb_27_col99,
-                    pedersen_points_table_output_limb_28_col100,
-                    pedersen_points_table_output_limb_29_col101,
-                    pedersen_points_table_output_limb_30_col102,
-                    pedersen_points_table_output_limb_31_col103,
-                    pedersen_points_table_output_limb_32_col104,
-                    pedersen_points_table_output_limb_33_col105,
-                    pedersen_points_table_output_limb_34_col106,
-                    pedersen_points_table_output_limb_35_col107,
-                    pedersen_points_table_output_limb_36_col108,
-                    pedersen_points_table_output_limb_37_col109,
-                    pedersen_points_table_output_limb_38_col110,
-                    pedersen_points_table_output_limb_39_col111,
-                    pedersen_points_table_output_limb_40_col112,
-                    pedersen_points_table_output_limb_41_col113,
-                    pedersen_points_table_output_limb_42_col114,
-                    pedersen_points_table_output_limb_43_col115,
-                    pedersen_points_table_output_limb_44_col116,
-                    pedersen_points_table_output_limb_45_col117,
-                    pedersen_points_table_output_limb_46_col118,
-                    pedersen_points_table_output_limb_47_col119,
-                    pedersen_points_table_output_limb_48_col120,
-                    pedersen_points_table_output_limb_49_col121,
-                    pedersen_points_table_output_limb_50_col122,
-                    pedersen_points_table_output_limb_51_col123,
-                    pedersen_points_table_output_limb_52_col124,
-                    pedersen_points_table_output_limb_53_col125,
-                    pedersen_points_table_output_limb_54_col126,
-                    pedersen_points_table_output_limb_55_col127,
+                    ((qm31_const::<512, 0, 0, 0>()
+                        * (input_limb_1_col1 * qm31_const::<2, 0, 0, 0>()))
+                        + window_low_col72),
+                    pedersen_points_table_output_limb_0_col73,
+                    pedersen_points_table_output_limb_1_col74,
+                    pedersen_points_table_output_limb_2_col75,
+                    pedersen_points_table_output_limb_3_col76,
+                    pedersen_points_table_output_limb_4_col77,
+                    pedersen_points_table_output_limb_5_col78,
+                    pedersen_points_table_output_limb_6_col79,
+                    pedersen_points_table_output_limb_7_col80,
+                    pedersen_points_table_output_limb_8_col81,
+                    pedersen_points_table_output_limb_9_col82,
+                    pedersen_points_table_output_limb_10_col83,
+                    pedersen_points_table_output_limb_11_col84,
+                    pedersen_points_table_output_limb_12_col85,
+                    pedersen_points_table_output_limb_13_col86,
+                    pedersen_points_table_output_limb_14_col87,
+                    pedersen_points_table_output_limb_15_col88,
+                    pedersen_points_table_output_limb_16_col89,
+                    pedersen_points_table_output_limb_17_col90,
+                    pedersen_points_table_output_limb_18_col91,
+                    pedersen_points_table_output_limb_19_col92,
+                    pedersen_points_table_output_limb_20_col93,
+                    pedersen_points_table_output_limb_21_col94,
+                    pedersen_points_table_output_limb_22_col95,
+                    pedersen_points_table_output_limb_23_col96,
+                    pedersen_points_table_output_limb_24_col97,
+                    pedersen_points_table_output_limb_25_col98,
+                    pedersen_points_table_output_limb_26_col99,
+                    pedersen_points_table_output_limb_27_col100,
+                    pedersen_points_table_output_limb_28_col101,
+                    pedersen_points_table_output_limb_29_col102,
+                    pedersen_points_table_output_limb_30_col103,
+                    pedersen_points_table_output_limb_31_col104,
+                    pedersen_points_table_output_limb_32_col105,
+                    pedersen_points_table_output_limb_33_col106,
+                    pedersen_points_table_output_limb_34_col107,
+                    pedersen_points_table_output_limb_35_col108,
+                    pedersen_points_table_output_limb_36_col109,
+                    pedersen_points_table_output_limb_37_col110,
+                    pedersen_points_table_output_limb_38_col111,
+                    pedersen_points_table_output_limb_39_col112,
+                    pedersen_points_table_output_limb_40_col113,
+                    pedersen_points_table_output_limb_41_col114,
+                    pedersen_points_table_output_limb_42_col115,
+                    pedersen_points_table_output_limb_43_col116,
+                    pedersen_points_table_output_limb_44_col117,
+                    pedersen_points_table_output_limb_45_col118,
+                    pedersen_points_table_output_limb_46_col119,
+                    pedersen_points_table_output_limb_47_col120,
+                    pedersen_points_table_output_limb_48_col121,
+                    pedersen_points_table_output_limb_49_col122,
+                    pedersen_points_table_output_limb_50_col123,
+                    pedersen_points_table_output_limb_51_col124,
+                    pedersen_points_table_output_limb_52_col125,
+                    pedersen_points_table_output_limb_53_col126,
+                    pedersen_points_table_output_limb_54_col127,
+                    pedersen_points_table_output_limb_55_col128,
                 ],
             );
         ec_add_evaluate(
@@ -1219,231 +2085,231 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 input_limb_60_col60, input_limb_61_col61, input_limb_62_col62, input_limb_63_col63,
                 input_limb_64_col64, input_limb_65_col65, input_limb_66_col66, input_limb_67_col67,
                 input_limb_68_col68, input_limb_69_col69, input_limb_70_col70, input_limb_71_col71,
-                pedersen_points_table_output_limb_0_col72,
-                pedersen_points_table_output_limb_1_col73,
-                pedersen_points_table_output_limb_2_col74,
-                pedersen_points_table_output_limb_3_col75,
-                pedersen_points_table_output_limb_4_col76,
-                pedersen_points_table_output_limb_5_col77,
-                pedersen_points_table_output_limb_6_col78,
-                pedersen_points_table_output_limb_7_col79,
-                pedersen_points_table_output_limb_8_col80,
-                pedersen_points_table_output_limb_9_col81,
-                pedersen_points_table_output_limb_10_col82,
-                pedersen_points_table_output_limb_11_col83,
-                pedersen_points_table_output_limb_12_col84,
-                pedersen_points_table_output_limb_13_col85,
-                pedersen_points_table_output_limb_14_col86,
-                pedersen_points_table_output_limb_15_col87,
-                pedersen_points_table_output_limb_16_col88,
-                pedersen_points_table_output_limb_17_col89,
-                pedersen_points_table_output_limb_18_col90,
-                pedersen_points_table_output_limb_19_col91,
-                pedersen_points_table_output_limb_20_col92,
-                pedersen_points_table_output_limb_21_col93,
-                pedersen_points_table_output_limb_22_col94,
-                pedersen_points_table_output_limb_23_col95,
-                pedersen_points_table_output_limb_24_col96,
-                pedersen_points_table_output_limb_25_col97,
-                pedersen_points_table_output_limb_26_col98,
-                pedersen_points_table_output_limb_27_col99,
-                pedersen_points_table_output_limb_28_col100,
-                pedersen_points_table_output_limb_29_col101,
-                pedersen_points_table_output_limb_30_col102,
-                pedersen_points_table_output_limb_31_col103,
-                pedersen_points_table_output_limb_32_col104,
-                pedersen_points_table_output_limb_33_col105,
-                pedersen_points_table_output_limb_34_col106,
-                pedersen_points_table_output_limb_35_col107,
-                pedersen_points_table_output_limb_36_col108,
-                pedersen_points_table_output_limb_37_col109,
-                pedersen_points_table_output_limb_38_col110,
-                pedersen_points_table_output_limb_39_col111,
-                pedersen_points_table_output_limb_40_col112,
-                pedersen_points_table_output_limb_41_col113,
-                pedersen_points_table_output_limb_42_col114,
-                pedersen_points_table_output_limb_43_col115,
-                pedersen_points_table_output_limb_44_col116,
-                pedersen_points_table_output_limb_45_col117,
-                pedersen_points_table_output_limb_46_col118,
-                pedersen_points_table_output_limb_47_col119,
-                pedersen_points_table_output_limb_48_col120,
-                pedersen_points_table_output_limb_49_col121,
-                pedersen_points_table_output_limb_50_col122,
-                pedersen_points_table_output_limb_51_col123,
-                pedersen_points_table_output_limb_52_col124,
-                pedersen_points_table_output_limb_53_col125,
-                pedersen_points_table_output_limb_54_col126,
-                pedersen_points_table_output_limb_55_col127,
+                pedersen_points_table_output_limb_0_col73,
+                pedersen_points_table_output_limb_1_col74,
+                pedersen_points_table_output_limb_2_col75,
+                pedersen_points_table_output_limb_3_col76,
+                pedersen_points_table_output_limb_4_col77,
+                pedersen_points_table_output_limb_5_col78,
+                pedersen_points_table_output_limb_6_col79,
+                pedersen_points_table_output_limb_7_col80,
+                pedersen_points_table_output_limb_8_col81,
+                pedersen_points_table_output_limb_9_col82,
+                pedersen_points_table_output_limb_10_col83,
+                pedersen_points_table_output_limb_11_col84,
+                pedersen_points_table_output_limb_12_col85,
+                pedersen_points_table_output_limb_13_col86,
+                pedersen_points_table_output_limb_14_col87,
+                pedersen_points_table_output_limb_15_col88,
+                pedersen_points_table_output_limb_16_col89,
+                pedersen_points_table_output_limb_17_col90,
+                pedersen_points_table_output_limb_18_col91,
+                pedersen_points_table_output_limb_19_col92,
+                pedersen_points_table_output_limb_20_col93,
+                pedersen_points_table_output_limb_21_col94,
+                pedersen_points_table_output_limb_22_col95,
+                pedersen_points_table_output_limb_23_col96,
+                pedersen_points_table_output_limb_24_col97,
+                pedersen_points_table_output_limb_25_col98,
+                pedersen_points_table_output_limb_26_col99,
+                pedersen_points_table_output_limb_27_col100,
+                pedersen_points_table_output_limb_28_col101,
+                pedersen_points_table_output_limb_29_col102,
+                pedersen_points_table_output_limb_30_col103,
+                pedersen_points_table_output_limb_31_col104,
+                pedersen_points_table_output_limb_32_col105,
+                pedersen_points_table_output_limb_33_col106,
+                pedersen_points_table_output_limb_34_col107,
+                pedersen_points_table_output_limb_35_col108,
+                pedersen_points_table_output_limb_36_col109,
+                pedersen_points_table_output_limb_37_col110,
+                pedersen_points_table_output_limb_38_col111,
+                pedersen_points_table_output_limb_39_col112,
+                pedersen_points_table_output_limb_40_col113,
+                pedersen_points_table_output_limb_41_col114,
+                pedersen_points_table_output_limb_42_col115,
+                pedersen_points_table_output_limb_43_col116,
+                pedersen_points_table_output_limb_44_col117,
+                pedersen_points_table_output_limb_45_col118,
+                pedersen_points_table_output_limb_46_col119,
+                pedersen_points_table_output_limb_47_col120,
+                pedersen_points_table_output_limb_48_col121,
+                pedersen_points_table_output_limb_49_col122,
+                pedersen_points_table_output_limb_50_col123,
+                pedersen_points_table_output_limb_51_col124,
+                pedersen_points_table_output_limb_52_col125,
+                pedersen_points_table_output_limb_53_col126,
+                pedersen_points_table_output_limb_54_col127,
+                pedersen_points_table_output_limb_55_col128,
             ],
-            slope_limb_0_col128,
-            slope_limb_1_col129,
-            slope_limb_2_col130,
-            slope_limb_3_col131,
-            slope_limb_4_col132,
-            slope_limb_5_col133,
-            slope_limb_6_col134,
-            slope_limb_7_col135,
-            slope_limb_8_col136,
-            slope_limb_9_col137,
-            slope_limb_10_col138,
-            slope_limb_11_col139,
-            slope_limb_12_col140,
-            slope_limb_13_col141,
-            slope_limb_14_col142,
-            slope_limb_15_col143,
-            slope_limb_16_col144,
-            slope_limb_17_col145,
-            slope_limb_18_col146,
-            slope_limb_19_col147,
-            slope_limb_20_col148,
-            slope_limb_21_col149,
-            slope_limb_22_col150,
-            slope_limb_23_col151,
-            slope_limb_24_col152,
-            slope_limb_25_col153,
-            slope_limb_26_col154,
-            slope_limb_27_col155,
-            k_col156,
-            carry_0_col157,
-            carry_1_col158,
-            carry_2_col159,
-            carry_3_col160,
-            carry_4_col161,
-            carry_5_col162,
-            carry_6_col163,
-            carry_7_col164,
-            carry_8_col165,
-            carry_9_col166,
-            carry_10_col167,
-            carry_11_col168,
-            carry_12_col169,
-            carry_13_col170,
-            carry_14_col171,
-            carry_15_col172,
-            carry_16_col173,
-            carry_17_col174,
-            carry_18_col175,
-            carry_19_col176,
-            carry_20_col177,
-            carry_21_col178,
-            carry_22_col179,
-            carry_23_col180,
-            carry_24_col181,
-            carry_25_col182,
-            carry_26_col183,
-            result_x_limb_0_col184,
-            result_x_limb_1_col185,
-            result_x_limb_2_col186,
-            result_x_limb_3_col187,
-            result_x_limb_4_col188,
-            result_x_limb_5_col189,
-            result_x_limb_6_col190,
-            result_x_limb_7_col191,
-            result_x_limb_8_col192,
-            result_x_limb_9_col193,
-            result_x_limb_10_col194,
-            result_x_limb_11_col195,
-            result_x_limb_12_col196,
-            result_x_limb_13_col197,
-            result_x_limb_14_col198,
-            result_x_limb_15_col199,
-            result_x_limb_16_col200,
-            result_x_limb_17_col201,
-            result_x_limb_18_col202,
-            result_x_limb_19_col203,
-            result_x_limb_20_col204,
-            result_x_limb_21_col205,
-            result_x_limb_22_col206,
-            result_x_limb_23_col207,
-            result_x_limb_24_col208,
-            result_x_limb_25_col209,
-            result_x_limb_26_col210,
-            result_x_limb_27_col211,
-            k_col212,
-            carry_0_col213,
-            carry_1_col214,
-            carry_2_col215,
-            carry_3_col216,
-            carry_4_col217,
-            carry_5_col218,
-            carry_6_col219,
-            carry_7_col220,
-            carry_8_col221,
-            carry_9_col222,
-            carry_10_col223,
-            carry_11_col224,
-            carry_12_col225,
-            carry_13_col226,
-            carry_14_col227,
-            carry_15_col228,
-            carry_16_col229,
-            carry_17_col230,
-            carry_18_col231,
-            carry_19_col232,
-            carry_20_col233,
-            carry_21_col234,
-            carry_22_col235,
-            carry_23_col236,
-            carry_24_col237,
-            carry_25_col238,
-            carry_26_col239,
-            result_y_limb_0_col240,
-            result_y_limb_1_col241,
-            result_y_limb_2_col242,
-            result_y_limb_3_col243,
-            result_y_limb_4_col244,
-            result_y_limb_5_col245,
-            result_y_limb_6_col246,
-            result_y_limb_7_col247,
-            result_y_limb_8_col248,
-            result_y_limb_9_col249,
-            result_y_limb_10_col250,
-            result_y_limb_11_col251,
-            result_y_limb_12_col252,
-            result_y_limb_13_col253,
-            result_y_limb_14_col254,
-            result_y_limb_15_col255,
-            result_y_limb_16_col256,
-            result_y_limb_17_col257,
-            result_y_limb_18_col258,
-            result_y_limb_19_col259,
-            result_y_limb_20_col260,
-            result_y_limb_21_col261,
-            result_y_limb_22_col262,
-            result_y_limb_23_col263,
-            result_y_limb_24_col264,
-            result_y_limb_25_col265,
-            result_y_limb_26_col266,
-            result_y_limb_27_col267,
-            k_col268,
-            carry_0_col269,
-            carry_1_col270,
-            carry_2_col271,
-            carry_3_col272,
-            carry_4_col273,
-            carry_5_col274,
-            carry_6_col275,
-            carry_7_col276,
-            carry_8_col277,
-            carry_9_col278,
-            carry_10_col279,
-            carry_11_col280,
-            carry_12_col281,
-            carry_13_col282,
-            carry_14_col283,
-            carry_15_col284,
-            carry_16_col285,
-            carry_17_col286,
-            carry_18_col287,
-            carry_19_col288,
-            carry_20_col289,
-            carry_21_col290,
-            carry_22_col291,
-            carry_23_col292,
-            carry_24_col293,
-            carry_25_col294,
-            carry_26_col295,
+            slope_limb_0_col129,
+            slope_limb_1_col130,
+            slope_limb_2_col131,
+            slope_limb_3_col132,
+            slope_limb_4_col133,
+            slope_limb_5_col134,
+            slope_limb_6_col135,
+            slope_limb_7_col136,
+            slope_limb_8_col137,
+            slope_limb_9_col138,
+            slope_limb_10_col139,
+            slope_limb_11_col140,
+            slope_limb_12_col141,
+            slope_limb_13_col142,
+            slope_limb_14_col143,
+            slope_limb_15_col144,
+            slope_limb_16_col145,
+            slope_limb_17_col146,
+            slope_limb_18_col147,
+            slope_limb_19_col148,
+            slope_limb_20_col149,
+            slope_limb_21_col150,
+            slope_limb_22_col151,
+            slope_limb_23_col152,
+            slope_limb_24_col153,
+            slope_limb_25_col154,
+            slope_limb_26_col155,
+            slope_limb_27_col156,
+            k_col157,
+            carry_0_col158,
+            carry_1_col159,
+            carry_2_col160,
+            carry_3_col161,
+            carry_4_col162,
+            carry_5_col163,
+            carry_6_col164,
+            carry_7_col165,
+            carry_8_col166,
+            carry_9_col167,
+            carry_10_col168,
+            carry_11_col169,
+            carry_12_col170,
+            carry_13_col171,
+            carry_14_col172,
+            carry_15_col173,
+            carry_16_col174,
+            carry_17_col175,
+            carry_18_col176,
+            carry_19_col177,
+            carry_20_col178,
+            carry_21_col179,
+            carry_22_col180,
+            carry_23_col181,
+            carry_24_col182,
+            carry_25_col183,
+            carry_26_col184,
+            result_x_limb_0_col185,
+            result_x_limb_1_col186,
+            result_x_limb_2_col187,
+            result_x_limb_3_col188,
+            result_x_limb_4_col189,
+            result_x_limb_5_col190,
+            result_x_limb_6_col191,
+            result_x_limb_7_col192,
+            result_x_limb_8_col193,
+            result_x_limb_9_col194,
+            result_x_limb_10_col195,
+            result_x_limb_11_col196,
+            result_x_limb_12_col197,
+            result_x_limb_13_col198,
+            result_x_limb_14_col199,
+            result_x_limb_15_col200,
+            result_x_limb_16_col201,
+            result_x_limb_17_col202,
+            result_x_limb_18_col203,
+            result_x_limb_19_col204,
+            result_x_limb_20_col205,
+            result_x_limb_21_col206,
+            result_x_limb_22_col207,
+            result_x_limb_23_col208,
+            result_x_limb_24_col209,
+            result_x_limb_25_col210,
+            result_x_limb_26_col211,
+            result_x_limb_27_col212,
+            k_col213,
+            carry_0_col214,
+            carry_1_col215,
+            carry_2_col216,
+            carry_3_col217,
+            carry_4_col218,
+            carry_5_col219,
+            carry_6_col220,
+            carry_7_col221,
+            carry_8_col222,
+            carry_9_col223,
+            carry_10_col224,
+            carry_11_col225,
+            carry_12_col226,
+            carry_13_col227,
+            carry_14_col228,
+            carry_15_col229,
+            carry_16_col230,
+            carry_17_col231,
+            carry_18_col232,
+            carry_19_col233,
+            carry_20_col234,
+            carry_21_col235,
+            carry_22_col236,
+            carry_23_col237,
+            carry_24_col238,
+            carry_25_col239,
+            carry_26_col240,
+            result_y_limb_0_col241,
+            result_y_limb_1_col242,
+            result_y_limb_2_col243,
+            result_y_limb_3_col244,
+            result_y_limb_4_col245,
+            result_y_limb_5_col246,
+            result_y_limb_6_col247,
+            result_y_limb_7_col248,
+            result_y_limb_8_col249,
+            result_y_limb_9_col250,
+            result_y_limb_10_col251,
+            result_y_limb_11_col252,
+            result_y_limb_12_col253,
+            result_y_limb_13_col254,
+            result_y_limb_14_col255,
+            result_y_limb_15_col256,
+            result_y_limb_16_col257,
+            result_y_limb_17_col258,
+            result_y_limb_18_col259,
+            result_y_limb_19_col260,
+            result_y_limb_20_col261,
+            result_y_limb_21_col262,
+            result_y_limb_22_col263,
+            result_y_limb_23_col264,
+            result_y_limb_24_col265,
+            result_y_limb_25_col266,
+            result_y_limb_26_col267,
+            result_y_limb_27_col268,
+            k_col269,
+            carry_0_col270,
+            carry_1_col271,
+            carry_2_col272,
+            carry_3_col273,
+            carry_4_col274,
+            carry_5_col275,
+            carry_6_col276,
+            carry_7_col277,
+            carry_8_col278,
+            carry_9_col279,
+            carry_10_col280,
+            carry_11_col281,
+            carry_12_col282,
+            carry_13_col283,
+            carry_14_col284,
+            carry_15_col285,
+            carry_16_col286,
+            carry_17_col287,
+            carry_18_col288,
+            carry_19_col289,
+            carry_20_col290,
+            carry_21_col291,
+            carry_22_col292,
+            carry_23_col293,
+            carry_24_col294,
+            carry_25_col295,
+            carry_26_col296,
             self.range_check_9_9_lookup_elements,
             self.range_check_9_9_b_lookup_elements,
             self.range_check_9_9_c_lookup_elements,
@@ -1460,138 +2326,597 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.range_check_20_f_lookup_elements,
             self.range_check_20_g_lookup_elements,
             self.range_check_20_h_lookup_elements,
-            ref range_check_9_9_sum_1,
-            ref range_check_9_9_b_sum_2,
-            ref range_check_9_9_c_sum_3,
-            ref range_check_9_9_d_sum_4,
-            ref range_check_9_9_e_sum_5,
-            ref range_check_9_9_f_sum_6,
-            ref range_check_9_9_g_sum_7,
-            ref range_check_9_9_h_sum_8,
-            ref range_check_9_9_sum_9,
-            ref range_check_9_9_b_sum_10,
-            ref range_check_9_9_c_sum_11,
-            ref range_check_9_9_d_sum_12,
-            ref range_check_9_9_e_sum_13,
-            ref range_check_9_9_f_sum_14,
-            ref range_check_20_sum_15,
-            ref range_check_20_b_sum_16,
-            ref range_check_20_c_sum_17,
-            ref range_check_20_d_sum_18,
-            ref range_check_20_e_sum_19,
-            ref range_check_20_f_sum_20,
-            ref range_check_20_g_sum_21,
-            ref range_check_20_h_sum_22,
-            ref range_check_20_sum_23,
-            ref range_check_20_b_sum_24,
-            ref range_check_20_c_sum_25,
-            ref range_check_20_d_sum_26,
-            ref range_check_20_e_sum_27,
-            ref range_check_20_f_sum_28,
-            ref range_check_20_g_sum_29,
-            ref range_check_20_h_sum_30,
-            ref range_check_20_sum_31,
-            ref range_check_20_b_sum_32,
-            ref range_check_20_c_sum_33,
-            ref range_check_20_d_sum_34,
-            ref range_check_20_e_sum_35,
-            ref range_check_20_f_sum_36,
-            ref range_check_20_g_sum_37,
-            ref range_check_20_h_sum_38,
-            ref range_check_20_sum_39,
-            ref range_check_20_b_sum_40,
-            ref range_check_20_c_sum_41,
-            ref range_check_20_d_sum_42,
-            ref range_check_9_9_sum_43,
-            ref range_check_9_9_b_sum_44,
-            ref range_check_9_9_c_sum_45,
-            ref range_check_9_9_d_sum_46,
-            ref range_check_9_9_e_sum_47,
-            ref range_check_9_9_f_sum_48,
-            ref range_check_9_9_g_sum_49,
-            ref range_check_9_9_h_sum_50,
-            ref range_check_9_9_sum_51,
-            ref range_check_9_9_b_sum_52,
-            ref range_check_9_9_c_sum_53,
-            ref range_check_9_9_d_sum_54,
-            ref range_check_9_9_e_sum_55,
-            ref range_check_9_9_f_sum_56,
-            ref range_check_20_sum_57,
-            ref range_check_20_b_sum_58,
-            ref range_check_20_c_sum_59,
-            ref range_check_20_d_sum_60,
-            ref range_check_20_e_sum_61,
-            ref range_check_20_f_sum_62,
-            ref range_check_20_g_sum_63,
-            ref range_check_20_h_sum_64,
-            ref range_check_20_sum_65,
-            ref range_check_20_b_sum_66,
-            ref range_check_20_c_sum_67,
-            ref range_check_20_d_sum_68,
-            ref range_check_20_e_sum_69,
-            ref range_check_20_f_sum_70,
-            ref range_check_20_g_sum_71,
-            ref range_check_20_h_sum_72,
-            ref range_check_20_sum_73,
-            ref range_check_20_b_sum_74,
-            ref range_check_20_c_sum_75,
-            ref range_check_20_d_sum_76,
-            ref range_check_20_e_sum_77,
-            ref range_check_20_f_sum_78,
-            ref range_check_20_g_sum_79,
-            ref range_check_20_h_sum_80,
-            ref range_check_20_sum_81,
-            ref range_check_20_b_sum_82,
-            ref range_check_20_c_sum_83,
-            ref range_check_20_d_sum_84,
-            ref range_check_9_9_sum_85,
-            ref range_check_9_9_b_sum_86,
-            ref range_check_9_9_c_sum_87,
-            ref range_check_9_9_d_sum_88,
-            ref range_check_9_9_e_sum_89,
-            ref range_check_9_9_f_sum_90,
-            ref range_check_9_9_g_sum_91,
-            ref range_check_9_9_h_sum_92,
-            ref range_check_9_9_sum_93,
-            ref range_check_9_9_b_sum_94,
-            ref range_check_9_9_c_sum_95,
-            ref range_check_9_9_d_sum_96,
-            ref range_check_9_9_e_sum_97,
-            ref range_check_9_9_f_sum_98,
-            ref range_check_20_sum_99,
-            ref range_check_20_b_sum_100,
-            ref range_check_20_c_sum_101,
-            ref range_check_20_d_sum_102,
-            ref range_check_20_e_sum_103,
-            ref range_check_20_f_sum_104,
-            ref range_check_20_g_sum_105,
-            ref range_check_20_h_sum_106,
-            ref range_check_20_sum_107,
-            ref range_check_20_b_sum_108,
-            ref range_check_20_c_sum_109,
-            ref range_check_20_d_sum_110,
-            ref range_check_20_e_sum_111,
-            ref range_check_20_f_sum_112,
-            ref range_check_20_g_sum_113,
-            ref range_check_20_h_sum_114,
-            ref range_check_20_sum_115,
-            ref range_check_20_b_sum_116,
-            ref range_check_20_c_sum_117,
-            ref range_check_20_d_sum_118,
-            ref range_check_20_e_sum_119,
-            ref range_check_20_f_sum_120,
-            ref range_check_20_g_sum_121,
-            ref range_check_20_h_sum_122,
-            ref range_check_20_sum_123,
-            ref range_check_20_b_sum_124,
-            ref range_check_20_c_sum_125,
-            ref range_check_20_d_sum_126,
+            ref range_check_9_9_sum_2,
+            ref range_check_9_9_b_sum_3,
+            ref range_check_9_9_c_sum_4,
+            ref range_check_9_9_d_sum_5,
+            ref range_check_9_9_e_sum_6,
+            ref range_check_9_9_f_sum_7,
+            ref range_check_9_9_g_sum_8,
+            ref range_check_9_9_h_sum_9,
+            ref range_check_9_9_sum_10,
+            ref range_check_9_9_b_sum_11,
+            ref range_check_9_9_c_sum_12,
+            ref range_check_9_9_d_sum_13,
+            ref range_check_9_9_e_sum_14,
+            ref range_check_9_9_f_sum_15,
+            ref range_check_20_sum_16,
+            ref range_check_20_b_sum_17,
+            ref range_check_20_c_sum_18,
+            ref range_check_20_d_sum_19,
+            ref range_check_20_e_sum_20,
+            ref range_check_20_f_sum_21,
+            ref range_check_20_g_sum_22,
+            ref range_check_20_h_sum_23,
+            ref range_check_20_sum_24,
+            ref range_check_20_b_sum_25,
+            ref range_check_20_c_sum_26,
+            ref range_check_20_d_sum_27,
+            ref range_check_20_e_sum_28,
+            ref range_check_20_f_sum_29,
+            ref range_check_20_g_sum_30,
+            ref range_check_20_h_sum_31,
+            ref range_check_20_sum_32,
+            ref range_check_20_b_sum_33,
+            ref range_check_20_c_sum_34,
+            ref range_check_20_d_sum_35,
+            ref range_check_20_e_sum_36,
+            ref range_check_20_f_sum_37,
+            ref range_check_20_g_sum_38,
+            ref range_check_20_h_sum_39,
+            ref range_check_20_sum_40,
+            ref range_check_20_b_sum_41,
+            ref range_check_20_c_sum_42,
+            ref range_check_20_d_sum_43,
+            ref range_check_9_9_sum_44,
+            ref range_check_9_9_b_sum_45,
+            ref range_check_9_9_c_sum_46,
+            ref range_check_9_9_d_sum_47,
+            ref range_check_9_9_e_sum_48,
+            ref range_check_9_9_f_sum_49,
+            ref range_check_9_9_g_sum_50,
+            ref range_check_9_9_h_sum_51,
+            ref range_check_9_9_sum_52,
+            ref range_check_9_9_b_sum_53,
+            ref range_check_9_9_c_sum_54,
+            ref range_check_9_9_d_sum_55,
+            ref range_check_9_9_e_sum_56,
+            ref range_check_9_9_f_sum_57,
+            ref range_check_20_sum_58,
+            ref range_check_20_b_sum_59,
+            ref range_check_20_c_sum_60,
+            ref range_check_20_d_sum_61,
+            ref range_check_20_e_sum_62,
+            ref range_check_20_f_sum_63,
+            ref range_check_20_g_sum_64,
+            ref range_check_20_h_sum_65,
+            ref range_check_20_sum_66,
+            ref range_check_20_b_sum_67,
+            ref range_check_20_c_sum_68,
+            ref range_check_20_d_sum_69,
+            ref range_check_20_e_sum_70,
+            ref range_check_20_f_sum_71,
+            ref range_check_20_g_sum_72,
+            ref range_check_20_h_sum_73,
+            ref range_check_20_sum_74,
+            ref range_check_20_b_sum_75,
+            ref range_check_20_c_sum_76,
+            ref range_check_20_d_sum_77,
+            ref range_check_20_e_sum_78,
+            ref range_check_20_f_sum_79,
+            ref range_check_20_g_sum_80,
+            ref range_check_20_h_sum_81,
+            ref range_check_20_sum_82,
+            ref range_check_20_b_sum_83,
+            ref range_check_20_c_sum_84,
+            ref range_check_20_d_sum_85,
+            ref range_check_9_9_sum_86,
+            ref range_check_9_9_b_sum_87,
+            ref range_check_9_9_c_sum_88,
+            ref range_check_9_9_d_sum_89,
+            ref range_check_9_9_e_sum_90,
+            ref range_check_9_9_f_sum_91,
+            ref range_check_9_9_g_sum_92,
+            ref range_check_9_9_h_sum_93,
+            ref range_check_9_9_sum_94,
+            ref range_check_9_9_b_sum_95,
+            ref range_check_9_9_c_sum_96,
+            ref range_check_9_9_d_sum_97,
+            ref range_check_9_9_e_sum_98,
+            ref range_check_9_9_f_sum_99,
+            ref range_check_20_sum_100,
+            ref range_check_20_b_sum_101,
+            ref range_check_20_c_sum_102,
+            ref range_check_20_d_sum_103,
+            ref range_check_20_e_sum_104,
+            ref range_check_20_f_sum_105,
+            ref range_check_20_g_sum_106,
+            ref range_check_20_h_sum_107,
+            ref range_check_20_sum_108,
+            ref range_check_20_b_sum_109,
+            ref range_check_20_c_sum_110,
+            ref range_check_20_d_sum_111,
+            ref range_check_20_e_sum_112,
+            ref range_check_20_f_sum_113,
+            ref range_check_20_g_sum_114,
+            ref range_check_20_h_sum_115,
+            ref range_check_20_sum_116,
+            ref range_check_20_b_sum_117,
+            ref range_check_20_c_sum_118,
+            ref range_check_20_d_sum_119,
+            ref range_check_20_e_sum_120,
+            ref range_check_20_f_sum_121,
+            ref range_check_20_g_sum_122,
+            ref range_check_20_h_sum_123,
+            ref range_check_20_sum_124,
+            ref range_check_20_b_sum_125,
+            ref range_check_20_c_sum_126,
+            ref range_check_20_d_sum_127,
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
         );
 
-        partial_ec_mul_sum_127 = self
+        pedersen_points_table_sum_128 = self
+            .pedersen_points_table_lookup_elements
+            .combine_qm31(
+                [
+                    ((qm31_const::<512, 0, 0, 0>()
+                        * ((input_limb_1_col1 * qm31_const::<2, 0, 0, 0>())
+                            + qm31_const::<1, 0, 0, 0>()))
+                        + window_high_tmp_71feb_1),
+                    pedersen_points_table_output_limb_0_col297,
+                    pedersen_points_table_output_limb_1_col298,
+                    pedersen_points_table_output_limb_2_col299,
+                    pedersen_points_table_output_limb_3_col300,
+                    pedersen_points_table_output_limb_4_col301,
+                    pedersen_points_table_output_limb_5_col302,
+                    pedersen_points_table_output_limb_6_col303,
+                    pedersen_points_table_output_limb_7_col304,
+                    pedersen_points_table_output_limb_8_col305,
+                    pedersen_points_table_output_limb_9_col306,
+                    pedersen_points_table_output_limb_10_col307,
+                    pedersen_points_table_output_limb_11_col308,
+                    pedersen_points_table_output_limb_12_col309,
+                    pedersen_points_table_output_limb_13_col310,
+                    pedersen_points_table_output_limb_14_col311,
+                    pedersen_points_table_output_limb_15_col312,
+                    pedersen_points_table_output_limb_16_col313,
+                    pedersen_points_table_output_limb_17_col314,
+                    pedersen_points_table_output_limb_18_col315,
+                    pedersen_points_table_output_limb_19_col316,
+                    pedersen_points_table_output_limb_20_col317,
+                    pedersen_points_table_output_limb_21_col318,
+                    pedersen_points_table_output_limb_22_col319,
+                    pedersen_points_table_output_limb_23_col320,
+                    pedersen_points_table_output_limb_24_col321,
+                    pedersen_points_table_output_limb_25_col322,
+                    pedersen_points_table_output_limb_26_col323,
+                    pedersen_points_table_output_limb_27_col324,
+                    pedersen_points_table_output_limb_28_col325,
+                    pedersen_points_table_output_limb_29_col326,
+                    pedersen_points_table_output_limb_30_col327,
+                    pedersen_points_table_output_limb_31_col328,
+                    pedersen_points_table_output_limb_32_col329,
+                    pedersen_points_table_output_limb_33_col330,
+                    pedersen_points_table_output_limb_34_col331,
+                    pedersen_points_table_output_limb_35_col332,
+                    pedersen_points_table_output_limb_36_col333,
+                    pedersen_points_table_output_limb_37_col334,
+                    pedersen_points_table_output_limb_38_col335,
+                    pedersen_points_table_output_limb_39_col336,
+                    pedersen_points_table_output_limb_40_col337,
+                    pedersen_points_table_output_limb_41_col338,
+                    pedersen_points_table_output_limb_42_col339,
+                    pedersen_points_table_output_limb_43_col340,
+                    pedersen_points_table_output_limb_44_col341,
+                    pedersen_points_table_output_limb_45_col342,
+                    pedersen_points_table_output_limb_46_col343,
+                    pedersen_points_table_output_limb_47_col344,
+                    pedersen_points_table_output_limb_48_col345,
+                    pedersen_points_table_output_limb_49_col346,
+                    pedersen_points_table_output_limb_50_col347,
+                    pedersen_points_table_output_limb_51_col348,
+                    pedersen_points_table_output_limb_52_col349,
+                    pedersen_points_table_output_limb_53_col350,
+                    pedersen_points_table_output_limb_54_col351,
+                    pedersen_points_table_output_limb_55_col352,
+                ],
+            );
+        ec_add_evaluate(
+            [
+                result_x_limb_0_col185, result_x_limb_1_col186, result_x_limb_2_col187,
+                result_x_limb_3_col188, result_x_limb_4_col189, result_x_limb_5_col190,
+                result_x_limb_6_col191, result_x_limb_7_col192, result_x_limb_8_col193,
+                result_x_limb_9_col194, result_x_limb_10_col195, result_x_limb_11_col196,
+                result_x_limb_12_col197, result_x_limb_13_col198, result_x_limb_14_col199,
+                result_x_limb_15_col200, result_x_limb_16_col201, result_x_limb_17_col202,
+                result_x_limb_18_col203, result_x_limb_19_col204, result_x_limb_20_col205,
+                result_x_limb_21_col206, result_x_limb_22_col207, result_x_limb_23_col208,
+                result_x_limb_24_col209, result_x_limb_25_col210, result_x_limb_26_col211,
+                result_x_limb_27_col212, result_y_limb_0_col241, result_y_limb_1_col242,
+                result_y_limb_2_col243, result_y_limb_3_col244, result_y_limb_4_col245,
+                result_y_limb_5_col246, result_y_limb_6_col247, result_y_limb_7_col248,
+                result_y_limb_8_col249, result_y_limb_9_col250, result_y_limb_10_col251,
+                result_y_limb_11_col252, result_y_limb_12_col253, result_y_limb_13_col254,
+                result_y_limb_14_col255, result_y_limb_15_col256, result_y_limb_16_col257,
+                result_y_limb_17_col258, result_y_limb_18_col259, result_y_limb_19_col260,
+                result_y_limb_20_col261, result_y_limb_21_col262, result_y_limb_22_col263,
+                result_y_limb_23_col264, result_y_limb_24_col265, result_y_limb_25_col266,
+                result_y_limb_26_col267, result_y_limb_27_col268,
+                pedersen_points_table_output_limb_0_col297,
+                pedersen_points_table_output_limb_1_col298,
+                pedersen_points_table_output_limb_2_col299,
+                pedersen_points_table_output_limb_3_col300,
+                pedersen_points_table_output_limb_4_col301,
+                pedersen_points_table_output_limb_5_col302,
+                pedersen_points_table_output_limb_6_col303,
+                pedersen_points_table_output_limb_7_col304,
+                pedersen_points_table_output_limb_8_col305,
+                pedersen_points_table_output_limb_9_col306,
+                pedersen_points_table_output_limb_10_col307,
+                pedersen_points_table_output_limb_11_col308,
+                pedersen_points_table_output_limb_12_col309,
+                pedersen_points_table_output_limb_13_col310,
+                pedersen_points_table_output_limb_14_col311,
+                pedersen_points_table_output_limb_15_col312,
+                pedersen_points_table_output_limb_16_col313,
+                pedersen_points_table_output_limb_17_col314,
+                pedersen_points_table_output_limb_18_col315,
+                pedersen_points_table_output_limb_19_col316,
+                pedersen_points_table_output_limb_20_col317,
+                pedersen_points_table_output_limb_21_col318,
+                pedersen_points_table_output_limb_22_col319,
+                pedersen_points_table_output_limb_23_col320,
+                pedersen_points_table_output_limb_24_col321,
+                pedersen_points_table_output_limb_25_col322,
+                pedersen_points_table_output_limb_26_col323,
+                pedersen_points_table_output_limb_27_col324,
+                pedersen_points_table_output_limb_28_col325,
+                pedersen_points_table_output_limb_29_col326,
+                pedersen_points_table_output_limb_30_col327,
+                pedersen_points_table_output_limb_31_col328,
+                pedersen_points_table_output_limb_32_col329,
+                pedersen_points_table_output_limb_33_col330,
+                pedersen_points_table_output_limb_34_col331,
+                pedersen_points_table_output_limb_35_col332,
+                pedersen_points_table_output_limb_36_col333,
+                pedersen_points_table_output_limb_37_col334,
+                pedersen_points_table_output_limb_38_col335,
+                pedersen_points_table_output_limb_39_col336,
+                pedersen_points_table_output_limb_40_col337,
+                pedersen_points_table_output_limb_41_col338,
+                pedersen_points_table_output_limb_42_col339,
+                pedersen_points_table_output_limb_43_col340,
+                pedersen_points_table_output_limb_44_col341,
+                pedersen_points_table_output_limb_45_col342,
+                pedersen_points_table_output_limb_46_col343,
+                pedersen_points_table_output_limb_47_col344,
+                pedersen_points_table_output_limb_48_col345,
+                pedersen_points_table_output_limb_49_col346,
+                pedersen_points_table_output_limb_50_col347,
+                pedersen_points_table_output_limb_51_col348,
+                pedersen_points_table_output_limb_52_col349,
+                pedersen_points_table_output_limb_53_col350,
+                pedersen_points_table_output_limb_54_col351,
+                pedersen_points_table_output_limb_55_col352,
+            ],
+            slope_limb_0_col353,
+            slope_limb_1_col354,
+            slope_limb_2_col355,
+            slope_limb_3_col356,
+            slope_limb_4_col357,
+            slope_limb_5_col358,
+            slope_limb_6_col359,
+            slope_limb_7_col360,
+            slope_limb_8_col361,
+            slope_limb_9_col362,
+            slope_limb_10_col363,
+            slope_limb_11_col364,
+            slope_limb_12_col365,
+            slope_limb_13_col366,
+            slope_limb_14_col367,
+            slope_limb_15_col368,
+            slope_limb_16_col369,
+            slope_limb_17_col370,
+            slope_limb_18_col371,
+            slope_limb_19_col372,
+            slope_limb_20_col373,
+            slope_limb_21_col374,
+            slope_limb_22_col375,
+            slope_limb_23_col376,
+            slope_limb_24_col377,
+            slope_limb_25_col378,
+            slope_limb_26_col379,
+            slope_limb_27_col380,
+            k_col381,
+            carry_0_col382,
+            carry_1_col383,
+            carry_2_col384,
+            carry_3_col385,
+            carry_4_col386,
+            carry_5_col387,
+            carry_6_col388,
+            carry_7_col389,
+            carry_8_col390,
+            carry_9_col391,
+            carry_10_col392,
+            carry_11_col393,
+            carry_12_col394,
+            carry_13_col395,
+            carry_14_col396,
+            carry_15_col397,
+            carry_16_col398,
+            carry_17_col399,
+            carry_18_col400,
+            carry_19_col401,
+            carry_20_col402,
+            carry_21_col403,
+            carry_22_col404,
+            carry_23_col405,
+            carry_24_col406,
+            carry_25_col407,
+            carry_26_col408,
+            result_x_limb_0_col409,
+            result_x_limb_1_col410,
+            result_x_limb_2_col411,
+            result_x_limb_3_col412,
+            result_x_limb_4_col413,
+            result_x_limb_5_col414,
+            result_x_limb_6_col415,
+            result_x_limb_7_col416,
+            result_x_limb_8_col417,
+            result_x_limb_9_col418,
+            result_x_limb_10_col419,
+            result_x_limb_11_col420,
+            result_x_limb_12_col421,
+            result_x_limb_13_col422,
+            result_x_limb_14_col423,
+            result_x_limb_15_col424,
+            result_x_limb_16_col425,
+            result_x_limb_17_col426,
+            result_x_limb_18_col427,
+            result_x_limb_19_col428,
+            result_x_limb_20_col429,
+            result_x_limb_21_col430,
+            result_x_limb_22_col431,
+            result_x_limb_23_col432,
+            result_x_limb_24_col433,
+            result_x_limb_25_col434,
+            result_x_limb_26_col435,
+            result_x_limb_27_col436,
+            k_col437,
+            carry_0_col438,
+            carry_1_col439,
+            carry_2_col440,
+            carry_3_col441,
+            carry_4_col442,
+            carry_5_col443,
+            carry_6_col444,
+            carry_7_col445,
+            carry_8_col446,
+            carry_9_col447,
+            carry_10_col448,
+            carry_11_col449,
+            carry_12_col450,
+            carry_13_col451,
+            carry_14_col452,
+            carry_15_col453,
+            carry_16_col454,
+            carry_17_col455,
+            carry_18_col456,
+            carry_19_col457,
+            carry_20_col458,
+            carry_21_col459,
+            carry_22_col460,
+            carry_23_col461,
+            carry_24_col462,
+            carry_25_col463,
+            carry_26_col464,
+            result_y_limb_0_col465,
+            result_y_limb_1_col466,
+            result_y_limb_2_col467,
+            result_y_limb_3_col468,
+            result_y_limb_4_col469,
+            result_y_limb_5_col470,
+            result_y_limb_6_col471,
+            result_y_limb_7_col472,
+            result_y_limb_8_col473,
+            result_y_limb_9_col474,
+            result_y_limb_10_col475,
+            result_y_limb_11_col476,
+            result_y_limb_12_col477,
+            result_y_limb_13_col478,
+            result_y_limb_14_col479,
+            result_y_limb_15_col480,
+            result_y_limb_16_col481,
+            result_y_limb_17_col482,
+            result_y_limb_18_col483,
+            result_y_limb_19_col484,
+            result_y_limb_20_col485,
+            result_y_limb_21_col486,
+            result_y_limb_22_col487,
+            result_y_limb_23_col488,
+            result_y_limb_24_col489,
+            result_y_limb_25_col490,
+            result_y_limb_26_col491,
+            result_y_limb_27_col492,
+            k_col493,
+            carry_0_col494,
+            carry_1_col495,
+            carry_2_col496,
+            carry_3_col497,
+            carry_4_col498,
+            carry_5_col499,
+            carry_6_col500,
+            carry_7_col501,
+            carry_8_col502,
+            carry_9_col503,
+            carry_10_col504,
+            carry_11_col505,
+            carry_12_col506,
+            carry_13_col507,
+            carry_14_col508,
+            carry_15_col509,
+            carry_16_col510,
+            carry_17_col511,
+            carry_18_col512,
+            carry_19_col513,
+            carry_20_col514,
+            carry_21_col515,
+            carry_22_col516,
+            carry_23_col517,
+            carry_24_col518,
+            carry_25_col519,
+            carry_26_col520,
+            self.range_check_9_9_lookup_elements,
+            self.range_check_9_9_b_lookup_elements,
+            self.range_check_9_9_c_lookup_elements,
+            self.range_check_9_9_d_lookup_elements,
+            self.range_check_9_9_e_lookup_elements,
+            self.range_check_9_9_f_lookup_elements,
+            self.range_check_9_9_g_lookup_elements,
+            self.range_check_9_9_h_lookup_elements,
+            self.range_check_20_lookup_elements,
+            self.range_check_20_b_lookup_elements,
+            self.range_check_20_c_lookup_elements,
+            self.range_check_20_d_lookup_elements,
+            self.range_check_20_e_lookup_elements,
+            self.range_check_20_f_lookup_elements,
+            self.range_check_20_g_lookup_elements,
+            self.range_check_20_h_lookup_elements,
+            ref range_check_9_9_sum_129,
+            ref range_check_9_9_b_sum_130,
+            ref range_check_9_9_c_sum_131,
+            ref range_check_9_9_d_sum_132,
+            ref range_check_9_9_e_sum_133,
+            ref range_check_9_9_f_sum_134,
+            ref range_check_9_9_g_sum_135,
+            ref range_check_9_9_h_sum_136,
+            ref range_check_9_9_sum_137,
+            ref range_check_9_9_b_sum_138,
+            ref range_check_9_9_c_sum_139,
+            ref range_check_9_9_d_sum_140,
+            ref range_check_9_9_e_sum_141,
+            ref range_check_9_9_f_sum_142,
+            ref range_check_20_sum_143,
+            ref range_check_20_b_sum_144,
+            ref range_check_20_c_sum_145,
+            ref range_check_20_d_sum_146,
+            ref range_check_20_e_sum_147,
+            ref range_check_20_f_sum_148,
+            ref range_check_20_g_sum_149,
+            ref range_check_20_h_sum_150,
+            ref range_check_20_sum_151,
+            ref range_check_20_b_sum_152,
+            ref range_check_20_c_sum_153,
+            ref range_check_20_d_sum_154,
+            ref range_check_20_e_sum_155,
+            ref range_check_20_f_sum_156,
+            ref range_check_20_g_sum_157,
+            ref range_check_20_h_sum_158,
+            ref range_check_20_sum_159,
+            ref range_check_20_b_sum_160,
+            ref range_check_20_c_sum_161,
+            ref range_check_20_d_sum_162,
+            ref range_check_20_e_sum_163,
+            ref range_check_20_f_sum_164,
+            ref range_check_20_g_sum_165,
+            ref range_check_20_h_sum_166,
+            ref range_check_20_sum_167,
+            ref range_check_20_b_sum_168,
+            ref range_check_20_c_sum_169,
+            ref range_check_20_d_sum_170,
+            ref range_check_9_9_sum_171,
+            ref range_check_9_9_b_sum_172,
+            ref range_check_9_9_c_sum_173,
+            ref range_check_9_9_d_sum_174,
+            ref range_check_9_9_e_sum_175,
+            ref range_check_9_9_f_sum_176,
+            ref range_check_9_9_g_sum_177,
+            ref range_check_9_9_h_sum_178,
+            ref range_check_9_9_sum_179,
+            ref range_check_9_9_b_sum_180,
+            ref range_check_9_9_c_sum_181,
+            ref range_check_9_9_d_sum_182,
+            ref range_check_9_9_e_sum_183,
+            ref range_check_9_9_f_sum_184,
+            ref range_check_20_sum_185,
+            ref range_check_20_b_sum_186,
+            ref range_check_20_c_sum_187,
+            ref range_check_20_d_sum_188,
+            ref range_check_20_e_sum_189,
+            ref range_check_20_f_sum_190,
+            ref range_check_20_g_sum_191,
+            ref range_check_20_h_sum_192,
+            ref range_check_20_sum_193,
+            ref range_check_20_b_sum_194,
+            ref range_check_20_c_sum_195,
+            ref range_check_20_d_sum_196,
+            ref range_check_20_e_sum_197,
+            ref range_check_20_f_sum_198,
+            ref range_check_20_g_sum_199,
+            ref range_check_20_h_sum_200,
+            ref range_check_20_sum_201,
+            ref range_check_20_b_sum_202,
+            ref range_check_20_c_sum_203,
+            ref range_check_20_d_sum_204,
+            ref range_check_20_e_sum_205,
+            ref range_check_20_f_sum_206,
+            ref range_check_20_g_sum_207,
+            ref range_check_20_h_sum_208,
+            ref range_check_20_sum_209,
+            ref range_check_20_b_sum_210,
+            ref range_check_20_c_sum_211,
+            ref range_check_20_d_sum_212,
+            ref range_check_9_9_sum_213,
+            ref range_check_9_9_b_sum_214,
+            ref range_check_9_9_c_sum_215,
+            ref range_check_9_9_d_sum_216,
+            ref range_check_9_9_e_sum_217,
+            ref range_check_9_9_f_sum_218,
+            ref range_check_9_9_g_sum_219,
+            ref range_check_9_9_h_sum_220,
+            ref range_check_9_9_sum_221,
+            ref range_check_9_9_b_sum_222,
+            ref range_check_9_9_c_sum_223,
+            ref range_check_9_9_d_sum_224,
+            ref range_check_9_9_e_sum_225,
+            ref range_check_9_9_f_sum_226,
+            ref range_check_20_sum_227,
+            ref range_check_20_b_sum_228,
+            ref range_check_20_c_sum_229,
+            ref range_check_20_d_sum_230,
+            ref range_check_20_e_sum_231,
+            ref range_check_20_f_sum_232,
+            ref range_check_20_g_sum_233,
+            ref range_check_20_h_sum_234,
+            ref range_check_20_sum_235,
+            ref range_check_20_b_sum_236,
+            ref range_check_20_c_sum_237,
+            ref range_check_20_d_sum_238,
+            ref range_check_20_e_sum_239,
+            ref range_check_20_f_sum_240,
+            ref range_check_20_g_sum_241,
+            ref range_check_20_h_sum_242,
+            ref range_check_20_sum_243,
+            ref range_check_20_b_sum_244,
+            ref range_check_20_c_sum_245,
+            ref range_check_20_d_sum_246,
+            ref range_check_20_e_sum_247,
+            ref range_check_20_f_sum_248,
+            ref range_check_20_g_sum_249,
+            ref range_check_20_h_sum_250,
+            ref range_check_20_sum_251,
+            ref range_check_20_b_sum_252,
+            ref range_check_20_c_sum_253,
+            ref range_check_20_d_sum_254,
+            ref sum,
+            domain_vanishing_eval_inv,
+            random_coeff,
+        );
+
+        partial_ec_mul_sum_255 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
@@ -1621,7 +2946,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        partial_ec_mul_sum_128 = self
+        partial_ec_mul_sum_256 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
@@ -1630,25 +2955,25 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     input_limb_7_col7, input_limb_8_col8, input_limb_9_col9, input_limb_10_col10,
                     input_limb_11_col11, input_limb_12_col12, input_limb_13_col13,
                     input_limb_14_col14, input_limb_15_col15, qm31_const::<0, 0, 0, 0>(),
-                    result_x_limb_0_col184, result_x_limb_1_col185, result_x_limb_2_col186,
-                    result_x_limb_3_col187, result_x_limb_4_col188, result_x_limb_5_col189,
-                    result_x_limb_6_col190, result_x_limb_7_col191, result_x_limb_8_col192,
-                    result_x_limb_9_col193, result_x_limb_10_col194, result_x_limb_11_col195,
-                    result_x_limb_12_col196, result_x_limb_13_col197, result_x_limb_14_col198,
-                    result_x_limb_15_col199, result_x_limb_16_col200, result_x_limb_17_col201,
-                    result_x_limb_18_col202, result_x_limb_19_col203, result_x_limb_20_col204,
-                    result_x_limb_21_col205, result_x_limb_22_col206, result_x_limb_23_col207,
-                    result_x_limb_24_col208, result_x_limb_25_col209, result_x_limb_26_col210,
-                    result_x_limb_27_col211, result_y_limb_0_col240, result_y_limb_1_col241,
-                    result_y_limb_2_col242, result_y_limb_3_col243, result_y_limb_4_col244,
-                    result_y_limb_5_col245, result_y_limb_6_col246, result_y_limb_7_col247,
-                    result_y_limb_8_col248, result_y_limb_9_col249, result_y_limb_10_col250,
-                    result_y_limb_11_col251, result_y_limb_12_col252, result_y_limb_13_col253,
-                    result_y_limb_14_col254, result_y_limb_15_col255, result_y_limb_16_col256,
-                    result_y_limb_17_col257, result_y_limb_18_col258, result_y_limb_19_col259,
-                    result_y_limb_20_col260, result_y_limb_21_col261, result_y_limb_22_col262,
-                    result_y_limb_23_col263, result_y_limb_24_col264, result_y_limb_25_col265,
-                    result_y_limb_26_col266, result_y_limb_27_col267,
+                    result_x_limb_0_col409, result_x_limb_1_col410, result_x_limb_2_col411,
+                    result_x_limb_3_col412, result_x_limb_4_col413, result_x_limb_5_col414,
+                    result_x_limb_6_col415, result_x_limb_7_col416, result_x_limb_8_col417,
+                    result_x_limb_9_col418, result_x_limb_10_col419, result_x_limb_11_col420,
+                    result_x_limb_12_col421, result_x_limb_13_col422, result_x_limb_14_col423,
+                    result_x_limb_15_col424, result_x_limb_16_col425, result_x_limb_17_col426,
+                    result_x_limb_18_col427, result_x_limb_19_col428, result_x_limb_20_col429,
+                    result_x_limb_21_col430, result_x_limb_22_col431, result_x_limb_23_col432,
+                    result_x_limb_24_col433, result_x_limb_25_col434, result_x_limb_26_col435,
+                    result_x_limb_27_col436, result_y_limb_0_col465, result_y_limb_1_col466,
+                    result_y_limb_2_col467, result_y_limb_3_col468, result_y_limb_4_col469,
+                    result_y_limb_5_col470, result_y_limb_6_col471, result_y_limb_7_col472,
+                    result_y_limb_8_col473, result_y_limb_9_col474, result_y_limb_10_col475,
+                    result_y_limb_11_col476, result_y_limb_12_col477, result_y_limb_13_col478,
+                    result_y_limb_14_col479, result_y_limb_15_col480, result_y_limb_16_col481,
+                    result_y_limb_17_col482, result_y_limb_18_col483, result_y_limb_19_col484,
+                    result_y_limb_20_col485, result_y_limb_21_col486, result_y_limb_22_col487,
+                    result_y_limb_23_col488, result_y_limb_24_col489, result_y_limb_25_col490,
+                    result_y_limb_26_col491, result_y_limb_27_col492,
                 ],
             );
 
@@ -1660,135 +2985,263 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             enabler,
             column_size,
             ref interaction_trace_mask_values,
-            pedersen_points_table_sum_0,
-            range_check_9_9_sum_1,
-            range_check_9_9_b_sum_2,
-            range_check_9_9_c_sum_3,
-            range_check_9_9_d_sum_4,
-            range_check_9_9_e_sum_5,
-            range_check_9_9_f_sum_6,
-            range_check_9_9_g_sum_7,
-            range_check_9_9_h_sum_8,
-            range_check_9_9_sum_9,
-            range_check_9_9_b_sum_10,
-            range_check_9_9_c_sum_11,
-            range_check_9_9_d_sum_12,
-            range_check_9_9_e_sum_13,
-            range_check_9_9_f_sum_14,
-            range_check_20_sum_15,
-            range_check_20_b_sum_16,
-            range_check_20_c_sum_17,
-            range_check_20_d_sum_18,
-            range_check_20_e_sum_19,
-            range_check_20_f_sum_20,
-            range_check_20_g_sum_21,
-            range_check_20_h_sum_22,
-            range_check_20_sum_23,
-            range_check_20_b_sum_24,
-            range_check_20_c_sum_25,
-            range_check_20_d_sum_26,
-            range_check_20_e_sum_27,
-            range_check_20_f_sum_28,
-            range_check_20_g_sum_29,
-            range_check_20_h_sum_30,
-            range_check_20_sum_31,
-            range_check_20_b_sum_32,
-            range_check_20_c_sum_33,
-            range_check_20_d_sum_34,
-            range_check_20_e_sum_35,
-            range_check_20_f_sum_36,
-            range_check_20_g_sum_37,
-            range_check_20_h_sum_38,
-            range_check_20_sum_39,
-            range_check_20_b_sum_40,
-            range_check_20_c_sum_41,
-            range_check_20_d_sum_42,
-            range_check_9_9_sum_43,
-            range_check_9_9_b_sum_44,
-            range_check_9_9_c_sum_45,
-            range_check_9_9_d_sum_46,
-            range_check_9_9_e_sum_47,
-            range_check_9_9_f_sum_48,
-            range_check_9_9_g_sum_49,
-            range_check_9_9_h_sum_50,
-            range_check_9_9_sum_51,
-            range_check_9_9_b_sum_52,
-            range_check_9_9_c_sum_53,
-            range_check_9_9_d_sum_54,
-            range_check_9_9_e_sum_55,
-            range_check_9_9_f_sum_56,
-            range_check_20_sum_57,
-            range_check_20_b_sum_58,
-            range_check_20_c_sum_59,
-            range_check_20_d_sum_60,
-            range_check_20_e_sum_61,
-            range_check_20_f_sum_62,
-            range_check_20_g_sum_63,
-            range_check_20_h_sum_64,
-            range_check_20_sum_65,
-            range_check_20_b_sum_66,
-            range_check_20_c_sum_67,
-            range_check_20_d_sum_68,
-            range_check_20_e_sum_69,
-            range_check_20_f_sum_70,
-            range_check_20_g_sum_71,
-            range_check_20_h_sum_72,
-            range_check_20_sum_73,
-            range_check_20_b_sum_74,
-            range_check_20_c_sum_75,
-            range_check_20_d_sum_76,
-            range_check_20_e_sum_77,
-            range_check_20_f_sum_78,
-            range_check_20_g_sum_79,
-            range_check_20_h_sum_80,
-            range_check_20_sum_81,
-            range_check_20_b_sum_82,
-            range_check_20_c_sum_83,
-            range_check_20_d_sum_84,
-            range_check_9_9_sum_85,
-            range_check_9_9_b_sum_86,
-            range_check_9_9_c_sum_87,
-            range_check_9_9_d_sum_88,
-            range_check_9_9_e_sum_89,
-            range_check_9_9_f_sum_90,
-            range_check_9_9_g_sum_91,
-            range_check_9_9_h_sum_92,
-            range_check_9_9_sum_93,
-            range_check_9_9_b_sum_94,
-            range_check_9_9_c_sum_95,
-            range_check_9_9_d_sum_96,
-            range_check_9_9_e_sum_97,
-            range_check_9_9_f_sum_98,
-            range_check_20_sum_99,
-            range_check_20_b_sum_100,
-            range_check_20_c_sum_101,
-            range_check_20_d_sum_102,
-            range_check_20_e_sum_103,
-            range_check_20_f_sum_104,
-            range_check_20_g_sum_105,
-            range_check_20_h_sum_106,
-            range_check_20_sum_107,
-            range_check_20_b_sum_108,
-            range_check_20_c_sum_109,
-            range_check_20_d_sum_110,
-            range_check_20_e_sum_111,
-            range_check_20_f_sum_112,
-            range_check_20_g_sum_113,
-            range_check_20_h_sum_114,
-            range_check_20_sum_115,
-            range_check_20_b_sum_116,
-            range_check_20_c_sum_117,
-            range_check_20_d_sum_118,
-            range_check_20_e_sum_119,
-            range_check_20_f_sum_120,
-            range_check_20_g_sum_121,
-            range_check_20_h_sum_122,
-            range_check_20_sum_123,
-            range_check_20_b_sum_124,
-            range_check_20_c_sum_125,
-            range_check_20_d_sum_126,
-            partial_ec_mul_sum_127,
-            partial_ec_mul_sum_128,
+            range_check_9_9_sum_0,
+            pedersen_points_table_sum_1,
+            range_check_9_9_sum_2,
+            range_check_9_9_b_sum_3,
+            range_check_9_9_c_sum_4,
+            range_check_9_9_d_sum_5,
+            range_check_9_9_e_sum_6,
+            range_check_9_9_f_sum_7,
+            range_check_9_9_g_sum_8,
+            range_check_9_9_h_sum_9,
+            range_check_9_9_sum_10,
+            range_check_9_9_b_sum_11,
+            range_check_9_9_c_sum_12,
+            range_check_9_9_d_sum_13,
+            range_check_9_9_e_sum_14,
+            range_check_9_9_f_sum_15,
+            range_check_20_sum_16,
+            range_check_20_b_sum_17,
+            range_check_20_c_sum_18,
+            range_check_20_d_sum_19,
+            range_check_20_e_sum_20,
+            range_check_20_f_sum_21,
+            range_check_20_g_sum_22,
+            range_check_20_h_sum_23,
+            range_check_20_sum_24,
+            range_check_20_b_sum_25,
+            range_check_20_c_sum_26,
+            range_check_20_d_sum_27,
+            range_check_20_e_sum_28,
+            range_check_20_f_sum_29,
+            range_check_20_g_sum_30,
+            range_check_20_h_sum_31,
+            range_check_20_sum_32,
+            range_check_20_b_sum_33,
+            range_check_20_c_sum_34,
+            range_check_20_d_sum_35,
+            range_check_20_e_sum_36,
+            range_check_20_f_sum_37,
+            range_check_20_g_sum_38,
+            range_check_20_h_sum_39,
+            range_check_20_sum_40,
+            range_check_20_b_sum_41,
+            range_check_20_c_sum_42,
+            range_check_20_d_sum_43,
+            range_check_9_9_sum_44,
+            range_check_9_9_b_sum_45,
+            range_check_9_9_c_sum_46,
+            range_check_9_9_d_sum_47,
+            range_check_9_9_e_sum_48,
+            range_check_9_9_f_sum_49,
+            range_check_9_9_g_sum_50,
+            range_check_9_9_h_sum_51,
+            range_check_9_9_sum_52,
+            range_check_9_9_b_sum_53,
+            range_check_9_9_c_sum_54,
+            range_check_9_9_d_sum_55,
+            range_check_9_9_e_sum_56,
+            range_check_9_9_f_sum_57,
+            range_check_20_sum_58,
+            range_check_20_b_sum_59,
+            range_check_20_c_sum_60,
+            range_check_20_d_sum_61,
+            range_check_20_e_sum_62,
+            range_check_20_f_sum_63,
+            range_check_20_g_sum_64,
+            range_check_20_h_sum_65,
+            range_check_20_sum_66,
+            range_check_20_b_sum_67,
+            range_check_20_c_sum_68,
+            range_check_20_d_sum_69,
+            range_check_20_e_sum_70,
+            range_check_20_f_sum_71,
+            range_check_20_g_sum_72,
+            range_check_20_h_sum_73,
+            range_check_20_sum_74,
+            range_check_20_b_sum_75,
+            range_check_20_c_sum_76,
+            range_check_20_d_sum_77,
+            range_check_20_e_sum_78,
+            range_check_20_f_sum_79,
+            range_check_20_g_sum_80,
+            range_check_20_h_sum_81,
+            range_check_20_sum_82,
+            range_check_20_b_sum_83,
+            range_check_20_c_sum_84,
+            range_check_20_d_sum_85,
+            range_check_9_9_sum_86,
+            range_check_9_9_b_sum_87,
+            range_check_9_9_c_sum_88,
+            range_check_9_9_d_sum_89,
+            range_check_9_9_e_sum_90,
+            range_check_9_9_f_sum_91,
+            range_check_9_9_g_sum_92,
+            range_check_9_9_h_sum_93,
+            range_check_9_9_sum_94,
+            range_check_9_9_b_sum_95,
+            range_check_9_9_c_sum_96,
+            range_check_9_9_d_sum_97,
+            range_check_9_9_e_sum_98,
+            range_check_9_9_f_sum_99,
+            range_check_20_sum_100,
+            range_check_20_b_sum_101,
+            range_check_20_c_sum_102,
+            range_check_20_d_sum_103,
+            range_check_20_e_sum_104,
+            range_check_20_f_sum_105,
+            range_check_20_g_sum_106,
+            range_check_20_h_sum_107,
+            range_check_20_sum_108,
+            range_check_20_b_sum_109,
+            range_check_20_c_sum_110,
+            range_check_20_d_sum_111,
+            range_check_20_e_sum_112,
+            range_check_20_f_sum_113,
+            range_check_20_g_sum_114,
+            range_check_20_h_sum_115,
+            range_check_20_sum_116,
+            range_check_20_b_sum_117,
+            range_check_20_c_sum_118,
+            range_check_20_d_sum_119,
+            range_check_20_e_sum_120,
+            range_check_20_f_sum_121,
+            range_check_20_g_sum_122,
+            range_check_20_h_sum_123,
+            range_check_20_sum_124,
+            range_check_20_b_sum_125,
+            range_check_20_c_sum_126,
+            range_check_20_d_sum_127,
+            pedersen_points_table_sum_128,
+            range_check_9_9_sum_129,
+            range_check_9_9_b_sum_130,
+            range_check_9_9_c_sum_131,
+            range_check_9_9_d_sum_132,
+            range_check_9_9_e_sum_133,
+            range_check_9_9_f_sum_134,
+            range_check_9_9_g_sum_135,
+            range_check_9_9_h_sum_136,
+            range_check_9_9_sum_137,
+            range_check_9_9_b_sum_138,
+            range_check_9_9_c_sum_139,
+            range_check_9_9_d_sum_140,
+            range_check_9_9_e_sum_141,
+            range_check_9_9_f_sum_142,
+            range_check_20_sum_143,
+            range_check_20_b_sum_144,
+            range_check_20_c_sum_145,
+            range_check_20_d_sum_146,
+            range_check_20_e_sum_147,
+            range_check_20_f_sum_148,
+            range_check_20_g_sum_149,
+            range_check_20_h_sum_150,
+            range_check_20_sum_151,
+            range_check_20_b_sum_152,
+            range_check_20_c_sum_153,
+            range_check_20_d_sum_154,
+            range_check_20_e_sum_155,
+            range_check_20_f_sum_156,
+            range_check_20_g_sum_157,
+            range_check_20_h_sum_158,
+            range_check_20_sum_159,
+            range_check_20_b_sum_160,
+            range_check_20_c_sum_161,
+            range_check_20_d_sum_162,
+            range_check_20_e_sum_163,
+            range_check_20_f_sum_164,
+            range_check_20_g_sum_165,
+            range_check_20_h_sum_166,
+            range_check_20_sum_167,
+            range_check_20_b_sum_168,
+            range_check_20_c_sum_169,
+            range_check_20_d_sum_170,
+            range_check_9_9_sum_171,
+            range_check_9_9_b_sum_172,
+            range_check_9_9_c_sum_173,
+            range_check_9_9_d_sum_174,
+            range_check_9_9_e_sum_175,
+            range_check_9_9_f_sum_176,
+            range_check_9_9_g_sum_177,
+            range_check_9_9_h_sum_178,
+            range_check_9_9_sum_179,
+            range_check_9_9_b_sum_180,
+            range_check_9_9_c_sum_181,
+            range_check_9_9_d_sum_182,
+            range_check_9_9_e_sum_183,
+            range_check_9_9_f_sum_184,
+            range_check_20_sum_185,
+            range_check_20_b_sum_186,
+            range_check_20_c_sum_187,
+            range_check_20_d_sum_188,
+            range_check_20_e_sum_189,
+            range_check_20_f_sum_190,
+            range_check_20_g_sum_191,
+            range_check_20_h_sum_192,
+            range_check_20_sum_193,
+            range_check_20_b_sum_194,
+            range_check_20_c_sum_195,
+            range_check_20_d_sum_196,
+            range_check_20_e_sum_197,
+            range_check_20_f_sum_198,
+            range_check_20_g_sum_199,
+            range_check_20_h_sum_200,
+            range_check_20_sum_201,
+            range_check_20_b_sum_202,
+            range_check_20_c_sum_203,
+            range_check_20_d_sum_204,
+            range_check_20_e_sum_205,
+            range_check_20_f_sum_206,
+            range_check_20_g_sum_207,
+            range_check_20_h_sum_208,
+            range_check_20_sum_209,
+            range_check_20_b_sum_210,
+            range_check_20_c_sum_211,
+            range_check_20_d_sum_212,
+            range_check_9_9_sum_213,
+            range_check_9_9_b_sum_214,
+            range_check_9_9_c_sum_215,
+            range_check_9_9_d_sum_216,
+            range_check_9_9_e_sum_217,
+            range_check_9_9_f_sum_218,
+            range_check_9_9_g_sum_219,
+            range_check_9_9_h_sum_220,
+            range_check_9_9_sum_221,
+            range_check_9_9_b_sum_222,
+            range_check_9_9_c_sum_223,
+            range_check_9_9_d_sum_224,
+            range_check_9_9_e_sum_225,
+            range_check_9_9_f_sum_226,
+            range_check_20_sum_227,
+            range_check_20_b_sum_228,
+            range_check_20_c_sum_229,
+            range_check_20_d_sum_230,
+            range_check_20_e_sum_231,
+            range_check_20_f_sum_232,
+            range_check_20_g_sum_233,
+            range_check_20_h_sum_234,
+            range_check_20_sum_235,
+            range_check_20_b_sum_236,
+            range_check_20_c_sum_237,
+            range_check_20_d_sum_238,
+            range_check_20_e_sum_239,
+            range_check_20_f_sum_240,
+            range_check_20_g_sum_241,
+            range_check_20_h_sum_242,
+            range_check_20_sum_243,
+            range_check_20_b_sum_244,
+            range_check_20_c_sum_245,
+            range_check_20_d_sum_246,
+            range_check_20_e_sum_247,
+            range_check_20_f_sum_248,
+            range_check_20_g_sum_249,
+            range_check_20_h_sum_250,
+            range_check_20_sum_251,
+            range_check_20_b_sum_252,
+            range_check_20_c_sum_253,
+            range_check_20_d_sum_254,
+            partial_ec_mul_sum_255,
+            partial_ec_mul_sum_256,
         );
     }
 }
@@ -1802,135 +3255,263 @@ fn lookup_constraints(
     enabler: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    pedersen_points_table_sum_0: QM31,
-    range_check_9_9_sum_1: QM31,
-    range_check_9_9_b_sum_2: QM31,
-    range_check_9_9_c_sum_3: QM31,
-    range_check_9_9_d_sum_4: QM31,
-    range_check_9_9_e_sum_5: QM31,
-    range_check_9_9_f_sum_6: QM31,
-    range_check_9_9_g_sum_7: QM31,
-    range_check_9_9_h_sum_8: QM31,
-    range_check_9_9_sum_9: QM31,
-    range_check_9_9_b_sum_10: QM31,
-    range_check_9_9_c_sum_11: QM31,
-    range_check_9_9_d_sum_12: QM31,
-    range_check_9_9_e_sum_13: QM31,
-    range_check_9_9_f_sum_14: QM31,
-    range_check_20_sum_15: QM31,
-    range_check_20_b_sum_16: QM31,
-    range_check_20_c_sum_17: QM31,
-    range_check_20_d_sum_18: QM31,
-    range_check_20_e_sum_19: QM31,
-    range_check_20_f_sum_20: QM31,
-    range_check_20_g_sum_21: QM31,
-    range_check_20_h_sum_22: QM31,
-    range_check_20_sum_23: QM31,
-    range_check_20_b_sum_24: QM31,
-    range_check_20_c_sum_25: QM31,
-    range_check_20_d_sum_26: QM31,
-    range_check_20_e_sum_27: QM31,
-    range_check_20_f_sum_28: QM31,
-    range_check_20_g_sum_29: QM31,
-    range_check_20_h_sum_30: QM31,
-    range_check_20_sum_31: QM31,
-    range_check_20_b_sum_32: QM31,
-    range_check_20_c_sum_33: QM31,
-    range_check_20_d_sum_34: QM31,
-    range_check_20_e_sum_35: QM31,
-    range_check_20_f_sum_36: QM31,
-    range_check_20_g_sum_37: QM31,
-    range_check_20_h_sum_38: QM31,
-    range_check_20_sum_39: QM31,
-    range_check_20_b_sum_40: QM31,
-    range_check_20_c_sum_41: QM31,
-    range_check_20_d_sum_42: QM31,
-    range_check_9_9_sum_43: QM31,
-    range_check_9_9_b_sum_44: QM31,
-    range_check_9_9_c_sum_45: QM31,
-    range_check_9_9_d_sum_46: QM31,
-    range_check_9_9_e_sum_47: QM31,
-    range_check_9_9_f_sum_48: QM31,
-    range_check_9_9_g_sum_49: QM31,
-    range_check_9_9_h_sum_50: QM31,
-    range_check_9_9_sum_51: QM31,
-    range_check_9_9_b_sum_52: QM31,
-    range_check_9_9_c_sum_53: QM31,
-    range_check_9_9_d_sum_54: QM31,
-    range_check_9_9_e_sum_55: QM31,
-    range_check_9_9_f_sum_56: QM31,
-    range_check_20_sum_57: QM31,
-    range_check_20_b_sum_58: QM31,
-    range_check_20_c_sum_59: QM31,
-    range_check_20_d_sum_60: QM31,
-    range_check_20_e_sum_61: QM31,
-    range_check_20_f_sum_62: QM31,
-    range_check_20_g_sum_63: QM31,
-    range_check_20_h_sum_64: QM31,
-    range_check_20_sum_65: QM31,
-    range_check_20_b_sum_66: QM31,
-    range_check_20_c_sum_67: QM31,
-    range_check_20_d_sum_68: QM31,
-    range_check_20_e_sum_69: QM31,
-    range_check_20_f_sum_70: QM31,
-    range_check_20_g_sum_71: QM31,
-    range_check_20_h_sum_72: QM31,
-    range_check_20_sum_73: QM31,
-    range_check_20_b_sum_74: QM31,
-    range_check_20_c_sum_75: QM31,
-    range_check_20_d_sum_76: QM31,
-    range_check_20_e_sum_77: QM31,
-    range_check_20_f_sum_78: QM31,
-    range_check_20_g_sum_79: QM31,
-    range_check_20_h_sum_80: QM31,
-    range_check_20_sum_81: QM31,
-    range_check_20_b_sum_82: QM31,
-    range_check_20_c_sum_83: QM31,
-    range_check_20_d_sum_84: QM31,
-    range_check_9_9_sum_85: QM31,
-    range_check_9_9_b_sum_86: QM31,
-    range_check_9_9_c_sum_87: QM31,
-    range_check_9_9_d_sum_88: QM31,
-    range_check_9_9_e_sum_89: QM31,
-    range_check_9_9_f_sum_90: QM31,
-    range_check_9_9_g_sum_91: QM31,
-    range_check_9_9_h_sum_92: QM31,
-    range_check_9_9_sum_93: QM31,
-    range_check_9_9_b_sum_94: QM31,
-    range_check_9_9_c_sum_95: QM31,
-    range_check_9_9_d_sum_96: QM31,
-    range_check_9_9_e_sum_97: QM31,
-    range_check_9_9_f_sum_98: QM31,
-    range_check_20_sum_99: QM31,
-    range_check_20_b_sum_100: QM31,
-    range_check_20_c_sum_101: QM31,
-    range_check_20_d_sum_102: QM31,
-    range_check_20_e_sum_103: QM31,
-    range_check_20_f_sum_104: QM31,
-    range_check_20_g_sum_105: QM31,
-    range_check_20_h_sum_106: QM31,
-    range_check_20_sum_107: QM31,
-    range_check_20_b_sum_108: QM31,
-    range_check_20_c_sum_109: QM31,
-    range_check_20_d_sum_110: QM31,
-    range_check_20_e_sum_111: QM31,
-    range_check_20_f_sum_112: QM31,
-    range_check_20_g_sum_113: QM31,
-    range_check_20_h_sum_114: QM31,
-    range_check_20_sum_115: QM31,
-    range_check_20_b_sum_116: QM31,
-    range_check_20_c_sum_117: QM31,
-    range_check_20_d_sum_118: QM31,
-    range_check_20_e_sum_119: QM31,
-    range_check_20_f_sum_120: QM31,
-    range_check_20_g_sum_121: QM31,
-    range_check_20_h_sum_122: QM31,
-    range_check_20_sum_123: QM31,
-    range_check_20_b_sum_124: QM31,
-    range_check_20_c_sum_125: QM31,
-    range_check_20_d_sum_126: QM31,
-    partial_ec_mul_sum_127: QM31,
-    partial_ec_mul_sum_128: QM31,
+    range_check_9_9_sum_0: QM31,
+    pedersen_points_table_sum_1: QM31,
+    range_check_9_9_sum_2: QM31,
+    range_check_9_9_b_sum_3: QM31,
+    range_check_9_9_c_sum_4: QM31,
+    range_check_9_9_d_sum_5: QM31,
+    range_check_9_9_e_sum_6: QM31,
+    range_check_9_9_f_sum_7: QM31,
+    range_check_9_9_g_sum_8: QM31,
+    range_check_9_9_h_sum_9: QM31,
+    range_check_9_9_sum_10: QM31,
+    range_check_9_9_b_sum_11: QM31,
+    range_check_9_9_c_sum_12: QM31,
+    range_check_9_9_d_sum_13: QM31,
+    range_check_9_9_e_sum_14: QM31,
+    range_check_9_9_f_sum_15: QM31,
+    range_check_20_sum_16: QM31,
+    range_check_20_b_sum_17: QM31,
+    range_check_20_c_sum_18: QM31,
+    range_check_20_d_sum_19: QM31,
+    range_check_20_e_sum_20: QM31,
+    range_check_20_f_sum_21: QM31,
+    range_check_20_g_sum_22: QM31,
+    range_check_20_h_sum_23: QM31,
+    range_check_20_sum_24: QM31,
+    range_check_20_b_sum_25: QM31,
+    range_check_20_c_sum_26: QM31,
+    range_check_20_d_sum_27: QM31,
+    range_check_20_e_sum_28: QM31,
+    range_check_20_f_sum_29: QM31,
+    range_check_20_g_sum_30: QM31,
+    range_check_20_h_sum_31: QM31,
+    range_check_20_sum_32: QM31,
+    range_check_20_b_sum_33: QM31,
+    range_check_20_c_sum_34: QM31,
+    range_check_20_d_sum_35: QM31,
+    range_check_20_e_sum_36: QM31,
+    range_check_20_f_sum_37: QM31,
+    range_check_20_g_sum_38: QM31,
+    range_check_20_h_sum_39: QM31,
+    range_check_20_sum_40: QM31,
+    range_check_20_b_sum_41: QM31,
+    range_check_20_c_sum_42: QM31,
+    range_check_20_d_sum_43: QM31,
+    range_check_9_9_sum_44: QM31,
+    range_check_9_9_b_sum_45: QM31,
+    range_check_9_9_c_sum_46: QM31,
+    range_check_9_9_d_sum_47: QM31,
+    range_check_9_9_e_sum_48: QM31,
+    range_check_9_9_f_sum_49: QM31,
+    range_check_9_9_g_sum_50: QM31,
+    range_check_9_9_h_sum_51: QM31,
+    range_check_9_9_sum_52: QM31,
+    range_check_9_9_b_sum_53: QM31,
+    range_check_9_9_c_sum_54: QM31,
+    range_check_9_9_d_sum_55: QM31,
+    range_check_9_9_e_sum_56: QM31,
+    range_check_9_9_f_sum_57: QM31,
+    range_check_20_sum_58: QM31,
+    range_check_20_b_sum_59: QM31,
+    range_check_20_c_sum_60: QM31,
+    range_check_20_d_sum_61: QM31,
+    range_check_20_e_sum_62: QM31,
+    range_check_20_f_sum_63: QM31,
+    range_check_20_g_sum_64: QM31,
+    range_check_20_h_sum_65: QM31,
+    range_check_20_sum_66: QM31,
+    range_check_20_b_sum_67: QM31,
+    range_check_20_c_sum_68: QM31,
+    range_check_20_d_sum_69: QM31,
+    range_check_20_e_sum_70: QM31,
+    range_check_20_f_sum_71: QM31,
+    range_check_20_g_sum_72: QM31,
+    range_check_20_h_sum_73: QM31,
+    range_check_20_sum_74: QM31,
+    range_check_20_b_sum_75: QM31,
+    range_check_20_c_sum_76: QM31,
+    range_check_20_d_sum_77: QM31,
+    range_check_20_e_sum_78: QM31,
+    range_check_20_f_sum_79: QM31,
+    range_check_20_g_sum_80: QM31,
+    range_check_20_h_sum_81: QM31,
+    range_check_20_sum_82: QM31,
+    range_check_20_b_sum_83: QM31,
+    range_check_20_c_sum_84: QM31,
+    range_check_20_d_sum_85: QM31,
+    range_check_9_9_sum_86: QM31,
+    range_check_9_9_b_sum_87: QM31,
+    range_check_9_9_c_sum_88: QM31,
+    range_check_9_9_d_sum_89: QM31,
+    range_check_9_9_e_sum_90: QM31,
+    range_check_9_9_f_sum_91: QM31,
+    range_check_9_9_g_sum_92: QM31,
+    range_check_9_9_h_sum_93: QM31,
+    range_check_9_9_sum_94: QM31,
+    range_check_9_9_b_sum_95: QM31,
+    range_check_9_9_c_sum_96: QM31,
+    range_check_9_9_d_sum_97: QM31,
+    range_check_9_9_e_sum_98: QM31,
+    range_check_9_9_f_sum_99: QM31,
+    range_check_20_sum_100: QM31,
+    range_check_20_b_sum_101: QM31,
+    range_check_20_c_sum_102: QM31,
+    range_check_20_d_sum_103: QM31,
+    range_check_20_e_sum_104: QM31,
+    range_check_20_f_sum_105: QM31,
+    range_check_20_g_sum_106: QM31,
+    range_check_20_h_sum_107: QM31,
+    range_check_20_sum_108: QM31,
+    range_check_20_b_sum_109: QM31,
+    range_check_20_c_sum_110: QM31,
+    range_check_20_d_sum_111: QM31,
+    range_check_20_e_sum_112: QM31,
+    range_check_20_f_sum_113: QM31,
+    range_check_20_g_sum_114: QM31,
+    range_check_20_h_sum_115: QM31,
+    range_check_20_sum_116: QM31,
+    range_check_20_b_sum_117: QM31,
+    range_check_20_c_sum_118: QM31,
+    range_check_20_d_sum_119: QM31,
+    range_check_20_e_sum_120: QM31,
+    range_check_20_f_sum_121: QM31,
+    range_check_20_g_sum_122: QM31,
+    range_check_20_h_sum_123: QM31,
+    range_check_20_sum_124: QM31,
+    range_check_20_b_sum_125: QM31,
+    range_check_20_c_sum_126: QM31,
+    range_check_20_d_sum_127: QM31,
+    pedersen_points_table_sum_128: QM31,
+    range_check_9_9_sum_129: QM31,
+    range_check_9_9_b_sum_130: QM31,
+    range_check_9_9_c_sum_131: QM31,
+    range_check_9_9_d_sum_132: QM31,
+    range_check_9_9_e_sum_133: QM31,
+    range_check_9_9_f_sum_134: QM31,
+    range_check_9_9_g_sum_135: QM31,
+    range_check_9_9_h_sum_136: QM31,
+    range_check_9_9_sum_137: QM31,
+    range_check_9_9_b_sum_138: QM31,
+    range_check_9_9_c_sum_139: QM31,
+    range_check_9_9_d_sum_140: QM31,
+    range_check_9_9_e_sum_141: QM31,
+    range_check_9_9_f_sum_142: QM31,
+    range_check_20_sum_143: QM31,
+    range_check_20_b_sum_144: QM31,
+    range_check_20_c_sum_145: QM31,
+    range_check_20_d_sum_146: QM31,
+    range_check_20_e_sum_147: QM31,
+    range_check_20_f_sum_148: QM31,
+    range_check_20_g_sum_149: QM31,
+    range_check_20_h_sum_150: QM31,
+    range_check_20_sum_151: QM31,
+    range_check_20_b_sum_152: QM31,
+    range_check_20_c_sum_153: QM31,
+    range_check_20_d_sum_154: QM31,
+    range_check_20_e_sum_155: QM31,
+    range_check_20_f_sum_156: QM31,
+    range_check_20_g_sum_157: QM31,
+    range_check_20_h_sum_158: QM31,
+    range_check_20_sum_159: QM31,
+    range_check_20_b_sum_160: QM31,
+    range_check_20_c_sum_161: QM31,
+    range_check_20_d_sum_162: QM31,
+    range_check_20_e_sum_163: QM31,
+    range_check_20_f_sum_164: QM31,
+    range_check_20_g_sum_165: QM31,
+    range_check_20_h_sum_166: QM31,
+    range_check_20_sum_167: QM31,
+    range_check_20_b_sum_168: QM31,
+    range_check_20_c_sum_169: QM31,
+    range_check_20_d_sum_170: QM31,
+    range_check_9_9_sum_171: QM31,
+    range_check_9_9_b_sum_172: QM31,
+    range_check_9_9_c_sum_173: QM31,
+    range_check_9_9_d_sum_174: QM31,
+    range_check_9_9_e_sum_175: QM31,
+    range_check_9_9_f_sum_176: QM31,
+    range_check_9_9_g_sum_177: QM31,
+    range_check_9_9_h_sum_178: QM31,
+    range_check_9_9_sum_179: QM31,
+    range_check_9_9_b_sum_180: QM31,
+    range_check_9_9_c_sum_181: QM31,
+    range_check_9_9_d_sum_182: QM31,
+    range_check_9_9_e_sum_183: QM31,
+    range_check_9_9_f_sum_184: QM31,
+    range_check_20_sum_185: QM31,
+    range_check_20_b_sum_186: QM31,
+    range_check_20_c_sum_187: QM31,
+    range_check_20_d_sum_188: QM31,
+    range_check_20_e_sum_189: QM31,
+    range_check_20_f_sum_190: QM31,
+    range_check_20_g_sum_191: QM31,
+    range_check_20_h_sum_192: QM31,
+    range_check_20_sum_193: QM31,
+    range_check_20_b_sum_194: QM31,
+    range_check_20_c_sum_195: QM31,
+    range_check_20_d_sum_196: QM31,
+    range_check_20_e_sum_197: QM31,
+    range_check_20_f_sum_198: QM31,
+    range_check_20_g_sum_199: QM31,
+    range_check_20_h_sum_200: QM31,
+    range_check_20_sum_201: QM31,
+    range_check_20_b_sum_202: QM31,
+    range_check_20_c_sum_203: QM31,
+    range_check_20_d_sum_204: QM31,
+    range_check_20_e_sum_205: QM31,
+    range_check_20_f_sum_206: QM31,
+    range_check_20_g_sum_207: QM31,
+    range_check_20_h_sum_208: QM31,
+    range_check_20_sum_209: QM31,
+    range_check_20_b_sum_210: QM31,
+    range_check_20_c_sum_211: QM31,
+    range_check_20_d_sum_212: QM31,
+    range_check_9_9_sum_213: QM31,
+    range_check_9_9_b_sum_214: QM31,
+    range_check_9_9_c_sum_215: QM31,
+    range_check_9_9_d_sum_216: QM31,
+    range_check_9_9_e_sum_217: QM31,
+    range_check_9_9_f_sum_218: QM31,
+    range_check_9_9_g_sum_219: QM31,
+    range_check_9_9_h_sum_220: QM31,
+    range_check_9_9_sum_221: QM31,
+    range_check_9_9_b_sum_222: QM31,
+    range_check_9_9_c_sum_223: QM31,
+    range_check_9_9_d_sum_224: QM31,
+    range_check_9_9_e_sum_225: QM31,
+    range_check_9_9_f_sum_226: QM31,
+    range_check_20_sum_227: QM31,
+    range_check_20_b_sum_228: QM31,
+    range_check_20_c_sum_229: QM31,
+    range_check_20_d_sum_230: QM31,
+    range_check_20_e_sum_231: QM31,
+    range_check_20_f_sum_232: QM31,
+    range_check_20_g_sum_233: QM31,
+    range_check_20_h_sum_234: QM31,
+    range_check_20_sum_235: QM31,
+    range_check_20_b_sum_236: QM31,
+    range_check_20_c_sum_237: QM31,
+    range_check_20_d_sum_238: QM31,
+    range_check_20_e_sum_239: QM31,
+    range_check_20_f_sum_240: QM31,
+    range_check_20_g_sum_241: QM31,
+    range_check_20_h_sum_242: QM31,
+    range_check_20_sum_243: QM31,
+    range_check_20_b_sum_244: QM31,
+    range_check_20_c_sum_245: QM31,
+    range_check_20_d_sum_246: QM31,
+    range_check_20_e_sum_247: QM31,
+    range_check_20_f_sum_248: QM31,
+    range_check_20_g_sum_249: QM31,
+    range_check_20_h_sum_250: QM31,
+    range_check_20_sum_251: QM31,
+    range_check_20_b_sum_252: QM31,
+    range_check_20_c_sum_253: QM31,
+    range_check_20_d_sum_254: QM31,
+    partial_ec_mul_sum_255: QM31,
+    partial_ec_mul_sum_256: QM31,
 ) {
     let [
         trace_2_col0,
@@ -2193,7 +3774,263 @@ fn lookup_constraints(
         trace_2_col257,
         trace_2_col258,
         trace_2_col259,
-    ]: [Span<QM31>; 260] =
+        trace_2_col260,
+        trace_2_col261,
+        trace_2_col262,
+        trace_2_col263,
+        trace_2_col264,
+        trace_2_col265,
+        trace_2_col266,
+        trace_2_col267,
+        trace_2_col268,
+        trace_2_col269,
+        trace_2_col270,
+        trace_2_col271,
+        trace_2_col272,
+        trace_2_col273,
+        trace_2_col274,
+        trace_2_col275,
+        trace_2_col276,
+        trace_2_col277,
+        trace_2_col278,
+        trace_2_col279,
+        trace_2_col280,
+        trace_2_col281,
+        trace_2_col282,
+        trace_2_col283,
+        trace_2_col284,
+        trace_2_col285,
+        trace_2_col286,
+        trace_2_col287,
+        trace_2_col288,
+        trace_2_col289,
+        trace_2_col290,
+        trace_2_col291,
+        trace_2_col292,
+        trace_2_col293,
+        trace_2_col294,
+        trace_2_col295,
+        trace_2_col296,
+        trace_2_col297,
+        trace_2_col298,
+        trace_2_col299,
+        trace_2_col300,
+        trace_2_col301,
+        trace_2_col302,
+        trace_2_col303,
+        trace_2_col304,
+        trace_2_col305,
+        trace_2_col306,
+        trace_2_col307,
+        trace_2_col308,
+        trace_2_col309,
+        trace_2_col310,
+        trace_2_col311,
+        trace_2_col312,
+        trace_2_col313,
+        trace_2_col314,
+        trace_2_col315,
+        trace_2_col316,
+        trace_2_col317,
+        trace_2_col318,
+        trace_2_col319,
+        trace_2_col320,
+        trace_2_col321,
+        trace_2_col322,
+        trace_2_col323,
+        trace_2_col324,
+        trace_2_col325,
+        trace_2_col326,
+        trace_2_col327,
+        trace_2_col328,
+        trace_2_col329,
+        trace_2_col330,
+        trace_2_col331,
+        trace_2_col332,
+        trace_2_col333,
+        trace_2_col334,
+        trace_2_col335,
+        trace_2_col336,
+        trace_2_col337,
+        trace_2_col338,
+        trace_2_col339,
+        trace_2_col340,
+        trace_2_col341,
+        trace_2_col342,
+        trace_2_col343,
+        trace_2_col344,
+        trace_2_col345,
+        trace_2_col346,
+        trace_2_col347,
+        trace_2_col348,
+        trace_2_col349,
+        trace_2_col350,
+        trace_2_col351,
+        trace_2_col352,
+        trace_2_col353,
+        trace_2_col354,
+        trace_2_col355,
+        trace_2_col356,
+        trace_2_col357,
+        trace_2_col358,
+        trace_2_col359,
+        trace_2_col360,
+        trace_2_col361,
+        trace_2_col362,
+        trace_2_col363,
+        trace_2_col364,
+        trace_2_col365,
+        trace_2_col366,
+        trace_2_col367,
+        trace_2_col368,
+        trace_2_col369,
+        trace_2_col370,
+        trace_2_col371,
+        trace_2_col372,
+        trace_2_col373,
+        trace_2_col374,
+        trace_2_col375,
+        trace_2_col376,
+        trace_2_col377,
+        trace_2_col378,
+        trace_2_col379,
+        trace_2_col380,
+        trace_2_col381,
+        trace_2_col382,
+        trace_2_col383,
+        trace_2_col384,
+        trace_2_col385,
+        trace_2_col386,
+        trace_2_col387,
+        trace_2_col388,
+        trace_2_col389,
+        trace_2_col390,
+        trace_2_col391,
+        trace_2_col392,
+        trace_2_col393,
+        trace_2_col394,
+        trace_2_col395,
+        trace_2_col396,
+        trace_2_col397,
+        trace_2_col398,
+        trace_2_col399,
+        trace_2_col400,
+        trace_2_col401,
+        trace_2_col402,
+        trace_2_col403,
+        trace_2_col404,
+        trace_2_col405,
+        trace_2_col406,
+        trace_2_col407,
+        trace_2_col408,
+        trace_2_col409,
+        trace_2_col410,
+        trace_2_col411,
+        trace_2_col412,
+        trace_2_col413,
+        trace_2_col414,
+        trace_2_col415,
+        trace_2_col416,
+        trace_2_col417,
+        trace_2_col418,
+        trace_2_col419,
+        trace_2_col420,
+        trace_2_col421,
+        trace_2_col422,
+        trace_2_col423,
+        trace_2_col424,
+        trace_2_col425,
+        trace_2_col426,
+        trace_2_col427,
+        trace_2_col428,
+        trace_2_col429,
+        trace_2_col430,
+        trace_2_col431,
+        trace_2_col432,
+        trace_2_col433,
+        trace_2_col434,
+        trace_2_col435,
+        trace_2_col436,
+        trace_2_col437,
+        trace_2_col438,
+        trace_2_col439,
+        trace_2_col440,
+        trace_2_col441,
+        trace_2_col442,
+        trace_2_col443,
+        trace_2_col444,
+        trace_2_col445,
+        trace_2_col446,
+        trace_2_col447,
+        trace_2_col448,
+        trace_2_col449,
+        trace_2_col450,
+        trace_2_col451,
+        trace_2_col452,
+        trace_2_col453,
+        trace_2_col454,
+        trace_2_col455,
+        trace_2_col456,
+        trace_2_col457,
+        trace_2_col458,
+        trace_2_col459,
+        trace_2_col460,
+        trace_2_col461,
+        trace_2_col462,
+        trace_2_col463,
+        trace_2_col464,
+        trace_2_col465,
+        trace_2_col466,
+        trace_2_col467,
+        trace_2_col468,
+        trace_2_col469,
+        trace_2_col470,
+        trace_2_col471,
+        trace_2_col472,
+        trace_2_col473,
+        trace_2_col474,
+        trace_2_col475,
+        trace_2_col476,
+        trace_2_col477,
+        trace_2_col478,
+        trace_2_col479,
+        trace_2_col480,
+        trace_2_col481,
+        trace_2_col482,
+        trace_2_col483,
+        trace_2_col484,
+        trace_2_col485,
+        trace_2_col486,
+        trace_2_col487,
+        trace_2_col488,
+        trace_2_col489,
+        trace_2_col490,
+        trace_2_col491,
+        trace_2_col492,
+        trace_2_col493,
+        trace_2_col494,
+        trace_2_col495,
+        trace_2_col496,
+        trace_2_col497,
+        trace_2_col498,
+        trace_2_col499,
+        trace_2_col500,
+        trace_2_col501,
+        trace_2_col502,
+        trace_2_col503,
+        trace_2_col504,
+        trace_2_col505,
+        trace_2_col506,
+        trace_2_col507,
+        trace_2_col508,
+        trace_2_col509,
+        trace_2_col510,
+        trace_2_col511,
+        trace_2_col512,
+        trace_2_col513,
+        trace_2_col514,
+        trace_2_col515,
+    ]: [Span<QM31>; 516] =
         (*interaction_trace_mask_values
         .multi_pop_front()
         .unwrap())
@@ -2455,13 +4292,269 @@ fn lookup_constraints(
     let [trace_2_col253]: [QM31; 1] = (*trace_2_col253.try_into().unwrap()).unbox();
     let [trace_2_col254]: [QM31; 1] = (*trace_2_col254.try_into().unwrap()).unbox();
     let [trace_2_col255]: [QM31; 1] = (*trace_2_col255.try_into().unwrap()).unbox();
-    let [trace_2_col256_neg1, trace_2_col256]: [QM31; 2] = (*trace_2_col256.try_into().unwrap())
+    let [trace_2_col256]: [QM31; 1] = (*trace_2_col256.try_into().unwrap()).unbox();
+    let [trace_2_col257]: [QM31; 1] = (*trace_2_col257.try_into().unwrap()).unbox();
+    let [trace_2_col258]: [QM31; 1] = (*trace_2_col258.try_into().unwrap()).unbox();
+    let [trace_2_col259]: [QM31; 1] = (*trace_2_col259.try_into().unwrap()).unbox();
+    let [trace_2_col260]: [QM31; 1] = (*trace_2_col260.try_into().unwrap()).unbox();
+    let [trace_2_col261]: [QM31; 1] = (*trace_2_col261.try_into().unwrap()).unbox();
+    let [trace_2_col262]: [QM31; 1] = (*trace_2_col262.try_into().unwrap()).unbox();
+    let [trace_2_col263]: [QM31; 1] = (*trace_2_col263.try_into().unwrap()).unbox();
+    let [trace_2_col264]: [QM31; 1] = (*trace_2_col264.try_into().unwrap()).unbox();
+    let [trace_2_col265]: [QM31; 1] = (*trace_2_col265.try_into().unwrap()).unbox();
+    let [trace_2_col266]: [QM31; 1] = (*trace_2_col266.try_into().unwrap()).unbox();
+    let [trace_2_col267]: [QM31; 1] = (*trace_2_col267.try_into().unwrap()).unbox();
+    let [trace_2_col268]: [QM31; 1] = (*trace_2_col268.try_into().unwrap()).unbox();
+    let [trace_2_col269]: [QM31; 1] = (*trace_2_col269.try_into().unwrap()).unbox();
+    let [trace_2_col270]: [QM31; 1] = (*trace_2_col270.try_into().unwrap()).unbox();
+    let [trace_2_col271]: [QM31; 1] = (*trace_2_col271.try_into().unwrap()).unbox();
+    let [trace_2_col272]: [QM31; 1] = (*trace_2_col272.try_into().unwrap()).unbox();
+    let [trace_2_col273]: [QM31; 1] = (*trace_2_col273.try_into().unwrap()).unbox();
+    let [trace_2_col274]: [QM31; 1] = (*trace_2_col274.try_into().unwrap()).unbox();
+    let [trace_2_col275]: [QM31; 1] = (*trace_2_col275.try_into().unwrap()).unbox();
+    let [trace_2_col276]: [QM31; 1] = (*trace_2_col276.try_into().unwrap()).unbox();
+    let [trace_2_col277]: [QM31; 1] = (*trace_2_col277.try_into().unwrap()).unbox();
+    let [trace_2_col278]: [QM31; 1] = (*trace_2_col278.try_into().unwrap()).unbox();
+    let [trace_2_col279]: [QM31; 1] = (*trace_2_col279.try_into().unwrap()).unbox();
+    let [trace_2_col280]: [QM31; 1] = (*trace_2_col280.try_into().unwrap()).unbox();
+    let [trace_2_col281]: [QM31; 1] = (*trace_2_col281.try_into().unwrap()).unbox();
+    let [trace_2_col282]: [QM31; 1] = (*trace_2_col282.try_into().unwrap()).unbox();
+    let [trace_2_col283]: [QM31; 1] = (*trace_2_col283.try_into().unwrap()).unbox();
+    let [trace_2_col284]: [QM31; 1] = (*trace_2_col284.try_into().unwrap()).unbox();
+    let [trace_2_col285]: [QM31; 1] = (*trace_2_col285.try_into().unwrap()).unbox();
+    let [trace_2_col286]: [QM31; 1] = (*trace_2_col286.try_into().unwrap()).unbox();
+    let [trace_2_col287]: [QM31; 1] = (*trace_2_col287.try_into().unwrap()).unbox();
+    let [trace_2_col288]: [QM31; 1] = (*trace_2_col288.try_into().unwrap()).unbox();
+    let [trace_2_col289]: [QM31; 1] = (*trace_2_col289.try_into().unwrap()).unbox();
+    let [trace_2_col290]: [QM31; 1] = (*trace_2_col290.try_into().unwrap()).unbox();
+    let [trace_2_col291]: [QM31; 1] = (*trace_2_col291.try_into().unwrap()).unbox();
+    let [trace_2_col292]: [QM31; 1] = (*trace_2_col292.try_into().unwrap()).unbox();
+    let [trace_2_col293]: [QM31; 1] = (*trace_2_col293.try_into().unwrap()).unbox();
+    let [trace_2_col294]: [QM31; 1] = (*trace_2_col294.try_into().unwrap()).unbox();
+    let [trace_2_col295]: [QM31; 1] = (*trace_2_col295.try_into().unwrap()).unbox();
+    let [trace_2_col296]: [QM31; 1] = (*trace_2_col296.try_into().unwrap()).unbox();
+    let [trace_2_col297]: [QM31; 1] = (*trace_2_col297.try_into().unwrap()).unbox();
+    let [trace_2_col298]: [QM31; 1] = (*trace_2_col298.try_into().unwrap()).unbox();
+    let [trace_2_col299]: [QM31; 1] = (*trace_2_col299.try_into().unwrap()).unbox();
+    let [trace_2_col300]: [QM31; 1] = (*trace_2_col300.try_into().unwrap()).unbox();
+    let [trace_2_col301]: [QM31; 1] = (*trace_2_col301.try_into().unwrap()).unbox();
+    let [trace_2_col302]: [QM31; 1] = (*trace_2_col302.try_into().unwrap()).unbox();
+    let [trace_2_col303]: [QM31; 1] = (*trace_2_col303.try_into().unwrap()).unbox();
+    let [trace_2_col304]: [QM31; 1] = (*trace_2_col304.try_into().unwrap()).unbox();
+    let [trace_2_col305]: [QM31; 1] = (*trace_2_col305.try_into().unwrap()).unbox();
+    let [trace_2_col306]: [QM31; 1] = (*trace_2_col306.try_into().unwrap()).unbox();
+    let [trace_2_col307]: [QM31; 1] = (*trace_2_col307.try_into().unwrap()).unbox();
+    let [trace_2_col308]: [QM31; 1] = (*trace_2_col308.try_into().unwrap()).unbox();
+    let [trace_2_col309]: [QM31; 1] = (*trace_2_col309.try_into().unwrap()).unbox();
+    let [trace_2_col310]: [QM31; 1] = (*trace_2_col310.try_into().unwrap()).unbox();
+    let [trace_2_col311]: [QM31; 1] = (*trace_2_col311.try_into().unwrap()).unbox();
+    let [trace_2_col312]: [QM31; 1] = (*trace_2_col312.try_into().unwrap()).unbox();
+    let [trace_2_col313]: [QM31; 1] = (*trace_2_col313.try_into().unwrap()).unbox();
+    let [trace_2_col314]: [QM31; 1] = (*trace_2_col314.try_into().unwrap()).unbox();
+    let [trace_2_col315]: [QM31; 1] = (*trace_2_col315.try_into().unwrap()).unbox();
+    let [trace_2_col316]: [QM31; 1] = (*trace_2_col316.try_into().unwrap()).unbox();
+    let [trace_2_col317]: [QM31; 1] = (*trace_2_col317.try_into().unwrap()).unbox();
+    let [trace_2_col318]: [QM31; 1] = (*trace_2_col318.try_into().unwrap()).unbox();
+    let [trace_2_col319]: [QM31; 1] = (*trace_2_col319.try_into().unwrap()).unbox();
+    let [trace_2_col320]: [QM31; 1] = (*trace_2_col320.try_into().unwrap()).unbox();
+    let [trace_2_col321]: [QM31; 1] = (*trace_2_col321.try_into().unwrap()).unbox();
+    let [trace_2_col322]: [QM31; 1] = (*trace_2_col322.try_into().unwrap()).unbox();
+    let [trace_2_col323]: [QM31; 1] = (*trace_2_col323.try_into().unwrap()).unbox();
+    let [trace_2_col324]: [QM31; 1] = (*trace_2_col324.try_into().unwrap()).unbox();
+    let [trace_2_col325]: [QM31; 1] = (*trace_2_col325.try_into().unwrap()).unbox();
+    let [trace_2_col326]: [QM31; 1] = (*trace_2_col326.try_into().unwrap()).unbox();
+    let [trace_2_col327]: [QM31; 1] = (*trace_2_col327.try_into().unwrap()).unbox();
+    let [trace_2_col328]: [QM31; 1] = (*trace_2_col328.try_into().unwrap()).unbox();
+    let [trace_2_col329]: [QM31; 1] = (*trace_2_col329.try_into().unwrap()).unbox();
+    let [trace_2_col330]: [QM31; 1] = (*trace_2_col330.try_into().unwrap()).unbox();
+    let [trace_2_col331]: [QM31; 1] = (*trace_2_col331.try_into().unwrap()).unbox();
+    let [trace_2_col332]: [QM31; 1] = (*trace_2_col332.try_into().unwrap()).unbox();
+    let [trace_2_col333]: [QM31; 1] = (*trace_2_col333.try_into().unwrap()).unbox();
+    let [trace_2_col334]: [QM31; 1] = (*trace_2_col334.try_into().unwrap()).unbox();
+    let [trace_2_col335]: [QM31; 1] = (*trace_2_col335.try_into().unwrap()).unbox();
+    let [trace_2_col336]: [QM31; 1] = (*trace_2_col336.try_into().unwrap()).unbox();
+    let [trace_2_col337]: [QM31; 1] = (*trace_2_col337.try_into().unwrap()).unbox();
+    let [trace_2_col338]: [QM31; 1] = (*trace_2_col338.try_into().unwrap()).unbox();
+    let [trace_2_col339]: [QM31; 1] = (*trace_2_col339.try_into().unwrap()).unbox();
+    let [trace_2_col340]: [QM31; 1] = (*trace_2_col340.try_into().unwrap()).unbox();
+    let [trace_2_col341]: [QM31; 1] = (*trace_2_col341.try_into().unwrap()).unbox();
+    let [trace_2_col342]: [QM31; 1] = (*trace_2_col342.try_into().unwrap()).unbox();
+    let [trace_2_col343]: [QM31; 1] = (*trace_2_col343.try_into().unwrap()).unbox();
+    let [trace_2_col344]: [QM31; 1] = (*trace_2_col344.try_into().unwrap()).unbox();
+    let [trace_2_col345]: [QM31; 1] = (*trace_2_col345.try_into().unwrap()).unbox();
+    let [trace_2_col346]: [QM31; 1] = (*trace_2_col346.try_into().unwrap()).unbox();
+    let [trace_2_col347]: [QM31; 1] = (*trace_2_col347.try_into().unwrap()).unbox();
+    let [trace_2_col348]: [QM31; 1] = (*trace_2_col348.try_into().unwrap()).unbox();
+    let [trace_2_col349]: [QM31; 1] = (*trace_2_col349.try_into().unwrap()).unbox();
+    let [trace_2_col350]: [QM31; 1] = (*trace_2_col350.try_into().unwrap()).unbox();
+    let [trace_2_col351]: [QM31; 1] = (*trace_2_col351.try_into().unwrap()).unbox();
+    let [trace_2_col352]: [QM31; 1] = (*trace_2_col352.try_into().unwrap()).unbox();
+    let [trace_2_col353]: [QM31; 1] = (*trace_2_col353.try_into().unwrap()).unbox();
+    let [trace_2_col354]: [QM31; 1] = (*trace_2_col354.try_into().unwrap()).unbox();
+    let [trace_2_col355]: [QM31; 1] = (*trace_2_col355.try_into().unwrap()).unbox();
+    let [trace_2_col356]: [QM31; 1] = (*trace_2_col356.try_into().unwrap()).unbox();
+    let [trace_2_col357]: [QM31; 1] = (*trace_2_col357.try_into().unwrap()).unbox();
+    let [trace_2_col358]: [QM31; 1] = (*trace_2_col358.try_into().unwrap()).unbox();
+    let [trace_2_col359]: [QM31; 1] = (*trace_2_col359.try_into().unwrap()).unbox();
+    let [trace_2_col360]: [QM31; 1] = (*trace_2_col360.try_into().unwrap()).unbox();
+    let [trace_2_col361]: [QM31; 1] = (*trace_2_col361.try_into().unwrap()).unbox();
+    let [trace_2_col362]: [QM31; 1] = (*trace_2_col362.try_into().unwrap()).unbox();
+    let [trace_2_col363]: [QM31; 1] = (*trace_2_col363.try_into().unwrap()).unbox();
+    let [trace_2_col364]: [QM31; 1] = (*trace_2_col364.try_into().unwrap()).unbox();
+    let [trace_2_col365]: [QM31; 1] = (*trace_2_col365.try_into().unwrap()).unbox();
+    let [trace_2_col366]: [QM31; 1] = (*trace_2_col366.try_into().unwrap()).unbox();
+    let [trace_2_col367]: [QM31; 1] = (*trace_2_col367.try_into().unwrap()).unbox();
+    let [trace_2_col368]: [QM31; 1] = (*trace_2_col368.try_into().unwrap()).unbox();
+    let [trace_2_col369]: [QM31; 1] = (*trace_2_col369.try_into().unwrap()).unbox();
+    let [trace_2_col370]: [QM31; 1] = (*trace_2_col370.try_into().unwrap()).unbox();
+    let [trace_2_col371]: [QM31; 1] = (*trace_2_col371.try_into().unwrap()).unbox();
+    let [trace_2_col372]: [QM31; 1] = (*trace_2_col372.try_into().unwrap()).unbox();
+    let [trace_2_col373]: [QM31; 1] = (*trace_2_col373.try_into().unwrap()).unbox();
+    let [trace_2_col374]: [QM31; 1] = (*trace_2_col374.try_into().unwrap()).unbox();
+    let [trace_2_col375]: [QM31; 1] = (*trace_2_col375.try_into().unwrap()).unbox();
+    let [trace_2_col376]: [QM31; 1] = (*trace_2_col376.try_into().unwrap()).unbox();
+    let [trace_2_col377]: [QM31; 1] = (*trace_2_col377.try_into().unwrap()).unbox();
+    let [trace_2_col378]: [QM31; 1] = (*trace_2_col378.try_into().unwrap()).unbox();
+    let [trace_2_col379]: [QM31; 1] = (*trace_2_col379.try_into().unwrap()).unbox();
+    let [trace_2_col380]: [QM31; 1] = (*trace_2_col380.try_into().unwrap()).unbox();
+    let [trace_2_col381]: [QM31; 1] = (*trace_2_col381.try_into().unwrap()).unbox();
+    let [trace_2_col382]: [QM31; 1] = (*trace_2_col382.try_into().unwrap()).unbox();
+    let [trace_2_col383]: [QM31; 1] = (*trace_2_col383.try_into().unwrap()).unbox();
+    let [trace_2_col384]: [QM31; 1] = (*trace_2_col384.try_into().unwrap()).unbox();
+    let [trace_2_col385]: [QM31; 1] = (*trace_2_col385.try_into().unwrap()).unbox();
+    let [trace_2_col386]: [QM31; 1] = (*trace_2_col386.try_into().unwrap()).unbox();
+    let [trace_2_col387]: [QM31; 1] = (*trace_2_col387.try_into().unwrap()).unbox();
+    let [trace_2_col388]: [QM31; 1] = (*trace_2_col388.try_into().unwrap()).unbox();
+    let [trace_2_col389]: [QM31; 1] = (*trace_2_col389.try_into().unwrap()).unbox();
+    let [trace_2_col390]: [QM31; 1] = (*trace_2_col390.try_into().unwrap()).unbox();
+    let [trace_2_col391]: [QM31; 1] = (*trace_2_col391.try_into().unwrap()).unbox();
+    let [trace_2_col392]: [QM31; 1] = (*trace_2_col392.try_into().unwrap()).unbox();
+    let [trace_2_col393]: [QM31; 1] = (*trace_2_col393.try_into().unwrap()).unbox();
+    let [trace_2_col394]: [QM31; 1] = (*trace_2_col394.try_into().unwrap()).unbox();
+    let [trace_2_col395]: [QM31; 1] = (*trace_2_col395.try_into().unwrap()).unbox();
+    let [trace_2_col396]: [QM31; 1] = (*trace_2_col396.try_into().unwrap()).unbox();
+    let [trace_2_col397]: [QM31; 1] = (*trace_2_col397.try_into().unwrap()).unbox();
+    let [trace_2_col398]: [QM31; 1] = (*trace_2_col398.try_into().unwrap()).unbox();
+    let [trace_2_col399]: [QM31; 1] = (*trace_2_col399.try_into().unwrap()).unbox();
+    let [trace_2_col400]: [QM31; 1] = (*trace_2_col400.try_into().unwrap()).unbox();
+    let [trace_2_col401]: [QM31; 1] = (*trace_2_col401.try_into().unwrap()).unbox();
+    let [trace_2_col402]: [QM31; 1] = (*trace_2_col402.try_into().unwrap()).unbox();
+    let [trace_2_col403]: [QM31; 1] = (*trace_2_col403.try_into().unwrap()).unbox();
+    let [trace_2_col404]: [QM31; 1] = (*trace_2_col404.try_into().unwrap()).unbox();
+    let [trace_2_col405]: [QM31; 1] = (*trace_2_col405.try_into().unwrap()).unbox();
+    let [trace_2_col406]: [QM31; 1] = (*trace_2_col406.try_into().unwrap()).unbox();
+    let [trace_2_col407]: [QM31; 1] = (*trace_2_col407.try_into().unwrap()).unbox();
+    let [trace_2_col408]: [QM31; 1] = (*trace_2_col408.try_into().unwrap()).unbox();
+    let [trace_2_col409]: [QM31; 1] = (*trace_2_col409.try_into().unwrap()).unbox();
+    let [trace_2_col410]: [QM31; 1] = (*trace_2_col410.try_into().unwrap()).unbox();
+    let [trace_2_col411]: [QM31; 1] = (*trace_2_col411.try_into().unwrap()).unbox();
+    let [trace_2_col412]: [QM31; 1] = (*trace_2_col412.try_into().unwrap()).unbox();
+    let [trace_2_col413]: [QM31; 1] = (*trace_2_col413.try_into().unwrap()).unbox();
+    let [trace_2_col414]: [QM31; 1] = (*trace_2_col414.try_into().unwrap()).unbox();
+    let [trace_2_col415]: [QM31; 1] = (*trace_2_col415.try_into().unwrap()).unbox();
+    let [trace_2_col416]: [QM31; 1] = (*trace_2_col416.try_into().unwrap()).unbox();
+    let [trace_2_col417]: [QM31; 1] = (*trace_2_col417.try_into().unwrap()).unbox();
+    let [trace_2_col418]: [QM31; 1] = (*trace_2_col418.try_into().unwrap()).unbox();
+    let [trace_2_col419]: [QM31; 1] = (*trace_2_col419.try_into().unwrap()).unbox();
+    let [trace_2_col420]: [QM31; 1] = (*trace_2_col420.try_into().unwrap()).unbox();
+    let [trace_2_col421]: [QM31; 1] = (*trace_2_col421.try_into().unwrap()).unbox();
+    let [trace_2_col422]: [QM31; 1] = (*trace_2_col422.try_into().unwrap()).unbox();
+    let [trace_2_col423]: [QM31; 1] = (*trace_2_col423.try_into().unwrap()).unbox();
+    let [trace_2_col424]: [QM31; 1] = (*trace_2_col424.try_into().unwrap()).unbox();
+    let [trace_2_col425]: [QM31; 1] = (*trace_2_col425.try_into().unwrap()).unbox();
+    let [trace_2_col426]: [QM31; 1] = (*trace_2_col426.try_into().unwrap()).unbox();
+    let [trace_2_col427]: [QM31; 1] = (*trace_2_col427.try_into().unwrap()).unbox();
+    let [trace_2_col428]: [QM31; 1] = (*trace_2_col428.try_into().unwrap()).unbox();
+    let [trace_2_col429]: [QM31; 1] = (*trace_2_col429.try_into().unwrap()).unbox();
+    let [trace_2_col430]: [QM31; 1] = (*trace_2_col430.try_into().unwrap()).unbox();
+    let [trace_2_col431]: [QM31; 1] = (*trace_2_col431.try_into().unwrap()).unbox();
+    let [trace_2_col432]: [QM31; 1] = (*trace_2_col432.try_into().unwrap()).unbox();
+    let [trace_2_col433]: [QM31; 1] = (*trace_2_col433.try_into().unwrap()).unbox();
+    let [trace_2_col434]: [QM31; 1] = (*trace_2_col434.try_into().unwrap()).unbox();
+    let [trace_2_col435]: [QM31; 1] = (*trace_2_col435.try_into().unwrap()).unbox();
+    let [trace_2_col436]: [QM31; 1] = (*trace_2_col436.try_into().unwrap()).unbox();
+    let [trace_2_col437]: [QM31; 1] = (*trace_2_col437.try_into().unwrap()).unbox();
+    let [trace_2_col438]: [QM31; 1] = (*trace_2_col438.try_into().unwrap()).unbox();
+    let [trace_2_col439]: [QM31; 1] = (*trace_2_col439.try_into().unwrap()).unbox();
+    let [trace_2_col440]: [QM31; 1] = (*trace_2_col440.try_into().unwrap()).unbox();
+    let [trace_2_col441]: [QM31; 1] = (*trace_2_col441.try_into().unwrap()).unbox();
+    let [trace_2_col442]: [QM31; 1] = (*trace_2_col442.try_into().unwrap()).unbox();
+    let [trace_2_col443]: [QM31; 1] = (*trace_2_col443.try_into().unwrap()).unbox();
+    let [trace_2_col444]: [QM31; 1] = (*trace_2_col444.try_into().unwrap()).unbox();
+    let [trace_2_col445]: [QM31; 1] = (*trace_2_col445.try_into().unwrap()).unbox();
+    let [trace_2_col446]: [QM31; 1] = (*trace_2_col446.try_into().unwrap()).unbox();
+    let [trace_2_col447]: [QM31; 1] = (*trace_2_col447.try_into().unwrap()).unbox();
+    let [trace_2_col448]: [QM31; 1] = (*trace_2_col448.try_into().unwrap()).unbox();
+    let [trace_2_col449]: [QM31; 1] = (*trace_2_col449.try_into().unwrap()).unbox();
+    let [trace_2_col450]: [QM31; 1] = (*trace_2_col450.try_into().unwrap()).unbox();
+    let [trace_2_col451]: [QM31; 1] = (*trace_2_col451.try_into().unwrap()).unbox();
+    let [trace_2_col452]: [QM31; 1] = (*trace_2_col452.try_into().unwrap()).unbox();
+    let [trace_2_col453]: [QM31; 1] = (*trace_2_col453.try_into().unwrap()).unbox();
+    let [trace_2_col454]: [QM31; 1] = (*trace_2_col454.try_into().unwrap()).unbox();
+    let [trace_2_col455]: [QM31; 1] = (*trace_2_col455.try_into().unwrap()).unbox();
+    let [trace_2_col456]: [QM31; 1] = (*trace_2_col456.try_into().unwrap()).unbox();
+    let [trace_2_col457]: [QM31; 1] = (*trace_2_col457.try_into().unwrap()).unbox();
+    let [trace_2_col458]: [QM31; 1] = (*trace_2_col458.try_into().unwrap()).unbox();
+    let [trace_2_col459]: [QM31; 1] = (*trace_2_col459.try_into().unwrap()).unbox();
+    let [trace_2_col460]: [QM31; 1] = (*trace_2_col460.try_into().unwrap()).unbox();
+    let [trace_2_col461]: [QM31; 1] = (*trace_2_col461.try_into().unwrap()).unbox();
+    let [trace_2_col462]: [QM31; 1] = (*trace_2_col462.try_into().unwrap()).unbox();
+    let [trace_2_col463]: [QM31; 1] = (*trace_2_col463.try_into().unwrap()).unbox();
+    let [trace_2_col464]: [QM31; 1] = (*trace_2_col464.try_into().unwrap()).unbox();
+    let [trace_2_col465]: [QM31; 1] = (*trace_2_col465.try_into().unwrap()).unbox();
+    let [trace_2_col466]: [QM31; 1] = (*trace_2_col466.try_into().unwrap()).unbox();
+    let [trace_2_col467]: [QM31; 1] = (*trace_2_col467.try_into().unwrap()).unbox();
+    let [trace_2_col468]: [QM31; 1] = (*trace_2_col468.try_into().unwrap()).unbox();
+    let [trace_2_col469]: [QM31; 1] = (*trace_2_col469.try_into().unwrap()).unbox();
+    let [trace_2_col470]: [QM31; 1] = (*trace_2_col470.try_into().unwrap()).unbox();
+    let [trace_2_col471]: [QM31; 1] = (*trace_2_col471.try_into().unwrap()).unbox();
+    let [trace_2_col472]: [QM31; 1] = (*trace_2_col472.try_into().unwrap()).unbox();
+    let [trace_2_col473]: [QM31; 1] = (*trace_2_col473.try_into().unwrap()).unbox();
+    let [trace_2_col474]: [QM31; 1] = (*trace_2_col474.try_into().unwrap()).unbox();
+    let [trace_2_col475]: [QM31; 1] = (*trace_2_col475.try_into().unwrap()).unbox();
+    let [trace_2_col476]: [QM31; 1] = (*trace_2_col476.try_into().unwrap()).unbox();
+    let [trace_2_col477]: [QM31; 1] = (*trace_2_col477.try_into().unwrap()).unbox();
+    let [trace_2_col478]: [QM31; 1] = (*trace_2_col478.try_into().unwrap()).unbox();
+    let [trace_2_col479]: [QM31; 1] = (*trace_2_col479.try_into().unwrap()).unbox();
+    let [trace_2_col480]: [QM31; 1] = (*trace_2_col480.try_into().unwrap()).unbox();
+    let [trace_2_col481]: [QM31; 1] = (*trace_2_col481.try_into().unwrap()).unbox();
+    let [trace_2_col482]: [QM31; 1] = (*trace_2_col482.try_into().unwrap()).unbox();
+    let [trace_2_col483]: [QM31; 1] = (*trace_2_col483.try_into().unwrap()).unbox();
+    let [trace_2_col484]: [QM31; 1] = (*trace_2_col484.try_into().unwrap()).unbox();
+    let [trace_2_col485]: [QM31; 1] = (*trace_2_col485.try_into().unwrap()).unbox();
+    let [trace_2_col486]: [QM31; 1] = (*trace_2_col486.try_into().unwrap()).unbox();
+    let [trace_2_col487]: [QM31; 1] = (*trace_2_col487.try_into().unwrap()).unbox();
+    let [trace_2_col488]: [QM31; 1] = (*trace_2_col488.try_into().unwrap()).unbox();
+    let [trace_2_col489]: [QM31; 1] = (*trace_2_col489.try_into().unwrap()).unbox();
+    let [trace_2_col490]: [QM31; 1] = (*trace_2_col490.try_into().unwrap()).unbox();
+    let [trace_2_col491]: [QM31; 1] = (*trace_2_col491.try_into().unwrap()).unbox();
+    let [trace_2_col492]: [QM31; 1] = (*trace_2_col492.try_into().unwrap()).unbox();
+    let [trace_2_col493]: [QM31; 1] = (*trace_2_col493.try_into().unwrap()).unbox();
+    let [trace_2_col494]: [QM31; 1] = (*trace_2_col494.try_into().unwrap()).unbox();
+    let [trace_2_col495]: [QM31; 1] = (*trace_2_col495.try_into().unwrap()).unbox();
+    let [trace_2_col496]: [QM31; 1] = (*trace_2_col496.try_into().unwrap()).unbox();
+    let [trace_2_col497]: [QM31; 1] = (*trace_2_col497.try_into().unwrap()).unbox();
+    let [trace_2_col498]: [QM31; 1] = (*trace_2_col498.try_into().unwrap()).unbox();
+    let [trace_2_col499]: [QM31; 1] = (*trace_2_col499.try_into().unwrap()).unbox();
+    let [trace_2_col500]: [QM31; 1] = (*trace_2_col500.try_into().unwrap()).unbox();
+    let [trace_2_col501]: [QM31; 1] = (*trace_2_col501.try_into().unwrap()).unbox();
+    let [trace_2_col502]: [QM31; 1] = (*trace_2_col502.try_into().unwrap()).unbox();
+    let [trace_2_col503]: [QM31; 1] = (*trace_2_col503.try_into().unwrap()).unbox();
+    let [trace_2_col504]: [QM31; 1] = (*trace_2_col504.try_into().unwrap()).unbox();
+    let [trace_2_col505]: [QM31; 1] = (*trace_2_col505.try_into().unwrap()).unbox();
+    let [trace_2_col506]: [QM31; 1] = (*trace_2_col506.try_into().unwrap()).unbox();
+    let [trace_2_col507]: [QM31; 1] = (*trace_2_col507.try_into().unwrap()).unbox();
+    let [trace_2_col508]: [QM31; 1] = (*trace_2_col508.try_into().unwrap()).unbox();
+    let [trace_2_col509]: [QM31; 1] = (*trace_2_col509.try_into().unwrap()).unbox();
+    let [trace_2_col510]: [QM31; 1] = (*trace_2_col510.try_into().unwrap()).unbox();
+    let [trace_2_col511]: [QM31; 1] = (*trace_2_col511.try_into().unwrap()).unbox();
+    let [trace_2_col512_neg1, trace_2_col512]: [QM31; 2] = (*trace_2_col512.try_into().unwrap())
         .unbox();
-    let [trace_2_col257_neg1, trace_2_col257]: [QM31; 2] = (*trace_2_col257.try_into().unwrap())
+    let [trace_2_col513_neg1, trace_2_col513]: [QM31; 2] = (*trace_2_col513.try_into().unwrap())
         .unbox();
-    let [trace_2_col258_neg1, trace_2_col258]: [QM31; 2] = (*trace_2_col258.try_into().unwrap())
+    let [trace_2_col514_neg1, trace_2_col514]: [QM31; 2] = (*trace_2_col514.try_into().unwrap())
         .unbox();
-    let [trace_2_col259_neg1, trace_2_col259]: [QM31; 2] = (*trace_2_col259.try_into().unwrap())
+    let [trace_2_col515_neg1, trace_2_col515]: [QM31; 2] = (*trace_2_col515.try_into().unwrap())
         .unbox();
 
     core::internal::revoke_ap_tracking();
@@ -2469,10 +4562,10 @@ fn lookup_constraints(
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
     ))
-        * pedersen_points_table_sum_0
-        * range_check_9_9_sum_1)
-        - pedersen_points_table_sum_0
-        - range_check_9_9_sum_1)
+        * range_check_9_9_sum_0
+        * pedersen_points_table_sum_1)
+        - range_check_9_9_sum_0
+        - pedersen_points_table_sum_1)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2480,10 +4573,10 @@ fn lookup_constraints(
         [trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7],
     )
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
-        * range_check_9_9_b_sum_2
-        * range_check_9_9_c_sum_3)
-        - range_check_9_9_b_sum_2
-        - range_check_9_9_c_sum_3)
+        * range_check_9_9_sum_2
+        * range_check_9_9_b_sum_3)
+        - range_check_9_9_sum_2
+        - range_check_9_9_b_sum_3)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2491,10 +4584,10 @@ fn lookup_constraints(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * range_check_9_9_d_sum_4
-        * range_check_9_9_e_sum_5)
-        - range_check_9_9_d_sum_4
-        - range_check_9_9_e_sum_5)
+        * range_check_9_9_c_sum_4
+        * range_check_9_9_d_sum_5)
+        - range_check_9_9_c_sum_4
+        - range_check_9_9_d_sum_5)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2502,10 +4595,10 @@ fn lookup_constraints(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
-        * range_check_9_9_f_sum_6
-        * range_check_9_9_g_sum_7)
-        - range_check_9_9_f_sum_6
-        - range_check_9_9_g_sum_7)
+        * range_check_9_9_e_sum_6
+        * range_check_9_9_f_sum_7)
+        - range_check_9_9_e_sum_6
+        - range_check_9_9_f_sum_7)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2515,10 +4608,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
         ))
-        * range_check_9_9_h_sum_8
-        * range_check_9_9_sum_9)
-        - range_check_9_9_h_sum_8
-        - range_check_9_9_sum_9)
+        * range_check_9_9_g_sum_8
+        * range_check_9_9_h_sum_9)
+        - range_check_9_9_g_sum_8
+        - range_check_9_9_h_sum_9)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2528,10 +4621,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
         ))
-        * range_check_9_9_b_sum_10
-        * range_check_9_9_c_sum_11)
-        - range_check_9_9_b_sum_10
-        - range_check_9_9_c_sum_11)
+        * range_check_9_9_sum_10
+        * range_check_9_9_b_sum_11)
+        - range_check_9_9_sum_10
+        - range_check_9_9_b_sum_11)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2541,10 +4634,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
         ))
-        * range_check_9_9_d_sum_12
-        * range_check_9_9_e_sum_13)
-        - range_check_9_9_d_sum_12
-        - range_check_9_9_e_sum_13)
+        * range_check_9_9_c_sum_12
+        * range_check_9_9_d_sum_13)
+        - range_check_9_9_c_sum_12
+        - range_check_9_9_d_sum_13)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2554,10 +4647,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col24, trace_2_col25, trace_2_col26, trace_2_col27],
         ))
-        * range_check_9_9_f_sum_14
-        * range_check_20_sum_15)
-        - range_check_9_9_f_sum_14
-        - range_check_20_sum_15)
+        * range_check_9_9_e_sum_14
+        * range_check_9_9_f_sum_15)
+        - range_check_9_9_e_sum_14
+        - range_check_9_9_f_sum_15)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2567,10 +4660,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col28, trace_2_col29, trace_2_col30, trace_2_col31],
         ))
-        * range_check_20_b_sum_16
-        * range_check_20_c_sum_17)
-        - range_check_20_b_sum_16
-        - range_check_20_c_sum_17)
+        * range_check_20_sum_16
+        * range_check_20_b_sum_17)
+        - range_check_20_sum_16
+        - range_check_20_b_sum_17)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2580,10 +4673,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col32, trace_2_col33, trace_2_col34, trace_2_col35],
         ))
-        * range_check_20_d_sum_18
-        * range_check_20_e_sum_19)
-        - range_check_20_d_sum_18
-        - range_check_20_e_sum_19)
+        * range_check_20_c_sum_18
+        * range_check_20_d_sum_19)
+        - range_check_20_c_sum_18
+        - range_check_20_d_sum_19)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2593,10 +4686,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col36, trace_2_col37, trace_2_col38, trace_2_col39],
         ))
-        * range_check_20_f_sum_20
-        * range_check_20_g_sum_21)
-        - range_check_20_f_sum_20
-        - range_check_20_g_sum_21)
+        * range_check_20_e_sum_20
+        * range_check_20_f_sum_21)
+        - range_check_20_e_sum_20
+        - range_check_20_f_sum_21)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2606,10 +4699,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col40, trace_2_col41, trace_2_col42, trace_2_col43],
         ))
-        * range_check_20_h_sum_22
-        * range_check_20_sum_23)
-        - range_check_20_h_sum_22
-        - range_check_20_sum_23)
+        * range_check_20_g_sum_22
+        * range_check_20_h_sum_23)
+        - range_check_20_g_sum_22
+        - range_check_20_h_sum_23)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2619,10 +4712,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col44, trace_2_col45, trace_2_col46, trace_2_col47],
         ))
-        * range_check_20_b_sum_24
-        * range_check_20_c_sum_25)
-        - range_check_20_b_sum_24
-        - range_check_20_c_sum_25)
+        * range_check_20_sum_24
+        * range_check_20_b_sum_25)
+        - range_check_20_sum_24
+        - range_check_20_b_sum_25)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2632,10 +4725,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col48, trace_2_col49, trace_2_col50, trace_2_col51],
         ))
-        * range_check_20_d_sum_26
-        * range_check_20_e_sum_27)
-        - range_check_20_d_sum_26
-        - range_check_20_e_sum_27)
+        * range_check_20_c_sum_26
+        * range_check_20_d_sum_27)
+        - range_check_20_c_sum_26
+        - range_check_20_d_sum_27)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2645,10 +4738,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col52, trace_2_col53, trace_2_col54, trace_2_col55],
         ))
-        * range_check_20_f_sum_28
-        * range_check_20_g_sum_29)
-        - range_check_20_f_sum_28
-        - range_check_20_g_sum_29)
+        * range_check_20_e_sum_28
+        * range_check_20_f_sum_29)
+        - range_check_20_e_sum_28
+        - range_check_20_f_sum_29)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2658,10 +4751,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col56, trace_2_col57, trace_2_col58, trace_2_col59],
         ))
-        * range_check_20_h_sum_30
-        * range_check_20_sum_31)
-        - range_check_20_h_sum_30
-        - range_check_20_sum_31)
+        * range_check_20_g_sum_30
+        * range_check_20_h_sum_31)
+        - range_check_20_g_sum_30
+        - range_check_20_h_sum_31)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2671,10 +4764,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col60, trace_2_col61, trace_2_col62, trace_2_col63],
         ))
-        * range_check_20_b_sum_32
-        * range_check_20_c_sum_33)
-        - range_check_20_b_sum_32
-        - range_check_20_c_sum_33)
+        * range_check_20_sum_32
+        * range_check_20_b_sum_33)
+        - range_check_20_sum_32
+        - range_check_20_b_sum_33)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2684,10 +4777,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col64, trace_2_col65, trace_2_col66, trace_2_col67],
         ))
-        * range_check_20_d_sum_34
-        * range_check_20_e_sum_35)
-        - range_check_20_d_sum_34
-        - range_check_20_e_sum_35)
+        * range_check_20_c_sum_34
+        * range_check_20_d_sum_35)
+        - range_check_20_c_sum_34
+        - range_check_20_d_sum_35)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2697,10 +4790,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col68, trace_2_col69, trace_2_col70, trace_2_col71],
         ))
-        * range_check_20_f_sum_36
-        * range_check_20_g_sum_37)
-        - range_check_20_f_sum_36
-        - range_check_20_g_sum_37)
+        * range_check_20_e_sum_36
+        * range_check_20_f_sum_37)
+        - range_check_20_e_sum_36
+        - range_check_20_f_sum_37)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2710,10 +4803,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col72, trace_2_col73, trace_2_col74, trace_2_col75],
         ))
-        * range_check_20_h_sum_38
-        * range_check_20_sum_39)
-        - range_check_20_h_sum_38
-        - range_check_20_sum_39)
+        * range_check_20_g_sum_38
+        * range_check_20_h_sum_39)
+        - range_check_20_g_sum_38
+        - range_check_20_h_sum_39)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2723,10 +4816,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col76, trace_2_col77, trace_2_col78, trace_2_col79],
         ))
-        * range_check_20_b_sum_40
-        * range_check_20_c_sum_41)
-        - range_check_20_b_sum_40
-        - range_check_20_c_sum_41)
+        * range_check_20_sum_40
+        * range_check_20_b_sum_41)
+        - range_check_20_sum_40
+        - range_check_20_b_sum_41)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2736,10 +4829,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col80, trace_2_col81, trace_2_col82, trace_2_col83],
         ))
-        * range_check_20_d_sum_42
-        * range_check_9_9_sum_43)
-        - range_check_20_d_sum_42
-        - range_check_9_9_sum_43)
+        * range_check_20_c_sum_42
+        * range_check_20_d_sum_43)
+        - range_check_20_c_sum_42
+        - range_check_20_d_sum_43)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2749,10 +4842,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col84, trace_2_col85, trace_2_col86, trace_2_col87],
         ))
-        * range_check_9_9_b_sum_44
-        * range_check_9_9_c_sum_45)
-        - range_check_9_9_b_sum_44
-        - range_check_9_9_c_sum_45)
+        * range_check_9_9_sum_44
+        * range_check_9_9_b_sum_45)
+        - range_check_9_9_sum_44
+        - range_check_9_9_b_sum_45)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2762,10 +4855,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col88, trace_2_col89, trace_2_col90, trace_2_col91],
         ))
-        * range_check_9_9_d_sum_46
-        * range_check_9_9_e_sum_47)
-        - range_check_9_9_d_sum_46
-        - range_check_9_9_e_sum_47)
+        * range_check_9_9_c_sum_46
+        * range_check_9_9_d_sum_47)
+        - range_check_9_9_c_sum_46
+        - range_check_9_9_d_sum_47)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2775,10 +4868,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col92, trace_2_col93, trace_2_col94, trace_2_col95],
         ))
-        * range_check_9_9_f_sum_48
-        * range_check_9_9_g_sum_49)
-        - range_check_9_9_f_sum_48
-        - range_check_9_9_g_sum_49)
+        * range_check_9_9_e_sum_48
+        * range_check_9_9_f_sum_49)
+        - range_check_9_9_e_sum_48
+        - range_check_9_9_f_sum_49)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2788,10 +4881,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col96, trace_2_col97, trace_2_col98, trace_2_col99],
         ))
-        * range_check_9_9_h_sum_50
-        * range_check_9_9_sum_51)
-        - range_check_9_9_h_sum_50
-        - range_check_9_9_sum_51)
+        * range_check_9_9_g_sum_50
+        * range_check_9_9_h_sum_51)
+        - range_check_9_9_g_sum_50
+        - range_check_9_9_h_sum_51)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2801,10 +4894,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col100, trace_2_col101, trace_2_col102, trace_2_col103],
         ))
-        * range_check_9_9_b_sum_52
-        * range_check_9_9_c_sum_53)
-        - range_check_9_9_b_sum_52
-        - range_check_9_9_c_sum_53)
+        * range_check_9_9_sum_52
+        * range_check_9_9_b_sum_53)
+        - range_check_9_9_sum_52
+        - range_check_9_9_b_sum_53)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2814,10 +4907,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col104, trace_2_col105, trace_2_col106, trace_2_col107],
         ))
-        * range_check_9_9_d_sum_54
-        * range_check_9_9_e_sum_55)
-        - range_check_9_9_d_sum_54
-        - range_check_9_9_e_sum_55)
+        * range_check_9_9_c_sum_54
+        * range_check_9_9_d_sum_55)
+        - range_check_9_9_c_sum_54
+        - range_check_9_9_d_sum_55)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2827,10 +4920,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col108, trace_2_col109, trace_2_col110, trace_2_col111],
         ))
-        * range_check_9_9_f_sum_56
-        * range_check_20_sum_57)
-        - range_check_9_9_f_sum_56
-        - range_check_20_sum_57)
+        * range_check_9_9_e_sum_56
+        * range_check_9_9_f_sum_57)
+        - range_check_9_9_e_sum_56
+        - range_check_9_9_f_sum_57)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2840,10 +4933,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col112, trace_2_col113, trace_2_col114, trace_2_col115],
         ))
-        * range_check_20_b_sum_58
-        * range_check_20_c_sum_59)
-        - range_check_20_b_sum_58
-        - range_check_20_c_sum_59)
+        * range_check_20_sum_58
+        * range_check_20_b_sum_59)
+        - range_check_20_sum_58
+        - range_check_20_b_sum_59)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2853,10 +4946,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col116, trace_2_col117, trace_2_col118, trace_2_col119],
         ))
-        * range_check_20_d_sum_60
-        * range_check_20_e_sum_61)
-        - range_check_20_d_sum_60
-        - range_check_20_e_sum_61)
+        * range_check_20_c_sum_60
+        * range_check_20_d_sum_61)
+        - range_check_20_c_sum_60
+        - range_check_20_d_sum_61)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2866,10 +4959,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col120, trace_2_col121, trace_2_col122, trace_2_col123],
         ))
-        * range_check_20_f_sum_62
-        * range_check_20_g_sum_63)
-        - range_check_20_f_sum_62
-        - range_check_20_g_sum_63)
+        * range_check_20_e_sum_62
+        * range_check_20_f_sum_63)
+        - range_check_20_e_sum_62
+        - range_check_20_f_sum_63)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2879,10 +4972,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col124, trace_2_col125, trace_2_col126, trace_2_col127],
         ))
-        * range_check_20_h_sum_64
-        * range_check_20_sum_65)
-        - range_check_20_h_sum_64
-        - range_check_20_sum_65)
+        * range_check_20_g_sum_64
+        * range_check_20_h_sum_65)
+        - range_check_20_g_sum_64
+        - range_check_20_h_sum_65)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2892,10 +4985,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col128, trace_2_col129, trace_2_col130, trace_2_col131],
         ))
-        * range_check_20_b_sum_66
-        * range_check_20_c_sum_67)
-        - range_check_20_b_sum_66
-        - range_check_20_c_sum_67)
+        * range_check_20_sum_66
+        * range_check_20_b_sum_67)
+        - range_check_20_sum_66
+        - range_check_20_b_sum_67)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2905,10 +4998,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col132, trace_2_col133, trace_2_col134, trace_2_col135],
         ))
-        * range_check_20_d_sum_68
-        * range_check_20_e_sum_69)
-        - range_check_20_d_sum_68
-        - range_check_20_e_sum_69)
+        * range_check_20_c_sum_68
+        * range_check_20_d_sum_69)
+        - range_check_20_c_sum_68
+        - range_check_20_d_sum_69)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2918,10 +5011,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col136, trace_2_col137, trace_2_col138, trace_2_col139],
         ))
-        * range_check_20_f_sum_70
-        * range_check_20_g_sum_71)
-        - range_check_20_f_sum_70
-        - range_check_20_g_sum_71)
+        * range_check_20_e_sum_70
+        * range_check_20_f_sum_71)
+        - range_check_20_e_sum_70
+        - range_check_20_f_sum_71)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2931,10 +5024,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col140, trace_2_col141, trace_2_col142, trace_2_col143],
         ))
-        * range_check_20_h_sum_72
-        * range_check_20_sum_73)
-        - range_check_20_h_sum_72
-        - range_check_20_sum_73)
+        * range_check_20_g_sum_72
+        * range_check_20_h_sum_73)
+        - range_check_20_g_sum_72
+        - range_check_20_h_sum_73)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2944,10 +5037,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col144, trace_2_col145, trace_2_col146, trace_2_col147],
         ))
-        * range_check_20_b_sum_74
-        * range_check_20_c_sum_75)
-        - range_check_20_b_sum_74
-        - range_check_20_c_sum_75)
+        * range_check_20_sum_74
+        * range_check_20_b_sum_75)
+        - range_check_20_sum_74
+        - range_check_20_b_sum_75)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2957,10 +5050,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col148, trace_2_col149, trace_2_col150, trace_2_col151],
         ))
-        * range_check_20_d_sum_76
-        * range_check_20_e_sum_77)
-        - range_check_20_d_sum_76
-        - range_check_20_e_sum_77)
+        * range_check_20_c_sum_76
+        * range_check_20_d_sum_77)
+        - range_check_20_c_sum_76
+        - range_check_20_d_sum_77)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2970,10 +5063,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col152, trace_2_col153, trace_2_col154, trace_2_col155],
         ))
-        * range_check_20_f_sum_78
-        * range_check_20_g_sum_79)
-        - range_check_20_f_sum_78
-        - range_check_20_g_sum_79)
+        * range_check_20_e_sum_78
+        * range_check_20_f_sum_79)
+        - range_check_20_e_sum_78
+        - range_check_20_f_sum_79)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2983,10 +5076,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col156, trace_2_col157, trace_2_col158, trace_2_col159],
         ))
-        * range_check_20_h_sum_80
-        * range_check_20_sum_81)
-        - range_check_20_h_sum_80
-        - range_check_20_sum_81)
+        * range_check_20_g_sum_80
+        * range_check_20_h_sum_81)
+        - range_check_20_g_sum_80
+        - range_check_20_h_sum_81)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -2996,10 +5089,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col160, trace_2_col161, trace_2_col162, trace_2_col163],
         ))
-        * range_check_20_b_sum_82
-        * range_check_20_c_sum_83)
-        - range_check_20_b_sum_82
-        - range_check_20_c_sum_83)
+        * range_check_20_sum_82
+        * range_check_20_b_sum_83)
+        - range_check_20_sum_82
+        - range_check_20_b_sum_83)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3009,10 +5102,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col164, trace_2_col165, trace_2_col166, trace_2_col167],
         ))
-        * range_check_20_d_sum_84
-        * range_check_9_9_sum_85)
-        - range_check_20_d_sum_84
-        - range_check_9_9_sum_85)
+        * range_check_20_c_sum_84
+        * range_check_20_d_sum_85)
+        - range_check_20_c_sum_84
+        - range_check_20_d_sum_85)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3022,10 +5115,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col168, trace_2_col169, trace_2_col170, trace_2_col171],
         ))
-        * range_check_9_9_b_sum_86
-        * range_check_9_9_c_sum_87)
-        - range_check_9_9_b_sum_86
-        - range_check_9_9_c_sum_87)
+        * range_check_9_9_sum_86
+        * range_check_9_9_b_sum_87)
+        - range_check_9_9_sum_86
+        - range_check_9_9_b_sum_87)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3035,10 +5128,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col172, trace_2_col173, trace_2_col174, trace_2_col175],
         ))
-        * range_check_9_9_d_sum_88
-        * range_check_9_9_e_sum_89)
-        - range_check_9_9_d_sum_88
-        - range_check_9_9_e_sum_89)
+        * range_check_9_9_c_sum_88
+        * range_check_9_9_d_sum_89)
+        - range_check_9_9_c_sum_88
+        - range_check_9_9_d_sum_89)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3048,10 +5141,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col176, trace_2_col177, trace_2_col178, trace_2_col179],
         ))
-        * range_check_9_9_f_sum_90
-        * range_check_9_9_g_sum_91)
-        - range_check_9_9_f_sum_90
-        - range_check_9_9_g_sum_91)
+        * range_check_9_9_e_sum_90
+        * range_check_9_9_f_sum_91)
+        - range_check_9_9_e_sum_90
+        - range_check_9_9_f_sum_91)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3061,10 +5154,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col180, trace_2_col181, trace_2_col182, trace_2_col183],
         ))
-        * range_check_9_9_h_sum_92
-        * range_check_9_9_sum_93)
-        - range_check_9_9_h_sum_92
-        - range_check_9_9_sum_93)
+        * range_check_9_9_g_sum_92
+        * range_check_9_9_h_sum_93)
+        - range_check_9_9_g_sum_92
+        - range_check_9_9_h_sum_93)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3074,10 +5167,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col184, trace_2_col185, trace_2_col186, trace_2_col187],
         ))
-        * range_check_9_9_b_sum_94
-        * range_check_9_9_c_sum_95)
-        - range_check_9_9_b_sum_94
-        - range_check_9_9_c_sum_95)
+        * range_check_9_9_sum_94
+        * range_check_9_9_b_sum_95)
+        - range_check_9_9_sum_94
+        - range_check_9_9_b_sum_95)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3087,10 +5180,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col188, trace_2_col189, trace_2_col190, trace_2_col191],
         ))
-        * range_check_9_9_d_sum_96
-        * range_check_9_9_e_sum_97)
-        - range_check_9_9_d_sum_96
-        - range_check_9_9_e_sum_97)
+        * range_check_9_9_c_sum_96
+        * range_check_9_9_d_sum_97)
+        - range_check_9_9_c_sum_96
+        - range_check_9_9_d_sum_97)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3100,10 +5193,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col192, trace_2_col193, trace_2_col194, trace_2_col195],
         ))
-        * range_check_9_9_f_sum_98
-        * range_check_20_sum_99)
-        - range_check_9_9_f_sum_98
-        - range_check_20_sum_99)
+        * range_check_9_9_e_sum_98
+        * range_check_9_9_f_sum_99)
+        - range_check_9_9_e_sum_98
+        - range_check_9_9_f_sum_99)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3113,10 +5206,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col196, trace_2_col197, trace_2_col198, trace_2_col199],
         ))
-        * range_check_20_b_sum_100
-        * range_check_20_c_sum_101)
-        - range_check_20_b_sum_100
-        - range_check_20_c_sum_101)
+        * range_check_20_sum_100
+        * range_check_20_b_sum_101)
+        - range_check_20_sum_100
+        - range_check_20_b_sum_101)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3126,10 +5219,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col200, trace_2_col201, trace_2_col202, trace_2_col203],
         ))
-        * range_check_20_d_sum_102
-        * range_check_20_e_sum_103)
-        - range_check_20_d_sum_102
-        - range_check_20_e_sum_103)
+        * range_check_20_c_sum_102
+        * range_check_20_d_sum_103)
+        - range_check_20_c_sum_102
+        - range_check_20_d_sum_103)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3139,10 +5232,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col204, trace_2_col205, trace_2_col206, trace_2_col207],
         ))
-        * range_check_20_f_sum_104
-        * range_check_20_g_sum_105)
-        - range_check_20_f_sum_104
-        - range_check_20_g_sum_105)
+        * range_check_20_e_sum_104
+        * range_check_20_f_sum_105)
+        - range_check_20_e_sum_104
+        - range_check_20_f_sum_105)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3152,10 +5245,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col208, trace_2_col209, trace_2_col210, trace_2_col211],
         ))
-        * range_check_20_h_sum_106
-        * range_check_20_sum_107)
-        - range_check_20_h_sum_106
-        - range_check_20_sum_107)
+        * range_check_20_g_sum_106
+        * range_check_20_h_sum_107)
+        - range_check_20_g_sum_106
+        - range_check_20_h_sum_107)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3165,10 +5258,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col212, trace_2_col213, trace_2_col214, trace_2_col215],
         ))
-        * range_check_20_b_sum_108
-        * range_check_20_c_sum_109)
-        - range_check_20_b_sum_108
-        - range_check_20_c_sum_109)
+        * range_check_20_sum_108
+        * range_check_20_b_sum_109)
+        - range_check_20_sum_108
+        - range_check_20_b_sum_109)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3178,10 +5271,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col216, trace_2_col217, trace_2_col218, trace_2_col219],
         ))
-        * range_check_20_d_sum_110
-        * range_check_20_e_sum_111)
-        - range_check_20_d_sum_110
-        - range_check_20_e_sum_111)
+        * range_check_20_c_sum_110
+        * range_check_20_d_sum_111)
+        - range_check_20_c_sum_110
+        - range_check_20_d_sum_111)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3191,10 +5284,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col220, trace_2_col221, trace_2_col222, trace_2_col223],
         ))
-        * range_check_20_f_sum_112
-        * range_check_20_g_sum_113)
-        - range_check_20_f_sum_112
-        - range_check_20_g_sum_113)
+        * range_check_20_e_sum_112
+        * range_check_20_f_sum_113)
+        - range_check_20_e_sum_112
+        - range_check_20_f_sum_113)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3204,10 +5297,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col224, trace_2_col225, trace_2_col226, trace_2_col227],
         ))
-        * range_check_20_h_sum_114
-        * range_check_20_sum_115)
-        - range_check_20_h_sum_114
-        - range_check_20_sum_115)
+        * range_check_20_g_sum_114
+        * range_check_20_h_sum_115)
+        - range_check_20_g_sum_114
+        - range_check_20_h_sum_115)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3217,10 +5310,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col228, trace_2_col229, trace_2_col230, trace_2_col231],
         ))
-        * range_check_20_b_sum_116
-        * range_check_20_c_sum_117)
-        - range_check_20_b_sum_116
-        - range_check_20_c_sum_117)
+        * range_check_20_sum_116
+        * range_check_20_b_sum_117)
+        - range_check_20_sum_116
+        - range_check_20_b_sum_117)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3230,10 +5323,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col232, trace_2_col233, trace_2_col234, trace_2_col235],
         ))
-        * range_check_20_d_sum_118
-        * range_check_20_e_sum_119)
-        - range_check_20_d_sum_118
-        - range_check_20_e_sum_119)
+        * range_check_20_c_sum_118
+        * range_check_20_d_sum_119)
+        - range_check_20_c_sum_118
+        - range_check_20_d_sum_119)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3243,10 +5336,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col236, trace_2_col237, trace_2_col238, trace_2_col239],
         ))
-        * range_check_20_f_sum_120
-        * range_check_20_g_sum_121)
-        - range_check_20_f_sum_120
-        - range_check_20_g_sum_121)
+        * range_check_20_e_sum_120
+        * range_check_20_f_sum_121)
+        - range_check_20_e_sum_120
+        - range_check_20_f_sum_121)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3256,10 +5349,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col240, trace_2_col241, trace_2_col242, trace_2_col243],
         ))
-        * range_check_20_h_sum_122
-        * range_check_20_sum_123)
-        - range_check_20_h_sum_122
-        - range_check_20_sum_123)
+        * range_check_20_g_sum_122
+        * range_check_20_h_sum_123)
+        - range_check_20_g_sum_122
+        - range_check_20_h_sum_123)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3269,10 +5362,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col244, trace_2_col245, trace_2_col246, trace_2_col247],
         ))
-        * range_check_20_b_sum_124
-        * range_check_20_c_sum_125)
-        - range_check_20_b_sum_124
-        - range_check_20_c_sum_125)
+        * range_check_20_sum_124
+        * range_check_20_b_sum_125)
+        - range_check_20_sum_124
+        - range_check_20_b_sum_125)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3282,10 +5375,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col248, trace_2_col249, trace_2_col250, trace_2_col251],
         ))
-        * range_check_20_d_sum_126
-        * partial_ec_mul_sum_127)
-        - (range_check_20_d_sum_126 * enabler)
-        - partial_ec_mul_sum_127)
+        * range_check_20_c_sum_126
+        * range_check_20_d_sum_127)
+        - range_check_20_c_sum_126
+        - range_check_20_d_sum_127)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -3294,12 +5387,844 @@ fn lookup_constraints(
     )
         - QM31Impl::from_partial_evals(
             [trace_2_col252, trace_2_col253, trace_2_col254, trace_2_col255],
+        ))
+        * pedersen_points_table_sum_128
+        * range_check_9_9_sum_129)
+        - pedersen_points_table_sum_128
+        - range_check_9_9_sum_129)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col260, trace_2_col261, trace_2_col262, trace_2_col263],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col256, trace_2_col257, trace_2_col258, trace_2_col259],
+        ))
+        * range_check_9_9_b_sum_130
+        * range_check_9_9_c_sum_131)
+        - range_check_9_9_b_sum_130
+        - range_check_9_9_c_sum_131)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col264, trace_2_col265, trace_2_col266, trace_2_col267],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col260, trace_2_col261, trace_2_col262, trace_2_col263],
+        ))
+        * range_check_9_9_d_sum_132
+        * range_check_9_9_e_sum_133)
+        - range_check_9_9_d_sum_132
+        - range_check_9_9_e_sum_133)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col268, trace_2_col269, trace_2_col270, trace_2_col271],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col264, trace_2_col265, trace_2_col266, trace_2_col267],
+        ))
+        * range_check_9_9_f_sum_134
+        * range_check_9_9_g_sum_135)
+        - range_check_9_9_f_sum_134
+        - range_check_9_9_g_sum_135)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col272, trace_2_col273, trace_2_col274, trace_2_col275],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col268, trace_2_col269, trace_2_col270, trace_2_col271],
+        ))
+        * range_check_9_9_h_sum_136
+        * range_check_9_9_sum_137)
+        - range_check_9_9_h_sum_136
+        - range_check_9_9_sum_137)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col276, trace_2_col277, trace_2_col278, trace_2_col279],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col272, trace_2_col273, trace_2_col274, trace_2_col275],
+        ))
+        * range_check_9_9_b_sum_138
+        * range_check_9_9_c_sum_139)
+        - range_check_9_9_b_sum_138
+        - range_check_9_9_c_sum_139)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col280, trace_2_col281, trace_2_col282, trace_2_col283],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col276, trace_2_col277, trace_2_col278, trace_2_col279],
+        ))
+        * range_check_9_9_d_sum_140
+        * range_check_9_9_e_sum_141)
+        - range_check_9_9_d_sum_140
+        - range_check_9_9_e_sum_141)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col284, trace_2_col285, trace_2_col286, trace_2_col287],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col280, trace_2_col281, trace_2_col282, trace_2_col283],
+        ))
+        * range_check_9_9_f_sum_142
+        * range_check_20_sum_143)
+        - range_check_9_9_f_sum_142
+        - range_check_20_sum_143)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col288, trace_2_col289, trace_2_col290, trace_2_col291],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col284, trace_2_col285, trace_2_col286, trace_2_col287],
+        ))
+        * range_check_20_b_sum_144
+        * range_check_20_c_sum_145)
+        - range_check_20_b_sum_144
+        - range_check_20_c_sum_145)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col292, trace_2_col293, trace_2_col294, trace_2_col295],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col288, trace_2_col289, trace_2_col290, trace_2_col291],
+        ))
+        * range_check_20_d_sum_146
+        * range_check_20_e_sum_147)
+        - range_check_20_d_sum_146
+        - range_check_20_e_sum_147)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col296, trace_2_col297, trace_2_col298, trace_2_col299],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col292, trace_2_col293, trace_2_col294, trace_2_col295],
+        ))
+        * range_check_20_f_sum_148
+        * range_check_20_g_sum_149)
+        - range_check_20_f_sum_148
+        - range_check_20_g_sum_149)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col300, trace_2_col301, trace_2_col302, trace_2_col303],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col296, trace_2_col297, trace_2_col298, trace_2_col299],
+        ))
+        * range_check_20_h_sum_150
+        * range_check_20_sum_151)
+        - range_check_20_h_sum_150
+        - range_check_20_sum_151)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col304, trace_2_col305, trace_2_col306, trace_2_col307],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col300, trace_2_col301, trace_2_col302, trace_2_col303],
+        ))
+        * range_check_20_b_sum_152
+        * range_check_20_c_sum_153)
+        - range_check_20_b_sum_152
+        - range_check_20_c_sum_153)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col308, trace_2_col309, trace_2_col310, trace_2_col311],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col304, trace_2_col305, trace_2_col306, trace_2_col307],
+        ))
+        * range_check_20_d_sum_154
+        * range_check_20_e_sum_155)
+        - range_check_20_d_sum_154
+        - range_check_20_e_sum_155)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col312, trace_2_col313, trace_2_col314, trace_2_col315],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col308, trace_2_col309, trace_2_col310, trace_2_col311],
+        ))
+        * range_check_20_f_sum_156
+        * range_check_20_g_sum_157)
+        - range_check_20_f_sum_156
+        - range_check_20_g_sum_157)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col316, trace_2_col317, trace_2_col318, trace_2_col319],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col312, trace_2_col313, trace_2_col314, trace_2_col315],
+        ))
+        * range_check_20_h_sum_158
+        * range_check_20_sum_159)
+        - range_check_20_h_sum_158
+        - range_check_20_sum_159)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col320, trace_2_col321, trace_2_col322, trace_2_col323],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col316, trace_2_col317, trace_2_col318, trace_2_col319],
+        ))
+        * range_check_20_b_sum_160
+        * range_check_20_c_sum_161)
+        - range_check_20_b_sum_160
+        - range_check_20_c_sum_161)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col324, trace_2_col325, trace_2_col326, trace_2_col327],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col320, trace_2_col321, trace_2_col322, trace_2_col323],
+        ))
+        * range_check_20_d_sum_162
+        * range_check_20_e_sum_163)
+        - range_check_20_d_sum_162
+        - range_check_20_e_sum_163)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col328, trace_2_col329, trace_2_col330, trace_2_col331],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col324, trace_2_col325, trace_2_col326, trace_2_col327],
+        ))
+        * range_check_20_f_sum_164
+        * range_check_20_g_sum_165)
+        - range_check_20_f_sum_164
+        - range_check_20_g_sum_165)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col332, trace_2_col333, trace_2_col334, trace_2_col335],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col328, trace_2_col329, trace_2_col330, trace_2_col331],
+        ))
+        * range_check_20_h_sum_166
+        * range_check_20_sum_167)
+        - range_check_20_h_sum_166
+        - range_check_20_sum_167)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col336, trace_2_col337, trace_2_col338, trace_2_col339],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col332, trace_2_col333, trace_2_col334, trace_2_col335],
+        ))
+        * range_check_20_b_sum_168
+        * range_check_20_c_sum_169)
+        - range_check_20_b_sum_168
+        - range_check_20_c_sum_169)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col340, trace_2_col341, trace_2_col342, trace_2_col343],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col336, trace_2_col337, trace_2_col338, trace_2_col339],
+        ))
+        * range_check_20_d_sum_170
+        * range_check_9_9_sum_171)
+        - range_check_20_d_sum_170
+        - range_check_9_9_sum_171)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col344, trace_2_col345, trace_2_col346, trace_2_col347],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col340, trace_2_col341, trace_2_col342, trace_2_col343],
+        ))
+        * range_check_9_9_b_sum_172
+        * range_check_9_9_c_sum_173)
+        - range_check_9_9_b_sum_172
+        - range_check_9_9_c_sum_173)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col348, trace_2_col349, trace_2_col350, trace_2_col351],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col344, trace_2_col345, trace_2_col346, trace_2_col347],
+        ))
+        * range_check_9_9_d_sum_174
+        * range_check_9_9_e_sum_175)
+        - range_check_9_9_d_sum_174
+        - range_check_9_9_e_sum_175)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col352, trace_2_col353, trace_2_col354, trace_2_col355],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col348, trace_2_col349, trace_2_col350, trace_2_col351],
+        ))
+        * range_check_9_9_f_sum_176
+        * range_check_9_9_g_sum_177)
+        - range_check_9_9_f_sum_176
+        - range_check_9_9_g_sum_177)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col356, trace_2_col357, trace_2_col358, trace_2_col359],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col352, trace_2_col353, trace_2_col354, trace_2_col355],
+        ))
+        * range_check_9_9_h_sum_178
+        * range_check_9_9_sum_179)
+        - range_check_9_9_h_sum_178
+        - range_check_9_9_sum_179)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col360, trace_2_col361, trace_2_col362, trace_2_col363],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col356, trace_2_col357, trace_2_col358, trace_2_col359],
+        ))
+        * range_check_9_9_b_sum_180
+        * range_check_9_9_c_sum_181)
+        - range_check_9_9_b_sum_180
+        - range_check_9_9_c_sum_181)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col364, trace_2_col365, trace_2_col366, trace_2_col367],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col360, trace_2_col361, trace_2_col362, trace_2_col363],
+        ))
+        * range_check_9_9_d_sum_182
+        * range_check_9_9_e_sum_183)
+        - range_check_9_9_d_sum_182
+        - range_check_9_9_e_sum_183)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col368, trace_2_col369, trace_2_col370, trace_2_col371],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col364, trace_2_col365, trace_2_col366, trace_2_col367],
+        ))
+        * range_check_9_9_f_sum_184
+        * range_check_20_sum_185)
+        - range_check_9_9_f_sum_184
+        - range_check_20_sum_185)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col372, trace_2_col373, trace_2_col374, trace_2_col375],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col368, trace_2_col369, trace_2_col370, trace_2_col371],
+        ))
+        * range_check_20_b_sum_186
+        * range_check_20_c_sum_187)
+        - range_check_20_b_sum_186
+        - range_check_20_c_sum_187)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col376, trace_2_col377, trace_2_col378, trace_2_col379],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col372, trace_2_col373, trace_2_col374, trace_2_col375],
+        ))
+        * range_check_20_d_sum_188
+        * range_check_20_e_sum_189)
+        - range_check_20_d_sum_188
+        - range_check_20_e_sum_189)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col380, trace_2_col381, trace_2_col382, trace_2_col383],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col376, trace_2_col377, trace_2_col378, trace_2_col379],
+        ))
+        * range_check_20_f_sum_190
+        * range_check_20_g_sum_191)
+        - range_check_20_f_sum_190
+        - range_check_20_g_sum_191)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col384, trace_2_col385, trace_2_col386, trace_2_col387],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col380, trace_2_col381, trace_2_col382, trace_2_col383],
+        ))
+        * range_check_20_h_sum_192
+        * range_check_20_sum_193)
+        - range_check_20_h_sum_192
+        - range_check_20_sum_193)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col388, trace_2_col389, trace_2_col390, trace_2_col391],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col384, trace_2_col385, trace_2_col386, trace_2_col387],
+        ))
+        * range_check_20_b_sum_194
+        * range_check_20_c_sum_195)
+        - range_check_20_b_sum_194
+        - range_check_20_c_sum_195)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col392, trace_2_col393, trace_2_col394, trace_2_col395],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col388, trace_2_col389, trace_2_col390, trace_2_col391],
+        ))
+        * range_check_20_d_sum_196
+        * range_check_20_e_sum_197)
+        - range_check_20_d_sum_196
+        - range_check_20_e_sum_197)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col396, trace_2_col397, trace_2_col398, trace_2_col399],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col392, trace_2_col393, trace_2_col394, trace_2_col395],
+        ))
+        * range_check_20_f_sum_198
+        * range_check_20_g_sum_199)
+        - range_check_20_f_sum_198
+        - range_check_20_g_sum_199)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col400, trace_2_col401, trace_2_col402, trace_2_col403],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col396, trace_2_col397, trace_2_col398, trace_2_col399],
+        ))
+        * range_check_20_h_sum_200
+        * range_check_20_sum_201)
+        - range_check_20_h_sum_200
+        - range_check_20_sum_201)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col404, trace_2_col405, trace_2_col406, trace_2_col407],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col400, trace_2_col401, trace_2_col402, trace_2_col403],
+        ))
+        * range_check_20_b_sum_202
+        * range_check_20_c_sum_203)
+        - range_check_20_b_sum_202
+        - range_check_20_c_sum_203)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col408, trace_2_col409, trace_2_col410, trace_2_col411],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col404, trace_2_col405, trace_2_col406, trace_2_col407],
+        ))
+        * range_check_20_d_sum_204
+        * range_check_20_e_sum_205)
+        - range_check_20_d_sum_204
+        - range_check_20_e_sum_205)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col412, trace_2_col413, trace_2_col414, trace_2_col415],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col408, trace_2_col409, trace_2_col410, trace_2_col411],
+        ))
+        * range_check_20_f_sum_206
+        * range_check_20_g_sum_207)
+        - range_check_20_f_sum_206
+        - range_check_20_g_sum_207)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col416, trace_2_col417, trace_2_col418, trace_2_col419],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col412, trace_2_col413, trace_2_col414, trace_2_col415],
+        ))
+        * range_check_20_h_sum_208
+        * range_check_20_sum_209)
+        - range_check_20_h_sum_208
+        - range_check_20_sum_209)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col420, trace_2_col421, trace_2_col422, trace_2_col423],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col416, trace_2_col417, trace_2_col418, trace_2_col419],
+        ))
+        * range_check_20_b_sum_210
+        * range_check_20_c_sum_211)
+        - range_check_20_b_sum_210
+        - range_check_20_c_sum_211)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col424, trace_2_col425, trace_2_col426, trace_2_col427],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col420, trace_2_col421, trace_2_col422, trace_2_col423],
+        ))
+        * range_check_20_d_sum_212
+        * range_check_9_9_sum_213)
+        - range_check_20_d_sum_212
+        - range_check_9_9_sum_213)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col428, trace_2_col429, trace_2_col430, trace_2_col431],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col424, trace_2_col425, trace_2_col426, trace_2_col427],
+        ))
+        * range_check_9_9_b_sum_214
+        * range_check_9_9_c_sum_215)
+        - range_check_9_9_b_sum_214
+        - range_check_9_9_c_sum_215)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col432, trace_2_col433, trace_2_col434, trace_2_col435],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col428, trace_2_col429, trace_2_col430, trace_2_col431],
+        ))
+        * range_check_9_9_d_sum_216
+        * range_check_9_9_e_sum_217)
+        - range_check_9_9_d_sum_216
+        - range_check_9_9_e_sum_217)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col436, trace_2_col437, trace_2_col438, trace_2_col439],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col432, trace_2_col433, trace_2_col434, trace_2_col435],
+        ))
+        * range_check_9_9_f_sum_218
+        * range_check_9_9_g_sum_219)
+        - range_check_9_9_f_sum_218
+        - range_check_9_9_g_sum_219)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col440, trace_2_col441, trace_2_col442, trace_2_col443],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col436, trace_2_col437, trace_2_col438, trace_2_col439],
+        ))
+        * range_check_9_9_h_sum_220
+        * range_check_9_9_sum_221)
+        - range_check_9_9_h_sum_220
+        - range_check_9_9_sum_221)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col444, trace_2_col445, trace_2_col446, trace_2_col447],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col440, trace_2_col441, trace_2_col442, trace_2_col443],
+        ))
+        * range_check_9_9_b_sum_222
+        * range_check_9_9_c_sum_223)
+        - range_check_9_9_b_sum_222
+        - range_check_9_9_c_sum_223)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col448, trace_2_col449, trace_2_col450, trace_2_col451],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col444, trace_2_col445, trace_2_col446, trace_2_col447],
+        ))
+        * range_check_9_9_d_sum_224
+        * range_check_9_9_e_sum_225)
+        - range_check_9_9_d_sum_224
+        - range_check_9_9_e_sum_225)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col452, trace_2_col453, trace_2_col454, trace_2_col455],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col448, trace_2_col449, trace_2_col450, trace_2_col451],
+        ))
+        * range_check_9_9_f_sum_226
+        * range_check_20_sum_227)
+        - range_check_9_9_f_sum_226
+        - range_check_20_sum_227)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col456, trace_2_col457, trace_2_col458, trace_2_col459],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col452, trace_2_col453, trace_2_col454, trace_2_col455],
+        ))
+        * range_check_20_b_sum_228
+        * range_check_20_c_sum_229)
+        - range_check_20_b_sum_228
+        - range_check_20_c_sum_229)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col460, trace_2_col461, trace_2_col462, trace_2_col463],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col456, trace_2_col457, trace_2_col458, trace_2_col459],
+        ))
+        * range_check_20_d_sum_230
+        * range_check_20_e_sum_231)
+        - range_check_20_d_sum_230
+        - range_check_20_e_sum_231)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col464, trace_2_col465, trace_2_col466, trace_2_col467],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col460, trace_2_col461, trace_2_col462, trace_2_col463],
+        ))
+        * range_check_20_f_sum_232
+        * range_check_20_g_sum_233)
+        - range_check_20_f_sum_232
+        - range_check_20_g_sum_233)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col468, trace_2_col469, trace_2_col470, trace_2_col471],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col464, trace_2_col465, trace_2_col466, trace_2_col467],
+        ))
+        * range_check_20_h_sum_234
+        * range_check_20_sum_235)
+        - range_check_20_h_sum_234
+        - range_check_20_sum_235)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col472, trace_2_col473, trace_2_col474, trace_2_col475],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col468, trace_2_col469, trace_2_col470, trace_2_col471],
+        ))
+        * range_check_20_b_sum_236
+        * range_check_20_c_sum_237)
+        - range_check_20_b_sum_236
+        - range_check_20_c_sum_237)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col476, trace_2_col477, trace_2_col478, trace_2_col479],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col472, trace_2_col473, trace_2_col474, trace_2_col475],
+        ))
+        * range_check_20_d_sum_238
+        * range_check_20_e_sum_239)
+        - range_check_20_d_sum_238
+        - range_check_20_e_sum_239)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col480, trace_2_col481, trace_2_col482, trace_2_col483],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col476, trace_2_col477, trace_2_col478, trace_2_col479],
+        ))
+        * range_check_20_f_sum_240
+        * range_check_20_g_sum_241)
+        - range_check_20_f_sum_240
+        - range_check_20_g_sum_241)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col484, trace_2_col485, trace_2_col486, trace_2_col487],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col480, trace_2_col481, trace_2_col482, trace_2_col483],
+        ))
+        * range_check_20_h_sum_242
+        * range_check_20_sum_243)
+        - range_check_20_h_sum_242
+        - range_check_20_sum_243)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col488, trace_2_col489, trace_2_col490, trace_2_col491],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col484, trace_2_col485, trace_2_col486, trace_2_col487],
+        ))
+        * range_check_20_b_sum_244
+        * range_check_20_c_sum_245)
+        - range_check_20_b_sum_244
+        - range_check_20_c_sum_245)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col492, trace_2_col493, trace_2_col494, trace_2_col495],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col488, trace_2_col489, trace_2_col490, trace_2_col491],
+        ))
+        * range_check_20_d_sum_246
+        * range_check_20_e_sum_247)
+        - range_check_20_d_sum_246
+        - range_check_20_e_sum_247)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col496, trace_2_col497, trace_2_col498, trace_2_col499],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col492, trace_2_col493, trace_2_col494, trace_2_col495],
+        ))
+        * range_check_20_f_sum_248
+        * range_check_20_g_sum_249)
+        - range_check_20_f_sum_248
+        - range_check_20_g_sum_249)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col500, trace_2_col501, trace_2_col502, trace_2_col503],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col496, trace_2_col497, trace_2_col498, trace_2_col499],
+        ))
+        * range_check_20_h_sum_250
+        * range_check_20_sum_251)
+        - range_check_20_h_sum_250
+        - range_check_20_sum_251)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col504, trace_2_col505, trace_2_col506, trace_2_col507],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col500, trace_2_col501, trace_2_col502, trace_2_col503],
+        ))
+        * range_check_20_b_sum_252
+        * range_check_20_c_sum_253)
+        - range_check_20_b_sum_252
+        - range_check_20_c_sum_253)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col508, trace_2_col509, trace_2_col510, trace_2_col511],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col504, trace_2_col505, trace_2_col506, trace_2_col507],
+        ))
+        * range_check_20_d_sum_254
+        * partial_ec_mul_sum_255)
+        - (range_check_20_d_sum_254 * enabler)
+        - partial_ec_mul_sum_255)
+        * domain_vanishing_eval_inv;
+    sum = sum * random_coeff + constraint_quotient;
+
+    let constraint_quotient = (((QM31Impl::from_partial_evals(
+        [trace_2_col512, trace_2_col513, trace_2_col514, trace_2_col515],
+    )
+        - QM31Impl::from_partial_evals(
+            [trace_2_col508, trace_2_col509, trace_2_col510, trace_2_col511],
         )
         - QM31Impl::from_partial_evals(
-            [trace_2_col256_neg1, trace_2_col257_neg1, trace_2_col258_neg1, trace_2_col259_neg1],
+            [trace_2_col512_neg1, trace_2_col513_neg1, trace_2_col514_neg1, trace_2_col515_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * partial_ec_mul_sum_128)
+        * partial_ec_mul_sum_256)
         + enabler)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -3708,6 +6633,231 @@ mod tests {
             [qm31_const::<1289746842, 268036292, 1064493548, 502540012>()].span(),
             [qm31_const::<819982589, 1475995843, 594731499, 502540012>()].span(),
             [qm31_const::<887091768, 1610213571, 661840363, 502540012>()].span(),
+            [qm31_const::<954200947, 1744431299, 728949227, 502540012>()].span(),
+            [qm31_const::<1021310126, 1878649027, 796058091, 502540012>()].span(),
+            [qm31_const::<551545873, 939124931, 326296043, 502540012>()].span(),
+            [qm31_const::<618655052, 1073342659, 393404907, 502540012>()].span(),
+            [qm31_const::<732050662, 1341756416, 527600936, 502532779>()].span(),
+            [qm31_const::<799159841, 1475974144, 594709800, 502532779>()].span(),
+            [qm31_const::<597832304, 1073320960, 393383208, 502532779>()].span(),
+            [qm31_const::<664941483, 1207538688, 460492072, 502532779>()].span(),
+            [qm31_const::<463613946, 804885504, 259165480, 502532779>()].span(),
+            [qm31_const::<530723125, 939103232, 326274344, 502532779>()].span(),
+            [qm31_const::<329395588, 536450048, 124947752, 502532779>()].span(),
+            [qm31_const::<396504767, 670667776, 192056616, 502532779>()].span(),
+            [qm31_const::<1268924094, 268014593, 1064471849, 502532779>()].span(),
+            [qm31_const::<1336033273, 402232321, 1131580713, 502532779>()].span(),
+            [qm31_const::<61061267, 2147062843, 2003996002, 502532798>()].span(),
+            [qm31_const::<2141435735, 2012845114, 1936887138, 502532798>()].span(),
+            [qm31_const::<195279625, 268014652, 2138213731, 502532798>()].span(),
+            [qm31_const::<128170446, 133796924, 2071104867, 502532798>()].span(),
+            [qm31_const::<329497983, 536450108, 124947812, 502532799>()].span(),
+            [qm31_const::<262388804, 402232380, 57838948, 502532799>()].span(),
+            [qm31_const::<463716341, 804885564, 259165540, 502532799>()].span(),
+            [qm31_const::<396607162, 670667836, 192056676, 502532799>()].span(),
+            [qm31_const::<597934699, 1073321020, 393383268, 502532799>()].span(),
+            [qm31_const::<530825520, 939103292, 326274404, 502532799>()].span(),
+            [qm31_const::<2074019371, 1878627206, 1869778094, 502532738>()].span(),
+            [qm31_const::<2141128550, 2012844934, 1936886958, 502532738>()].span(),
+            [qm31_const::<60754082, 2147062663, 2003995822, 502532738>()].span(),
+            [qm31_const::<127863261, 133796744, 2071104687, 502532738>()].span(),
+            [qm31_const::<194972440, 268014472, 2138213551, 502532738>()].span(),
+            [qm31_const::<262081619, 402232200, 57838768, 502532739>()].span(),
+            [qm31_const::<329190798, 536449928, 124947632, 502532739>()].span(),
+            [qm31_const::<396299977, 670667656, 192056496, 502532739>()].span(),
+            [qm31_const::<463409156, 804885384, 259165360, 502532739>()].span(),
+            [qm31_const::<530518335, 939103112, 326274224, 502532739>()].span(),
+            [qm31_const::<1403040057, 536449989, 1198689517, 502532759>()].span(),
+            [qm31_const::<1335930878, 402232261, 1131580653, 502532759>()].span(),
+            [qm31_const::<1268821699, 268014533, 1064471789, 502532759>()].span(),
+            [qm31_const::<1201712520, 133796805, 997362925, 502532759>()].span(),
+            [qm31_const::<1671476773, 1073320901, 1467124973, 502532759>()].span(),
+            [qm31_const::<1604367594, 939103173, 1400016109, 502532759>()].span(),
+            [qm31_const::<1537258415, 804885445, 1332907245, 502532759>()].span(),
+            [qm31_const::<1470149236, 670667717, 1265798381, 502532759>()].span(),
+            [qm31_const::<866166625, 1610191812, 661818604, 502532759>()].span(),
+            [qm31_const::<799057446, 1475974084, 594709740, 502532759>()].span(),
+            [qm31_const::<195546486, 268014820, 2138213899, 502532854>()].span(),
+            [qm31_const::<262655665, 402232548, 57839116, 502532855>()].span(),
+            [qm31_const::<61328128, 2147063011, 2003996170, 502532854>()].span(),
+            [qm31_const::<128437307, 133797092, 2071105035, 502532854>()].span(),
+            [qm31_const::<463983202, 804885732, 259165708, 502532855>()].span(),
+            [qm31_const::<531092381, 939103460, 326274572, 502532855>()].span(),
+            [qm31_const::<329764844, 536450276, 124947980, 502532855>()].span(),
+            [qm31_const::<396874023, 670668004, 192056844, 502532855>()].span(),
+            [qm31_const::<732419918, 1341756644, 527601164, 502532855>()].span(),
+            [qm31_const::<799529097, 1475974372, 594710028, 502532855>()].span(),
+            [qm31_const::<1672050819, 1073321249, 1467125321, 502532875>()].span(),
+            [qm31_const::<1604941640, 939103521, 1400016457, 502532875>()].span(),
+            [qm31_const::<1806269177, 1341756705, 1601343049, 502532875>()].span(),
+            [qm31_const::<1739159998, 1207538977, 1534234185, 502532875>()].span(),
+            [qm31_const::<1403614103, 536450337, 1198689865, 502532875>()].span(),
+            [qm31_const::<1336504924, 402232609, 1131581001, 502532875>()].span(),
+            [qm31_const::<1537832461, 804885793, 1332907593, 502532875>()].span(),
+            [qm31_const::<1470723282, 670668065, 1265798729, 502532875>()].span(),
+            [qm31_const::<1135177387, 2147063072, 930254408, 502532875>()].span(),
+            [qm31_const::<1068068208, 2012845344, 863145544, 502532875>()].span(),
+            [qm31_const::<1537525276, 804885613, 1332907413, 502532815>()].span(),
+            [qm31_const::<1604634455, 939103341, 1400016277, 502532815>()].span(),
+            [qm31_const::<1671743634, 1073321069, 1467125141, 502532815>()].span(),
+            [qm31_const::<1738852813, 1207538797, 1534234005, 502532815>()].span(),
+            [qm31_const::<1269088560, 268014701, 1064471957, 502532815>()].span(),
+            [qm31_const::<1336197739, 402232429, 1131580821, 502532815>()].span(),
+            [qm31_const::<1403306918, 536450157, 1198689685, 502532815>()].span(),
+            [qm31_const::<1470416097, 670667885, 1265798549, 502532815>()].span(),
+            [qm31_const::<1000651844, 1878627436, 796036500, 502532815>()].span(),
+            [qm31_const::<1067761023, 2012845164, 863145364, 502532815>()].span(),
+            [qm31_const::<866535881, 1610192040, 661818832, 502532835>()].span(),
+            [qm31_const::<799426702, 1475974312, 594709968, 502532835>()].span(),
+            [qm31_const::<732317523, 1341756584, 527601104, 502532835>()].span(),
+            [qm31_const::<665208344, 1207538856, 460492240, 502532835>()].span(),
+            [qm31_const::<598099165, 1073321128, 393383376, 502532835>()].span(),
+            [qm31_const::<530989986, 939103400, 326274512, 502532835>()].span(),
+            [qm31_const::<463880807, 804885672, 259165648, 502532835>()].span(),
+            [qm31_const::<396771628, 670667944, 192056784, 502532835>()].span(),
+            [qm31_const::<1403409313, 536450217, 1198689745, 502532835>()].span(),
+            [qm31_const::<1336300134, 402232489, 1131580881, 502532835>()].span(),
+            [qm31_const::<1806576362, 1341756885, 1601343229, 502532935>()].span(),
+            [qm31_const::<1873685541, 1475974613, 1668452093, 502532935>()].span(),
+            [qm31_const::<1672358004, 1073321429, 1467125501, 502532935>()].span(),
+            [qm31_const::<1739467183, 1207539157, 1534234365, 502532935>()].span(),
+            [qm31_const::<1538139646, 804885973, 1332907773, 502532935>()].span(),
+            [qm31_const::<1605248825, 939103701, 1400016637, 502532935>()].span(),
+            [qm31_const::<1403921288, 536450517, 1198690045, 502532935>()].span(),
+            [qm31_const::<1471030467, 670668245, 1265798909, 502532935>()].span(),
+            [qm31_const::<1269702930, 268015061, 1064472317, 502532935>()].span(),
+            [qm31_const::<1336812109, 402232789, 1131581181, 502532935>()].span(),
+            [qm31_const::<1135586967, 2147063312, 930254648, 502532955>()].span(),
+            [qm31_const::<1068477788, 2012845584, 863145784, 502532955>()].span(),
+            [qm31_const::<1269805325, 268015121, 1064472377, 502532955>()].span(),
+            [qm31_const::<1202696146, 133797393, 997363513, 502532955>()].span(),
+            [qm31_const::<1404023683, 536450577, 1198690105, 502532955>()].span(),
+            [qm31_const::<1336914504, 402232849, 1131581241, 502532955>()].span(),
+            [qm31_const::<1538242041, 804886033, 1332907833, 502532955>()].span(),
+            [qm31_const::<1471132862, 670668305, 1265798969, 502532955>()].span(),
+            [qm31_const::<598713535, 1073321488, 393383736, 502532955>()].span(),
+            [qm31_const::<531604356, 939103760, 326274872, 502532955>()].span(),
+            [qm31_const::<1176508559, 402090889, 1131439281, 502485635>()].span(),
+            [qm31_const::<1109399380, 267873161, 1064330417, 502485635>()].span(),
+            [qm31_const::<1310726917, 670526345, 1265657009, 502485635>()].span(),
+            [qm31_const::<1243617738, 536308617, 1198548145, 502485635>()].span(),
+            [qm31_const::<1444945275, 938961801, 1399874737, 502485635>()].span(),
+            [qm31_const::<1377836096, 804744073, 1332765873, 502485635>()].span(),
+            [qm31_const::<1579163633, 1207397257, 1534092465, 502485635>()].span(),
+            [qm31_const::<1512054454, 1073179529, 1466983601, 502485635>()].span(),
+            [qm31_const::<639635127, 1475832712, 594568368, 502485635>()].span(),
+            [qm31_const::<572525948, 1341614984, 527459504, 502485635>()].span(),
+            [qm31_const::<1847497954, 1744268109, 1802527861, 502485615>()].span(),
+            [qm31_const::<1914607133, 1878485837, 1869636725, 502485615>()].span(),
+            [qm31_const::<1713279596, 1475832653, 1668310133, 502485615>()].span(),
+            [qm31_const::<1780388775, 1610050381, 1735418997, 502485615>()].span(),
+            [qm31_const::<1579061238, 1207397197, 1534092405, 502485615>()].span(),
+            [qm31_const::<1646170417, 1341614925, 1601201269, 502485615>()].span(),
+            [qm31_const::<1444842880, 938961741, 1399874677, 502485615>()].span(),
+            [qm31_const::<1511952059, 1073179469, 1466983541, 502485615>()].span(),
+            [qm31_const::<1310624522, 670526285, 1265656949, 502485615>()].span(),
+            [qm31_const::<1377733701, 804744013, 1332765813, 502485615>()].span(),
+            [qm31_const::<370993621, 938961680, 326132792, 502485595>()].span(),
+            [qm31_const::<303884442, 804743952, 259023928, 502485595>()].span(),
+            [qm31_const::<236775263, 670526224, 191915064, 502485595>()].span(),
+            [qm31_const::<169666084, 536308496, 124806200, 502485595>()].span(),
+            [qm31_const::<639430337, 1475832592, 594568248, 502485595>()].span(),
+            [qm31_const::<572321158, 1341614864, 527459384, 502485595>()].span(),
+            [qm31_const::<505211979, 1207397136, 460350520, 502485595>()].span(),
+            [qm31_const::<438102800, 1073179408, 393241656, 502485595>()].span(),
+            [qm31_const::<907867053, 2012703504, 863003704, 502485595>()].span(),
+            [qm31_const::<840757874, 1878485776, 795894840, 502485595>()].span(),
+            [qm31_const::<1041983016, 133655253, 997221373, 502485575>()].span(),
+            [qm31_const::<1109092195, 267872981, 1064330237, 502485575>()].span(),
+            [qm31_const::<1176201374, 402090709, 1131439101, 502485575>()].span(),
+            [qm31_const::<1243310553, 536308437, 1198547965, 502485575>()].span(),
+            [qm31_const::<1310419732, 670526165, 1265656829, 502485575>()].span(),
+            [qm31_const::<1377528911, 804743893, 1332765693, 502485575>()].span(),
+            [qm31_const::<1444638090, 938961621, 1399874557, 502485575>()].span(),
+            [qm31_const::<1511747269, 1073179349, 1466983421, 502485575>()].span(),
+            [qm31_const::<505109584, 1207397076, 460350460, 502485575>()].span(),
+            [qm31_const::<572218763, 1341614804, 527459324, 502485575>()].span(),
+            [qm31_const::<640044707, 1475832952, 594568608, 502485715>()].span(),
+            [qm31_const::<572935528, 1341615224, 527459744, 502485715>()].span(),
+            [qm31_const::<774263065, 1744268408, 728786336, 502485715>()].span(),
+            [qm31_const::<707153886, 1610050680, 661677472, 502485715>()].span(),
+            [qm31_const::<371607991, 938962040, 326133152, 502485715>()].span(),
+            [qm31_const::<304498812, 804744312, 259024288, 502485715>()].span(),
+            [qm31_const::<505826349, 1207397496, 460350880, 502485715>()].span(),
+            [qm31_const::<438717170, 1073179768, 393242016, 502485715>()].span(),
+            [qm31_const::<1176918139, 402091129, 1131439521, 502485715>()].span(),
+            [qm31_const::<1109808960, 267873401, 1064330657, 502485715>()].span(),
+            [qm31_const::<1311034102, 670526525, 1265657189, 502485695>()].span(),
+            [qm31_const::<1378143281, 804744253, 1332766053, 502485695>()].span(),
+            [qm31_const::<1176815744, 402091069, 1131439461, 502485695>()].span(),
+            [qm31_const::<1243924923, 536308797, 1198548325, 502485695>()].span(),
+            [qm31_const::<1579470818, 1207397437, 1534092645, 502485695>()].span(),
+            [qm31_const::<1646579997, 1341615165, 1601201509, 502485695>()].span(),
+            [qm31_const::<1445252460, 938961981, 1399874917, 502485695>()].span(),
+            [qm31_const::<1512361639, 1073179709, 1466983781, 502485695>()].span(),
+            [qm31_const::<774160670, 1744268348, 728786276, 502485695>()].span(),
+            [qm31_const::<841269849, 1878486076, 795895140, 502485695>()].span(),
+            [qm31_const::<1982023497, 2012703745, 1936745769, 502485675>()].span(),
+            [qm31_const::<1914914318, 1878486017, 1869636905, 502485675>()].span(),
+            [qm31_const::<1847805139, 1744268289, 1802528041, 502485675>()].span(),
+            [qm31_const::<1780695960, 1610050561, 1735419177, 502485675>()].span(),
+            [qm31_const::<1713586781, 1475832833, 1668310313, 502485675>()].span(),
+            [qm31_const::<1646477602, 1341615105, 1601201449, 502485675>()].span(),
+            [qm31_const::<1579368423, 1207397377, 1534092585, 502485675>()].span(),
+            [qm31_const::<1512259244, 1073179649, 1466983721, 502485675>()].span(),
+            [qm31_const::<1445150065, 938961921, 1399874857, 502485675>()].span(),
+            [qm31_const::<1378040886, 804744193, 1332765993, 502485675>()].span(),
+            [qm31_const::<505519164, 1207397316, 460350700, 502485655>()].span(),
+            [qm31_const::<572628343, 1341615044, 527459564, 502485655>()].span(),
+            [qm31_const::<639737522, 1475832772, 594568428, 502485655>()].span(),
+            [qm31_const::<706846701, 1610050500, 661677292, 502485655>()].span(),
+            [qm31_const::<237082448, 670526404, 191915244, 502485655>()].span(),
+            [qm31_const::<304191627, 804744132, 259024108, 502485655>()].span(),
+            [qm31_const::<371300806, 938961860, 326132972, 502485655>()].span(),
+            [qm31_const::<438409985, 1073179588, 393241836, 502485655>()].span(),
+            [qm31_const::<1042392596, 133655493, 997221613, 502485655>()].span(),
+            [qm31_const::<1109501775, 267873221, 1064330477, 502485655>()].span(),
+            [qm31_const::<101982859, 402090420, 57696988, 502485479>()].span(),
+            [qm31_const::<34873680, 267872692, 2138071771, 502485478>()].span(),
+            [qm31_const::<236201217, 670525876, 191914716, 502485479>()].span(),
+            [qm31_const::<169092038, 536308148, 124805852, 502485479>()].span(),
+            [qm31_const::<370419575, 938961332, 326132444, 502485479>()].span(),
+            [qm31_const::<303310396, 804743604, 259023580, 502485479>()].span(),
+            [qm31_const::<504637933, 1207396788, 460350172, 502485479>()].span(),
+            [qm31_const::<437528754, 1073179060, 393241308, 502485479>()].span(),
+            [qm31_const::<638856291, 1475832244, 594567900, 502485479>()].span(),
+            [qm31_const::<571747112, 1341614516, 527459036, 502485479>()].span(),
+            [qm31_const::<772972254, 1744267640, 728785568, 502485459>()].span(),
+            [qm31_const::<840081433, 1878485368, 795894432, 502485459>()].span(),
+            [qm31_const::<638753896, 1475832184, 594567840, 502485459>()].span(),
+            [qm31_const::<705863075, 1610049912, 661676704, 502485459>()].span(),
+            [qm31_const::<504535538, 1207396728, 460350112, 502485459>()].span(),
+            [qm31_const::<571644717, 1341614456, 527458976, 502485459>()].span(),
+            [qm31_const::<370317180, 938961272, 326132384, 502485459>()].span(),
+            [qm31_const::<437426359, 1073179000, 393241248, 502485459>()].span(),
+            [qm31_const::<1309845686, 670525817, 1265656481, 502485459>()].span(),
+            [qm31_const::<1376954865, 804743545, 1332765345, 502485459>()].span(),
+            [qm31_const::<403859967, 1073149729, 393211977, 502475702>()].span(),
+            [qm31_const::<470969146, 1207367457, 460320841, 502475702>()].span(),
+            [qm31_const::<538078325, 1341585185, 527429705, 502475702>()].span(),
+            [qm31_const::<605187504, 1475802913, 594538569, 502475702>()].span(),
+            [qm31_const::<672296683, 1610020641, 661647433, 502475702>()].span(),
+            [qm31_const::<739405862, 1744238369, 728756297, 502475702>()].span(),
+            [qm31_const::<806515041, 1878456097, 795865161, 502475702>()].span(),
+            [qm31_const::<873624220, 2012673825, 862974025, 502475702>()].span(),
+            [qm31_const::<940733399, 2146891553, 930082889, 502475702>()].span(),
+            [qm31_const::<1007842578, 133625634, 997191754, 502475702>()].span(),
+            [qm31_const::<1880364300, 1878456158, 1869607046, 502475722>()].span(),
+            [qm31_const::<1813255121, 1744238430, 1802498182, 502475722>()].span(),
+            [qm31_const::<1746145942, 1610020702, 1735389318, 502475722>()].span(),
+            [qm31_const::<1679036763, 1475802974, 1668280454, 502475722>()].span(),
+            [qm31_const::<1317369, 267843424, 2138042503, 502475722>()].span(),
+            [qm31_const::<2081691837, 133625695, 2070933639, 502475722>()].span(),
+            [qm31_const::<2014582658, 2146891614, 2003824774, 502475722>()].span(),
+            [qm31_const::<1947473479, 2012673886, 1936715910, 502475722>()].span(),
+            [qm31_const::<1343490868, 804714334, 1332736134, 502475722>()].span(),
+            [qm31_const::<1276381689, 670496606, 1265627270, 502475722>()].span(),
+            [qm31_const::<1209374905, 536278938, 1198518466, 502475742>()].span(),
             [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
         ]
             .span();
@@ -3777,6 +6927,70 @@ mod tests {
             qm31_const::<1309154897, 1716713663, 1469661115, 1261630150>(),
             qm31_const::<1376264076, 1850931391, 1536769979, 1261630150>(),
             qm31_const::<1174936539, 1448278207, 1335443387, 1261630150>(),
+            qm31_const::<1242045718, 1582495935, 1402552251, 1261630150>(),
+            qm31_const::<1040718181, 1179842751, 1201225659, 1261630150>(),
+            qm31_const::<1107827360, 1314060479, 1268334523, 1261630150>(),
+            qm31_const::<1980246687, 911407296, 2140749756, 1261630150>(),
+            qm31_const::<2047355866, 1045625024, 60374973, 1261630151>(),
+            qm31_const::<772383860, 642971899, 932790263, 1261630170>(),
+            qm31_const::<705274681, 508754171, 865681399, 1261630170>(),
+            qm31_const::<906602218, 911407355, 1067007991, 1261630170>(),
+            qm31_const::<839493039, 777189627, 999899127, 1261630170>(),
+            qm31_const::<1040820576, 1179842811, 1201225719, 1261630170>(),
+            qm31_const::<973711397, 1045625083, 1134116855, 1261630170>(),
+            qm31_const::<1175038934, 1448278267, 1335443447, 1261630170>(),
+            qm31_const::<1107929755, 1314060539, 1268334583, 1261630170>(),
+            qm31_const::<1309257292, 1716713723, 1469661175, 1261630170>(),
+            qm31_const::<1242148113, 1582495995, 1402552311, 1261630170>(),
+            qm31_const::<1175920165, 1448278795, 1335443975, 1261630346>(),
+            qm31_const::<1243029344, 1582496523, 1402552839, 1261630346>(),
+            qm31_const::<1310138523, 1716714251, 1469661703, 1261630346>(),
+            qm31_const::<1377247702, 1850931979, 1536770567, 1261630346>(),
+            qm31_const::<907483449, 911407883, 1067008519, 1261630346>(),
+            qm31_const::<974592628, 1045625611, 1134117383, 1261630346>(),
+            qm31_const::<1041701807, 1179843339, 1201226247, 1261630346>(),
+            qm31_const::<1108810986, 1314061067, 1268335111, 1261630346>(),
+            qm31_const::<1712793597, 374536972, 1872314888, 1261630346>(),
+            qm31_const::<1779902776, 508754700, 1939423752, 1261630346>(),
+            qm31_const::<504940851, 106101578, 664355398, 1261630367>(),
+            qm31_const::<437831672, 2119367497, 597246533, 1261630367>(),
+            qm31_const::<370722493, 1985149769, 530137669, 1261630367>(),
+            qm31_const::<303613314, 1850932041, 463028805, 1261630367>(),
+            qm31_const::<236504135, 1716714313, 395919941, 1261630367>(),
+            qm31_const::<169394956, 1582496585, 328811077, 1261630367>(),
+            qm31_const::<102285777, 1448278857, 261702213, 1261630367>(),
+            qm31_const::<35176598, 1314061129, 194593349, 1261630367>(),
+            qm31_const::<2115551066, 1179843400, 127484485, 1261630367>(),
+            qm31_const::<2048441887, 1045625672, 60375621, 1261630367>(),
+            qm31_const::<1231601974, 50060046, 1081419154, 592571159>(),
+            qm31_const::<1164492795, 2063325965, 1014310289, 592571159>(),
+            qm31_const::<1365820332, 318495502, 1215636882, 592571159>(),
+            qm31_const::<1298711153, 184277774, 1148528018, 592571159>(),
+            qm31_const::<963165258, 1660672781, 812983697, 592571159>(),
+            qm31_const::<896056079, 1526455053, 745874833, 592571159>(),
+            qm31_const::<1097383616, 1929108237, 947201425, 592571159>(),
+            qm31_const::<1030274437, 1794890509, 880092561, 592571159>(),
+            qm31_const::<694728542, 1123801869, 544548241, 592571159>(),
+            qm31_const::<627619363, 989584141, 477439377, 592571159>(),
+            qm31_const::<1902581288, 1392237263, 1752507731, 592571138>(),
+            qm31_const::<1969690467, 1526454991, 1819616595, 592571138>(),
+            qm31_const::<1768362930, 1123801807, 1618290003, 592571138>(),
+            qm31_const::<1835472109, 1258019535, 1685398867, 592571138>(),
+            qm31_const::<23534357, 1929108176, 2020943187, 592571138>(),
+            qm31_const::<90643536, 2063325904, 2088052051, 592571138>(),
+            qm31_const::<2036799646, 1660672719, 1886725459, 592571138>(),
+            qm31_const::<2103908825, 1794890447, 1953834323, 592571138>(),
+            qm31_const::<291971073, 318495441, 141894997, 592571139>(),
+            qm31_const::<359080252, 452713169, 209003861, 592571139>(),
+            qm31_const::<426087036, 586930837, 276112665, 592571119>(),
+            qm31_const::<358977857, 452713109, 209003801, 592571119>(),
+            qm31_const::<291868678, 318495381, 141894937, 592571119>(),
+            qm31_const::<224759499, 184277653, 74786073, 592571119>(),
+            qm31_const::<157650320, 50059925, 7677209, 592571119>(),
+            qm31_const::<90541141, 2063325844, 2088051991, 592571118>(),
+            qm31_const::<23431962, 1929108116, 2020943127, 592571118>(),
+            qm31_const::<2103806430, 1794890387, 1953834263, 592571118>(),
+            qm31_const::<962960468, 1660672661, 812983577, 592571119>(),
         ];
         let mut interaction_columns = make_interaction_trace(
             interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),
