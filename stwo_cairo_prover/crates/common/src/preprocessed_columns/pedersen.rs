@@ -26,10 +26,10 @@ pub static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> = LazyLock::new(Pederse
 
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
-pub const BITS_PER_WINDOW: usize = 18;
+pub const BITS_PER_WINDOW: usize = 9;
 pub const NUM_WINDOWS: usize = 252usize.div_ceil(BITS_PER_WINDOW);
 pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
-pub const BITS_IN_LAST_WINDOW: usize = 14;
+pub const BITS_IN_LAST_WINDOW: usize = BITS_PER_WINDOW - 4;
 pub const ROWS_IN_LAST_WINDOW: usize = 1 << BITS_IN_LAST_WINDOW;
 
 pub const P_0_SECTION_START: usize = 0;
@@ -82,14 +82,14 @@ impl PreProcessedColumn for PedersenPoints {
     }
 }
 
-// A table with 2**23 rows, each containing a point on the Pedersen elliptic curve.
+// A table with 2**15 rows, each containing a point on the Pedersen elliptic curve.
 // The table is divided into 2 sections:
-// 1a. First 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_0
-// 1b. The 14th block of 2**18 rows: Row k + (l << 14) contains
-//       -P_shift + 2**(18*13) * k * P_0 + l * P_1
-// 2a. Next 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
-// 2b. The last block of 2**18 rows: Row k + (l << 14) contains
-//       -P_shift + 2**(18*13) * k * P_2 + l * P_3
+// 1a. First 27 blocks of 2**9 rows: Row k of block b contains -P_shift + 2**(9*b) * k * P_0
+// 1b. The 28th block of 2**9 rows: Row k + (l << 5) contains
+//       -P_shift + 2**(9*27) * k * P_0 + l * P_1
+// 2a. Next 27 blocks of 2**9 rows: Row k of block b contains -P_shift + 2**(9*b) * k * P_2
+// 2b. The last block of 2**9 rows: Row k + (l << 5) contains
+//       -P_shift + 2**(9*13) * k * P_2 + l * P_3
 pub struct PedersenPointsTable {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
