@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
@@ -592,37 +592,37 @@ impl RangeChecksComponents {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<GpuBackend>> {
         vec![
-            &self.rc_6 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_8 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_11 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_12 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_18 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_18_b as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_b as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_c as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_d as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_e as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_f as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_g as &dyn ComponentProver<SimdBackend>,
-            &self.rc_20_h as &dyn ComponentProver<SimdBackend>,
-            &self.rc_4_3 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_4_4 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_5_4 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_b as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_c as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_d as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_e as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_f as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_g as &dyn ComponentProver<SimdBackend>,
-            &self.rc_9_9_h as &dyn ComponentProver<SimdBackend>,
-            &self.rc_7_2_5 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_3_6_6_3 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_4_4_4_4 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_3_3_3_3_3 as &dyn ComponentProver<SimdBackend>,
+            &self.rc_6 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_8 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_11 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_12 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_18 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_18_b as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_b as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_c as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_d as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_e as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_f as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_g as &dyn ComponentProver<GpuBackend>,
+            &self.rc_20_h as &dyn ComponentProver<GpuBackend>,
+            &self.rc_4_3 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_4_4 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_5_4 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_b as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_c as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_d as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_e as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_f as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_g as &dyn ComponentProver<GpuBackend>,
+            &self.rc_9_9_h as &dyn ComponentProver<GpuBackend>,
+            &self.rc_7_2_5 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_3_6_6_3 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_4_4_4_4 as &dyn ComponentProver<GpuBackend>,
+            &self.rc_3_3_3_3_3 as &dyn ComponentProver<GpuBackend>,
         ]
     }
 }

@@ -11,7 +11,7 @@ use stwo::core::fields::FieldExpOps;
 use stwo::core::pcs::TreeVec;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::MerkleHasher;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::ComponentProver;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
@@ -891,27 +891,27 @@ impl CairoComponents {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<GpuBackend>> {
         chain!(
             self.opcodes.provers(),
-            [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
+            [&self.verify_instruction as &dyn ComponentProver<GpuBackend>,],
             self.blake_context.provers(),
             self.builtins.provers(),
             self.pedersen_context.provers(),
             self.poseidon_context.provers(),
-            [&self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
+            [&self.memory_address_to_id as &dyn ComponentProver<GpuBackend>,],
             self.memory_id_to_value
                 .0
                 .iter()
-                .map(|component| component as &dyn ComponentProver<SimdBackend>),
-            [&self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,],
+                .map(|component| component as &dyn ComponentProver<GpuBackend>),
+            [&self.memory_id_to_value.1 as &dyn ComponentProver<GpuBackend>,],
             self.range_checks.provers(),
             [
-                &self.verify_bitwise_xor_4 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_7 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_8 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_8_b as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_9 as &dyn ComponentProver<SimdBackend>,
+                &self.verify_bitwise_xor_4 as &dyn ComponentProver<GpuBackend>,
+                &self.verify_bitwise_xor_7 as &dyn ComponentProver<GpuBackend>,
+                &self.verify_bitwise_xor_8 as &dyn ComponentProver<GpuBackend>,
+                &self.verify_bitwise_xor_8_b as &dyn ComponentProver<GpuBackend>,
+                &self.verify_bitwise_xor_9 as &dyn ComponentProver<GpuBackend>,
             ]
         )
         .collect()

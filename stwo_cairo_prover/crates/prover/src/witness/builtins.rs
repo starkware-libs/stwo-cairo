@@ -1,6 +1,6 @@
 use cairo_air::air::CairoInteractionElements;
 use cairo_air::builtins_air::{BuiltinsClaim, BuiltinsInteractionClaim};
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_common::builtins::{
     ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
@@ -133,7 +133,7 @@ impl BuiltinsClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         pedersen_context_trace_generator: &mut PedersenContextClaimGenerator,
@@ -263,7 +263,7 @@ pub struct BuiltinsInteractionClaimGenerator {
 impl BuiltinsInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> BuiltinsInteractionClaim {
         let add_mod_builtin_interaction_claim =

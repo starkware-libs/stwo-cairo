@@ -137,7 +137,7 @@ fn get_preprocessed_roots<MC: MerkleChannel>(
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> Vec<<MC::H as MerkleHasher>::Hash>
 where
-    stwo::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
+    stwo::prover::backend::gpu::GpuBackend: BackendForChannel<MC>,
 {
     (1..=max_log_blowup_factor)
         .map(|i| generate_preprocessed_commitment_root::<MC>(i, preprocessed_trace))

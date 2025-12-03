@@ -4,7 +4,7 @@ use cairo_air::air::CairoInteractionElements;
 use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use tracing::{span, Level};
@@ -43,7 +43,7 @@ impl BlakeContextClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
         memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
@@ -115,7 +115,7 @@ pub struct BlakeContextInteractionClaimGenerator {
 impl BlakeContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> BlakeContextInteractionClaim {
         BlakeContextInteractionClaim {
@@ -136,7 +136,7 @@ struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> InteractionClaim {
         let blake_round_interaction_claim =

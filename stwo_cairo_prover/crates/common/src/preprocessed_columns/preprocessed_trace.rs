@@ -7,7 +7,7 @@ use stwo::core::fields::m31::{BaseField, M31, MODULUS_BITS};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::backend::Col;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
@@ -30,7 +30,7 @@ pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
     fn log_size(&self) -> u32;
     fn id(&self) -> PreProcessedColumnId;
-    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>;
+    fn gen_column_simd(&self) -> CircleEvaluation<GpuBackend, BaseField, BitReversedOrder>;
 }
 
 /// A collection of preprocessed columns, whose values are publicly acknowledged, and independent of
@@ -98,7 +98,7 @@ impl PreProcessedTrace {
         self.columns.iter().map(|c| c.log_size()).collect()
     }
 
-    pub fn gen_trace(&self) -> Vec<CircleEvaluation<SimdBackend, BaseField, BitReversedOrder>> {
+    pub fn gen_trace(&self) -> Vec<CircleEvaluation<GpuBackend, BaseField, BitReversedOrder>> {
         self.columns.iter().map(|c| c.gen_column_simd()).collect()
     }
 
@@ -199,8 +199,8 @@ impl PreProcessedColumn for Seq {
         PackedM31::broadcast(M31::from(vec_row * N_LANES))
             + unsafe { PackedM31::from_simd_unchecked(SIMD_ENUMERATION_0) }
     }
-    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
-        let col = Col::<SimdBackend, BaseField>::from_iter(
+    fn gen_column_simd(&self) -> CircleEvaluation<GpuBackend, BaseField, BitReversedOrder> {
+        let col = Col::<GpuBackend, BaseField>::from_iter(
             (0..(1 << self.log_size)).map(BaseField::from),
         );
         CircleEvaluation::new(CanonicCoset::new(self.log_size).circle_domain(), col)
@@ -273,7 +273,7 @@ impl<const N: usize> PreProcessedColumn for RangeCheck<N> {
         unsafe { PackedM31::from_simd_unchecked(simd_result) }
     }
 
-    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    fn gen_column_simd(&self) -> CircleEvaluation<GpuBackend, BaseField, BitReversedOrder> {
         let partitions = generate_partitioned_enumeration(self.ranges);
         let column = partitions.into_iter().nth(self.column_idx).unwrap();
         CircleEvaluation::new(

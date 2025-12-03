@@ -1,6 +1,6 @@
 use num_traits::Zero;
 use stwo::core::fields::qm31::QM31;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
@@ -141,7 +141,7 @@ impl PedersenContextComponents {
         Self { components }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<GpuBackend>> {
         self.components
             .as_ref()
             .map(|c| c.provers())
@@ -254,7 +254,7 @@ impl Components {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn provers(&self) -> Vec<&dyn ComponentProver<GpuBackend>> {
         vec![
             &self.pedersen_aggregator,
             &self.partial_ec_mul,

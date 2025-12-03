@@ -113,7 +113,7 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         range_check_9_9_trace_generator: &range_check_9_9::ClaimGenerator,
         range_check_9_9_b_trace_generator: &range_check_9_9_b::ClaimGenerator,
         range_check_9_9_c_trace_generator: &range_check_9_9_c::ClaimGenerator,
@@ -244,7 +244,7 @@ impl ClaimGenerator {
             let trace = big_table_trace
                 .into_iter()
                 .map(|eval| {
-                    CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
+                    CircleEvaluation::<GpuBackend, M31, BitReversedOrder>::new(
                         CanonicCoset::new(big_log_size).circle_domain(),
                         eval,
                     )
@@ -256,7 +256,7 @@ impl ClaimGenerator {
         let trace = small_table_trace
             .into_iter()
             .map(|eval| {
-                CircleEvaluation::<SimdBackend, M31, BitReversedOrder>::new(
+                CircleEvaluation::<GpuBackend, M31, BitReversedOrder>::new(
                     CanonicCoset::new(small_log_size).circle_domain(),
                     eval,
                 )
@@ -387,7 +387,7 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         lookup_elements: &relations::MemoryIdToBig,
         range9_9_lookup_elements: &relations::RangeCheck_9_9,
         range9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
@@ -455,7 +455,7 @@ impl InteractionClaimGenerator {
         range9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
         range9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
     ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        Vec<CircleEvaluation<GpuBackend, M31, BitReversedOrder>>,
         QM31,
     ) {
         assert!(big_components_values
@@ -529,7 +529,7 @@ impl InteractionClaimGenerator {
         range9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
         range9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
     ) -> (
-        Vec<CircleEvaluation<SimdBackend, M31, BitReversedOrder>>,
+        Vec<CircleEvaluation<GpuBackend, M31, BitReversedOrder>>,
         QM31,
     ) {
         let small_table_log_size = self.small_values[0].len().ilog2() + LOG_N_LANES;

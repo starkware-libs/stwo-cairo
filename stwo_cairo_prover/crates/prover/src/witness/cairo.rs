@@ -7,7 +7,7 @@ use cairo_air::air::{
 };
 use itertools::Itertools;
 use stwo::core::fields::m31::M31;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
@@ -233,7 +233,7 @@ impl CairoClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
@@ -387,7 +387,7 @@ pub struct CairoInteractionClaimGenerator {
 impl CairoInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> CairoInteractionClaim {
         let opcodes_interaction_claims = self

@@ -44,7 +44,7 @@ impl PedersenContextClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
     ) -> (
@@ -130,7 +130,7 @@ pub struct PedersenContextInteractionClaimGenerator {
 impl PedersenContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> PedersenContextInteractionClaim {
         PedersenContextInteractionClaim {
@@ -149,7 +149,7 @@ struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> InteractionClaim {
         let pedersen_aggregator_interaction_claim = self

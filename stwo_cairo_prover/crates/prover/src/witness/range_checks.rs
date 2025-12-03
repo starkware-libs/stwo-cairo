@@ -3,7 +3,7 @@ use std::sync::Arc;
 use cairo_air::range_checks_air::{
     RangeChecksClaim, RangeChecksInteractionClaim, RangeChecksInteractionElements,
 };
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 use crate::witness::components::{
@@ -142,7 +142,7 @@ impl RangeChecksClaimGenerator {
     }
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
     ) -> (RangeChecksClaim, RangeChecksInteractionClaimGenerator) {
         let (rc_6_claim, rc_6_interaction_gen) =
             self.rc_6_trace_generator.write_trace(tree_builder);
@@ -303,7 +303,7 @@ pub struct RangeChecksInteractionClaimGenerator {
 impl RangeChecksInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &RangeChecksInteractionElements,
     ) -> RangeChecksInteractionClaim {
         let rc_6_interaction_claim = self

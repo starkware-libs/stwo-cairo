@@ -47,7 +47,7 @@ impl PoseidonContextClaimGenerator {
 
     pub fn write_trace(
         mut self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_id_to_big_trace_generator: &memory_id_to_big::ClaimGenerator,
         range_checks_trace_generator: &RangeChecksClaimGenerator,
     ) -> (
@@ -157,7 +157,7 @@ pub struct PoseidonContextInteractionClaimGenerator {
 impl PoseidonContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> PoseidonContextInteractionClaim {
         PoseidonContextInteractionClaim {
@@ -181,7 +181,7 @@ struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         interaction_elements: &CairoInteractionElements,
     ) -> InteractionClaim {
         let poseidon_aggregator_interaction_claim = self

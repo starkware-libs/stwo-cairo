@@ -27,7 +27,7 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         range_check_5_4_state: &range_check_5_4::ClaimGenerator,
         range_check_8_state: &range_check_8::ClaimGenerator,
@@ -3095,7 +3095,7 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         range_check_5_4: &relations::RangeCheck_5_4,
         memory_id_to_big: &relations::MemoryIdToBig,
         range_check_8: &relations::RangeCheck_8,

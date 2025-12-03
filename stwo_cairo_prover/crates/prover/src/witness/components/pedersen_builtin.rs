@@ -23,7 +23,7 @@ impl ClaimGenerator {
 
     pub fn write_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
         pedersen_aggregator_state: &pedersen_aggregator::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
@@ -171,7 +171,7 @@ pub struct InteractionClaimGenerator {
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        tree_builder: &mut impl TreeBuilder<GpuBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
         pedersen_aggregator: &relations::PedersenAggregator,
     ) -> InteractionClaim {

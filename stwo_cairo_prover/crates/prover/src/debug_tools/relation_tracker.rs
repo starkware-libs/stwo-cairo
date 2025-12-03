@@ -8,7 +8,7 @@ use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::pcs::TreeVec;
 use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::backend::{BackendForChannel, Col, Column};
 use stwo::prover::poly::circle::CircleCoefficients;
 use stwo::prover::CommitmentSchemeProver;
@@ -19,24 +19,24 @@ use stwo_constraint_framework::relation_tracker::{
 use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
 
 pub fn track_and_summarize_cairo_relations<MC: MerkleChannel>(
-    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
+    commitment_scheme: &CommitmentSchemeProver<'_, GpuBackend, MC>,
     components: &CairoComponents,
     public_data: &PublicData,
 ) -> RelationSummary
 where
-    SimdBackend: BackendForChannel<MC>,
+    GpuBackend: BackendForChannel<MC>,
 {
     let entries = track_cairo_relations(commitment_scheme, components, public_data);
     RelationSummary::summarize_relations(&entries).cleaned()
 }
 
 pub fn track_cairo_relations<MC: MerkleChannel>(
-    commitment_scheme: &CommitmentSchemeProver<'_, SimdBackend, MC>,
+    commitment_scheme: &CommitmentSchemeProver<'_, GpuBackend, MC>,
     components: &CairoComponents,
     public_data: &PublicData,
 ) -> Vec<RelationTrackerEntry>
 where
-    SimdBackend: BackendForChannel<MC>,
+    GpuBackend: BackendForChannel<MC>,
 {
     // Cairo air aggregates interpolated polynomials. Evaluate to get the original trace.
     // NOTE: this process is slow, and should be only used for debugging.
@@ -327,7 +327,7 @@ fn add_to_relation_entries_many<E: FrameworkEval>(
 }
 
 /// Reduces the polynomial to a minimal degree polynomial that evaluates to the same values.
-pub fn reduce_degree(coeffs: CircleCoefficients<SimdBackend>) -> CircleCoefficients<SimdBackend> {
+pub fn reduce_degree(coeffs: CircleCoefficients<GpuBackend>) -> CircleCoefficients<GpuBackend> {
     let mut new_log_size = coeffs.log_size();
     while new_log_size > 1 {
         if ((1 << (new_log_size - 1))..(1 << new_log_size))
@@ -337,7 +337,7 @@ pub fn reduce_degree(coeffs: CircleCoefficients<SimdBackend>) -> CircleCoefficie
         }
         new_log_size -= 1;
     }
-    CircleCoefficients::new(Col::<SimdBackend, BaseField>::from_iter(
+    CircleCoefficients::new(Col::<GpuBackend, BaseField>::from_iter(
         coeffs.coeffs.to_cpu()[..1 << new_log_size].iter().copied(),
     ))
 }

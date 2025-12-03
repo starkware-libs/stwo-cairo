@@ -2,7 +2,7 @@ use cairo_air::PreProcessedTraceVariant;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::vcs::MerkleHasher;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::CommitmentTreeProver;
@@ -15,21 +15,21 @@ pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     preprocessed_trace: PreProcessedTraceVariant,
 ) -> <<MC as MerkleChannel>::H as MerkleHasher>::Hash
 where
-    SimdBackend: BackendForChannel<MC>,
+    GpuBackend: BackendForChannel<MC>,
 {
     let preprocessed_trace = preprocessed_trace.to_preprocessed_trace();
 
     // Precompute twiddles for the commitment scheme.
     let max_log_size = preprocessed_trace.log_sizes().into_iter().max().unwrap();
-    let twiddles = SimdBackend::precompute_twiddles(
+    let twiddles = GpuBackend::precompute_twiddles(
         CanonicCoset::new(max_log_size + log_blowup_factor)
             .circle_domain()
             .half_coset,
     );
 
     // Generate the commitment tree.
-    let polys = SimdBackend::interpolate_columns(preprocessed_trace.gen_trace(), &twiddles);
-    let commitment_scheme = CommitmentTreeProver::<SimdBackend, MC>::new(
+    let polys = GpuBackend::interpolate_columns(preprocessed_trace.gen_trace(), &twiddles);
+    let commitment_scheme = CommitmentTreeProver::<GpuBackend, MC>::new(
         polys,
         log_blowup_factor,
         &mut MC::C::default(),

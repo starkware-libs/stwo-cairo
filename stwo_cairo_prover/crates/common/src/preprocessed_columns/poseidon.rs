@@ -2,7 +2,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::m31::PackedM31;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
@@ -54,7 +54,7 @@ impl PreProcessedColumn for PoseidonRoundKeys {
         self.packed_keys[vec_row]
     }
 
-    fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+    fn gen_column_simd(&self) -> CircleEvaluation<GpuBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(LOG_N_ROWS).circle_domain(),
             BaseColumn::from_simd(self.packed_keys.to_vec()),

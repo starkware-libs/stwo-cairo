@@ -16,7 +16,7 @@ use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo::prover::backend::simd::SimdBackend;
+use stwo::prover::backend::gpu::GpuBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
@@ -40,7 +40,7 @@ pub fn prove_cairo<MC: MerkleChannel>(
     prover_params: ProverParameters,
 ) -> Result<CairoProof<MC::H>, ProvingError>
 where
-    SimdBackend: BackendForChannel<MC>,
+    GpuBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
     // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
@@ -52,7 +52,7 @@ where
         preprocessed_trace,
         store_polynomials_coefficients,
     } = prover_params;
-    let twiddles = SimdBackend::precompute_twiddles(
+    let twiddles = GpuBackend::precompute_twiddles(
         CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
             .circle_domain()
             .half_coset,
@@ -65,7 +65,7 @@ where
     }
     pcs_config.mix_into(channel);
     let mut commitment_scheme =
-        CommitmentSchemeProver::<SimdBackend, MC>::new(pcs_config, &twiddles);
+        CommitmentSchemeProver::<GpuBackend, MC>::new(pcs_config, &twiddles);
     if store_polynomials_coefficients {
         commitment_scheme.set_store_polynomials_coefficients();
     }
@@ -87,7 +87,7 @@ where
     tree_builder.commit(channel);
 
     // Draw interaction elements.
-    let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
+    let interaction_pow = GpuBackend::grind(channel, INTERACTION_POW_BITS);
     channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
@@ -135,7 +135,7 @@ where
 
     // Prove stark.
     let span = span!(Level::INFO, "Prove STARKs").entered();
-    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    let proof = prove::<GpuBackend, _>(&components, channel, commitment_scheme)?;
     span.exit();
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
