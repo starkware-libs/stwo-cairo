@@ -6,7 +6,7 @@ use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 206;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
-    ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMul', 2),
+    ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMulWindowBits18', 2),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -51,8 +51,8 @@ pub struct Component {
     pub interaction_claim: InteractionClaim,
     pub memory_id_to_big_lookup_elements: crate::MemoryIdToBigElements,
     pub range_check_8_lookup_elements: crate::RangeCheck_8Elements,
-    pub partial_ec_mul_lookup_elements: crate::PartialEcMulElements,
-    pub pedersen_aggregator_lookup_elements: crate::PedersenAggregatorElements,
+    pub partial_ec_mul_window_bits_18_lookup_elements: crate::PartialEcMulWindowBits18Elements,
+    pub pedersen_aggregator_window_bits_18_lookup_elements: crate::PedersenAggregatorWindowBits18Elements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -69,8 +69,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
             interaction_claim: *interaction_claim,
             memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
             range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
-            partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-            pedersen_aggregator_lookup_elements: interaction_elements.pedersen_aggregator.clone(),
+            partial_ec_mul_window_bits_18_lookup_elements: interaction_elements
+                .partial_ec_mul_window_bits_18
+                .clone(),
+            pedersen_aggregator_window_bits_18_lookup_elements: interaction_elements
+                .pedersen_aggregator_window_bits_18
+                .clone(),
         }
     }
 }
@@ -96,12 +100,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_8_sum_3: QM31 = Zero::zero();
         let mut range_check_8_sum_4: QM31 = Zero::zero();
         let mut range_check_8_sum_5: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_6: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_7: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_8: QM31 = Zero::zero();
-        let mut partial_ec_mul_sum_9: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_6: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_7: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_8: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_9: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_10: QM31 = Zero::zero();
-        let mut pedersen_aggregator_sum_11: QM31 = Zero::zero();
+        let mut pedersen_aggregator_window_bits_18_sum_11: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -171,147 +175,147 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ms_limb_is_max_col62,
             ms_and_mid_limbs_are_max_col63,
             rc_input_col64,
-            partial_ec_mul_output_limb_0_col65,
-            partial_ec_mul_output_limb_1_col66,
-            partial_ec_mul_output_limb_2_col67,
-            partial_ec_mul_output_limb_3_col68,
-            partial_ec_mul_output_limb_4_col69,
-            partial_ec_mul_output_limb_5_col70,
-            partial_ec_mul_output_limb_6_col71,
-            partial_ec_mul_output_limb_7_col72,
-            partial_ec_mul_output_limb_8_col73,
-            partial_ec_mul_output_limb_9_col74,
-            partial_ec_mul_output_limb_10_col75,
-            partial_ec_mul_output_limb_11_col76,
-            partial_ec_mul_output_limb_12_col77,
-            partial_ec_mul_output_limb_13_col78,
-            partial_ec_mul_output_limb_14_col79,
-            partial_ec_mul_output_limb_15_col80,
-            partial_ec_mul_output_limb_16_col81,
-            partial_ec_mul_output_limb_17_col82,
-            partial_ec_mul_output_limb_18_col83,
-            partial_ec_mul_output_limb_19_col84,
-            partial_ec_mul_output_limb_20_col85,
-            partial_ec_mul_output_limb_21_col86,
-            partial_ec_mul_output_limb_22_col87,
-            partial_ec_mul_output_limb_23_col88,
-            partial_ec_mul_output_limb_24_col89,
-            partial_ec_mul_output_limb_25_col90,
-            partial_ec_mul_output_limb_26_col91,
-            partial_ec_mul_output_limb_27_col92,
-            partial_ec_mul_output_limb_28_col93,
-            partial_ec_mul_output_limb_29_col94,
-            partial_ec_mul_output_limb_30_col95,
-            partial_ec_mul_output_limb_31_col96,
-            partial_ec_mul_output_limb_32_col97,
-            partial_ec_mul_output_limb_33_col98,
-            partial_ec_mul_output_limb_34_col99,
-            partial_ec_mul_output_limb_35_col100,
-            partial_ec_mul_output_limb_36_col101,
-            partial_ec_mul_output_limb_37_col102,
-            partial_ec_mul_output_limb_38_col103,
-            partial_ec_mul_output_limb_39_col104,
-            partial_ec_mul_output_limb_40_col105,
-            partial_ec_mul_output_limb_41_col106,
-            partial_ec_mul_output_limb_42_col107,
-            partial_ec_mul_output_limb_43_col108,
-            partial_ec_mul_output_limb_44_col109,
-            partial_ec_mul_output_limb_45_col110,
-            partial_ec_mul_output_limb_46_col111,
-            partial_ec_mul_output_limb_47_col112,
-            partial_ec_mul_output_limb_48_col113,
-            partial_ec_mul_output_limb_49_col114,
-            partial_ec_mul_output_limb_50_col115,
-            partial_ec_mul_output_limb_51_col116,
-            partial_ec_mul_output_limb_52_col117,
-            partial_ec_mul_output_limb_53_col118,
-            partial_ec_mul_output_limb_54_col119,
-            partial_ec_mul_output_limb_55_col120,
-            partial_ec_mul_output_limb_56_col121,
-            partial_ec_mul_output_limb_57_col122,
-            partial_ec_mul_output_limb_58_col123,
-            partial_ec_mul_output_limb_59_col124,
-            partial_ec_mul_output_limb_60_col125,
-            partial_ec_mul_output_limb_61_col126,
-            partial_ec_mul_output_limb_62_col127,
-            partial_ec_mul_output_limb_63_col128,
-            partial_ec_mul_output_limb_64_col129,
-            partial_ec_mul_output_limb_65_col130,
-            partial_ec_mul_output_limb_66_col131,
-            partial_ec_mul_output_limb_67_col132,
-            partial_ec_mul_output_limb_68_col133,
-            partial_ec_mul_output_limb_69_col134,
-            partial_ec_mul_output_limb_0_col135,
-            partial_ec_mul_output_limb_1_col136,
-            partial_ec_mul_output_limb_2_col137,
-            partial_ec_mul_output_limb_3_col138,
-            partial_ec_mul_output_limb_4_col139,
-            partial_ec_mul_output_limb_5_col140,
-            partial_ec_mul_output_limb_6_col141,
-            partial_ec_mul_output_limb_7_col142,
-            partial_ec_mul_output_limb_8_col143,
-            partial_ec_mul_output_limb_9_col144,
-            partial_ec_mul_output_limb_10_col145,
-            partial_ec_mul_output_limb_11_col146,
-            partial_ec_mul_output_limb_12_col147,
-            partial_ec_mul_output_limb_13_col148,
-            partial_ec_mul_output_limb_14_col149,
-            partial_ec_mul_output_limb_15_col150,
-            partial_ec_mul_output_limb_16_col151,
-            partial_ec_mul_output_limb_17_col152,
-            partial_ec_mul_output_limb_18_col153,
-            partial_ec_mul_output_limb_19_col154,
-            partial_ec_mul_output_limb_20_col155,
-            partial_ec_mul_output_limb_21_col156,
-            partial_ec_mul_output_limb_22_col157,
-            partial_ec_mul_output_limb_23_col158,
-            partial_ec_mul_output_limb_24_col159,
-            partial_ec_mul_output_limb_25_col160,
-            partial_ec_mul_output_limb_26_col161,
-            partial_ec_mul_output_limb_27_col162,
-            partial_ec_mul_output_limb_28_col163,
-            partial_ec_mul_output_limb_29_col164,
-            partial_ec_mul_output_limb_30_col165,
-            partial_ec_mul_output_limb_31_col166,
-            partial_ec_mul_output_limb_32_col167,
-            partial_ec_mul_output_limb_33_col168,
-            partial_ec_mul_output_limb_34_col169,
-            partial_ec_mul_output_limb_35_col170,
-            partial_ec_mul_output_limb_36_col171,
-            partial_ec_mul_output_limb_37_col172,
-            partial_ec_mul_output_limb_38_col173,
-            partial_ec_mul_output_limb_39_col174,
-            partial_ec_mul_output_limb_40_col175,
-            partial_ec_mul_output_limb_41_col176,
-            partial_ec_mul_output_limb_42_col177,
-            partial_ec_mul_output_limb_43_col178,
-            partial_ec_mul_output_limb_44_col179,
-            partial_ec_mul_output_limb_45_col180,
-            partial_ec_mul_output_limb_46_col181,
-            partial_ec_mul_output_limb_47_col182,
-            partial_ec_mul_output_limb_48_col183,
-            partial_ec_mul_output_limb_49_col184,
-            partial_ec_mul_output_limb_50_col185,
-            partial_ec_mul_output_limb_51_col186,
-            partial_ec_mul_output_limb_52_col187,
-            partial_ec_mul_output_limb_53_col188,
-            partial_ec_mul_output_limb_54_col189,
-            partial_ec_mul_output_limb_55_col190,
-            partial_ec_mul_output_limb_56_col191,
-            partial_ec_mul_output_limb_57_col192,
-            partial_ec_mul_output_limb_58_col193,
-            partial_ec_mul_output_limb_59_col194,
-            partial_ec_mul_output_limb_60_col195,
-            partial_ec_mul_output_limb_61_col196,
-            partial_ec_mul_output_limb_62_col197,
-            partial_ec_mul_output_limb_63_col198,
-            partial_ec_mul_output_limb_64_col199,
-            partial_ec_mul_output_limb_65_col200,
-            partial_ec_mul_output_limb_66_col201,
-            partial_ec_mul_output_limb_67_col202,
-            partial_ec_mul_output_limb_68_col203,
-            partial_ec_mul_output_limb_69_col204,
-            pedersen_aggregator_multiplicity,
+            partial_ec_mul_window_bits_18_output_limb_0_col65,
+            partial_ec_mul_window_bits_18_output_limb_1_col66,
+            partial_ec_mul_window_bits_18_output_limb_2_col67,
+            partial_ec_mul_window_bits_18_output_limb_3_col68,
+            partial_ec_mul_window_bits_18_output_limb_4_col69,
+            partial_ec_mul_window_bits_18_output_limb_5_col70,
+            partial_ec_mul_window_bits_18_output_limb_6_col71,
+            partial_ec_mul_window_bits_18_output_limb_7_col72,
+            partial_ec_mul_window_bits_18_output_limb_8_col73,
+            partial_ec_mul_window_bits_18_output_limb_9_col74,
+            partial_ec_mul_window_bits_18_output_limb_10_col75,
+            partial_ec_mul_window_bits_18_output_limb_11_col76,
+            partial_ec_mul_window_bits_18_output_limb_12_col77,
+            partial_ec_mul_window_bits_18_output_limb_13_col78,
+            partial_ec_mul_window_bits_18_output_limb_14_col79,
+            partial_ec_mul_window_bits_18_output_limb_15_col80,
+            partial_ec_mul_window_bits_18_output_limb_16_col81,
+            partial_ec_mul_window_bits_18_output_limb_17_col82,
+            partial_ec_mul_window_bits_18_output_limb_18_col83,
+            partial_ec_mul_window_bits_18_output_limb_19_col84,
+            partial_ec_mul_window_bits_18_output_limb_20_col85,
+            partial_ec_mul_window_bits_18_output_limb_21_col86,
+            partial_ec_mul_window_bits_18_output_limb_22_col87,
+            partial_ec_mul_window_bits_18_output_limb_23_col88,
+            partial_ec_mul_window_bits_18_output_limb_24_col89,
+            partial_ec_mul_window_bits_18_output_limb_25_col90,
+            partial_ec_mul_window_bits_18_output_limb_26_col91,
+            partial_ec_mul_window_bits_18_output_limb_27_col92,
+            partial_ec_mul_window_bits_18_output_limb_28_col93,
+            partial_ec_mul_window_bits_18_output_limb_29_col94,
+            partial_ec_mul_window_bits_18_output_limb_30_col95,
+            partial_ec_mul_window_bits_18_output_limb_31_col96,
+            partial_ec_mul_window_bits_18_output_limb_32_col97,
+            partial_ec_mul_window_bits_18_output_limb_33_col98,
+            partial_ec_mul_window_bits_18_output_limb_34_col99,
+            partial_ec_mul_window_bits_18_output_limb_35_col100,
+            partial_ec_mul_window_bits_18_output_limb_36_col101,
+            partial_ec_mul_window_bits_18_output_limb_37_col102,
+            partial_ec_mul_window_bits_18_output_limb_38_col103,
+            partial_ec_mul_window_bits_18_output_limb_39_col104,
+            partial_ec_mul_window_bits_18_output_limb_40_col105,
+            partial_ec_mul_window_bits_18_output_limb_41_col106,
+            partial_ec_mul_window_bits_18_output_limb_42_col107,
+            partial_ec_mul_window_bits_18_output_limb_43_col108,
+            partial_ec_mul_window_bits_18_output_limb_44_col109,
+            partial_ec_mul_window_bits_18_output_limb_45_col110,
+            partial_ec_mul_window_bits_18_output_limb_46_col111,
+            partial_ec_mul_window_bits_18_output_limb_47_col112,
+            partial_ec_mul_window_bits_18_output_limb_48_col113,
+            partial_ec_mul_window_bits_18_output_limb_49_col114,
+            partial_ec_mul_window_bits_18_output_limb_50_col115,
+            partial_ec_mul_window_bits_18_output_limb_51_col116,
+            partial_ec_mul_window_bits_18_output_limb_52_col117,
+            partial_ec_mul_window_bits_18_output_limb_53_col118,
+            partial_ec_mul_window_bits_18_output_limb_54_col119,
+            partial_ec_mul_window_bits_18_output_limb_55_col120,
+            partial_ec_mul_window_bits_18_output_limb_56_col121,
+            partial_ec_mul_window_bits_18_output_limb_57_col122,
+            partial_ec_mul_window_bits_18_output_limb_58_col123,
+            partial_ec_mul_window_bits_18_output_limb_59_col124,
+            partial_ec_mul_window_bits_18_output_limb_60_col125,
+            partial_ec_mul_window_bits_18_output_limb_61_col126,
+            partial_ec_mul_window_bits_18_output_limb_62_col127,
+            partial_ec_mul_window_bits_18_output_limb_63_col128,
+            partial_ec_mul_window_bits_18_output_limb_64_col129,
+            partial_ec_mul_window_bits_18_output_limb_65_col130,
+            partial_ec_mul_window_bits_18_output_limb_66_col131,
+            partial_ec_mul_window_bits_18_output_limb_67_col132,
+            partial_ec_mul_window_bits_18_output_limb_68_col133,
+            partial_ec_mul_window_bits_18_output_limb_69_col134,
+            partial_ec_mul_window_bits_18_output_limb_0_col135,
+            partial_ec_mul_window_bits_18_output_limb_1_col136,
+            partial_ec_mul_window_bits_18_output_limb_2_col137,
+            partial_ec_mul_window_bits_18_output_limb_3_col138,
+            partial_ec_mul_window_bits_18_output_limb_4_col139,
+            partial_ec_mul_window_bits_18_output_limb_5_col140,
+            partial_ec_mul_window_bits_18_output_limb_6_col141,
+            partial_ec_mul_window_bits_18_output_limb_7_col142,
+            partial_ec_mul_window_bits_18_output_limb_8_col143,
+            partial_ec_mul_window_bits_18_output_limb_9_col144,
+            partial_ec_mul_window_bits_18_output_limb_10_col145,
+            partial_ec_mul_window_bits_18_output_limb_11_col146,
+            partial_ec_mul_window_bits_18_output_limb_12_col147,
+            partial_ec_mul_window_bits_18_output_limb_13_col148,
+            partial_ec_mul_window_bits_18_output_limb_14_col149,
+            partial_ec_mul_window_bits_18_output_limb_15_col150,
+            partial_ec_mul_window_bits_18_output_limb_16_col151,
+            partial_ec_mul_window_bits_18_output_limb_17_col152,
+            partial_ec_mul_window_bits_18_output_limb_18_col153,
+            partial_ec_mul_window_bits_18_output_limb_19_col154,
+            partial_ec_mul_window_bits_18_output_limb_20_col155,
+            partial_ec_mul_window_bits_18_output_limb_21_col156,
+            partial_ec_mul_window_bits_18_output_limb_22_col157,
+            partial_ec_mul_window_bits_18_output_limb_23_col158,
+            partial_ec_mul_window_bits_18_output_limb_24_col159,
+            partial_ec_mul_window_bits_18_output_limb_25_col160,
+            partial_ec_mul_window_bits_18_output_limb_26_col161,
+            partial_ec_mul_window_bits_18_output_limb_27_col162,
+            partial_ec_mul_window_bits_18_output_limb_28_col163,
+            partial_ec_mul_window_bits_18_output_limb_29_col164,
+            partial_ec_mul_window_bits_18_output_limb_30_col165,
+            partial_ec_mul_window_bits_18_output_limb_31_col166,
+            partial_ec_mul_window_bits_18_output_limb_32_col167,
+            partial_ec_mul_window_bits_18_output_limb_33_col168,
+            partial_ec_mul_window_bits_18_output_limb_34_col169,
+            partial_ec_mul_window_bits_18_output_limb_35_col170,
+            partial_ec_mul_window_bits_18_output_limb_36_col171,
+            partial_ec_mul_window_bits_18_output_limb_37_col172,
+            partial_ec_mul_window_bits_18_output_limb_38_col173,
+            partial_ec_mul_window_bits_18_output_limb_39_col174,
+            partial_ec_mul_window_bits_18_output_limb_40_col175,
+            partial_ec_mul_window_bits_18_output_limb_41_col176,
+            partial_ec_mul_window_bits_18_output_limb_42_col177,
+            partial_ec_mul_window_bits_18_output_limb_43_col178,
+            partial_ec_mul_window_bits_18_output_limb_44_col179,
+            partial_ec_mul_window_bits_18_output_limb_45_col180,
+            partial_ec_mul_window_bits_18_output_limb_46_col181,
+            partial_ec_mul_window_bits_18_output_limb_47_col182,
+            partial_ec_mul_window_bits_18_output_limb_48_col183,
+            partial_ec_mul_window_bits_18_output_limb_49_col184,
+            partial_ec_mul_window_bits_18_output_limb_50_col185,
+            partial_ec_mul_window_bits_18_output_limb_51_col186,
+            partial_ec_mul_window_bits_18_output_limb_52_col187,
+            partial_ec_mul_window_bits_18_output_limb_53_col188,
+            partial_ec_mul_window_bits_18_output_limb_54_col189,
+            partial_ec_mul_window_bits_18_output_limb_55_col190,
+            partial_ec_mul_window_bits_18_output_limb_56_col191,
+            partial_ec_mul_window_bits_18_output_limb_57_col192,
+            partial_ec_mul_window_bits_18_output_limb_58_col193,
+            partial_ec_mul_window_bits_18_output_limb_59_col194,
+            partial_ec_mul_window_bits_18_output_limb_60_col195,
+            partial_ec_mul_window_bits_18_output_limb_61_col196,
+            partial_ec_mul_window_bits_18_output_limb_62_col197,
+            partial_ec_mul_window_bits_18_output_limb_63_col198,
+            partial_ec_mul_window_bits_18_output_limb_64_col199,
+            partial_ec_mul_window_bits_18_output_limb_65_col200,
+            partial_ec_mul_window_bits_18_output_limb_66_col201,
+            partial_ec_mul_window_bits_18_output_limb_67_col202,
+            partial_ec_mul_window_bits_18_output_limb_68_col203,
+            partial_ec_mul_window_bits_18_output_limb_69_col204,
+            pedersen_aggregator_window_bits_18_multiplicity,
         ]: [Span<QM31>; 206] =
             (*trace_mask_values
             .multi_pop_front()
@@ -388,662 +392,708 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unwrap())
             .unbox();
         let [rc_input_col64]: [QM31; 1] = (*rc_input_col64.try_into().unwrap()).unbox();
-        let [partial_ec_mul_output_limb_0_col65]: [QM31; 1] = (*partial_ec_mul_output_limb_0_col65
+        let [partial_ec_mul_window_bits_18_output_limb_0_col65]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_0_col65
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_1_col66]: [QM31; 1] = (*partial_ec_mul_output_limb_1_col66
+        let [partial_ec_mul_window_bits_18_output_limb_1_col66]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_1_col66
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_2_col67]: [QM31; 1] = (*partial_ec_mul_output_limb_2_col67
+        let [partial_ec_mul_window_bits_18_output_limb_2_col67]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_2_col67
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_3_col68]: [QM31; 1] = (*partial_ec_mul_output_limb_3_col68
+        let [partial_ec_mul_window_bits_18_output_limb_3_col68]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_3_col68
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_4_col69]: [QM31; 1] = (*partial_ec_mul_output_limb_4_col69
+        let [partial_ec_mul_window_bits_18_output_limb_4_col69]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_4_col69
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_5_col70]: [QM31; 1] = (*partial_ec_mul_output_limb_5_col70
+        let [partial_ec_mul_window_bits_18_output_limb_5_col70]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_5_col70
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_6_col71]: [QM31; 1] = (*partial_ec_mul_output_limb_6_col71
+        let [partial_ec_mul_window_bits_18_output_limb_6_col71]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_6_col71
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_7_col72]: [QM31; 1] = (*partial_ec_mul_output_limb_7_col72
+        let [partial_ec_mul_window_bits_18_output_limb_7_col72]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_7_col72
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_8_col73]: [QM31; 1] = (*partial_ec_mul_output_limb_8_col73
+        let [partial_ec_mul_window_bits_18_output_limb_8_col73]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_8_col73
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_9_col74]: [QM31; 1] = (*partial_ec_mul_output_limb_9_col74
+        let [partial_ec_mul_window_bits_18_output_limb_9_col74]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_9_col74
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_10_col75]: [QM31; 1] = (*partial_ec_mul_output_limb_10_col75
+        let [partial_ec_mul_window_bits_18_output_limb_10_col75]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_10_col75
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_11_col76]: [QM31; 1] = (*partial_ec_mul_output_limb_11_col76
+        let [partial_ec_mul_window_bits_18_output_limb_11_col76]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_11_col76
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_12_col77]: [QM31; 1] = (*partial_ec_mul_output_limb_12_col77
+        let [partial_ec_mul_window_bits_18_output_limb_12_col77]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_12_col77
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_13_col78]: [QM31; 1] = (*partial_ec_mul_output_limb_13_col78
+        let [partial_ec_mul_window_bits_18_output_limb_13_col78]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_13_col78
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_14_col79]: [QM31; 1] = (*partial_ec_mul_output_limb_14_col79
+        let [partial_ec_mul_window_bits_18_output_limb_14_col79]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_14_col79
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_15_col80]: [QM31; 1] = (*partial_ec_mul_output_limb_15_col80
+        let [partial_ec_mul_window_bits_18_output_limb_15_col80]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_15_col80
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_16_col81]: [QM31; 1] = (*partial_ec_mul_output_limb_16_col81
+        let [partial_ec_mul_window_bits_18_output_limb_16_col81]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_16_col81
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_17_col82]: [QM31; 1] = (*partial_ec_mul_output_limb_17_col82
+        let [partial_ec_mul_window_bits_18_output_limb_17_col82]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_17_col82
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_18_col83]: [QM31; 1] = (*partial_ec_mul_output_limb_18_col83
+        let [partial_ec_mul_window_bits_18_output_limb_18_col83]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_18_col83
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_19_col84]: [QM31; 1] = (*partial_ec_mul_output_limb_19_col84
+        let [partial_ec_mul_window_bits_18_output_limb_19_col84]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_19_col84
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_20_col85]: [QM31; 1] = (*partial_ec_mul_output_limb_20_col85
+        let [partial_ec_mul_window_bits_18_output_limb_20_col85]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_20_col85
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_21_col86]: [QM31; 1] = (*partial_ec_mul_output_limb_21_col86
+        let [partial_ec_mul_window_bits_18_output_limb_21_col86]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_21_col86
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_22_col87]: [QM31; 1] = (*partial_ec_mul_output_limb_22_col87
+        let [partial_ec_mul_window_bits_18_output_limb_22_col87]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_22_col87
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_23_col88]: [QM31; 1] = (*partial_ec_mul_output_limb_23_col88
+        let [partial_ec_mul_window_bits_18_output_limb_23_col88]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_23_col88
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_24_col89]: [QM31; 1] = (*partial_ec_mul_output_limb_24_col89
+        let [partial_ec_mul_window_bits_18_output_limb_24_col89]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_24_col89
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_25_col90]: [QM31; 1] = (*partial_ec_mul_output_limb_25_col90
+        let [partial_ec_mul_window_bits_18_output_limb_25_col90]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_25_col90
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_26_col91]: [QM31; 1] = (*partial_ec_mul_output_limb_26_col91
+        let [partial_ec_mul_window_bits_18_output_limb_26_col91]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_26_col91
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_27_col92]: [QM31; 1] = (*partial_ec_mul_output_limb_27_col92
+        let [partial_ec_mul_window_bits_18_output_limb_27_col92]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_27_col92
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_28_col93]: [QM31; 1] = (*partial_ec_mul_output_limb_28_col93
+        let [partial_ec_mul_window_bits_18_output_limb_28_col93]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_28_col93
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_29_col94]: [QM31; 1] = (*partial_ec_mul_output_limb_29_col94
+        let [partial_ec_mul_window_bits_18_output_limb_29_col94]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_29_col94
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_30_col95]: [QM31; 1] = (*partial_ec_mul_output_limb_30_col95
+        let [partial_ec_mul_window_bits_18_output_limb_30_col95]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_30_col95
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_31_col96]: [QM31; 1] = (*partial_ec_mul_output_limb_31_col96
+        let [partial_ec_mul_window_bits_18_output_limb_31_col96]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_31_col96
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_32_col97]: [QM31; 1] = (*partial_ec_mul_output_limb_32_col97
+        let [partial_ec_mul_window_bits_18_output_limb_32_col97]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_32_col97
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_33_col98]: [QM31; 1] = (*partial_ec_mul_output_limb_33_col98
+        let [partial_ec_mul_window_bits_18_output_limb_33_col98]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_33_col98
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_34_col99]: [QM31; 1] = (*partial_ec_mul_output_limb_34_col99
+        let [partial_ec_mul_window_bits_18_output_limb_34_col99]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_34_col99
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_35_col100]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_35_col100
+        let [partial_ec_mul_window_bits_18_output_limb_35_col100]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_35_col100
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_36_col101]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_36_col101
+        let [partial_ec_mul_window_bits_18_output_limb_36_col101]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_36_col101
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_37_col102]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_37_col102
+        let [partial_ec_mul_window_bits_18_output_limb_37_col102]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_37_col102
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_38_col103]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_38_col103
+        let [partial_ec_mul_window_bits_18_output_limb_38_col103]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_38_col103
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_39_col104]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_39_col104
+        let [partial_ec_mul_window_bits_18_output_limb_39_col104]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_39_col104
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_40_col105]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_40_col105
+        let [partial_ec_mul_window_bits_18_output_limb_40_col105]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_40_col105
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_41_col106]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_41_col106
+        let [partial_ec_mul_window_bits_18_output_limb_41_col106]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_41_col106
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_42_col107]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_42_col107
+        let [partial_ec_mul_window_bits_18_output_limb_42_col107]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_42_col107
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_43_col108]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_43_col108
+        let [partial_ec_mul_window_bits_18_output_limb_43_col108]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_43_col108
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_44_col109]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_44_col109
+        let [partial_ec_mul_window_bits_18_output_limb_44_col109]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_44_col109
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_45_col110]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_45_col110
+        let [partial_ec_mul_window_bits_18_output_limb_45_col110]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_45_col110
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_46_col111]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_46_col111
+        let [partial_ec_mul_window_bits_18_output_limb_46_col111]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_46_col111
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_47_col112]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_47_col112
+        let [partial_ec_mul_window_bits_18_output_limb_47_col112]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_47_col112
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_48_col113]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_48_col113
+        let [partial_ec_mul_window_bits_18_output_limb_48_col113]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_48_col113
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_49_col114]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_49_col114
+        let [partial_ec_mul_window_bits_18_output_limb_49_col114]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_49_col114
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_50_col115]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_50_col115
+        let [partial_ec_mul_window_bits_18_output_limb_50_col115]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_50_col115
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_51_col116]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_51_col116
+        let [partial_ec_mul_window_bits_18_output_limb_51_col116]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_51_col116
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_52_col117]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_52_col117
+        let [partial_ec_mul_window_bits_18_output_limb_52_col117]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_52_col117
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_53_col118]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_53_col118
+        let [partial_ec_mul_window_bits_18_output_limb_53_col118]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_53_col118
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_54_col119]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_54_col119
+        let [partial_ec_mul_window_bits_18_output_limb_54_col119]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_54_col119
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_55_col120]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_55_col120
+        let [partial_ec_mul_window_bits_18_output_limb_55_col120]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_55_col120
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_56_col121]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_56_col121
+        let [partial_ec_mul_window_bits_18_output_limb_56_col121]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_56_col121
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_57_col122]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_57_col122
+        let [partial_ec_mul_window_bits_18_output_limb_57_col122]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_57_col122
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_58_col123]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_58_col123
+        let [partial_ec_mul_window_bits_18_output_limb_58_col123]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_58_col123
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_59_col124]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_59_col124
+        let [partial_ec_mul_window_bits_18_output_limb_59_col124]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_59_col124
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_60_col125]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_60_col125
+        let [partial_ec_mul_window_bits_18_output_limb_60_col125]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_60_col125
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_61_col126]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_61_col126
+        let [partial_ec_mul_window_bits_18_output_limb_61_col126]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_61_col126
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_62_col127]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_62_col127
+        let [partial_ec_mul_window_bits_18_output_limb_62_col127]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_62_col127
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_63_col128]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_63_col128
+        let [partial_ec_mul_window_bits_18_output_limb_63_col128]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_63_col128
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_64_col129]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_64_col129
+        let [partial_ec_mul_window_bits_18_output_limb_64_col129]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_64_col129
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_65_col130]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_65_col130
+        let [partial_ec_mul_window_bits_18_output_limb_65_col130]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_65_col130
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_66_col131]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_66_col131
+        let [partial_ec_mul_window_bits_18_output_limb_66_col131]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_66_col131
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_67_col132]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_67_col132
+        let [partial_ec_mul_window_bits_18_output_limb_67_col132]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_67_col132
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_68_col133]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_68_col133
+        let [partial_ec_mul_window_bits_18_output_limb_68_col133]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_68_col133
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_69_col134]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_69_col134
+        let [partial_ec_mul_window_bits_18_output_limb_69_col134]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_69_col134
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_0_col135]: [QM31; 1] = (*partial_ec_mul_output_limb_0_col135
+        let [partial_ec_mul_window_bits_18_output_limb_0_col135]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_0_col135
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_1_col136]: [QM31; 1] = (*partial_ec_mul_output_limb_1_col136
+        let [partial_ec_mul_window_bits_18_output_limb_1_col136]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_1_col136
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_2_col137]: [QM31; 1] = (*partial_ec_mul_output_limb_2_col137
+        let [partial_ec_mul_window_bits_18_output_limb_2_col137]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_2_col137
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_3_col138]: [QM31; 1] = (*partial_ec_mul_output_limb_3_col138
+        let [partial_ec_mul_window_bits_18_output_limb_3_col138]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_3_col138
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_4_col139]: [QM31; 1] = (*partial_ec_mul_output_limb_4_col139
+        let [partial_ec_mul_window_bits_18_output_limb_4_col139]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_4_col139
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_5_col140]: [QM31; 1] = (*partial_ec_mul_output_limb_5_col140
+        let [partial_ec_mul_window_bits_18_output_limb_5_col140]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_5_col140
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_6_col141]: [QM31; 1] = (*partial_ec_mul_output_limb_6_col141
+        let [partial_ec_mul_window_bits_18_output_limb_6_col141]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_6_col141
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_7_col142]: [QM31; 1] = (*partial_ec_mul_output_limb_7_col142
+        let [partial_ec_mul_window_bits_18_output_limb_7_col142]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_7_col142
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_8_col143]: [QM31; 1] = (*partial_ec_mul_output_limb_8_col143
+        let [partial_ec_mul_window_bits_18_output_limb_8_col143]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_8_col143
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_9_col144]: [QM31; 1] = (*partial_ec_mul_output_limb_9_col144
+        let [partial_ec_mul_window_bits_18_output_limb_9_col144]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_9_col144
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_10_col145]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_10_col145
+        let [partial_ec_mul_window_bits_18_output_limb_10_col145]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_10_col145
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_11_col146]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_11_col146
+        let [partial_ec_mul_window_bits_18_output_limb_11_col146]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_11_col146
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_12_col147]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_12_col147
+        let [partial_ec_mul_window_bits_18_output_limb_12_col147]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_12_col147
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_13_col148]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_13_col148
+        let [partial_ec_mul_window_bits_18_output_limb_13_col148]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_13_col148
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_14_col149]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_14_col149
+        let [partial_ec_mul_window_bits_18_output_limb_14_col149]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_14_col149
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_15_col150]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_15_col150
+        let [partial_ec_mul_window_bits_18_output_limb_15_col150]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_15_col150
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_16_col151]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_16_col151
+        let [partial_ec_mul_window_bits_18_output_limb_16_col151]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_16_col151
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_17_col152]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_17_col152
+        let [partial_ec_mul_window_bits_18_output_limb_17_col152]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_17_col152
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_18_col153]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_18_col153
+        let [partial_ec_mul_window_bits_18_output_limb_18_col153]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_18_col153
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_19_col154]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_19_col154
+        let [partial_ec_mul_window_bits_18_output_limb_19_col154]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_19_col154
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_20_col155]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_20_col155
+        let [partial_ec_mul_window_bits_18_output_limb_20_col155]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_20_col155
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_21_col156]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_21_col156
+        let [partial_ec_mul_window_bits_18_output_limb_21_col156]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_21_col156
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_22_col157]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_22_col157
+        let [partial_ec_mul_window_bits_18_output_limb_22_col157]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_22_col157
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_23_col158]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_23_col158
+        let [partial_ec_mul_window_bits_18_output_limb_23_col158]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_23_col158
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_24_col159]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_24_col159
+        let [partial_ec_mul_window_bits_18_output_limb_24_col159]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_24_col159
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_25_col160]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_25_col160
+        let [partial_ec_mul_window_bits_18_output_limb_25_col160]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_25_col160
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_26_col161]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_26_col161
+        let [partial_ec_mul_window_bits_18_output_limb_26_col161]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_26_col161
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_27_col162]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_27_col162
+        let [partial_ec_mul_window_bits_18_output_limb_27_col162]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_27_col162
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_28_col163]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_28_col163
+        let [partial_ec_mul_window_bits_18_output_limb_28_col163]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_28_col163
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_29_col164]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_29_col164
+        let [partial_ec_mul_window_bits_18_output_limb_29_col164]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_29_col164
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_30_col165]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_30_col165
+        let [partial_ec_mul_window_bits_18_output_limb_30_col165]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_30_col165
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_31_col166]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_31_col166
+        let [partial_ec_mul_window_bits_18_output_limb_31_col166]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_31_col166
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_32_col167]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_32_col167
+        let [partial_ec_mul_window_bits_18_output_limb_32_col167]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_32_col167
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_33_col168]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_33_col168
+        let [partial_ec_mul_window_bits_18_output_limb_33_col168]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_33_col168
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_34_col169]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_34_col169
+        let [partial_ec_mul_window_bits_18_output_limb_34_col169]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_34_col169
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_35_col170]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_35_col170
+        let [partial_ec_mul_window_bits_18_output_limb_35_col170]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_35_col170
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_36_col171]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_36_col171
+        let [partial_ec_mul_window_bits_18_output_limb_36_col171]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_36_col171
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_37_col172]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_37_col172
+        let [partial_ec_mul_window_bits_18_output_limb_37_col172]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_37_col172
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_38_col173]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_38_col173
+        let [partial_ec_mul_window_bits_18_output_limb_38_col173]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_38_col173
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_39_col174]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_39_col174
+        let [partial_ec_mul_window_bits_18_output_limb_39_col174]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_39_col174
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_40_col175]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_40_col175
+        let [partial_ec_mul_window_bits_18_output_limb_40_col175]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_40_col175
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_41_col176]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_41_col176
+        let [partial_ec_mul_window_bits_18_output_limb_41_col176]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_41_col176
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_42_col177]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_42_col177
+        let [partial_ec_mul_window_bits_18_output_limb_42_col177]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_42_col177
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_43_col178]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_43_col178
+        let [partial_ec_mul_window_bits_18_output_limb_43_col178]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_43_col178
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_44_col179]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_44_col179
+        let [partial_ec_mul_window_bits_18_output_limb_44_col179]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_44_col179
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_45_col180]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_45_col180
+        let [partial_ec_mul_window_bits_18_output_limb_45_col180]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_45_col180
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_46_col181]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_46_col181
+        let [partial_ec_mul_window_bits_18_output_limb_46_col181]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_46_col181
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_47_col182]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_47_col182
+        let [partial_ec_mul_window_bits_18_output_limb_47_col182]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_47_col182
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_48_col183]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_48_col183
+        let [partial_ec_mul_window_bits_18_output_limb_48_col183]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_48_col183
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_49_col184]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_49_col184
+        let [partial_ec_mul_window_bits_18_output_limb_49_col184]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_49_col184
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_50_col185]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_50_col185
+        let [partial_ec_mul_window_bits_18_output_limb_50_col185]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_50_col185
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_51_col186]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_51_col186
+        let [partial_ec_mul_window_bits_18_output_limb_51_col186]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_51_col186
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_52_col187]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_52_col187
+        let [partial_ec_mul_window_bits_18_output_limb_52_col187]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_52_col187
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_53_col188]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_53_col188
+        let [partial_ec_mul_window_bits_18_output_limb_53_col188]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_53_col188
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_54_col189]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_54_col189
+        let [partial_ec_mul_window_bits_18_output_limb_54_col189]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_54_col189
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_55_col190]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_55_col190
+        let [partial_ec_mul_window_bits_18_output_limb_55_col190]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_55_col190
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_56_col191]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_56_col191
+        let [partial_ec_mul_window_bits_18_output_limb_56_col191]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_56_col191
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_57_col192]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_57_col192
+        let [partial_ec_mul_window_bits_18_output_limb_57_col192]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_57_col192
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_58_col193]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_58_col193
+        let [partial_ec_mul_window_bits_18_output_limb_58_col193]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_58_col193
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_59_col194]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_59_col194
+        let [partial_ec_mul_window_bits_18_output_limb_59_col194]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_59_col194
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_60_col195]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_60_col195
+        let [partial_ec_mul_window_bits_18_output_limb_60_col195]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_60_col195
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_61_col196]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_61_col196
+        let [partial_ec_mul_window_bits_18_output_limb_61_col196]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_61_col196
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_62_col197]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_62_col197
+        let [partial_ec_mul_window_bits_18_output_limb_62_col197]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_62_col197
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_63_col198]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_63_col198
+        let [partial_ec_mul_window_bits_18_output_limb_63_col198]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_63_col198
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_64_col199]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_64_col199
+        let [partial_ec_mul_window_bits_18_output_limb_64_col199]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_64_col199
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_65_col200]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_65_col200
+        let [partial_ec_mul_window_bits_18_output_limb_65_col200]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_65_col200
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_66_col201]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_66_col201
+        let [partial_ec_mul_window_bits_18_output_limb_66_col201]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_66_col201
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_67_col202]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_67_col202
+        let [partial_ec_mul_window_bits_18_output_limb_67_col202]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_67_col202
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_68_col203]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_68_col203
+        let [partial_ec_mul_window_bits_18_output_limb_68_col203]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_68_col203
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_69_col204]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_69_col204
+        let [partial_ec_mul_window_bits_18_output_limb_69_col204]: [QM31; 1] =
+            (*partial_ec_mul_window_bits_18_output_limb_69_col204
             .try_into()
             .unwrap())
             .unbox();
-        let [pedersen_aggregator_multiplicity]: [QM31; 1] = (*pedersen_aggregator_multiplicity
+        let [pedersen_aggregator_window_bits_18_multiplicity]: [QM31; 1] =
+            (*pedersen_aggregator_window_bits_18_multiplicity
             .try_into()
             .unwrap())
             .unbox();
@@ -1162,13 +1212,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
         );
-        let partial_ec_mul_chain_tmp_tmp_c48a1_8: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
+        let partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8: QM31 = (seq
+            * qm31_const::<2, 0, 0, 0>());
 
-        partial_ec_mul_sum_6 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_6 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_c48a1_8, qm31_const::<0, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8, qm31_const::<0, 0, 0, 0>(),
                     (value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col5 + (value_limb_3_col6 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_4_col7 + (value_limb_5_col8 * qm31_const::<512, 0, 0, 0>())),
@@ -1214,56 +1265,93 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 ],
             );
 
-        partial_ec_mul_sum_7 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_7 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_c48a1_8, qm31_const::<14, 0, 0, 0>(),
-                    partial_ec_mul_output_limb_0_col65, partial_ec_mul_output_limb_1_col66,
-                    partial_ec_mul_output_limb_2_col67, partial_ec_mul_output_limb_3_col68,
-                    partial_ec_mul_output_limb_4_col69, partial_ec_mul_output_limb_5_col70,
-                    partial_ec_mul_output_limb_6_col71, partial_ec_mul_output_limb_7_col72,
-                    partial_ec_mul_output_limb_8_col73, partial_ec_mul_output_limb_9_col74,
-                    partial_ec_mul_output_limb_10_col75, partial_ec_mul_output_limb_11_col76,
-                    partial_ec_mul_output_limb_12_col77, partial_ec_mul_output_limb_13_col78,
-                    partial_ec_mul_output_limb_14_col79, partial_ec_mul_output_limb_15_col80,
-                    partial_ec_mul_output_limb_16_col81, partial_ec_mul_output_limb_17_col82,
-                    partial_ec_mul_output_limb_18_col83, partial_ec_mul_output_limb_19_col84,
-                    partial_ec_mul_output_limb_20_col85, partial_ec_mul_output_limb_21_col86,
-                    partial_ec_mul_output_limb_22_col87, partial_ec_mul_output_limb_23_col88,
-                    partial_ec_mul_output_limb_24_col89, partial_ec_mul_output_limb_25_col90,
-                    partial_ec_mul_output_limb_26_col91, partial_ec_mul_output_limb_27_col92,
-                    partial_ec_mul_output_limb_28_col93, partial_ec_mul_output_limb_29_col94,
-                    partial_ec_mul_output_limb_30_col95, partial_ec_mul_output_limb_31_col96,
-                    partial_ec_mul_output_limb_32_col97, partial_ec_mul_output_limb_33_col98,
-                    partial_ec_mul_output_limb_34_col99, partial_ec_mul_output_limb_35_col100,
-                    partial_ec_mul_output_limb_36_col101, partial_ec_mul_output_limb_37_col102,
-                    partial_ec_mul_output_limb_38_col103, partial_ec_mul_output_limb_39_col104,
-                    partial_ec_mul_output_limb_40_col105, partial_ec_mul_output_limb_41_col106,
-                    partial_ec_mul_output_limb_42_col107, partial_ec_mul_output_limb_43_col108,
-                    partial_ec_mul_output_limb_44_col109, partial_ec_mul_output_limb_45_col110,
-                    partial_ec_mul_output_limb_46_col111, partial_ec_mul_output_limb_47_col112,
-                    partial_ec_mul_output_limb_48_col113, partial_ec_mul_output_limb_49_col114,
-                    partial_ec_mul_output_limb_50_col115, partial_ec_mul_output_limb_51_col116,
-                    partial_ec_mul_output_limb_52_col117, partial_ec_mul_output_limb_53_col118,
-                    partial_ec_mul_output_limb_54_col119, partial_ec_mul_output_limb_55_col120,
-                    partial_ec_mul_output_limb_56_col121, partial_ec_mul_output_limb_57_col122,
-                    partial_ec_mul_output_limb_58_col123, partial_ec_mul_output_limb_59_col124,
-                    partial_ec_mul_output_limb_60_col125, partial_ec_mul_output_limb_61_col126,
-                    partial_ec_mul_output_limb_62_col127, partial_ec_mul_output_limb_63_col128,
-                    partial_ec_mul_output_limb_64_col129, partial_ec_mul_output_limb_65_col130,
-                    partial_ec_mul_output_limb_66_col131, partial_ec_mul_output_limb_67_col132,
-                    partial_ec_mul_output_limb_68_col133, partial_ec_mul_output_limb_69_col134,
+                    partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8,
+                    qm31_const::<14, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col65,
+                    partial_ec_mul_window_bits_18_output_limb_1_col66,
+                    partial_ec_mul_window_bits_18_output_limb_2_col67,
+                    partial_ec_mul_window_bits_18_output_limb_3_col68,
+                    partial_ec_mul_window_bits_18_output_limb_4_col69,
+                    partial_ec_mul_window_bits_18_output_limb_5_col70,
+                    partial_ec_mul_window_bits_18_output_limb_6_col71,
+                    partial_ec_mul_window_bits_18_output_limb_7_col72,
+                    partial_ec_mul_window_bits_18_output_limb_8_col73,
+                    partial_ec_mul_window_bits_18_output_limb_9_col74,
+                    partial_ec_mul_window_bits_18_output_limb_10_col75,
+                    partial_ec_mul_window_bits_18_output_limb_11_col76,
+                    partial_ec_mul_window_bits_18_output_limb_12_col77,
+                    partial_ec_mul_window_bits_18_output_limb_13_col78,
+                    partial_ec_mul_window_bits_18_output_limb_14_col79,
+                    partial_ec_mul_window_bits_18_output_limb_15_col80,
+                    partial_ec_mul_window_bits_18_output_limb_16_col81,
+                    partial_ec_mul_window_bits_18_output_limb_17_col82,
+                    partial_ec_mul_window_bits_18_output_limb_18_col83,
+                    partial_ec_mul_window_bits_18_output_limb_19_col84,
+                    partial_ec_mul_window_bits_18_output_limb_20_col85,
+                    partial_ec_mul_window_bits_18_output_limb_21_col86,
+                    partial_ec_mul_window_bits_18_output_limb_22_col87,
+                    partial_ec_mul_window_bits_18_output_limb_23_col88,
+                    partial_ec_mul_window_bits_18_output_limb_24_col89,
+                    partial_ec_mul_window_bits_18_output_limb_25_col90,
+                    partial_ec_mul_window_bits_18_output_limb_26_col91,
+                    partial_ec_mul_window_bits_18_output_limb_27_col92,
+                    partial_ec_mul_window_bits_18_output_limb_28_col93,
+                    partial_ec_mul_window_bits_18_output_limb_29_col94,
+                    partial_ec_mul_window_bits_18_output_limb_30_col95,
+                    partial_ec_mul_window_bits_18_output_limb_31_col96,
+                    partial_ec_mul_window_bits_18_output_limb_32_col97,
+                    partial_ec_mul_window_bits_18_output_limb_33_col98,
+                    partial_ec_mul_window_bits_18_output_limb_34_col99,
+                    partial_ec_mul_window_bits_18_output_limb_35_col100,
+                    partial_ec_mul_window_bits_18_output_limb_36_col101,
+                    partial_ec_mul_window_bits_18_output_limb_37_col102,
+                    partial_ec_mul_window_bits_18_output_limb_38_col103,
+                    partial_ec_mul_window_bits_18_output_limb_39_col104,
+                    partial_ec_mul_window_bits_18_output_limb_40_col105,
+                    partial_ec_mul_window_bits_18_output_limb_41_col106,
+                    partial_ec_mul_window_bits_18_output_limb_42_col107,
+                    partial_ec_mul_window_bits_18_output_limb_43_col108,
+                    partial_ec_mul_window_bits_18_output_limb_44_col109,
+                    partial_ec_mul_window_bits_18_output_limb_45_col110,
+                    partial_ec_mul_window_bits_18_output_limb_46_col111,
+                    partial_ec_mul_window_bits_18_output_limb_47_col112,
+                    partial_ec_mul_window_bits_18_output_limb_48_col113,
+                    partial_ec_mul_window_bits_18_output_limb_49_col114,
+                    partial_ec_mul_window_bits_18_output_limb_50_col115,
+                    partial_ec_mul_window_bits_18_output_limb_51_col116,
+                    partial_ec_mul_window_bits_18_output_limb_52_col117,
+                    partial_ec_mul_window_bits_18_output_limb_53_col118,
+                    partial_ec_mul_window_bits_18_output_limb_54_col119,
+                    partial_ec_mul_window_bits_18_output_limb_55_col120,
+                    partial_ec_mul_window_bits_18_output_limb_56_col121,
+                    partial_ec_mul_window_bits_18_output_limb_57_col122,
+                    partial_ec_mul_window_bits_18_output_limb_58_col123,
+                    partial_ec_mul_window_bits_18_output_limb_59_col124,
+                    partial_ec_mul_window_bits_18_output_limb_60_col125,
+                    partial_ec_mul_window_bits_18_output_limb_61_col126,
+                    partial_ec_mul_window_bits_18_output_limb_62_col127,
+                    partial_ec_mul_window_bits_18_output_limb_63_col128,
+                    partial_ec_mul_window_bits_18_output_limb_64_col129,
+                    partial_ec_mul_window_bits_18_output_limb_65_col130,
+                    partial_ec_mul_window_bits_18_output_limb_66_col131,
+                    partial_ec_mul_window_bits_18_output_limb_67_col132,
+                    partial_ec_mul_window_bits_18_output_limb_68_col133,
+                    partial_ec_mul_window_bits_18_output_limb_69_col134,
                 ],
             );
-        let partial_ec_mul_chain_id_tmp_c48a1_23: QM31 = (partial_ec_mul_chain_tmp_tmp_c48a1_8
+        let partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23: QM31 =
+            (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8
             + qm31_const::<1, 0, 0, 0>());
 
-        partial_ec_mul_sum_8 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_8 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_23, qm31_const::<14, 0, 0, 0>(),
+                    partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
+                    qm31_const::<14, 0, 0, 0>(),
                     (value_limb_0_col31 + (value_limb_1_col32 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_2_col33 + (value_limb_3_col34 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_4_col35 + (value_limb_5_col36 * qm31_const::<512, 0, 0, 0>())),
@@ -1278,77 +1366,140 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     (value_limb_22_col53 + (value_limb_23_col54 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_24_col55 + (value_limb_25_col56 * qm31_const::<512, 0, 0, 0>())),
                     (value_limb_26_col57 + (value_limb_27_col58 * qm31_const::<512, 0, 0, 0>())),
-                    partial_ec_mul_output_limb_14_col79, partial_ec_mul_output_limb_15_col80,
-                    partial_ec_mul_output_limb_16_col81, partial_ec_mul_output_limb_17_col82,
-                    partial_ec_mul_output_limb_18_col83, partial_ec_mul_output_limb_19_col84,
-                    partial_ec_mul_output_limb_20_col85, partial_ec_mul_output_limb_21_col86,
-                    partial_ec_mul_output_limb_22_col87, partial_ec_mul_output_limb_23_col88,
-                    partial_ec_mul_output_limb_24_col89, partial_ec_mul_output_limb_25_col90,
-                    partial_ec_mul_output_limb_26_col91, partial_ec_mul_output_limb_27_col92,
-                    partial_ec_mul_output_limb_28_col93, partial_ec_mul_output_limb_29_col94,
-                    partial_ec_mul_output_limb_30_col95, partial_ec_mul_output_limb_31_col96,
-                    partial_ec_mul_output_limb_32_col97, partial_ec_mul_output_limb_33_col98,
-                    partial_ec_mul_output_limb_34_col99, partial_ec_mul_output_limb_35_col100,
-                    partial_ec_mul_output_limb_36_col101, partial_ec_mul_output_limb_37_col102,
-                    partial_ec_mul_output_limb_38_col103, partial_ec_mul_output_limb_39_col104,
-                    partial_ec_mul_output_limb_40_col105, partial_ec_mul_output_limb_41_col106,
-                    partial_ec_mul_output_limb_42_col107, partial_ec_mul_output_limb_43_col108,
-                    partial_ec_mul_output_limb_44_col109, partial_ec_mul_output_limb_45_col110,
-                    partial_ec_mul_output_limb_46_col111, partial_ec_mul_output_limb_47_col112,
-                    partial_ec_mul_output_limb_48_col113, partial_ec_mul_output_limb_49_col114,
-                    partial_ec_mul_output_limb_50_col115, partial_ec_mul_output_limb_51_col116,
-                    partial_ec_mul_output_limb_52_col117, partial_ec_mul_output_limb_53_col118,
-                    partial_ec_mul_output_limb_54_col119, partial_ec_mul_output_limb_55_col120,
-                    partial_ec_mul_output_limb_56_col121, partial_ec_mul_output_limb_57_col122,
-                    partial_ec_mul_output_limb_58_col123, partial_ec_mul_output_limb_59_col124,
-                    partial_ec_mul_output_limb_60_col125, partial_ec_mul_output_limb_61_col126,
-                    partial_ec_mul_output_limb_62_col127, partial_ec_mul_output_limb_63_col128,
-                    partial_ec_mul_output_limb_64_col129, partial_ec_mul_output_limb_65_col130,
-                    partial_ec_mul_output_limb_66_col131, partial_ec_mul_output_limb_67_col132,
-                    partial_ec_mul_output_limb_68_col133, partial_ec_mul_output_limb_69_col134,
+                    partial_ec_mul_window_bits_18_output_limb_14_col79,
+                    partial_ec_mul_window_bits_18_output_limb_15_col80,
+                    partial_ec_mul_window_bits_18_output_limb_16_col81,
+                    partial_ec_mul_window_bits_18_output_limb_17_col82,
+                    partial_ec_mul_window_bits_18_output_limb_18_col83,
+                    partial_ec_mul_window_bits_18_output_limb_19_col84,
+                    partial_ec_mul_window_bits_18_output_limb_20_col85,
+                    partial_ec_mul_window_bits_18_output_limb_21_col86,
+                    partial_ec_mul_window_bits_18_output_limb_22_col87,
+                    partial_ec_mul_window_bits_18_output_limb_23_col88,
+                    partial_ec_mul_window_bits_18_output_limb_24_col89,
+                    partial_ec_mul_window_bits_18_output_limb_25_col90,
+                    partial_ec_mul_window_bits_18_output_limb_26_col91,
+                    partial_ec_mul_window_bits_18_output_limb_27_col92,
+                    partial_ec_mul_window_bits_18_output_limb_28_col93,
+                    partial_ec_mul_window_bits_18_output_limb_29_col94,
+                    partial_ec_mul_window_bits_18_output_limb_30_col95,
+                    partial_ec_mul_window_bits_18_output_limb_31_col96,
+                    partial_ec_mul_window_bits_18_output_limb_32_col97,
+                    partial_ec_mul_window_bits_18_output_limb_33_col98,
+                    partial_ec_mul_window_bits_18_output_limb_34_col99,
+                    partial_ec_mul_window_bits_18_output_limb_35_col100,
+                    partial_ec_mul_window_bits_18_output_limb_36_col101,
+                    partial_ec_mul_window_bits_18_output_limb_37_col102,
+                    partial_ec_mul_window_bits_18_output_limb_38_col103,
+                    partial_ec_mul_window_bits_18_output_limb_39_col104,
+                    partial_ec_mul_window_bits_18_output_limb_40_col105,
+                    partial_ec_mul_window_bits_18_output_limb_41_col106,
+                    partial_ec_mul_window_bits_18_output_limb_42_col107,
+                    partial_ec_mul_window_bits_18_output_limb_43_col108,
+                    partial_ec_mul_window_bits_18_output_limb_44_col109,
+                    partial_ec_mul_window_bits_18_output_limb_45_col110,
+                    partial_ec_mul_window_bits_18_output_limb_46_col111,
+                    partial_ec_mul_window_bits_18_output_limb_47_col112,
+                    partial_ec_mul_window_bits_18_output_limb_48_col113,
+                    partial_ec_mul_window_bits_18_output_limb_49_col114,
+                    partial_ec_mul_window_bits_18_output_limb_50_col115,
+                    partial_ec_mul_window_bits_18_output_limb_51_col116,
+                    partial_ec_mul_window_bits_18_output_limb_52_col117,
+                    partial_ec_mul_window_bits_18_output_limb_53_col118,
+                    partial_ec_mul_window_bits_18_output_limb_54_col119,
+                    partial_ec_mul_window_bits_18_output_limb_55_col120,
+                    partial_ec_mul_window_bits_18_output_limb_56_col121,
+                    partial_ec_mul_window_bits_18_output_limb_57_col122,
+                    partial_ec_mul_window_bits_18_output_limb_58_col123,
+                    partial_ec_mul_window_bits_18_output_limb_59_col124,
+                    partial_ec_mul_window_bits_18_output_limb_60_col125,
+                    partial_ec_mul_window_bits_18_output_limb_61_col126,
+                    partial_ec_mul_window_bits_18_output_limb_62_col127,
+                    partial_ec_mul_window_bits_18_output_limb_63_col128,
+                    partial_ec_mul_window_bits_18_output_limb_64_col129,
+                    partial_ec_mul_window_bits_18_output_limb_65_col130,
+                    partial_ec_mul_window_bits_18_output_limb_66_col131,
+                    partial_ec_mul_window_bits_18_output_limb_67_col132,
+                    partial_ec_mul_window_bits_18_output_limb_68_col133,
+                    partial_ec_mul_window_bits_18_output_limb_69_col134,
                 ],
             );
 
-        partial_ec_mul_sum_9 = self
-            .partial_ec_mul_lookup_elements
+        partial_ec_mul_window_bits_18_sum_9 = self
+            .partial_ec_mul_window_bits_18_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_23, qm31_const::<28, 0, 0, 0>(),
-                    partial_ec_mul_output_limb_0_col135, partial_ec_mul_output_limb_1_col136,
-                    partial_ec_mul_output_limb_2_col137, partial_ec_mul_output_limb_3_col138,
-                    partial_ec_mul_output_limb_4_col139, partial_ec_mul_output_limb_5_col140,
-                    partial_ec_mul_output_limb_6_col141, partial_ec_mul_output_limb_7_col142,
-                    partial_ec_mul_output_limb_8_col143, partial_ec_mul_output_limb_9_col144,
-                    partial_ec_mul_output_limb_10_col145, partial_ec_mul_output_limb_11_col146,
-                    partial_ec_mul_output_limb_12_col147, partial_ec_mul_output_limb_13_col148,
-                    partial_ec_mul_output_limb_14_col149, partial_ec_mul_output_limb_15_col150,
-                    partial_ec_mul_output_limb_16_col151, partial_ec_mul_output_limb_17_col152,
-                    partial_ec_mul_output_limb_18_col153, partial_ec_mul_output_limb_19_col154,
-                    partial_ec_mul_output_limb_20_col155, partial_ec_mul_output_limb_21_col156,
-                    partial_ec_mul_output_limb_22_col157, partial_ec_mul_output_limb_23_col158,
-                    partial_ec_mul_output_limb_24_col159, partial_ec_mul_output_limb_25_col160,
-                    partial_ec_mul_output_limb_26_col161, partial_ec_mul_output_limb_27_col162,
-                    partial_ec_mul_output_limb_28_col163, partial_ec_mul_output_limb_29_col164,
-                    partial_ec_mul_output_limb_30_col165, partial_ec_mul_output_limb_31_col166,
-                    partial_ec_mul_output_limb_32_col167, partial_ec_mul_output_limb_33_col168,
-                    partial_ec_mul_output_limb_34_col169, partial_ec_mul_output_limb_35_col170,
-                    partial_ec_mul_output_limb_36_col171, partial_ec_mul_output_limb_37_col172,
-                    partial_ec_mul_output_limb_38_col173, partial_ec_mul_output_limb_39_col174,
-                    partial_ec_mul_output_limb_40_col175, partial_ec_mul_output_limb_41_col176,
-                    partial_ec_mul_output_limb_42_col177, partial_ec_mul_output_limb_43_col178,
-                    partial_ec_mul_output_limb_44_col179, partial_ec_mul_output_limb_45_col180,
-                    partial_ec_mul_output_limb_46_col181, partial_ec_mul_output_limb_47_col182,
-                    partial_ec_mul_output_limb_48_col183, partial_ec_mul_output_limb_49_col184,
-                    partial_ec_mul_output_limb_50_col185, partial_ec_mul_output_limb_51_col186,
-                    partial_ec_mul_output_limb_52_col187, partial_ec_mul_output_limb_53_col188,
-                    partial_ec_mul_output_limb_54_col189, partial_ec_mul_output_limb_55_col190,
-                    partial_ec_mul_output_limb_56_col191, partial_ec_mul_output_limb_57_col192,
-                    partial_ec_mul_output_limb_58_col193, partial_ec_mul_output_limb_59_col194,
-                    partial_ec_mul_output_limb_60_col195, partial_ec_mul_output_limb_61_col196,
-                    partial_ec_mul_output_limb_62_col197, partial_ec_mul_output_limb_63_col198,
-                    partial_ec_mul_output_limb_64_col199, partial_ec_mul_output_limb_65_col200,
-                    partial_ec_mul_output_limb_66_col201, partial_ec_mul_output_limb_67_col202,
-                    partial_ec_mul_output_limb_68_col203, partial_ec_mul_output_limb_69_col204,
+                    partial_ec_mul_window_bits_18_chain_id_tmp_94cb4_23,
+                    qm31_const::<28, 0, 0, 0>(), partial_ec_mul_window_bits_18_output_limb_0_col135,
+                    partial_ec_mul_window_bits_18_output_limb_1_col136,
+                    partial_ec_mul_window_bits_18_output_limb_2_col137,
+                    partial_ec_mul_window_bits_18_output_limb_3_col138,
+                    partial_ec_mul_window_bits_18_output_limb_4_col139,
+                    partial_ec_mul_window_bits_18_output_limb_5_col140,
+                    partial_ec_mul_window_bits_18_output_limb_6_col141,
+                    partial_ec_mul_window_bits_18_output_limb_7_col142,
+                    partial_ec_mul_window_bits_18_output_limb_8_col143,
+                    partial_ec_mul_window_bits_18_output_limb_9_col144,
+                    partial_ec_mul_window_bits_18_output_limb_10_col145,
+                    partial_ec_mul_window_bits_18_output_limb_11_col146,
+                    partial_ec_mul_window_bits_18_output_limb_12_col147,
+                    partial_ec_mul_window_bits_18_output_limb_13_col148,
+                    partial_ec_mul_window_bits_18_output_limb_14_col149,
+                    partial_ec_mul_window_bits_18_output_limb_15_col150,
+                    partial_ec_mul_window_bits_18_output_limb_16_col151,
+                    partial_ec_mul_window_bits_18_output_limb_17_col152,
+                    partial_ec_mul_window_bits_18_output_limb_18_col153,
+                    partial_ec_mul_window_bits_18_output_limb_19_col154,
+                    partial_ec_mul_window_bits_18_output_limb_20_col155,
+                    partial_ec_mul_window_bits_18_output_limb_21_col156,
+                    partial_ec_mul_window_bits_18_output_limb_22_col157,
+                    partial_ec_mul_window_bits_18_output_limb_23_col158,
+                    partial_ec_mul_window_bits_18_output_limb_24_col159,
+                    partial_ec_mul_window_bits_18_output_limb_25_col160,
+                    partial_ec_mul_window_bits_18_output_limb_26_col161,
+                    partial_ec_mul_window_bits_18_output_limb_27_col162,
+                    partial_ec_mul_window_bits_18_output_limb_28_col163,
+                    partial_ec_mul_window_bits_18_output_limb_29_col164,
+                    partial_ec_mul_window_bits_18_output_limb_30_col165,
+                    partial_ec_mul_window_bits_18_output_limb_31_col166,
+                    partial_ec_mul_window_bits_18_output_limb_32_col167,
+                    partial_ec_mul_window_bits_18_output_limb_33_col168,
+                    partial_ec_mul_window_bits_18_output_limb_34_col169,
+                    partial_ec_mul_window_bits_18_output_limb_35_col170,
+                    partial_ec_mul_window_bits_18_output_limb_36_col171,
+                    partial_ec_mul_window_bits_18_output_limb_37_col172,
+                    partial_ec_mul_window_bits_18_output_limb_38_col173,
+                    partial_ec_mul_window_bits_18_output_limb_39_col174,
+                    partial_ec_mul_window_bits_18_output_limb_40_col175,
+                    partial_ec_mul_window_bits_18_output_limb_41_col176,
+                    partial_ec_mul_window_bits_18_output_limb_42_col177,
+                    partial_ec_mul_window_bits_18_output_limb_43_col178,
+                    partial_ec_mul_window_bits_18_output_limb_44_col179,
+                    partial_ec_mul_window_bits_18_output_limb_45_col180,
+                    partial_ec_mul_window_bits_18_output_limb_46_col181,
+                    partial_ec_mul_window_bits_18_output_limb_47_col182,
+                    partial_ec_mul_window_bits_18_output_limb_48_col183,
+                    partial_ec_mul_window_bits_18_output_limb_49_col184,
+                    partial_ec_mul_window_bits_18_output_limb_50_col185,
+                    partial_ec_mul_window_bits_18_output_limb_51_col186,
+                    partial_ec_mul_window_bits_18_output_limb_52_col187,
+                    partial_ec_mul_window_bits_18_output_limb_53_col188,
+                    partial_ec_mul_window_bits_18_output_limb_54_col189,
+                    partial_ec_mul_window_bits_18_output_limb_55_col190,
+                    partial_ec_mul_window_bits_18_output_limb_56_col191,
+                    partial_ec_mul_window_bits_18_output_limb_57_col192,
+                    partial_ec_mul_window_bits_18_output_limb_58_col193,
+                    partial_ec_mul_window_bits_18_output_limb_59_col194,
+                    partial_ec_mul_window_bits_18_output_limb_60_col195,
+                    partial_ec_mul_window_bits_18_output_limb_61_col196,
+                    partial_ec_mul_window_bits_18_output_limb_62_col197,
+                    partial_ec_mul_window_bits_18_output_limb_63_col198,
+                    partial_ec_mul_window_bits_18_output_limb_64_col199,
+                    partial_ec_mul_window_bits_18_output_limb_65_col200,
+                    partial_ec_mul_window_bits_18_output_limb_66_col201,
+                    partial_ec_mul_window_bits_18_output_limb_67_col202,
+                    partial_ec_mul_window_bits_18_output_limb_68_col203,
+                    partial_ec_mul_window_bits_18_output_limb_69_col204,
                 ],
             );
 
@@ -1356,26 +1507,39 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .memory_id_to_big_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_2_col2, partial_ec_mul_output_limb_14_col149,
-                    partial_ec_mul_output_limb_15_col150, partial_ec_mul_output_limb_16_col151,
-                    partial_ec_mul_output_limb_17_col152, partial_ec_mul_output_limb_18_col153,
-                    partial_ec_mul_output_limb_19_col154, partial_ec_mul_output_limb_20_col155,
-                    partial_ec_mul_output_limb_21_col156, partial_ec_mul_output_limb_22_col157,
-                    partial_ec_mul_output_limb_23_col158, partial_ec_mul_output_limb_24_col159,
-                    partial_ec_mul_output_limb_25_col160, partial_ec_mul_output_limb_26_col161,
-                    partial_ec_mul_output_limb_27_col162, partial_ec_mul_output_limb_28_col163,
-                    partial_ec_mul_output_limb_29_col164, partial_ec_mul_output_limb_30_col165,
-                    partial_ec_mul_output_limb_31_col166, partial_ec_mul_output_limb_32_col167,
-                    partial_ec_mul_output_limb_33_col168, partial_ec_mul_output_limb_34_col169,
-                    partial_ec_mul_output_limb_35_col170, partial_ec_mul_output_limb_36_col171,
-                    partial_ec_mul_output_limb_37_col172, partial_ec_mul_output_limb_38_col173,
-                    partial_ec_mul_output_limb_39_col174, partial_ec_mul_output_limb_40_col175,
-                    partial_ec_mul_output_limb_41_col176,
+                    input_limb_2_col2, partial_ec_mul_window_bits_18_output_limb_14_col149,
+                    partial_ec_mul_window_bits_18_output_limb_15_col150,
+                    partial_ec_mul_window_bits_18_output_limb_16_col151,
+                    partial_ec_mul_window_bits_18_output_limb_17_col152,
+                    partial_ec_mul_window_bits_18_output_limb_18_col153,
+                    partial_ec_mul_window_bits_18_output_limb_19_col154,
+                    partial_ec_mul_window_bits_18_output_limb_20_col155,
+                    partial_ec_mul_window_bits_18_output_limb_21_col156,
+                    partial_ec_mul_window_bits_18_output_limb_22_col157,
+                    partial_ec_mul_window_bits_18_output_limb_23_col158,
+                    partial_ec_mul_window_bits_18_output_limb_24_col159,
+                    partial_ec_mul_window_bits_18_output_limb_25_col160,
+                    partial_ec_mul_window_bits_18_output_limb_26_col161,
+                    partial_ec_mul_window_bits_18_output_limb_27_col162,
+                    partial_ec_mul_window_bits_18_output_limb_28_col163,
+                    partial_ec_mul_window_bits_18_output_limb_29_col164,
+                    partial_ec_mul_window_bits_18_output_limb_30_col165,
+                    partial_ec_mul_window_bits_18_output_limb_31_col166,
+                    partial_ec_mul_window_bits_18_output_limb_32_col167,
+                    partial_ec_mul_window_bits_18_output_limb_33_col168,
+                    partial_ec_mul_window_bits_18_output_limb_34_col169,
+                    partial_ec_mul_window_bits_18_output_limb_35_col170,
+                    partial_ec_mul_window_bits_18_output_limb_36_col171,
+                    partial_ec_mul_window_bits_18_output_limb_37_col172,
+                    partial_ec_mul_window_bits_18_output_limb_38_col173,
+                    partial_ec_mul_window_bits_18_output_limb_39_col174,
+                    partial_ec_mul_window_bits_18_output_limb_40_col175,
+                    partial_ec_mul_window_bits_18_output_limb_41_col176,
                 ],
             );
 
-        pedersen_aggregator_sum_11 = self
-            .pedersen_aggregator_lookup_elements
+        pedersen_aggregator_window_bits_18_sum_11 = self
+            .pedersen_aggregator_window_bits_18_lookup_elements
             .combine_qm31([input_limb_0_col0, input_limb_1_col1, input_limb_2_col2]);
 
         lookup_constraints(
@@ -1383,7 +1547,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            pedersen_aggregator_multiplicity,
+            pedersen_aggregator_window_bits_18_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             memory_id_to_big_sum_0,
@@ -1392,12 +1556,12 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             range_check_8_sum_3,
             range_check_8_sum_4,
             range_check_8_sum_5,
-            partial_ec_mul_sum_6,
-            partial_ec_mul_sum_7,
-            partial_ec_mul_sum_8,
-            partial_ec_mul_sum_9,
+            partial_ec_mul_window_bits_18_sum_6,
+            partial_ec_mul_window_bits_18_sum_7,
+            partial_ec_mul_window_bits_18_sum_8,
+            partial_ec_mul_window_bits_18_sum_9,
             memory_id_to_big_sum_10,
-            pedersen_aggregator_sum_11,
+            pedersen_aggregator_window_bits_18_sum_11,
         );
     }
 }
@@ -1408,7 +1572,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    pedersen_aggregator_multiplicity: QM31,
+    pedersen_aggregator_window_bits_18_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_id_to_big_sum_0: QM31,
@@ -1417,12 +1581,12 @@ fn lookup_constraints(
     range_check_8_sum_3: QM31,
     range_check_8_sum_4: QM31,
     range_check_8_sum_5: QM31,
-    partial_ec_mul_sum_6: QM31,
-    partial_ec_mul_sum_7: QM31,
-    partial_ec_mul_sum_8: QM31,
-    partial_ec_mul_sum_9: QM31,
+    partial_ec_mul_window_bits_18_sum_6: QM31,
+    partial_ec_mul_window_bits_18_sum_7: QM31,
+    partial_ec_mul_window_bits_18_sum_8: QM31,
+    partial_ec_mul_window_bits_18_sum_9: QM31,
     memory_id_to_big_sum_10: QM31,
-    pedersen_aggregator_sum_11: QM31,
+    pedersen_aggregator_window_bits_18_sum_11: QM31,
 ) {
     let [
         trace_2_col0,
@@ -1522,10 +1686,10 @@ fn lookup_constraints(
         [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
     )
         - QM31Impl::from_partial_evals([trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11]))
-        * partial_ec_mul_sum_6
-        * partial_ec_mul_sum_7)
-        - partial_ec_mul_sum_6
-        + partial_ec_mul_sum_7)
+        * partial_ec_mul_window_bits_18_sum_6
+        * partial_ec_mul_window_bits_18_sum_7)
+        - partial_ec_mul_window_bits_18_sum_6
+        + partial_ec_mul_window_bits_18_sum_7)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -1535,10 +1699,10 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals(
             [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
         ))
-        * partial_ec_mul_sum_8
-        * partial_ec_mul_sum_9)
-        - partial_ec_mul_sum_8
-        + partial_ec_mul_sum_9)
+        * partial_ec_mul_window_bits_18_sum_8
+        * partial_ec_mul_window_bits_18_sum_9)
+        - partial_ec_mul_window_bits_18_sum_8
+        + partial_ec_mul_window_bits_18_sum_9)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
@@ -1551,9 +1715,9 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_10
-        * pedersen_aggregator_sum_11)
-        + (memory_id_to_big_sum_10 * pedersen_aggregator_multiplicity)
-        - pedersen_aggregator_sum_11)
+        * pedersen_aggregator_window_bits_18_sum_11)
+        + (memory_id_to_big_sum_10 * pedersen_aggregator_window_bits_18_multiplicity)
+        - pedersen_aggregator_window_bits_18_sum_11)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }
@@ -1587,13 +1751,13 @@ mod tests {
                 qm31_const::<844624398, 1166453613, 1247584074, 330174372>(),
                 qm31_const::<1844105245, 1400976933, 1126903288, 1155460729>(),
             ),
-            partial_ec_mul_lookup_elements: make_lookup_elements(
-                qm31_const::<1649646149, 853343631, 2092831524, 2004475967>(),
-                qm31_const::<566949925, 426542195, 926007664, 380048330>(),
+            partial_ec_mul_window_bits_18_lookup_elements: make_lookup_elements(
+                qm31_const::<37636051, 926155324, 1316217340, 1476484835>(),
+                qm31_const::<1101679660, 849400774, 849837411, 1270574324>(),
             ),
-            pedersen_aggregator_lookup_elements: make_lookup_elements(
-                qm31_const::<920417564, 1680486498, 1628630402, 353948678>(),
-                qm31_const::<846637634, 1325318444, 1529670858, 731974051>(),
+            pedersen_aggregator_window_bits_18_lookup_elements: make_lookup_elements(
+                qm31_const::<989342410, 1557514986, 1593463493, 412909928>(),
+                qm31_const::<142248599, 1510521029, 22359969, 507780239>(),
             ),
             range_check_8_lookup_elements: make_lookup_elements(
                 qm31_const::<1180316345, 706098445, 2005498950, 439840985>(),
@@ -1843,6 +2007,8 @@ mod tests {
                 point,
             );
         preprocessed_trace.validate_usage();
-        assert_eq!(sum, QM31Trait::from_fixed_array(PEDERSEN_AGGREGATOR_SAMPLE_EVAL_RESULT))
+        assert_eq!(
+            sum, QM31Trait::from_fixed_array(PEDERSEN_AGGREGATOR_WINDOW_BITS_18_SAMPLE_EVAL_RESULT),
+        )
     }
 }
