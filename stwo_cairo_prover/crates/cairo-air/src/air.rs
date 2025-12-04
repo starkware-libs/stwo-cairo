@@ -1,4 +1,4 @@
-use itertools::chain;
+use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
@@ -14,7 +14,6 @@ use stwo_constraint_framework::TraceLocationAllocator;
 use super::blake::air::{BlakeContextClaim, BlakeContextComponents, BlakeContextInteractionClaim};
 use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
 use super::components::indented_component_display;
-use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
 use super::pedersen::air::{
     PedersenContextClaim, PedersenContextComponents, PedersenContextInteractionClaim,
 };
@@ -26,8 +25,13 @@ use super::range_checks_air::{
 };
 use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::components::{
-    memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
+    add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
+    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
+    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
+    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
+    memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
+    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_8_b,
+    verify_bitwise_xor_9, verify_instruction,
 };
 pub use crate::public_data::{
     MemorySection, MemorySmallValue, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
@@ -37,7 +41,26 @@ use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
-    pub opcodes: OpcodeClaim,
+    pub add: Vec<add_opcode::Claim>,
+    pub add_small: Vec<add_opcode_small::Claim>,
+    pub add_ap: Vec<add_ap_opcode::Claim>,
+    pub assert_eq: Vec<assert_eq_opcode::Claim>,
+    pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
+    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
+    pub blake: Vec<blake_compress_opcode::Claim>,
+    pub call: Vec<call_opcode_abs::Claim>,
+    pub call_rel_imm: Vec<call_opcode_rel_imm::Claim>,
+    pub generic: Vec<generic_opcode::Claim>,
+    pub jnz: Vec<jnz_opcode_non_taken::Claim>,
+    pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
+    pub jump: Vec<jump_opcode_abs::Claim>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::Claim>,
+    pub jump_rel: Vec<jump_opcode_rel::Claim>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
+    pub mul: Vec<mul_opcode::Claim>,
+    pub mul_small: Vec<mul_opcode_small::Claim>,
+    pub qm31: Vec<qm_31_add_mul_opcode::Claim>,
+    pub ret: Vec<ret_opcode::Claim>,
     pub verify_instruction: verify_instruction::Claim,
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
@@ -58,7 +81,26 @@ impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         let Self {
             public_data,
-            opcodes,
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_rel_imm,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
             verify_instruction,
             blake_context,
             builtins,
@@ -74,7 +116,69 @@ impl CairoClaim {
             verify_bitwise_xor_9,
         } = self;
         public_data.mix_into(channel);
-        opcodes.mix_into(channel);
+
+        channel.mix_u64(add.len() as u64);
+        add.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(add_small.len() as u64);
+        add_small.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(add_ap.len() as u64);
+        add_ap.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(assert_eq.len() as u64);
+        assert_eq.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(assert_eq_imm.len() as u64);
+        assert_eq_imm.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(assert_eq_double_deref.len() as u64);
+        assert_eq_double_deref
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(blake.len() as u64);
+        blake.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(call.len() as u64);
+        call.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(call_rel_imm.len() as u64);
+        call_rel_imm.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(generic.len() as u64);
+        generic.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(jnz.len() as u64);
+        jnz.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(jnz_taken.len() as u64);
+        jnz_taken.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(jump.len() as u64);
+        jump.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(jump_double_deref.len() as u64);
+        jump_double_deref.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(self.jump_rel.len() as u64);
+        jump_rel.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(jump_rel_imm.len() as u64);
+        jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(mul.len() as u64);
+        mul.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(mul_small.len() as u64);
+        mul_small.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(qm31.len() as u64);
+        qm31.iter().for_each(|c| c.mix_into(channel));
+
+        channel.mix_u64(ret.len() as u64);
+        ret.iter().for_each(|c| c.mix_into(channel));
+
         verify_instruction.mix_into(channel);
         blake_context.mix_into(channel);
         builtins.mix_into(channel);
@@ -94,7 +198,28 @@ impl CairoClaim {
     /// Does not include the preprocessed trace log sizes.
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let log_sizes_list = vec![
-            self.opcodes.log_sizes(),
+            TreeVec::concat_cols(chain!(
+                self.add.iter().map(|c| c.log_sizes()),
+                self.add_small.iter().map(|c| c.log_sizes()),
+                self.add_ap.iter().map(|c| c.log_sizes()),
+                self.assert_eq.iter().map(|c| c.log_sizes()),
+                self.assert_eq_imm.iter().map(|c| c.log_sizes()),
+                self.assert_eq_double_deref.iter().map(|c| c.log_sizes()),
+                self.blake.iter().map(|c| c.log_sizes()),
+                self.call.iter().map(|c| c.log_sizes()),
+                self.call_rel_imm.iter().map(|c| c.log_sizes()),
+                self.generic.iter().map(|c| c.log_sizes()),
+                self.jnz.iter().map(|c| c.log_sizes()),
+                self.jnz_taken.iter().map(|c| c.log_sizes()),
+                self.jump.iter().map(|c| c.log_sizes()),
+                self.jump_double_deref.iter().map(|c| c.log_sizes()),
+                self.jump_rel.iter().map(|c| c.log_sizes()),
+                self.jump_rel_imm.iter().map(|c| c.log_sizes()),
+                self.mul.iter().map(|c| c.log_sizes()),
+                self.mul_small.iter().map(|c| c.log_sizes()),
+                self.qm31.iter().map(|c| c.log_sizes()),
+                self.ret.iter().map(|c| c.log_sizes()),
+            )),
             self.verify_instruction.log_sizes(),
             self.blake_context.log_sizes(),
             self.builtins.log_sizes(),
@@ -116,7 +241,26 @@ impl CairoClaim {
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             public_data: _,
-            opcodes,
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_rel_imm,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
             verify_instruction,
             blake_context,
             builtins,
@@ -136,7 +280,135 @@ impl CairoClaim {
         // - verify_bitwise_xor_*
         // - memory_address_to_id
 
-        opcodes.accumulate_relation_uses(relation_uses);
+        add.iter().for_each(|c| {
+            accumulate_relation_uses(relation_uses, add_opcode::RELATION_USES_PER_ROW, c.log_size)
+        });
+        add_small.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                add_opcode_small::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        add_ap.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                add_ap_opcode::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        assert_eq.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                assert_eq_opcode::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        assert_eq_imm.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                assert_eq_opcode_imm::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        assert_eq_double_deref.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                assert_eq_opcode_double_deref::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        blake.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                blake_compress_opcode::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        call.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                call_opcode_abs::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        call_rel_imm.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                call_opcode_rel_imm::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        generic.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                generic_opcode::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jnz.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jnz_opcode_non_taken::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jnz_taken.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jnz_opcode_taken::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jump.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jump_opcode_abs::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jump_double_deref.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jump_opcode_double_deref::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jump_rel.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jump_opcode_rel::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        jump_rel_imm.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                jump_opcode_rel_imm::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        mul.iter().for_each(|c| {
+            accumulate_relation_uses(relation_uses, mul_opcode::RELATION_USES_PER_ROW, c.log_size)
+        });
+        mul_small.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                mul_opcode_small::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        qm31.iter().for_each(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                qm_31_add_mul_opcode::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        ret.iter().for_each(|c| {
+            accumulate_relation_uses(relation_uses, ret_opcode::RELATION_USES_PER_ROW, c.log_size)
+        });
+
         builtins.accumulate_relation_uses(relation_uses);
         blake_context.accumulate_relation_uses(relation_uses);
         pedersen_context.accumulate_relation_uses(relation_uses);
@@ -166,7 +438,26 @@ impl CairoClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoInteractionClaim {
-    pub opcodes: OpcodeInteractionClaim,
+    pub add: Vec<add_opcode::InteractionClaim>,
+    pub add_small: Vec<add_opcode_small::InteractionClaim>,
+    pub add_ap: Vec<add_ap_opcode::InteractionClaim>,
+    pub assert_eq: Vec<assert_eq_opcode::InteractionClaim>,
+    pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
+    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
+    pub blake: Vec<blake_compress_opcode::InteractionClaim>,
+    pub call: Vec<call_opcode_abs::InteractionClaim>,
+    pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaim>,
+    pub generic: Vec<generic_opcode::InteractionClaim>,
+    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaim>,
+    pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
+    pub jump: Vec<jump_opcode_abs::InteractionClaim>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaim>,
+    pub jump_rel: Vec<jump_opcode_rel::InteractionClaim>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
+    pub mul: Vec<mul_opcode::InteractionClaim>,
+    pub mul_small: Vec<mul_opcode_small::InteractionClaim>,
+    pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaim>,
+    pub ret: Vec<ret_opcode::InteractionClaim>,
     pub verify_instruction: verify_instruction::InteractionClaim,
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
@@ -183,7 +474,30 @@ pub struct CairoInteractionClaim {
 }
 impl CairoInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.opcodes.mix_into(channel);
+        self.add.iter().for_each(|c| c.mix_into(channel));
+        self.add_small.iter().for_each(|c| c.mix_into(channel));
+        self.add_ap.iter().for_each(|c| c.mix_into(channel));
+        self.assert_eq.iter().for_each(|c| c.mix_into(channel));
+        self.assert_eq_imm.iter().for_each(|c| c.mix_into(channel));
+        self.assert_eq_double_deref
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.blake.iter().for_each(|c| c.mix_into(channel));
+        self.call.iter().for_each(|c| c.mix_into(channel));
+        self.call_rel_imm.iter().for_each(|c| c.mix_into(channel));
+        self.generic.iter().for_each(|c| c.mix_into(channel));
+        self.jnz.iter().for_each(|c| c.mix_into(channel));
+        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
+        self.jump.iter().for_each(|c| c.mix_into(channel));
+        self.jump_double_deref
+            .iter()
+            .for_each(|c| c.mix_into(channel));
+        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
+        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
+        self.mul.iter().for_each(|c| c.mix_into(channel));
+        self.mul_small.iter().for_each(|c| c.mix_into(channel));
+        self.qm31.iter().for_each(|c| c.mix_into(channel));
+        self.ret.iter().for_each(|c| c.mix_into(channel));
         self.verify_instruction.mix_into(channel);
         self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
@@ -210,7 +524,66 @@ pub fn lookup_sum(
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
-    sum += interaction_claim.opcodes.sum();
+    for ic in &interaction_claim.add {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.add_small {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.add_ap {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.assert_eq {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.assert_eq_imm {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.assert_eq_double_deref {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.blake {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.call {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.call_rel_imm {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.generic {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jnz {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jnz_taken {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jump {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jump_double_deref {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jump_rel {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.jump_rel_imm {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.mul {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.mul_small {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.qm31 {
+        sum += ic.claimed_sum;
+    }
+    for ic in &interaction_claim.ret {
+        sum += ic.claimed_sum;
+    }
     sum += interaction_claim.verify_instruction.claimed_sum;
     sum += interaction_claim.blake_context.sum();
     sum += interaction_claim.builtins.sum();
@@ -229,7 +602,26 @@ pub fn lookup_sum(
 }
 
 pub struct CairoComponents {
-    pub opcodes: OpcodeComponents,
+    pub add: Vec<add_opcode::Component>,
+    pub add_small: Vec<add_opcode_small::Component>,
+    pub add_ap: Vec<add_ap_opcode::Component>,
+    pub assert_eq: Vec<assert_eq_opcode::Component>,
+    pub assert_eq_imm: Vec<assert_eq_opcode_imm::Component>,
+    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Component>,
+    pub blake: Vec<blake_compress_opcode::Component>,
+    pub call: Vec<call_opcode_abs::Component>,
+    pub call_rel_imm: Vec<call_opcode_rel_imm::Component>,
+    pub generic: Vec<generic_opcode::Component>,
+    pub jnz: Vec<jnz_opcode_non_taken::Component>,
+    pub jnz_taken: Vec<jnz_opcode_taken::Component>,
+    pub jump: Vec<jump_opcode_abs::Component>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::Component>,
+    pub jump_rel: Vec<jump_opcode_rel::Component>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::Component>,
+    pub mul: Vec<mul_opcode::Component>,
+    pub mul_small: Vec<mul_opcode_small::Component>,
+    pub qm31: Vec<qm_31_add_mul_opcode::Component>,
+    pub ret: Vec<ret_opcode::Component>,
     pub verify_instruction: verify_instruction::Component,
     pub blake_context: BlakeContextComponents,
     pub builtins: BuiltinComponents,
@@ -259,12 +651,609 @@ impl CairoComponents {
         let tree_span_provider =
             &mut TraceLocationAllocator::new_with_preprocessed_columns(preprocessed_column_ids);
 
-        let opcode_components = OpcodeComponents::new(
-            tree_span_provider,
-            &cairo_claim.opcodes,
-            interaction_elements,
-            &interaction_claim.opcodes,
-        );
+        let add = cairo_claim
+            .add
+            .iter()
+            .zip(interaction_claim.add.iter())
+            .map(|(claim, interaction_claim)| {
+                add_opcode::Component::new(
+                    tree_span_provider,
+                    add_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let add_small = cairo_claim
+            .add_small
+            .iter()
+            .zip(interaction_claim.add_small.iter())
+            .map(|(claim, interaction_claim)| {
+                add_opcode_small::Component::new(
+                    tree_span_provider,
+                    add_opcode_small::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let add_ap = cairo_claim
+            .add_ap
+            .iter()
+            .zip(interaction_claim.add_ap.iter())
+            .map(|(claim, interaction_claim)| {
+                add_ap_opcode::Component::new(
+                    tree_span_provider,
+                    add_ap_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                        range_check_18_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_18
+                            .clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let assert_eq = cairo_claim
+            .assert_eq
+            .iter()
+            .zip(interaction_claim.assert_eq.iter())
+            .map(|(claim, interaction_claim)| {
+                assert_eq_opcode::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let assert_eq_imm = cairo_claim
+            .assert_eq_imm
+            .iter()
+            .zip(interaction_claim.assert_eq_imm.iter())
+            .map(|(claim, interaction_claim)| {
+                assert_eq_opcode_imm::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode_imm::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let assert_eq_double_deref = cairo_claim
+            .assert_eq_double_deref
+            .iter()
+            .zip(interaction_claim.assert_eq_double_deref.iter())
+            .map(|(claim, interaction_claim)| {
+                assert_eq_opcode_double_deref::Component::new(
+                    tree_span_provider,
+                    assert_eq_opcode_double_deref::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let blake = cairo_claim
+            .blake
+            .iter()
+            .zip(interaction_claim.blake.iter())
+            .map(|(claim, interaction_claim)| {
+                blake_compress_opcode::Component::new(
+                    tree_span_provider,
+                    blake_compress_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_7_2_5_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_7_2_5
+                            .clone(),
+                        verify_bitwise_xor_8_lookup_elements: interaction_elements
+                            .verify_bitwise_xor_8
+                            .clone(),
+                        blake_round_lookup_elements: interaction_elements.blake_round.clone(),
+                        triple_xor_32_lookup_elements: interaction_elements.triple_xor_32.clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let call = cairo_claim
+            .call
+            .iter()
+            .zip(interaction_claim.call.iter())
+            .map(|(claim, interaction_claim)| {
+                call_opcode_abs::Component::new(
+                    tree_span_provider,
+                    call_opcode_abs::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let call_rel_imm = cairo_claim
+            .call_rel_imm
+            .iter()
+            .zip(interaction_claim.call_rel_imm.iter())
+            .map(|(claim, interaction_claim)| {
+                call_opcode_rel_imm::Component::new(
+                    tree_span_provider,
+                    call_opcode_rel_imm::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let generic = cairo_claim
+            .generic
+            .iter()
+            .zip(interaction_claim.generic.iter())
+            .map(|(claim, interaction_claim)| {
+                generic_opcode::Component::new(
+                    tree_span_provider,
+                    generic_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_9_9_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9
+                            .clone(),
+                        range_check_9_9_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_b
+                            .clone(),
+                        range_check_9_9_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_c
+                            .clone(),
+                        range_check_9_9_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_d
+                            .clone(),
+                        range_check_9_9_e_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_e
+                            .clone(),
+                        range_check_9_9_f_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_f
+                            .clone(),
+                        range_check_9_9_g_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_g
+                            .clone(),
+                        range_check_9_9_h_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_9_9_h
+                            .clone(),
+                        range_check_20_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20
+                            .clone(),
+                        range_check_20_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_b
+                            .clone(),
+                        range_check_20_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_c
+                            .clone(),
+                        range_check_20_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_d
+                            .clone(),
+                        range_check_20_e_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_e
+                            .clone(),
+                        range_check_20_f_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_f
+                            .clone(),
+                        range_check_20_g_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_g
+                            .clone(),
+                        range_check_20_h_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_h
+                            .clone(),
+                        range_check_18_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_18
+                            .clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jnz = cairo_claim
+            .jnz
+            .iter()
+            .zip(interaction_claim.jnz.iter())
+            .map(|(claim, interaction_claim)| {
+                jnz_opcode_non_taken::Component::new(
+                    tree_span_provider,
+                    jnz_opcode_non_taken::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jnz_taken = cairo_claim
+            .jnz_taken
+            .iter()
+            .zip(interaction_claim.jnz_taken.iter())
+            .map(|(claim, interaction_claim)| {
+                jnz_opcode_taken::Component::new(
+                    tree_span_provider,
+                    jnz_opcode_taken::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jump = cairo_claim
+            .jump
+            .iter()
+            .zip(interaction_claim.jump.iter())
+            .map(|(claim, interaction_claim)| {
+                jump_opcode_abs::Component::new(
+                    tree_span_provider,
+                    jump_opcode_abs::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jump_double_deref = cairo_claim
+            .jump_double_deref
+            .iter()
+            .zip(interaction_claim.jump_double_deref.iter())
+            .map(|(claim, interaction_claim)| {
+                jump_opcode_double_deref::Component::new(
+                    tree_span_provider,
+                    jump_opcode_double_deref::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jump_rel = cairo_claim
+            .jump_rel
+            .iter()
+            .zip(interaction_claim.jump_rel.iter())
+            .map(|(claim, interaction_claim)| {
+                jump_opcode_rel::Component::new(
+                    tree_span_provider,
+                    jump_opcode_rel::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let jump_rel_imm = cairo_claim
+            .jump_rel_imm
+            .iter()
+            .zip(interaction_claim.jump_rel_imm.iter())
+            .map(|(claim, interaction_claim)| {
+                jump_opcode_rel_imm::Component::new(
+                    tree_span_provider,
+                    jump_opcode_rel_imm::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let mul = cairo_claim
+            .mul
+            .iter()
+            .zip(interaction_claim.mul.iter())
+            .map(|(claim, interaction_claim)| {
+                mul_opcode::Component::new(
+                    tree_span_provider,
+                    mul_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_20_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20
+                            .clone(),
+                        range_check_20_b_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_b
+                            .clone(),
+                        range_check_20_c_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_c
+                            .clone(),
+                        range_check_20_d_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_d
+                            .clone(),
+                        range_check_20_e_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_e
+                            .clone(),
+                        range_check_20_f_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_f
+                            .clone(),
+                        range_check_20_g_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_g
+                            .clone(),
+                        range_check_20_h_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_20_h
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let mul_small = cairo_claim
+            .mul_small
+            .iter()
+            .zip(interaction_claim.mul_small.iter())
+            .map(|(claim, interaction_claim)| {
+                mul_opcode_small::Component::new(
+                    tree_span_provider,
+                    mul_opcode_small::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_11_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_11
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let qm31 = cairo_claim
+            .qm31
+            .iter()
+            .zip(interaction_claim.qm31.iter())
+            .map(|(claim, interaction_claim)| {
+                qm_31_add_mul_opcode::Component::new(
+                    tree_span_provider,
+                    qm_31_add_mul_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        range_check_4_4_4_4_lookup_elements: interaction_elements
+                            .range_checks
+                            .rc_4_4_4_4
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
+        let ret = cairo_claim
+            .ret
+            .iter()
+            .zip(interaction_claim.ret.iter())
+            .map(|(claim, interaction_claim)| {
+                ret_opcode::Component::new(
+                    tree_span_provider,
+                    ret_opcode::Eval {
+                        claim: *claim,
+                        verify_instruction_lookup_elements: interaction_elements
+                            .verify_instruction
+                            .clone(),
+                        memory_address_to_id_lookup_elements: interaction_elements
+                            .memory_address_to_id
+                            .clone(),
+                        memory_id_to_big_lookup_elements: interaction_elements
+                            .memory_id_to_value
+                            .clone(),
+                        opcodes_lookup_elements: interaction_elements.opcodes.clone(),
+                    },
+                    interaction_claim.claimed_sum,
+                )
+            })
+            .collect();
 
         let verify_instruction_component = verify_instruction::Component::new(
             tree_span_provider,
@@ -402,7 +1391,26 @@ impl CairoComponents {
             interaction_claim.verify_bitwise_xor_9.claimed_sum,
         );
         Self {
-            opcodes: opcode_components,
+            add,
+            add_small,
+            add_ap,
+            assert_eq,
+            assert_eq_imm,
+            assert_eq_double_deref,
+            blake,
+            call,
+            call_rel_imm,
+            generic,
+            jnz,
+            jnz_taken,
+            jump,
+            jump_double_deref,
+            jump_rel,
+            jump_rel_imm,
+            mul,
+            mul_small,
+            qm31,
+            ret,
             verify_instruction: verify_instruction_component,
             blake_context,
             builtins: builtin_components,
@@ -424,7 +1432,66 @@ impl CairoComponents {
 
     pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
         chain!(
-            self.opcodes.provers(),
+            self.add
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.add_small
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.add_ap
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.assert_eq
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.assert_eq_imm
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.assert_eq_double_deref
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.blake
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.call
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.call_rel_imm
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.generic
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jnz
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jnz_taken
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jump
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jump_double_deref
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jump_rel
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.jump_rel_imm
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.mul
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.mul_small
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.qm31
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
+            self.ret
+                .iter()
+                .map(|c| c as &dyn ComponentProver<SimdBackend>),
             [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
             self.blake_context.provers(),
             self.builtins.provers(),
@@ -459,7 +1526,142 @@ impl CairoComponents {
 impl std::fmt::Display for CairoComponents {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "CairoComponents")?;
-        writeln!(f, "Opcodes: {}", self.opcodes)?;
+        writeln!(
+            f,
+            "AddOpcode: {}",
+            self.add.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "AddOpcodeSmall: {}",
+            self.add_small
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "AddApOpcode: {}",
+            self.add_ap
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "AssertEqOpcode: {}",
+            self.assert_eq
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "AssertEqOpcodeImm: {}",
+            self.assert_eq_imm
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "AssertEqOpcodeDoubleDeref: {}",
+            self.assert_eq_double_deref
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "BlakeCompressOpcode: {}",
+            self.blake.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "CallOpcodeAbs: {}",
+            self.call.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "CallOpcodeRelImm: {}",
+            self.call_rel_imm
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "GenericOpcode: {}",
+            self.generic
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "JnzOpcodeNonTaken: {}",
+            self.jnz.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "JnzOpcodeTaken: {}",
+            self.jnz_taken
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "JumpOpcodeAbs: {}",
+            self.jump.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "JumpOpcodeDoubleDeref: {}",
+            self.jump_double_deref
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "JumpOpcodeRel: {}",
+            self.jump_rel
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "JumpOpcodeRelImm: {}",
+            self.jump_rel_imm
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "MulOpcode: {}",
+            self.mul.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "MulOpcodeSmall: {}",
+            self.mul_small
+                .iter()
+                .map(indented_component_display)
+                .join("\n")
+        )?;
+        writeln!(
+            f,
+            "Qm31AddMulOpcode: {}",
+            self.qm31.iter().map(indented_component_display).join("\n")
+        )?;
+        writeln!(
+            f,
+            "RetOpcode: {}",
+            self.ret.iter().map(indented_component_display).join("\n")
+        )?;
         writeln!(
             f,
             "VerifyInstruction: {}",
