@@ -35,18 +35,13 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             poseidon_aggregator_state,
         );
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
-            });
-        sub_component_inputs
-            .poseidon_aggregator
-            .iter()
-            .for_each(|inputs| {
-                poseidon_aggregator_state.add_packed_inputs(inputs);
-            });
+        for inputs in sub_component_inputs.memory_address_to_id {
+            memory_address_to_id_state.add_packed_inputs(&inputs);
+        }
+        for inputs in sub_component_inputs.poseidon_aggregator {
+            poseidon_aggregator_state.add_packed_inputs(&inputs);
+        }
+
         tree_builder.extend_evals(trace.to_evals());
 
         (
