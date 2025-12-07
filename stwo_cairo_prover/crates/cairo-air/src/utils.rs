@@ -27,7 +27,7 @@ mod json {
 const MSB_U32: u32 = 0x80000000;
 
 /// Cairo proof format
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Clone, ValueEnum, Serialize, Deserialize)]
 pub enum ProofFormat {
     /// Standard JSON format.
     Json,
