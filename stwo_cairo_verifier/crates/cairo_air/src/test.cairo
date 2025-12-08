@@ -120,7 +120,6 @@ fn dummy_interaction_lookup_elements() -> CairoInteractionElements {
             rc_20_h: LookupElementsDummyImpl::dummy(),
             rc_4_3: LookupElementsDummyImpl::dummy(),
             rc_4_4: LookupElementsDummyImpl::dummy(),
-            rc_5_4: LookupElementsDummyImpl::dummy(),
             rc_9_9: LookupElementsDummyImpl::dummy(),
             rc_9_9_b: LookupElementsDummyImpl::dummy(),
             rc_9_9_c: LookupElementsDummyImpl::dummy(),
