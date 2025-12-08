@@ -6,7 +6,7 @@ use crate::components::subroutines::eval_operands::EvalOperands;
 use crate::components::subroutines::handle_opcodes::HandleOpcodes;
 use crate::components::subroutines::update_registers::UpdateRegisters;
 
-pub const N_TRACE_COLUMNS: usize = 244;
+pub const N_TRACE_COLUMNS: usize = 243;
 pub const RELATION_USES_PER_ROW: [RelationUse; 22] = [
     RelationUse {
         relation_id: "MemoryAddressToId",
@@ -393,21 +393,20 @@ impl FrameworkEval for Eval {
         let partial_limb_msb_col225 = eval.next_trace_mask();
         let partial_limb_msb_col226 = eval.next_trace_mask();
         let partial_limb_msb_col227 = eval.next_trace_mask();
-        let partial_limb_msb_col228 = eval.next_trace_mask();
-        let msb_col229 = eval.next_trace_mask();
-        let mid_limbs_set_col230 = eval.next_trace_mask();
-        let partial_limb_msb_col231 = eval.next_trace_mask();
-        let dst_sum_squares_inv_col232 = eval.next_trace_mask();
-        let dst_sum_inv_col233 = eval.next_trace_mask();
-        let op1_as_rel_imm_cond_col234 = eval.next_trace_mask();
-        let msb_col235 = eval.next_trace_mask();
-        let mid_limbs_set_col236 = eval.next_trace_mask();
-        let partial_limb_msb_col237 = eval.next_trace_mask();
-        let next_pc_jnz_col238 = eval.next_trace_mask();
-        let next_pc_col239 = eval.next_trace_mask();
-        let next_ap_col240 = eval.next_trace_mask();
-        let range_check_ap_bot11bits_col241 = eval.next_trace_mask();
-        let next_fp_col242 = eval.next_trace_mask();
+        let msb_col228 = eval.next_trace_mask();
+        let mid_limbs_set_col229 = eval.next_trace_mask();
+        let partial_limb_msb_col230 = eval.next_trace_mask();
+        let dst_sum_squares_inv_col231 = eval.next_trace_mask();
+        let dst_sum_inv_col232 = eval.next_trace_mask();
+        let op1_as_rel_imm_cond_col233 = eval.next_trace_mask();
+        let msb_col234 = eval.next_trace_mask();
+        let mid_limbs_set_col235 = eval.next_trace_mask();
+        let partial_limb_msb_col236 = eval.next_trace_mask();
+        let next_pc_jnz_col237 = eval.next_trace_mask();
+        let next_pc_col238 = eval.next_trace_mask();
+        let next_ap_col239 = eval.next_trace_mask();
+        let range_check_ap_bot11bits_col240 = eval.next_trace_mask();
+        let next_fp_col241 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -887,21 +886,20 @@ impl FrameworkEval for Eval {
                 res_limb_27_col224.clone(),
             ],
             partial_limb_msb_col227.clone(),
-            partial_limb_msb_col228.clone(),
-            msb_col229.clone(),
-            mid_limbs_set_col230.clone(),
-            partial_limb_msb_col231.clone(),
-            dst_sum_squares_inv_col232.clone(),
-            dst_sum_inv_col233.clone(),
-            op1_as_rel_imm_cond_col234.clone(),
-            msb_col235.clone(),
-            mid_limbs_set_col236.clone(),
-            partial_limb_msb_col237.clone(),
-            next_pc_jnz_col238.clone(),
-            next_pc_col239.clone(),
-            next_ap_col240.clone(),
-            range_check_ap_bot11bits_col241.clone(),
-            next_fp_col242.clone(),
+            msb_col228.clone(),
+            mid_limbs_set_col229.clone(),
+            partial_limb_msb_col230.clone(),
+            dst_sum_squares_inv_col231.clone(),
+            dst_sum_inv_col232.clone(),
+            op1_as_rel_imm_cond_col233.clone(),
+            msb_col234.clone(),
+            mid_limbs_set_col235.clone(),
+            partial_limb_msb_col236.clone(),
+            next_pc_jnz_col237.clone(),
+            next_pc_col238.clone(),
+            next_ap_col239.clone(),
+            range_check_ap_bot11bits_col240.clone(),
+            next_fp_col241.clone(),
             &self.range_check_18_lookup_elements,
             &self.range_check_11_lookup_elements,
             &mut eval,
@@ -920,9 +918,9 @@ impl FrameworkEval for Eval {
             &self.opcodes_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
-                next_pc_col239.clone(),
-                next_ap_col240.clone(),
-                next_fp_col242.clone(),
+                next_pc_col238.clone(),
+                next_ap_col239.clone(),
+                next_fp_col241.clone(),
             ],
         ));
 
