@@ -46,7 +46,7 @@ pub const CUBE_252: Expect = expect![[r#"
     (2138805547 + 791862161i) + (1496263445 + 1432185054i)u
 "#]];
 pub const GENERIC_OPCODE: Expect = expect![[r#"
-    (170491415 + 509359895i) + (1575914609 + 237442486i)u
+    (7522005 + 143143560i) + (2147333686 + 272502067i)u
 "#]];
 pub const JNZ_OPCODE_TAKEN: Expect = expect![[r#"
     (863863896 + 1799155008i) + (2087434855 + 1577176263i)u
