@@ -379,7 +379,7 @@ pub mod tests {
             );
         }
 
-        #[test]
+        #[test_log::test]
         fn test_prove_verify_all_opcode_components() {
             let compiled_program =
                 get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
