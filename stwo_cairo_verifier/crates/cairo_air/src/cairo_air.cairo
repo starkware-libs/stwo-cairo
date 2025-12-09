@@ -87,7 +87,6 @@ use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl, pow2};
 use stwo_verifier_core::verifier::Air;
 use stwo_verifier_core::{ColumnArray, ColumnSpan, TreeArray, TreeSpan};
-use stwo_verifier_utils::zip_eq::zip_eq;
 
 
 pub type Cube252Elements = LookupElements<20>;
@@ -138,26 +137,26 @@ pub type VerifyBitwiseXor_12Elements = LookupElements<3>;
 #[derive(Drop, Serde)]
 pub struct CairoClaim {
     pub public_data: PublicData,
-    pub add: Array<add_opcode::Claim>,
-    pub add_small: Array<add_opcode_small::Claim>,
-    pub add_ap: Array<add_ap_opcode::Claim>,
-    pub assert_eq: Array<assert_eq_opcode::Claim>,
-    pub assert_eq_imm: Array<assert_eq_opcode_imm::Claim>,
-    pub assert_eq_double_deref: Array<assert_eq_opcode_double_deref::Claim>,
-    pub blake: Array<blake_compress_opcode::Claim>,
-    pub call: Array<call_opcode_abs::Claim>,
-    pub call_rel_imm: Array<call_opcode_rel_imm::Claim>,
-    pub generic: Array<generic_opcode::Claim>,
-    pub jnz: Array<jnz_opcode_non_taken::Claim>,
-    pub jnz_taken: Array<jnz_opcode_taken::Claim>,
-    pub jump: Array<jump_opcode_abs::Claim>,
-    pub jump_double_deref: Array<jump_opcode_double_deref::Claim>,
-    pub jump_rel: Array<jump_opcode_rel::Claim>,
-    pub jump_rel_imm: Array<jump_opcode_rel_imm::Claim>,
-    pub mul: Array<mul_opcode::Claim>,
-    pub mul_small: Array<mul_opcode_small::Claim>,
-    pub qm31: Array<qm_31_add_mul_opcode::Claim>,
-    pub ret: Array<ret_opcode::Claim>,
+    pub add: Option<add_opcode::Claim>,
+    pub add_small: Option<add_opcode_small::Claim>,
+    pub add_ap: Option<add_ap_opcode::Claim>,
+    pub assert_eq: Option<assert_eq_opcode::Claim>,
+    pub assert_eq_imm: Option<assert_eq_opcode_imm::Claim>,
+    pub assert_eq_double_deref: Option<assert_eq_opcode_double_deref::Claim>,
+    pub blake: Option<blake_compress_opcode::Claim>,
+    pub call: Option<call_opcode_abs::Claim>,
+    pub call_rel_imm: Option<call_opcode_rel_imm::Claim>,
+    pub generic: Option<generic_opcode::Claim>,
+    pub jnz: Option<jnz_opcode_non_taken::Claim>,
+    pub jnz_taken: Option<jnz_opcode_taken::Claim>,
+    pub jump: Option<jump_opcode_abs::Claim>,
+    pub jump_double_deref: Option<jump_opcode_double_deref::Claim>,
+    pub jump_rel: Option<jump_opcode_rel::Claim>,
+    pub jump_rel_imm: Option<jump_opcode_rel_imm::Claim>,
+    pub mul: Option<mul_opcode::Claim>,
+    pub mul_small: Option<mul_opcode_small::Claim>,
+    pub qm31: Option<qm_31_add_mul_opcode::Claim>,
+    pub ret: Option<ret_opcode::Claim>,
     pub verify_instruction: components::verify_instruction::Claim,
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
@@ -176,80 +175,83 @@ pub struct CairoClaim {
 
 pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
     fn log_sizes(self: @CairoClaim) -> TreeArray<Span<u32>> {
-        let mut opcode_log_sizes = array![];
-        for claim in self.add.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        let mut log_sizes_list = array![];
+        if let Some(claim) = self.add {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.add_small.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.add_small {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.add_ap.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.add_ap {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.assert_eq.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.assert_eq {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.assert_eq_imm.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.assert_eq_imm {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.assert_eq_double_deref.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.assert_eq_double_deref {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.blake.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.blake {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.call.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.call {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.call_rel_imm.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.call_rel_imm {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.generic.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.generic {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jnz.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jnz {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jnz_taken.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jnz_taken {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jump.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jump {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jump_double_deref.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jump_double_deref {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jump_rel.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jump_rel {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.jump_rel_imm.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.jump_rel_imm {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.mul.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.mul {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.mul_small.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.mul_small {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.qm31.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.qm31 {
+            log_sizes_list.append(claim.log_sizes());
         }
-        for claim in self.ret.span() {
-            opcode_log_sizes.append(claim.log_sizes());
+        if let Some(claim) = self.ret {
+            log_sizes_list.append(claim.log_sizes());
         }
-        let opcode_log_sizes_concat = utils::tree_array_concat_cols(opcode_log_sizes);
 
-        let mut aggregated_log_sizes = utils::tree_array_concat_cols(
-            array![
-                opcode_log_sizes_concat, self.verify_instruction.log_sizes(),
-                self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
-                self.verify_bitwise_xor_8_b.log_sizes(), self.verify_bitwise_xor_9.log_sizes(),
-            ],
-        );
+        log_sizes_list.append(self.verify_instruction.log_sizes());
+        log_sizes_list.append(self.blake_context.log_sizes());
+        log_sizes_list.append(self.builtins.log_sizes());
+        log_sizes_list.append(self.pedersen_context.log_sizes());
+        log_sizes_list.append(self.poseidon_context.log_sizes());
+        log_sizes_list.append(self.memory_address_to_id.log_sizes());
+        log_sizes_list.append(self.memory_id_to_value.log_sizes());
+        log_sizes_list.append(self.range_checks.log_sizes());
+        log_sizes_list.append(self.verify_bitwise_xor_4.log_sizes());
+        log_sizes_list.append(self.verify_bitwise_xor_7.log_sizes());
+        log_sizes_list.append(self.verify_bitwise_xor_8.log_sizes());
+        log_sizes_list.append(self.verify_bitwise_xor_8_b.log_sizes());
+        log_sizes_list.append(self.verify_bitwise_xor_9.log_sizes());
+
+        let mut aggregated_log_sizes = utils::tree_array_concat_cols(log_sizes_list);
 
         // Overwrite the preprocessed trace log sizes.
         let _invalid_preprocessed_trace_log_sizes = aggregated_log_sizes.pop_front();
@@ -307,85 +309,144 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
 
         public_data.mix_into(ref channel);
 
-        channel.mix_u64(add.len().into());
-        for claim in add.span() {
+        if let Some(claim) = add {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(add_small.len().into());
-        for claim in add_small.span() {
+
+        if let Some(claim) = add_small {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(add_ap.len().into());
-        for claim in add_ap.span() {
+
+        if let Some(claim) = add_ap {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(assert_eq.len().into());
-        for claim in assert_eq.span() {
+
+        if let Some(claim) = assert_eq {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(assert_eq_imm.len().into());
-        for claim in assert_eq_imm.span() {
+
+        if let Some(claim) = assert_eq_imm {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(assert_eq_double_deref.len().into());
-        for claim in assert_eq_double_deref.span() {
+
+        if let Some(claim) = assert_eq_double_deref {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(blake.len().into());
-        for claim in blake.span() {
+
+        if let Some(claim) = blake {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(call.len().into());
-        for claim in call.span() {
+
+        if let Some(claim) = call {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(call_rel_imm.len().into());
-        for claim in call_rel_imm.span() {
+
+        if let Some(claim) = call_rel_imm {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(generic.len().into());
-        for claim in generic.span() {
+
+        if let Some(claim) = generic {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jnz.len().into());
-        for claim in jnz.span() {
+
+        if let Some(claim) = jnz {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jnz_taken.len().into());
-        for claim in jnz_taken.span() {
+
+        if let Some(claim) = jnz_taken {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jump.len().into());
-        for claim in jump.span() {
+
+        if let Some(claim) = jump {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jump_double_deref.len().into());
-        for claim in jump_double_deref.span() {
+
+        if let Some(claim) = jump_double_deref {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jump_rel.len().into());
-        for claim in jump_rel.span() {
+
+        if let Some(claim) = jump_rel {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(jump_rel_imm.len().into());
-        for claim in jump_rel_imm.span() {
+
+        if let Some(claim) = jump_rel_imm {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(mul.len().into());
-        for claim in mul.span() {
+
+        if let Some(claim) = mul {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(mul_small.len().into());
-        for claim in mul_small.span() {
+
+        if let Some(claim) = mul_small {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(qm31.len().into());
-        for claim in qm31.span() {
+
+        if let Some(claim) = qm31 {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
-        channel.mix_u64(ret.len().into());
-        for claim in ret.span() {
+
+        if let Some(claim) = ret {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
 
         verify_instruction.mix_into(ref channel);
@@ -445,64 +506,64 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         // - verify_bitwise_xor_*
         // - memory_address_to_id
 
-        for claim in add.span() {
+        if let Some(claim) = add {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in add_small.span() {
+        if let Some(claim) = add_small {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in add_ap.span() {
+        if let Some(claim) = add_ap {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in assert_eq.span() {
+        if let Some(claim) = assert_eq {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in assert_eq_imm.span() {
+        if let Some(claim) = assert_eq_imm {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in assert_eq_double_deref.span() {
+        if let Some(claim) = assert_eq_double_deref {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in blake.span() {
+        if let Some(claim) = blake {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in call.span() {
+        if let Some(claim) = call {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in call_rel_imm.span() {
+        if let Some(claim) = call_rel_imm {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in generic.span() {
+        if let Some(claim) = generic {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jnz.span() {
+        if let Some(claim) = jnz {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jnz_taken.span() {
+        if let Some(claim) = jnz_taken {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jump.span() {
+        if let Some(claim) = jump {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jump_double_deref.span() {
+        if let Some(claim) = jump_double_deref {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jump_rel.span() {
+        if let Some(claim) = jump_rel {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in jump_rel_imm.span() {
+        if let Some(claim) = jump_rel_imm {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in mul.span() {
+        if let Some(claim) = mul {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in mul_small.span() {
+        if let Some(claim) = mul_small {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in qm31.span() {
+        if let Some(claim) = qm31 {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        for claim in ret.span() {
+        if let Some(claim) = ret {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         blake_context.accumulate_relation_uses(ref relation_uses);
@@ -517,26 +578,26 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
 
 #[derive(Drop, Serde)]
 pub struct CairoInteractionClaim {
-    pub add: Array<add_opcode::InteractionClaim>,
-    pub add_small: Array<add_opcode_small::InteractionClaim>,
-    pub add_ap: Array<add_ap_opcode::InteractionClaim>,
-    pub assert_eq: Array<assert_eq_opcode::InteractionClaim>,
-    pub assert_eq_imm: Array<assert_eq_opcode_imm::InteractionClaim>,
-    pub assert_eq_double_deref: Array<assert_eq_opcode_double_deref::InteractionClaim>,
-    pub blake: Array<blake_compress_opcode::InteractionClaim>,
-    pub call: Array<call_opcode_abs::InteractionClaim>,
-    pub call_rel_imm: Array<call_opcode_rel_imm::InteractionClaim>,
-    pub generic: Array<generic_opcode::InteractionClaim>,
-    pub jnz: Array<jnz_opcode_non_taken::InteractionClaim>,
-    pub jnz_taken: Array<jnz_opcode_taken::InteractionClaim>,
-    pub jump: Array<jump_opcode_abs::InteractionClaim>,
-    pub jump_double_deref: Array<jump_opcode_double_deref::InteractionClaim>,
-    pub jump_rel: Array<jump_opcode_rel::InteractionClaim>,
-    pub jump_rel_imm: Array<jump_opcode_rel_imm::InteractionClaim>,
-    pub mul: Array<mul_opcode::InteractionClaim>,
-    pub mul_small: Array<mul_opcode_small::InteractionClaim>,
-    pub qm31: Array<qm_31_add_mul_opcode::InteractionClaim>,
-    pub ret: Array<ret_opcode::InteractionClaim>,
+    pub add: Option<add_opcode::InteractionClaim>,
+    pub add_small: Option<add_opcode_small::InteractionClaim>,
+    pub add_ap: Option<add_ap_opcode::InteractionClaim>,
+    pub assert_eq: Option<assert_eq_opcode::InteractionClaim>,
+    pub assert_eq_imm: Option<assert_eq_opcode_imm::InteractionClaim>,
+    pub assert_eq_double_deref: Option<assert_eq_opcode_double_deref::InteractionClaim>,
+    pub blake: Option<blake_compress_opcode::InteractionClaim>,
+    pub call: Option<call_opcode_abs::InteractionClaim>,
+    pub call_rel_imm: Option<call_opcode_rel_imm::InteractionClaim>,
+    pub generic: Option<generic_opcode::InteractionClaim>,
+    pub jnz: Option<jnz_opcode_non_taken::InteractionClaim>,
+    pub jnz_taken: Option<jnz_opcode_taken::InteractionClaim>,
+    pub jump: Option<jump_opcode_abs::InteractionClaim>,
+    pub jump_double_deref: Option<jump_opcode_double_deref::InteractionClaim>,
+    pub jump_rel: Option<jump_opcode_rel::InteractionClaim>,
+    pub jump_rel_imm: Option<jump_opcode_rel_imm::InteractionClaim>,
+    pub mul: Option<mul_opcode::InteractionClaim>,
+    pub mul_small: Option<mul_opcode_small::InteractionClaim>,
+    pub qm31: Option<qm_31_add_mul_opcode::InteractionClaim>,
+    pub ret: Option<ret_opcode::InteractionClaim>,
     pub verify_instruction: components::verify_instruction::InteractionClaim,
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
@@ -591,64 +652,64 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             verify_bitwise_xor_9,
         } = self;
 
-        for interaction_claim in add.span() {
+        if let Some(interaction_claim) = add {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in add_small.span() {
+        if let Some(interaction_claim) = add_small {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in add_ap.span() {
+        if let Some(interaction_claim) = add_ap {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in assert_eq.span() {
+        if let Some(interaction_claim) = assert_eq {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in assert_eq_imm.span() {
+        if let Some(interaction_claim) = assert_eq_imm {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in assert_eq_double_deref.span() {
+        if let Some(interaction_claim) = assert_eq_double_deref {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in blake.span() {
+        if let Some(interaction_claim) = blake {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in call.span() {
+        if let Some(interaction_claim) = call {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in call_rel_imm.span() {
+        if let Some(interaction_claim) = call_rel_imm {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in generic.span() {
+        if let Some(interaction_claim) = generic {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jnz.span() {
+        if let Some(interaction_claim) = jnz {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jnz_taken.span() {
+        if let Some(interaction_claim) = jnz_taken {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jump.span() {
+        if let Some(interaction_claim) = jump {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jump_double_deref.span() {
+        if let Some(interaction_claim) = jump_double_deref {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jump_rel.span() {
+        if let Some(interaction_claim) = jump_rel {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in jump_rel_imm.span() {
+        if let Some(interaction_claim) = jump_rel_imm {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in mul.span() {
+        if let Some(interaction_claim) = mul {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in mul_small.span() {
+        if let Some(interaction_claim) = mul_small {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in qm31.span() {
+        if let Some(interaction_claim) = qm31 {
             interaction_claim.mix_into(ref channel);
         }
-        for interaction_claim in ret.span() {
+        if let Some(interaction_claim) = ret {
             interaction_claim.mix_into(ref channel);
         }
         verify_instruction.mix_into(ref channel);
@@ -714,66 +775,67 @@ pub fn lookup_sum(
         verify_bitwise_xor_9,
     } = interaction_claim;
 
-    for interaction_claim in add.span() {
+    if let Some(interaction_claim) = add {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in add_small.span() {
+    if let Some(interaction_claim) = add_small {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in add_ap.span() {
+    if let Some(interaction_claim) = add_ap {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq.span() {
+    if let Some(interaction_claim) = assert_eq {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq_imm.span() {
+    if let Some(interaction_claim) = assert_eq_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in assert_eq_double_deref.span() {
+    if let Some(interaction_claim) = assert_eq_double_deref {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in blake.span() {
+    if let Some(interaction_claim) = blake {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in call.span() {
+    if let Some(interaction_claim) = call {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in call_rel_imm.span() {
+    if let Some(interaction_claim) = call_rel_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in generic.span() {
+    if let Some(interaction_claim) = generic {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jnz.span() {
+    if let Some(interaction_claim) = jnz {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jnz_taken.span() {
+    if let Some(interaction_claim) = jnz_taken {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump.span() {
+    if let Some(interaction_claim) = jump {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_double_deref.span() {
+    if let Some(interaction_claim) = jump_double_deref {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_rel.span() {
+    if let Some(interaction_claim) = jump_rel {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in jump_rel_imm.span() {
+    if let Some(interaction_claim) = jump_rel_imm {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in mul.span() {
+    if let Some(interaction_claim) = mul {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in mul_small.span() {
+    if let Some(interaction_claim) = mul_small {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in qm31.span() {
+    if let Some(interaction_claim) = qm31 {
         sum += *interaction_claim.claimed_sum;
     }
-    for interaction_claim in ret.span() {
+    if let Some(interaction_claim) = ret {
         sum += *interaction_claim.claimed_sum;
     }
+
     sum += *verify_instruction.claimed_sum;
     sum += blake_context.sum();
     sum += builtins.sum();
@@ -793,26 +855,26 @@ pub fn lookup_sum(
 #[derive(Drop)]
 #[cfg(not(feature: "poseidon252_verifier"))]
 pub struct CairoAir {
-    add: Array<add_opcode::Component>,
-    add_small: Array<add_opcode_small::Component>,
-    add_ap: Array<add_ap_opcode::Component>,
-    assert_eq: Array<assert_eq_opcode::Component>,
-    assert_eq_imm: Array<assert_eq_opcode_imm::Component>,
-    assert_eq_double_deref: Array<assert_eq_opcode_double_deref::Component>,
-    blake: Array<blake_compress_opcode::Component>,
-    call: Array<call_opcode_abs::Component>,
-    call_rel_imm: Array<call_opcode_rel_imm::Component>,
-    generic: Array<generic_opcode::Component>,
-    jnz: Array<jnz_opcode_non_taken::Component>,
-    jnz_taken: Array<jnz_opcode_taken::Component>,
-    jump: Array<jump_opcode_abs::Component>,
-    jump_double_deref: Array<jump_opcode_double_deref::Component>,
-    jump_rel: Array<jump_opcode_rel::Component>,
-    jump_rel_imm: Array<jump_opcode_rel_imm::Component>,
-    mul: Array<mul_opcode::Component>,
-    mul_small: Array<mul_opcode_small::Component>,
-    qm31: Array<qm_31_add_mul_opcode::Component>,
-    ret: Array<ret_opcode::Component>,
+    add: Option<add_opcode::Component>,
+    add_small: Option<add_opcode_small::Component>,
+    add_ap: Option<add_ap_opcode::Component>,
+    assert_eq: Option<assert_eq_opcode::Component>,
+    assert_eq_imm: Option<assert_eq_opcode_imm::Component>,
+    assert_eq_double_deref: Option<assert_eq_opcode_double_deref::Component>,
+    blake: Option<blake_compress_opcode::Component>,
+    call: Option<call_opcode_abs::Component>,
+    call_rel_imm: Option<call_opcode_rel_imm::Component>,
+    generic: Option<generic_opcode::Component>,
+    jnz: Option<jnz_opcode_non_taken::Component>,
+    jnz_taken: Option<jnz_opcode_taken::Component>,
+    jump: Option<jump_opcode_abs::Component>,
+    jump_double_deref: Option<jump_opcode_double_deref::Component>,
+    jump_rel: Option<jump_opcode_rel::Component>,
+    jump_rel_imm: Option<jump_opcode_rel_imm::Component>,
+    mul: Option<mul_opcode::Component>,
+    mul_small: Option<mul_opcode_small::Component>,
+    qm31: Option<qm_31_add_mul_opcode::Component>,
+    ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
@@ -890,256 +952,223 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             ..,
         } = interaction_claim;
 
-        // Add components
-        let mut add_components = array![];
-        for (claim, interaction_claim) in zip_eq(add_claims.span(), add_interaction_claims.span()) {
-            add_components
-                .append(
+        // Add component
+        let add_component = add_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_interaction_claims.unwrap();
                     add_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
-
-        // Add Small components
-        let mut add_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_small_claims.span(), add_small_interaction_claims.span(),
-        ) {
-            add_small_components
-                .append(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        // Add Small component
+        let add_small_component = add_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_small_interaction_claims.unwrap();
                     add_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Add AP components
-        let mut add_ap_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_ap_claims.span(), add_ap_interaction_claims.span(),
-        ) {
-            add_ap_components
-                .append(
+        // Add AP component
+        let add_ap_component = add_ap_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_ap_interaction_claims.unwrap();
                     add_ap_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Assert Eq components
-        let mut assert_eq_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_claims.span(), assert_eq_interaction_claims.span(),
-        ) {
-            assert_eq_components
-                .append(
+        // Assert Eq component
+        let assert_eq_component = assert_eq_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_interaction_claims.unwrap();
                     assert_eq_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Assert Eq Imm components
-        let mut assert_eq_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_imm_claims.span(), assert_eq_imm_interaction_claims.span(),
-        ) {
-            assert_eq_imm_components
-                .append(
+        // Assert Eq Imm component
+        let assert_eq_imm_component = assert_eq_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_imm_interaction_claims.unwrap();
                     assert_eq_opcode_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Assert Eq Double Deref components
-        let mut assert_eq_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_double_deref_claims.span(), assert_eq_double_deref_interaction_claims.span(),
-        ) {
-            assert_eq_double_deref_components
-                .append(
+        // Assert Eq Double Deref component
+        let assert_eq_double_deref_component = assert_eq_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_double_deref_interaction_claims.unwrap();
                     assert_eq_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        let mut blake_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            blake_claims.span(), blake_interaction_claims.span(),
-        ) {
-            blake_components
-                .append(
+        let blake_component = blake_claims
+            .map(
+                |claim| {
+                    let interaction_claim = blake_interaction_claims.unwrap();
                     blake_compress_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Call components
-        let mut call_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_claims.span(), call_interaction_claims.span(),
-        ) {
-            call_components
-                .append(
+        // Call component
+        let call_component = call_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_interaction_claims.unwrap();
                     call_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Call Rel_imm components
-        let mut call_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_rel_imm_claims.span(), call_rel_imm_interaction_claims.span(),
-        ) {
-            call_rel_imm_components
-                .append(
+        // Call Rel_imm component
+        let call_rel_imm_component = call_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_rel_imm_interaction_claims.unwrap();
                     call_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Generic components
-        let mut generic_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            generic_claims.span(), generic_interaction_claims.span(),
-        ) {
-            generic_components
-                .append(
+        // Generic component
+        let generic_component = generic_claims
+            .map(
+                |claim| {
+                    let interaction_claim = generic_interaction_claims.unwrap();
                     generic_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jnz components
-        let mut jnz_components = array![];
-        for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
-            jnz_components
-                .append(
+        // Jnz component
+        let jnz_component = jnz_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_interaction_claims.unwrap();
                     jnz_opcode_non_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jnz Taken components
-        let mut jnz_taken_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jnz_taken_claims.span(), jnz_taken_interaction_claims.span(),
-        ) {
-            jnz_taken_components
-                .append(
+        // Jnz Taken component
+        let jnz_taken_component = jnz_taken_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_taken_interaction_claims.unwrap();
                     jnz_opcode_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jump components
-        let mut jump_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_claims.span(), jump_interaction_claims.span(),
-        ) {
-            jump_components
-                .append(
+        // Jump component
+        let jump_component = jump_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_interaction_claims.unwrap();
                     jump_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jump Double Deref components
-        let mut jump_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_double_deref_claims.span(), jump_double_deref_interaction_claims.span(),
-        ) {
-            jump_double_deref_components
-                .append(
+        // Jump Double Deref component
+        let jump_double_deref_component = jump_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_double_deref_interaction_claims.unwrap();
                     jump_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jump Rel components
-        let mut jump_rel_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_claims.span(), jump_rel_interaction_claims.span(),
-        ) {
-            jump_rel_components
-                .append(
+        // Jump Rel component
+        let jump_rel_component = jump_rel_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_interaction_claims.unwrap();
                     jump_opcode_rel::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Jump Rel Imm components
-        let mut jump_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_imm_claims.span(), jump_rel_imm_interaction_claims.span(),
-        ) {
-            jump_rel_imm_components
-                .append(
+        // Jump Rel Imm component
+        let jump_rel_imm_component = jump_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_imm_interaction_claims.unwrap();
                     jump_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Mul components
-        let mut mul_components = array![];
-        for (claim, interaction_claim) in zip_eq(mul_claims.span(), mul_interaction_claims.span()) {
-            mul_components
-                .append(
+        // Mul component
+        let mul_component = mul_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_interaction_claims.unwrap();
                     mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Mul Small components
-        let mut mul_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            mul_small_claims.span(), mul_small_interaction_claims.span(),
-        ) {
-            mul_small_components
-                .append(
+        // Mul Small component
+        let mul_small_component = mul_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_small_interaction_claims.unwrap();
                     mul_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // QM31 components
-        let mut qm31_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            qm31_claims.span(), qm31_interaction_claims.span(),
-        ) {
-            qm31_components
-                .append(
+        // QM31 component
+        let qm31_component = qm31_claims
+            .map(
+                |claim| {
+                    let interaction_claim = qm31_interaction_claims.unwrap();
                     qm_31_add_mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        // Ret components
-        let mut ret_components = array![];
-        for (claim, interaction_claim) in zip_eq(ret_claims.span(), ret_interaction_claims.span()) {
-            ret_components
-                .append(
+        // Ret component
+        let ret_component = ret_claims
+            .map(
+                |claim| {
+                    let interaction_claim = ret_interaction_claims.unwrap();
                     ret_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
             cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
@@ -1242,26 +1271,26 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
         );
 
         CairoAir {
-            add: add_components,
-            add_small: add_small_components,
-            add_ap: add_ap_components,
-            assert_eq: assert_eq_components,
-            assert_eq_imm: assert_eq_imm_components,
-            assert_eq_double_deref: assert_eq_double_deref_components,
-            blake: blake_components,
-            call: call_components,
-            call_rel_imm: call_rel_imm_components,
-            generic: generic_components,
-            jnz: jnz_components,
-            jnz_taken: jnz_taken_components,
-            jump: jump_components,
-            jump_double_deref: jump_double_deref_components,
-            jump_rel: jump_rel_components,
-            jump_rel_imm: jump_rel_imm_components,
-            mul: mul_components,
-            mul_small: mul_small_components,
-            qm31: qm31_components,
-            ret: ret_components,
+            add: add_component,
+            add_small: add_small_component,
+            add_ap: add_ap_component,
+            assert_eq: assert_eq_component,
+            assert_eq_imm: assert_eq_imm_component,
+            assert_eq_double_deref: assert_eq_double_deref_component,
+            blake: blake_component,
+            call: call_component,
+            call_rel_imm: call_rel_imm_component,
+            generic: generic_component,
+            jnz: jnz_component,
+            jnz_taken: jnz_taken_component,
+            jump: jump_component,
+            jump_double_deref: jump_double_deref_component,
+            jump_rel: jump_rel_component,
+            jump_rel_imm: jump_rel_imm_component,
+            mul: mul_component,
+            mul_small: mul_small_component,
+            qm31: qm31_component,
+            ret: ret_component,
             verify_instruction: verifyinstruction_component,
             blake_context: blake_context_component,
             builtins: builtins_components,
@@ -1345,7 +1374,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             composition_log_degree_bound: _,
         } = self;
 
-        for component in add.span() {
+        if let Some(component) = add {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1356,7 +1385,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_small.span() {
+        if let Some(component) = add_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1367,7 +1396,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_ap.span() {
+        if let Some(component) = add_ap {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1378,7 +1407,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq.span() {
+        if let Some(component) = assert_eq {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1389,7 +1418,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_imm.span() {
+        if let Some(component) = assert_eq_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1400,7 +1429,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_double_deref.span() {
+        if let Some(component) = assert_eq_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1411,7 +1440,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in blake.span() {
+        if let Some(component) = blake {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1422,7 +1451,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call.span() {
+        if let Some(component) = call {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1433,7 +1462,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call_rel_imm.span() {
+        if let Some(component) = call_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1444,7 +1473,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in generic.span() {
+        if let Some(component) = generic {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1455,7 +1484,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz.span() {
+        if let Some(component) = jnz {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1466,7 +1495,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz_taken.span() {
+        if let Some(component) = jnz_taken {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1477,7 +1506,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump.span() {
+        if let Some(component) = jump {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1488,7 +1517,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_double_deref.span() {
+        if let Some(component) = jump_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1499,7 +1528,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel.span() {
+        if let Some(component) = jump_rel {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1510,7 +1539,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel_imm.span() {
+        if let Some(component) = jump_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1521,7 +1550,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul.span() {
+        if let Some(component) = mul {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1532,7 +1561,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul_small.span() {
+        if let Some(component) = mul_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1543,7 +1572,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in qm31.span() {
+        if let Some(component) = qm31 {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1554,7 +1583,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in ret.span() {
+        if let Some(component) = ret {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -1702,25 +1731,25 @@ pub impl CairoAirImpl of Air<CairoAir> {
 #[derive(Drop)]
 #[cfg(and(feature: "poseidon252_verifier", not(feature: "poseidon_outputs_packing")))]
 pub struct CairoAir {
-    add: Array<add_opcode::Component>,
-    add_small: Array<add_opcode_small::Component>,
-    add_ap: Array<add_ap_opcode::Component>,
-    assert_eq: Array<assert_eq_opcode::Component>,
-    assert_eq_imm: Array<assert_eq_opcode_imm::Component>,
-    assert_eq_double_deref: Array<assert_eq_opcode_double_deref::Component>,
-    blake: Array<blake_compress_opcode::Component>,
-    call: Array<call_opcode_abs::Component>,
-    call_rel_imm: Array<call_opcode_rel_imm::Component>,
-    jnz: Array<jnz_opcode_non_taken::Component>,
-    jnz_taken: Array<jnz_opcode_taken::Component>,
-    jump: Array<jump_opcode_abs::Component>,
-    jump_double_deref: Array<jump_opcode_double_deref::Component>,
-    jump_rel: Array<jump_opcode_rel::Component>,
-    jump_rel_imm: Array<jump_opcode_rel_imm::Component>,
-    mul: Array<mul_opcode::Component>,
-    mul_small: Array<mul_opcode_small::Component>,
-    qm31: Array<qm_31_add_mul_opcode::Component>,
-    ret: Array<ret_opcode::Component>,
+    add: Option<add_opcode::Component>,
+    add_small: Option<add_opcode_small::Component>,
+    add_ap: Option<add_ap_opcode::Component>,
+    assert_eq: Option<assert_eq_opcode::Component>,
+    assert_eq_imm: Option<assert_eq_opcode_imm::Component>,
+    assert_eq_double_deref: Option<assert_eq_opcode_double_deref::Component>,
+    blake: Option<blake_compress_opcode::Component>,
+    call: Option<call_opcode_abs::Component>,
+    call_rel_imm: Option<call_opcode_rel_imm::Component>,
+    jnz: Option<jnz_opcode_non_taken::Component>,
+    jnz_taken: Option<jnz_opcode_taken::Component>,
+    jump: Option<jump_opcode_abs::Component>,
+    jump_double_deref: Option<jump_opcode_double_deref::Component>,
+    jump_rel: Option<jump_opcode_rel::Component>,
+    jump_rel_imm: Option<jump_opcode_rel_imm::Component>,
+    mul: Option<mul_opcode::Component>,
+    mul_small: Option<mul_opcode_small::Component>,
+    qm31: Option<qm_31_add_mul_opcode::Component>,
+    ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
@@ -1771,7 +1800,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             ret: ret_claims,
             ..,
         } = cairo_claim;
-        assert!(generic_claims.is_empty(), "The generic opcode is not supported.");
+        assert!(generic_claims.is_none(), "The generic opcode is not supported.");
 
         let CairoInteractionClaim {
             add: add_interaction_claims,
@@ -1796,248 +1825,215 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             ret: ret_interaction_claims,
             ..,
         } = interaction_claim;
-
-        for _ in zip_eq(generic_claims.span(), generic_interaction_claims.span()) {
-            panic!("The generic opcode is not supported.");
-        }
+        assert!(generic_interaction_claims.is_none(), "The generic opcode is not supported.");
 
         // Add components
-        let mut add_components = array![];
-        for (claim, interaction_claim) in zip_eq(add_claims.span(), add_interaction_claims.span()) {
-            add_components
-                .append(
+        let add_components = add_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_interaction_claims.unwrap();
                     add_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Add Small components
-        let mut add_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_small_claims.span(), add_small_interaction_claims.span(),
-        ) {
-            add_small_components
-                .append(
+        let add_small_components = add_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_small_interaction_claims.unwrap();
                     add_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Add AP components
-        let mut add_ap_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_ap_claims.span(), add_ap_interaction_claims.span(),
-        ) {
-            add_ap_components
-                .append(
+        let add_ap_components = add_ap_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_ap_interaction_claims.unwrap();
                     add_ap_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq components
-        let mut assert_eq_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_claims.span(), assert_eq_interaction_claims.span(),
-        ) {
-            assert_eq_components
-                .append(
+        let assert_eq_components = assert_eq_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_interaction_claims.unwrap();
                     assert_eq_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq Imm components
-        let mut assert_eq_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_imm_claims.span(), assert_eq_imm_interaction_claims.span(),
-        ) {
-            assert_eq_imm_components
-                .append(
+        let assert_eq_imm_components = assert_eq_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_imm_interaction_claims.unwrap();
                     assert_eq_opcode_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq Double Deref components
-        let mut assert_eq_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_double_deref_claims.span(), assert_eq_double_deref_interaction_claims.span(),
-        ) {
-            assert_eq_double_deref_components
-                .append(
+        let assert_eq_double_deref_components = assert_eq_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_double_deref_interaction_claims.unwrap();
                     assert_eq_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        let mut blake_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            blake_claims.span(), blake_interaction_claims.span(),
-        ) {
-            blake_components
-                .append(
+        let blake_components = blake_claims
+            .map(
+                |claim| {
+                    let interaction_claim = blake_interaction_claims.unwrap();
                     blake_compress_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Call components
-        let mut call_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_claims.span(), call_interaction_claims.span(),
-        ) {
-            call_components
-                .append(
+        let call_components = call_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_interaction_claims.unwrap();
                     call_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Call Rel_imm components
-        let mut call_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_rel_imm_claims.span(), call_rel_imm_interaction_claims.span(),
-        ) {
-            call_rel_imm_components
-                .append(
+        let call_rel_imm_components = call_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_rel_imm_interaction_claims.unwrap();
                     call_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jnz components
-        let mut jnz_components = array![];
-        for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
-            jnz_components
-                .append(
+        let jnz_components = jnz_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_interaction_claims.unwrap();
                     jnz_opcode_non_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jnz Taken components
-        let mut jnz_taken_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jnz_taken_claims.span(), jnz_taken_interaction_claims.span(),
-        ) {
-            jnz_taken_components
-                .append(
+        let jnz_taken_components = jnz_taken_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_taken_interaction_claims.unwrap();
                     jnz_opcode_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump components
-        let mut jump_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_claims.span(), jump_interaction_claims.span(),
-        ) {
-            jump_components
-                .append(
+        let jump_components = jump_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_interaction_claims.unwrap();
                     jump_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Double Deref components
-        let mut jump_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_double_deref_claims.span(), jump_double_deref_interaction_claims.span(),
-        ) {
-            jump_double_deref_components
-                .append(
+        let jump_double_deref_components = jump_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_double_deref_interaction_claims.unwrap();
                     jump_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Rel components
-        let mut jump_rel_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_claims.span(), jump_rel_interaction_claims.span(),
-        ) {
-            jump_rel_components
-                .append(
+        let jump_rel_components = jump_rel_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_interaction_claims.unwrap();
                     jump_opcode_rel::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Rel Imm components
-        let mut jump_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_imm_claims.span(), jump_rel_imm_interaction_claims.span(),
-        ) {
-            jump_rel_imm_components
-                .append(
+        let jump_rel_imm_components = jump_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_imm_interaction_claims.unwrap();
                     jump_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Mul components
-        let mut mul_components = array![];
-        for (claim, interaction_claim) in zip_eq(mul_claims.span(), mul_interaction_claims.span()) {
-            mul_components
-                .append(
+        let mul_components = mul_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_interaction_claims.unwrap();
                     mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Mul Small components
-        let mut mul_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            mul_small_claims.span(), mul_small_interaction_claims.span(),
-        ) {
-            mul_small_components
-                .append(
+        let mul_small_components = mul_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_small_interaction_claims.unwrap();
                     mul_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // QM31 components
-        let mut qm31_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            qm31_claims.span(), qm31_interaction_claims.span(),
-        ) {
-            qm31_components
-                .append(
+        let qm31_components = qm31_claims
+            .map(
+                |claim| {
+                    let interaction_claim = qm31_interaction_claims.unwrap();
                     qm_31_add_mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Ret components
-        let mut ret_components = array![];
-        for (claim, interaction_claim) in zip_eq(ret_claims.span(), ret_interaction_claims.span()) {
-            ret_components
-                .append(
+        let ret_components = ret_claims
+            .map(
+                |claim| {
+                    let interaction_claim = ret_interaction_claims.unwrap();
                     ret_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
             cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
@@ -2230,7 +2226,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             composition_log_degree_bound: _,
         } = self;
 
-        for component in add.span() {
+        if let Some(component) = add {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2241,7 +2237,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_small.span() {
+        if let Some(component) = add_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2252,7 +2248,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_ap.span() {
+        if let Some(component) = add_ap {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2263,7 +2259,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq.span() {
+        if let Some(component) = assert_eq {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2274,7 +2270,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_imm.span() {
+        if let Some(component) = assert_eq_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2285,7 +2281,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_double_deref.span() {
+        if let Some(component) = assert_eq_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2296,7 +2292,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in blake.span() {
+        if let Some(component) = blake {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2307,7 +2303,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call.span() {
+        if let Some(component) = call {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2318,7 +2314,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call_rel_imm.span() {
+        if let Some(component) = call_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2329,7 +2325,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz.span() {
+        if let Some(component) = jnz {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2340,7 +2336,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz_taken.span() {
+        if let Some(component) = jnz_taken {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2351,7 +2347,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump.span() {
+        if let Some(component) = jump {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2362,7 +2358,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_double_deref.span() {
+        if let Some(component) = jump_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2373,7 +2369,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel.span() {
+        if let Some(component) = jump_rel {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2384,7 +2380,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel_imm.span() {
+        if let Some(component) = jump_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2395,7 +2391,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul.span() {
+        if let Some(component) = mul {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2406,7 +2402,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul_small.span() {
+        if let Some(component) = mul_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2417,7 +2413,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in qm31.span() {
+        if let Some(component) = qm31 {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2428,7 +2424,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in ret.span() {
+        if let Some(component) = ret {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -2557,25 +2553,25 @@ pub impl CairoAirImpl of Air<CairoAir> {
 #[derive(Drop)]
 #[cfg(and(feature: "poseidon252_verifier", feature: "poseidon_outputs_packing"))]
 pub struct CairoAir {
-    add: Array<add_opcode::Component>,
-    add_small: Array<add_opcode_small::Component>,
-    add_ap: Array<add_ap_opcode::Component>,
-    assert_eq: Array<assert_eq_opcode::Component>,
-    assert_eq_imm: Array<assert_eq_opcode_imm::Component>,
-    assert_eq_double_deref: Array<assert_eq_opcode_double_deref::Component>,
-    blake: Array<blake_compress_opcode::Component>,
-    call: Array<call_opcode_abs::Component>,
-    call_rel_imm: Array<call_opcode_rel_imm::Component>,
-    jnz: Array<jnz_opcode_non_taken::Component>,
-    jnz_taken: Array<jnz_opcode_taken::Component>,
-    jump: Array<jump_opcode_abs::Component>,
-    jump_double_deref: Array<jump_opcode_double_deref::Component>,
-    jump_rel: Array<jump_opcode_rel::Component>,
-    jump_rel_imm: Array<jump_opcode_rel_imm::Component>,
-    mul: Array<mul_opcode::Component>,
-    mul_small: Array<mul_opcode_small::Component>,
-    qm31: Array<qm_31_add_mul_opcode::Component>,
-    ret: Array<ret_opcode::Component>,
+    add: Option<add_opcode::Component>,
+    add_small: Option<add_opcode_small::Component>,
+    add_ap: Option<add_ap_opcode::Component>,
+    assert_eq: Option<assert_eq_opcode::Component>,
+    assert_eq_imm: Option<assert_eq_opcode_imm::Component>,
+    assert_eq_double_deref: Option<assert_eq_opcode_double_deref::Component>,
+    blake: Option<blake_compress_opcode::Component>,
+    call: Option<call_opcode_abs::Component>,
+    call_rel_imm: Option<call_opcode_rel_imm::Component>,
+    jnz: Option<jnz_opcode_non_taken::Component>,
+    jnz_taken: Option<jnz_opcode_taken::Component>,
+    jump: Option<jump_opcode_abs::Component>,
+    jump_double_deref: Option<jump_opcode_double_deref::Component>,
+    jump_rel: Option<jump_opcode_rel::Component>,
+    jump_rel_imm: Option<jump_opcode_rel_imm::Component>,
+    mul: Option<mul_opcode::Component>,
+    mul_small: Option<mul_opcode_small::Component>,
+    qm31: Option<qm_31_add_mul_opcode::Component>,
+    ret: Option<ret_opcode::Component>,
     verify_instruction: components::verify_instruction::Component,
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
@@ -2627,7 +2623,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             ret: ret_claims,
             ..,
         } = cairo_claim;
-        assert!(generic_claims.is_empty(), "The generic opcode is not supported.");
+        assert!(generic_claims.is_none(), "The generic opcode is not supported.");
 
         let CairoInteractionClaim {
             add: add_interaction_claims,
@@ -2652,248 +2648,215 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             ret: ret_interaction_claims,
             ..,
         } = interaction_claim;
-
-        for _ in zip_eq(generic_claims.span(), generic_interaction_claims.span()) {
-            panic!("The generic opcode is not supported.");
-        }
+        assert!(generic_interaction_claims.is_none(), "The generic opcode is not supported.");
 
         // Add components
-        let mut add_components = array![];
-        for (claim, interaction_claim) in zip_eq(add_claims.span(), add_interaction_claims.span()) {
-            add_components
-                .append(
+        let add_components = add_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_interaction_claims.unwrap();
                     add_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Add Small components
-        let mut add_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_small_claims.span(), add_small_interaction_claims.span(),
-        ) {
-            add_small_components
-                .append(
+        let add_small_components = add_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_small_interaction_claims.unwrap();
                     add_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Add AP components
-        let mut add_ap_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            add_ap_claims.span(), add_ap_interaction_claims.span(),
-        ) {
-            add_ap_components
-                .append(
+        let add_ap_components = add_ap_claims
+            .map(
+                |claim| {
+                    let interaction_claim = add_ap_interaction_claims.unwrap();
                     add_ap_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq components
-        let mut assert_eq_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_claims.span(), assert_eq_interaction_claims.span(),
-        ) {
-            assert_eq_components
-                .append(
+        let assert_eq_components = assert_eq_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_interaction_claims.unwrap();
                     assert_eq_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq Imm components
-        let mut assert_eq_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_imm_claims.span(), assert_eq_imm_interaction_claims.span(),
-        ) {
-            assert_eq_imm_components
-                .append(
+        let assert_eq_imm_components = assert_eq_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_imm_interaction_claims.unwrap();
                     assert_eq_opcode_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Assert Eq Double Deref components
-        let mut assert_eq_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            assert_eq_double_deref_claims.span(), assert_eq_double_deref_interaction_claims.span(),
-        ) {
-            assert_eq_double_deref_components
-                .append(
+        let assert_eq_double_deref_components = assert_eq_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = assert_eq_double_deref_interaction_claims.unwrap();
                     assert_eq_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
-        let mut blake_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            blake_claims.span(), blake_interaction_claims.span(),
-        ) {
-            blake_components
-                .append(
+        let blake_components = blake_claims
+            .map(
+                |claim| {
+                    let interaction_claim = blake_interaction_claims.unwrap();
                     blake_compress_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Call components
-        let mut call_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_claims.span(), call_interaction_claims.span(),
-        ) {
-            call_components
-                .append(
+        let call_components = call_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_interaction_claims.unwrap();
                     call_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Call Rel_imm components
-        let mut call_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            call_rel_imm_claims.span(), call_rel_imm_interaction_claims.span(),
-        ) {
-            call_rel_imm_components
-                .append(
+        let call_rel_imm_components = call_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = call_rel_imm_interaction_claims.unwrap();
                     call_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jnz components
-        let mut jnz_components = array![];
-        for (claim, interaction_claim) in zip_eq(jnz_claims.span(), jnz_interaction_claims.span()) {
-            jnz_components
-                .append(
+        let jnz_components = jnz_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_interaction_claims.unwrap();
                     jnz_opcode_non_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jnz Taken components
-        let mut jnz_taken_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jnz_taken_claims.span(), jnz_taken_interaction_claims.span(),
-        ) {
-            jnz_taken_components
-                .append(
+        let jnz_taken_components = jnz_taken_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jnz_taken_interaction_claims.unwrap();
                     jnz_opcode_taken::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump components
-        let mut jump_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_claims.span(), jump_interaction_claims.span(),
-        ) {
-            jump_components
-                .append(
+        let jump_components = jump_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_interaction_claims.unwrap();
                     jump_opcode_abs::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Double Deref components
-        let mut jump_double_deref_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_double_deref_claims.span(), jump_double_deref_interaction_claims.span(),
-        ) {
-            jump_double_deref_components
-                .append(
+        let jump_double_deref_components = jump_double_deref_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_double_deref_interaction_claims.unwrap();
                     jump_opcode_double_deref::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Rel components
-        let mut jump_rel_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_claims.span(), jump_rel_interaction_claims.span(),
-        ) {
-            jump_rel_components
-                .append(
+        let jump_rel_components = jump_rel_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_interaction_claims.unwrap();
                     jump_opcode_rel::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Jump Rel Imm components
-        let mut jump_rel_imm_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            jump_rel_imm_claims.span(), jump_rel_imm_interaction_claims.span(),
-        ) {
-            jump_rel_imm_components
-                .append(
+        let jump_rel_imm_components = jump_rel_imm_claims
+            .map(
+                |claim| {
+                    let interaction_claim = jump_rel_imm_interaction_claims.unwrap();
                     jump_opcode_rel_imm::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Mul components
-        let mut mul_components = array![];
-        for (claim, interaction_claim) in zip_eq(mul_claims.span(), mul_interaction_claims.span()) {
-            mul_components
-                .append(
+        let mul_components = mul_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_interaction_claims.unwrap();
                     mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Mul Small components
-        let mut mul_small_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            mul_small_claims.span(), mul_small_interaction_claims.span(),
-        ) {
-            mul_small_components
-                .append(
+        let mul_small_components = mul_small_claims
+            .map(
+                |claim| {
+                    let interaction_claim = mul_small_interaction_claims.unwrap();
                     mul_opcode_small::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // QM31 components
-        let mut qm31_components = array![];
-        for (claim, interaction_claim) in zip_eq(
-            qm31_claims.span(), qm31_interaction_claims.span(),
-        ) {
-            qm31_components
-                .append(
+        let qm31_components = qm31_claims
+            .map(
+                |claim| {
+                    let interaction_claim = qm31_interaction_claims.unwrap();
                     qm_31_add_mul_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         // Ret components
-        let mut ret_components = array![];
-        for (claim, interaction_claim) in zip_eq(ret_claims.span(), ret_interaction_claims.span()) {
-            ret_components
-                .append(
+        let ret_components = ret_claims
+            .map(
+                |claim| {
+                    let interaction_claim = ret_interaction_claims.unwrap();
                     ret_opcode::NewComponentImpl::new(
-                        claim, interaction_claim, interaction_elements,
-                    ),
-                );
-        }
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let blake_context_component = BlakeContextComponentsImpl::new(
             cairo_claim.blake_context, interaction_elements, interaction_claim.blake_context,
@@ -3092,7 +3055,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             composition_log_degree_bound: _,
         } = self;
 
-        for component in add.span() {
+        if let Some(component) = add {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3103,7 +3066,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_small.span() {
+        if let Some(component) = add_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3114,7 +3077,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in add_ap.span() {
+        if let Some(component) = add_ap {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3125,7 +3088,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq.span() {
+        if let Some(component) = assert_eq {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3136,7 +3099,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_imm.span() {
+        if let Some(component) = assert_eq_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3147,7 +3110,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in assert_eq_double_deref.span() {
+        if let Some(component) = assert_eq_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3158,7 +3121,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in blake.span() {
+        if let Some(component) = blake {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3169,7 +3132,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call.span() {
+        if let Some(component) = call {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3180,7 +3143,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in call_rel_imm.span() {
+        if let Some(component) = call_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3191,7 +3154,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz.span() {
+        if let Some(component) = jnz {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3202,7 +3165,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jnz_taken.span() {
+        if let Some(component) = jnz_taken {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3213,7 +3176,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump.span() {
+        if let Some(component) = jump {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3224,7 +3187,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_double_deref.span() {
+        if let Some(component) = jump_double_deref {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3235,7 +3198,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel.span() {
+        if let Some(component) = jump_rel {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3246,7 +3209,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in jump_rel_imm.span() {
+        if let Some(component) = jump_rel_imm {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3257,7 +3220,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul.span() {
+        if let Some(component) = mul {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3268,7 +3231,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in mul_small.span() {
+        if let Some(component) = mul_small {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3279,7 +3242,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in qm31.span() {
+        if let Some(component) = qm31 {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -3290,7 +3253,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        for component in ret.span() {
+        if let Some(component) = ret {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
