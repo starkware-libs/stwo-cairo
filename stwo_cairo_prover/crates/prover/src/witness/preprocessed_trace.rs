@@ -1,7 +1,7 @@
 use cairo_air::PreProcessedTraceVariant;
 use stwo::core::channel::MerkleChannel;
 use stwo::core::poly::circle::CanonicCoset;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
@@ -13,7 +13,7 @@ use stwo::prover::CommitmentTreeProver;
 pub fn generate_preprocessed_commitment_root<MC: MerkleChannel>(
     log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
-) -> <<MC as MerkleChannel>::H as MerkleHasher>::Hash
+) -> <<MC as MerkleChannel>::H as MerkleHasherLifted>::Hash
 where
     SimdBackend: BackendForChannel<MC>,
 {
@@ -44,7 +44,7 @@ where
 #[test]
 fn test_canonical_preprocessed_root_regression() {
     use stwo::core::vcs::blake2_hash::Blake2sHash;
-    use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 
     let log_blowup_factor = 1;
     let expected = Blake2sHash::from(

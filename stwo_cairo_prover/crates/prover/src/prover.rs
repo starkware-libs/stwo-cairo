@@ -15,7 +15,7 @@ use stwo::core::fri::FriConfig;
 use stwo::core::pcs::PcsConfig;
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
-use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
@@ -232,7 +232,7 @@ pub fn create_and_serialize_proof(
         }
         #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
         ChannelHash::Poseidon252 => {
-            use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+            use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
             let proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
             serialize_proof_to_file(&proof, &proof_path, proof_format)?;
             if verify {
@@ -272,7 +272,7 @@ pub mod tests {
         use dev_utils::utils::get_proof_file_path;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
-        use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+        use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         use stwo_cairo_serialize::CairoSerialize;
         use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
         use tempfile::NamedTempFile;
@@ -355,7 +355,7 @@ pub mod tests {
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
-        use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
+        use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
         use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
         use stwo_cairo_serialize::CairoSerialize;
         use tempfile::NamedTempFile;
@@ -395,7 +395,7 @@ pub mod tests {
                 pcs_config: PcsConfig::default(),
                 preprocessed_trace: PreProcessedTraceVariant::CanonicalWithoutPedersen,
                 channel_salt: None,
-                store_polynomials_coefficients: false,
+                store_polynomials_coefficients: true,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)

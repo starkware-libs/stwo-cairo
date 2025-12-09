@@ -9,8 +9,8 @@ use stwo::core::pcs::{PcsConfig, TreeVec};
 use stwo::core::poly::line::LinePoly;
 use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHash;
-use stwo::core::vcs::verifier::MerkleDecommitment;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::core::ColumnVec;
 pub use stwo_cairo_serialize_derive::CairoDeserialize;
 
@@ -67,16 +67,14 @@ impl CairoDeserialize for SecureField {
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for MerkleDecommitment<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for MerkleDecommitmentLifted<H>
 where
     H::Hash: CairoDeserialize,
 {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let hash_witness = Vec::<H::Hash>::deserialize(data);
-        let column_witness = Vec::<BaseField>::deserialize(data);
-        MerkleDecommitment {
+        MerkleDecommitmentLifted {
             hash_witness,
-            column_witness,
         }
     }
 }
@@ -95,13 +93,13 @@ impl CairoDeserialize for LinePoly {
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for FriLayerProof<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for FriLayerProof<H>
 where
     H::Hash: CairoDeserialize,
 {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let fri_witness = Vec::deserialize(data);
-        let decommitment = MerkleDecommitment::deserialize(data);
+        let decommitment = MerkleDecommitmentLifted::deserialize(data);
         let commitment = H::Hash::deserialize(data);
         FriLayerProof {
             fri_witness,
@@ -111,7 +109,7 @@ where
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for FriProof<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for FriProof<H>
 where
     H::Hash: CairoDeserialize,
 {
@@ -157,7 +155,7 @@ impl CairoDeserialize for PcsConfig {
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for CommitmentSchemeProof<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for CommitmentSchemeProof<H>
 where
     H::Hash: CairoDeserialize,
 {
@@ -165,7 +163,7 @@ where
         let config = PcsConfig::deserialize(data);
         let commitments = TreeVec(Vec::<H::Hash>::deserialize(data));
         let sampled_values = TreeVec(Vec::<ColumnVec<Vec<SecureField>>>::deserialize(data));
-        let decommitments = TreeVec(Vec::<MerkleDecommitment<H>>::deserialize(data));
+        let decommitments = TreeVec(Vec::<MerkleDecommitmentLifted<H>>::deserialize(data));
         let queried_values = TreeVec(Vec::<Vec<BaseField>>::deserialize(data));
         let proof_of_work: u64 = u64::deserialize(data);
         let fri_proof = FriProof::deserialize(data);
@@ -181,7 +179,7 @@ where
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for StarkProof<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for StarkProof<H>
 where
     H::Hash: CairoDeserialize,
 {

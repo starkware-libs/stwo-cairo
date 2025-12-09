@@ -10,7 +10,7 @@ use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
 use stwo::core::pcs::TreeVec;
 use stwo::core::proof::StarkProof;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -41,7 +41,7 @@ use crate::relations;
 use crate::verifier::RelationUse;
 
 #[derive(Serialize, Deserialize)]
-pub struct CairoProof<H: MerkleHasher> {
+pub struct CairoProof<H: MerkleHasherLifted> {
     pub claim: CairoClaim,
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
@@ -50,7 +50,7 @@ pub struct CairoProof<H: MerkleHasher> {
     pub channel_salt: Option<u64>,
 }
 
-impl<H: MerkleHasher> CairoSerialize for CairoProof<H>
+impl<H: MerkleHasherLifted> CairoSerialize for CairoProof<H>
 where
     H::Hash: CairoSerialize,
 {
@@ -70,7 +70,7 @@ where
     }
 }
 
-impl<H: MerkleHasher> CairoDeserialize for CairoProof<H>
+impl<H: MerkleHasherLifted> CairoDeserialize for CairoProof<H>
 where
     H::Hash: CairoDeserialize,
 {
