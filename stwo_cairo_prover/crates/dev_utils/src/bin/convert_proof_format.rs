@@ -6,9 +6,9 @@ use cairo_air::CairoProof;
 use clap::Parser;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
-use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
-use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleHasher;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleHasher;
+use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleHasher;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 #[derive(Parser, Debug)]
@@ -38,7 +38,7 @@ struct Args {
     hash: String,
 }
 
-fn convert_proof<H: MerkleHasher + Serialize + DeserializeOwned>(
+fn convert_proof<H: MerkleHasherLifted + Serialize + DeserializeOwned>(
     input_path: &Path,
     output_path: &Path,
     input_format: ProofFormat,
