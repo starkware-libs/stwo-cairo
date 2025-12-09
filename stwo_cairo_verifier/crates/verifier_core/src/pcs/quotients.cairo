@@ -343,7 +343,7 @@ impl QuotientConstantsImpl of QuotientConstantsTrait {
 
             // The coefficients (a_i, b_i, c_i) are the coefficients of the line
             //   c_i * F(q) - a_i * q.y - b_i through
-            // through (p.y, v_i) and (conj(p.y), conj(v_i)) are:
+            // (p.y, v_i) and (conj(p.y), conj(v_i)) are:
             //   c_i =               conj(p.y) - p.y = -2u * Im(p.y),
             //   a_i =               conj(v_i) - v_i = -2u * Im(v_i),
             //   b_i = conj(p.y)*v_i - conj(v_i)*p.y = -2u * (Re(v_i)*Im(p.y) - Re(p.y)*Im(v_i)).
@@ -406,15 +406,6 @@ pub struct ColumnSampleBatch {
     pub point: CirclePoint<QM31>,
     /// The sampled column indices and their values at the point.
     pub columns_and_values: Array<(usize, QM31)>,
-}
-
-/// A circle point encoding to index into [`Felt252Dict`].
-#[generate_trait]
-pub impl CirclePointQM31Key of CirclePointQM31KeyTrait {
-    fn encode(key: @CirclePoint<QM31>) -> felt252 {
-        let encoded_y = pack_qm31(Zero::zero(), *key.y);
-        pack_qm31(encoded_y, *key.x)
-    }
 }
 
 /// Pops `ns[i]` elements from the `trees[i]` and returns them as a flat array.

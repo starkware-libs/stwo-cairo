@@ -25,11 +25,11 @@ struct WM31 {
 #[derive(Copy, Drop, Debug)]
 pub struct PackedUnreducedWM31 {
     /// Encodes two potentially unreduced M31 elements within a single `felt252`.
-    /// Stored as `a + (b << 128)`.
+    /// Stored as `a + (c << 128)`.
     ///
     /// Bounds:
     /// - `a` must be in the range [0, 2^128).
-    /// - `b` must be in the range [0, 2^123 + 17 * 2^64).
+    /// - `c` must be in the range [0, 2^123 + 17 * 2^64).
     pub inner: felt252,
 }
 

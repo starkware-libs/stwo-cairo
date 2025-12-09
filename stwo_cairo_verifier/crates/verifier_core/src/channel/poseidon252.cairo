@@ -113,8 +113,7 @@ pub impl Poseidon252ChannelImpl of ChannelTrait {
     /// of a random felt252 in little endian.
     fn draw_u32s(ref self: Poseidon252Channel) -> Span<u32> {
         let secure_felt = draw_secure_felt252(ref self).into();
-        let x = deconstruct_f252(secure_felt);
-        let mut res = x.span();
+        let mut res = deconstruct_f252(secure_felt).span();
         // The top limb's 4 most significant bits are zero,
         // hence we discard it since it's not uniformly random.
         let _ = res.pop_back();

@@ -61,24 +61,23 @@ pub fn mul_cm_unreduced(lhs: CM31, rhs: CM31) -> UnreducedCM31 {
 
 // TODO(andrew): Consider Karatsuba.
 #[inline]
-fn mul_qm_unreduced(lhs: QM31, rhs: QM31) -> UnreducedQM31 {
-    let aa_t_ba = mul_cm_unreduced(lhs.a, rhs.a);
-    let aa_t_bb = mul_cm_unreduced(lhs.a, rhs.b);
-    let ab_t_ba = mul_cm_unreduced(lhs.b, rhs.a);
-    let ab_t_bb = mul_cm_unreduced(lhs.b, rhs.b);
+fn mul_qm_unreduced(x: QM31, y: QM31) -> UnreducedQM31 {
+    let xa_t_ya = mul_cm_unreduced(x.a, y.a);
+    let xa_t_yb = mul_cm_unreduced(x.a, y.b);
+    let xb_t_ya = mul_cm_unreduced(x.b, y.a);
+    let xb_t_yb = mul_cm_unreduced(x.b, y.b);
     // Multiply the u*u block by r = u^2 = i + 2.
-    let r_ab_t_bb = {
-        let (a, b) = (ab_t_bb.a, ab_t_bb.b);
-        let (a, b) = (a + a - b, a + b + b);
-        UnreducedCM31 { a, b }
+    let r_xb_t_yb = {
+        let (a, b) = (xb_t_yb.a, xb_t_yb.b);
+        UnreducedCM31 { a: a + a - b, b: a + b + b }
     };
 
     // All use cases require offsetting the entries prior to the reduction.
     // Limbs aa, ab, ba all involve subtraction in the arithmetic; limb bb does not.
-    let res_aa = aa_t_ba.a + r_ab_t_bb.a + PP16;
-    let res_ab = aa_t_ba.b + r_ab_t_bb.b + PP16;
-    let res_ba = aa_t_bb.a + ab_t_ba.a + PP16;
-    let res_bb = aa_t_bb.b + ab_t_ba.b;
+    let res_aa = xa_t_ya.a + r_xb_t_yb.a + PP16;
+    let res_ab = xa_t_ya.b + r_xb_t_yb.b + PP16;
+    let res_ba = xa_t_yb.a + xb_t_ya.a + PP16;
+    let res_bb = xa_t_yb.b + xb_t_ya.b;
 
     UnreducedQM31 {
         a: UnreducedCM31 { a: res_aa, b: res_ab }, b: UnreducedCM31 { a: res_ba, b: res_bb },
@@ -92,6 +91,8 @@ pub fn mul_cm_using_unreduced(a: CM31, b: CM31) -> CM31 {
     reduce_cm31(mul_res)
 }
 
+
+// TODO(audit): consider renaming to mul_qm.
 #[inline]
 pub fn mul_qm_using_unreduced(a: QM31, b: QM31) -> QM31 {
     reduce_qm31(mul_qm_unreduced(a, b))

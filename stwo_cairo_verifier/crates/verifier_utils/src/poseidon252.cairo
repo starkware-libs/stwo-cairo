@@ -36,10 +36,8 @@ pub fn hash_memory_section(section: MemorySection) -> Box<[u32; 8]> {
 }
 
 /// Returns the hash of the given state and data.
-pub fn hash_u32s_with_state(state: felt252, data: Span<u32>) -> felt252 {
+pub fn hash_u32s_with_state(state: felt252, mut data: Span<u32>) -> felt252 {
     let mut res = array![state];
-
-    let mut data = data;
 
     while let Some(chunk) = data.multi_pop_front::<7>() {
         res.append(construct_f252_be(*chunk));
