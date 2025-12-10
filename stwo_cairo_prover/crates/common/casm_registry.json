@@ -1,22 +1,6 @@
 {
-  "air_version": "e6ca02a4",
+  "air_version": "b2325af5",
   "air_fns": {
-    "memory_address_to_id": {
-      "trace_type": "Memory",
-      "num_state_cols": 1,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "MemoryAddressToId": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 6,
-      "trace_cells_upper_bound": 6,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
     "range_check_9_9": {
       "trace_type": "Component",
       "num_state_cols": 0,
@@ -76,6 +60,53 @@
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 5,
       "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "memory_id_to_small": {
+      "trace_type": "Memory",
+      "num_state_cols": 8,
+      "use_lookup_cols": {
+        "RangeCheck_9_9": 1,
+        "RangeCheck_9_9_B": 1,
+        "RangeCheck_9_9_C": 1,
+        "RangeCheck_9_9_D": 1
+      },
+      "yield_lookup_cols": {
+        "MemoryIdToBig": 1
+      },
+      "lookup_rows": {
+        "range_check_9_9": 1,
+        "range_check_9_9_b": 1,
+        "range_check_9_9_c": 1,
+        "range_check_9_9_d": 1
+      },
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 21,
+      "trace_cells_upper_bound": 21,
+      "uses_upper_bound": {
+        "range_check_9_9": 1,
+        "range_check_9_9_b": 1,
+        "range_check_9_9_c": 1,
+        "range_check_9_9_d": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "memory_address_to_id": {
+      "trace_type": "Memory",
+      "num_state_cols": 1,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "MemoryAddressToId": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 6,
+      "trace_cells_upper_bound": 6,
       "uses_upper_bound": {},
       "rows_upper_bound": {},
       "max_instances_uses_limit": 2147483647,

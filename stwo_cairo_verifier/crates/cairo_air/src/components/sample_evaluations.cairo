@@ -1,4 +1,4 @@
-// AIR version e6ca02a4
+// AIR version b2325af5
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -93,8 +93,12 @@ pub const MEMORY_ADDRESS_TO_ID_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1769855319 },
 ];
 pub const MEMORY_ID_TO_BIG_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 2037678882 }, M31 { inner: 1156163137 }, M31 { inner: 380382785 },
-    M31 { inner: 2144247495 },
+    M31 { inner: 1328447092 }, M31 { inner: 893210678 }, M31 { inner: 916189801 },
+    M31 { inner: 186210795 },
+];
+pub const MEMORY_ID_TO_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 650607163 }, M31 { inner: 185878434 }, M31 { inner: 2068862080 },
+    M31 { inner: 1972751327 },
 ];
 pub const MUL_MOD_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1986961210 }, M31 { inner: 1544396062 }, M31 { inner: 1397624473 },
