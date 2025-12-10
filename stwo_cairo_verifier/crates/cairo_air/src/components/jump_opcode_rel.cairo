@@ -162,7 +162,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 + (decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap * input_ap_col1))))
             * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
-        let read_small_output_tmp_62dfc_15_limb_0: QM31 = read_small_evaluate(
+        let read_small_output_tmp_62dfc_16_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col6 + decode_instruction_ba944_output_tmp_62dfc_5_offset2),
             next_pc_id_col7,
             msb_col8,
@@ -189,7 +189,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .opcodes_lookup_elements
             .combine_qm31(
                 [
-                    (input_pc_col0 + read_small_output_tmp_62dfc_15_limb_0),
+                    (input_pc_col0 + read_small_output_tmp_62dfc_16_limb_0),
                     (input_ap_col1 + ap_update_add_1_col5), input_fp_col2,
                 ],
             );

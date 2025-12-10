@@ -34,7 +34,13 @@ pub fn read_small_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    decode_small_sign_evaluate(
+    let [
+        decode_small_sign_output_tmp_ceaaf_5_limb_0,
+        decode_small_sign_output_tmp_ceaaf_5_limb_1,
+        decode_small_sign_output_tmp_ceaaf_5_limb_2,
+        decode_small_sign_output_tmp_ceaaf_5_limb_3,
+    ] =
+        decode_small_sign_evaluate(
         [], msb_col1, mid_limbs_set_col2, ref sum, domain_vanishing_eval_inv, random_coeff,
     );
     cond_range_check_2_evaluate(
@@ -44,39 +50,32 @@ pub fn read_small_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
+    let limb_4_to_20_value_tmp_ceaaf_9: QM31 = decode_small_sign_output_tmp_ceaaf_5_limb_1;
 
     memory_id_to_big_sum_1 = memory_id_to_big_lookup_elements
         .combine_qm31(
             [
                 id_col0, value_limb_0_col3, value_limb_1_col4, value_limb_2_col5,
-                (remainder_bits_col6 + (mid_limbs_set_col2 * qm31_const::<508, 0, 0, 0>())),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                ((qm31_const::<136, 0, 0, 0>() * msb_col1) - mid_limbs_set_col2),
+                (remainder_bits_col6 + decode_small_sign_output_tmp_ceaaf_5_limb_0),
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, limb_4_to_20_value_tmp_ceaaf_9,
+                limb_4_to_20_value_tmp_ceaaf_9, decode_small_sign_output_tmp_ceaaf_5_limb_2,
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                (msb_col1 * qm31_const::<256, 0, 0, 0>()),
+                decode_small_sign_output_tmp_ceaaf_5_limb_3,
             ],
         );
 
     (((((value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>()))
         + (value_limb_2_col5 * qm31_const::<262144, 0, 0, 0>()))
         + (remainder_bits_col6 * qm31_const::<134217728, 0, 0, 0>()))
-        - msb_col1)
-        - (qm31_const::<536870912, 0, 0, 0>() * mid_limbs_set_col2))
+        - (decode_small_sign_output_tmp_ceaaf_5_limb_3 * qm31_const::<8388608, 0, 0, 0>()))
+        - (qm31_const::<536870912, 0, 0, 0>()
+            * (decode_small_sign_output_tmp_ceaaf_5_limb_1 * qm31_const::<142885409, 0, 0, 0>())))
 }

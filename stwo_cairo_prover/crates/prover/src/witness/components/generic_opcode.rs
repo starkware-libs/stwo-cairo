@@ -13,6 +13,8 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 
+
+
 impl ClaimGenerator {
     pub fn new(inputs: Vec<InputType>) -> Self {
         Self { inputs }
@@ -121,6 +123,8 @@ range_check_11_state: &range_check_11::ClaimGenerator,
         M31::from(134217728)
     );let M31_136 = PackedM31::broadcast(
         M31::from(136)
+    );let M31_142885409 = PackedM31::broadcast(
+        M31::from(142885409)
     );let M31_16 = PackedM31::broadcast(
         M31::from(16)
     );let M31_2 = PackedM31::broadcast(
@@ -153,6 +157,8 @@ range_check_11_state: &range_check_11::ClaimGenerator,
         M31::from(65536)
     );let M31_8 = PackedM31::broadcast(
         M31::from(8)
+    );let M31_8388608 = PackedM31::broadcast(
+        M31::from(8388608)
     );let UInt16_0 = PackedUInt16::broadcast(
         UInt16::from(0)
     );let UInt16_1 = PackedUInt16::broadcast(
@@ -713,16 +719,16 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_95 = res_limb_27_col224.eq(M31_256);let msb_col229 = msb_tmp_57455_95.as_m31();
             *row[229] = msb_col229;let mid_limbs_set_tmp_57455_96 = ((res_limb_20_col217.eq(M31_511)) & (msb_tmp_57455_95));let mid_limbs_set_col230 = mid_limbs_set_tmp_57455_96.as_m31();
-            *row[230] = mid_limbs_set_col230;let decode_small_sign_output_tmp_57455_97 = [msb_col229, mid_limbs_set_col230];
+            *row[230] = mid_limbs_set_col230;let decode_small_sign_output_tmp_57455_97 = [((mid_limbs_set_col230) * (M31_508)), ((mid_limbs_set_col230) * (M31_511)), ((((msb_col229) * (M31_136))) - (mid_limbs_set_col230)), ((msb_col229) * (M31_256))];
 
-            let remainder_bits_tmp_57455_98 = ((res_limb_3_col200) - (((mid_limbs_set_col230) * (M31_508))));
+            let remainder_bits_tmp_57455_98 = ((res_limb_3_col200) - (decode_small_sign_output_tmp_57455_97[0]));
 
             // Cond Range Check 2.
 
             let partial_limb_msb_tmp_57455_99 = ((((PackedUInt16::from_m31(remainder_bits_tmp_57455_98)) & (UInt16_2))) >> (UInt16_1));let partial_limb_msb_col231 = partial_limb_msb_tmp_57455_99.as_m31();
             *row[231] = partial_limb_msb_col231;
 
-            let cond_felt_252_as_rel_imm_output_tmp_57455_101 = ((((((((((res_limb_0_col197) + (((res_limb_1_col198) * (M31_512))))) + (((res_limb_2_col199) * (M31_262144))))) + (((remainder_bits_tmp_57455_98) * (M31_134217728))))) - (msb_col229))) - (((M31_536870912) * (mid_limbs_set_col230))));
+            let cond_felt_252_as_rel_imm_output_tmp_57455_101 = ((((((((((res_limb_0_col197) + (((res_limb_1_col198) * (M31_512))))) + (((res_limb_2_col199) * (M31_262144))))) + (((remainder_bits_tmp_57455_98) * (M31_134217728))))) - (((decode_small_sign_output_tmp_57455_97[3]) * (M31_8388608))))) - (((M31_536870912) * (((decode_small_sign_output_tmp_57455_97[1]) * (M31_142885409))))));
 
             let diff_from_p_tmp_57455_102 = ((dst_limb_0_col23) - (M31_1));let diff_from_p_tmp_57455_103 = ((dst_limb_21_col44) - (M31_136));let diff_from_p_tmp_57455_104 = ((dst_limb_27_col50) - (M31_256));let dst_sum_squares_inv_col232 = ((((((((((((((((((((((((((((((((((((((((((((((((((((((((diff_from_p_tmp_57455_102) * (diff_from_p_tmp_57455_102))) + (dst_limb_1_col24))) + (dst_limb_2_col25))) + (dst_limb_3_col26))) + (dst_limb_4_col27))) + (dst_limb_5_col28))) + (dst_limb_6_col29))) + (dst_limb_7_col30))) + (dst_limb_8_col31))) + (dst_limb_9_col32))) + (dst_limb_10_col33))) + (dst_limb_11_col34))) + (dst_limb_12_col35))) + (dst_limb_13_col36))) + (dst_limb_14_col37))) + (dst_limb_15_col38))) + (dst_limb_16_col39))) + (dst_limb_17_col40))) + (dst_limb_18_col41))) + (dst_limb_19_col42))) + (dst_limb_20_col43))) + (((diff_from_p_tmp_57455_103) * (diff_from_p_tmp_57455_103))))) + (dst_limb_22_col45))) + (dst_limb_23_col46))) + (dst_limb_24_col47))) + (dst_limb_25_col48))) + (dst_limb_26_col49))) + (((diff_from_p_tmp_57455_104) * (diff_from_p_tmp_57455_104)))).inverse();
             *row[232] = dst_sum_squares_inv_col232;let dst_sum_tmp_57455_105 = ((((((((((((((((((((((((((((((((((((((((((((((((((((((dst_limb_0_col23) + (dst_limb_1_col24))) + (dst_limb_2_col25))) + (dst_limb_3_col26))) + (dst_limb_4_col27))) + (dst_limb_5_col28))) + (dst_limb_6_col29))) + (dst_limb_7_col30))) + (dst_limb_8_col31))) + (dst_limb_9_col32))) + (dst_limb_10_col33))) + (dst_limb_11_col34))) + (dst_limb_12_col35))) + (dst_limb_13_col36))) + (dst_limb_14_col37))) + (dst_limb_15_col38))) + (dst_limb_16_col39))) + (dst_limb_17_col40))) + (dst_limb_18_col41))) + (dst_limb_19_col42))) + (dst_limb_20_col43))) + (dst_limb_21_col44))) + (dst_limb_22_col45))) + (dst_limb_23_col46))) + (dst_limb_24_col47))) + (dst_limb_25_col48))) + (dst_limb_26_col49))) + (dst_limb_27_col50));let dst_is_zero_tmp_57455_106 = dst_sum_tmp_57455_105.eq(M31_0);let dst_sum_inv_col233 = ((dst_sum_tmp_57455_105) + (dst_is_zero_tmp_57455_106.as_m31())).inverse();
@@ -735,16 +741,16 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_107 = op1_limb_27_col111.eq(M31_256);let msb_col235 = msb_tmp_57455_107.as_m31();
             *row[235] = msb_col235;let mid_limbs_set_tmp_57455_108 = ((op1_limb_20_col104.eq(M31_511)) & (msb_tmp_57455_107));let mid_limbs_set_col236 = mid_limbs_set_tmp_57455_108.as_m31();
-            *row[236] = mid_limbs_set_col236;let decode_small_sign_output_tmp_57455_109 = [msb_col235, mid_limbs_set_col236];
+            *row[236] = mid_limbs_set_col236;let decode_small_sign_output_tmp_57455_109 = [((mid_limbs_set_col236) * (M31_508)), ((mid_limbs_set_col236) * (M31_511)), ((((msb_col235) * (M31_136))) - (mid_limbs_set_col236)), ((msb_col235) * (M31_256))];
 
-            let remainder_bits_tmp_57455_110 = ((op1_limb_3_col87) - (((mid_limbs_set_col236) * (M31_508))));
+            let remainder_bits_tmp_57455_110 = ((op1_limb_3_col87) - (decode_small_sign_output_tmp_57455_109[0]));
 
             // Cond Range Check 2.
 
             let partial_limb_msb_tmp_57455_111 = ((((PackedUInt16::from_m31(remainder_bits_tmp_57455_110)) & (UInt16_2))) >> (UInt16_1));let partial_limb_msb_col237 = partial_limb_msb_tmp_57455_111.as_m31();
             *row[237] = partial_limb_msb_col237;
 
-            let cond_felt_252_as_rel_imm_output_tmp_57455_113 = ((((((((((op1_limb_0_col84) + (((op1_limb_1_col85) * (M31_512))))) + (((op1_limb_2_col86) * (M31_262144))))) + (((remainder_bits_tmp_57455_110) * (M31_134217728))))) - (msb_col235))) - (((M31_536870912) * (mid_limbs_set_col236))));
+            let cond_felt_252_as_rel_imm_output_tmp_57455_113 = ((((((((((op1_limb_0_col84) + (((op1_limb_1_col85) * (M31_512))))) + (((op1_limb_2_col86) * (M31_262144))))) + (((remainder_bits_tmp_57455_110) * (M31_134217728))))) - (((decode_small_sign_output_tmp_57455_109[3]) * (M31_8388608))))) - (((M31_536870912) * (((decode_small_sign_output_tmp_57455_109[1]) * (M31_142885409))))));
 
             let next_pc_jnz_col238 = ((((dst_is_zero_tmp_57455_106.as_m31()) * (((input_pc_col0) + (decode_generic_instruction_output_tmp_57455_26.0[19]))))) + (((((M31_1) - (dst_is_zero_tmp_57455_106.as_m31()))) * (((input_pc_col0) + (cond_felt_252_as_rel_imm_output_tmp_57455_113))))));
             *row[238] = next_pc_jnz_col238;let next_pc_col239 = ((((((((decode_generic_instruction_output_tmp_57455_26.0[17]) * (((input_pc_col0) + (decode_generic_instruction_output_tmp_57455_26.0[19]))))) + (((pc_update_jump_col13) * (cond_felt_252_as_addr_output_tmp_57455_91))))) + (((pc_update_jump_rel_col14) * (((input_pc_col0) + (cond_felt_252_as_rel_imm_output_tmp_57455_101))))))) + (((pc_update_jnz_col15) * (next_pc_jnz_col238))));

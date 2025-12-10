@@ -107,6 +107,7 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_142885409 = PackedM31::broadcast(M31::from(142885409));
     let M31_2 = PackedM31::broadcast(M31::from(2));
     let M31_256 = PackedM31::broadcast(M31::from(256));
     let M31_262144 = PackedM31::broadcast(M31::from(262144));
@@ -118,6 +119,7 @@ fn write_trace_simd(
     let M31_512 = PackedM31::broadcast(M31::from(512));
     let M31_536870912 = PackedM31::broadcast(M31::from(536870912));
     let M31_68 = PackedM31::broadcast(M31::from(68));
+    let M31_8388608 = PackedM31::broadcast(M31::from(8388608));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
     let UInt16_3 = PackedUInt16::broadcast(UInt16::from(3));
@@ -401,7 +403,12 @@ fn write_trace_simd(
                         & (msb_tmp_9db06_20));
                 let mid_limbs_set_col17 = mid_limbs_set_tmp_9db06_21.as_m31();
                 *row[17] = mid_limbs_set_col17;
-                let decode_small_sign_output_tmp_9db06_22 = [msb_col16, mid_limbs_set_col17];
+                let decode_small_sign_output_tmp_9db06_22 = [
+                    ((mid_limbs_set_col17) * (M31_508)),
+                    ((mid_limbs_set_col17) * (M31_511)),
+                    (((msb_col16) * (M31_136)) - (mid_limbs_set_col17)),
+                    ((msb_col16) * (M31_256)),
+                ];
 
                 let distance_to_next_pc_limb_0_col18 =
                     memory_id_to_big_value_tmp_9db06_19.get_m31(0);
@@ -425,51 +432,53 @@ fn write_trace_simd(
                 let partial_limb_msb_col22 = partial_limb_msb_tmp_9db06_24.as_m31();
                 *row[22] = partial_limb_msb_col22;
 
+                let limb_4_to_20_value_tmp_9db06_26 = decode_small_sign_output_tmp_9db06_22[1];
                 *sub_component_inputs.memory_id_to_big[2] = distance_to_next_pc_id_col15;
                 *lookup_data.memory_id_to_big_2 = [
                     distance_to_next_pc_id_col15,
                     distance_to_next_pc_limb_0_col18,
                     distance_to_next_pc_limb_1_col19,
                     distance_to_next_pc_limb_2_col20,
-                    ((remainder_bits_col21) + ((mid_limbs_set_col17) * (M31_508))),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    (((M31_136) * (msb_col16)) - (mid_limbs_set_col17)),
+                    ((remainder_bits_col21) + (decode_small_sign_output_tmp_9db06_22[0])),
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    limb_4_to_20_value_tmp_9db06_26,
+                    decode_small_sign_output_tmp_9db06_22[2],
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
-                    ((msb_col16) * (M31_256)),
+                    decode_small_sign_output_tmp_9db06_22[3],
                 ];
-                let read_small_output_tmp_9db06_26 = (
+                let read_small_output_tmp_9db06_27 = (
                     ((((((distance_to_next_pc_limb_0_col18)
                         + ((distance_to_next_pc_limb_1_col19) * (M31_512)))
                         + ((distance_to_next_pc_limb_2_col20) * (M31_262144)))
                         + ((remainder_bits_col21) * (M31_134217728)))
-                        - (msb_col16))
-                        - ((M31_536870912) * (mid_limbs_set_col17))),
+                        - ((decode_small_sign_output_tmp_9db06_22[3]) * (M31_8388608)))
+                        - ((M31_536870912)
+                            * ((decode_small_sign_output_tmp_9db06_22[1]) * (M31_142885409)))),
                     distance_to_next_pc_id_col15,
                 );
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_9db06_26.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_9db06_27.0)),
                     ((input_ap_col1) + (M31_2)),
                     ((input_ap_col1) + (M31_2)),
                 ];

@@ -32,13 +32,11 @@ impl ReadSmall {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
-        let M31_136 = E::F::from(M31::from(136));
-        let M31_256 = E::F::from(M31::from(256));
+        let M31_142885409 = E::F::from(M31::from(142885409));
         let M31_262144 = E::F::from(M31::from(262144));
-        let M31_508 = E::F::from(M31::from(508));
-        let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
+        let M31_8388608 = E::F::from(M31::from(8388608));
 
         ReadId::evaluate(
             [read_small_input.clone()],
@@ -46,12 +44,15 @@ impl ReadSmall {
             memory_address_to_id_lookup_elements,
             eval,
         );
-        DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
+        let [decode_small_sign_output_tmp_ceaaf_5_limb_0, decode_small_sign_output_tmp_ceaaf_5_limb_1, decode_small_sign_output_tmp_ceaaf_5_limb_2, decode_small_sign_output_tmp_ceaaf_5_limb_3] =
+            DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
             partial_limb_msb_col7.clone(),
             eval,
         );
+        let limb_4_to_20_value_tmp_ceaaf_9 =
+            eval.add_intermediate(decode_small_sign_output_tmp_ceaaf_5_limb_1.clone());
         eval.add_to_relation(RelationEntry::new(
             memory_id_to_big_lookup_elements,
             E::EF::one(),
@@ -60,31 +61,31 @@ impl ReadSmall {
                 value_limb_0_col3.clone(),
                 value_limb_1_col4.clone(),
                 value_limb_2_col5.clone(),
-                (remainder_bits_col6.clone() + (mid_limbs_set_col2.clone() * M31_508.clone())),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col1.clone()) - mid_limbs_set_col2.clone()),
+                (remainder_bits_col6.clone() + decode_small_sign_output_tmp_ceaaf_5_limb_0.clone()),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                limb_4_to_20_value_tmp_ceaaf_9.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limb_2.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
-                (msb_col1.clone() * M31_256.clone()),
+                decode_small_sign_output_tmp_ceaaf_5_limb_3.clone(),
             ],
         ));
 
@@ -92,8 +93,10 @@ impl ReadSmall {
             (((((value_limb_0_col3.clone() + (value_limb_1_col4.clone() * M31_512.clone()))
                 + (value_limb_2_col5.clone() * M31_262144.clone()))
                 + (remainder_bits_col6.clone() * M31_134217728.clone()))
-                - msb_col1.clone())
-                - (M31_536870912.clone() * mid_limbs_set_col2.clone())),
+                - (decode_small_sign_output_tmp_ceaaf_5_limb_3.clone() * M31_8388608.clone()))
+                - (M31_536870912.clone()
+                    * (decode_small_sign_output_tmp_ceaaf_5_limb_1.clone()
+                        * M31_142885409.clone()))),
         ]
     }
 }

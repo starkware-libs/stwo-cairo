@@ -107,6 +107,7 @@ fn write_trace_simd(
     let M31_1 = PackedM31::broadcast(M31::from(1));
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
+    let M31_142885409 = PackedM31::broadcast(M31::from(142885409));
     let M31_16 = PackedM31::broadcast(M31::from(16));
     let M31_2147483646 = PackedM31::broadcast(M31::from(2147483646));
     let M31_256 = PackedM31::broadcast(M31::from(256));
@@ -120,6 +121,7 @@ fn write_trace_simd(
     let M31_512 = PackedM31::broadcast(M31::from(512));
     let M31_536870912 = PackedM31::broadcast(M31::from(536870912));
     let M31_8 = PackedM31::broadcast(M31::from(8));
+    let M31_8388608 = PackedM31::broadcast(M31::from(8388608));
     let UInt16_0 = PackedUInt16::broadcast(UInt16::from(0));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_11 = PackedUInt16::broadcast(UInt16::from(11));
@@ -435,7 +437,12 @@ fn write_trace_simd(
                         & (msb_tmp_f51a9_18));
                 let mid_limbs_set_col40 = mid_limbs_set_tmp_f51a9_19.as_m31();
                 *row[40] = mid_limbs_set_col40;
-                let decode_small_sign_output_tmp_f51a9_20 = [msb_col39, mid_limbs_set_col40];
+                let decode_small_sign_output_tmp_f51a9_20 = [
+                    ((mid_limbs_set_col40) * (M31_508)),
+                    ((mid_limbs_set_col40) * (M31_511)),
+                    (((msb_col39) * (M31_136)) - (mid_limbs_set_col40)),
+                    ((msb_col39) * (M31_256)),
+                ];
 
                 let next_pc_limb_0_col41 = memory_id_to_big_value_tmp_f51a9_17.get_m31(0);
                 *row[41] = next_pc_limb_0_col41;
@@ -456,50 +463,52 @@ fn write_trace_simd(
                 let partial_limb_msb_col45 = partial_limb_msb_tmp_f51a9_22.as_m31();
                 *row[45] = partial_limb_msb_col45;
 
+                let limb_4_to_20_value_tmp_f51a9_24 = decode_small_sign_output_tmp_f51a9_20[1];
                 *sub_component_inputs.memory_id_to_big[1] = next_pc_id_col38;
                 *lookup_data.memory_id_to_big_1 = [
                     next_pc_id_col38,
                     next_pc_limb_0_col41,
                     next_pc_limb_1_col42,
                     next_pc_limb_2_col43,
-                    ((remainder_bits_col44) + ((mid_limbs_set_col40) * (M31_508))),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    ((mid_limbs_set_col40) * (M31_511)),
-                    (((M31_136) * (msb_col39)) - (mid_limbs_set_col40)),
+                    ((remainder_bits_col44) + (decode_small_sign_output_tmp_f51a9_20[0])),
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    limb_4_to_20_value_tmp_f51a9_24,
+                    decode_small_sign_output_tmp_f51a9_20[2],
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
-                    ((msb_col39) * (M31_256)),
+                    decode_small_sign_output_tmp_f51a9_20[3],
                 ];
-                let read_small_output_tmp_f51a9_24 = (
+                let read_small_output_tmp_f51a9_25 = (
                     ((((((next_pc_limb_0_col41) + ((next_pc_limb_1_col42) * (M31_512)))
                         + ((next_pc_limb_2_col43) * (M31_262144)))
                         + ((remainder_bits_col44) * (M31_134217728)))
-                        - (msb_col39))
-                        - ((M31_536870912) * (mid_limbs_set_col40))),
+                        - ((decode_small_sign_output_tmp_f51a9_20[3]) * (M31_8388608)))
+                        - ((M31_536870912)
+                            * ((decode_small_sign_output_tmp_f51a9_20[1]) * (M31_142885409)))),
                     next_pc_id_col38,
                 );
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [
-                    ((input_pc_col0) + (read_small_output_tmp_f51a9_24.0)),
+                    ((input_pc_col0) + (read_small_output_tmp_f51a9_25.0)),
                     ((input_ap_col1) + (ap_update_add_1_col5)),
                     input_fp_col2,
                 ];
