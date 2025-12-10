@@ -958,6 +958,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, ADD_MOD_BUILTIN);
+        ADD_MOD_BUILTIN.assert_debug_eq(&sum);
     }
 }

@@ -127,6 +127,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, MEMORY_ADDRESS_TO_ID);
+        MEMORY_ADDRESS_TO_ID.assert_debug_eq(&sum);
     }
 }

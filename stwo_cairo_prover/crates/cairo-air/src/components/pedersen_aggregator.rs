@@ -968,6 +968,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, PEDERSEN_AGGREGATOR);
+        PEDERSEN_AGGREGATOR.assert_debug_eq(&sum);
     }
 }

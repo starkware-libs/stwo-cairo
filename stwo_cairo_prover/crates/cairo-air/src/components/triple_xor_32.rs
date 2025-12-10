@@ -244,6 +244,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, TRIPLE_XOR_32);
+        TRIPLE_XOR_32.assert_debug_eq(&sum);
     }
 }

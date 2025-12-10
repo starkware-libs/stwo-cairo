@@ -290,6 +290,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, RANGE_CHECK_252_WIDTH_27);
+        RANGE_CHECK_252_WIDTH_27.assert_debug_eq(&sum);
     }
 }

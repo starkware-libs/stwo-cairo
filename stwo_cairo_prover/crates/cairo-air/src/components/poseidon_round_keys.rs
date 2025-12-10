@@ -212,6 +212,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, POSEIDON_ROUND_KEYS);
+        POSEIDON_ROUND_KEYS.assert_debug_eq(&sum);
     }
 }

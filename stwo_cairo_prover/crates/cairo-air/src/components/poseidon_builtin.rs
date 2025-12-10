@@ -166,6 +166,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, POSEIDON_BUILTIN);
+        POSEIDON_BUILTIN.assert_debug_eq(&sum);
     }
 }

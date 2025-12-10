@@ -348,6 +348,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, BLAKE_G);
+        BLAKE_G.assert_debug_eq(&sum);
     }
 }

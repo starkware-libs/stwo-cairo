@@ -1016,6 +1016,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, PARTIAL_EC_MUL);
+        PARTIAL_EC_MUL.assert_debug_eq(&sum);
     }
 }

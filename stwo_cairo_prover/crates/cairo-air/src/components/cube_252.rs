@@ -679,6 +679,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, CUBE_252);
+        CUBE_252.assert_debug_eq(&sum);
     }
 }

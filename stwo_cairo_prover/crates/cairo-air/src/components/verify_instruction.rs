@@ -200,6 +200,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, VERIFY_INSTRUCTION);
+        VERIFY_INSTRUCTION.assert_debug_eq(&sum);
     }
 }

@@ -96,6 +96,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, RANGE_CHECK_9_9_F);
+        RANGE_CHECK_9_9_F.assert_debug_eq(&sum);
     }
 }

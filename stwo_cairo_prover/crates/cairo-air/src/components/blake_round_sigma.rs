@@ -156,6 +156,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, BLAKE_ROUND_SIGMA);
+        BLAKE_ROUND_SIGMA.assert_debug_eq(&sum);
     }
 }
