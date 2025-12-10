@@ -221,6 +221,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, CALL_OPCODE_REL_IMM);
+        CALL_OPCODE_REL_IMM.assert_debug_eq(&sum);
     }
 }

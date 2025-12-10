@@ -100,6 +100,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, VERIFY_BITWISE_XOR_7);
+        VERIFY_BITWISE_XOR_7.assert_debug_eq(&sum);
     }
 }

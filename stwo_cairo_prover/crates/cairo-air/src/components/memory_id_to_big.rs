@@ -446,7 +446,7 @@ mod tests {
             small_sum += c.assign(&small_assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(big_sum, BIG_MEMORY_ID_TO_BIG);
-        assert_eq!(small_sum, SMALL_MEMORY_ID_TO_BIG);
+        BIG_MEMORY_ID_TO_BIG.assert_debug_eq(&big_sum);
+        SMALL_MEMORY_ID_TO_BIG.assert_debug_eq(&small_sum);
     }
 }

@@ -606,6 +606,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, POSEIDON_FULL_ROUND_CHAIN);
+        POSEIDON_FULL_ROUND_CHAIN.assert_debug_eq(&sum);
     }
 }

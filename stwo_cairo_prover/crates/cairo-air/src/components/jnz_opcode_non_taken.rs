@@ -197,6 +197,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, JNZ_OPCODE_NON_TAKEN);
+        JNZ_OPCODE_NON_TAKEN.assert_debug_eq(&sum);
     }
 }

@@ -316,6 +316,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, PEDERSEN_POINTS_TABLE);
+        PEDERSEN_POINTS_TABLE.assert_debug_eq(&sum);
     }
 }

@@ -685,6 +685,6 @@ mod tests {
             sum += c.assign(&assignment) * rng.gen::<QM31>();
         }
 
-        assert_eq!(sum, BITWISE_BUILTIN);
+        BITWISE_BUILTIN.assert_debug_eq(&sum);
     }
 }
