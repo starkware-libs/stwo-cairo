@@ -179,147 +179,18 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut id_to_value_alpha_powers = self.lookup_elements.alpha_powers.span();
-        let id_to_value_alpha_0 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_1 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_2 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_3 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_4 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_5 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_6 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_7 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_8 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_9 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_10 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_11 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_12 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_13 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_14 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_15 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_16 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_17 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_18 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_19 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_20 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_21 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_22 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_23 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_24 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_25 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_26 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_27 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_28 = *id_to_value_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_alpha_powers = self.range_9_9_lookup_elements.alpha_powers.span();
-        let range_check_9_9_alpha_0 = *range_check_9_9_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_b_alpha_powers = self
-            .range_9_9_b_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_b_alpha_0 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_b_alpha_1 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_c_alpha_powers = self
-            .range_9_9_c_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_c_alpha_0 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_c_alpha_1 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_d_alpha_powers = self
-            .range_9_9_d_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_d_alpha_0 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_d_alpha_1 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_e_alpha_powers = self
-            .range_9_9_e_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_e_alpha_0 = *range_check_9_9_e_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_e_alpha_1 = *range_check_9_9_e_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_f_alpha_powers = self
-            .range_9_9_f_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_f_alpha_0 = *range_check_9_9_f_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_f_alpha_1 = *range_check_9_9_f_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_g_alpha_powers = self
-            .range_9_9_g_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_g_alpha_0 = *range_check_9_9_g_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_g_alpha_1 = *range_check_9_9_g_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_h_alpha_powers = self
-            .range_9_9_h_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_h_alpha_0 = *range_check_9_9_h_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_h_alpha_1 = *range_check_9_9_h_alpha_powers.pop_front().unwrap();
-
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
             offset: (*self.offset).try_into().unwrap(),
-            MemoryIdToBig_alpha0: id_to_value_alpha_0,
-            MemoryIdToBig_alpha1: id_to_value_alpha_1,
-            MemoryIdToBig_alpha10: id_to_value_alpha_10,
-            MemoryIdToBig_alpha11: id_to_value_alpha_11,
-            MemoryIdToBig_alpha12: id_to_value_alpha_12,
-            MemoryIdToBig_alpha13: id_to_value_alpha_13,
-            MemoryIdToBig_alpha14: id_to_value_alpha_14,
-            MemoryIdToBig_alpha15: id_to_value_alpha_15,
-            MemoryIdToBig_alpha16: id_to_value_alpha_16,
-            MemoryIdToBig_alpha17: id_to_value_alpha_17,
-            MemoryIdToBig_alpha18: id_to_value_alpha_18,
-            MemoryIdToBig_alpha19: id_to_value_alpha_19,
-            MemoryIdToBig_alpha2: id_to_value_alpha_2,
-            MemoryIdToBig_alpha20: id_to_value_alpha_20,
-            MemoryIdToBig_alpha21: id_to_value_alpha_21,
-            MemoryIdToBig_alpha22: id_to_value_alpha_22,
-            MemoryIdToBig_alpha23: id_to_value_alpha_23,
-            MemoryIdToBig_alpha24: id_to_value_alpha_24,
-            MemoryIdToBig_alpha25: id_to_value_alpha_25,
-            MemoryIdToBig_alpha26: id_to_value_alpha_26,
-            MemoryIdToBig_alpha27: id_to_value_alpha_27,
-            MemoryIdToBig_alpha28: id_to_value_alpha_28,
-            MemoryIdToBig_alpha3: id_to_value_alpha_3,
-            MemoryIdToBig_alpha4: id_to_value_alpha_4,
-            MemoryIdToBig_alpha5: id_to_value_alpha_5,
-            MemoryIdToBig_alpha6: id_to_value_alpha_6,
-            MemoryIdToBig_alpha7: id_to_value_alpha_7,
-            MemoryIdToBig_alpha8: id_to_value_alpha_8,
-            MemoryIdToBig_alpha9: id_to_value_alpha_9,
-            MemoryIdToBig_z: *self.lookup_elements.z,
-            RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
-            RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
-            RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            RangeCheck_9_9_b_alpha0: range_check_9_9_b_alpha_0,
-            RangeCheck_9_9_b_alpha1: range_check_9_9_b_alpha_1,
-            RangeCheck_9_9_b_z: *self.range_9_9_b_lookup_elements.z,
-            RangeCheck_9_9_c_alpha0: range_check_9_9_c_alpha_0,
-            RangeCheck_9_9_c_alpha1: range_check_9_9_c_alpha_1,
-            RangeCheck_9_9_c_z: *self.range_9_9_c_lookup_elements.z,
-            RangeCheck_9_9_d_alpha0: range_check_9_9_d_alpha_0,
-            RangeCheck_9_9_d_alpha1: range_check_9_9_d_alpha_1,
-            RangeCheck_9_9_d_z: *self.range_9_9_d_lookup_elements.z,
-            RangeCheck_9_9_e_alpha0: range_check_9_9_e_alpha_0,
-            RangeCheck_9_9_e_alpha1: range_check_9_9_e_alpha_1,
-            RangeCheck_9_9_e_z: *self.range_9_9_e_lookup_elements.z,
-            RangeCheck_9_9_f_alpha0: range_check_9_9_f_alpha_0,
-            RangeCheck_9_9_f_alpha1: range_check_9_9_f_alpha_1,
-            RangeCheck_9_9_f_z: *self.range_9_9_f_lookup_elements.z,
-            RangeCheck_9_9_g_alpha0: range_check_9_9_g_alpha_0,
-            RangeCheck_9_9_g_alpha1: range_check_9_9_g_alpha_1,
-            RangeCheck_9_9_g_z: *self.range_9_9_g_lookup_elements.z,
-            RangeCheck_9_9_h_alpha0: range_check_9_9_h_alpha_0,
-            RangeCheck_9_9_h_alpha1: range_check_9_9_h_alpha_1,
-            RangeCheck_9_9_h_z: *self.range_9_9_h_lookup_elements.z,
+            range_check_9_9_lookup_elements: self.range_9_9_lookup_elements.clone(),
+            range_check_9_9_b_lookup_elements: self.range_9_9_b_lookup_elements.clone(),
+            range_check_9_9_c_lookup_elements: self.range_9_9_c_lookup_elements.clone(),
+            range_check_9_9_d_lookup_elements: self.range_9_9_d_lookup_elements.clone(),
+            range_check_9_9_e_lookup_elements: self.range_9_9_e_lookup_elements.clone(),
+            range_check_9_9_f_lookup_elements: self.range_9_9_f_lookup_elements.clone(),
+            range_check_9_9_g_lookup_elements: self.range_9_9_g_lookup_elements.clone(),
+            range_check_9_9_h_lookup_elements: self.range_9_9_h_lookup_elements.clone(),
+            memory_id_to_big_lookup_elements: self.lookup_elements.clone(),
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
@@ -378,66 +249,13 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let mut id_to_value_alpha_powers = self.lookup_elements.alpha_powers.span();
-        let id_to_value_alpha_0 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_1 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_2 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_3 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_4 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_5 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_6 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_7 = *id_to_value_alpha_powers.pop_front().unwrap();
-        let id_to_value_alpha_8 = *id_to_value_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_alpha_powers = self.range_9_9_lookup_elements.alpha_powers.span();
-        let range_check_9_9_alpha_0 = *range_check_9_9_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_alpha_1 = *range_check_9_9_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_b_alpha_powers = self
-            .range_9_9_b_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_b_alpha_0 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_b_alpha_1 = *range_check_9_9_b_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_c_alpha_powers = self
-            .range_9_9_c_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_c_alpha_0 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_c_alpha_1 = *range_check_9_9_c_alpha_powers.pop_front().unwrap();
-
-        let mut range_check_9_9_d_alpha_powers = self
-            .range_9_9_d_lookup_elements
-            .alpha_powers
-            .span();
-        let range_check_9_9_d_alpha_0 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
-        let range_check_9_9_d_alpha_1 = *range_check_9_9_d_alpha_powers.pop_front().unwrap();
-
         let params = constraints_small::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
-            MemoryIdToBig_alpha0: id_to_value_alpha_0,
-            MemoryIdToBig_alpha1: id_to_value_alpha_1,
-            MemoryIdToBig_alpha2: id_to_value_alpha_2,
-            MemoryIdToBig_alpha3: id_to_value_alpha_3,
-            MemoryIdToBig_alpha4: id_to_value_alpha_4,
-            MemoryIdToBig_alpha5: id_to_value_alpha_5,
-            MemoryIdToBig_alpha6: id_to_value_alpha_6,
-            MemoryIdToBig_alpha7: id_to_value_alpha_7,
-            MemoryIdToBig_alpha8: id_to_value_alpha_8,
-            MemoryIdToBig_z: *self.lookup_elements.z,
-            RangeCheck_9_9_alpha0: range_check_9_9_alpha_0,
-            RangeCheck_9_9_alpha1: range_check_9_9_alpha_1,
-            RangeCheck_9_9_z: *self.range_9_9_lookup_elements.z,
-            RangeCheck_9_9_b_alpha0: range_check_9_9_b_alpha_0,
-            RangeCheck_9_9_b_alpha1: range_check_9_9_b_alpha_1,
-            RangeCheck_9_9_b_z: *self.range_9_9_b_lookup_elements.z,
-            RangeCheck_9_9_c_alpha0: range_check_9_9_c_alpha_0,
-            RangeCheck_9_9_c_alpha1: range_check_9_9_c_alpha_1,
-            RangeCheck_9_9_c_z: *self.range_9_9_c_lookup_elements.z,
-            RangeCheck_9_9_d_alpha0: range_check_9_9_d_alpha_0,
-            RangeCheck_9_9_d_alpha1: range_check_9_9_d_alpha_1,
-            RangeCheck_9_9_d_z: *self.range_9_9_d_lookup_elements.z,
+            range_check_9_9_lookup_elements: self.range_9_9_lookup_elements.clone(),
+            range_check_9_9_b_lookup_elements: self.range_9_9_b_lookup_elements.clone(),
+            range_check_9_9_c_lookup_elements: self.range_9_9_c_lookup_elements.clone(),
+            range_check_9_9_d_lookup_elements: self.range_9_9_d_lookup_elements.clone(),
+            memory_id_to_big_lookup_elements: self.lookup_elements.clone(),
             claimed_sum: *self.claimed_sum,
             seq: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
