@@ -72,7 +72,11 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         qm31,
         ret,
         verify_instruction,
-        blake_context,
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
         builtins,
         pedersen_context,
         poseidon_context,
@@ -187,20 +191,19 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     }
     assert_component(&memory_id_to_value.1, &trace);
 
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        assert_component(blake_round, &trace);
-        assert_component(blake_g, &trace);
-        assert_component(blake_sigma, &trace);
-        assert_component(triple_xor_32, &trace);
-        assert_component(verify_bitwise_xor_12, &trace);
-    }
+    blake_round
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    blake_g.as_ref().inspect(|c| assert_component(c, &trace));
+    blake_sigma
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    triple_xor_32
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    verify_bitwise_xor_12
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
 
     let BuiltinComponents {
         add_mod_builtin,

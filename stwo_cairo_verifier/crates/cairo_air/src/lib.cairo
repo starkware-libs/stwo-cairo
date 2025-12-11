@@ -99,8 +99,6 @@ use pedersen::PedersenContextInteractionClaimImpl;
 pub mod poseidon;
 use poseidon::PoseidonContextInteractionClaimImpl;
 
-pub mod blake;
-use blake::BlakeContextInteractionClaimImpl;
 
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
