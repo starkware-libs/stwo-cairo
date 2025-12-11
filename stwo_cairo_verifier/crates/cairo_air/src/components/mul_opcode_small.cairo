@@ -145,7 +145,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_1_col33,
             carry_3_col34,
             carry_5_col35,
-            enabler,
+            opcodes_multiplicity,
         ]: [Span<QM31>; 37] =
             (*trace_mask_values
             .multi_pop_front()
@@ -188,11 +188,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [carry_1_col33]: [QM31; 1] = (*carry_1_col33.try_into().unwrap()).unbox();
         let [carry_3_col34]: [QM31; 1] = (*carry_3_col34.try_into().unwrap()).unbox();
         let [carry_5_col35]: [QM31; 1] = (*carry_5_col35.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [opcodes_multiplicity]: [QM31; 1] = (*opcodes_multiplicity.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
+            - opcodes_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_4b8cf_output_tmp_9d1ad_11_offset0,
@@ -329,7 +331,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            opcodes_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_instruction_sum_0,
@@ -354,7 +356,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    opcodes_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_instruction_sum_0: QM31,
@@ -498,8 +500,8 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_10
         * opcodes_sum_11)
-        + (opcodes_sum_10 * enabler)
-        - (opcodes_sum_11 * enabler))
+        + (opcodes_sum_10 * opcodes_multiplicity)
+        - (opcodes_sum_11 * opcodes_multiplicity))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

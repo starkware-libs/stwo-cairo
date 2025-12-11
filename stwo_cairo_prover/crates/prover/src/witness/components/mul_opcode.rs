@@ -4,9 +4,7 @@
 use cairo_air::components::mul_opcode::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{
-    memory_address_to_id, memory_id_to_big, range_check_20, range_check_20_b, range_check_20_c,
-    range_check_20_d, range_check_20_e, range_check_20_f, range_check_20_g, range_check_20_h,
-    verify_instruction,
+    memory_address_to_id, memory_id_to_big, range_check_20, verify_instruction,
 };
 use crate::witness::prelude::*;
 
@@ -30,13 +28,6 @@ impl ClaimGenerator {
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
         verify_instruction_state: &verify_instruction::ClaimGenerator,
         range_check_20_state: &range_check_20::ClaimGenerator,
-        range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-        range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-        range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-        range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-        range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-        range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-        range_check_20_h_state: &range_check_20_h::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let n_rows = self.inputs.len();
         assert_ne!(n_rows, 0);
@@ -52,79 +43,72 @@ impl ClaimGenerator {
             memory_id_to_big_state,
             verify_instruction_state,
             range_check_20_state,
-            range_check_20_b_state,
-            range_check_20_c_state,
-            range_check_20_d_state,
-            range_check_20_e_state,
-            range_check_20_f_state,
-            range_check_20_g_state,
-            range_check_20_h_state,
         );
         sub_component_inputs
             .verify_instruction
             .iter()
             .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs);
+                verify_instruction_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_20
             .iter()
             .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_20_b
             .iter()
             .for_each(|inputs| {
-                range_check_20_b_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .range_check_20_c
             .iter()
             .for_each(|inputs| {
-                range_check_20_c_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 2);
             });
         sub_component_inputs
             .range_check_20_d
             .iter()
             .for_each(|inputs| {
-                range_check_20_d_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 3);
             });
         sub_component_inputs
             .range_check_20_e
             .iter()
             .for_each(|inputs| {
-                range_check_20_e_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 4);
             });
         sub_component_inputs
             .range_check_20_f
             .iter()
             .for_each(|inputs| {
-                range_check_20_f_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 5);
             });
         sub_component_inputs
             .range_check_20_g
             .iter()
             .for_each(|inputs| {
-                range_check_20_g_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 6);
             });
         sub_component_inputs
             .range_check_20_h
             .iter()
             .for_each(|inputs| {
-                range_check_20_h_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 7);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -145,13 +129,13 @@ struct SubComponentInputs {
     memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 3],
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
     range_check_20: [Vec<range_check_20::PackedInputType>; 4],
-    range_check_20_b: [Vec<range_check_20_b::PackedInputType>; 4],
-    range_check_20_c: [Vec<range_check_20_c::PackedInputType>; 4],
-    range_check_20_d: [Vec<range_check_20_d::PackedInputType>; 4],
-    range_check_20_e: [Vec<range_check_20_e::PackedInputType>; 3],
-    range_check_20_f: [Vec<range_check_20_f::PackedInputType>; 3],
-    range_check_20_g: [Vec<range_check_20_g::PackedInputType>; 3],
-    range_check_20_h: [Vec<range_check_20_h::PackedInputType>; 3],
+    range_check_20_b: [Vec<range_check_20::PackedInputType>; 4],
+    range_check_20_c: [Vec<range_check_20::PackedInputType>; 4],
+    range_check_20_d: [Vec<range_check_20::PackedInputType>; 4],
+    range_check_20_e: [Vec<range_check_20::PackedInputType>; 3],
+    range_check_20_f: [Vec<range_check_20::PackedInputType>; 3],
+    range_check_20_g: [Vec<range_check_20::PackedInputType>; 3],
+    range_check_20_h: [Vec<range_check_20::PackedInputType>; 3],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -165,13 +149,6 @@ fn write_trace_simd(
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
     verify_instruction_state: &verify_instruction::ClaimGenerator,
     range_check_20_state: &range_check_20::ClaimGenerator,
-    range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-    range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-    range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-    range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-    range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-    range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-    range_check_20_h_state: &range_check_20_h::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

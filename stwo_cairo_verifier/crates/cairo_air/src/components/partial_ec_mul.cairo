@@ -551,7 +551,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             carry_24_col293,
             carry_25_col294,
             carry_26_col295,
-            enabler,
+            partial_ec_mul_multiplicity,
         ]: [Span<QM31>; 297] =
             (*trace_mask_values
             .multi_pop_front()
@@ -1133,11 +1133,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [carry_24_col293]: [QM31; 1] = (*carry_24_col293.try_into().unwrap()).unbox();
         let [carry_25_col294]: [QM31; 1] = (*carry_25_col294.try_into().unwrap()).unbox();
         let [carry_26_col295]: [QM31; 1] = (*carry_26_col295.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [partial_ec_mul_multiplicity]: [QM31; 1] = (*partial_ec_mul_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (partial_ec_mul_multiplicity * partial_ec_mul_multiplicity
+            - partial_ec_mul_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
 
         pedersen_points_table_sum_0 = self
@@ -1657,7 +1662,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            partial_ec_mul_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             pedersen_points_table_sum_0,
@@ -1799,7 +1804,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    partial_ec_mul_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     pedersen_points_table_sum_0: QM31,
@@ -3284,7 +3289,7 @@ fn lookup_constraints(
         ))
         * range_check_20_d_sum_126
         * partial_ec_mul_sum_127)
-        - (range_check_20_d_sum_126 * enabler)
+        - (range_check_20_d_sum_126 * partial_ec_mul_multiplicity)
         - partial_ec_mul_sum_127)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -3300,7 +3305,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * partial_ec_mul_sum_128)
-        + enabler)
+        + partial_ec_mul_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

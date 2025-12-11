@@ -2,7 +2,7 @@
 
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;
+pub const N_TRACE_COLUMNS: usize = 2;
 const LOG_SIZE: u32 = 16;
 
 #[derive(Drop, Serde, Copy)]
@@ -40,6 +40,7 @@ pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
     pub verify_bitwise_xor_8_lookup_elements: crate::VerifyBitwiseXor_8Elements,
+    pub verify_bitwise_xor_8_b_lookup_elements: crate::VerifyBitwiseXor_8_BElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -55,6 +56,9 @@ pub impl NewComponentImpl of NewComponent<Component> {
             claim: *claim,
             interaction_claim: *interaction_claim,
             verify_bitwise_xor_8_lookup_elements: interaction_elements.verify_bitwise_xor_8.clone(),
+            verify_bitwise_xor_8_b_lookup_elements: interaction_elements
+                .verify_bitwise_xor_8_b
+                .clone(),
         }
     }
 }
@@ -75,12 +79,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_bitwise_xor_8_sum_0: QM31 = Zero::zero();
+        let mut verify_bitwise_xor_8_b_sum_1: QM31 = Zero::zero();
         let bitwise_xor_8_0 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_0_IDX);
         let bitwise_xor_8_1 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_1_IDX);
         let bitwise_xor_8_2 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_8_2_IDX);
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [
+            verify_bitwise_xor_8_multiplicity, verify_bitwise_xor_8_b_multiplicity,
+        ]: [Span<QM31>; 2] =
+            (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
+        let [verify_bitwise_xor_8_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_8_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [verify_bitwise_xor_8_b_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_8_b_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -88,15 +106,21 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .verify_bitwise_xor_8_lookup_elements
             .combine_qm31([bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2]);
 
+        verify_bitwise_xor_8_b_sum_1 = self
+            .verify_bitwise_xor_8_b_lookup_elements
+            .combine_qm31([bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2]);
+
         lookup_constraints(
             ref sum,
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            verify_bitwise_xor_8_multiplicity,
+            verify_bitwise_xor_8_b_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_8_sum_0,
+            verify_bitwise_xor_8_b_sum_1,
         );
     }
 }
@@ -107,10 +131,12 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    verify_bitwise_xor_8_multiplicity: QM31,
+    verify_bitwise_xor_8_b_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_8_sum_0: QM31,
+    verify_bitwise_xor_8_b_sum_1: QM31,
 ) {
     let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
         (*interaction_trace_mask_values
@@ -132,8 +158,10 @@ fn lookup_constraints(
             [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * verify_bitwise_xor_8_sum_0)
-        + enabler)
+        * verify_bitwise_xor_8_sum_0
+        * verify_bitwise_xor_8_b_sum_1)
+        + (verify_bitwise_xor_8_sum_0 * verify_bitwise_xor_8_b_multiplicity)
+        + (verify_bitwise_xor_8_b_sum_1 * verify_bitwise_xor_8_multiplicity))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

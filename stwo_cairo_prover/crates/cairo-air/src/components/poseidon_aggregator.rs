@@ -439,7 +439,7 @@ impl FrameworkEval for Eval {
         let unpacked_limb_22_col338 = eval.next_trace_mask();
         let unpacked_limb_24_col339 = eval.next_trace_mask();
         let unpacked_limb_25_col340 = eval.next_trace_mask();
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         ReadPositiveKnownIdNumBits252::evaluate(
             [input_limb_0_col0.clone()],
@@ -1106,7 +1106,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.poseidon_aggregator_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             &[
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),

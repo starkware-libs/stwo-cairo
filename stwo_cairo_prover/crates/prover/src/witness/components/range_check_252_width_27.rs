@@ -3,10 +3,7 @@
 #![allow(unused_parens)]
 use cairo_air::components::range_check_252_width_27::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::{
-    range_check_18, range_check_18_b, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
-    range_check_9_9_d, range_check_9_9_e,
-};
+use crate::witness::components::{range_check_18, range_check_9_9};
 use crate::witness::prelude::*;
 
 pub type PackedInputType = PackedFelt252Width27;
@@ -30,11 +27,6 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         range_check_9_9_state: &range_check_9_9::ClaimGenerator,
         range_check_18_state: &range_check_18::ClaimGenerator,
-        range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-        range_check_18_b_state: &range_check_18_b::ClaimGenerator,
-        range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-        range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-        range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -49,53 +41,48 @@ impl ClaimGenerator {
             n_rows,
             range_check_9_9_state,
             range_check_18_state,
-            range_check_9_9_b_state,
-            range_check_18_b_state,
-            range_check_9_9_c_state,
-            range_check_9_9_d_state,
-            range_check_9_9_e_state,
         );
         sub_component_inputs
             .range_check_9_9
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_18
             .iter()
             .for_each(|inputs| {
-                range_check_18_state.add_packed_inputs(inputs);
+                range_check_18_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_9_9_b
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_b_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .range_check_18_b
             .iter()
             .for_each(|inputs| {
-                range_check_18_b_state.add_packed_inputs(inputs);
+                range_check_18_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .range_check_9_9_c
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_c_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 2);
             });
         sub_component_inputs
             .range_check_9_9_d
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_d_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 3);
             });
         sub_component_inputs
             .range_check_9_9_e
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_e_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 4);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -109,7 +96,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
         self.packed_inputs.extend(inputs);
     }
 }
@@ -118,11 +105,11 @@ impl ClaimGenerator {
 struct SubComponentInputs {
     range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 1],
     range_check_18: [Vec<range_check_18::PackedInputType>; 7],
-    range_check_9_9_b: [Vec<range_check_9_9_b::PackedInputType>; 1],
-    range_check_18_b: [Vec<range_check_18_b::PackedInputType>; 2],
-    range_check_9_9_c: [Vec<range_check_9_9_c::PackedInputType>; 1],
-    range_check_9_9_d: [Vec<range_check_9_9_d::PackedInputType>; 1],
-    range_check_9_9_e: [Vec<range_check_9_9_e::PackedInputType>; 1],
+    range_check_9_9_b: [Vec<range_check_9_9::PackedInputType>; 1],
+    range_check_18_b: [Vec<range_check_18::PackedInputType>; 2],
+    range_check_9_9_c: [Vec<range_check_9_9::PackedInputType>; 1],
+    range_check_9_9_d: [Vec<range_check_9_9::PackedInputType>; 1],
+    range_check_9_9_e: [Vec<range_check_9_9::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -134,11 +121,6 @@ fn write_trace_simd(
     n_rows: usize,
     range_check_9_9_state: &range_check_9_9::ClaimGenerator,
     range_check_18_state: &range_check_18::ClaimGenerator,
-    range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-    range_check_18_b_state: &range_check_18_b::ClaimGenerator,
-    range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-    range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-    range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

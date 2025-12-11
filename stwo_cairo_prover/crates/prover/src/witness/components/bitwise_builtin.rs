@@ -45,25 +45,25 @@ impl ClaimGenerator {
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_9
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_9_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_9_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 

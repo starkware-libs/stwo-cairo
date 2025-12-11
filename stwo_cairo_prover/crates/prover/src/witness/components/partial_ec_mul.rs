@@ -1,12 +1,7 @@
 #![allow(unused_parens)]
 use cairo_air::components::partial_ec_mul::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::{
-    pedersen_points_table, range_check_20, range_check_20_b, range_check_20_c, range_check_20_d,
-    range_check_20_e, range_check_20_f, range_check_20_g, range_check_20_h, range_check_9_9,
-    range_check_9_9_b, range_check_9_9_c, range_check_9_9_d, range_check_9_9_e, range_check_9_9_f,
-    range_check_9_9_g, range_check_9_9_h,
-};
+use crate::witness::components::{pedersen_points_table, range_check_20, range_check_9_9};
 use crate::witness::prelude::*;
 
 pub type PackedInputType = (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2]));
@@ -30,21 +25,7 @@ impl ClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
         range_check_9_9_state: &range_check_9_9::ClaimGenerator,
-        range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-        range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-        range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-        range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
-        range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
-        range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
-        range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
         range_check_20_state: &range_check_20::ClaimGenerator,
-        range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-        range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-        range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-        range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-        range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-        range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-        range_check_20_h_state: &range_check_20_h::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         assert!(!self.packed_inputs.is_empty());
         let n_vec_rows = self.packed_inputs.len();
@@ -68,124 +49,110 @@ impl ClaimGenerator {
                 n_rows,
                 pedersen_points_table_state,
                 range_check_9_9_state,
-                range_check_9_9_b_state,
-                range_check_9_9_c_state,
-                range_check_9_9_d_state,
-                range_check_9_9_e_state,
-                range_check_9_9_f_state,
-                range_check_9_9_g_state,
-                range_check_9_9_h_state,
                 range_check_20_state,
-                range_check_20_b_state,
-                range_check_20_c_state,
-                range_check_20_d_state,
-                range_check_20_e_state,
-                range_check_20_f_state,
-                range_check_20_g_state,
-                range_check_20_h_state,
             )
         });
         sub_component_inputs
             .pedersen_points_table
             .iter()
             .for_each(|inputs| {
-                pedersen_points_table_state.add_packed_inputs(inputs);
+                pedersen_points_table_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_9_9
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_9_9_b
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_b_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .range_check_9_9_c
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_c_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 2);
             });
         sub_component_inputs
             .range_check_9_9_d
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_d_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 3);
             });
         sub_component_inputs
             .range_check_9_9_e
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_e_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 4);
             });
         sub_component_inputs
             .range_check_9_9_f
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_f_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 5);
             });
         sub_component_inputs
             .range_check_9_9_g
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_g_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 6);
             });
         sub_component_inputs
             .range_check_9_9_h
             .iter()
             .for_each(|inputs| {
-                range_check_9_9_h_state.add_packed_inputs(inputs);
+                range_check_9_9_state.add_packed_inputs(inputs, 7);
             });
         sub_component_inputs
             .range_check_20
             .iter()
             .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_20_b
             .iter()
             .for_each(|inputs| {
-                range_check_20_b_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .range_check_20_c
             .iter()
             .for_each(|inputs| {
-                range_check_20_c_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 2);
             });
         sub_component_inputs
             .range_check_20_d
             .iter()
             .for_each(|inputs| {
-                range_check_20_d_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 3);
             });
         sub_component_inputs
             .range_check_20_e
             .iter()
             .for_each(|inputs| {
-                range_check_20_e_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 4);
             });
         sub_component_inputs
             .range_check_20_f
             .iter()
             .for_each(|inputs| {
-                range_check_20_f_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 5);
             });
         sub_component_inputs
             .range_check_20_g
             .iter()
             .for_each(|inputs| {
-                range_check_20_g_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 6);
             });
         sub_component_inputs
             .range_check_20_h
             .iter()
             .for_each(|inputs| {
-                range_check_20_h_state.add_packed_inputs(inputs);
+                range_check_20_state.add_packed_inputs(inputs, 7);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -199,7 +166,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
         self.packed_inputs.extend(inputs);
     }
 }
@@ -208,21 +175,21 @@ impl ClaimGenerator {
 struct SubComponentInputs {
     pedersen_points_table: [Vec<pedersen_points_table::PackedInputType>; 1],
     range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 6],
-    range_check_9_9_b: [Vec<range_check_9_9_b::PackedInputType>; 6],
-    range_check_9_9_c: [Vec<range_check_9_9_c::PackedInputType>; 6],
-    range_check_9_9_d: [Vec<range_check_9_9_d::PackedInputType>; 6],
-    range_check_9_9_e: [Vec<range_check_9_9_e::PackedInputType>; 6],
-    range_check_9_9_f: [Vec<range_check_9_9_f::PackedInputType>; 6],
-    range_check_9_9_g: [Vec<range_check_9_9_g::PackedInputType>; 3],
-    range_check_9_9_h: [Vec<range_check_9_9_h::PackedInputType>; 3],
+    range_check_9_9_b: [Vec<range_check_9_9::PackedInputType>; 6],
+    range_check_9_9_c: [Vec<range_check_9_9::PackedInputType>; 6],
+    range_check_9_9_d: [Vec<range_check_9_9::PackedInputType>; 6],
+    range_check_9_9_e: [Vec<range_check_9_9::PackedInputType>; 6],
+    range_check_9_9_f: [Vec<range_check_9_9::PackedInputType>; 6],
+    range_check_9_9_g: [Vec<range_check_9_9::PackedInputType>; 3],
+    range_check_9_9_h: [Vec<range_check_9_9::PackedInputType>; 3],
     range_check_20: [Vec<range_check_20::PackedInputType>; 12],
-    range_check_20_b: [Vec<range_check_20_b::PackedInputType>; 12],
-    range_check_20_c: [Vec<range_check_20_c::PackedInputType>; 12],
-    range_check_20_d: [Vec<range_check_20_d::PackedInputType>; 12],
-    range_check_20_e: [Vec<range_check_20_e::PackedInputType>; 9],
-    range_check_20_f: [Vec<range_check_20_f::PackedInputType>; 9],
-    range_check_20_g: [Vec<range_check_20_g::PackedInputType>; 9],
-    range_check_20_h: [Vec<range_check_20_h::PackedInputType>; 9],
+    range_check_20_b: [Vec<range_check_20::PackedInputType>; 12],
+    range_check_20_c: [Vec<range_check_20::PackedInputType>; 12],
+    range_check_20_d: [Vec<range_check_20::PackedInputType>; 12],
+    range_check_20_e: [Vec<range_check_20::PackedInputType>; 9],
+    range_check_20_f: [Vec<range_check_20::PackedInputType>; 9],
+    range_check_20_g: [Vec<range_check_20::PackedInputType>; 9],
+    range_check_20_h: [Vec<range_check_20::PackedInputType>; 9],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -234,21 +201,7 @@ fn write_trace_simd(
     n_rows: usize,
     pedersen_points_table_state: &pedersen_points_table::ClaimGenerator,
     range_check_9_9_state: &range_check_9_9::ClaimGenerator,
-    range_check_9_9_b_state: &range_check_9_9_b::ClaimGenerator,
-    range_check_9_9_c_state: &range_check_9_9_c::ClaimGenerator,
-    range_check_9_9_d_state: &range_check_9_9_d::ClaimGenerator,
-    range_check_9_9_e_state: &range_check_9_9_e::ClaimGenerator,
-    range_check_9_9_f_state: &range_check_9_9_f::ClaimGenerator,
-    range_check_9_9_g_state: &range_check_9_9_g::ClaimGenerator,
-    range_check_9_9_h_state: &range_check_9_9_h::ClaimGenerator,
     range_check_20_state: &range_check_20::ClaimGenerator,
-    range_check_20_b_state: &range_check_20_b::ClaimGenerator,
-    range_check_20_c_state: &range_check_20_c::ClaimGenerator,
-    range_check_20_d_state: &range_check_20_d::ClaimGenerator,
-    range_check_20_e_state: &range_check_20_e::ClaimGenerator,
-    range_check_20_f_state: &range_check_20_f::ClaimGenerator,
-    range_check_20_g_state: &range_check_20_g::ClaimGenerator,
-    range_check_20_h_state: &range_check_20_h::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,

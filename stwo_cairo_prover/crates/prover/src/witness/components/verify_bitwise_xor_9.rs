@@ -11,13 +11,14 @@ pub type InputType = [M31; 3];
 pub type PackedInputType = [PackedM31; 3];
 
 pub struct ClaimGenerator {
-    pub mults: AtomicMultiplicityColumn,
+    pub mults: [AtomicMultiplicityColumn; 1],
     input_to_row: HashMap<[M31; 3], usize>,
     preprocessed_trace: Arc<PreProcessedTrace>,
 }
 
 impl ClaimGenerator {
     pub fn new(preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
+        let mults = from_fn(|_| AtomicMultiplicityColumn::new(1 << LOG_SIZE));
         let column_ids = [
             PreProcessedColumnId {
                 id: "bitwise_xor_9_0".to_owned(),
@@ -29,8 +30,9 @@ impl ClaimGenerator {
                 id: "bitwise_xor_9_2".to_owned(),
             },
         ];
+
         Self {
-            mults: AtomicMultiplicityColumn::new(1 << LOG_SIZE),
+            mults,
             input_to_row: make_input_to_row(&preprocessed_trace, column_ids),
             preprocessed_trace,
         }
@@ -40,7 +42,11 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (Claim, InteractionClaimGenerator) {
-        let mults = self.mults.into_simd_vec();
+        let mults = self
+            .mults
+            .into_iter()
+            .map(|v| v.into_simd_vec())
+            .collect::<Vec<_>>();
 
         let (trace, lookup_data) = write_trace_simd(&self.preprocessed_trace, mults);
         tree_builder.extend_evals(trace.to_evals());
@@ -48,15 +54,15 @@ impl ClaimGenerator {
         (Claim {}, InteractionClaimGenerator { lookup_data })
     }
 
-    pub fn add_input(&self, input: &InputType) {
-        self.mults
+    pub fn add_input(&self, input: &InputType, relation_index: usize) {
+        self.mults[relation_index]
             .increase_at((*self.input_to_row.get(input).unwrap()).try_into().unwrap());
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input);
+                self.add_input(&input, relation_index);
             });
         });
     }
@@ -68,7 +74,7 @@ impl ClaimGenerator {
 #[allow(non_snake_case)]
 fn write_trace_simd(
     preprocessed_trace: &PreProcessedTrace,
-    mults: Vec<PackedM31>,
+    mults: Vec<Vec<PackedM31>>,
 ) -> (ComponentTrace<N_TRACE_COLUMNS>, LookupData) {
     let log_n_packed_rows = LOG_SIZE - LOG_N_LANES;
     let (mut trace, mut lookup_data) = unsafe {
@@ -97,9 +103,10 @@ fn write_trace_simd(
             let bitwise_xor_9_2 = bitwise_xor_9_2.packed_at(row_index);
             *lookup_data.verify_bitwise_xor_9_0 =
                 [bitwise_xor_9_0, bitwise_xor_9_1, bitwise_xor_9_2];
-            let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
+            let mult = &mults[0];
+            let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
-            *lookup_data.mults = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data)
@@ -108,7 +115,7 @@ fn write_trace_simd(
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
     verify_bitwise_xor_9_0: Vec<[PackedM31; 3]>,
-    mults: Vec<PackedM31>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -127,12 +134,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.verify_bitwise_xor_9_0,
-            self.lookup_data.mults,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mults)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = verify_bitwise_xor_9.combine(values);
-                writer.write_frac(-PackedQM31::one() * mults, denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

@@ -175,7 +175,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             xor_col49,
             xor_col50,
             xor_col51,
-            enabler,
+            blake_g_multiplicity,
         ]: [Span<QM31>; 53] =
             (*trace_mask_values
             .multi_pop_front()
@@ -257,11 +257,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [xor_col49]: [QM31; 1] = (*xor_col49.try_into().unwrap()).unbox();
         let [xor_col50]: [QM31; 1] = (*xor_col50.try_into().unwrap()).unbox();
         let [xor_col51]: [QM31; 1] = (*xor_col51.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [blake_g_multiplicity]: [QM31; 1] = (*blake_g_multiplicity.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (blake_g_multiplicity * blake_g_multiplicity
+            - blake_g_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         triple_sum_32_evaluate(
             [
@@ -435,7 +437,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            blake_g_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_8_sum_0,
@@ -465,7 +467,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    blake_g_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_8_sum_0: QM31,
@@ -676,7 +678,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * blake_g_sum_16)
-        + enabler)
+        + blake_g_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

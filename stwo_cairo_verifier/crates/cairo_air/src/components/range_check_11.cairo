@@ -77,8 +77,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let mut range_check_11_sum_0: QM31 = Zero::zero();
         let seq_11 = preprocessed_mask_values.get_and_mark_used(SEQ_11_IDX);
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [range_check_11_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
+        let [range_check_11_multiplicity]: [QM31; 1] = (*range_check_11_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -89,7 +95,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            range_check_11_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             range_check_11_sum_0,
@@ -103,7 +109,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    range_check_11_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_11_sum_0: QM31,
@@ -129,7 +135,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * range_check_11_sum_0)
-        + enabler)
+        + range_check_11_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

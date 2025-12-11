@@ -115,7 +115,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             offset2_mid_col13,
             offset2_high_col14,
             instruction_id_col15,
-            enabler,
+            verify_instruction_multiplicity,
         ]: [Span<QM31>; 17] =
             (*trace_mask_values
             .multi_pop_front()
@@ -144,7 +144,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [offset2_mid_col13]: [QM31; 1] = (*offset2_mid_col13.try_into().unwrap()).unbox();
         let [offset2_high_col14]: [QM31; 1] = (*offset2_high_col14.try_into().unwrap()).unbox();
         let [instruction_id_col15]: [QM31; 1] = (*instruction_id_col15.try_into().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [verify_instruction_multiplicity]: [QM31; 1] = (*verify_instruction_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -204,7 +207,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            verify_instruction_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             range_check_7_2_5_sum_0,
@@ -222,7 +225,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    verify_instruction_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     range_check_7_2_5_sum_0: QM31,
@@ -297,7 +300,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * verify_instruction_sum_4)
-        + enabler)
+        + verify_instruction_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

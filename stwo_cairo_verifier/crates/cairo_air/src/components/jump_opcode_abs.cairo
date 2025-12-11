@@ -110,7 +110,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_limb_2_col10,
             next_pc_limb_3_col11,
             partial_limb_msb_col12,
-            enabler,
+            opcodes_multiplicity,
         ]: [Span<QM31>; 14] =
             (*trace_mask_values
             .multi_pop_front()
@@ -130,11 +130,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [next_pc_limb_3_col11]: [QM31; 1] = (*next_pc_limb_3_col11.try_into().unwrap()).unbox();
         let [partial_limb_msb_col12]: [QM31; 1] = (*partial_limb_msb_col12.try_into().unwrap())
             .unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [opcodes_multiplicity]: [QM31; 1] = (*opcodes_multiplicity.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
 
-        let constraint_quotient = (enabler * enabler - enabler) * domain_vanishing_eval_inv;
+        let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
+            - opcodes_multiplicity)
+            * domain_vanishing_eval_inv;
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_b1597_output_tmp_39ce3_5_offset2,
@@ -195,7 +197,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            opcodes_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_instruction_sum_0,
@@ -213,7 +215,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    opcodes_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_instruction_sum_0: QM31,
@@ -274,7 +276,7 @@ fn lookup_constraints(
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
         * memory_id_to_big_sum_2
         * opcodes_sum_3)
-        - (memory_id_to_big_sum_2 * enabler)
+        - (memory_id_to_big_sum_2 * opcodes_multiplicity)
         - opcodes_sum_3)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
@@ -288,7 +290,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_4)
-        + enabler)
+        + opcodes_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

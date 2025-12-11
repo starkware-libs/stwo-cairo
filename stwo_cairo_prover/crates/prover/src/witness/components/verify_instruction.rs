@@ -66,25 +66,25 @@ impl ClaimGenerator {
             .range_check_7_2_5
             .iter()
             .for_each(|inputs| {
-                range_check_7_2_5_state.add_packed_inputs(inputs);
+                range_check_7_2_5_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_4_3
             .iter()
             .for_each(|inputs| {
-                range_check_4_3_state.add_packed_inputs(inputs);
+                range_check_4_3_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_address_to_id
             .iter()
             .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs);
+                memory_address_to_id_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -97,17 +97,17 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_input(&self, input: &InputType) {
+    pub fn add_input(&self, input: &InputType, _relation_index: usize) {
         self.mults
             .entry(*input)
             .or_insert_with(|| AtomicU32::new(0))
             .fetch_add(1, Ordering::Relaxed);
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input);
+                self.add_input(&input, relation_index);
             });
         });
     }
@@ -288,7 +288,7 @@ fn write_trace_simd(
                 ];
                 let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
                 *row[16] = mult_at_row;
-                *lookup_data.mults = mult_at_row;
+                *lookup_data.mults_0 = mult_at_row;
             },
         );
 
@@ -302,7 +302,7 @@ struct LookupData {
     range_check_4_3_0: Vec<[PackedM31; 2]>,
     range_check_7_2_5_0: Vec<[PackedM31; 3]>,
     verify_instruction_0: Vec<[PackedM31; 7]>,
-    mults: Vec<PackedM31>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -355,12 +355,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.verify_instruction_0,
-            self.lookup_data.mults,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values, mults)| {
+            .for_each(|(writer, values, mults_0)| {
                 let denom = verify_instruction.combine(values);
-                writer.write_frac(-PackedQM31::one() * mults, denom);
+                writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();
 

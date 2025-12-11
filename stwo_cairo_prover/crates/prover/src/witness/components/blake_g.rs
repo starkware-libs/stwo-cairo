@@ -5,7 +5,7 @@ use cairo_air::components::blake_g::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
-    verify_bitwise_xor_8_b, verify_bitwise_xor_9,
+    verify_bitwise_xor_9,
 };
 use crate::witness::prelude::*;
 
@@ -29,7 +29,6 @@ impl ClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-        verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
         verify_bitwise_xor_12_state: &verify_bitwise_xor_12::ClaimGenerator,
         verify_bitwise_xor_4_state: &verify_bitwise_xor_4::ClaimGenerator,
         verify_bitwise_xor_7_state: &verify_bitwise_xor_7::ClaimGenerator,
@@ -47,7 +46,6 @@ impl ClaimGenerator {
             self.packed_inputs,
             n_rows,
             verify_bitwise_xor_8_state,
-            verify_bitwise_xor_8_b_state,
             verify_bitwise_xor_12_state,
             verify_bitwise_xor_4_state,
             verify_bitwise_xor_7_state,
@@ -57,37 +55,37 @@ impl ClaimGenerator {
             .verify_bitwise_xor_8
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_8_b
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_8_b_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 1);
             });
         sub_component_inputs
             .verify_bitwise_xor_12
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_12_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_12_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_4
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_4_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_4_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_7
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_7_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_7_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .verify_bitwise_xor_9
             .iter()
             .for_each(|inputs| {
-                verify_bitwise_xor_9_state.add_packed_inputs(inputs);
+                verify_bitwise_xor_9_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -101,7 +99,7 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&mut self, inputs: &[PackedInputType], _relation_index: usize) {
         self.packed_inputs.extend(inputs);
     }
 }
@@ -109,7 +107,7 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     verify_bitwise_xor_8: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
-    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8_b::PackedInputType>; 4],
+    verify_bitwise_xor_8_b: [Vec<verify_bitwise_xor_8::PackedInputType>; 4],
     verify_bitwise_xor_12: [Vec<verify_bitwise_xor_12::PackedInputType>; 2],
     verify_bitwise_xor_4: [Vec<verify_bitwise_xor_4::PackedInputType>; 2],
     verify_bitwise_xor_7: [Vec<verify_bitwise_xor_7::PackedInputType>; 2],
@@ -124,7 +122,6 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     n_rows: usize,
     verify_bitwise_xor_8_state: &verify_bitwise_xor_8::ClaimGenerator,
-    verify_bitwise_xor_8_b_state: &verify_bitwise_xor_8_b::ClaimGenerator,
     verify_bitwise_xor_12_state: &verify_bitwise_xor_12::ClaimGenerator,
     verify_bitwise_xor_4_state: &verify_bitwise_xor_4::ClaimGenerator,
     verify_bitwise_xor_7_state: &verify_bitwise_xor_7::ClaimGenerator,
