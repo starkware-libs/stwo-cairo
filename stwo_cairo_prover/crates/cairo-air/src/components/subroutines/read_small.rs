@@ -32,11 +32,7 @@ impl ReadSmall {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
-        let M31_136 = E::F::from(M31::from(136));
-        let M31_256 = E::F::from(M31::from(256));
         let M31_262144 = E::F::from(M31::from(262144));
-        let M31_508 = E::F::from(M31::from(508));
-        let M31_511 = E::F::from(M31::from(511));
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
 
@@ -46,7 +42,8 @@ impl ReadSmall {
             memory_address_to_id_lookup_elements,
             eval,
         );
-        DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
+        let [decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits, decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20, decode_small_sign_output_tmp_ceaaf_5_limb21, decode_small_sign_output_tmp_ceaaf_5_limb27] =
+            DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
             partial_limb_msb_col7.clone(),
@@ -60,31 +57,32 @@ impl ReadSmall {
                 value_limb_0_col3.clone(),
                 value_limb_1_col4.clone(),
                 value_limb_2_col5.clone(),
-                (remainder_bits_col6.clone() + (mid_limbs_set_col2.clone() * M31_508.clone())),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                (mid_limbs_set_col2.clone() * M31_511.clone()),
-                ((M31_136.clone() * msb_col1.clone()) - mid_limbs_set_col2.clone()),
+                (remainder_bits_col6.clone()
+                    + decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits.clone()),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20.clone(),
+                decode_small_sign_output_tmp_ceaaf_5_limb21.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
                 M31_0.clone(),
-                (msb_col1.clone() * M31_256.clone()),
+                decode_small_sign_output_tmp_ceaaf_5_limb27.clone(),
             ],
         ));
 

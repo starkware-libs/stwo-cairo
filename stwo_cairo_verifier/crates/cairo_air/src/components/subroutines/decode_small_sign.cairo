@@ -10,7 +10,7 @@ pub fn decode_small_sign_evaluate(
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
-) -> [QM31; 0] {
+) -> [QM31; 4] {
     let [] = input;
 
     // Constraint - msb is a bit
@@ -29,5 +29,10 @@ pub fn decode_small_sign_evaluate(
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 
-    []
+    [
+        (mid_limbs_set_col1 * qm31_const::<508, 0, 0, 0>()),
+        (mid_limbs_set_col1 * qm31_const::<511, 0, 0, 0>()),
+        ((msb_col0 * qm31_const::<136, 0, 0, 0>()) - mid_limbs_set_col1),
+        (msb_col0 * qm31_const::<256, 0, 0, 0>()),
+    ]
 }

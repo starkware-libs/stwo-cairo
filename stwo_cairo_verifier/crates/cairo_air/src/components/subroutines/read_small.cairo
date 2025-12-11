@@ -34,7 +34,13 @@ pub fn read_small_evaluate(
         domain_vanishing_eval_inv,
         random_coeff,
     );
-    decode_small_sign_evaluate(
+    let [
+        decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits,
+        decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+        decode_small_sign_output_tmp_ceaaf_5_limb21,
+        decode_small_sign_output_tmp_ceaaf_5_limb27,
+    ] =
+        decode_small_sign_evaluate(
         [], msb_col1, mid_limbs_set_col2, ref sum, domain_vanishing_eval_inv, random_coeff,
     );
     cond_range_check_2_evaluate(
@@ -49,28 +55,27 @@ pub fn read_small_evaluate(
         .combine_qm31(
             [
                 id_col0, value_limb_0_col3, value_limb_1_col4, value_limb_2_col5,
-                (remainder_bits_col6 + (mid_limbs_set_col2 * qm31_const::<508, 0, 0, 0>())),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                (mid_limbs_set_col2 * qm31_const::<511, 0, 0, 0>()),
-                ((qm31_const::<136, 0, 0, 0>() * msb_col1) - mid_limbs_set_col2),
+                (remainder_bits_col6 + decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits),
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20,
+                decode_small_sign_output_tmp_ceaaf_5_limb21, qm31_const::<0, 0, 0, 0>(),
                 qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                qm31_const::<0, 0, 0, 0>(), qm31_const::<0, 0, 0, 0>(),
-                (msb_col1 * qm31_const::<256, 0, 0, 0>()),
+                qm31_const::<0, 0, 0, 0>(), decode_small_sign_output_tmp_ceaaf_5_limb27,
             ],
         );
 

@@ -401,7 +401,14 @@ fn write_trace_simd(
                         & (msb_tmp_9db06_20));
                 let mid_limbs_set_col17 = mid_limbs_set_tmp_9db06_21.as_m31();
                 *row[17] = mid_limbs_set_col17;
-                let decode_small_sign_output_tmp_9db06_22 = [msb_col16, mid_limbs_set_col17];
+                let decode_small_sign_output_tmp_9db06_22 = [
+                    msb_col16,
+                    mid_limbs_set_col17,
+                    ((mid_limbs_set_col17) * (M31_508)),
+                    ((mid_limbs_set_col17) * (M31_511)),
+                    (((msb_col16) * (M31_136)) - (mid_limbs_set_col17)),
+                    ((msb_col16) * (M31_256)),
+                ];
 
                 let distance_to_next_pc_limb_0_col18 =
                     memory_id_to_big_value_tmp_9db06_19.get_m31(0);
@@ -431,31 +438,31 @@ fn write_trace_simd(
                     distance_to_next_pc_limb_0_col18,
                     distance_to_next_pc_limb_1_col19,
                     distance_to_next_pc_limb_2_col20,
-                    ((remainder_bits_col21) + ((mid_limbs_set_col17) * (M31_508))),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    ((mid_limbs_set_col17) * (M31_511)),
-                    (((M31_136) * (msb_col16)) - (mid_limbs_set_col17)),
+                    ((remainder_bits_col21) + (decode_small_sign_output_tmp_9db06_22[2])),
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[3],
+                    decode_small_sign_output_tmp_9db06_22[4],
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
                     M31_0,
-                    ((msb_col16) * (M31_256)),
+                    decode_small_sign_output_tmp_9db06_22[5],
                 ];
                 let read_small_output_tmp_9db06_26 = (
                     ((((((distance_to_next_pc_limb_0_col18)

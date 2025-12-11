@@ -13,6 +13,8 @@ pub struct ClaimGenerator {
     pub inputs: Vec<InputType>,
 }
 
+
+
 impl ClaimGenerator {
     pub fn new(inputs: Vec<InputType>) -> Self {
         Self { inputs }
@@ -713,9 +715,9 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_95 = res_limb_27_col224.eq(M31_256);let msb_col229 = msb_tmp_57455_95.as_m31();
             *row[229] = msb_col229;let mid_limbs_set_tmp_57455_96 = ((res_limb_20_col217.eq(M31_511)) & (msb_tmp_57455_95));let mid_limbs_set_col230 = mid_limbs_set_tmp_57455_96.as_m31();
-            *row[230] = mid_limbs_set_col230;let decode_small_sign_output_tmp_57455_97 = [msb_col229, mid_limbs_set_col230];
+            *row[230] = mid_limbs_set_col230;let decode_small_sign_output_tmp_57455_97 = [msb_col229, mid_limbs_set_col230, ((mid_limbs_set_col230) * (M31_508)), ((mid_limbs_set_col230) * (M31_511)), ((((msb_col229) * (M31_136))) - (mid_limbs_set_col230)), ((msb_col229) * (M31_256))];
 
-            let remainder_bits_tmp_57455_98 = ((res_limb_3_col200) - (((mid_limbs_set_col230) * (M31_508))));
+            let remainder_bits_tmp_57455_98 = ((res_limb_3_col200) - (decode_small_sign_output_tmp_57455_97[2]));
 
             // Cond Range Check 2.
 
@@ -735,9 +737,9 @@ range_check_11_state: &range_check_11::ClaimGenerator,
 
             let msb_tmp_57455_107 = op1_limb_27_col111.eq(M31_256);let msb_col235 = msb_tmp_57455_107.as_m31();
             *row[235] = msb_col235;let mid_limbs_set_tmp_57455_108 = ((op1_limb_20_col104.eq(M31_511)) & (msb_tmp_57455_107));let mid_limbs_set_col236 = mid_limbs_set_tmp_57455_108.as_m31();
-            *row[236] = mid_limbs_set_col236;let decode_small_sign_output_tmp_57455_109 = [msb_col235, mid_limbs_set_col236];
+            *row[236] = mid_limbs_set_col236;let decode_small_sign_output_tmp_57455_109 = [msb_col235, mid_limbs_set_col236, ((mid_limbs_set_col236) * (M31_508)), ((mid_limbs_set_col236) * (M31_511)), ((((msb_col235) * (M31_136))) - (mid_limbs_set_col236)), ((msb_col235) * (M31_256))];
 
-            let remainder_bits_tmp_57455_110 = ((op1_limb_3_col87) - (((mid_limbs_set_col236) * (M31_508))));
+            let remainder_bits_tmp_57455_110 = ((op1_limb_3_col87) - (decode_small_sign_output_tmp_57455_109[2]));
 
             // Cond Range Check 2.
 
