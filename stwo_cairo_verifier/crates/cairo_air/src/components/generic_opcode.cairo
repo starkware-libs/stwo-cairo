@@ -6,7 +6,7 @@ use crate::components::subroutines::handle_opcodes::handle_opcodes_evaluate;
 use crate::components::subroutines::update_registers::update_registers_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 244;
+pub const N_TRACE_COLUMNS: usize = 243;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 22] = [
     ('VerifyInstruction', 1), ('MemoryAddressToId', 3), ('MemoryIdToBig', 3), ('RangeCheck_9_9', 4),
     ('RangeCheck_9_9_B', 4), ('RangeCheck_9_9_C', 4), ('RangeCheck_9_9_D', 4),
@@ -430,23 +430,22 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_limb_msb_col225,
             partial_limb_msb_col226,
             partial_limb_msb_col227,
-            partial_limb_msb_col228,
-            msb_col229,
-            mid_limbs_set_col230,
-            partial_limb_msb_col231,
-            dst_sum_squares_inv_col232,
-            dst_sum_inv_col233,
-            op1_as_rel_imm_cond_col234,
-            msb_col235,
-            mid_limbs_set_col236,
-            partial_limb_msb_col237,
-            next_pc_jnz_col238,
-            next_pc_col239,
-            next_ap_col240,
-            range_check_ap_bot11bits_col241,
-            next_fp_col242,
+            msb_col228,
+            mid_limbs_set_col229,
+            partial_limb_msb_col230,
+            dst_sum_squares_inv_col231,
+            dst_sum_inv_col232,
+            op1_as_rel_imm_cond_col233,
+            msb_col234,
+            mid_limbs_set_col235,
+            partial_limb_msb_col236,
+            next_pc_jnz_col237,
+            next_pc_col238,
+            next_ap_col239,
+            range_check_ap_bot11bits_col240,
+            next_fp_col241,
             enabler,
-        ]: [Span<QM31>; 244] =
+        ]: [Span<QM31>; 243] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -742,33 +741,31 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .unbox();
         let [partial_limb_msb_col227]: [QM31; 1] = (*partial_limb_msb_col227.try_into().unwrap())
             .unbox();
-        let [partial_limb_msb_col228]: [QM31; 1] = (*partial_limb_msb_col228.try_into().unwrap())
+        let [msb_col228]: [QM31; 1] = (*msb_col228.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col229]: [QM31; 1] = (*mid_limbs_set_col229.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col230]: [QM31; 1] = (*partial_limb_msb_col230.try_into().unwrap())
             .unbox();
-        let [msb_col229]: [QM31; 1] = (*msb_col229.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col230]: [QM31; 1] = (*mid_limbs_set_col230.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col231]: [QM31; 1] = (*partial_limb_msb_col231.try_into().unwrap())
-            .unbox();
-        let [dst_sum_squares_inv_col232]: [QM31; 1] = (*dst_sum_squares_inv_col232
+        let [dst_sum_squares_inv_col231]: [QM31; 1] = (*dst_sum_squares_inv_col231
             .try_into()
             .unwrap())
             .unbox();
-        let [dst_sum_inv_col233]: [QM31; 1] = (*dst_sum_inv_col233.try_into().unwrap()).unbox();
-        let [op1_as_rel_imm_cond_col234]: [QM31; 1] = (*op1_as_rel_imm_cond_col234
+        let [dst_sum_inv_col232]: [QM31; 1] = (*dst_sum_inv_col232.try_into().unwrap()).unbox();
+        let [op1_as_rel_imm_cond_col233]: [QM31; 1] = (*op1_as_rel_imm_cond_col233
             .try_into()
             .unwrap())
             .unbox();
-        let [msb_col235]: [QM31; 1] = (*msb_col235.try_into().unwrap()).unbox();
-        let [mid_limbs_set_col236]: [QM31; 1] = (*mid_limbs_set_col236.try_into().unwrap()).unbox();
-        let [partial_limb_msb_col237]: [QM31; 1] = (*partial_limb_msb_col237.try_into().unwrap())
+        let [msb_col234]: [QM31; 1] = (*msb_col234.try_into().unwrap()).unbox();
+        let [mid_limbs_set_col235]: [QM31; 1] = (*mid_limbs_set_col235.try_into().unwrap()).unbox();
+        let [partial_limb_msb_col236]: [QM31; 1] = (*partial_limb_msb_col236.try_into().unwrap())
             .unbox();
-        let [next_pc_jnz_col238]: [QM31; 1] = (*next_pc_jnz_col238.try_into().unwrap()).unbox();
-        let [next_pc_col239]: [QM31; 1] = (*next_pc_col239.try_into().unwrap()).unbox();
-        let [next_ap_col240]: [QM31; 1] = (*next_ap_col240.try_into().unwrap()).unbox();
-        let [range_check_ap_bot11bits_col241]: [QM31; 1] = (*range_check_ap_bot11bits_col241
+        let [next_pc_jnz_col237]: [QM31; 1] = (*next_pc_jnz_col237.try_into().unwrap()).unbox();
+        let [next_pc_col238]: [QM31; 1] = (*next_pc_col238.try_into().unwrap()).unbox();
+        let [next_ap_col239]: [QM31; 1] = (*next_ap_col239.try_into().unwrap()).unbox();
+        let [range_check_ap_bot11bits_col240]: [QM31; 1] = (*range_check_ap_bot11bits_col240
             .try_into()
             .unwrap())
             .unbox();
-        let [next_fp_col242]: [QM31; 1] = (*next_fp_col242.try_into().unwrap()).unbox();
+        let [next_fp_col241]: [QM31; 1] = (*next_fp_col241.try_into().unwrap()).unbox();
         let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
 
         core::internal::revoke_ap_tracking();
@@ -1177,21 +1174,20 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                 res_limb_25_col222, res_limb_26_col223, res_limb_27_col224,
             ],
             partial_limb_msb_col227,
-            partial_limb_msb_col228,
-            msb_col229,
-            mid_limbs_set_col230,
-            partial_limb_msb_col231,
-            dst_sum_squares_inv_col232,
-            dst_sum_inv_col233,
-            op1_as_rel_imm_cond_col234,
-            msb_col235,
-            mid_limbs_set_col236,
-            partial_limb_msb_col237,
-            next_pc_jnz_col238,
-            next_pc_col239,
-            next_ap_col240,
-            range_check_ap_bot11bits_col241,
-            next_fp_col242,
+            msb_col228,
+            mid_limbs_set_col229,
+            partial_limb_msb_col230,
+            dst_sum_squares_inv_col231,
+            dst_sum_inv_col232,
+            op1_as_rel_imm_cond_col233,
+            msb_col234,
+            mid_limbs_set_col235,
+            partial_limb_msb_col236,
+            next_pc_jnz_col237,
+            next_pc_col238,
+            next_ap_col239,
+            range_check_ap_bot11bits_col240,
+            next_fp_col241,
             self.range_check_18_lookup_elements,
             self.range_check_11_lookup_elements,
             ref range_check_18_sum_63,
@@ -1207,7 +1203,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         opcodes_sum_66 = self
             .opcodes_lookup_elements
-            .combine_qm31([next_pc_col239, next_ap_col240, next_fp_col242]);
+            .combine_qm31([next_pc_col238, next_ap_col239, next_fp_col241]);
 
         lookup_constraints(
             ref sum,
@@ -2452,7 +2448,6 @@ mod tests {
             [qm31_const::<351201962, 536472335, 124970039, 502540208>()].span(),
             [qm31_const::<2028449705, 1744431597, 1802691349, 502540111>()].span(),
             [qm31_const::<1961340526, 1610213869, 1735582485, 502540111>()].span(),
-            [qm31_const::<1894231347, 1475996141, 1668473621, 502540111>()].span(),
             [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
         ]
             .span();

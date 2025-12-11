@@ -1,5 +1,5 @@
 {
-  "air_version": "b2325af5",
+  "air_version": "65baf470",
   "air_fns": {
     "range_check_9_9": {
       "trace_type": "Component",
@@ -1314,7 +1314,7 @@
     },
     "generic_opcode": {
       "trace_type": "Opcode",
-      "num_state_cols": 243,
+      "num_state_cols": 242,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
         "MemoryAddressToId": 3,
@@ -1366,8 +1366,8 @@
         "range_check_11": 1
       },
       "padding_type": "Enabler",
-      "total_num_trace_cols": 380,
-      "trace_cells_upper_bound": 380,
+      "total_num_trace_cols": 379,
+      "trace_cells_upper_bound": 379,
       "uses_upper_bound": {
         "range_check_7_2_5": 1,
         "range_check_4_3": 1,
