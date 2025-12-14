@@ -96,9 +96,6 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 pub mod pedersen;
 use pedersen::PedersenContextInteractionClaimImpl;
 
-pub mod poseidon;
-use poseidon::PoseidonContextInteractionClaimImpl;
-
 
 pub mod builtins;
 use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};

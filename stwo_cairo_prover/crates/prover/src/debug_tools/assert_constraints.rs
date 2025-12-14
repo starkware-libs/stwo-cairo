@@ -79,7 +79,12 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_12,
         builtins,
         pedersen_context,
-        poseidon_context,
+        poseidon_aggregator,
+        poseidon_3_partial_rounds_chain,
+        poseidon_full_round_chain,
+        cube_252,
+        poseidon_round_keys,
+        range_check_252_width_27,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -243,22 +248,22 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         assert_component(partial_ec_mul, &trace);
         assert_component(pedersen_points_table, &trace);
     }
-    if let Some(cairo_air::poseidon::air::Components {
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys,
-        range_check_252_width_27,
-        poseidon_aggregator,
-    }) = &poseidon_context.components
-    {
-        assert_component(poseidon_3_partial_rounds_chain, &trace);
-        assert_component(poseidon_full_round_chain, &trace);
-        assert_component(cube_252, &trace);
-        assert_component(poseidon_round_keys, &trace);
-        assert_component(range_check_252_width_27, &trace);
-        assert_component(poseidon_aggregator, &trace);
-    }
+    poseidon_aggregator
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    poseidon_3_partial_rounds_chain
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    poseidon_full_round_chain
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    cube_252.as_ref().inspect(|c| assert_component(c, &trace));
+    poseidon_round_keys
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    range_check_252_width_27
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
 }
 
 pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: PreProcessedTrace) {

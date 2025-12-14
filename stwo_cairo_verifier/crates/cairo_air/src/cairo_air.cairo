@@ -10,6 +10,7 @@ use components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimI
 use components::blake_round_sigma::InteractionClaimImpl as BlakeRoundSigmaInteractionClaimImpl;
 use components::call_opcode_abs::InteractionClaimImpl as CallOpcodeAbsInteractionClaimImpl;
 use components::call_opcode_rel_imm::InteractionClaimImpl as CallOpcodeRelImmInteractionClaimImpl;
+use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
 use components::generic_opcode::InteractionClaimImpl as GenericOpcodeInteractionClaimImpl;
 use components::jnz_opcode_non_taken::InteractionClaimImpl as JnzOpcodeNonTakenInteractionClaimImpl;
 use components::jnz_opcode_taken::InteractionClaimImpl as JnzOpcodeTakenInteractionClaimImpl;
@@ -23,7 +24,12 @@ use components::memory_id_to_big::{
 };
 use components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
 use components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
+use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
+use components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
+use components::poseidon_full_round_chain::InteractionClaimImpl as PoseidonFullRoundChainInteractionClaimImpl;
+use components::poseidon_round_keys::InteractionClaimImpl as PoseidonRoundKeysInteractionClaimImpl;
 use components::qm_31_add_mul_opcode::InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl;
+use components::range_check_252_width_27::InteractionClaimImpl as RangeCheck252Width27InteractionClaimImpl;
 use components::ret_opcode::InteractionClaimImpl as RetOpcodeInteractionClaimImpl;
 use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
@@ -42,9 +48,11 @@ use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
-    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
-    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode,
-    mul_opcode_small, qm_31_add_mul_opcode, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
+    call_opcode_abs, call_opcode_rel_imm, cube_252, generic_opcode, jnz_opcode_non_taken,
+    jnz_opcode_taken, jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel,
+    jump_opcode_rel_imm, mul_opcode, mul_opcode_small, poseidon_3_partial_rounds_chain,
+    poseidon_aggregator, poseidon_full_round_chain, poseidon_round_keys, qm_31_add_mul_opcode,
+    range_check_252_width_27, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
 };
 use crate::P_U32;
 
@@ -54,20 +62,11 @@ pub mod pedersen_context_imports {
 }
 #[cfg(not(feature: "poseidon252_verifier"))]
 use pedersen_context_imports::*;
-#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-pub mod poseidon_context_imports {
-    pub use stwo_cairo_air::poseidon::{PoseidonContextComponents, PoseidonContextComponentsImpl};
-}
-#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use poseidon_context_imports::*;
 use stwo_cairo_air::builtins::{
     BuiltinsClaim, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
 };
 use stwo_cairo_air::pedersen::{
     PedersenContextClaim, PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
-};
-use stwo_cairo_air::poseidon::{
-    PoseidonContextClaim, PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
 };
 use stwo_cairo_air::preprocessed_columns::{NUM_PREPROCESSED_COLUMNS, PREPROCESSED_COLUMN_LOG_SIZE};
 use stwo_cairo_air::range_checks::{
@@ -163,7 +162,12 @@ pub struct CairoClaim {
     pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Claim>,
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
-    pub poseidon_context: PoseidonContextClaim,
+    pub poseidon_aggregator: Option<poseidon_aggregator::Claim>,
+    pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Claim>,
+    pub poseidon_full_round_chain: Option<poseidon_full_round_chain::Claim>,
+    pub cube_252: Option<cube_252::Claim>,
+    pub poseidon_round_keys: Option<poseidon_round_keys::Claim>,
+    pub range_check_252_width_27: Option<range_check_252_width_27::Claim>,
     pub memory_address_to_id: components::memory_address_to_id::Claim,
     pub memory_id_to_value: components::memory_id_to_big::Claim,
     pub range_checks: RangeChecksClaim,
@@ -259,7 +263,25 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
 
         log_sizes_list.append(self.builtins.log_sizes());
         log_sizes_list.append(self.pedersen_context.log_sizes());
-        log_sizes_list.append(self.poseidon_context.log_sizes());
+
+        if let Some(claim) = self.poseidon_aggregator {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_3_partial_rounds_chain {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_full_round_chain {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.cube_252 {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_round_keys {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_252_width_27 {
+            log_sizes_list.append(claim.log_sizes());
+        }
         log_sizes_list.append(self.memory_address_to_id.log_sizes());
         log_sizes_list.append(self.memory_id_to_value.log_sizes());
         log_sizes_list.append(self.range_checks.log_sizes());
@@ -318,7 +340,12 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_12,
             builtins,
             pedersen_context,
-            poseidon_context,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -504,7 +531,25 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         }
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
-        poseidon_context.mix_into(ref channel);
+
+        if let Some(claim) = poseidon_aggregator {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_3_partial_rounds_chain {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_full_round_chain {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = cube_252 {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_round_keys {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = range_check_252_width_27 {
+            claim.mix_into(ref channel);
+        }
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
         range_checks.mix_into(ref channel);
@@ -546,7 +591,12 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_12: _,
             builtins,
             pedersen_context,
-            poseidon_context,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
             memory_address_to_id: _,
             memory_id_to_value,
             range_checks: _,
@@ -632,7 +682,24 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         }
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
-        poseidon_context.accumulate_relation_uses(ref relation_uses);
+        if let Some(claim) = poseidon_aggregator {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = poseidon_3_partial_rounds_chain {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = poseidon_full_round_chain {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = cube_252 {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = poseidon_round_keys {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = range_check_252_width_27 {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
         verify_instruction.accumulate_relation_uses(ref relation_uses);
         memory_id_to_value.accumulate_relation_uses(ref relation_uses);
     }
@@ -669,7 +736,12 @@ pub struct CairoInteractionClaim {
     pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::InteractionClaim>,
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
-    pub poseidon_context: PoseidonContextInteractionClaim,
+    pub poseidon_aggregator: Option<poseidon_aggregator::InteractionClaim>,
+    pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::InteractionClaim>,
+    pub poseidon_full_round_chain: Option<poseidon_full_round_chain::InteractionClaim>,
+    pub cube_252: Option<cube_252::InteractionClaim>,
+    pub poseidon_round_keys: Option<poseidon_round_keys::InteractionClaim>,
+    pub range_check_252_width_27: Option<range_check_252_width_27::InteractionClaim>,
     pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: components::memory_id_to_big::InteractionClaim,
     pub range_checks: RangeChecksInteractionClaim,
@@ -712,7 +784,12 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             verify_bitwise_xor_12,
             builtins,
             pedersen_context,
-            poseidon_context,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -801,7 +878,24 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         }
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
-        poseidon_context.mix_into(ref channel);
+        if let Some(claim) = poseidon_aggregator {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_3_partial_rounds_chain {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_full_round_chain {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = cube_252 {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_round_keys {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = range_check_252_width_27 {
+            claim.mix_into(ref channel);
+        }
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
         range_checks.mix_into(ref channel);
@@ -853,7 +947,12 @@ pub fn lookup_sum(
         verify_bitwise_xor_12,
         builtins,
         pedersen_context,
-        poseidon_context,
+        poseidon_aggregator,
+        poseidon_3_partial_rounds_chain,
+        poseidon_full_round_chain,
+        cube_252,
+        poseidon_round_keys,
+        range_check_252_width_27,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -1016,7 +1115,24 @@ pub fn lookup_sum(
     }
     sum += builtins.sum();
     sum += pedersen_context.sum();
-    sum += poseidon_context.sum();
+    if let Some(claim) = poseidon_aggregator {
+        sum += *claim.claimed_sum;
+    }
+    if let Some(claim) = poseidon_3_partial_rounds_chain {
+        sum += *claim.claimed_sum;
+    }
+    if let Some(claim) = poseidon_full_round_chain {
+        sum += *claim.claimed_sum;
+    }
+    if let Some(claim) = cube_252 {
+        sum += *claim.claimed_sum;
+    }
+    if let Some(claim) = poseidon_round_keys {
+        sum += *claim.claimed_sum;
+    }
+    if let Some(claim) = range_check_252_width_27 {
+        sum += *claim.claimed_sum;
+    }
     sum += *memory_address_to_id.claimed_sum;
     sum += memory_id_to_value.sum();
     sum += range_checks.sum();
@@ -1059,7 +1175,12 @@ pub struct CairoAir {
     verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
     builtins: BuiltinComponents,
     pedersen_context: PedersenContextComponents,
-    poseidon_context: PoseidonContextComponents,
+    poseidon_aggregator: Option<poseidon_aggregator::Component>,
+    poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Component>,
+    poseidon_full_round_chain: Option<poseidon_full_round_chain::Component>,
+    cube_252: Option<cube_252::Component>,
+    poseidon_round_keys: Option<poseidon_round_keys::Component>,
+    range_check_252_width_27: Option<range_check_252_width_27::Component>,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
         Array<components::memory_id_to_big::BigComponent>,
@@ -1411,9 +1532,73 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.pedersen_context, interaction_elements, interaction_claim.pedersen_context,
         );
 
-        let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
-        );
+        let poseidon_aggregator_component = cairo_claim
+            .poseidon_aggregator
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_aggregator.unwrap();
+                    poseidon_aggregator::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_3_partial_rounds_chain_component = cairo_claim
+            .poseidon_3_partial_rounds_chain
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim
+                        .poseidon_3_partial_rounds_chain
+                        .unwrap();
+                    poseidon_3_partial_rounds_chain::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_full_round_chain_component = cairo_claim
+            .poseidon_full_round_chain
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_full_round_chain.unwrap();
+                    poseidon_full_round_chain::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let cube_252_component = cairo_claim
+            .cube_252
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.cube_252.unwrap();
+                    cube_252::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_round_keys_component = cairo_claim
+            .poseidon_round_keys
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_round_keys.unwrap();
+                    poseidon_round_keys::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let range_check_252_width_27_component = cairo_claim
+            .range_check_252_width_27
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_252_width_27.unwrap();
+                    range_check_252_width_27::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
@@ -1528,7 +1713,12 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtins_components,
             pedersen_context: pedersen_context_components,
-            poseidon_context: poseidon_context_components,
+            poseidon_aggregator: poseidon_aggregator_component,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
+            poseidon_full_round_chain: poseidon_full_round_chain_component,
+            cube_252: cube_252_component,
+            poseidon_round_keys: poseidon_round_keys_component,
+            range_check_252_width_27: range_check_252_width_27_component,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
@@ -1599,7 +1789,12 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_12,
             builtins,
             pedersen_context,
-            poseidon_context,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -1913,15 +2108,72 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        poseidon_context
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = poseidon_aggregator {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_3_partial_rounds_chain {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_full_round_chain {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = cube_252 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_round_keys {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_252_width_27 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
@@ -2969,7 +3221,12 @@ pub struct CairoAir {
     triple_xor_32: Option<components::triple_xor_32::Component>,
     verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
     builtins: BuiltinComponents,
-    poseidon_context: PoseidonContextComponents,
+    poseidon_aggregator: Option<poseidon_aggregator::Component>,
+    poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::Component>,
+    poseidon_full_round_chain: Option<poseidon_full_round_chain::Component>,
+    cube_252: Option<cube_252::Component>,
+    poseidon_round_keys: Option<poseidon_round_keys::Component>,
+    range_check_252_width_27: Option<range_check_252_width_27::Component>,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
         Array<components::memory_id_to_big::BigComponent>,
@@ -3309,9 +3566,73 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
         );
 
-        let poseidon_context_components = PoseidonContextComponentsImpl::new(
-            cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
-        );
+        let poseidon_aggregator_component = cairo_claim
+            .poseidon_aggregator
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_aggregator.unwrap();
+                    poseidon_aggregator::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_3_partial_rounds_chain_component = cairo_claim
+            .poseidon_3_partial_rounds_chain
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim
+                        .poseidon_3_partial_rounds_chain
+                        .unwrap();
+                    poseidon_3_partial_rounds_chain::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_full_round_chain_component = cairo_claim
+            .poseidon_full_round_chain
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_full_round_chain.unwrap();
+                    poseidon_full_round_chain::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let cube_252_component = cairo_claim
+            .cube_252
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.cube_252.unwrap();
+                    cube_252::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let poseidon_round_keys_component = cairo_claim
+            .poseidon_round_keys
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_round_keys.unwrap();
+                    poseidon_round_keys::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let range_check_252_width_27_component = cairo_claim
+            .range_check_252_width_27
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_252_width_27.unwrap();
+                    range_check_252_width_27::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
@@ -3424,7 +3745,12 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
             builtins: builtins_components,
-            poseidon_context: poseidon_context_components,
+            poseidon_aggregator: poseidon_aggregator_component,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_component,
+            poseidon_full_round_chain: poseidon_full_round_chain_component,
+            cube_252: cube_252_component,
+            poseidon_round_keys: poseidon_round_keys_component,
+            range_check_252_width_27: range_check_252_width_27_component,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
@@ -3494,7 +3820,12 @@ pub impl CairoAirImpl of Air<CairoAir> {
             triple_xor_32,
             verify_bitwise_xor_12,
             builtins,
-            poseidon_context,
+            poseidon_aggregator,
+            poseidon_3_partial_rounds_chain,
+            poseidon_full_round_chain,
+            cube_252,
+            poseidon_round_keys,
+            range_check_252_width_27,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -3788,15 +4119,72 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        poseidon_context
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = poseidon_aggregator {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_3_partial_rounds_chain {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_full_round_chain {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = cube_252 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_round_keys {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_252_width_27 {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
