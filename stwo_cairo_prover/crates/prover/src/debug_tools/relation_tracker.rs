@@ -135,7 +135,12 @@ fn cairo_relation_entries(
         verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
         pedersen_context,
-        poseidon_context,
+        poseidon_aggregator,
+        poseidon_3_partial_rounds_chain,
+        poseidon_full_round_chain,
+        cube_252,
+        poseidon_round_keys,
+        range_check_252_width_27,
     } = cairo_components;
 
     let RangeChecksComponents {
@@ -269,24 +274,14 @@ fn cairo_relation_entries(
         entries.extend(add_to_relation_entries(rc_128, trace));
     }
 
-    if let Some(cairo_air::poseidon::air::Components {
-        poseidon_aggregator,
-        poseidon_3_partial_rounds_chain,
-        poseidon_full_round_chain,
-        cube_252,
-        poseidon_round_keys,
-        range_check_252_width_27,
-    }) = &poseidon_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(poseidon_aggregator, trace),
-            add_to_relation_entries(poseidon_3_partial_rounds_chain, trace),
-            add_to_relation_entries(poseidon_full_round_chain, trace),
-            add_to_relation_entries(cube_252, trace),
-            add_to_relation_entries(poseidon_round_keys, trace),
-            add_to_relation_entries(range_check_252_width_27, trace),
-        ));
-    }
+    entries.extend(chain!(
+        add_to_relation_option(poseidon_aggregator, trace),
+        add_to_relation_option(poseidon_3_partial_rounds_chain, trace),
+        add_to_relation_option(poseidon_full_round_chain, trace),
+        add_to_relation_option(cube_252, trace),
+        add_to_relation_option(poseidon_round_keys, trace),
+        add_to_relation_option(range_check_252_width_27, trace),
+    ));
 
     if let Some(cairo_air::pedersen::air::Components {
         pedersen_points_table,
