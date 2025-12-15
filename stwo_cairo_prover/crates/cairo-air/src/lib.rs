@@ -6,7 +6,6 @@ pub mod air;
 pub mod builtins_air;
 pub mod components;
 pub mod pedersen;
-pub mod poseidon;
 pub mod range_checks_air;
 pub mod relations;
 pub mod utils;

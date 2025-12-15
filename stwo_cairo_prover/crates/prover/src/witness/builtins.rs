@@ -8,12 +8,12 @@ use stwo_cairo_common::builtins::{
 };
 
 use super::components::pedersen::PedersenContextClaimGenerator;
-use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_6_6_3,
-    range_check_5_4, range_check_6, range_check_8, range_check_builtin_bits_128,
-    range_check_builtin_bits_96, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    pedersen_builtin, poseidon_aggregator, poseidon_builtin, range_check_12, range_check_18,
+    range_check_3_6_6_3, range_check_5_4, range_check_6, range_check_8,
+    range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_8,
+    verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
 pub struct BuiltinsClaimGenerator {
@@ -139,7 +139,7 @@ impl BuiltinsClaimGenerator {
         pedersen_context_trace_generator: &mut PedersenContextClaimGenerator,
         range_check_5_4_trace_generator: &range_check_5_4::ClaimGenerator,
         range_check_8_trace_generator: &range_check_8::ClaimGenerator,
-        poseidon_context_trace_generator: &mut PoseidonContextClaimGenerator,
+        poseidon_aggregator_trace_generator: &mut Option<poseidon_aggregator::ClaimGenerator>,
         range_check_6_trace_generator: &range_check_6::ClaimGenerator,
         range_check_12_trace_generator: &range_check_12::ClaimGenerator,
         range_check_18_trace_generator: &range_check_18::ClaimGenerator,
@@ -202,7 +202,7 @@ impl BuiltinsClaimGenerator {
                 poseidon_builtin_trace_generator.write_trace(
                     tree_builder,
                     memory_address_to_id_trace_generator,
-                    &poseidon_context_trace_generator.poseidon_aggregator_trace_generator,
+                    poseidon_aggregator_trace_generator.as_mut().unwrap(),
                 )
             })
             .unzip();

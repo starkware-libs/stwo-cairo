@@ -13,17 +13,16 @@ use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaim
 use crate::witness::components::pedersen::{
     PedersenContextClaimGenerator, PedersenContextInteractionClaimGenerator,
 };
-use crate::witness::components::poseidon::{
-    PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
-};
 use crate::witness::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
-    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
-    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
-    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode,
-    ret_opcode, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7,
-    verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
+    call_opcode_abs, call_opcode_rel_imm, cube_252, generic_opcode, jnz_opcode_non_taken,
+    jnz_opcode_taken, jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel,
+    jump_opcode_rel_imm, memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_small,
+    poseidon_3_partial_rounds_chain, poseidon_aggregator, poseidon_full_round_chain,
+    poseidon_round_keys, qm_31_add_mul_opcode, range_check_252_width_27, ret_opcode, triple_xor_32,
+    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
+    verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -63,7 +62,13 @@ pub struct CairoClaimGenerator {
     verify_bitwise_xor_12_trace_generator: Option<verify_bitwise_xor_12::ClaimGenerator>,
     builtins: BuiltinsClaimGenerator,
     pedersen_context_trace_generator: PedersenContextClaimGenerator,
-    poseidon_context_trace_generator: PoseidonContextClaimGenerator,
+    poseidon_aggregator_trace_generator: Option<poseidon_aggregator::ClaimGenerator>,
+    poseidon_3_partial_rounds_chain_trace_generator:
+        Option<poseidon_3_partial_rounds_chain::ClaimGenerator>,
+    poseidon_full_round_chain_trace_generator: Option<poseidon_full_round_chain::ClaimGenerator>,
+    cube_252_trace_generator: Option<cube_252::ClaimGenerator>,
+    poseidon_round_keys_trace_generator: Option<poseidon_round_keys::ClaimGenerator>,
+    range_check_252_width_27_trace_generator: Option<range_check_252_width_27::ClaimGenerator>,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
     memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
     range_checks_trace_generator: RangeChecksClaimGenerator,
@@ -269,9 +274,27 @@ impl CairoClaimGenerator {
             ret_opcode::ClaimGenerator::new(state_transitions.casm_states_by_opcode.ret_opcode)
         });
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
-        let builtins = BuiltinsClaimGenerator::new(builtin_segments);
+        let builtins = BuiltinsClaimGenerator::new(builtin_segments.clone());
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
-        let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
+        let (
+            poseidon_aggregator_trace_generator,
+            poseidon_3_partial_rounds_chain_trace_generator,
+            poseidon_full_round_chain_trace_generator,
+            cube_252_trace_generator,
+            poseidon_round_keys_trace_generator,
+            range_check_252_width_27_trace_generator,
+        ) = if builtin_segments.poseidon.is_some() {
+            (
+                Some(poseidon_aggregator::ClaimGenerator::new()),
+                Some(poseidon_3_partial_rounds_chain::ClaimGenerator::new()),
+                Some(poseidon_full_round_chain::ClaimGenerator::new()),
+                Some(cube_252::ClaimGenerator::new()),
+                Some(poseidon_round_keys::ClaimGenerator::new()),
+                Some(range_check_252_width_27::ClaimGenerator::new()),
+            )
+        } else {
+            (None, None, None, None, None, None)
+        };
         let memory_address_to_id_trace_generator =
             memory_address_to_id::ClaimGenerator::new(&memory);
         let memory_id_to_value_trace_generator = memory_id_to_big::ClaimGenerator::new(&memory);
@@ -345,7 +368,12 @@ impl CairoClaimGenerator {
             verify_bitwise_xor_12_trace_generator,
             builtins,
             pedersen_context_trace_generator,
-            poseidon_context_trace_generator,
+            poseidon_aggregator_trace_generator,
+            poseidon_3_partial_rounds_chain_trace_generator,
+            poseidon_full_round_chain_trace_generator,
+            cube_252_trace_generator,
+            poseidon_round_keys_trace_generator,
+            range_check_252_width_27_trace_generator,
             memory_address_to_id_trace_generator,
             memory_id_to_value_trace_generator,
             range_checks_trace_generator,
@@ -685,7 +713,7 @@ impl CairoClaimGenerator {
             &mut self.pedersen_context_trace_generator,
             &self.range_checks_trace_generator.rc_5_4_trace_generator,
             &self.range_checks_trace_generator.rc_8_trace_generator,
-            &mut self.poseidon_context_trace_generator,
+            &mut self.poseidon_aggregator_trace_generator,
             &self.range_checks_trace_generator.rc_6_trace_generator,
             &self.range_checks_trace_generator.rc_12_trace_generator,
             &self.range_checks_trace_generator.rc_18_trace_generator,
@@ -696,12 +724,117 @@ impl CairoClaimGenerator {
         let (pedersen_context_claim, pedersen_context_interaction_gen) = self
             .pedersen_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
-        let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            self.poseidon_context_trace_generator.write_trace(
-                tree_builder,
-                &self.memory_id_to_value_trace_generator,
-                &self.range_checks_trace_generator,
-            );
+
+        let (poseidon_aggregator_claim, poseidon_aggregator_interaction_gen) = self
+            .poseidon_aggregator_trace_generator
+            .take()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_id_to_value_trace_generator,
+                    self.poseidon_full_round_chain_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                    self.range_check_252_width_27_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    &self
+                        .range_checks_trace_generator
+                        .rc_3_3_3_3_3_trace_generator,
+                    &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
+                    &self.range_checks_trace_generator.rc_4_4_trace_generator,
+                    self.poseidon_3_partial_rounds_chain_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                )
+            })
+            .unzip();
+
+        let (
+            poseidon_3_partial_rounds_chain_claim,
+            poseidon_3_partial_rounds_chain_interaction_gen,
+        ) = self
+            .poseidon_3_partial_rounds_chain_trace_generator
+            .take()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    self.poseidon_round_keys_trace_generator.as_ref().unwrap(),
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    &self.range_checks_trace_generator.rc_4_4_4_4_trace_generator,
+                    &self.range_checks_trace_generator.rc_4_4_trace_generator,
+                    self.range_check_252_width_27_trace_generator
+                        .as_mut()
+                        .unwrap(),
+                )
+            })
+            .unzip();
+
+        let (poseidon_full_round_chain_claim, poseidon_full_round_chain_interaction_gen) = self
+            .poseidon_full_round_chain_trace_generator
+            .take()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    self.cube_252_trace_generator.as_mut().unwrap(),
+                    self.poseidon_round_keys_trace_generator.as_ref().unwrap(),
+                    &self
+                        .range_checks_trace_generator
+                        .rc_3_3_3_3_3_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (cube_252_claim, cube_252_interaction_gen) = self
+            .cube_252_trace_generator
+            .take()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.range_checks_trace_generator.rc_20_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_b_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_c_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_d_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_e_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_f_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_g_trace_generator,
+                    &self.range_checks_trace_generator.rc_20_h_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_b_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_c_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_d_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_e_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_f_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_g_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_h_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (poseidon_round_keys_claim, poseidon_round_keys_interaction_gen) = self
+            .poseidon_round_keys_trace_generator
+            .take()
+            .map(|gen| gen.write_trace(tree_builder))
+            .unzip();
+
+        let (range_check_252_width_27_claim, range_check_252_width_27_interaction_gen) = self
+            .range_check_252_width_27_trace_generator
+            .take()
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.range_checks_trace_generator.rc_9_9_trace_generator,
+                    &self.range_checks_trace_generator.rc_18_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_b_trace_generator,
+                    &self.range_checks_trace_generator.rc_18_b_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_c_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_d_trace_generator,
+                    &self.range_checks_trace_generator.rc_9_9_e_trace_generator,
+                )
+            })
+            .unzip();
+
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
             .memory_address_to_id_trace_generator
             .write_trace(tree_builder);
@@ -770,7 +903,12 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
                 builtins: builtins_claim,
                 pedersen_context: pedersen_context_claim,
-                poseidon_context: poseidon_context_claim,
+                poseidon_aggregator: poseidon_aggregator_claim,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain: poseidon_full_round_chain_claim,
+                cube_252: cube_252_claim,
+                poseidon_round_keys: poseidon_round_keys_claim,
+                range_check_252_width_27: range_check_252_width_27_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
                 range_checks: range_checks_claim,
@@ -809,7 +947,12 @@ impl CairoClaimGenerator {
                 verify_bitwise_xor_12_interaction_gen,
                 builtins_interaction_gen,
                 pedersen_context_interaction_gen,
-                poseidon_context_interaction_gen,
+                poseidon_aggregator_interaction_gen,
+                poseidon_3_partial_rounds_chain_interaction_gen,
+                poseidon_full_round_chain_interaction_gen,
+                cube_252_interaction_gen,
+                poseidon_round_keys_interaction_gen,
+                range_check_252_width_27_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
                 range_checks_interaction_gen,
@@ -852,7 +995,15 @@ pub struct CairoInteractionClaimGenerator {
     verify_bitwise_xor_12_interaction_gen: Option<verify_bitwise_xor_12::InteractionClaimGenerator>,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
-    poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
+    poseidon_aggregator_interaction_gen: Option<poseidon_aggregator::InteractionClaimGenerator>,
+    poseidon_3_partial_rounds_chain_interaction_gen:
+        Option<poseidon_3_partial_rounds_chain::InteractionClaimGenerator>,
+    poseidon_full_round_chain_interaction_gen:
+        Option<poseidon_full_round_chain::InteractionClaimGenerator>,
+    cube_252_interaction_gen: Option<cube_252::InteractionClaimGenerator>,
+    poseidon_round_keys_interaction_gen: Option<poseidon_round_keys::InteractionClaimGenerator>,
+    range_check_252_width_27_interaction_gen:
+        Option<range_check_252_width_27::InteractionClaimGenerator>,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
     range_checks_interaction_gen: RangeChecksInteractionClaimGenerator,
@@ -1138,9 +1289,84 @@ impl CairoInteractionClaimGenerator {
         let pedersen_context_interaction_claim = self
             .pedersen_context_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
-        let poseidon_context_interaction_claim = self
-            .poseidon_context_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+        let poseidon_aggregator_interaction_claim =
+            self.poseidon_aggregator_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_id_to_value,
+                    &interaction_elements.poseidon_full_round_chain,
+                    &interaction_elements.range_check_252_width_27,
+                    &interaction_elements.cube_252,
+                    &interaction_elements.range_checks.rc_3_3_3_3_3,
+                    &interaction_elements.range_checks.rc_4_4_4_4,
+                    &interaction_elements.range_checks.rc_4_4,
+                    &interaction_elements.poseidon_3_partial_rounds_chain,
+                    &interaction_elements.poseidon_aggregator,
+                )
+            });
+        let poseidon_3_partial_rounds_chain_interaction_claim = self
+            .poseidon_3_partial_rounds_chain_interaction_gen
+            .map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.poseidon_round_keys,
+                    &interaction_elements.cube_252,
+                    &interaction_elements.range_checks.rc_4_4_4_4,
+                    &interaction_elements.range_checks.rc_4_4,
+                    &interaction_elements.range_check_252_width_27,
+                    &interaction_elements.poseidon_3_partial_rounds_chain,
+                )
+            });
+        let poseidon_full_round_chain_interaction_claim =
+            self.poseidon_full_round_chain_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.cube_252,
+                    &interaction_elements.poseidon_round_keys,
+                    &interaction_elements.range_checks.rc_3_3_3_3_3,
+                    &interaction_elements.poseidon_full_round_chain,
+                )
+            });
+        let cube_252_interaction_claim = self.cube_252_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.range_checks.rc_9_9,
+                &interaction_elements.range_checks.rc_9_9_b,
+                &interaction_elements.range_checks.rc_9_9_c,
+                &interaction_elements.range_checks.rc_9_9_d,
+                &interaction_elements.range_checks.rc_9_9_e,
+                &interaction_elements.range_checks.rc_9_9_f,
+                &interaction_elements.range_checks.rc_9_9_g,
+                &interaction_elements.range_checks.rc_9_9_h,
+                &interaction_elements.range_checks.rc_20,
+                &interaction_elements.range_checks.rc_20_b,
+                &interaction_elements.range_checks.rc_20_c,
+                &interaction_elements.range_checks.rc_20_d,
+                &interaction_elements.range_checks.rc_20_e,
+                &interaction_elements.range_checks.rc_20_f,
+                &interaction_elements.range_checks.rc_20_g,
+                &interaction_elements.range_checks.rc_20_h,
+                &interaction_elements.cube_252,
+            )
+        });
+        let poseidon_round_keys_interaction_claim =
+            self.poseidon_round_keys_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(tree_builder, &interaction_elements.poseidon_round_keys)
+            });
+        let range_check_252_width_27_interaction_claim =
+            self.range_check_252_width_27_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.range_checks.rc_9_9,
+                    &interaction_elements.range_checks.rc_18,
+                    &interaction_elements.range_checks.rc_9_9_b,
+                    &interaction_elements.range_checks.rc_18_b,
+                    &interaction_elements.range_checks.rc_9_9_c,
+                    &interaction_elements.range_checks.rc_9_9_d,
+                    &interaction_elements.range_checks.rc_9_9_e,
+                    &interaction_elements.range_check_252_width_27,
+                )
+            });
         let memory_address_to_id_interaction_claim = self
             .memory_address_to_id_interaction_gen
             .write_interaction_trace(tree_builder, &interaction_elements.memory_address_to_id);
@@ -1207,7 +1433,12 @@ impl CairoInteractionClaimGenerator {
             verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
             builtins: builtins_interaction_claims,
             pedersen_context: pedersen_context_interaction_claim,
-            poseidon_context: poseidon_context_interaction_claim,
+            poseidon_aggregator: poseidon_aggregator_interaction_claim,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
+            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
+            cube_252: cube_252_interaction_claim,
+            poseidon_round_keys: poseidon_round_keys_interaction_claim,
+            range_check_252_width_27: range_check_252_width_27_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,
             range_checks: range_checks_interaction_claim,
