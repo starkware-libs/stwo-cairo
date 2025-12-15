@@ -2,7 +2,7 @@
 
 use crate::components::prelude::*;
 use crate::components::subroutines::decode_instruction_d2a10::DecodeInstructionD2A10;
-use crate::components::subroutines::range_check_ap::RangeCheckAp;
+use crate::components::subroutines::range_check_29::RangeCheck29;
 use crate::components::subroutines::read_small::ReadSmall;
 
 pub const N_TRACE_COLUMNS: usize = 17;
@@ -100,7 +100,7 @@ impl FrameworkEval for Eval {
         let op1_limb_2_col12 = eval.next_trace_mask();
         let remainder_bits_col13 = eval.next_trace_mask();
         let partial_limb_msb_col14 = eval.next_trace_mask();
-        let range_check_ap_bot11bits_col15 = eval.next_trace_mask();
+        let range_check_29_bot11bits_col15 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
@@ -149,9 +149,9 @@ impl FrameworkEval for Eval {
         let next_ap_tmp_c921e_17 = eval.add_intermediate(
             (input_ap_col1.clone() + read_small_output_tmp_c921e_16_limb_0.clone()),
         );
-        RangeCheckAp::evaluate(
+        RangeCheck29::evaluate(
             [next_ap_tmp_c921e_17.clone()],
-            range_check_ap_bot11bits_col15.clone(),
+            range_check_29_bot11bits_col15.clone(),
             &self.range_check_18_lookup_elements,
             &self.range_check_11_lookup_elements,
             &mut eval,

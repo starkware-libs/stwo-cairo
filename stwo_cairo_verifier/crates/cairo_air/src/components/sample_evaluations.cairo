@@ -1,4 +1,4 @@
-// AIR version f55204f4
+// AIR version 2830a356-dirty
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -204,17 +204,17 @@ pub const RANGE_CHECK_8_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 920986984 }, M31 { inner: 295163622 }, M31 { inner: 1921036644 },
     M31 { inner: 16539011 },
 ];
+pub const RANGE_CHECK_96_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 283558836 }, M31 { inner: 316717125 }, M31 { inner: 931472961 },
+    M31 { inner: 751753897 },
+];
 pub const RANGE_CHECK_9_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 367214327 }, M31 { inner: 184499643 }, M31 { inner: 475431525 },
     M31 { inner: 1368648563 },
 ];
-pub const RANGE_CHECK_BUILTIN_BITS_128_SAMPLE_EVAL_RESULT: [M31; 4] = [
+pub const RANGE_CHECK_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1665232554 }, M31 { inner: 1405085129 }, M31 { inner: 1343789673 },
     M31 { inner: 1978119322 },
-];
-pub const RANGE_CHECK_BUILTIN_BITS_96_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 283558836 }, M31 { inner: 316717125 }, M31 { inner: 931472961 },
-    M31 { inner: 751753897 },
 ];
 pub const RET_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 787699403 }, M31 { inner: 591680386 }, M31 { inner: 2128938201 },

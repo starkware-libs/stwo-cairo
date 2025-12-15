@@ -3,8 +3,8 @@ use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteracti
 use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
 use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
 use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
-use components::range_check_builtin_bits_128::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
-use components::range_check_builtin_bits_96::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
+use components::range_check96_builtin::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
+use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
@@ -27,8 +27,8 @@ pub struct BuiltinsClaim {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Claim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
-    pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Claim>,
-    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Claim>,
+    pub range_check_96_builtin: Option<components::range_check96_builtin::Claim>,
+    pub range_check_128_builtin: Option<components::range_check_builtin::Claim>,
 }
 
 pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
@@ -150,8 +150,8 @@ pub struct BuiltinsInteractionClaim {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::InteractionClaim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
-    pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::InteractionClaim>,
-    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::InteractionClaim>,
+    pub range_check_96_builtin: Option<components::range_check96_builtin::InteractionClaim>,
+    pub range_check_128_builtin: Option<components::range_check_builtin::InteractionClaim>,
 }
 
 #[generate_trait]
@@ -243,15 +243,15 @@ pub struct BuiltinComponents {
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
-    pub range_check_96_builtin: Option<components::range_check_builtin_bits_96::Component>,
-    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
+    pub range_check_96_builtin: Option<components::range_check96_builtin::Component>,
+    pub range_check_128_builtin: Option<components::range_check_builtin::Component>,
 }
 
 #[derive(Drop)]
 #[cfg(and(feature: "poseidon252_verifier", not(feature: "poseidon_outputs_packing")))]
 pub struct BuiltinComponents {
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
-    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
+    pub range_check_128_builtin: Option<components::range_check_builtin::Component>,
 }
 
 #[derive(Drop)]
@@ -259,7 +259,7 @@ pub struct BuiltinComponents {
 pub struct BuiltinComponents {
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
-    pub range_check_128_builtin: Option<components::range_check_builtin_bits_128::Component>,
+    pub range_check_128_builtin: Option<components::range_check_builtin::Component>,
 }
 
 
@@ -335,7 +335,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_96_builtin {
             range_check_96_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_96::NewComponentImpl::new(
+                    components::range_check96_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_96_builtin.unwrap(),
                         interaction_elements,
@@ -347,7 +347,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_128::NewComponentImpl::new(
+                    components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
                         interaction_elements,
@@ -508,7 +508,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_128::NewComponentImpl::new(
+                    components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
                         interaction_elements,
@@ -605,7 +605,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         if let Option::Some(claim) = range_check_128_builtin {
             range_check_128_builtin_component =
                 Option::Some(
-                    components::range_check_builtin_bits_128::NewComponentImpl::new(
+                    components::range_check_builtin::NewComponentImpl::new(
                         claim,
                         @interaction_claim.range_check_128_builtin.unwrap(),
                         interaction_elements,

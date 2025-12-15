@@ -3,7 +3,7 @@
 use crate::components::prelude::*;
 use crate::components::subroutines::cond_felt_252_as_addr::CondFelt252AsAddr;
 use crate::components::subroutines::cond_felt_252_as_rel_imm::CondFelt252AsRelImm;
-use crate::components::subroutines::range_check_ap::RangeCheckAp;
+use crate::components::subroutines::range_check_29::RangeCheck29;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
 pub struct UpdateRegisters {}
@@ -30,7 +30,7 @@ impl UpdateRegisters {
         next_pc_jnz_col10: E::F,
         next_pc_col11: E::F,
         next_ap_col12: E::F,
-        range_check_ap_bot11bits_col13: E::F,
+        range_check_29_bot11bits_col13: E::F,
         next_fp_col14: E::F,
         range_check_18_lookup_elements: &relations::RangeCheck_18,
         range_check_11_lookup_elements: &relations::RangeCheck_11,
@@ -264,9 +264,9 @@ impl UpdateRegisters {
                     + update_registers_input_ap_update_add_1.clone())
                     + (update_registers_input_opcode_call.clone() * M31_2.clone()))),
         );
-        RangeCheckAp::evaluate(
+        RangeCheck29::evaluate(
             [next_ap_col12.clone()],
-            range_check_ap_bot11bits_col13.clone(),
+            range_check_29_bot11bits_col13.clone(),
             range_check_18_lookup_elements,
             range_check_11_lookup_elements,
             eval,
