@@ -1,5 +1,4 @@
 use itertools::{chain, Itertools};
-use num_traits::One;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
@@ -15,6 +14,8 @@ use stwo_constraint_framework::{
 };
 
 use super::prelude::RelationUse;
+use crate::components::subroutines::range_check_mem_value_n_28::RangeCheckMemValueN28;
+use crate::components::subroutines::range_check_mem_value_n_8::RangeCheckMemValueN8;
 use crate::relations;
 
 // TODO(AlonH): Make memory size configurable.
@@ -143,67 +144,113 @@ impl FrameworkEval for BigEval {
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let value: [E::F; N_M31_IN_FELT252] = std::array::from_fn(|_| eval.next_trace_mask());
+        let memory_id_to_big_output_col0 = eval.next_trace_mask();
+        let memory_id_to_big_output_col1 = eval.next_trace_mask();
+        let memory_id_to_big_output_col2 = eval.next_trace_mask();
+        let memory_id_to_big_output_col3 = eval.next_trace_mask();
+        let memory_id_to_big_output_col4 = eval.next_trace_mask();
+        let memory_id_to_big_output_col5 = eval.next_trace_mask();
+        let memory_id_to_big_output_col6 = eval.next_trace_mask();
+        let memory_id_to_big_output_col7 = eval.next_trace_mask();
+        let memory_id_to_big_output_col8 = eval.next_trace_mask();
+        let memory_id_to_big_output_col9 = eval.next_trace_mask();
+        let memory_id_to_big_output_col10 = eval.next_trace_mask();
+        let memory_id_to_big_output_col11 = eval.next_trace_mask();
+        let memory_id_to_big_output_col12 = eval.next_trace_mask();
+        let memory_id_to_big_output_col13 = eval.next_trace_mask();
+        let memory_id_to_big_output_col14 = eval.next_trace_mask();
+        let memory_id_to_big_output_col15 = eval.next_trace_mask();
+        let memory_id_to_big_output_col16 = eval.next_trace_mask();
+        let memory_id_to_big_output_col17 = eval.next_trace_mask();
+        let memory_id_to_big_output_col18 = eval.next_trace_mask();
+        let memory_id_to_big_output_col19 = eval.next_trace_mask();
+        let memory_id_to_big_output_col20 = eval.next_trace_mask();
+        let memory_id_to_big_output_col21 = eval.next_trace_mask();
+        let memory_id_to_big_output_col22 = eval.next_trace_mask();
+        let memory_id_to_big_output_col23 = eval.next_trace_mask();
+        let memory_id_to_big_output_col24 = eval.next_trace_mask();
+        let memory_id_to_big_output_col25 = eval.next_trace_mask();
+        let memory_id_to_big_output_col26 = eval.next_trace_mask();
+        let memory_id_to_big_output_col27 = eval.next_trace_mask();
         let multiplicity = eval.next_trace_mask();
 
-        // Range check limbs.
-        for (i, (l, r)) in value.iter().tuples().enumerate() {
-            let limb_pair = [l.clone(), r.clone()];
-            match i % 8 {
-                0 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                1 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_b_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                2 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_c_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                3 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_d_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                4 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_e_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                5 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_f_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                6 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_g_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                7 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_h_lookup_elements,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                _ => {
-                    unreachable!("There are only 8 possible values for i % 8.",)
-                }
-            };
-        }
-
-        // Yield the value.
-        let id = seq
-            + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE))
-            + E::F::from(M31::from(self.offset));
+        RangeCheckMemValueN28::evaluate(
+            [
+                memory_id_to_big_output_col0.clone(),
+                memory_id_to_big_output_col1.clone(),
+                memory_id_to_big_output_col2.clone(),
+                memory_id_to_big_output_col3.clone(),
+                memory_id_to_big_output_col4.clone(),
+                memory_id_to_big_output_col5.clone(),
+                memory_id_to_big_output_col6.clone(),
+                memory_id_to_big_output_col7.clone(),
+                memory_id_to_big_output_col8.clone(),
+                memory_id_to_big_output_col9.clone(),
+                memory_id_to_big_output_col10.clone(),
+                memory_id_to_big_output_col11.clone(),
+                memory_id_to_big_output_col12.clone(),
+                memory_id_to_big_output_col13.clone(),
+                memory_id_to_big_output_col14.clone(),
+                memory_id_to_big_output_col15.clone(),
+                memory_id_to_big_output_col16.clone(),
+                memory_id_to_big_output_col17.clone(),
+                memory_id_to_big_output_col18.clone(),
+                memory_id_to_big_output_col19.clone(),
+                memory_id_to_big_output_col20.clone(),
+                memory_id_to_big_output_col21.clone(),
+                memory_id_to_big_output_col22.clone(),
+                memory_id_to_big_output_col23.clone(),
+                memory_id_to_big_output_col24.clone(),
+                memory_id_to_big_output_col25.clone(),
+                memory_id_to_big_output_col26.clone(),
+                memory_id_to_big_output_col27.clone(),
+            ],
+            &self.range_check_9_9_lookup_elements,
+            &self.range_check_9_9_b_lookup_elements,
+            &self.range_check_9_9_c_lookup_elements,
+            &self.range_check_9_9_d_lookup_elements,
+            &self.range_check_9_9_e_lookup_elements,
+            &self.range_check_9_9_f_lookup_elements,
+            &self.range_check_9_9_g_lookup_elements,
+            &self.range_check_9_9_h_lookup_elements,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &chain!([id], value).collect_vec(),
+            -E::EF::from(multiplicity),
+            &[
+                seq.clone()
+                    + E::F::from(M31::from(LARGE_MEMORY_VALUE_ID_BASE))
+                    + E::F::from(M31::from(self.offset)),
+                memory_id_to_big_output_col0.clone(),
+                memory_id_to_big_output_col1.clone(),
+                memory_id_to_big_output_col2.clone(),
+                memory_id_to_big_output_col3.clone(),
+                memory_id_to_big_output_col4.clone(),
+                memory_id_to_big_output_col5.clone(),
+                memory_id_to_big_output_col6.clone(),
+                memory_id_to_big_output_col7.clone(),
+                memory_id_to_big_output_col8.clone(),
+                memory_id_to_big_output_col9.clone(),
+                memory_id_to_big_output_col10.clone(),
+                memory_id_to_big_output_col11.clone(),
+                memory_id_to_big_output_col12.clone(),
+                memory_id_to_big_output_col13.clone(),
+                memory_id_to_big_output_col14.clone(),
+                memory_id_to_big_output_col15.clone(),
+                memory_id_to_big_output_col16.clone(),
+                memory_id_to_big_output_col17.clone(),
+                memory_id_to_big_output_col18.clone(),
+                memory_id_to_big_output_col19.clone(),
+                memory_id_to_big_output_col20.clone(),
+                memory_id_to_big_output_col21.clone(),
+                memory_id_to_big_output_col22.clone(),
+                memory_id_to_big_output_col23.clone(),
+                memory_id_to_big_output_col24.clone(),
+                memory_id_to_big_output_col25.clone(),
+                memory_id_to_big_output_col26.clone(),
+                memory_id_to_big_output_col27.clone(),
+            ],
         ));
 
         eval.finalize_logup_in_pairs();
@@ -291,45 +338,47 @@ impl FrameworkEval for SmallEval {
 
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
-        let value: [E::F; N_M31_IN_SMALL_FELT252] = std::array::from_fn(|_| eval.next_trace_mask());
+        let memory_id_to_small_output_col0 = eval.next_trace_mask();
+        let memory_id_to_small_output_col1 = eval.next_trace_mask();
+        let memory_id_to_small_output_col2 = eval.next_trace_mask();
+        let memory_id_to_small_output_col3 = eval.next_trace_mask();
+        let memory_id_to_small_output_col4 = eval.next_trace_mask();
+        let memory_id_to_small_output_col5 = eval.next_trace_mask();
+        let memory_id_to_small_output_col6 = eval.next_trace_mask();
+        let memory_id_to_small_output_col7 = eval.next_trace_mask();
         let multiplicity = eval.next_trace_mask();
 
-        // Range check limbs.
-        for (i, (l, r)) in value.iter().tuples().enumerate() {
-            let limb_pair = [l.clone(), r.clone()];
-            match i % 4 {
-                0 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_relation,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                1 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_b_relation,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                2 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_c_relation,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                3 => eval.add_to_relation(RelationEntry::new(
-                    &self.range_check_9_9_d_relation,
-                    E::EF::one(),
-                    &limb_pair,
-                )),
-                _ => {
-                    unreachable!("There are only 4 possible values for i % 4.",)
-                }
-            };
-        }
-
-        // Yield the value.
-        let id = seq;
+        RangeCheckMemValueN8::evaluate(
+            [
+                memory_id_to_small_output_col0.clone(),
+                memory_id_to_small_output_col1.clone(),
+                memory_id_to_small_output_col2.clone(),
+                memory_id_to_small_output_col3.clone(),
+                memory_id_to_small_output_col4.clone(),
+                memory_id_to_small_output_col5.clone(),
+                memory_id_to_small_output_col6.clone(),
+                memory_id_to_small_output_col7.clone(),
+            ],
+            &self.range_check_9_9_relation,
+            &self.range_check_9_9_b_relation,
+            &self.range_check_9_9_c_relation,
+            &self.range_check_9_9_d_relation,
+            &mut eval,
+        );
         eval.add_to_relation(RelationEntry::new(
             &self.lookup_elements,
-            E::EF::from(-multiplicity),
-            &chain!([id], value).collect_vec(),
+            -E::EF::from(multiplicity),
+            &[
+                seq.clone(),
+                memory_id_to_small_output_col0.clone(),
+                memory_id_to_small_output_col1.clone(),
+                memory_id_to_small_output_col2.clone(),
+                memory_id_to_small_output_col3.clone(),
+                memory_id_to_small_output_col4.clone(),
+                memory_id_to_small_output_col5.clone(),
+                memory_id_to_small_output_col6.clone(),
+                memory_id_to_small_output_col7.clone(),
+            ],
         ));
 
         eval.finalize_logup_in_pairs();
