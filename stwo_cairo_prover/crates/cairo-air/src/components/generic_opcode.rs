@@ -405,7 +405,7 @@ impl FrameworkEval for Eval {
         let next_pc_jnz_col237 = eval.next_trace_mask();
         let next_pc_col238 = eval.next_trace_mask();
         let next_ap_col239 = eval.next_trace_mask();
-        let range_check_ap_bot11bits_col240 = eval.next_trace_mask();
+        let range_check_29_bot11bits_col240 = eval.next_trace_mask();
         let next_fp_col241 = eval.next_trace_mask();
         let enabler = eval.next_trace_mask();
 
@@ -898,7 +898,7 @@ impl FrameworkEval for Eval {
             next_pc_jnz_col237.clone(),
             next_pc_col238.clone(),
             next_ap_col239.clone(),
-            range_check_ap_bot11bits_col240.clone(),
+            range_check_29_bot11bits_col240.clone(),
             next_fp_col241.clone(),
             &self.range_check_18_lookup_elements,
             &self.range_check_11_lookup_elements,

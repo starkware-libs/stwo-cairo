@@ -11,8 +11,8 @@ use super::components::pedersen::PedersenContextClaimGenerator;
 use super::components::poseidon::PoseidonContextClaimGenerator;
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check_12, range_check_18, range_check_3_6_6_3,
-    range_check_6, range_check_builtin_bits_128, range_check_builtin_bits_96, verify_bitwise_xor_8,
+    pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_12, range_check_18,
+    range_check_3_6_6_3, range_check_6, range_check_builtin, verify_bitwise_xor_8,
     verify_bitwise_xor_9,
 };
 use crate::witness::utils::TreeBuilder;
@@ -22,8 +22,8 @@ pub struct BuiltinsClaimGenerator {
     mul_mod_builtin_trace_generator: Option<mul_mod_builtin::ClaimGenerator>,
     pedersen_builtin_trace_generator: Option<pedersen_builtin::ClaimGenerator>,
     poseidon_builtin_trace_generator: Option<poseidon_builtin::ClaimGenerator>,
-    range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
-    range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
+    range_check_96_builtin_trace_generator: Option<range_check96_builtin::ClaimGenerator>,
+    range_check_128_builtin_trace_generator: Option<range_check_builtin::ClaimGenerator>,
 }
 impl BuiltinsClaimGenerator {
     pub fn new(builtin_segments: BuiltinSegments) -> Self {
@@ -102,7 +102,7 @@ impl BuiltinsClaimGenerator {
                     n_instances.is_power_of_two(),
                     "range_check_bits_96 instances number is not a power of two"
                 );
-                range_check_builtin_bits_96::ClaimGenerator::new(
+                range_check96_builtin::ClaimGenerator::new(
                     n_instances.ilog2(),
                     segment.begin_addr as u32,
                 )
@@ -115,7 +115,7 @@ impl BuiltinsClaimGenerator {
                     n_instances.is_power_of_two(),
                     "range_check_bits_128 instances number is not a power of two"
                 );
-                range_check_builtin_bits_128::ClaimGenerator::new(
+                range_check_builtin::ClaimGenerator::new(
                     n_instances.ilog2(),
                     segment.begin_addr as u32,
                 )
@@ -256,9 +256,8 @@ pub struct BuiltinsInteractionClaimGenerator {
     pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
     poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
-        Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
-    range_check_128_builtin_interaction_gen:
-        Option<range_check_builtin_bits_128::InteractionClaimGenerator>,
+        Option<range_check96_builtin::InteractionClaimGenerator>,
+    range_check_128_builtin_interaction_gen: Option<range_check_builtin::InteractionClaimGenerator>,
 }
 impl BuiltinsInteractionClaimGenerator {
     pub fn write_interaction_trace(

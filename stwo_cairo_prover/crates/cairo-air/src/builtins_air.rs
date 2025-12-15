@@ -13,7 +13,7 @@ use super::air::CairoInteractionElements;
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
+    pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_builtin,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -23,8 +23,8 @@ pub struct BuiltinsClaim {
     pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<pedersen_builtin::Claim>,
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
-    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
-    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
+    pub range_check_96_builtin: Option<range_check96_builtin::Claim>,
+    pub range_check_128_builtin: Option<range_check_builtin::Claim>,
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -104,8 +104,8 @@ impl BuiltinsClaim {
         relation_uses!(mul_mod_builtin, mul_mod_builtin);
         relation_uses!(pedersen_builtin, pedersen_builtin);
         relation_uses!(poseidon_builtin, poseidon_builtin);
-        relation_uses!(range_check_96_builtin, range_check_builtin_bits_96);
-        relation_uses!(range_check_128_builtin, range_check_builtin_bits_128);
+        relation_uses!(range_check_96_builtin, range_check96_builtin);
+        relation_uses!(range_check_128_builtin, range_check_builtin);
     }
 }
 
@@ -116,8 +116,8 @@ pub struct BuiltinsInteractionClaim {
     pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
-    pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
-    pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
+    pub range_check_96_builtin: Option<range_check96_builtin::InteractionClaim>,
+    pub range_check_128_builtin: Option<range_check_builtin::InteractionClaim>,
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -176,8 +176,8 @@ pub struct BuiltinComponents {
     pub mul_mod_builtin: Option<mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<pedersen_builtin::Component>,
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
-    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
-    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
+    pub range_check_96_builtin: Option<range_check96_builtin::Component>,
+    pub range_check_128_builtin: Option<range_check_builtin::Component>,
 }
 impl BuiltinComponents {
     pub fn new(
@@ -275,9 +275,9 @@ impl BuiltinComponents {
         });
         let range_check_96_builtin_component =
             claim.range_check_96_builtin.map(|range_check_96_builtin| {
-                range_check_builtin_bits_96::Component::new(
+                range_check96_builtin::Component::new(
                     tree_span_provider,
-                    range_check_builtin_bits_96::Eval {
+                    range_check96_builtin::Eval {
                         claim: range_check_96_builtin,
                         memory_address_to_id_lookup_elements: interaction_elements
                             .memory_address_to_id
@@ -300,9 +300,9 @@ impl BuiltinComponents {
             claim
                 .range_check_128_builtin
                 .map(|range_check_128_builtin| {
-                    range_check_builtin_bits_128::Component::new(
+                    range_check_builtin::Component::new(
                         tree_span_provider,
-                        range_check_builtin_bits_128::Eval {
+                        range_check_builtin::Eval {
                             claim: range_check_128_builtin,
                             memory_address_to_id_lookup_elements: interaction_elements
                                 .memory_address_to_id

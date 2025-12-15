@@ -442,7 +442,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_jnz_col237,
             next_pc_col238,
             next_ap_col239,
-            range_check_ap_bot11bits_col240,
+            range_check_29_bot11bits_col240,
             next_fp_col241,
             opcodes_multiplicity,
         ]: [Span<QM31>; 243] =
@@ -761,7 +761,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [next_pc_jnz_col237]: [QM31; 1] = (*next_pc_jnz_col237.try_into().unwrap()).unbox();
         let [next_pc_col238]: [QM31; 1] = (*next_pc_col238.try_into().unwrap()).unbox();
         let [next_ap_col239]: [QM31; 1] = (*next_ap_col239.try_into().unwrap()).unbox();
-        let [range_check_ap_bot11bits_col240]: [QM31; 1] = (*range_check_ap_bot11bits_col240
+        let [range_check_29_bot11bits_col240]: [QM31; 1] = (*range_check_29_bot11bits_col240
             .try_into()
             .unwrap())
             .unbox();
@@ -1188,7 +1188,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             next_pc_jnz_col237,
             next_pc_col238,
             next_ap_col239,
-            range_check_ap_bot11bits_col240,
+            range_check_29_bot11bits_col240,
             next_fp_col241,
             self.range_check_18_lookup_elements,
             self.range_check_11_lookup_elements,
