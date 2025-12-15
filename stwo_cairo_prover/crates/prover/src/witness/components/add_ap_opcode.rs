@@ -364,21 +364,21 @@ fn write_trace_simd(
 
                 let next_ap_tmp_c921e_17 = ((input_ap_col1) + (read_small_output_tmp_c921e_16.0));
 
-                // Range Check Ap.
+                // Range Check 29.
 
-                let range_check_ap_bot11bits_u32_tmp_c921e_18 =
+                let range_check_29_bot11bits_u32_tmp_c921e_18 =
                     ((PackedUInt32::from_m31(next_ap_tmp_c921e_17)) & (UInt32_2047));
-                let range_check_ap_bot11bits_col15 =
-                    range_check_ap_bot11bits_u32_tmp_c921e_18.low().as_m31();
-                *row[15] = range_check_ap_bot11bits_col15;
+                let range_check_29_bot11bits_col15 =
+                    range_check_29_bot11bits_u32_tmp_c921e_18.low().as_m31();
+                *row[15] = range_check_29_bot11bits_col15;
                 *sub_component_inputs.range_check_18[0] = [(((next_ap_tmp_c921e_17)
-                    - (range_check_ap_bot11bits_col15))
+                    - (range_check_29_bot11bits_col15))
                     * (M31_1048576))];
                 *lookup_data.range_check_18_0 = [(((next_ap_tmp_c921e_17)
-                    - (range_check_ap_bot11bits_col15))
+                    - (range_check_29_bot11bits_col15))
                     * (M31_1048576))];
-                *sub_component_inputs.range_check_11[0] = [range_check_ap_bot11bits_col15];
-                *lookup_data.range_check_11_0 = [range_check_ap_bot11bits_col15];
+                *sub_component_inputs.range_check_11[0] = [range_check_29_bot11bits_col15];
+                *lookup_data.range_check_11_0 = [range_check_29_bot11bits_col15];
 
                 *lookup_data.opcodes_0 = [input_pc_col0, input_ap_col1, input_fp_col2];
                 *lookup_data.opcodes_1 = [

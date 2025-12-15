@@ -3,9 +3,9 @@
 use crate::components::prelude::*;
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize)]
-pub struct RangeCheckAp {}
+pub struct RangeCheck29 {}
 
-impl RangeCheckAp {
+impl RangeCheck29 {
     #[allow(unused_parens)]
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
@@ -13,8 +13,8 @@ impl RangeCheckAp {
     #[allow(unused_variables)]
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
-        [range_check_ap_input]: [E::F; 1],
-        range_check_ap_bot11bits_col0: E::F,
+        [range_check_29_input]: [E::F; 1],
+        range_check_29_bot11bits_col0: E::F,
         range_check_18_lookup_elements: &relations::RangeCheck_18,
         range_check_11_lookup_elements: &relations::RangeCheck_11,
         eval: &mut E,
@@ -25,7 +25,7 @@ impl RangeCheckAp {
             range_check_18_lookup_elements,
             E::EF::one(),
             std::slice::from_ref(
-                &((range_check_ap_input.clone() - range_check_ap_bot11bits_col0.clone())
+                &((range_check_29_input.clone() - range_check_29_bot11bits_col0.clone())
                     * M31_1048576.clone()),
             ),
         ));
@@ -33,7 +33,7 @@ impl RangeCheckAp {
         eval.add_to_relation(RelationEntry::new(
             range_check_11_lookup_elements,
             E::EF::one(),
-            std::slice::from_ref(&range_check_ap_bot11bits_col0),
+            std::slice::from_ref(&range_check_29_bot11bits_col0),
         ));
 
         []

@@ -114,10 +114,10 @@ pub const POSEIDON_ROUND_KEYS: Expect = expect![[r#"
 pub const QM_31_ADD_MUL_OPCODE: Expect = expect![[r#"
     (989822133 + 613070772i) + (258458924 + 1917445389i)u
 "#]];
-pub const RANGE_CHECK_BUILTIN_BITS_96: Expect = expect![[r#"
+pub const RANGE_CHECK_96_BUILTIN: Expect = expect![[r#"
     (1203114103 + 1251795602i) + (1884838449 + 1758114216i)u
 "#]];
-pub const RANGE_CHECK_BUILTIN_BITS_128: Expect = expect![[r#"
+pub const RANGE_CHECK_BUILTIN: Expect = expect![[r#"
     (98318865 + 510635574i) + (1814943674 + 477505709i)u
 "#]];
 pub const RANGE_CHECK_252_WIDTH_27: Expect = expect![[r#"

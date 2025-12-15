@@ -1,5 +1,5 @@
 {
-  "air_version": "594e3ef2",
+  "air_version": "68e53230",
   "air_fns": {
     "range_check_9_9": {
       "trace_type": "Component",
@@ -287,7 +287,7 @@
       "max_instances_uses_limit": 79536431,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_builtin_bits_128": {
+    "range_check_builtin": {
       "trace_type": "Builtin",
       "num_state_cols": 17,
       "use_lookup_cols": {
@@ -333,7 +333,7 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_builtin_bits_96": {
+    "range_check96_builtin": {
       "trace_type": "Builtin",
       "num_state_cols": 12,
       "use_lookup_cols": {

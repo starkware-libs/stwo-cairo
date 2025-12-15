@@ -1,9 +1,7 @@
 // This file was created by the AIR team.
 
 #![allow(unused_parens)]
-use cairo_air::components::range_check_builtin_bits_128::{
-    Claim, InteractionClaim, N_TRACE_COLUMNS,
-};
+use cairo_air::components::range_check_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big};
 use crate::witness::prelude::*;
