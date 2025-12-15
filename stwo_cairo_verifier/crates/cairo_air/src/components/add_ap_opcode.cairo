@@ -1,7 +1,7 @@
 // This file was created by the AIR team.
 
 use crate::components::subroutines::decode_instruction_d2a10::decode_instruction_d2a10_evaluate;
-use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
+use crate::components::subroutines::range_check_29::range_check_29_evaluate;
 use crate::components::subroutines::read_small::read_small_evaluate;
 use crate::prelude::*;
 
@@ -120,7 +120,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             op1_limb_2_col12,
             remainder_bits_col13,
             partial_limb_msb_col14,
-            range_check_ap_bot11bits_col15,
+            range_check_29_bot11bits_col15,
             opcodes_multiplicity,
         ]: [Span<QM31>; 17] =
             (*trace_mask_values
@@ -143,7 +143,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let [remainder_bits_col13]: [QM31; 1] = (*remainder_bits_col13.try_into().unwrap()).unbox();
         let [partial_limb_msb_col14]: [QM31; 1] = (*partial_limb_msb_col14.try_into().unwrap())
             .unbox();
-        let [range_check_ap_bot11bits_col15]: [QM31; 1] = (*range_check_ap_bot11bits_col15
+        let [range_check_29_bot11bits_col15]: [QM31; 1] = (*range_check_29_bot11bits_col15
             .try_into()
             .unwrap())
             .unbox();
@@ -202,9 +202,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             random_coeff,
         );
         let next_ap_tmp_c921e_17: QM31 = (input_ap_col1 + read_small_output_tmp_c921e_16_limb_0);
-        range_check_ap_evaluate(
+        range_check_29_evaluate(
             next_ap_tmp_c921e_17,
-            range_check_ap_bot11bits_col15,
+            range_check_29_bot11bits_col15,
             self.range_check_18_lookup_elements,
             self.range_check_11_lookup_elements,
             ref range_check_18_sum_3,
