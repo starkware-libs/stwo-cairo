@@ -6,12 +6,12 @@ use starknet_types_core::curve::ProjectivePoint;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
 use stwo::prover::backend::simd::m31::PackedM31;
 use stwo_cairo_common::preprocessed_columns::pedersen::{
-    NUM_WINDOWS, PEDERSEN_TABLE, ROWS_PER_WINDOW,
+    BITS_PER_WINDOW, NUM_WINDOWS, PEDERSEN_TABLE, ROWS_PER_WINDOW,
 };
 use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
-type PartialEcMulState = ([M31; 14], [Felt252; 2]);
+type PartialEcMulState = (Felt252, [Felt252; 2]);
 
 pub struct PackedPedersenPointsTable {}
 impl PackedPedersenPointsTable {
@@ -38,7 +38,7 @@ impl PartialEcMul {
             ProjectivePoint::from_affine(accumulator[0].into(), accumulator[1].into())
                 .expect("The accumulator should contain a curve point");
 
-        let window_value = m_shifted[0].0 as usize;
+        let window_value = m_shifted.get_m31(0).0 as usize;
         let table_row = round_usize * ROWS_PER_WINDOW + window_value;
         let affine_point = PEDERSEN_TABLE.get_row(table_row);
         let table_point = ProjectivePoint::from_affine(affine_point.x, affine_point.y)
@@ -50,13 +50,13 @@ impl PartialEcMul {
         let new_accumulator_x: Felt252 = new_accumulator_point.x().into();
         let new_accumulator_y: Felt252 = new_accumulator_point.y().into();
 
-        let new_m_shifted: [M31; 14] = from_fn(|i| {
-            if i < m_shifted.len() - 1 {
-                m_shifted[i + 1]
-            } else {
-                M31::zero()
-            }
-        });
+        let new_m_shifted = (m_shifted
+            - Felt252 {
+                limbs: [window_value as u64, 0, 0, 0],
+            })
+            / Felt252 {
+                limbs: [1 << BITS_PER_WINDOW, 0, 0, 0],
+            };
 
         (
             chain,
@@ -69,8 +69,8 @@ impl PartialEcMul {
 pub struct PackedPartialEcMul {}
 impl PackedPartialEcMul {
     pub fn deduce_output(
-        input: (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2])),
-    ) -> (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2])) {
+        input: (PackedM31, PackedM31, (PackedFelt252, [PackedFelt252; 2])),
+    ) -> (PackedM31, PackedM31, (PackedFelt252, [PackedFelt252; 2])) {
         let unpacked_inputs = input.unpack();
         <_ as Pack>::pack(
             unpacked_inputs
@@ -84,31 +84,31 @@ mod tests {
     use starknet_curve::curve_params::{PEDERSEN_P0, PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
     use starknet_types_core::curve::ProjectivePoint;
     use starknet_types_core::felt::Felt;
-    use stwo_cairo_common::preprocessed_columns::pedersen::BITS_PER_WINDOW;
-    use stwo_cairo_common::prover_types::cpu::M31;
+    use stwo_cairo_common::preprocessed_columns::pedersen::{BITS_PER_WINDOW, NUM_WINDOWS};
+    use stwo_cairo_common::prover_types::cpu::{Felt252, M31};
 
     use super::PartialEcMul;
 
     #[test]
     fn test_deduce_output() {
         let chain = M31::from_u32_unchecked(1234);
-        let round = M31::from_u32_unchecked(15);
-        let mut m_shifted = [M31::from_u32_unchecked(0); 14];
-        m_shifted[0] = M31::from_u32_unchecked(5678);
-        m_shifted[1] = M31::from_u32_unchecked(9999);
+        let round = M31::from_u32_unchecked((NUM_WINDOWS + 1) as u32);
+        let m_shifted = Felt252 {
+            limbs: [56 + (99 << 9), 0, 0, 0],
+        };
         let accumulator = [PEDERSEN_P1.x().into(), PEDERSEN_P1.y().into()];
 
         let (new_chain, new_round, (new_m_shifted, new_accumulator)) =
             PartialEcMul::deduce_output(chain, round, (m_shifted, accumulator));
 
-        let mut expected_new_m_shifted = [M31::from_u32_unchecked(0); 14];
-        expected_new_m_shifted[0] = M31::from_u32_unchecked(9999);
+        let expected_new_m_shifted = Felt252 {
+            limbs: [99, 0, 0, 0],
+        };
 
         let p1 = ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).unwrap();
         let p2 = ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).unwrap();
         let shift_point = ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y()).unwrap();
-        let expected_new_accumulator = (p1 + &p2 * Felt::from(5678 << BITS_PER_WINDOW)
-            - shift_point)
+        let expected_new_accumulator = (p1 + &p2 * Felt::from(56 << BITS_PER_WINDOW) - shift_point)
             .to_affine()
             .unwrap();
 
@@ -122,24 +122,25 @@ mod tests {
     #[test]
     fn test_deduce_output_high_window() {
         let chain = M31::from_u32_unchecked(1234);
-        let round = M31::from_u32_unchecked(13);
-        let mut m_shifted = [M31::from_u32_unchecked(0); 14];
-        m_shifted[0] = M31::from_u32_unchecked(32773); // (2<<14) + 5
-        m_shifted[1] = M31::from_u32_unchecked(9999);
+        let round = M31::from_u32_unchecked((NUM_WINDOWS - 1) as u32);
+        let m_shifted = Felt252 {
+            limbs: [5 + (2 << 5) + (99 << 9), 0, 0, 0],
+        };
         let accumulator = [PEDERSEN_P1.x().into(), PEDERSEN_P1.y().into()];
 
         let (new_chain, new_round, (new_m_shifted, new_accumulator)) =
             PartialEcMul::deduce_output(chain, round, (m_shifted, accumulator));
 
-        let mut expected_new_m_shifted = [M31::from_u32_unchecked(0); 14];
-        expected_new_m_shifted[0] = M31::from_u32_unchecked(9999);
+        let expected_new_m_shifted = Felt252 {
+            limbs: [99, 0, 0, 0],
+        };
 
         let p0 = ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).unwrap();
         let p1 = ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).unwrap();
         let shift_point = ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y()).unwrap();
         let shifted_p0 = &p0
-            * (Felt::from(1u128 << (BITS_PER_WINDOW * 7))
-                * Felt::from(1u128 << (BITS_PER_WINDOW * 6)));
+            * (Felt::from(1u128 << (BITS_PER_WINDOW * 14))
+                * Felt::from(1u128 << (BITS_PER_WINDOW * 13)));
         let expected_new_accumulator = (&p1 * Felt::from(3) + &shifted_p0 * Felt::from(5)
             - shift_point)
             .to_affine()

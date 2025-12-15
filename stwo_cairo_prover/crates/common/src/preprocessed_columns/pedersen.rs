@@ -202,7 +202,7 @@ fn create_table_rows() -> Vec<SimpleAffinePoint> {
     rows.extend(create_low_section(points[2]));
     rows.extend(create_high_section(points[2], points[3]));
 
-    assert!(rows.len() == ((2 * 14) << 18));
+    assert!(rows.len() == ((2 * NUM_WINDOWS) << BITS_PER_WINDOW));
 
     let padded_size = rows.len().next_power_of_two();
     for _ in 0..(padded_size - rows.len()) {

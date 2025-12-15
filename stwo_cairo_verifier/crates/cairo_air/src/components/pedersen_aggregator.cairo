@@ -4,7 +4,7 @@ use crate::components::subroutines::read_positive_known_id_num_bits_252::read_po
 use crate::components::subroutines::verify_reduced_252::verify_reduced_252_evaluate;
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 206;
+pub const N_TRACE_COLUMNS: usize = 234;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
     ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMul', 2),
 ];
@@ -241,78 +241,106 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_ec_mul_output_limb_67_col132,
             partial_ec_mul_output_limb_68_col133,
             partial_ec_mul_output_limb_69_col134,
-            partial_ec_mul_output_limb_0_col135,
-            partial_ec_mul_output_limb_1_col136,
-            partial_ec_mul_output_limb_2_col137,
-            partial_ec_mul_output_limb_3_col138,
-            partial_ec_mul_output_limb_4_col139,
-            partial_ec_mul_output_limb_5_col140,
-            partial_ec_mul_output_limb_6_col141,
-            partial_ec_mul_output_limb_7_col142,
-            partial_ec_mul_output_limb_8_col143,
-            partial_ec_mul_output_limb_9_col144,
-            partial_ec_mul_output_limb_10_col145,
-            partial_ec_mul_output_limb_11_col146,
-            partial_ec_mul_output_limb_12_col147,
-            partial_ec_mul_output_limb_13_col148,
-            partial_ec_mul_output_limb_14_col149,
-            partial_ec_mul_output_limb_15_col150,
-            partial_ec_mul_output_limb_16_col151,
-            partial_ec_mul_output_limb_17_col152,
-            partial_ec_mul_output_limb_18_col153,
-            partial_ec_mul_output_limb_19_col154,
-            partial_ec_mul_output_limb_20_col155,
-            partial_ec_mul_output_limb_21_col156,
-            partial_ec_mul_output_limb_22_col157,
-            partial_ec_mul_output_limb_23_col158,
-            partial_ec_mul_output_limb_24_col159,
-            partial_ec_mul_output_limb_25_col160,
-            partial_ec_mul_output_limb_26_col161,
-            partial_ec_mul_output_limb_27_col162,
-            partial_ec_mul_output_limb_28_col163,
-            partial_ec_mul_output_limb_29_col164,
-            partial_ec_mul_output_limb_30_col165,
-            partial_ec_mul_output_limb_31_col166,
-            partial_ec_mul_output_limb_32_col167,
-            partial_ec_mul_output_limb_33_col168,
-            partial_ec_mul_output_limb_34_col169,
-            partial_ec_mul_output_limb_35_col170,
-            partial_ec_mul_output_limb_36_col171,
-            partial_ec_mul_output_limb_37_col172,
-            partial_ec_mul_output_limb_38_col173,
-            partial_ec_mul_output_limb_39_col174,
-            partial_ec_mul_output_limb_40_col175,
-            partial_ec_mul_output_limb_41_col176,
-            partial_ec_mul_output_limb_42_col177,
-            partial_ec_mul_output_limb_43_col178,
-            partial_ec_mul_output_limb_44_col179,
-            partial_ec_mul_output_limb_45_col180,
-            partial_ec_mul_output_limb_46_col181,
-            partial_ec_mul_output_limb_47_col182,
-            partial_ec_mul_output_limb_48_col183,
-            partial_ec_mul_output_limb_49_col184,
-            partial_ec_mul_output_limb_50_col185,
-            partial_ec_mul_output_limb_51_col186,
-            partial_ec_mul_output_limb_52_col187,
-            partial_ec_mul_output_limb_53_col188,
-            partial_ec_mul_output_limb_54_col189,
-            partial_ec_mul_output_limb_55_col190,
-            partial_ec_mul_output_limb_56_col191,
-            partial_ec_mul_output_limb_57_col192,
-            partial_ec_mul_output_limb_58_col193,
-            partial_ec_mul_output_limb_59_col194,
-            partial_ec_mul_output_limb_60_col195,
-            partial_ec_mul_output_limb_61_col196,
-            partial_ec_mul_output_limb_62_col197,
-            partial_ec_mul_output_limb_63_col198,
-            partial_ec_mul_output_limb_64_col199,
-            partial_ec_mul_output_limb_65_col200,
-            partial_ec_mul_output_limb_66_col201,
-            partial_ec_mul_output_limb_67_col202,
-            partial_ec_mul_output_limb_68_col203,
-            partial_ec_mul_output_limb_69_col204,
+            partial_ec_mul_output_limb_70_col135,
+            partial_ec_mul_output_limb_71_col136,
+            partial_ec_mul_output_limb_72_col137,
+            partial_ec_mul_output_limb_73_col138,
+            partial_ec_mul_output_limb_74_col139,
+            partial_ec_mul_output_limb_75_col140,
+            partial_ec_mul_output_limb_76_col141,
+            partial_ec_mul_output_limb_77_col142,
+            partial_ec_mul_output_limb_78_col143,
+            partial_ec_mul_output_limb_79_col144,
+            partial_ec_mul_output_limb_80_col145,
+            partial_ec_mul_output_limb_81_col146,
+            partial_ec_mul_output_limb_82_col147,
+            partial_ec_mul_output_limb_83_col148,
+            partial_ec_mul_output_limb_0_col149,
+            partial_ec_mul_output_limb_1_col150,
+            partial_ec_mul_output_limb_2_col151,
+            partial_ec_mul_output_limb_3_col152,
+            partial_ec_mul_output_limb_4_col153,
+            partial_ec_mul_output_limb_5_col154,
+            partial_ec_mul_output_limb_6_col155,
+            partial_ec_mul_output_limb_7_col156,
+            partial_ec_mul_output_limb_8_col157,
+            partial_ec_mul_output_limb_9_col158,
+            partial_ec_mul_output_limb_10_col159,
+            partial_ec_mul_output_limb_11_col160,
+            partial_ec_mul_output_limb_12_col161,
+            partial_ec_mul_output_limb_13_col162,
+            partial_ec_mul_output_limb_14_col163,
+            partial_ec_mul_output_limb_15_col164,
+            partial_ec_mul_output_limb_16_col165,
+            partial_ec_mul_output_limb_17_col166,
+            partial_ec_mul_output_limb_18_col167,
+            partial_ec_mul_output_limb_19_col168,
+            partial_ec_mul_output_limb_20_col169,
+            partial_ec_mul_output_limb_21_col170,
+            partial_ec_mul_output_limb_22_col171,
+            partial_ec_mul_output_limb_23_col172,
+            partial_ec_mul_output_limb_24_col173,
+            partial_ec_mul_output_limb_25_col174,
+            partial_ec_mul_output_limb_26_col175,
+            partial_ec_mul_output_limb_27_col176,
+            partial_ec_mul_output_limb_28_col177,
+            partial_ec_mul_output_limb_29_col178,
+            partial_ec_mul_output_limb_30_col179,
+            partial_ec_mul_output_limb_31_col180,
+            partial_ec_mul_output_limb_32_col181,
+            partial_ec_mul_output_limb_33_col182,
+            partial_ec_mul_output_limb_34_col183,
+            partial_ec_mul_output_limb_35_col184,
+            partial_ec_mul_output_limb_36_col185,
+            partial_ec_mul_output_limb_37_col186,
+            partial_ec_mul_output_limb_38_col187,
+            partial_ec_mul_output_limb_39_col188,
+            partial_ec_mul_output_limb_40_col189,
+            partial_ec_mul_output_limb_41_col190,
+            partial_ec_mul_output_limb_42_col191,
+            partial_ec_mul_output_limb_43_col192,
+            partial_ec_mul_output_limb_44_col193,
+            partial_ec_mul_output_limb_45_col194,
+            partial_ec_mul_output_limb_46_col195,
+            partial_ec_mul_output_limb_47_col196,
+            partial_ec_mul_output_limb_48_col197,
+            partial_ec_mul_output_limb_49_col198,
+            partial_ec_mul_output_limb_50_col199,
+            partial_ec_mul_output_limb_51_col200,
+            partial_ec_mul_output_limb_52_col201,
+            partial_ec_mul_output_limb_53_col202,
+            partial_ec_mul_output_limb_54_col203,
+            partial_ec_mul_output_limb_55_col204,
+            partial_ec_mul_output_limb_56_col205,
+            partial_ec_mul_output_limb_57_col206,
+            partial_ec_mul_output_limb_58_col207,
+            partial_ec_mul_output_limb_59_col208,
+            partial_ec_mul_output_limb_60_col209,
+            partial_ec_mul_output_limb_61_col210,
+            partial_ec_mul_output_limb_62_col211,
+            partial_ec_mul_output_limb_63_col212,
+            partial_ec_mul_output_limb_64_col213,
+            partial_ec_mul_output_limb_65_col214,
+            partial_ec_mul_output_limb_66_col215,
+            partial_ec_mul_output_limb_67_col216,
+            partial_ec_mul_output_limb_68_col217,
+            partial_ec_mul_output_limb_69_col218,
+            partial_ec_mul_output_limb_70_col219,
+            partial_ec_mul_output_limb_71_col220,
+            partial_ec_mul_output_limb_72_col221,
+            partial_ec_mul_output_limb_73_col222,
+            partial_ec_mul_output_limb_74_col223,
+            partial_ec_mul_output_limb_75_col224,
+            partial_ec_mul_output_limb_76_col225,
+            partial_ec_mul_output_limb_77_col226,
+            partial_ec_mul_output_limb_78_col227,
+            partial_ec_mul_output_limb_79_col228,
+            partial_ec_mul_output_limb_80_col229,
+            partial_ec_mul_output_limb_81_col230,
+            partial_ec_mul_output_limb_82_col231,
+            partial_ec_mul_output_limb_83_col232,
             enabler,
-        ]: [Span<QM31>; 206] =
+        ]: [Span<QM31>; 234] =
             (*trace_mask_values
             .multi_pop_front()
             .unwrap())
@@ -703,343 +731,483 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_0_col135]: [QM31; 1] = (*partial_ec_mul_output_limb_0_col135
+        let [partial_ec_mul_output_limb_70_col135]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_70_col135
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_1_col136]: [QM31; 1] = (*partial_ec_mul_output_limb_1_col136
+        let [partial_ec_mul_output_limb_71_col136]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_71_col136
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_2_col137]: [QM31; 1] = (*partial_ec_mul_output_limb_2_col137
+        let [partial_ec_mul_output_limb_72_col137]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_72_col137
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_3_col138]: [QM31; 1] = (*partial_ec_mul_output_limb_3_col138
+        let [partial_ec_mul_output_limb_73_col138]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_73_col138
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_4_col139]: [QM31; 1] = (*partial_ec_mul_output_limb_4_col139
+        let [partial_ec_mul_output_limb_74_col139]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_74_col139
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_5_col140]: [QM31; 1] = (*partial_ec_mul_output_limb_5_col140
+        let [partial_ec_mul_output_limb_75_col140]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_75_col140
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_6_col141]: [QM31; 1] = (*partial_ec_mul_output_limb_6_col141
+        let [partial_ec_mul_output_limb_76_col141]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_76_col141
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_7_col142]: [QM31; 1] = (*partial_ec_mul_output_limb_7_col142
+        let [partial_ec_mul_output_limb_77_col142]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_77_col142
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_8_col143]: [QM31; 1] = (*partial_ec_mul_output_limb_8_col143
+        let [partial_ec_mul_output_limb_78_col143]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_78_col143
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_9_col144]: [QM31; 1] = (*partial_ec_mul_output_limb_9_col144
+        let [partial_ec_mul_output_limb_79_col144]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_79_col144
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_10_col145]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_10_col145
+        let [partial_ec_mul_output_limb_80_col145]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_80_col145
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_11_col146]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_11_col146
+        let [partial_ec_mul_output_limb_81_col146]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_81_col146
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_12_col147]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_12_col147
+        let [partial_ec_mul_output_limb_82_col147]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_82_col147
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_13_col148]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_13_col148
+        let [partial_ec_mul_output_limb_83_col148]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_83_col148
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_14_col149]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_14_col149
+        let [partial_ec_mul_output_limb_0_col149]: [QM31; 1] = (*partial_ec_mul_output_limb_0_col149
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_15_col150]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_15_col150
+        let [partial_ec_mul_output_limb_1_col150]: [QM31; 1] = (*partial_ec_mul_output_limb_1_col150
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_16_col151]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_16_col151
+        let [partial_ec_mul_output_limb_2_col151]: [QM31; 1] = (*partial_ec_mul_output_limb_2_col151
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_17_col152]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_17_col152
+        let [partial_ec_mul_output_limb_3_col152]: [QM31; 1] = (*partial_ec_mul_output_limb_3_col152
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_18_col153]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_18_col153
+        let [partial_ec_mul_output_limb_4_col153]: [QM31; 1] = (*partial_ec_mul_output_limb_4_col153
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_19_col154]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_19_col154
+        let [partial_ec_mul_output_limb_5_col154]: [QM31; 1] = (*partial_ec_mul_output_limb_5_col154
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_20_col155]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_20_col155
+        let [partial_ec_mul_output_limb_6_col155]: [QM31; 1] = (*partial_ec_mul_output_limb_6_col155
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_21_col156]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_21_col156
+        let [partial_ec_mul_output_limb_7_col156]: [QM31; 1] = (*partial_ec_mul_output_limb_7_col156
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_22_col157]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_22_col157
+        let [partial_ec_mul_output_limb_8_col157]: [QM31; 1] = (*partial_ec_mul_output_limb_8_col157
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_23_col158]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_23_col158
+        let [partial_ec_mul_output_limb_9_col158]: [QM31; 1] = (*partial_ec_mul_output_limb_9_col158
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_24_col159]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_24_col159
+        let [partial_ec_mul_output_limb_10_col159]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_10_col159
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_25_col160]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_25_col160
+        let [partial_ec_mul_output_limb_11_col160]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_11_col160
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_26_col161]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_26_col161
+        let [partial_ec_mul_output_limb_12_col161]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_12_col161
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_27_col162]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_27_col162
+        let [partial_ec_mul_output_limb_13_col162]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_13_col162
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_28_col163]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_28_col163
+        let [partial_ec_mul_output_limb_14_col163]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_14_col163
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_29_col164]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_29_col164
+        let [partial_ec_mul_output_limb_15_col164]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_15_col164
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_30_col165]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_30_col165
+        let [partial_ec_mul_output_limb_16_col165]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_16_col165
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_31_col166]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_31_col166
+        let [partial_ec_mul_output_limb_17_col166]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_17_col166
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_32_col167]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_32_col167
+        let [partial_ec_mul_output_limb_18_col167]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_18_col167
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_33_col168]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_33_col168
+        let [partial_ec_mul_output_limb_19_col168]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_19_col168
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_34_col169]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_34_col169
+        let [partial_ec_mul_output_limb_20_col169]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_20_col169
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_35_col170]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_35_col170
+        let [partial_ec_mul_output_limb_21_col170]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_21_col170
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_36_col171]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_36_col171
+        let [partial_ec_mul_output_limb_22_col171]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_22_col171
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_37_col172]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_37_col172
+        let [partial_ec_mul_output_limb_23_col172]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_23_col172
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_38_col173]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_38_col173
+        let [partial_ec_mul_output_limb_24_col173]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_24_col173
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_39_col174]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_39_col174
+        let [partial_ec_mul_output_limb_25_col174]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_25_col174
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_40_col175]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_40_col175
+        let [partial_ec_mul_output_limb_26_col175]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_26_col175
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_41_col176]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_41_col176
+        let [partial_ec_mul_output_limb_27_col176]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_27_col176
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_42_col177]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_42_col177
+        let [partial_ec_mul_output_limb_28_col177]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_28_col177
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_43_col178]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_43_col178
+        let [partial_ec_mul_output_limb_29_col178]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_29_col178
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_44_col179]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_44_col179
+        let [partial_ec_mul_output_limb_30_col179]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_30_col179
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_45_col180]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_45_col180
+        let [partial_ec_mul_output_limb_31_col180]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_31_col180
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_46_col181]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_46_col181
+        let [partial_ec_mul_output_limb_32_col181]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_32_col181
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_47_col182]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_47_col182
+        let [partial_ec_mul_output_limb_33_col182]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_33_col182
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_48_col183]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_48_col183
+        let [partial_ec_mul_output_limb_34_col183]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_34_col183
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_49_col184]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_49_col184
+        let [partial_ec_mul_output_limb_35_col184]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_35_col184
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_50_col185]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_50_col185
+        let [partial_ec_mul_output_limb_36_col185]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_36_col185
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_51_col186]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_51_col186
+        let [partial_ec_mul_output_limb_37_col186]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_37_col186
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_52_col187]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_52_col187
+        let [partial_ec_mul_output_limb_38_col187]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_38_col187
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_53_col188]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_53_col188
+        let [partial_ec_mul_output_limb_39_col188]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_39_col188
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_54_col189]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_54_col189
+        let [partial_ec_mul_output_limb_40_col189]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_40_col189
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_55_col190]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_55_col190
+        let [partial_ec_mul_output_limb_41_col190]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_41_col190
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_56_col191]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_56_col191
+        let [partial_ec_mul_output_limb_42_col191]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_42_col191
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_57_col192]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_57_col192
+        let [partial_ec_mul_output_limb_43_col192]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_43_col192
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_58_col193]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_58_col193
+        let [partial_ec_mul_output_limb_44_col193]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_44_col193
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_59_col194]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_59_col194
+        let [partial_ec_mul_output_limb_45_col194]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_45_col194
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_60_col195]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_60_col195
+        let [partial_ec_mul_output_limb_46_col195]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_46_col195
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_61_col196]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_61_col196
+        let [partial_ec_mul_output_limb_47_col196]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_47_col196
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_62_col197]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_62_col197
+        let [partial_ec_mul_output_limb_48_col197]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_48_col197
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_63_col198]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_63_col198
+        let [partial_ec_mul_output_limb_49_col198]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_49_col198
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_64_col199]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_64_col199
+        let [partial_ec_mul_output_limb_50_col199]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_50_col199
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_65_col200]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_65_col200
+        let [partial_ec_mul_output_limb_51_col200]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_51_col200
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_66_col201]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_66_col201
+        let [partial_ec_mul_output_limb_52_col201]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_52_col201
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_67_col202]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_67_col202
+        let [partial_ec_mul_output_limb_53_col202]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_53_col202
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_68_col203]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_68_col203
+        let [partial_ec_mul_output_limb_54_col203]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_54_col203
             .try_into()
             .unwrap())
             .unbox();
-        let [partial_ec_mul_output_limb_69_col204]: [QM31; 1] =
-            (*partial_ec_mul_output_limb_69_col204
+        let [partial_ec_mul_output_limb_55_col204]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_55_col204
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_56_col205]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_56_col205
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_57_col206]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_57_col206
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_58_col207]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_58_col207
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_59_col208]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_59_col208
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_60_col209]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_60_col209
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_61_col210]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_61_col210
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_62_col211]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_62_col211
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_63_col212]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_63_col212
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_64_col213]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_64_col213
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_65_col214]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_65_col214
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_66_col215]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_66_col215
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_67_col216]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_67_col216
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_68_col217]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_68_col217
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_69_col218]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_69_col218
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_70_col219]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_70_col219
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_71_col220]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_71_col220
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_72_col221]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_72_col221
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_73_col222]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_73_col222
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_74_col223]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_74_col223
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_75_col224]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_75_col224
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_76_col225]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_76_col225
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_77_col226]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_77_col226
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_78_col227]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_78_col227
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_79_col228]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_79_col228
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_80_col229]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_80_col229
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_81_col230]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_81_col230
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_82_col231]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_82_col231
+            .try_into()
+            .unwrap())
+            .unbox();
+        let [partial_ec_mul_output_limb_83_col232]: [QM31; 1] =
+            (*partial_ec_mul_output_limb_83_col232
             .try_into()
             .unwrap())
             .unbox();
@@ -1166,48 +1334,43 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .combine_qm31(
                 [
                     partial_ec_mul_chain_tmp_tmp_c48a1_8, qm31_const::<0, 0, 0, 0>(),
-                    (value_limb_0_col3 + (value_limb_1_col4 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_2_col5 + (value_limb_3_col6 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_4_col7 + (value_limb_5_col8 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_6_col9 + (value_limb_7_col10 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_8_col11 + (value_limb_9_col12 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_10_col13 + (value_limb_11_col14 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_12_col15 + (value_limb_13_col16 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_14_col17 + (value_limb_15_col18 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_16_col19 + (value_limb_17_col20 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_18_col21 + (value_limb_19_col22 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_20_col23 + (value_limb_21_col24 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_22_col25 + (value_limb_23_col26 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_24_col27 + (value_limb_25_col28 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_26_col29 + (value_limb_27_col30 * qm31_const::<512, 0, 0, 0>())),
-                    qm31_const::<427, 0, 0, 0>(), qm31_const::<381, 0, 0, 0>(),
-                    qm31_const::<378, 0, 0, 0>(), qm31_const::<484, 0, 0, 0>(),
-                    qm31_const::<320, 0, 0, 0>(), qm31_const::<88, 0, 0, 0>(),
-                    qm31_const::<319, 0, 0, 0>(), qm31_const::<396, 0, 0, 0>(),
-                    qm31_const::<429, 0, 0, 0>(), qm31_const::<59, 0, 0, 0>(),
-                    qm31_const::<52, 0, 0, 0>(), qm31_const::<478, 0, 0, 0>(),
-                    qm31_const::<148, 0, 0, 0>(), qm31_const::<181, 0, 0, 0>(),
-                    qm31_const::<18, 0, 0, 0>(), qm31_const::<309, 0, 0, 0>(),
-                    qm31_const::<412, 0, 0, 0>(), qm31_const::<88, 0, 0, 0>(),
-                    qm31_const::<2, 0, 0, 0>(), qm31_const::<184, 0, 0, 0>(),
-                    qm31_const::<126, 0, 0, 0>(), qm31_const::<46, 0, 0, 0>(),
-                    qm31_const::<29, 0, 0, 0>(), qm31_const::<206, 0, 0, 0>(),
-                    qm31_const::<134, 0, 0, 0>(), qm31_const::<233, 0, 0, 0>(),
-                    qm31_const::<448, 0, 0, 0>(), qm31_const::<211, 0, 0, 0>(),
-                    qm31_const::<508, 0, 0, 0>(), qm31_const::<420, 0, 0, 0>(),
-                    qm31_const::<374, 0, 0, 0>(), qm31_const::<283, 0, 0, 0>(),
-                    qm31_const::<306, 0, 0, 0>(), qm31_const::<450, 0, 0, 0>(),
-                    qm31_const::<278, 0, 0, 0>(), qm31_const::<86, 0, 0, 0>(),
-                    qm31_const::<131, 0, 0, 0>(), qm31_const::<160, 0, 0, 0>(),
-                    qm31_const::<411, 0, 0, 0>(), qm31_const::<301, 0, 0, 0>(),
-                    qm31_const::<264, 0, 0, 0>(), qm31_const::<322, 0, 0, 0>(),
-                    qm31_const::<161, 0, 0, 0>(), qm31_const::<346, 0, 0, 0>(),
-                    qm31_const::<320, 0, 0, 0>(), qm31_const::<342, 0, 0, 0>(),
-                    qm31_const::<261, 0, 0, 0>(), qm31_const::<184, 0, 0, 0>(),
-                    qm31_const::<280, 0, 0, 0>(), qm31_const::<326, 0, 0, 0>(),
-                    qm31_const::<220, 0, 0, 0>(), qm31_const::<167, 0, 0, 0>(),
-                    qm31_const::<21, 0, 0, 0>(), qm31_const::<260, 0, 0, 0>(),
-                    qm31_const::<19, 0, 0, 0>(), qm31_const::<199, 0, 0, 0>(),
+                    value_limb_0_col3, value_limb_1_col4, value_limb_2_col5, value_limb_3_col6,
+                    value_limb_4_col7, value_limb_5_col8, value_limb_6_col9, value_limb_7_col10,
+                    value_limb_8_col11, value_limb_9_col12, value_limb_10_col13,
+                    value_limb_11_col14, value_limb_12_col15, value_limb_13_col16,
+                    value_limb_14_col17, value_limb_15_col18, value_limb_16_col19,
+                    value_limb_17_col20, value_limb_18_col21, value_limb_19_col22,
+                    value_limb_20_col23, value_limb_21_col24, value_limb_22_col25,
+                    value_limb_23_col26, value_limb_24_col27, value_limb_25_col28,
+                    value_limb_26_col29, value_limb_27_col30, qm31_const::<427, 0, 0, 0>(),
+                    qm31_const::<381, 0, 0, 0>(), qm31_const::<378, 0, 0, 0>(),
+                    qm31_const::<484, 0, 0, 0>(), qm31_const::<320, 0, 0, 0>(),
+                    qm31_const::<88, 0, 0, 0>(), qm31_const::<319, 0, 0, 0>(),
+                    qm31_const::<396, 0, 0, 0>(), qm31_const::<429, 0, 0, 0>(),
+                    qm31_const::<59, 0, 0, 0>(), qm31_const::<52, 0, 0, 0>(),
+                    qm31_const::<478, 0, 0, 0>(), qm31_const::<148, 0, 0, 0>(),
+                    qm31_const::<181, 0, 0, 0>(), qm31_const::<18, 0, 0, 0>(),
+                    qm31_const::<309, 0, 0, 0>(), qm31_const::<412, 0, 0, 0>(),
+                    qm31_const::<88, 0, 0, 0>(), qm31_const::<2, 0, 0, 0>(),
+                    qm31_const::<184, 0, 0, 0>(), qm31_const::<126, 0, 0, 0>(),
+                    qm31_const::<46, 0, 0, 0>(), qm31_const::<29, 0, 0, 0>(),
+                    qm31_const::<206, 0, 0, 0>(), qm31_const::<134, 0, 0, 0>(),
+                    qm31_const::<233, 0, 0, 0>(), qm31_const::<448, 0, 0, 0>(),
+                    qm31_const::<211, 0, 0, 0>(), qm31_const::<508, 0, 0, 0>(),
+                    qm31_const::<420, 0, 0, 0>(), qm31_const::<374, 0, 0, 0>(),
+                    qm31_const::<283, 0, 0, 0>(), qm31_const::<306, 0, 0, 0>(),
+                    qm31_const::<450, 0, 0, 0>(), qm31_const::<278, 0, 0, 0>(),
+                    qm31_const::<86, 0, 0, 0>(), qm31_const::<131, 0, 0, 0>(),
+                    qm31_const::<160, 0, 0, 0>(), qm31_const::<411, 0, 0, 0>(),
+                    qm31_const::<301, 0, 0, 0>(), qm31_const::<264, 0, 0, 0>(),
+                    qm31_const::<322, 0, 0, 0>(), qm31_const::<161, 0, 0, 0>(),
+                    qm31_const::<346, 0, 0, 0>(), qm31_const::<320, 0, 0, 0>(),
+                    qm31_const::<342, 0, 0, 0>(), qm31_const::<261, 0, 0, 0>(),
+                    qm31_const::<184, 0, 0, 0>(), qm31_const::<280, 0, 0, 0>(),
+                    qm31_const::<326, 0, 0, 0>(), qm31_const::<220, 0, 0, 0>(),
+                    qm31_const::<167, 0, 0, 0>(), qm31_const::<21, 0, 0, 0>(),
+                    qm31_const::<260, 0, 0, 0>(), qm31_const::<19, 0, 0, 0>(),
+                    qm31_const::<199, 0, 0, 0>(),
                 ],
             );
 
@@ -1215,7 +1378,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_tmp_tmp_c48a1_8, qm31_const::<14, 0, 0, 0>(),
+                    partial_ec_mul_chain_tmp_tmp_c48a1_8, qm31_const::<28, 0, 0, 0>(),
                     partial_ec_mul_output_limb_0_col65, partial_ec_mul_output_limb_1_col66,
                     partial_ec_mul_output_limb_2_col67, partial_ec_mul_output_limb_3_col68,
                     partial_ec_mul_output_limb_4_col69, partial_ec_mul_output_limb_5_col70,
@@ -1251,58 +1414,60 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     partial_ec_mul_output_limb_64_col129, partial_ec_mul_output_limb_65_col130,
                     partial_ec_mul_output_limb_66_col131, partial_ec_mul_output_limb_67_col132,
                     partial_ec_mul_output_limb_68_col133, partial_ec_mul_output_limb_69_col134,
+                    partial_ec_mul_output_limb_70_col135, partial_ec_mul_output_limb_71_col136,
+                    partial_ec_mul_output_limb_72_col137, partial_ec_mul_output_limb_73_col138,
+                    partial_ec_mul_output_limb_74_col139, partial_ec_mul_output_limb_75_col140,
+                    partial_ec_mul_output_limb_76_col141, partial_ec_mul_output_limb_77_col142,
+                    partial_ec_mul_output_limb_78_col143, partial_ec_mul_output_limb_79_col144,
+                    partial_ec_mul_output_limb_80_col145, partial_ec_mul_output_limb_81_col146,
+                    partial_ec_mul_output_limb_82_col147, partial_ec_mul_output_limb_83_col148,
                 ],
             );
-        let partial_ec_mul_chain_id_tmp_c48a1_23: QM31 = (partial_ec_mul_chain_tmp_tmp_c48a1_8
+        let partial_ec_mul_chain_id_tmp_c48a1_37: QM31 = (partial_ec_mul_chain_tmp_tmp_c48a1_8
             + qm31_const::<1, 0, 0, 0>());
 
         partial_ec_mul_sum_8 = self
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_23, qm31_const::<14, 0, 0, 0>(),
-                    (value_limb_0_col31 + (value_limb_1_col32 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_2_col33 + (value_limb_3_col34 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_4_col35 + (value_limb_5_col36 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_6_col37 + (value_limb_7_col38 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_8_col39 + (value_limb_9_col40 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_10_col41 + (value_limb_11_col42 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_12_col43 + (value_limb_13_col44 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_14_col45 + (value_limb_15_col46 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_16_col47 + (value_limb_17_col48 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_18_col49 + (value_limb_19_col50 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_20_col51 + (value_limb_21_col52 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_22_col53 + (value_limb_23_col54 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_24_col55 + (value_limb_25_col56 * qm31_const::<512, 0, 0, 0>())),
-                    (value_limb_26_col57 + (value_limb_27_col58 * qm31_const::<512, 0, 0, 0>())),
-                    partial_ec_mul_output_limb_14_col79, partial_ec_mul_output_limb_15_col80,
-                    partial_ec_mul_output_limb_16_col81, partial_ec_mul_output_limb_17_col82,
-                    partial_ec_mul_output_limb_18_col83, partial_ec_mul_output_limb_19_col84,
-                    partial_ec_mul_output_limb_20_col85, partial_ec_mul_output_limb_21_col86,
-                    partial_ec_mul_output_limb_22_col87, partial_ec_mul_output_limb_23_col88,
-                    partial_ec_mul_output_limb_24_col89, partial_ec_mul_output_limb_25_col90,
-                    partial_ec_mul_output_limb_26_col91, partial_ec_mul_output_limb_27_col92,
-                    partial_ec_mul_output_limb_28_col93, partial_ec_mul_output_limb_29_col94,
-                    partial_ec_mul_output_limb_30_col95, partial_ec_mul_output_limb_31_col96,
-                    partial_ec_mul_output_limb_32_col97, partial_ec_mul_output_limb_33_col98,
-                    partial_ec_mul_output_limb_34_col99, partial_ec_mul_output_limb_35_col100,
-                    partial_ec_mul_output_limb_36_col101, partial_ec_mul_output_limb_37_col102,
-                    partial_ec_mul_output_limb_38_col103, partial_ec_mul_output_limb_39_col104,
-                    partial_ec_mul_output_limb_40_col105, partial_ec_mul_output_limb_41_col106,
-                    partial_ec_mul_output_limb_42_col107, partial_ec_mul_output_limb_43_col108,
-                    partial_ec_mul_output_limb_44_col109, partial_ec_mul_output_limb_45_col110,
-                    partial_ec_mul_output_limb_46_col111, partial_ec_mul_output_limb_47_col112,
-                    partial_ec_mul_output_limb_48_col113, partial_ec_mul_output_limb_49_col114,
-                    partial_ec_mul_output_limb_50_col115, partial_ec_mul_output_limb_51_col116,
-                    partial_ec_mul_output_limb_52_col117, partial_ec_mul_output_limb_53_col118,
-                    partial_ec_mul_output_limb_54_col119, partial_ec_mul_output_limb_55_col120,
-                    partial_ec_mul_output_limb_56_col121, partial_ec_mul_output_limb_57_col122,
-                    partial_ec_mul_output_limb_58_col123, partial_ec_mul_output_limb_59_col124,
-                    partial_ec_mul_output_limb_60_col125, partial_ec_mul_output_limb_61_col126,
-                    partial_ec_mul_output_limb_62_col127, partial_ec_mul_output_limb_63_col128,
-                    partial_ec_mul_output_limb_64_col129, partial_ec_mul_output_limb_65_col130,
-                    partial_ec_mul_output_limb_66_col131, partial_ec_mul_output_limb_67_col132,
-                    partial_ec_mul_output_limb_68_col133, partial_ec_mul_output_limb_69_col134,
+                    partial_ec_mul_chain_id_tmp_c48a1_37, qm31_const::<28, 0, 0, 0>(),
+                    value_limb_0_col31, value_limb_1_col32, value_limb_2_col33, value_limb_3_col34,
+                    value_limb_4_col35, value_limb_5_col36, value_limb_6_col37, value_limb_7_col38,
+                    value_limb_8_col39, value_limb_9_col40, value_limb_10_col41,
+                    value_limb_11_col42, value_limb_12_col43, value_limb_13_col44,
+                    value_limb_14_col45, value_limb_15_col46, value_limb_16_col47,
+                    value_limb_17_col48, value_limb_18_col49, value_limb_19_col50,
+                    value_limb_20_col51, value_limb_21_col52, value_limb_22_col53,
+                    value_limb_23_col54, value_limb_24_col55, value_limb_25_col56,
+                    value_limb_26_col57, value_limb_27_col58, partial_ec_mul_output_limb_28_col93,
+                    partial_ec_mul_output_limb_29_col94, partial_ec_mul_output_limb_30_col95,
+                    partial_ec_mul_output_limb_31_col96, partial_ec_mul_output_limb_32_col97,
+                    partial_ec_mul_output_limb_33_col98, partial_ec_mul_output_limb_34_col99,
+                    partial_ec_mul_output_limb_35_col100, partial_ec_mul_output_limb_36_col101,
+                    partial_ec_mul_output_limb_37_col102, partial_ec_mul_output_limb_38_col103,
+                    partial_ec_mul_output_limb_39_col104, partial_ec_mul_output_limb_40_col105,
+                    partial_ec_mul_output_limb_41_col106, partial_ec_mul_output_limb_42_col107,
+                    partial_ec_mul_output_limb_43_col108, partial_ec_mul_output_limb_44_col109,
+                    partial_ec_mul_output_limb_45_col110, partial_ec_mul_output_limb_46_col111,
+                    partial_ec_mul_output_limb_47_col112, partial_ec_mul_output_limb_48_col113,
+                    partial_ec_mul_output_limb_49_col114, partial_ec_mul_output_limb_50_col115,
+                    partial_ec_mul_output_limb_51_col116, partial_ec_mul_output_limb_52_col117,
+                    partial_ec_mul_output_limb_53_col118, partial_ec_mul_output_limb_54_col119,
+                    partial_ec_mul_output_limb_55_col120, partial_ec_mul_output_limb_56_col121,
+                    partial_ec_mul_output_limb_57_col122, partial_ec_mul_output_limb_58_col123,
+                    partial_ec_mul_output_limb_59_col124, partial_ec_mul_output_limb_60_col125,
+                    partial_ec_mul_output_limb_61_col126, partial_ec_mul_output_limb_62_col127,
+                    partial_ec_mul_output_limb_63_col128, partial_ec_mul_output_limb_64_col129,
+                    partial_ec_mul_output_limb_65_col130, partial_ec_mul_output_limb_66_col131,
+                    partial_ec_mul_output_limb_67_col132, partial_ec_mul_output_limb_68_col133,
+                    partial_ec_mul_output_limb_69_col134, partial_ec_mul_output_limb_70_col135,
+                    partial_ec_mul_output_limb_71_col136, partial_ec_mul_output_limb_72_col137,
+                    partial_ec_mul_output_limb_73_col138, partial_ec_mul_output_limb_74_col139,
+                    partial_ec_mul_output_limb_75_col140, partial_ec_mul_output_limb_76_col141,
+                    partial_ec_mul_output_limb_77_col142, partial_ec_mul_output_limb_78_col143,
+                    partial_ec_mul_output_limb_79_col144, partial_ec_mul_output_limb_80_col145,
+                    partial_ec_mul_output_limb_81_col146, partial_ec_mul_output_limb_82_col147,
+                    partial_ec_mul_output_limb_83_col148,
                 ],
             );
 
@@ -1310,42 +1475,49 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .partial_ec_mul_lookup_elements
             .combine_qm31(
                 [
-                    partial_ec_mul_chain_id_tmp_c48a1_23, qm31_const::<28, 0, 0, 0>(),
-                    partial_ec_mul_output_limb_0_col135, partial_ec_mul_output_limb_1_col136,
-                    partial_ec_mul_output_limb_2_col137, partial_ec_mul_output_limb_3_col138,
-                    partial_ec_mul_output_limb_4_col139, partial_ec_mul_output_limb_5_col140,
-                    partial_ec_mul_output_limb_6_col141, partial_ec_mul_output_limb_7_col142,
-                    partial_ec_mul_output_limb_8_col143, partial_ec_mul_output_limb_9_col144,
-                    partial_ec_mul_output_limb_10_col145, partial_ec_mul_output_limb_11_col146,
-                    partial_ec_mul_output_limb_12_col147, partial_ec_mul_output_limb_13_col148,
-                    partial_ec_mul_output_limb_14_col149, partial_ec_mul_output_limb_15_col150,
-                    partial_ec_mul_output_limb_16_col151, partial_ec_mul_output_limb_17_col152,
-                    partial_ec_mul_output_limb_18_col153, partial_ec_mul_output_limb_19_col154,
-                    partial_ec_mul_output_limb_20_col155, partial_ec_mul_output_limb_21_col156,
-                    partial_ec_mul_output_limb_22_col157, partial_ec_mul_output_limb_23_col158,
-                    partial_ec_mul_output_limb_24_col159, partial_ec_mul_output_limb_25_col160,
-                    partial_ec_mul_output_limb_26_col161, partial_ec_mul_output_limb_27_col162,
-                    partial_ec_mul_output_limb_28_col163, partial_ec_mul_output_limb_29_col164,
-                    partial_ec_mul_output_limb_30_col165, partial_ec_mul_output_limb_31_col166,
-                    partial_ec_mul_output_limb_32_col167, partial_ec_mul_output_limb_33_col168,
-                    partial_ec_mul_output_limb_34_col169, partial_ec_mul_output_limb_35_col170,
-                    partial_ec_mul_output_limb_36_col171, partial_ec_mul_output_limb_37_col172,
-                    partial_ec_mul_output_limb_38_col173, partial_ec_mul_output_limb_39_col174,
-                    partial_ec_mul_output_limb_40_col175, partial_ec_mul_output_limb_41_col176,
-                    partial_ec_mul_output_limb_42_col177, partial_ec_mul_output_limb_43_col178,
-                    partial_ec_mul_output_limb_44_col179, partial_ec_mul_output_limb_45_col180,
-                    partial_ec_mul_output_limb_46_col181, partial_ec_mul_output_limb_47_col182,
-                    partial_ec_mul_output_limb_48_col183, partial_ec_mul_output_limb_49_col184,
-                    partial_ec_mul_output_limb_50_col185, partial_ec_mul_output_limb_51_col186,
-                    partial_ec_mul_output_limb_52_col187, partial_ec_mul_output_limb_53_col188,
-                    partial_ec_mul_output_limb_54_col189, partial_ec_mul_output_limb_55_col190,
-                    partial_ec_mul_output_limb_56_col191, partial_ec_mul_output_limb_57_col192,
-                    partial_ec_mul_output_limb_58_col193, partial_ec_mul_output_limb_59_col194,
-                    partial_ec_mul_output_limb_60_col195, partial_ec_mul_output_limb_61_col196,
-                    partial_ec_mul_output_limb_62_col197, partial_ec_mul_output_limb_63_col198,
-                    partial_ec_mul_output_limb_64_col199, partial_ec_mul_output_limb_65_col200,
-                    partial_ec_mul_output_limb_66_col201, partial_ec_mul_output_limb_67_col202,
-                    partial_ec_mul_output_limb_68_col203, partial_ec_mul_output_limb_69_col204,
+                    partial_ec_mul_chain_id_tmp_c48a1_37, qm31_const::<56, 0, 0, 0>(),
+                    partial_ec_mul_output_limb_0_col149, partial_ec_mul_output_limb_1_col150,
+                    partial_ec_mul_output_limb_2_col151, partial_ec_mul_output_limb_3_col152,
+                    partial_ec_mul_output_limb_4_col153, partial_ec_mul_output_limb_5_col154,
+                    partial_ec_mul_output_limb_6_col155, partial_ec_mul_output_limb_7_col156,
+                    partial_ec_mul_output_limb_8_col157, partial_ec_mul_output_limb_9_col158,
+                    partial_ec_mul_output_limb_10_col159, partial_ec_mul_output_limb_11_col160,
+                    partial_ec_mul_output_limb_12_col161, partial_ec_mul_output_limb_13_col162,
+                    partial_ec_mul_output_limb_14_col163, partial_ec_mul_output_limb_15_col164,
+                    partial_ec_mul_output_limb_16_col165, partial_ec_mul_output_limb_17_col166,
+                    partial_ec_mul_output_limb_18_col167, partial_ec_mul_output_limb_19_col168,
+                    partial_ec_mul_output_limb_20_col169, partial_ec_mul_output_limb_21_col170,
+                    partial_ec_mul_output_limb_22_col171, partial_ec_mul_output_limb_23_col172,
+                    partial_ec_mul_output_limb_24_col173, partial_ec_mul_output_limb_25_col174,
+                    partial_ec_mul_output_limb_26_col175, partial_ec_mul_output_limb_27_col176,
+                    partial_ec_mul_output_limb_28_col177, partial_ec_mul_output_limb_29_col178,
+                    partial_ec_mul_output_limb_30_col179, partial_ec_mul_output_limb_31_col180,
+                    partial_ec_mul_output_limb_32_col181, partial_ec_mul_output_limb_33_col182,
+                    partial_ec_mul_output_limb_34_col183, partial_ec_mul_output_limb_35_col184,
+                    partial_ec_mul_output_limb_36_col185, partial_ec_mul_output_limb_37_col186,
+                    partial_ec_mul_output_limb_38_col187, partial_ec_mul_output_limb_39_col188,
+                    partial_ec_mul_output_limb_40_col189, partial_ec_mul_output_limb_41_col190,
+                    partial_ec_mul_output_limb_42_col191, partial_ec_mul_output_limb_43_col192,
+                    partial_ec_mul_output_limb_44_col193, partial_ec_mul_output_limb_45_col194,
+                    partial_ec_mul_output_limb_46_col195, partial_ec_mul_output_limb_47_col196,
+                    partial_ec_mul_output_limb_48_col197, partial_ec_mul_output_limb_49_col198,
+                    partial_ec_mul_output_limb_50_col199, partial_ec_mul_output_limb_51_col200,
+                    partial_ec_mul_output_limb_52_col201, partial_ec_mul_output_limb_53_col202,
+                    partial_ec_mul_output_limb_54_col203, partial_ec_mul_output_limb_55_col204,
+                    partial_ec_mul_output_limb_56_col205, partial_ec_mul_output_limb_57_col206,
+                    partial_ec_mul_output_limb_58_col207, partial_ec_mul_output_limb_59_col208,
+                    partial_ec_mul_output_limb_60_col209, partial_ec_mul_output_limb_61_col210,
+                    partial_ec_mul_output_limb_62_col211, partial_ec_mul_output_limb_63_col212,
+                    partial_ec_mul_output_limb_64_col213, partial_ec_mul_output_limb_65_col214,
+                    partial_ec_mul_output_limb_66_col215, partial_ec_mul_output_limb_67_col216,
+                    partial_ec_mul_output_limb_68_col217, partial_ec_mul_output_limb_69_col218,
+                    partial_ec_mul_output_limb_70_col219, partial_ec_mul_output_limb_71_col220,
+                    partial_ec_mul_output_limb_72_col221, partial_ec_mul_output_limb_73_col222,
+                    partial_ec_mul_output_limb_74_col223, partial_ec_mul_output_limb_75_col224,
+                    partial_ec_mul_output_limb_76_col225, partial_ec_mul_output_limb_77_col226,
+                    partial_ec_mul_output_limb_78_col227, partial_ec_mul_output_limb_79_col228,
+                    partial_ec_mul_output_limb_80_col229, partial_ec_mul_output_limb_81_col230,
+                    partial_ec_mul_output_limb_82_col231, partial_ec_mul_output_limb_83_col232,
                 ],
             );
 
@@ -1353,21 +1525,21 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .memory_id_to_big_lookup_elements
             .combine_qm31(
                 [
-                    input_limb_2_col2, partial_ec_mul_output_limb_14_col149,
-                    partial_ec_mul_output_limb_15_col150, partial_ec_mul_output_limb_16_col151,
-                    partial_ec_mul_output_limb_17_col152, partial_ec_mul_output_limb_18_col153,
-                    partial_ec_mul_output_limb_19_col154, partial_ec_mul_output_limb_20_col155,
-                    partial_ec_mul_output_limb_21_col156, partial_ec_mul_output_limb_22_col157,
-                    partial_ec_mul_output_limb_23_col158, partial_ec_mul_output_limb_24_col159,
-                    partial_ec_mul_output_limb_25_col160, partial_ec_mul_output_limb_26_col161,
-                    partial_ec_mul_output_limb_27_col162, partial_ec_mul_output_limb_28_col163,
-                    partial_ec_mul_output_limb_29_col164, partial_ec_mul_output_limb_30_col165,
-                    partial_ec_mul_output_limb_31_col166, partial_ec_mul_output_limb_32_col167,
-                    partial_ec_mul_output_limb_33_col168, partial_ec_mul_output_limb_34_col169,
-                    partial_ec_mul_output_limb_35_col170, partial_ec_mul_output_limb_36_col171,
-                    partial_ec_mul_output_limb_37_col172, partial_ec_mul_output_limb_38_col173,
-                    partial_ec_mul_output_limb_39_col174, partial_ec_mul_output_limb_40_col175,
-                    partial_ec_mul_output_limb_41_col176,
+                    input_limb_2_col2, partial_ec_mul_output_limb_28_col177,
+                    partial_ec_mul_output_limb_29_col178, partial_ec_mul_output_limb_30_col179,
+                    partial_ec_mul_output_limb_31_col180, partial_ec_mul_output_limb_32_col181,
+                    partial_ec_mul_output_limb_33_col182, partial_ec_mul_output_limb_34_col183,
+                    partial_ec_mul_output_limb_35_col184, partial_ec_mul_output_limb_36_col185,
+                    partial_ec_mul_output_limb_37_col186, partial_ec_mul_output_limb_38_col187,
+                    partial_ec_mul_output_limb_39_col188, partial_ec_mul_output_limb_40_col189,
+                    partial_ec_mul_output_limb_41_col190, partial_ec_mul_output_limb_42_col191,
+                    partial_ec_mul_output_limb_43_col192, partial_ec_mul_output_limb_44_col193,
+                    partial_ec_mul_output_limb_45_col194, partial_ec_mul_output_limb_46_col195,
+                    partial_ec_mul_output_limb_47_col196, partial_ec_mul_output_limb_48_col197,
+                    partial_ec_mul_output_limb_49_col198, partial_ec_mul_output_limb_50_col199,
+                    partial_ec_mul_output_limb_51_col200, partial_ec_mul_output_limb_52_col201,
+                    partial_ec_mul_output_limb_53_col202, partial_ec_mul_output_limb_54_col203,
+                    partial_ec_mul_output_limb_55_col204,
                 ],
             );
 
@@ -1816,6 +1988,34 @@ mod tests {
             [qm31_const::<1357737252, 402254548, 1131602940, 502540188>()].span(),
             [qm31_const::<1290628073, 268036820, 1064494076, 502540188>()].span(),
             [qm31_const::<1223518894, 133819092, 997385212, 502540188>()].span(),
+            [qm31_const::<1156409715, 2147085011, 930276347, 502540188>()].span(),
+            [qm31_const::<1089300536, 2012867283, 863167483, 502540188>()].span(),
+            [qm31_const::<1022191357, 1878649555, 796058619, 502540188>()].span(),
+            [qm31_const::<955082178, 1744431827, 728949755, 502540188>()].span(),
+            [qm31_const::<887972999, 1610214099, 661840891, 502540188>()].span(),
+            [qm31_const::<15491601, 2012867234, 1936909257, 502540171>()].span(),
+            [qm31_const::<82600780, 2147084962, 2004018121, 502540171>()].span(),
+            [qm31_const::<149709959, 133819043, 2071126986, 502540171>()].span(),
+            [qm31_const::<216819138, 268036771, 2138235850, 502540171>()].span(),
+            [qm31_const::<1894538532, 1475996321, 1668473801, 502540171>()].span(),
+            [qm31_const::<1961647711, 1610214049, 1735582665, 502540171>()].span(),
+            [qm31_const::<2028756890, 1744431777, 1802691529, 502540171>()].span(),
+            [qm31_const::<2095866069, 1878649505, 1869800393, 502540171>()].span(),
+            [qm31_const::<552365033, 939125411, 326296523, 502540172>()].span(),
+            [qm31_const::<619474212, 1073343139, 393405387, 502540172>()].span(),
+            [qm31_const::<149976820, 133819211, 2071127154, 502540227>()].span(),
+            [qm31_const::<82867641, 2147085130, 2004018289, 502540227>()].span(),
+            [qm31_const::<284195178, 402254667, 57861235, 502540228>()].span(),
+            [qm31_const::<217085999, 268036939, 2138236018, 502540227>()].span(),
+            [qm31_const::<2029023751, 1744431945, 1802691697, 502540227>()].span(),
+            [qm31_const::<1961914572, 1610214217, 1735582833, 502540227>()].span(),
+            [qm31_const::<15758462, 2012867402, 1936909425, 502540227>()].span(),
+            [qm31_const::<2096132930, 1878649673, 1869800561, 502540227>()].span(),
+            [qm31_const::<686850252, 1207561035, 460514419, 502540228>()].span(),
+            [qm31_const::<619741073, 1073343307, 393405555, 502540228>()].span(),
+            [qm31_const::<820966215, 1475996431, 594732087, 502540208>()].span(),
+            [qm31_const::<888075394, 1610214159, 661840951, 502540208>()].span(),
+            [qm31_const::<686747857, 1207560975, 460514359, 502540208>()].span(),
             [qm31_const::<179325277, 825275894, 97341591, 1357105975>()].span(),
         ]
             .span();

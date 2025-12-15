@@ -9,7 +9,7 @@ use crate::witness::components::{
 };
 use crate::witness::prelude::*;
 
-pub type PackedInputType = (PackedM31, PackedM31, ([PackedM31; 14], [PackedFelt252; 2]));
+pub type PackedInputType = (PackedM31, PackedM31, (PackedFelt252, [PackedFelt252; 2]));
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -269,10 +269,10 @@ fn write_trace_simd(
     let M31_134217728 = PackedM31::broadcast(M31::from(134217728));
     let M31_136 = PackedM31::broadcast(M31::from(136));
     let M31_2 = PackedM31::broadcast(M31::from(2));
-    let M31_262144 = PackedM31::broadcast(M31::from(262144));
     let M31_32 = PackedM31::broadcast(M31::from(32));
     let M31_4 = PackedM31::broadcast(M31::from(4));
     let M31_4194304 = PackedM31::broadcast(M31::from(4194304));
+    let M31_512 = PackedM31::broadcast(M31::from(512));
     let M31_524288 = PackedM31::broadcast(M31::from(524288));
     let M31_64 = PackedM31::broadcast(M31::from(64));
     let M31_65536 = PackedM31::broadcast(M31::from(65536));
@@ -297,378 +297,406 @@ fn write_trace_simd(
                 *row[0] = input_limb_0_col0;
                 let input_limb_1_col1 = partial_ec_mul_input.1;
                 *row[1] = input_limb_1_col1;
-                let input_limb_2_col2 = partial_ec_mul_input.2 .0[0];
+                let input_limb_2_col2 = partial_ec_mul_input.2 .0.get_m31(0);
                 *row[2] = input_limb_2_col2;
-                let input_limb_3_col3 = partial_ec_mul_input.2 .0[1];
+                let input_limb_3_col3 = partial_ec_mul_input.2 .0.get_m31(1);
                 *row[3] = input_limb_3_col3;
-                let input_limb_4_col4 = partial_ec_mul_input.2 .0[2];
+                let input_limb_4_col4 = partial_ec_mul_input.2 .0.get_m31(2);
                 *row[4] = input_limb_4_col4;
-                let input_limb_5_col5 = partial_ec_mul_input.2 .0[3];
+                let input_limb_5_col5 = partial_ec_mul_input.2 .0.get_m31(3);
                 *row[5] = input_limb_5_col5;
-                let input_limb_6_col6 = partial_ec_mul_input.2 .0[4];
+                let input_limb_6_col6 = partial_ec_mul_input.2 .0.get_m31(4);
                 *row[6] = input_limb_6_col6;
-                let input_limb_7_col7 = partial_ec_mul_input.2 .0[5];
+                let input_limb_7_col7 = partial_ec_mul_input.2 .0.get_m31(5);
                 *row[7] = input_limb_7_col7;
-                let input_limb_8_col8 = partial_ec_mul_input.2 .0[6];
+                let input_limb_8_col8 = partial_ec_mul_input.2 .0.get_m31(6);
                 *row[8] = input_limb_8_col8;
-                let input_limb_9_col9 = partial_ec_mul_input.2 .0[7];
+                let input_limb_9_col9 = partial_ec_mul_input.2 .0.get_m31(7);
                 *row[9] = input_limb_9_col9;
-                let input_limb_10_col10 = partial_ec_mul_input.2 .0[8];
+                let input_limb_10_col10 = partial_ec_mul_input.2 .0.get_m31(8);
                 *row[10] = input_limb_10_col10;
-                let input_limb_11_col11 = partial_ec_mul_input.2 .0[9];
+                let input_limb_11_col11 = partial_ec_mul_input.2 .0.get_m31(9);
                 *row[11] = input_limb_11_col11;
-                let input_limb_12_col12 = partial_ec_mul_input.2 .0[10];
+                let input_limb_12_col12 = partial_ec_mul_input.2 .0.get_m31(10);
                 *row[12] = input_limb_12_col12;
-                let input_limb_13_col13 = partial_ec_mul_input.2 .0[11];
+                let input_limb_13_col13 = partial_ec_mul_input.2 .0.get_m31(11);
                 *row[13] = input_limb_13_col13;
-                let input_limb_14_col14 = partial_ec_mul_input.2 .0[12];
+                let input_limb_14_col14 = partial_ec_mul_input.2 .0.get_m31(12);
                 *row[14] = input_limb_14_col14;
-                let input_limb_15_col15 = partial_ec_mul_input.2 .0[13];
+                let input_limb_15_col15 = partial_ec_mul_input.2 .0.get_m31(13);
                 *row[15] = input_limb_15_col15;
-                let input_limb_16_col16 = partial_ec_mul_input.2 .1[0].get_m31(0);
+                let input_limb_16_col16 = partial_ec_mul_input.2 .0.get_m31(14);
                 *row[16] = input_limb_16_col16;
-                let input_limb_17_col17 = partial_ec_mul_input.2 .1[0].get_m31(1);
+                let input_limb_17_col17 = partial_ec_mul_input.2 .0.get_m31(15);
                 *row[17] = input_limb_17_col17;
-                let input_limb_18_col18 = partial_ec_mul_input.2 .1[0].get_m31(2);
+                let input_limb_18_col18 = partial_ec_mul_input.2 .0.get_m31(16);
                 *row[18] = input_limb_18_col18;
-                let input_limb_19_col19 = partial_ec_mul_input.2 .1[0].get_m31(3);
+                let input_limb_19_col19 = partial_ec_mul_input.2 .0.get_m31(17);
                 *row[19] = input_limb_19_col19;
-                let input_limb_20_col20 = partial_ec_mul_input.2 .1[0].get_m31(4);
+                let input_limb_20_col20 = partial_ec_mul_input.2 .0.get_m31(18);
                 *row[20] = input_limb_20_col20;
-                let input_limb_21_col21 = partial_ec_mul_input.2 .1[0].get_m31(5);
+                let input_limb_21_col21 = partial_ec_mul_input.2 .0.get_m31(19);
                 *row[21] = input_limb_21_col21;
-                let input_limb_22_col22 = partial_ec_mul_input.2 .1[0].get_m31(6);
+                let input_limb_22_col22 = partial_ec_mul_input.2 .0.get_m31(20);
                 *row[22] = input_limb_22_col22;
-                let input_limb_23_col23 = partial_ec_mul_input.2 .1[0].get_m31(7);
+                let input_limb_23_col23 = partial_ec_mul_input.2 .0.get_m31(21);
                 *row[23] = input_limb_23_col23;
-                let input_limb_24_col24 = partial_ec_mul_input.2 .1[0].get_m31(8);
+                let input_limb_24_col24 = partial_ec_mul_input.2 .0.get_m31(22);
                 *row[24] = input_limb_24_col24;
-                let input_limb_25_col25 = partial_ec_mul_input.2 .1[0].get_m31(9);
+                let input_limb_25_col25 = partial_ec_mul_input.2 .0.get_m31(23);
                 *row[25] = input_limb_25_col25;
-                let input_limb_26_col26 = partial_ec_mul_input.2 .1[0].get_m31(10);
+                let input_limb_26_col26 = partial_ec_mul_input.2 .0.get_m31(24);
                 *row[26] = input_limb_26_col26;
-                let input_limb_27_col27 = partial_ec_mul_input.2 .1[0].get_m31(11);
+                let input_limb_27_col27 = partial_ec_mul_input.2 .0.get_m31(25);
                 *row[27] = input_limb_27_col27;
-                let input_limb_28_col28 = partial_ec_mul_input.2 .1[0].get_m31(12);
+                let input_limb_28_col28 = partial_ec_mul_input.2 .0.get_m31(26);
                 *row[28] = input_limb_28_col28;
-                let input_limb_29_col29 = partial_ec_mul_input.2 .1[0].get_m31(13);
+                let input_limb_29_col29 = partial_ec_mul_input.2 .0.get_m31(27);
                 *row[29] = input_limb_29_col29;
-                let input_limb_30_col30 = partial_ec_mul_input.2 .1[0].get_m31(14);
+                let input_limb_30_col30 = partial_ec_mul_input.2 .1[0].get_m31(0);
                 *row[30] = input_limb_30_col30;
-                let input_limb_31_col31 = partial_ec_mul_input.2 .1[0].get_m31(15);
+                let input_limb_31_col31 = partial_ec_mul_input.2 .1[0].get_m31(1);
                 *row[31] = input_limb_31_col31;
-                let input_limb_32_col32 = partial_ec_mul_input.2 .1[0].get_m31(16);
+                let input_limb_32_col32 = partial_ec_mul_input.2 .1[0].get_m31(2);
                 *row[32] = input_limb_32_col32;
-                let input_limb_33_col33 = partial_ec_mul_input.2 .1[0].get_m31(17);
+                let input_limb_33_col33 = partial_ec_mul_input.2 .1[0].get_m31(3);
                 *row[33] = input_limb_33_col33;
-                let input_limb_34_col34 = partial_ec_mul_input.2 .1[0].get_m31(18);
+                let input_limb_34_col34 = partial_ec_mul_input.2 .1[0].get_m31(4);
                 *row[34] = input_limb_34_col34;
-                let input_limb_35_col35 = partial_ec_mul_input.2 .1[0].get_m31(19);
+                let input_limb_35_col35 = partial_ec_mul_input.2 .1[0].get_m31(5);
                 *row[35] = input_limb_35_col35;
-                let input_limb_36_col36 = partial_ec_mul_input.2 .1[0].get_m31(20);
+                let input_limb_36_col36 = partial_ec_mul_input.2 .1[0].get_m31(6);
                 *row[36] = input_limb_36_col36;
-                let input_limb_37_col37 = partial_ec_mul_input.2 .1[0].get_m31(21);
+                let input_limb_37_col37 = partial_ec_mul_input.2 .1[0].get_m31(7);
                 *row[37] = input_limb_37_col37;
-                let input_limb_38_col38 = partial_ec_mul_input.2 .1[0].get_m31(22);
+                let input_limb_38_col38 = partial_ec_mul_input.2 .1[0].get_m31(8);
                 *row[38] = input_limb_38_col38;
-                let input_limb_39_col39 = partial_ec_mul_input.2 .1[0].get_m31(23);
+                let input_limb_39_col39 = partial_ec_mul_input.2 .1[0].get_m31(9);
                 *row[39] = input_limb_39_col39;
-                let input_limb_40_col40 = partial_ec_mul_input.2 .1[0].get_m31(24);
+                let input_limb_40_col40 = partial_ec_mul_input.2 .1[0].get_m31(10);
                 *row[40] = input_limb_40_col40;
-                let input_limb_41_col41 = partial_ec_mul_input.2 .1[0].get_m31(25);
+                let input_limb_41_col41 = partial_ec_mul_input.2 .1[0].get_m31(11);
                 *row[41] = input_limb_41_col41;
-                let input_limb_42_col42 = partial_ec_mul_input.2 .1[0].get_m31(26);
+                let input_limb_42_col42 = partial_ec_mul_input.2 .1[0].get_m31(12);
                 *row[42] = input_limb_42_col42;
-                let input_limb_43_col43 = partial_ec_mul_input.2 .1[0].get_m31(27);
+                let input_limb_43_col43 = partial_ec_mul_input.2 .1[0].get_m31(13);
                 *row[43] = input_limb_43_col43;
-                let input_limb_44_col44 = partial_ec_mul_input.2 .1[1].get_m31(0);
+                let input_limb_44_col44 = partial_ec_mul_input.2 .1[0].get_m31(14);
                 *row[44] = input_limb_44_col44;
-                let input_limb_45_col45 = partial_ec_mul_input.2 .1[1].get_m31(1);
+                let input_limb_45_col45 = partial_ec_mul_input.2 .1[0].get_m31(15);
                 *row[45] = input_limb_45_col45;
-                let input_limb_46_col46 = partial_ec_mul_input.2 .1[1].get_m31(2);
+                let input_limb_46_col46 = partial_ec_mul_input.2 .1[0].get_m31(16);
                 *row[46] = input_limb_46_col46;
-                let input_limb_47_col47 = partial_ec_mul_input.2 .1[1].get_m31(3);
+                let input_limb_47_col47 = partial_ec_mul_input.2 .1[0].get_m31(17);
                 *row[47] = input_limb_47_col47;
-                let input_limb_48_col48 = partial_ec_mul_input.2 .1[1].get_m31(4);
+                let input_limb_48_col48 = partial_ec_mul_input.2 .1[0].get_m31(18);
                 *row[48] = input_limb_48_col48;
-                let input_limb_49_col49 = partial_ec_mul_input.2 .1[1].get_m31(5);
+                let input_limb_49_col49 = partial_ec_mul_input.2 .1[0].get_m31(19);
                 *row[49] = input_limb_49_col49;
-                let input_limb_50_col50 = partial_ec_mul_input.2 .1[1].get_m31(6);
+                let input_limb_50_col50 = partial_ec_mul_input.2 .1[0].get_m31(20);
                 *row[50] = input_limb_50_col50;
-                let input_limb_51_col51 = partial_ec_mul_input.2 .1[1].get_m31(7);
+                let input_limb_51_col51 = partial_ec_mul_input.2 .1[0].get_m31(21);
                 *row[51] = input_limb_51_col51;
-                let input_limb_52_col52 = partial_ec_mul_input.2 .1[1].get_m31(8);
+                let input_limb_52_col52 = partial_ec_mul_input.2 .1[0].get_m31(22);
                 *row[52] = input_limb_52_col52;
-                let input_limb_53_col53 = partial_ec_mul_input.2 .1[1].get_m31(9);
+                let input_limb_53_col53 = partial_ec_mul_input.2 .1[0].get_m31(23);
                 *row[53] = input_limb_53_col53;
-                let input_limb_54_col54 = partial_ec_mul_input.2 .1[1].get_m31(10);
+                let input_limb_54_col54 = partial_ec_mul_input.2 .1[0].get_m31(24);
                 *row[54] = input_limb_54_col54;
-                let input_limb_55_col55 = partial_ec_mul_input.2 .1[1].get_m31(11);
+                let input_limb_55_col55 = partial_ec_mul_input.2 .1[0].get_m31(25);
                 *row[55] = input_limb_55_col55;
-                let input_limb_56_col56 = partial_ec_mul_input.2 .1[1].get_m31(12);
+                let input_limb_56_col56 = partial_ec_mul_input.2 .1[0].get_m31(26);
                 *row[56] = input_limb_56_col56;
-                let input_limb_57_col57 = partial_ec_mul_input.2 .1[1].get_m31(13);
+                let input_limb_57_col57 = partial_ec_mul_input.2 .1[0].get_m31(27);
                 *row[57] = input_limb_57_col57;
-                let input_limb_58_col58 = partial_ec_mul_input.2 .1[1].get_m31(14);
+                let input_limb_58_col58 = partial_ec_mul_input.2 .1[1].get_m31(0);
                 *row[58] = input_limb_58_col58;
-                let input_limb_59_col59 = partial_ec_mul_input.2 .1[1].get_m31(15);
+                let input_limb_59_col59 = partial_ec_mul_input.2 .1[1].get_m31(1);
                 *row[59] = input_limb_59_col59;
-                let input_limb_60_col60 = partial_ec_mul_input.2 .1[1].get_m31(16);
+                let input_limb_60_col60 = partial_ec_mul_input.2 .1[1].get_m31(2);
                 *row[60] = input_limb_60_col60;
-                let input_limb_61_col61 = partial_ec_mul_input.2 .1[1].get_m31(17);
+                let input_limb_61_col61 = partial_ec_mul_input.2 .1[1].get_m31(3);
                 *row[61] = input_limb_61_col61;
-                let input_limb_62_col62 = partial_ec_mul_input.2 .1[1].get_m31(18);
+                let input_limb_62_col62 = partial_ec_mul_input.2 .1[1].get_m31(4);
                 *row[62] = input_limb_62_col62;
-                let input_limb_63_col63 = partial_ec_mul_input.2 .1[1].get_m31(19);
+                let input_limb_63_col63 = partial_ec_mul_input.2 .1[1].get_m31(5);
                 *row[63] = input_limb_63_col63;
-                let input_limb_64_col64 = partial_ec_mul_input.2 .1[1].get_m31(20);
+                let input_limb_64_col64 = partial_ec_mul_input.2 .1[1].get_m31(6);
                 *row[64] = input_limb_64_col64;
-                let input_limb_65_col65 = partial_ec_mul_input.2 .1[1].get_m31(21);
+                let input_limb_65_col65 = partial_ec_mul_input.2 .1[1].get_m31(7);
                 *row[65] = input_limb_65_col65;
-                let input_limb_66_col66 = partial_ec_mul_input.2 .1[1].get_m31(22);
+                let input_limb_66_col66 = partial_ec_mul_input.2 .1[1].get_m31(8);
                 *row[66] = input_limb_66_col66;
-                let input_limb_67_col67 = partial_ec_mul_input.2 .1[1].get_m31(23);
+                let input_limb_67_col67 = partial_ec_mul_input.2 .1[1].get_m31(9);
                 *row[67] = input_limb_67_col67;
-                let input_limb_68_col68 = partial_ec_mul_input.2 .1[1].get_m31(24);
+                let input_limb_68_col68 = partial_ec_mul_input.2 .1[1].get_m31(10);
                 *row[68] = input_limb_68_col68;
-                let input_limb_69_col69 = partial_ec_mul_input.2 .1[1].get_m31(25);
+                let input_limb_69_col69 = partial_ec_mul_input.2 .1[1].get_m31(11);
                 *row[69] = input_limb_69_col69;
-                let input_limb_70_col70 = partial_ec_mul_input.2 .1[1].get_m31(26);
+                let input_limb_70_col70 = partial_ec_mul_input.2 .1[1].get_m31(12);
                 *row[70] = input_limb_70_col70;
-                let input_limb_71_col71 = partial_ec_mul_input.2 .1[1].get_m31(27);
+                let input_limb_71_col71 = partial_ec_mul_input.2 .1[1].get_m31(13);
                 *row[71] = input_limb_71_col71;
+                let input_limb_72_col72 = partial_ec_mul_input.2 .1[1].get_m31(14);
+                *row[72] = input_limb_72_col72;
+                let input_limb_73_col73 = partial_ec_mul_input.2 .1[1].get_m31(15);
+                *row[73] = input_limb_73_col73;
+                let input_limb_74_col74 = partial_ec_mul_input.2 .1[1].get_m31(16);
+                *row[74] = input_limb_74_col74;
+                let input_limb_75_col75 = partial_ec_mul_input.2 .1[1].get_m31(17);
+                *row[75] = input_limb_75_col75;
+                let input_limb_76_col76 = partial_ec_mul_input.2 .1[1].get_m31(18);
+                *row[76] = input_limb_76_col76;
+                let input_limb_77_col77 = partial_ec_mul_input.2 .1[1].get_m31(19);
+                *row[77] = input_limb_77_col77;
+                let input_limb_78_col78 = partial_ec_mul_input.2 .1[1].get_m31(20);
+                *row[78] = input_limb_78_col78;
+                let input_limb_79_col79 = partial_ec_mul_input.2 .1[1].get_m31(21);
+                *row[79] = input_limb_79_col79;
+                let input_limb_80_col80 = partial_ec_mul_input.2 .1[1].get_m31(22);
+                *row[80] = input_limb_80_col80;
+                let input_limb_81_col81 = partial_ec_mul_input.2 .1[1].get_m31(23);
+                *row[81] = input_limb_81_col81;
+                let input_limb_82_col82 = partial_ec_mul_input.2 .1[1].get_m31(24);
+                *row[82] = input_limb_82_col82;
+                let input_limb_83_col83 = partial_ec_mul_input.2 .1[1].get_m31(25);
+                *row[83] = input_limb_83_col83;
+                let input_limb_84_col84 = partial_ec_mul_input.2 .1[1].get_m31(26);
+                *row[84] = input_limb_84_col84;
+                let input_limb_85_col85 = partial_ec_mul_input.2 .1[1].get_m31(27);
+                *row[85] = input_limb_85_col85;
                 *sub_component_inputs.pedersen_points_table[0] =
-                    [(((M31_262144) * (input_limb_1_col1)) + (input_limb_2_col2))];
+                    [(((M31_512) * (input_limb_1_col1)) + (input_limb_2_col2))];
                 let pedersen_points_table_output_tmp_71feb_0 =
-                    PackedPedersenPointsTable::deduce_output([(((M31_262144)
-                        * (input_limb_1_col1))
-                        + (input_limb_2_col2))]);
-                let pedersen_points_table_output_limb_0_col72 =
+                    PackedPedersenPointsTable::deduce_output([
+                        (((M31_512) * (input_limb_1_col1)) + (input_limb_2_col2))
+                    ]);
+                let pedersen_points_table_output_limb_0_col86 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(0);
-                *row[72] = pedersen_points_table_output_limb_0_col72;
-                let pedersen_points_table_output_limb_1_col73 =
+                *row[86] = pedersen_points_table_output_limb_0_col86;
+                let pedersen_points_table_output_limb_1_col87 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(1);
-                *row[73] = pedersen_points_table_output_limb_1_col73;
-                let pedersen_points_table_output_limb_2_col74 =
+                *row[87] = pedersen_points_table_output_limb_1_col87;
+                let pedersen_points_table_output_limb_2_col88 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(2);
-                *row[74] = pedersen_points_table_output_limb_2_col74;
-                let pedersen_points_table_output_limb_3_col75 =
+                *row[88] = pedersen_points_table_output_limb_2_col88;
+                let pedersen_points_table_output_limb_3_col89 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(3);
-                *row[75] = pedersen_points_table_output_limb_3_col75;
-                let pedersen_points_table_output_limb_4_col76 =
+                *row[89] = pedersen_points_table_output_limb_3_col89;
+                let pedersen_points_table_output_limb_4_col90 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(4);
-                *row[76] = pedersen_points_table_output_limb_4_col76;
-                let pedersen_points_table_output_limb_5_col77 =
+                *row[90] = pedersen_points_table_output_limb_4_col90;
+                let pedersen_points_table_output_limb_5_col91 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(5);
-                *row[77] = pedersen_points_table_output_limb_5_col77;
-                let pedersen_points_table_output_limb_6_col78 =
+                *row[91] = pedersen_points_table_output_limb_5_col91;
+                let pedersen_points_table_output_limb_6_col92 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(6);
-                *row[78] = pedersen_points_table_output_limb_6_col78;
-                let pedersen_points_table_output_limb_7_col79 =
+                *row[92] = pedersen_points_table_output_limb_6_col92;
+                let pedersen_points_table_output_limb_7_col93 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(7);
-                *row[79] = pedersen_points_table_output_limb_7_col79;
-                let pedersen_points_table_output_limb_8_col80 =
+                *row[93] = pedersen_points_table_output_limb_7_col93;
+                let pedersen_points_table_output_limb_8_col94 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(8);
-                *row[80] = pedersen_points_table_output_limb_8_col80;
-                let pedersen_points_table_output_limb_9_col81 =
+                *row[94] = pedersen_points_table_output_limb_8_col94;
+                let pedersen_points_table_output_limb_9_col95 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(9);
-                *row[81] = pedersen_points_table_output_limb_9_col81;
-                let pedersen_points_table_output_limb_10_col82 =
+                *row[95] = pedersen_points_table_output_limb_9_col95;
+                let pedersen_points_table_output_limb_10_col96 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(10);
-                *row[82] = pedersen_points_table_output_limb_10_col82;
-                let pedersen_points_table_output_limb_11_col83 =
+                *row[96] = pedersen_points_table_output_limb_10_col96;
+                let pedersen_points_table_output_limb_11_col97 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(11);
-                *row[83] = pedersen_points_table_output_limb_11_col83;
-                let pedersen_points_table_output_limb_12_col84 =
+                *row[97] = pedersen_points_table_output_limb_11_col97;
+                let pedersen_points_table_output_limb_12_col98 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(12);
-                *row[84] = pedersen_points_table_output_limb_12_col84;
-                let pedersen_points_table_output_limb_13_col85 =
+                *row[98] = pedersen_points_table_output_limb_12_col98;
+                let pedersen_points_table_output_limb_13_col99 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(13);
-                *row[85] = pedersen_points_table_output_limb_13_col85;
-                let pedersen_points_table_output_limb_14_col86 =
+                *row[99] = pedersen_points_table_output_limb_13_col99;
+                let pedersen_points_table_output_limb_14_col100 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(14);
-                *row[86] = pedersen_points_table_output_limb_14_col86;
-                let pedersen_points_table_output_limb_15_col87 =
+                *row[100] = pedersen_points_table_output_limb_14_col100;
+                let pedersen_points_table_output_limb_15_col101 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(15);
-                *row[87] = pedersen_points_table_output_limb_15_col87;
-                let pedersen_points_table_output_limb_16_col88 =
+                *row[101] = pedersen_points_table_output_limb_15_col101;
+                let pedersen_points_table_output_limb_16_col102 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(16);
-                *row[88] = pedersen_points_table_output_limb_16_col88;
-                let pedersen_points_table_output_limb_17_col89 =
+                *row[102] = pedersen_points_table_output_limb_16_col102;
+                let pedersen_points_table_output_limb_17_col103 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(17);
-                *row[89] = pedersen_points_table_output_limb_17_col89;
-                let pedersen_points_table_output_limb_18_col90 =
+                *row[103] = pedersen_points_table_output_limb_17_col103;
+                let pedersen_points_table_output_limb_18_col104 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(18);
-                *row[90] = pedersen_points_table_output_limb_18_col90;
-                let pedersen_points_table_output_limb_19_col91 =
+                *row[104] = pedersen_points_table_output_limb_18_col104;
+                let pedersen_points_table_output_limb_19_col105 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(19);
-                *row[91] = pedersen_points_table_output_limb_19_col91;
-                let pedersen_points_table_output_limb_20_col92 =
+                *row[105] = pedersen_points_table_output_limb_19_col105;
+                let pedersen_points_table_output_limb_20_col106 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(20);
-                *row[92] = pedersen_points_table_output_limb_20_col92;
-                let pedersen_points_table_output_limb_21_col93 =
+                *row[106] = pedersen_points_table_output_limb_20_col106;
+                let pedersen_points_table_output_limb_21_col107 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(21);
-                *row[93] = pedersen_points_table_output_limb_21_col93;
-                let pedersen_points_table_output_limb_22_col94 =
+                *row[107] = pedersen_points_table_output_limb_21_col107;
+                let pedersen_points_table_output_limb_22_col108 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(22);
-                *row[94] = pedersen_points_table_output_limb_22_col94;
-                let pedersen_points_table_output_limb_23_col95 =
+                *row[108] = pedersen_points_table_output_limb_22_col108;
+                let pedersen_points_table_output_limb_23_col109 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(23);
-                *row[95] = pedersen_points_table_output_limb_23_col95;
-                let pedersen_points_table_output_limb_24_col96 =
+                *row[109] = pedersen_points_table_output_limb_23_col109;
+                let pedersen_points_table_output_limb_24_col110 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(24);
-                *row[96] = pedersen_points_table_output_limb_24_col96;
-                let pedersen_points_table_output_limb_25_col97 =
+                *row[110] = pedersen_points_table_output_limb_24_col110;
+                let pedersen_points_table_output_limb_25_col111 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(25);
-                *row[97] = pedersen_points_table_output_limb_25_col97;
-                let pedersen_points_table_output_limb_26_col98 =
+                *row[111] = pedersen_points_table_output_limb_25_col111;
+                let pedersen_points_table_output_limb_26_col112 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(26);
-                *row[98] = pedersen_points_table_output_limb_26_col98;
-                let pedersen_points_table_output_limb_27_col99 =
+                *row[112] = pedersen_points_table_output_limb_26_col112;
+                let pedersen_points_table_output_limb_27_col113 =
                     pedersen_points_table_output_tmp_71feb_0[0].get_m31(27);
-                *row[99] = pedersen_points_table_output_limb_27_col99;
-                let pedersen_points_table_output_limb_28_col100 =
+                *row[113] = pedersen_points_table_output_limb_27_col113;
+                let pedersen_points_table_output_limb_28_col114 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(0);
-                *row[100] = pedersen_points_table_output_limb_28_col100;
-                let pedersen_points_table_output_limb_29_col101 =
+                *row[114] = pedersen_points_table_output_limb_28_col114;
+                let pedersen_points_table_output_limb_29_col115 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(1);
-                *row[101] = pedersen_points_table_output_limb_29_col101;
-                let pedersen_points_table_output_limb_30_col102 =
+                *row[115] = pedersen_points_table_output_limb_29_col115;
+                let pedersen_points_table_output_limb_30_col116 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(2);
-                *row[102] = pedersen_points_table_output_limb_30_col102;
-                let pedersen_points_table_output_limb_31_col103 =
+                *row[116] = pedersen_points_table_output_limb_30_col116;
+                let pedersen_points_table_output_limb_31_col117 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(3);
-                *row[103] = pedersen_points_table_output_limb_31_col103;
-                let pedersen_points_table_output_limb_32_col104 =
+                *row[117] = pedersen_points_table_output_limb_31_col117;
+                let pedersen_points_table_output_limb_32_col118 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(4);
-                *row[104] = pedersen_points_table_output_limb_32_col104;
-                let pedersen_points_table_output_limb_33_col105 =
+                *row[118] = pedersen_points_table_output_limb_32_col118;
+                let pedersen_points_table_output_limb_33_col119 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(5);
-                *row[105] = pedersen_points_table_output_limb_33_col105;
-                let pedersen_points_table_output_limb_34_col106 =
+                *row[119] = pedersen_points_table_output_limb_33_col119;
+                let pedersen_points_table_output_limb_34_col120 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(6);
-                *row[106] = pedersen_points_table_output_limb_34_col106;
-                let pedersen_points_table_output_limb_35_col107 =
+                *row[120] = pedersen_points_table_output_limb_34_col120;
+                let pedersen_points_table_output_limb_35_col121 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(7);
-                *row[107] = pedersen_points_table_output_limb_35_col107;
-                let pedersen_points_table_output_limb_36_col108 =
+                *row[121] = pedersen_points_table_output_limb_35_col121;
+                let pedersen_points_table_output_limb_36_col122 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(8);
-                *row[108] = pedersen_points_table_output_limb_36_col108;
-                let pedersen_points_table_output_limb_37_col109 =
+                *row[122] = pedersen_points_table_output_limb_36_col122;
+                let pedersen_points_table_output_limb_37_col123 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(9);
-                *row[109] = pedersen_points_table_output_limb_37_col109;
-                let pedersen_points_table_output_limb_38_col110 =
+                *row[123] = pedersen_points_table_output_limb_37_col123;
+                let pedersen_points_table_output_limb_38_col124 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(10);
-                *row[110] = pedersen_points_table_output_limb_38_col110;
-                let pedersen_points_table_output_limb_39_col111 =
+                *row[124] = pedersen_points_table_output_limb_38_col124;
+                let pedersen_points_table_output_limb_39_col125 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(11);
-                *row[111] = pedersen_points_table_output_limb_39_col111;
-                let pedersen_points_table_output_limb_40_col112 =
+                *row[125] = pedersen_points_table_output_limb_39_col125;
+                let pedersen_points_table_output_limb_40_col126 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(12);
-                *row[112] = pedersen_points_table_output_limb_40_col112;
-                let pedersen_points_table_output_limb_41_col113 =
+                *row[126] = pedersen_points_table_output_limb_40_col126;
+                let pedersen_points_table_output_limb_41_col127 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(13);
-                *row[113] = pedersen_points_table_output_limb_41_col113;
-                let pedersen_points_table_output_limb_42_col114 =
+                *row[127] = pedersen_points_table_output_limb_41_col127;
+                let pedersen_points_table_output_limb_42_col128 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(14);
-                *row[114] = pedersen_points_table_output_limb_42_col114;
-                let pedersen_points_table_output_limb_43_col115 =
+                *row[128] = pedersen_points_table_output_limb_42_col128;
+                let pedersen_points_table_output_limb_43_col129 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(15);
-                *row[115] = pedersen_points_table_output_limb_43_col115;
-                let pedersen_points_table_output_limb_44_col116 =
+                *row[129] = pedersen_points_table_output_limb_43_col129;
+                let pedersen_points_table_output_limb_44_col130 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(16);
-                *row[116] = pedersen_points_table_output_limb_44_col116;
-                let pedersen_points_table_output_limb_45_col117 =
+                *row[130] = pedersen_points_table_output_limb_44_col130;
+                let pedersen_points_table_output_limb_45_col131 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(17);
-                *row[117] = pedersen_points_table_output_limb_45_col117;
-                let pedersen_points_table_output_limb_46_col118 =
+                *row[131] = pedersen_points_table_output_limb_45_col131;
+                let pedersen_points_table_output_limb_46_col132 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(18);
-                *row[118] = pedersen_points_table_output_limb_46_col118;
-                let pedersen_points_table_output_limb_47_col119 =
+                *row[132] = pedersen_points_table_output_limb_46_col132;
+                let pedersen_points_table_output_limb_47_col133 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(19);
-                *row[119] = pedersen_points_table_output_limb_47_col119;
-                let pedersen_points_table_output_limb_48_col120 =
+                *row[133] = pedersen_points_table_output_limb_47_col133;
+                let pedersen_points_table_output_limb_48_col134 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(20);
-                *row[120] = pedersen_points_table_output_limb_48_col120;
-                let pedersen_points_table_output_limb_49_col121 =
+                *row[134] = pedersen_points_table_output_limb_48_col134;
+                let pedersen_points_table_output_limb_49_col135 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(21);
-                *row[121] = pedersen_points_table_output_limb_49_col121;
-                let pedersen_points_table_output_limb_50_col122 =
+                *row[135] = pedersen_points_table_output_limb_49_col135;
+                let pedersen_points_table_output_limb_50_col136 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(22);
-                *row[122] = pedersen_points_table_output_limb_50_col122;
-                let pedersen_points_table_output_limb_51_col123 =
+                *row[136] = pedersen_points_table_output_limb_50_col136;
+                let pedersen_points_table_output_limb_51_col137 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(23);
-                *row[123] = pedersen_points_table_output_limb_51_col123;
-                let pedersen_points_table_output_limb_52_col124 =
+                *row[137] = pedersen_points_table_output_limb_51_col137;
+                let pedersen_points_table_output_limb_52_col138 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(24);
-                *row[124] = pedersen_points_table_output_limb_52_col124;
-                let pedersen_points_table_output_limb_53_col125 =
+                *row[138] = pedersen_points_table_output_limb_52_col138;
+                let pedersen_points_table_output_limb_53_col139 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(25);
-                *row[125] = pedersen_points_table_output_limb_53_col125;
-                let pedersen_points_table_output_limb_54_col126 =
+                *row[139] = pedersen_points_table_output_limb_53_col139;
+                let pedersen_points_table_output_limb_54_col140 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(26);
-                *row[126] = pedersen_points_table_output_limb_54_col126;
-                let pedersen_points_table_output_limb_55_col127 =
+                *row[140] = pedersen_points_table_output_limb_54_col140;
+                let pedersen_points_table_output_limb_55_col141 =
                     pedersen_points_table_output_tmp_71feb_0[1].get_m31(27);
-                *row[127] = pedersen_points_table_output_limb_55_col127;
+                *row[141] = pedersen_points_table_output_limb_55_col141;
                 *lookup_data.pedersen_points_table_0 = [
-                    (((M31_262144) * (input_limb_1_col1)) + (input_limb_2_col2)),
-                    pedersen_points_table_output_limb_0_col72,
-                    pedersen_points_table_output_limb_1_col73,
-                    pedersen_points_table_output_limb_2_col74,
-                    pedersen_points_table_output_limb_3_col75,
-                    pedersen_points_table_output_limb_4_col76,
-                    pedersen_points_table_output_limb_5_col77,
-                    pedersen_points_table_output_limb_6_col78,
-                    pedersen_points_table_output_limb_7_col79,
-                    pedersen_points_table_output_limb_8_col80,
-                    pedersen_points_table_output_limb_9_col81,
-                    pedersen_points_table_output_limb_10_col82,
-                    pedersen_points_table_output_limb_11_col83,
-                    pedersen_points_table_output_limb_12_col84,
-                    pedersen_points_table_output_limb_13_col85,
-                    pedersen_points_table_output_limb_14_col86,
-                    pedersen_points_table_output_limb_15_col87,
-                    pedersen_points_table_output_limb_16_col88,
-                    pedersen_points_table_output_limb_17_col89,
-                    pedersen_points_table_output_limb_18_col90,
-                    pedersen_points_table_output_limb_19_col91,
-                    pedersen_points_table_output_limb_20_col92,
-                    pedersen_points_table_output_limb_21_col93,
-                    pedersen_points_table_output_limb_22_col94,
-                    pedersen_points_table_output_limb_23_col95,
-                    pedersen_points_table_output_limb_24_col96,
-                    pedersen_points_table_output_limb_25_col97,
-                    pedersen_points_table_output_limb_26_col98,
-                    pedersen_points_table_output_limb_27_col99,
-                    pedersen_points_table_output_limb_28_col100,
-                    pedersen_points_table_output_limb_29_col101,
-                    pedersen_points_table_output_limb_30_col102,
-                    pedersen_points_table_output_limb_31_col103,
-                    pedersen_points_table_output_limb_32_col104,
-                    pedersen_points_table_output_limb_33_col105,
-                    pedersen_points_table_output_limb_34_col106,
-                    pedersen_points_table_output_limb_35_col107,
-                    pedersen_points_table_output_limb_36_col108,
-                    pedersen_points_table_output_limb_37_col109,
-                    pedersen_points_table_output_limb_38_col110,
-                    pedersen_points_table_output_limb_39_col111,
-                    pedersen_points_table_output_limb_40_col112,
-                    pedersen_points_table_output_limb_41_col113,
-                    pedersen_points_table_output_limb_42_col114,
-                    pedersen_points_table_output_limb_43_col115,
-                    pedersen_points_table_output_limb_44_col116,
-                    pedersen_points_table_output_limb_45_col117,
-                    pedersen_points_table_output_limb_46_col118,
-                    pedersen_points_table_output_limb_47_col119,
-                    pedersen_points_table_output_limb_48_col120,
-                    pedersen_points_table_output_limb_49_col121,
-                    pedersen_points_table_output_limb_50_col122,
-                    pedersen_points_table_output_limb_51_col123,
-                    pedersen_points_table_output_limb_52_col124,
-                    pedersen_points_table_output_limb_53_col125,
-                    pedersen_points_table_output_limb_54_col126,
-                    pedersen_points_table_output_limb_55_col127,
+                    (((M31_512) * (input_limb_1_col1)) + (input_limb_2_col2)),
+                    pedersen_points_table_output_limb_0_col86,
+                    pedersen_points_table_output_limb_1_col87,
+                    pedersen_points_table_output_limb_2_col88,
+                    pedersen_points_table_output_limb_3_col89,
+                    pedersen_points_table_output_limb_4_col90,
+                    pedersen_points_table_output_limb_5_col91,
+                    pedersen_points_table_output_limb_6_col92,
+                    pedersen_points_table_output_limb_7_col93,
+                    pedersen_points_table_output_limb_8_col94,
+                    pedersen_points_table_output_limb_9_col95,
+                    pedersen_points_table_output_limb_10_col96,
+                    pedersen_points_table_output_limb_11_col97,
+                    pedersen_points_table_output_limb_12_col98,
+                    pedersen_points_table_output_limb_13_col99,
+                    pedersen_points_table_output_limb_14_col100,
+                    pedersen_points_table_output_limb_15_col101,
+                    pedersen_points_table_output_limb_16_col102,
+                    pedersen_points_table_output_limb_17_col103,
+                    pedersen_points_table_output_limb_18_col104,
+                    pedersen_points_table_output_limb_19_col105,
+                    pedersen_points_table_output_limb_20_col106,
+                    pedersen_points_table_output_limb_21_col107,
+                    pedersen_points_table_output_limb_22_col108,
+                    pedersen_points_table_output_limb_23_col109,
+                    pedersen_points_table_output_limb_24_col110,
+                    pedersen_points_table_output_limb_25_col111,
+                    pedersen_points_table_output_limb_26_col112,
+                    pedersen_points_table_output_limb_27_col113,
+                    pedersen_points_table_output_limb_28_col114,
+                    pedersen_points_table_output_limb_29_col115,
+                    pedersen_points_table_output_limb_30_col116,
+                    pedersen_points_table_output_limb_31_col117,
+                    pedersen_points_table_output_limb_32_col118,
+                    pedersen_points_table_output_limb_33_col119,
+                    pedersen_points_table_output_limb_34_col120,
+                    pedersen_points_table_output_limb_35_col121,
+                    pedersen_points_table_output_limb_36_col122,
+                    pedersen_points_table_output_limb_37_col123,
+                    pedersen_points_table_output_limb_38_col124,
+                    pedersen_points_table_output_limb_39_col125,
+                    pedersen_points_table_output_limb_40_col126,
+                    pedersen_points_table_output_limb_41_col127,
+                    pedersen_points_table_output_limb_42_col128,
+                    pedersen_points_table_output_limb_43_col129,
+                    pedersen_points_table_output_limb_44_col130,
+                    pedersen_points_table_output_limb_45_col131,
+                    pedersen_points_table_output_limb_46_col132,
+                    pedersen_points_table_output_limb_47_col133,
+                    pedersen_points_table_output_limb_48_col134,
+                    pedersen_points_table_output_limb_49_col135,
+                    pedersen_points_table_output_limb_50_col136,
+                    pedersen_points_table_output_limb_51_col137,
+                    pedersen_points_table_output_limb_52_col138,
+                    pedersen_points_table_output_limb_53_col139,
+                    pedersen_points_table_output_limb_54_col140,
+                    pedersen_points_table_output_limb_55_col141,
                 ];
 
                 // Ec Add.
@@ -677,107 +705,107 @@ fn write_trace_simd(
                     - (partial_ec_mul_input.2 .1[1]))
                     / ((pedersen_points_table_output_tmp_71feb_0[0])
                         - (partial_ec_mul_input.2 .1[0])));
-                let slope_limb_0_col128 = slope_tmp_71feb_1.get_m31(0);
-                *row[128] = slope_limb_0_col128;
-                let slope_limb_1_col129 = slope_tmp_71feb_1.get_m31(1);
-                *row[129] = slope_limb_1_col129;
-                let slope_limb_2_col130 = slope_tmp_71feb_1.get_m31(2);
-                *row[130] = slope_limb_2_col130;
-                let slope_limb_3_col131 = slope_tmp_71feb_1.get_m31(3);
-                *row[131] = slope_limb_3_col131;
-                let slope_limb_4_col132 = slope_tmp_71feb_1.get_m31(4);
-                *row[132] = slope_limb_4_col132;
-                let slope_limb_5_col133 = slope_tmp_71feb_1.get_m31(5);
-                *row[133] = slope_limb_5_col133;
-                let slope_limb_6_col134 = slope_tmp_71feb_1.get_m31(6);
-                *row[134] = slope_limb_6_col134;
-                let slope_limb_7_col135 = slope_tmp_71feb_1.get_m31(7);
-                *row[135] = slope_limb_7_col135;
-                let slope_limb_8_col136 = slope_tmp_71feb_1.get_m31(8);
-                *row[136] = slope_limb_8_col136;
-                let slope_limb_9_col137 = slope_tmp_71feb_1.get_m31(9);
-                *row[137] = slope_limb_9_col137;
-                let slope_limb_10_col138 = slope_tmp_71feb_1.get_m31(10);
-                *row[138] = slope_limb_10_col138;
-                let slope_limb_11_col139 = slope_tmp_71feb_1.get_m31(11);
-                *row[139] = slope_limb_11_col139;
-                let slope_limb_12_col140 = slope_tmp_71feb_1.get_m31(12);
-                *row[140] = slope_limb_12_col140;
-                let slope_limb_13_col141 = slope_tmp_71feb_1.get_m31(13);
-                *row[141] = slope_limb_13_col141;
-                let slope_limb_14_col142 = slope_tmp_71feb_1.get_m31(14);
-                *row[142] = slope_limb_14_col142;
-                let slope_limb_15_col143 = slope_tmp_71feb_1.get_m31(15);
-                *row[143] = slope_limb_15_col143;
-                let slope_limb_16_col144 = slope_tmp_71feb_1.get_m31(16);
-                *row[144] = slope_limb_16_col144;
-                let slope_limb_17_col145 = slope_tmp_71feb_1.get_m31(17);
-                *row[145] = slope_limb_17_col145;
-                let slope_limb_18_col146 = slope_tmp_71feb_1.get_m31(18);
-                *row[146] = slope_limb_18_col146;
-                let slope_limb_19_col147 = slope_tmp_71feb_1.get_m31(19);
-                *row[147] = slope_limb_19_col147;
-                let slope_limb_20_col148 = slope_tmp_71feb_1.get_m31(20);
-                *row[148] = slope_limb_20_col148;
-                let slope_limb_21_col149 = slope_tmp_71feb_1.get_m31(21);
-                *row[149] = slope_limb_21_col149;
-                let slope_limb_22_col150 = slope_tmp_71feb_1.get_m31(22);
-                *row[150] = slope_limb_22_col150;
-                let slope_limb_23_col151 = slope_tmp_71feb_1.get_m31(23);
-                *row[151] = slope_limb_23_col151;
-                let slope_limb_24_col152 = slope_tmp_71feb_1.get_m31(24);
-                *row[152] = slope_limb_24_col152;
-                let slope_limb_25_col153 = slope_tmp_71feb_1.get_m31(25);
-                *row[153] = slope_limb_25_col153;
-                let slope_limb_26_col154 = slope_tmp_71feb_1.get_m31(26);
-                *row[154] = slope_limb_26_col154;
-                let slope_limb_27_col155 = slope_tmp_71feb_1.get_m31(27);
-                *row[155] = slope_limb_27_col155;
+                let slope_limb_0_col142 = slope_tmp_71feb_1.get_m31(0);
+                *row[142] = slope_limb_0_col142;
+                let slope_limb_1_col143 = slope_tmp_71feb_1.get_m31(1);
+                *row[143] = slope_limb_1_col143;
+                let slope_limb_2_col144 = slope_tmp_71feb_1.get_m31(2);
+                *row[144] = slope_limb_2_col144;
+                let slope_limb_3_col145 = slope_tmp_71feb_1.get_m31(3);
+                *row[145] = slope_limb_3_col145;
+                let slope_limb_4_col146 = slope_tmp_71feb_1.get_m31(4);
+                *row[146] = slope_limb_4_col146;
+                let slope_limb_5_col147 = slope_tmp_71feb_1.get_m31(5);
+                *row[147] = slope_limb_5_col147;
+                let slope_limb_6_col148 = slope_tmp_71feb_1.get_m31(6);
+                *row[148] = slope_limb_6_col148;
+                let slope_limb_7_col149 = slope_tmp_71feb_1.get_m31(7);
+                *row[149] = slope_limb_7_col149;
+                let slope_limb_8_col150 = slope_tmp_71feb_1.get_m31(8);
+                *row[150] = slope_limb_8_col150;
+                let slope_limb_9_col151 = slope_tmp_71feb_1.get_m31(9);
+                *row[151] = slope_limb_9_col151;
+                let slope_limb_10_col152 = slope_tmp_71feb_1.get_m31(10);
+                *row[152] = slope_limb_10_col152;
+                let slope_limb_11_col153 = slope_tmp_71feb_1.get_m31(11);
+                *row[153] = slope_limb_11_col153;
+                let slope_limb_12_col154 = slope_tmp_71feb_1.get_m31(12);
+                *row[154] = slope_limb_12_col154;
+                let slope_limb_13_col155 = slope_tmp_71feb_1.get_m31(13);
+                *row[155] = slope_limb_13_col155;
+                let slope_limb_14_col156 = slope_tmp_71feb_1.get_m31(14);
+                *row[156] = slope_limb_14_col156;
+                let slope_limb_15_col157 = slope_tmp_71feb_1.get_m31(15);
+                *row[157] = slope_limb_15_col157;
+                let slope_limb_16_col158 = slope_tmp_71feb_1.get_m31(16);
+                *row[158] = slope_limb_16_col158;
+                let slope_limb_17_col159 = slope_tmp_71feb_1.get_m31(17);
+                *row[159] = slope_limb_17_col159;
+                let slope_limb_18_col160 = slope_tmp_71feb_1.get_m31(18);
+                *row[160] = slope_limb_18_col160;
+                let slope_limb_19_col161 = slope_tmp_71feb_1.get_m31(19);
+                *row[161] = slope_limb_19_col161;
+                let slope_limb_20_col162 = slope_tmp_71feb_1.get_m31(20);
+                *row[162] = slope_limb_20_col162;
+                let slope_limb_21_col163 = slope_tmp_71feb_1.get_m31(21);
+                *row[163] = slope_limb_21_col163;
+                let slope_limb_22_col164 = slope_tmp_71feb_1.get_m31(22);
+                *row[164] = slope_limb_22_col164;
+                let slope_limb_23_col165 = slope_tmp_71feb_1.get_m31(23);
+                *row[165] = slope_limb_23_col165;
+                let slope_limb_24_col166 = slope_tmp_71feb_1.get_m31(24);
+                *row[166] = slope_limb_24_col166;
+                let slope_limb_25_col167 = slope_tmp_71feb_1.get_m31(25);
+                *row[167] = slope_limb_25_col167;
+                let slope_limb_26_col168 = slope_tmp_71feb_1.get_m31(26);
+                *row[168] = slope_limb_26_col168;
+                let slope_limb_27_col169 = slope_tmp_71feb_1.get_m31(27);
+                *row[169] = slope_limb_27_col169;
 
                 // Range Check Mem Value N 28.
 
                 *sub_component_inputs.range_check_9_9[0] =
-                    [slope_limb_0_col128, slope_limb_1_col129];
-                *lookup_data.range_check_9_9_0 = [slope_limb_0_col128, slope_limb_1_col129];
+                    [slope_limb_0_col142, slope_limb_1_col143];
+                *lookup_data.range_check_9_9_0 = [slope_limb_0_col142, slope_limb_1_col143];
                 *sub_component_inputs.range_check_9_9_b[0] =
-                    [slope_limb_2_col130, slope_limb_3_col131];
-                *lookup_data.range_check_9_9_b_0 = [slope_limb_2_col130, slope_limb_3_col131];
+                    [slope_limb_2_col144, slope_limb_3_col145];
+                *lookup_data.range_check_9_9_b_0 = [slope_limb_2_col144, slope_limb_3_col145];
                 *sub_component_inputs.range_check_9_9_c[0] =
-                    [slope_limb_4_col132, slope_limb_5_col133];
-                *lookup_data.range_check_9_9_c_0 = [slope_limb_4_col132, slope_limb_5_col133];
+                    [slope_limb_4_col146, slope_limb_5_col147];
+                *lookup_data.range_check_9_9_c_0 = [slope_limb_4_col146, slope_limb_5_col147];
                 *sub_component_inputs.range_check_9_9_d[0] =
-                    [slope_limb_6_col134, slope_limb_7_col135];
-                *lookup_data.range_check_9_9_d_0 = [slope_limb_6_col134, slope_limb_7_col135];
+                    [slope_limb_6_col148, slope_limb_7_col149];
+                *lookup_data.range_check_9_9_d_0 = [slope_limb_6_col148, slope_limb_7_col149];
                 *sub_component_inputs.range_check_9_9_e[0] =
-                    [slope_limb_8_col136, slope_limb_9_col137];
-                *lookup_data.range_check_9_9_e_0 = [slope_limb_8_col136, slope_limb_9_col137];
+                    [slope_limb_8_col150, slope_limb_9_col151];
+                *lookup_data.range_check_9_9_e_0 = [slope_limb_8_col150, slope_limb_9_col151];
                 *sub_component_inputs.range_check_9_9_f[0] =
-                    [slope_limb_10_col138, slope_limb_11_col139];
-                *lookup_data.range_check_9_9_f_0 = [slope_limb_10_col138, slope_limb_11_col139];
+                    [slope_limb_10_col152, slope_limb_11_col153];
+                *lookup_data.range_check_9_9_f_0 = [slope_limb_10_col152, slope_limb_11_col153];
                 *sub_component_inputs.range_check_9_9_g[0] =
-                    [slope_limb_12_col140, slope_limb_13_col141];
-                *lookup_data.range_check_9_9_g_0 = [slope_limb_12_col140, slope_limb_13_col141];
+                    [slope_limb_12_col154, slope_limb_13_col155];
+                *lookup_data.range_check_9_9_g_0 = [slope_limb_12_col154, slope_limb_13_col155];
                 *sub_component_inputs.range_check_9_9_h[0] =
-                    [slope_limb_14_col142, slope_limb_15_col143];
-                *lookup_data.range_check_9_9_h_0 = [slope_limb_14_col142, slope_limb_15_col143];
+                    [slope_limb_14_col156, slope_limb_15_col157];
+                *lookup_data.range_check_9_9_h_0 = [slope_limb_14_col156, slope_limb_15_col157];
                 *sub_component_inputs.range_check_9_9[1] =
-                    [slope_limb_16_col144, slope_limb_17_col145];
-                *lookup_data.range_check_9_9_1 = [slope_limb_16_col144, slope_limb_17_col145];
+                    [slope_limb_16_col158, slope_limb_17_col159];
+                *lookup_data.range_check_9_9_1 = [slope_limb_16_col158, slope_limb_17_col159];
                 *sub_component_inputs.range_check_9_9_b[1] =
-                    [slope_limb_18_col146, slope_limb_19_col147];
-                *lookup_data.range_check_9_9_b_1 = [slope_limb_18_col146, slope_limb_19_col147];
+                    [slope_limb_18_col160, slope_limb_19_col161];
+                *lookup_data.range_check_9_9_b_1 = [slope_limb_18_col160, slope_limb_19_col161];
                 *sub_component_inputs.range_check_9_9_c[1] =
-                    [slope_limb_20_col148, slope_limb_21_col149];
-                *lookup_data.range_check_9_9_c_1 = [slope_limb_20_col148, slope_limb_21_col149];
+                    [slope_limb_20_col162, slope_limb_21_col163];
+                *lookup_data.range_check_9_9_c_1 = [slope_limb_20_col162, slope_limb_21_col163];
                 *sub_component_inputs.range_check_9_9_d[1] =
-                    [slope_limb_22_col150, slope_limb_23_col151];
-                *lookup_data.range_check_9_9_d_1 = [slope_limb_22_col150, slope_limb_23_col151];
+                    [slope_limb_22_col164, slope_limb_23_col165];
+                *lookup_data.range_check_9_9_d_1 = [slope_limb_22_col164, slope_limb_23_col165];
                 *sub_component_inputs.range_check_9_9_e[1] =
-                    [slope_limb_24_col152, slope_limb_25_col153];
-                *lookup_data.range_check_9_9_e_1 = [slope_limb_24_col152, slope_limb_25_col153];
+                    [slope_limb_24_col166, slope_limb_25_col167];
+                *lookup_data.range_check_9_9_e_1 = [slope_limb_24_col166, slope_limb_25_col167];
                 *sub_component_inputs.range_check_9_9_f[1] =
-                    [slope_limb_26_col154, slope_limb_27_col155];
-                *lookup_data.range_check_9_9_f_1 = [slope_limb_26_col154, slope_limb_27_col155];
+                    [slope_limb_26_col168, slope_limb_27_col169];
+                *lookup_data.range_check_9_9_f_1 = [slope_limb_26_col168, slope_limb_27_col169];
 
                 // Verify Mul 252.
 
@@ -786,313 +814,313 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_2 = [
-                    ((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_0_col72) - (input_limb_16_col16))),
-                    (((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_1_col73) - (input_limb_17_col17)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    ((((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_2_col74) - (input_limb_18_col18)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17))))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    (((((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_3_col75) - (input_limb_19_col19)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18))))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17))))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    ((((((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_4_col76)
-                            - (input_limb_20_col20)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19))))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18))))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17))))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    (((((((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_5_col77)
-                            - (input_limb_21_col21)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20))))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19))))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18))))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17))))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    ((((((((slope_limb_0_col128)
-                        * ((pedersen_points_table_output_limb_6_col78)
-                            - (input_limb_22_col22)))
-                        + ((slope_limb_1_col129)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21))))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20))))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19))))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18))))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17))))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_0_col72)
-                                - (input_limb_16_col16)))),
-                    (((((((slope_limb_1_col129)
-                        * ((pedersen_points_table_output_limb_6_col78)
-                            - (input_limb_22_col22)))
-                        + ((slope_limb_2_col130)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21))))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20))))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19))))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18))))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_1_col73)
-                                - (input_limb_17_col17)))),
-                    ((((((slope_limb_2_col130)
-                        * ((pedersen_points_table_output_limb_6_col78)
-                            - (input_limb_22_col22)))
-                        + ((slope_limb_3_col131)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21))))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20))))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19))))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_2_col74)
-                                - (input_limb_18_col18)))),
-                    (((((slope_limb_3_col131)
-                        * ((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22)))
-                        + ((slope_limb_4_col132)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21))))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20))))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_3_col75)
-                                - (input_limb_19_col19)))),
-                    ((((slope_limb_4_col132)
-                        * ((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22)))
-                        + ((slope_limb_5_col133)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21))))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_4_col76)
-                                - (input_limb_20_col20)))),
-                    (((slope_limb_5_col133)
-                        * ((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22)))
-                        + ((slope_limb_6_col134)
-                            * ((pedersen_points_table_output_limb_5_col77)
-                                - (input_limb_21_col21)))),
-                    ((slope_limb_6_col134)
-                        * ((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22))),
+                    ((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_0_col86) - (input_limb_30_col30))),
+                    (((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_1_col87) - (input_limb_31_col31)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    ((((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_2_col88) - (input_limb_32_col32)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31))))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    (((((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_3_col89) - (input_limb_33_col33)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32))))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31))))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    ((((((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_4_col90)
+                            - (input_limb_34_col34)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33))))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32))))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31))))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    (((((((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_5_col91)
+                            - (input_limb_35_col35)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34))))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33))))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32))))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31))))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    ((((((((slope_limb_0_col142)
+                        * ((pedersen_points_table_output_limb_6_col92)
+                            - (input_limb_36_col36)))
+                        + ((slope_limb_1_col143)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35))))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34))))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33))))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32))))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31))))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_0_col86)
+                                - (input_limb_30_col30)))),
+                    (((((((slope_limb_1_col143)
+                        * ((pedersen_points_table_output_limb_6_col92)
+                            - (input_limb_36_col36)))
+                        + ((slope_limb_2_col144)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35))))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34))))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33))))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32))))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_1_col87)
+                                - (input_limb_31_col31)))),
+                    ((((((slope_limb_2_col144)
+                        * ((pedersen_points_table_output_limb_6_col92)
+                            - (input_limb_36_col36)))
+                        + ((slope_limb_3_col145)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35))))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34))))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33))))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_2_col88)
+                                - (input_limb_32_col32)))),
+                    (((((slope_limb_3_col145)
+                        * ((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36)))
+                        + ((slope_limb_4_col146)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35))))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34))))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_3_col89)
+                                - (input_limb_33_col33)))),
+                    ((((slope_limb_4_col146)
+                        * ((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36)))
+                        + ((slope_limb_5_col147)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35))))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_4_col90)
+                                - (input_limb_34_col34)))),
+                    (((slope_limb_5_col147)
+                        * ((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36)))
+                        + ((slope_limb_6_col148)
+                            * ((pedersen_points_table_output_limb_5_col91)
+                                - (input_limb_35_col35)))),
+                    ((slope_limb_6_col148)
+                        * ((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36))),
                 ];
                 let z2_tmp_71feb_3 = [
-                    ((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_7_col79) - (input_limb_23_col23))),
-                    (((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_8_col80) - (input_limb_24_col24)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    ((((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_9_col81) - (input_limb_25_col25)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24))))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    (((((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_10_col82)
-                            - (input_limb_26_col26)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25))))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24))))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    ((((((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_11_col83)
-                            - (input_limb_27_col27)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26))))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25))))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24))))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    (((((((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_12_col84)
-                            - (input_limb_28_col28)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27))))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26))))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25))))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24))))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    ((((((((slope_limb_7_col135)
-                        * ((pedersen_points_table_output_limb_13_col85)
-                            - (input_limb_29_col29)))
-                        + ((slope_limb_8_col136)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28))))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27))))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26))))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25))))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24))))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_7_col79)
-                                - (input_limb_23_col23)))),
-                    (((((((slope_limb_8_col136)
-                        * ((pedersen_points_table_output_limb_13_col85)
-                            - (input_limb_29_col29)))
-                        + ((slope_limb_9_col137)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28))))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27))))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26))))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25))))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_8_col80)
-                                - (input_limb_24_col24)))),
-                    ((((((slope_limb_9_col137)
-                        * ((pedersen_points_table_output_limb_13_col85)
-                            - (input_limb_29_col29)))
-                        + ((slope_limb_10_col138)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28))))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27))))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26))))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_9_col81)
-                                - (input_limb_25_col25)))),
-                    (((((slope_limb_10_col138)
-                        * ((pedersen_points_table_output_limb_13_col85)
-                            - (input_limb_29_col29)))
-                        + ((slope_limb_11_col139)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28))))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27))))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_10_col82)
-                                - (input_limb_26_col26)))),
-                    ((((slope_limb_11_col139)
-                        * ((pedersen_points_table_output_limb_13_col85) - (input_limb_29_col29)))
-                        + ((slope_limb_12_col140)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28))))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_11_col83)
-                                - (input_limb_27_col27)))),
-                    (((slope_limb_12_col140)
-                        * ((pedersen_points_table_output_limb_13_col85) - (input_limb_29_col29)))
-                        + ((slope_limb_13_col141)
-                            * ((pedersen_points_table_output_limb_12_col84)
-                                - (input_limb_28_col28)))),
-                    ((slope_limb_13_col141)
-                        * ((pedersen_points_table_output_limb_13_col85) - (input_limb_29_col29))),
+                    ((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_7_col93) - (input_limb_37_col37))),
+                    (((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_8_col94) - (input_limb_38_col38)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    ((((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_9_col95) - (input_limb_39_col39)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38))))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    (((((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_10_col96)
+                            - (input_limb_40_col40)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39))))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38))))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    ((((((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_11_col97)
+                            - (input_limb_41_col41)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40))))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39))))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38))))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    (((((((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_12_col98)
+                            - (input_limb_42_col42)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41))))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40))))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39))))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38))))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    ((((((((slope_limb_7_col149)
+                        * ((pedersen_points_table_output_limb_13_col99)
+                            - (input_limb_43_col43)))
+                        + ((slope_limb_8_col150)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42))))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41))))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40))))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39))))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38))))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_7_col93)
+                                - (input_limb_37_col37)))),
+                    (((((((slope_limb_8_col150)
+                        * ((pedersen_points_table_output_limb_13_col99)
+                            - (input_limb_43_col43)))
+                        + ((slope_limb_9_col151)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42))))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41))))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40))))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39))))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_8_col94)
+                                - (input_limb_38_col38)))),
+                    ((((((slope_limb_9_col151)
+                        * ((pedersen_points_table_output_limb_13_col99)
+                            - (input_limb_43_col43)))
+                        + ((slope_limb_10_col152)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42))))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41))))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40))))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_9_col95)
+                                - (input_limb_39_col39)))),
+                    (((((slope_limb_10_col152)
+                        * ((pedersen_points_table_output_limb_13_col99)
+                            - (input_limb_43_col43)))
+                        + ((slope_limb_11_col153)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42))))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41))))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_10_col96)
+                                - (input_limb_40_col40)))),
+                    ((((slope_limb_11_col153)
+                        * ((pedersen_points_table_output_limb_13_col99) - (input_limb_43_col43)))
+                        + ((slope_limb_12_col154)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42))))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_11_col97)
+                                - (input_limb_41_col41)))),
+                    (((slope_limb_12_col154)
+                        * ((pedersen_points_table_output_limb_13_col99) - (input_limb_43_col43)))
+                        + ((slope_limb_13_col155)
+                            * ((pedersen_points_table_output_limb_12_col98)
+                                - (input_limb_42_col42)))),
+                    ((slope_limb_13_col155)
+                        * ((pedersen_points_table_output_limb_13_col99) - (input_limb_43_col43))),
                 ];
                 let x_sum_tmp_71feb_4 = [
-                    ((slope_limb_0_col128) + (slope_limb_7_col135)),
-                    ((slope_limb_1_col129) + (slope_limb_8_col136)),
-                    ((slope_limb_2_col130) + (slope_limb_9_col137)),
-                    ((slope_limb_3_col131) + (slope_limb_10_col138)),
-                    ((slope_limb_4_col132) + (slope_limb_11_col139)),
-                    ((slope_limb_5_col133) + (slope_limb_12_col140)),
-                    ((slope_limb_6_col134) + (slope_limb_13_col141)),
+                    ((slope_limb_0_col142) + (slope_limb_7_col149)),
+                    ((slope_limb_1_col143) + (slope_limb_8_col150)),
+                    ((slope_limb_2_col144) + (slope_limb_9_col151)),
+                    ((slope_limb_3_col145) + (slope_limb_10_col152)),
+                    ((slope_limb_4_col146) + (slope_limb_11_col153)),
+                    ((slope_limb_5_col147) + (slope_limb_12_col154)),
+                    ((slope_limb_6_col148) + (slope_limb_13_col155)),
                 ];
                 let y_sum_tmp_71feb_5 = [
-                    (((pedersen_points_table_output_limb_0_col72) - (input_limb_16_col16))
-                        + ((pedersen_points_table_output_limb_7_col79) - (input_limb_23_col23))),
-                    (((pedersen_points_table_output_limb_1_col73) - (input_limb_17_col17))
-                        + ((pedersen_points_table_output_limb_8_col80) - (input_limb_24_col24))),
-                    (((pedersen_points_table_output_limb_2_col74) - (input_limb_18_col18))
-                        + ((pedersen_points_table_output_limb_9_col81) - (input_limb_25_col25))),
-                    (((pedersen_points_table_output_limb_3_col75) - (input_limb_19_col19))
-                        + ((pedersen_points_table_output_limb_10_col82) - (input_limb_26_col26))),
-                    (((pedersen_points_table_output_limb_4_col76) - (input_limb_20_col20))
-                        + ((pedersen_points_table_output_limb_11_col83) - (input_limb_27_col27))),
-                    (((pedersen_points_table_output_limb_5_col77) - (input_limb_21_col21))
-                        + ((pedersen_points_table_output_limb_12_col84) - (input_limb_28_col28))),
-                    (((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22))
-                        + ((pedersen_points_table_output_limb_13_col85) - (input_limb_29_col29))),
+                    (((pedersen_points_table_output_limb_0_col86) - (input_limb_30_col30))
+                        + ((pedersen_points_table_output_limb_7_col93) - (input_limb_37_col37))),
+                    (((pedersen_points_table_output_limb_1_col87) - (input_limb_31_col31))
+                        + ((pedersen_points_table_output_limb_8_col94) - (input_limb_38_col38))),
+                    (((pedersen_points_table_output_limb_2_col88) - (input_limb_32_col32))
+                        + ((pedersen_points_table_output_limb_9_col95) - (input_limb_39_col39))),
+                    (((pedersen_points_table_output_limb_3_col89) - (input_limb_33_col33))
+                        + ((pedersen_points_table_output_limb_10_col96) - (input_limb_40_col40))),
+                    (((pedersen_points_table_output_limb_4_col90) - (input_limb_34_col34))
+                        + ((pedersen_points_table_output_limb_11_col97) - (input_limb_41_col41))),
+                    (((pedersen_points_table_output_limb_5_col91) - (input_limb_35_col35))
+                        + ((pedersen_points_table_output_limb_12_col98) - (input_limb_42_col42))),
+                    (((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36))
+                        + ((pedersen_points_table_output_limb_13_col99) - (input_limb_43_col43))),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_6 = [
                     z0_tmp_71feb_2[0],
@@ -1201,315 +1229,319 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_7 = [
-                    ((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_14_col86) - (input_limb_30_col30))),
-                    (((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_15_col87) - (input_limb_31_col31)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    ((((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_16_col88) - (input_limb_32_col32)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31))))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    (((((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_17_col89)
-                            - (input_limb_33_col33)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32))))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31))))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    ((((((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_18_col90)
-                            - (input_limb_34_col34)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33))))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32))))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31))))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    (((((((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_19_col91)
-                            - (input_limb_35_col35)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34))))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33))))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32))))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31))))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    ((((((((slope_limb_14_col142)
-                        * ((pedersen_points_table_output_limb_20_col92)
-                            - (input_limb_36_col36)))
-                        + ((slope_limb_15_col143)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35))))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34))))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33))))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32))))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31))))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_14_col86)
-                                - (input_limb_30_col30)))),
-                    (((((((slope_limb_15_col143)
-                        * ((pedersen_points_table_output_limb_20_col92)
-                            - (input_limb_36_col36)))
-                        + ((slope_limb_16_col144)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35))))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34))))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33))))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32))))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_15_col87)
-                                - (input_limb_31_col31)))),
-                    ((((((slope_limb_16_col144)
-                        * ((pedersen_points_table_output_limb_20_col92)
-                            - (input_limb_36_col36)))
-                        + ((slope_limb_17_col145)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35))))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34))))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33))))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_16_col88)
-                                - (input_limb_32_col32)))),
-                    (((((slope_limb_17_col145)
-                        * ((pedersen_points_table_output_limb_20_col92)
-                            - (input_limb_36_col36)))
-                        + ((slope_limb_18_col146)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35))))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34))))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_17_col89)
-                                - (input_limb_33_col33)))),
-                    ((((slope_limb_18_col146)
-                        * ((pedersen_points_table_output_limb_20_col92) - (input_limb_36_col36)))
-                        + ((slope_limb_19_col147)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35))))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_18_col90)
-                                - (input_limb_34_col34)))),
-                    (((slope_limb_19_col147)
-                        * ((pedersen_points_table_output_limb_20_col92) - (input_limb_36_col36)))
-                        + ((slope_limb_20_col148)
-                            * ((pedersen_points_table_output_limb_19_col91)
-                                - (input_limb_35_col35)))),
-                    ((slope_limb_20_col148)
-                        * ((pedersen_points_table_output_limb_20_col92) - (input_limb_36_col36))),
+                    ((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_14_col100) - (input_limb_44_col44))),
+                    (((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_15_col101) - (input_limb_45_col45)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    ((((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_16_col102)
+                            - (input_limb_46_col46)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45))))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    (((((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_17_col103)
+                            - (input_limb_47_col47)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46))))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45))))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    ((((((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_18_col104)
+                            - (input_limb_48_col48)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47))))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46))))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45))))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    (((((((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_19_col105)
+                            - (input_limb_49_col49)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48))))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47))))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46))))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45))))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    ((((((((slope_limb_14_col156)
+                        * ((pedersen_points_table_output_limb_20_col106)
+                            - (input_limb_50_col50)))
+                        + ((slope_limb_15_col157)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49))))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48))))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47))))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46))))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45))))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_14_col100)
+                                - (input_limb_44_col44)))),
+                    (((((((slope_limb_15_col157)
+                        * ((pedersen_points_table_output_limb_20_col106)
+                            - (input_limb_50_col50)))
+                        + ((slope_limb_16_col158)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49))))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48))))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47))))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46))))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_15_col101)
+                                - (input_limb_45_col45)))),
+                    ((((((slope_limb_16_col158)
+                        * ((pedersen_points_table_output_limb_20_col106)
+                            - (input_limb_50_col50)))
+                        + ((slope_limb_17_col159)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49))))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48))))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47))))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_16_col102)
+                                - (input_limb_46_col46)))),
+                    (((((slope_limb_17_col159)
+                        * ((pedersen_points_table_output_limb_20_col106)
+                            - (input_limb_50_col50)))
+                        + ((slope_limb_18_col160)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49))))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48))))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_17_col103)
+                                - (input_limb_47_col47)))),
+                    ((((slope_limb_18_col160)
+                        * ((pedersen_points_table_output_limb_20_col106)
+                            - (input_limb_50_col50)))
+                        + ((slope_limb_19_col161)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49))))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_18_col104)
+                                - (input_limb_48_col48)))),
+                    (((slope_limb_19_col161)
+                        * ((pedersen_points_table_output_limb_20_col106) - (input_limb_50_col50)))
+                        + ((slope_limb_20_col162)
+                            * ((pedersen_points_table_output_limb_19_col105)
+                                - (input_limb_49_col49)))),
+                    ((slope_limb_20_col162)
+                        * ((pedersen_points_table_output_limb_20_col106) - (input_limb_50_col50))),
                 ];
                 let z2_tmp_71feb_8 = [
-                    ((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_21_col93) - (input_limb_37_col37))),
-                    (((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_22_col94) - (input_limb_38_col38)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    ((((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_23_col95) - (input_limb_39_col39)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38))))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    (((((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_24_col96)
-                            - (input_limb_40_col40)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39))))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38))))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    ((((((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_25_col97)
-                            - (input_limb_41_col41)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40))))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39))))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38))))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    (((((((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_26_col98)
-                            - (input_limb_42_col42)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41))))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40))))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39))))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38))))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    ((((((((slope_limb_21_col149)
-                        * ((pedersen_points_table_output_limb_27_col99)
-                            - (input_limb_43_col43)))
-                        + ((slope_limb_22_col150)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42))))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41))))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40))))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39))))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38))))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_21_col93)
-                                - (input_limb_37_col37)))),
-                    (((((((slope_limb_22_col150)
-                        * ((pedersen_points_table_output_limb_27_col99)
-                            - (input_limb_43_col43)))
-                        + ((slope_limb_23_col151)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42))))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41))))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40))))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39))))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_22_col94)
-                                - (input_limb_38_col38)))),
-                    ((((((slope_limb_23_col151)
-                        * ((pedersen_points_table_output_limb_27_col99)
-                            - (input_limb_43_col43)))
-                        + ((slope_limb_24_col152)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42))))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41))))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40))))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_23_col95)
-                                - (input_limb_39_col39)))),
-                    (((((slope_limb_24_col152)
-                        * ((pedersen_points_table_output_limb_27_col99)
-                            - (input_limb_43_col43)))
-                        + ((slope_limb_25_col153)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42))))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41))))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_24_col96)
-                                - (input_limb_40_col40)))),
-                    ((((slope_limb_25_col153)
-                        * ((pedersen_points_table_output_limb_27_col99) - (input_limb_43_col43)))
-                        + ((slope_limb_26_col154)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42))))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_25_col97)
-                                - (input_limb_41_col41)))),
-                    (((slope_limb_26_col154)
-                        * ((pedersen_points_table_output_limb_27_col99) - (input_limb_43_col43)))
-                        + ((slope_limb_27_col155)
-                            * ((pedersen_points_table_output_limb_26_col98)
-                                - (input_limb_42_col42)))),
-                    ((slope_limb_27_col155)
-                        * ((pedersen_points_table_output_limb_27_col99) - (input_limb_43_col43))),
+                    ((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_21_col107) - (input_limb_51_col51))),
+                    (((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_22_col108) - (input_limb_52_col52)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    ((((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_23_col109)
+                            - (input_limb_53_col53)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52))))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    (((((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_24_col110)
+                            - (input_limb_54_col54)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53))))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52))))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    ((((((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_25_col111)
+                            - (input_limb_55_col55)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54))))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53))))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52))))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    (((((((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_26_col112)
+                            - (input_limb_56_col56)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55))))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54))))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53))))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52))))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    ((((((((slope_limb_21_col163)
+                        * ((pedersen_points_table_output_limb_27_col113)
+                            - (input_limb_57_col57)))
+                        + ((slope_limb_22_col164)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56))))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55))))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54))))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53))))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52))))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_21_col107)
+                                - (input_limb_51_col51)))),
+                    (((((((slope_limb_22_col164)
+                        * ((pedersen_points_table_output_limb_27_col113)
+                            - (input_limb_57_col57)))
+                        + ((slope_limb_23_col165)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56))))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55))))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54))))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53))))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_22_col108)
+                                - (input_limb_52_col52)))),
+                    ((((((slope_limb_23_col165)
+                        * ((pedersen_points_table_output_limb_27_col113)
+                            - (input_limb_57_col57)))
+                        + ((slope_limb_24_col166)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56))))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55))))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54))))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_23_col109)
+                                - (input_limb_53_col53)))),
+                    (((((slope_limb_24_col166)
+                        * ((pedersen_points_table_output_limb_27_col113)
+                            - (input_limb_57_col57)))
+                        + ((slope_limb_25_col167)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56))))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55))))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_24_col110)
+                                - (input_limb_54_col54)))),
+                    ((((slope_limb_25_col167)
+                        * ((pedersen_points_table_output_limb_27_col113)
+                            - (input_limb_57_col57)))
+                        + ((slope_limb_26_col168)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56))))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_25_col111)
+                                - (input_limb_55_col55)))),
+                    (((slope_limb_26_col168)
+                        * ((pedersen_points_table_output_limb_27_col113) - (input_limb_57_col57)))
+                        + ((slope_limb_27_col169)
+                            * ((pedersen_points_table_output_limb_26_col112)
+                                - (input_limb_56_col56)))),
+                    ((slope_limb_27_col169)
+                        * ((pedersen_points_table_output_limb_27_col113) - (input_limb_57_col57))),
                 ];
                 let x_sum_tmp_71feb_9 = [
-                    ((slope_limb_14_col142) + (slope_limb_21_col149)),
-                    ((slope_limb_15_col143) + (slope_limb_22_col150)),
-                    ((slope_limb_16_col144) + (slope_limb_23_col151)),
-                    ((slope_limb_17_col145) + (slope_limb_24_col152)),
-                    ((slope_limb_18_col146) + (slope_limb_25_col153)),
-                    ((slope_limb_19_col147) + (slope_limb_26_col154)),
-                    ((slope_limb_20_col148) + (slope_limb_27_col155)),
+                    ((slope_limb_14_col156) + (slope_limb_21_col163)),
+                    ((slope_limb_15_col157) + (slope_limb_22_col164)),
+                    ((slope_limb_16_col158) + (slope_limb_23_col165)),
+                    ((slope_limb_17_col159) + (slope_limb_24_col166)),
+                    ((slope_limb_18_col160) + (slope_limb_25_col167)),
+                    ((slope_limb_19_col161) + (slope_limb_26_col168)),
+                    ((slope_limb_20_col162) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_10 = [
-                    (((pedersen_points_table_output_limb_14_col86) - (input_limb_30_col30))
-                        + ((pedersen_points_table_output_limb_21_col93) - (input_limb_37_col37))),
-                    (((pedersen_points_table_output_limb_15_col87) - (input_limb_31_col31))
-                        + ((pedersen_points_table_output_limb_22_col94) - (input_limb_38_col38))),
-                    (((pedersen_points_table_output_limb_16_col88) - (input_limb_32_col32))
-                        + ((pedersen_points_table_output_limb_23_col95) - (input_limb_39_col39))),
-                    (((pedersen_points_table_output_limb_17_col89) - (input_limb_33_col33))
-                        + ((pedersen_points_table_output_limb_24_col96) - (input_limb_40_col40))),
-                    (((pedersen_points_table_output_limb_18_col90) - (input_limb_34_col34))
-                        + ((pedersen_points_table_output_limb_25_col97) - (input_limb_41_col41))),
-                    (((pedersen_points_table_output_limb_19_col91) - (input_limb_35_col35))
-                        + ((pedersen_points_table_output_limb_26_col98) - (input_limb_42_col42))),
-                    (((pedersen_points_table_output_limb_20_col92) - (input_limb_36_col36))
-                        + ((pedersen_points_table_output_limb_27_col99) - (input_limb_43_col43))),
+                    (((pedersen_points_table_output_limb_14_col100) - (input_limb_44_col44))
+                        + ((pedersen_points_table_output_limb_21_col107) - (input_limb_51_col51))),
+                    (((pedersen_points_table_output_limb_15_col101) - (input_limb_45_col45))
+                        + ((pedersen_points_table_output_limb_22_col108) - (input_limb_52_col52))),
+                    (((pedersen_points_table_output_limb_16_col102) - (input_limb_46_col46))
+                        + ((pedersen_points_table_output_limb_23_col109) - (input_limb_53_col53))),
+                    (((pedersen_points_table_output_limb_17_col103) - (input_limb_47_col47))
+                        + ((pedersen_points_table_output_limb_24_col110) - (input_limb_54_col54))),
+                    (((pedersen_points_table_output_limb_18_col104) - (input_limb_48_col48))
+                        + ((pedersen_points_table_output_limb_25_col111) - (input_limb_55_col55))),
+                    (((pedersen_points_table_output_limb_19_col105) - (input_limb_49_col49))
+                        + ((pedersen_points_table_output_limb_26_col112) - (input_limb_56_col56))),
+                    (((pedersen_points_table_output_limb_20_col106) - (input_limb_50_col50))
+                        + ((pedersen_points_table_output_limb_27_col113) - (input_limb_57_col57))),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_11 = [
                     z0_tmp_71feb_7[0],
@@ -1616,50 +1648,50 @@ fn write_trace_simd(
                 ];
 
                 let x_sum_tmp_71feb_12 = [
-                    ((slope_limb_0_col128) + (slope_limb_14_col142)),
-                    ((slope_limb_1_col129) + (slope_limb_15_col143)),
-                    ((slope_limb_2_col130) + (slope_limb_16_col144)),
-                    ((slope_limb_3_col131) + (slope_limb_17_col145)),
-                    ((slope_limb_4_col132) + (slope_limb_18_col146)),
-                    ((slope_limb_5_col133) + (slope_limb_19_col147)),
-                    ((slope_limb_6_col134) + (slope_limb_20_col148)),
-                    ((slope_limb_7_col135) + (slope_limb_21_col149)),
-                    ((slope_limb_8_col136) + (slope_limb_22_col150)),
-                    ((slope_limb_9_col137) + (slope_limb_23_col151)),
-                    ((slope_limb_10_col138) + (slope_limb_24_col152)),
-                    ((slope_limb_11_col139) + (slope_limb_25_col153)),
-                    ((slope_limb_12_col140) + (slope_limb_26_col154)),
-                    ((slope_limb_13_col141) + (slope_limb_27_col155)),
+                    ((slope_limb_0_col142) + (slope_limb_14_col156)),
+                    ((slope_limb_1_col143) + (slope_limb_15_col157)),
+                    ((slope_limb_2_col144) + (slope_limb_16_col158)),
+                    ((slope_limb_3_col145) + (slope_limb_17_col159)),
+                    ((slope_limb_4_col146) + (slope_limb_18_col160)),
+                    ((slope_limb_5_col147) + (slope_limb_19_col161)),
+                    ((slope_limb_6_col148) + (slope_limb_20_col162)),
+                    ((slope_limb_7_col149) + (slope_limb_21_col163)),
+                    ((slope_limb_8_col150) + (slope_limb_22_col164)),
+                    ((slope_limb_9_col151) + (slope_limb_23_col165)),
+                    ((slope_limb_10_col152) + (slope_limb_24_col166)),
+                    ((slope_limb_11_col153) + (slope_limb_25_col167)),
+                    ((slope_limb_12_col154) + (slope_limb_26_col168)),
+                    ((slope_limb_13_col155) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_13 = [
-                    (((pedersen_points_table_output_limb_0_col72) - (input_limb_16_col16))
-                        + ((pedersen_points_table_output_limb_14_col86) - (input_limb_30_col30))),
-                    (((pedersen_points_table_output_limb_1_col73) - (input_limb_17_col17))
-                        + ((pedersen_points_table_output_limb_15_col87) - (input_limb_31_col31))),
-                    (((pedersen_points_table_output_limb_2_col74) - (input_limb_18_col18))
-                        + ((pedersen_points_table_output_limb_16_col88) - (input_limb_32_col32))),
-                    (((pedersen_points_table_output_limb_3_col75) - (input_limb_19_col19))
-                        + ((pedersen_points_table_output_limb_17_col89) - (input_limb_33_col33))),
-                    (((pedersen_points_table_output_limb_4_col76) - (input_limb_20_col20))
-                        + ((pedersen_points_table_output_limb_18_col90) - (input_limb_34_col34))),
-                    (((pedersen_points_table_output_limb_5_col77) - (input_limb_21_col21))
-                        + ((pedersen_points_table_output_limb_19_col91) - (input_limb_35_col35))),
-                    (((pedersen_points_table_output_limb_6_col78) - (input_limb_22_col22))
-                        + ((pedersen_points_table_output_limb_20_col92) - (input_limb_36_col36))),
-                    (((pedersen_points_table_output_limb_7_col79) - (input_limb_23_col23))
-                        + ((pedersen_points_table_output_limb_21_col93) - (input_limb_37_col37))),
-                    (((pedersen_points_table_output_limb_8_col80) - (input_limb_24_col24))
-                        + ((pedersen_points_table_output_limb_22_col94) - (input_limb_38_col38))),
-                    (((pedersen_points_table_output_limb_9_col81) - (input_limb_25_col25))
-                        + ((pedersen_points_table_output_limb_23_col95) - (input_limb_39_col39))),
-                    (((pedersen_points_table_output_limb_10_col82) - (input_limb_26_col26))
-                        + ((pedersen_points_table_output_limb_24_col96) - (input_limb_40_col40))),
-                    (((pedersen_points_table_output_limb_11_col83) - (input_limb_27_col27))
-                        + ((pedersen_points_table_output_limb_25_col97) - (input_limb_41_col41))),
-                    (((pedersen_points_table_output_limb_12_col84) - (input_limb_28_col28))
-                        + ((pedersen_points_table_output_limb_26_col98) - (input_limb_42_col42))),
-                    (((pedersen_points_table_output_limb_13_col85) - (input_limb_29_col29))
-                        + ((pedersen_points_table_output_limb_27_col99) - (input_limb_43_col43))),
+                    (((pedersen_points_table_output_limb_0_col86) - (input_limb_30_col30))
+                        + ((pedersen_points_table_output_limb_14_col100) - (input_limb_44_col44))),
+                    (((pedersen_points_table_output_limb_1_col87) - (input_limb_31_col31))
+                        + ((pedersen_points_table_output_limb_15_col101) - (input_limb_45_col45))),
+                    (((pedersen_points_table_output_limb_2_col88) - (input_limb_32_col32))
+                        + ((pedersen_points_table_output_limb_16_col102) - (input_limb_46_col46))),
+                    (((pedersen_points_table_output_limb_3_col89) - (input_limb_33_col33))
+                        + ((pedersen_points_table_output_limb_17_col103) - (input_limb_47_col47))),
+                    (((pedersen_points_table_output_limb_4_col90) - (input_limb_34_col34))
+                        + ((pedersen_points_table_output_limb_18_col104) - (input_limb_48_col48))),
+                    (((pedersen_points_table_output_limb_5_col91) - (input_limb_35_col35))
+                        + ((pedersen_points_table_output_limb_19_col105) - (input_limb_49_col49))),
+                    (((pedersen_points_table_output_limb_6_col92) - (input_limb_36_col36))
+                        + ((pedersen_points_table_output_limb_20_col106) - (input_limb_50_col50))),
+                    (((pedersen_points_table_output_limb_7_col93) - (input_limb_37_col37))
+                        + ((pedersen_points_table_output_limb_21_col107) - (input_limb_51_col51))),
+                    (((pedersen_points_table_output_limb_8_col94) - (input_limb_38_col38))
+                        + ((pedersen_points_table_output_limb_22_col108) - (input_limb_52_col52))),
+                    (((pedersen_points_table_output_limb_9_col95) - (input_limb_39_col39))
+                        + ((pedersen_points_table_output_limb_23_col109) - (input_limb_53_col53))),
+                    (((pedersen_points_table_output_limb_10_col96) - (input_limb_40_col40))
+                        + ((pedersen_points_table_output_limb_24_col110) - (input_limb_54_col54))),
+                    (((pedersen_points_table_output_limb_11_col97) - (input_limb_41_col41))
+                        + ((pedersen_points_table_output_limb_25_col111) - (input_limb_55_col55))),
+                    (((pedersen_points_table_output_limb_12_col98) - (input_limb_42_col42))
+                        + ((pedersen_points_table_output_limb_26_col112) - (input_limb_56_col56))),
+                    (((pedersen_points_table_output_limb_13_col99) - (input_limb_43_col43))
+                        + ((pedersen_points_table_output_limb_27_col113) - (input_limb_57_col57))),
                 ];
 
                 // Single Karatsuba N 7.
@@ -2028,61 +2060,61 @@ fn write_trace_simd(
 
                 let conv_tmp_71feb_20 = [
                     ((double_karatsuba_1454b_output_tmp_71feb_19[0])
-                        - ((pedersen_points_table_output_limb_28_col100) - (input_limb_44_col44))),
+                        - ((pedersen_points_table_output_limb_28_col114) - (input_limb_58_col58))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[1])
-                        - ((pedersen_points_table_output_limb_29_col101) - (input_limb_45_col45))),
+                        - ((pedersen_points_table_output_limb_29_col115) - (input_limb_59_col59))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[2])
-                        - ((pedersen_points_table_output_limb_30_col102) - (input_limb_46_col46))),
+                        - ((pedersen_points_table_output_limb_30_col116) - (input_limb_60_col60))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[3])
-                        - ((pedersen_points_table_output_limb_31_col103) - (input_limb_47_col47))),
+                        - ((pedersen_points_table_output_limb_31_col117) - (input_limb_61_col61))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[4])
-                        - ((pedersen_points_table_output_limb_32_col104) - (input_limb_48_col48))),
+                        - ((pedersen_points_table_output_limb_32_col118) - (input_limb_62_col62))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[5])
-                        - ((pedersen_points_table_output_limb_33_col105) - (input_limb_49_col49))),
+                        - ((pedersen_points_table_output_limb_33_col119) - (input_limb_63_col63))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[6])
-                        - ((pedersen_points_table_output_limb_34_col106) - (input_limb_50_col50))),
+                        - ((pedersen_points_table_output_limb_34_col120) - (input_limb_64_col64))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[7])
-                        - ((pedersen_points_table_output_limb_35_col107) - (input_limb_51_col51))),
+                        - ((pedersen_points_table_output_limb_35_col121) - (input_limb_65_col65))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[8])
-                        - ((pedersen_points_table_output_limb_36_col108) - (input_limb_52_col52))),
+                        - ((pedersen_points_table_output_limb_36_col122) - (input_limb_66_col66))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[9])
-                        - ((pedersen_points_table_output_limb_37_col109) - (input_limb_53_col53))),
+                        - ((pedersen_points_table_output_limb_37_col123) - (input_limb_67_col67))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[10])
-                        - ((pedersen_points_table_output_limb_38_col110) - (input_limb_54_col54))),
+                        - ((pedersen_points_table_output_limb_38_col124) - (input_limb_68_col68))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[11])
-                        - ((pedersen_points_table_output_limb_39_col111) - (input_limb_55_col55))),
+                        - ((pedersen_points_table_output_limb_39_col125) - (input_limb_69_col69))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[12])
-                        - ((pedersen_points_table_output_limb_40_col112) - (input_limb_56_col56))),
+                        - ((pedersen_points_table_output_limb_40_col126) - (input_limb_70_col70))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[13])
-                        - ((pedersen_points_table_output_limb_41_col113) - (input_limb_57_col57))),
+                        - ((pedersen_points_table_output_limb_41_col127) - (input_limb_71_col71))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[14])
-                        - ((pedersen_points_table_output_limb_42_col114) - (input_limb_58_col58))),
+                        - ((pedersen_points_table_output_limb_42_col128) - (input_limb_72_col72))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[15])
-                        - ((pedersen_points_table_output_limb_43_col115) - (input_limb_59_col59))),
+                        - ((pedersen_points_table_output_limb_43_col129) - (input_limb_73_col73))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[16])
-                        - ((pedersen_points_table_output_limb_44_col116) - (input_limb_60_col60))),
+                        - ((pedersen_points_table_output_limb_44_col130) - (input_limb_74_col74))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[17])
-                        - ((pedersen_points_table_output_limb_45_col117) - (input_limb_61_col61))),
+                        - ((pedersen_points_table_output_limb_45_col131) - (input_limb_75_col75))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[18])
-                        - ((pedersen_points_table_output_limb_46_col118) - (input_limb_62_col62))),
+                        - ((pedersen_points_table_output_limb_46_col132) - (input_limb_76_col76))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[19])
-                        - ((pedersen_points_table_output_limb_47_col119) - (input_limb_63_col63))),
+                        - ((pedersen_points_table_output_limb_47_col133) - (input_limb_77_col77))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[20])
-                        - ((pedersen_points_table_output_limb_48_col120) - (input_limb_64_col64))),
+                        - ((pedersen_points_table_output_limb_48_col134) - (input_limb_78_col78))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[21])
-                        - ((pedersen_points_table_output_limb_49_col121) - (input_limb_65_col65))),
+                        - ((pedersen_points_table_output_limb_49_col135) - (input_limb_79_col79))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[22])
-                        - ((pedersen_points_table_output_limb_50_col122) - (input_limb_66_col66))),
+                        - ((pedersen_points_table_output_limb_50_col136) - (input_limb_80_col80))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[23])
-                        - ((pedersen_points_table_output_limb_51_col123) - (input_limb_67_col67))),
+                        - ((pedersen_points_table_output_limb_51_col137) - (input_limb_81_col81))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[24])
-                        - ((pedersen_points_table_output_limb_52_col124) - (input_limb_68_col68))),
+                        - ((pedersen_points_table_output_limb_52_col138) - (input_limb_82_col82))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[25])
-                        - ((pedersen_points_table_output_limb_53_col125) - (input_limb_69_col69))),
+                        - ((pedersen_points_table_output_limb_53_col139) - (input_limb_83_col83))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[26])
-                        - ((pedersen_points_table_output_limb_54_col126) - (input_limb_70_col70))),
+                        - ((pedersen_points_table_output_limb_54_col140) - (input_limb_84_col84))),
                     ((double_karatsuba_1454b_output_tmp_71feb_19[27])
-                        - ((pedersen_points_table_output_limb_55_col127) - (input_limb_71_col71))),
+                        - ((pedersen_points_table_output_limb_55_col141) - (input_limb_85_col85))),
                     double_karatsuba_1454b_output_tmp_71feb_19[28],
                     double_karatsuba_1454b_output_tmp_71feb_19[29],
                     double_karatsuba_1454b_output_tmp_71feb_19[30],
@@ -2202,259 +2234,259 @@ fn write_trace_simd(
                             << (UInt32_9)))
                         + (UInt32_131072))
                         & (UInt32_262143));
-                let k_col156 = ((k_mod_2_18_biased_tmp_71feb_22.low().as_m31())
+                let k_col170 = ((k_mod_2_18_biased_tmp_71feb_22.low().as_m31())
                     + (((k_mod_2_18_biased_tmp_71feb_22.high().as_m31()) - (M31_2)) * (M31_65536)));
-                *row[156] = k_col156;
-                *sub_component_inputs.range_check_20[0] = [((k_col156) + (M31_524288))];
-                *lookup_data.range_check_20_0 = [((k_col156) + (M31_524288))];
-                let carry_0_col157 = (((conv_mod_tmp_71feb_21[0]) - (k_col156)) * (M31_4194304));
-                *row[157] = carry_0_col157;
-                *sub_component_inputs.range_check_20_b[0] = [((carry_0_col157) + (M31_524288))];
-                *lookup_data.range_check_20_b_0 = [((carry_0_col157) + (M31_524288))];
-                let carry_1_col158 =
-                    (((conv_mod_tmp_71feb_21[1]) + (carry_0_col157)) * (M31_4194304));
-                *row[158] = carry_1_col158;
-                *sub_component_inputs.range_check_20_c[0] = [((carry_1_col158) + (M31_524288))];
-                *lookup_data.range_check_20_c_0 = [((carry_1_col158) + (M31_524288))];
-                let carry_2_col159 =
-                    (((conv_mod_tmp_71feb_21[2]) + (carry_1_col158)) * (M31_4194304));
-                *row[159] = carry_2_col159;
-                *sub_component_inputs.range_check_20_d[0] = [((carry_2_col159) + (M31_524288))];
-                *lookup_data.range_check_20_d_0 = [((carry_2_col159) + (M31_524288))];
-                let carry_3_col160 =
-                    (((conv_mod_tmp_71feb_21[3]) + (carry_2_col159)) * (M31_4194304));
-                *row[160] = carry_3_col160;
-                *sub_component_inputs.range_check_20_e[0] = [((carry_3_col160) + (M31_524288))];
-                *lookup_data.range_check_20_e_0 = [((carry_3_col160) + (M31_524288))];
-                let carry_4_col161 =
-                    (((conv_mod_tmp_71feb_21[4]) + (carry_3_col160)) * (M31_4194304));
-                *row[161] = carry_4_col161;
-                *sub_component_inputs.range_check_20_f[0] = [((carry_4_col161) + (M31_524288))];
-                *lookup_data.range_check_20_f_0 = [((carry_4_col161) + (M31_524288))];
-                let carry_5_col162 =
-                    (((conv_mod_tmp_71feb_21[5]) + (carry_4_col161)) * (M31_4194304));
-                *row[162] = carry_5_col162;
-                *sub_component_inputs.range_check_20_g[0] = [((carry_5_col162) + (M31_524288))];
-                *lookup_data.range_check_20_g_0 = [((carry_5_col162) + (M31_524288))];
-                let carry_6_col163 =
-                    (((conv_mod_tmp_71feb_21[6]) + (carry_5_col162)) * (M31_4194304));
-                *row[163] = carry_6_col163;
-                *sub_component_inputs.range_check_20_h[0] = [((carry_6_col163) + (M31_524288))];
-                *lookup_data.range_check_20_h_0 = [((carry_6_col163) + (M31_524288))];
-                let carry_7_col164 =
-                    (((conv_mod_tmp_71feb_21[7]) + (carry_6_col163)) * (M31_4194304));
-                *row[164] = carry_7_col164;
-                *sub_component_inputs.range_check_20[1] = [((carry_7_col164) + (M31_524288))];
-                *lookup_data.range_check_20_1 = [((carry_7_col164) + (M31_524288))];
-                let carry_8_col165 =
-                    (((conv_mod_tmp_71feb_21[8]) + (carry_7_col164)) * (M31_4194304));
-                *row[165] = carry_8_col165;
-                *sub_component_inputs.range_check_20_b[1] = [((carry_8_col165) + (M31_524288))];
-                *lookup_data.range_check_20_b_1 = [((carry_8_col165) + (M31_524288))];
-                let carry_9_col166 =
-                    (((conv_mod_tmp_71feb_21[9]) + (carry_8_col165)) * (M31_4194304));
-                *row[166] = carry_9_col166;
-                *sub_component_inputs.range_check_20_c[1] = [((carry_9_col166) + (M31_524288))];
-                *lookup_data.range_check_20_c_1 = [((carry_9_col166) + (M31_524288))];
-                let carry_10_col167 =
-                    (((conv_mod_tmp_71feb_21[10]) + (carry_9_col166)) * (M31_4194304));
-                *row[167] = carry_10_col167;
-                *sub_component_inputs.range_check_20_d[1] = [((carry_10_col167) + (M31_524288))];
-                *lookup_data.range_check_20_d_1 = [((carry_10_col167) + (M31_524288))];
-                let carry_11_col168 =
-                    (((conv_mod_tmp_71feb_21[11]) + (carry_10_col167)) * (M31_4194304));
-                *row[168] = carry_11_col168;
-                *sub_component_inputs.range_check_20_e[1] = [((carry_11_col168) + (M31_524288))];
-                *lookup_data.range_check_20_e_1 = [((carry_11_col168) + (M31_524288))];
-                let carry_12_col169 =
-                    (((conv_mod_tmp_71feb_21[12]) + (carry_11_col168)) * (M31_4194304));
-                *row[169] = carry_12_col169;
-                *sub_component_inputs.range_check_20_f[1] = [((carry_12_col169) + (M31_524288))];
-                *lookup_data.range_check_20_f_1 = [((carry_12_col169) + (M31_524288))];
-                let carry_13_col170 =
-                    (((conv_mod_tmp_71feb_21[13]) + (carry_12_col169)) * (M31_4194304));
-                *row[170] = carry_13_col170;
-                *sub_component_inputs.range_check_20_g[1] = [((carry_13_col170) + (M31_524288))];
-                *lookup_data.range_check_20_g_1 = [((carry_13_col170) + (M31_524288))];
-                let carry_14_col171 =
-                    (((conv_mod_tmp_71feb_21[14]) + (carry_13_col170)) * (M31_4194304));
-                *row[171] = carry_14_col171;
-                *sub_component_inputs.range_check_20_h[1] = [((carry_14_col171) + (M31_524288))];
-                *lookup_data.range_check_20_h_1 = [((carry_14_col171) + (M31_524288))];
-                let carry_15_col172 =
-                    (((conv_mod_tmp_71feb_21[15]) + (carry_14_col171)) * (M31_4194304));
-                *row[172] = carry_15_col172;
-                *sub_component_inputs.range_check_20[2] = [((carry_15_col172) + (M31_524288))];
-                *lookup_data.range_check_20_2 = [((carry_15_col172) + (M31_524288))];
-                let carry_16_col173 =
-                    (((conv_mod_tmp_71feb_21[16]) + (carry_15_col172)) * (M31_4194304));
-                *row[173] = carry_16_col173;
-                *sub_component_inputs.range_check_20_b[2] = [((carry_16_col173) + (M31_524288))];
-                *lookup_data.range_check_20_b_2 = [((carry_16_col173) + (M31_524288))];
-                let carry_17_col174 =
-                    (((conv_mod_tmp_71feb_21[17]) + (carry_16_col173)) * (M31_4194304));
-                *row[174] = carry_17_col174;
-                *sub_component_inputs.range_check_20_c[2] = [((carry_17_col174) + (M31_524288))];
-                *lookup_data.range_check_20_c_2 = [((carry_17_col174) + (M31_524288))];
-                let carry_18_col175 =
-                    (((conv_mod_tmp_71feb_21[18]) + (carry_17_col174)) * (M31_4194304));
-                *row[175] = carry_18_col175;
-                *sub_component_inputs.range_check_20_d[2] = [((carry_18_col175) + (M31_524288))];
-                *lookup_data.range_check_20_d_2 = [((carry_18_col175) + (M31_524288))];
-                let carry_19_col176 =
-                    (((conv_mod_tmp_71feb_21[19]) + (carry_18_col175)) * (M31_4194304));
-                *row[176] = carry_19_col176;
-                *sub_component_inputs.range_check_20_e[2] = [((carry_19_col176) + (M31_524288))];
-                *lookup_data.range_check_20_e_2 = [((carry_19_col176) + (M31_524288))];
-                let carry_20_col177 =
-                    (((conv_mod_tmp_71feb_21[20]) + (carry_19_col176)) * (M31_4194304));
-                *row[177] = carry_20_col177;
-                *sub_component_inputs.range_check_20_f[2] = [((carry_20_col177) + (M31_524288))];
-                *lookup_data.range_check_20_f_2 = [((carry_20_col177) + (M31_524288))];
-                let carry_21_col178 = ((((conv_mod_tmp_71feb_21[21]) - ((M31_136) * (k_col156)))
-                    + (carry_20_col177))
+                *row[170] = k_col170;
+                *sub_component_inputs.range_check_20[0] = [((k_col170) + (M31_524288))];
+                *lookup_data.range_check_20_0 = [((k_col170) + (M31_524288))];
+                let carry_0_col171 = (((conv_mod_tmp_71feb_21[0]) - (k_col170)) * (M31_4194304));
+                *row[171] = carry_0_col171;
+                *sub_component_inputs.range_check_20_b[0] = [((carry_0_col171) + (M31_524288))];
+                *lookup_data.range_check_20_b_0 = [((carry_0_col171) + (M31_524288))];
+                let carry_1_col172 =
+                    (((conv_mod_tmp_71feb_21[1]) + (carry_0_col171)) * (M31_4194304));
+                *row[172] = carry_1_col172;
+                *sub_component_inputs.range_check_20_c[0] = [((carry_1_col172) + (M31_524288))];
+                *lookup_data.range_check_20_c_0 = [((carry_1_col172) + (M31_524288))];
+                let carry_2_col173 =
+                    (((conv_mod_tmp_71feb_21[2]) + (carry_1_col172)) * (M31_4194304));
+                *row[173] = carry_2_col173;
+                *sub_component_inputs.range_check_20_d[0] = [((carry_2_col173) + (M31_524288))];
+                *lookup_data.range_check_20_d_0 = [((carry_2_col173) + (M31_524288))];
+                let carry_3_col174 =
+                    (((conv_mod_tmp_71feb_21[3]) + (carry_2_col173)) * (M31_4194304));
+                *row[174] = carry_3_col174;
+                *sub_component_inputs.range_check_20_e[0] = [((carry_3_col174) + (M31_524288))];
+                *lookup_data.range_check_20_e_0 = [((carry_3_col174) + (M31_524288))];
+                let carry_4_col175 =
+                    (((conv_mod_tmp_71feb_21[4]) + (carry_3_col174)) * (M31_4194304));
+                *row[175] = carry_4_col175;
+                *sub_component_inputs.range_check_20_f[0] = [((carry_4_col175) + (M31_524288))];
+                *lookup_data.range_check_20_f_0 = [((carry_4_col175) + (M31_524288))];
+                let carry_5_col176 =
+                    (((conv_mod_tmp_71feb_21[5]) + (carry_4_col175)) * (M31_4194304));
+                *row[176] = carry_5_col176;
+                *sub_component_inputs.range_check_20_g[0] = [((carry_5_col176) + (M31_524288))];
+                *lookup_data.range_check_20_g_0 = [((carry_5_col176) + (M31_524288))];
+                let carry_6_col177 =
+                    (((conv_mod_tmp_71feb_21[6]) + (carry_5_col176)) * (M31_4194304));
+                *row[177] = carry_6_col177;
+                *sub_component_inputs.range_check_20_h[0] = [((carry_6_col177) + (M31_524288))];
+                *lookup_data.range_check_20_h_0 = [((carry_6_col177) + (M31_524288))];
+                let carry_7_col178 =
+                    (((conv_mod_tmp_71feb_21[7]) + (carry_6_col177)) * (M31_4194304));
+                *row[178] = carry_7_col178;
+                *sub_component_inputs.range_check_20[1] = [((carry_7_col178) + (M31_524288))];
+                *lookup_data.range_check_20_1 = [((carry_7_col178) + (M31_524288))];
+                let carry_8_col179 =
+                    (((conv_mod_tmp_71feb_21[8]) + (carry_7_col178)) * (M31_4194304));
+                *row[179] = carry_8_col179;
+                *sub_component_inputs.range_check_20_b[1] = [((carry_8_col179) + (M31_524288))];
+                *lookup_data.range_check_20_b_1 = [((carry_8_col179) + (M31_524288))];
+                let carry_9_col180 =
+                    (((conv_mod_tmp_71feb_21[9]) + (carry_8_col179)) * (M31_4194304));
+                *row[180] = carry_9_col180;
+                *sub_component_inputs.range_check_20_c[1] = [((carry_9_col180) + (M31_524288))];
+                *lookup_data.range_check_20_c_1 = [((carry_9_col180) + (M31_524288))];
+                let carry_10_col181 =
+                    (((conv_mod_tmp_71feb_21[10]) + (carry_9_col180)) * (M31_4194304));
+                *row[181] = carry_10_col181;
+                *sub_component_inputs.range_check_20_d[1] = [((carry_10_col181) + (M31_524288))];
+                *lookup_data.range_check_20_d_1 = [((carry_10_col181) + (M31_524288))];
+                let carry_11_col182 =
+                    (((conv_mod_tmp_71feb_21[11]) + (carry_10_col181)) * (M31_4194304));
+                *row[182] = carry_11_col182;
+                *sub_component_inputs.range_check_20_e[1] = [((carry_11_col182) + (M31_524288))];
+                *lookup_data.range_check_20_e_1 = [((carry_11_col182) + (M31_524288))];
+                let carry_12_col183 =
+                    (((conv_mod_tmp_71feb_21[12]) + (carry_11_col182)) * (M31_4194304));
+                *row[183] = carry_12_col183;
+                *sub_component_inputs.range_check_20_f[1] = [((carry_12_col183) + (M31_524288))];
+                *lookup_data.range_check_20_f_1 = [((carry_12_col183) + (M31_524288))];
+                let carry_13_col184 =
+                    (((conv_mod_tmp_71feb_21[13]) + (carry_12_col183)) * (M31_4194304));
+                *row[184] = carry_13_col184;
+                *sub_component_inputs.range_check_20_g[1] = [((carry_13_col184) + (M31_524288))];
+                *lookup_data.range_check_20_g_1 = [((carry_13_col184) + (M31_524288))];
+                let carry_14_col185 =
+                    (((conv_mod_tmp_71feb_21[14]) + (carry_13_col184)) * (M31_4194304));
+                *row[185] = carry_14_col185;
+                *sub_component_inputs.range_check_20_h[1] = [((carry_14_col185) + (M31_524288))];
+                *lookup_data.range_check_20_h_1 = [((carry_14_col185) + (M31_524288))];
+                let carry_15_col186 =
+                    (((conv_mod_tmp_71feb_21[15]) + (carry_14_col185)) * (M31_4194304));
+                *row[186] = carry_15_col186;
+                *sub_component_inputs.range_check_20[2] = [((carry_15_col186) + (M31_524288))];
+                *lookup_data.range_check_20_2 = [((carry_15_col186) + (M31_524288))];
+                let carry_16_col187 =
+                    (((conv_mod_tmp_71feb_21[16]) + (carry_15_col186)) * (M31_4194304));
+                *row[187] = carry_16_col187;
+                *sub_component_inputs.range_check_20_b[2] = [((carry_16_col187) + (M31_524288))];
+                *lookup_data.range_check_20_b_2 = [((carry_16_col187) + (M31_524288))];
+                let carry_17_col188 =
+                    (((conv_mod_tmp_71feb_21[17]) + (carry_16_col187)) * (M31_4194304));
+                *row[188] = carry_17_col188;
+                *sub_component_inputs.range_check_20_c[2] = [((carry_17_col188) + (M31_524288))];
+                *lookup_data.range_check_20_c_2 = [((carry_17_col188) + (M31_524288))];
+                let carry_18_col189 =
+                    (((conv_mod_tmp_71feb_21[18]) + (carry_17_col188)) * (M31_4194304));
+                *row[189] = carry_18_col189;
+                *sub_component_inputs.range_check_20_d[2] = [((carry_18_col189) + (M31_524288))];
+                *lookup_data.range_check_20_d_2 = [((carry_18_col189) + (M31_524288))];
+                let carry_19_col190 =
+                    (((conv_mod_tmp_71feb_21[19]) + (carry_18_col189)) * (M31_4194304));
+                *row[190] = carry_19_col190;
+                *sub_component_inputs.range_check_20_e[2] = [((carry_19_col190) + (M31_524288))];
+                *lookup_data.range_check_20_e_2 = [((carry_19_col190) + (M31_524288))];
+                let carry_20_col191 =
+                    (((conv_mod_tmp_71feb_21[20]) + (carry_19_col190)) * (M31_4194304));
+                *row[191] = carry_20_col191;
+                *sub_component_inputs.range_check_20_f[2] = [((carry_20_col191) + (M31_524288))];
+                *lookup_data.range_check_20_f_2 = [((carry_20_col191) + (M31_524288))];
+                let carry_21_col192 = ((((conv_mod_tmp_71feb_21[21]) - ((M31_136) * (k_col170)))
+                    + (carry_20_col191))
                     * (M31_4194304));
-                *row[178] = carry_21_col178;
-                *sub_component_inputs.range_check_20_g[2] = [((carry_21_col178) + (M31_524288))];
-                *lookup_data.range_check_20_g_2 = [((carry_21_col178) + (M31_524288))];
-                let carry_22_col179 =
-                    (((conv_mod_tmp_71feb_21[22]) + (carry_21_col178)) * (M31_4194304));
-                *row[179] = carry_22_col179;
-                *sub_component_inputs.range_check_20_h[2] = [((carry_22_col179) + (M31_524288))];
-                *lookup_data.range_check_20_h_2 = [((carry_22_col179) + (M31_524288))];
-                let carry_23_col180 =
-                    (((conv_mod_tmp_71feb_21[23]) + (carry_22_col179)) * (M31_4194304));
-                *row[180] = carry_23_col180;
-                *sub_component_inputs.range_check_20[3] = [((carry_23_col180) + (M31_524288))];
-                *lookup_data.range_check_20_3 = [((carry_23_col180) + (M31_524288))];
-                let carry_24_col181 =
-                    (((conv_mod_tmp_71feb_21[24]) + (carry_23_col180)) * (M31_4194304));
-                *row[181] = carry_24_col181;
-                *sub_component_inputs.range_check_20_b[3] = [((carry_24_col181) + (M31_524288))];
-                *lookup_data.range_check_20_b_3 = [((carry_24_col181) + (M31_524288))];
-                let carry_25_col182 =
-                    (((conv_mod_tmp_71feb_21[25]) + (carry_24_col181)) * (M31_4194304));
-                *row[182] = carry_25_col182;
-                *sub_component_inputs.range_check_20_c[3] = [((carry_25_col182) + (M31_524288))];
-                *lookup_data.range_check_20_c_3 = [((carry_25_col182) + (M31_524288))];
-                let carry_26_col183 =
-                    (((conv_mod_tmp_71feb_21[26]) + (carry_25_col182)) * (M31_4194304));
-                *row[183] = carry_26_col183;
-                *sub_component_inputs.range_check_20_d[3] = [((carry_26_col183) + (M31_524288))];
-                *lookup_data.range_check_20_d_3 = [((carry_26_col183) + (M31_524288))];
+                *row[192] = carry_21_col192;
+                *sub_component_inputs.range_check_20_g[2] = [((carry_21_col192) + (M31_524288))];
+                *lookup_data.range_check_20_g_2 = [((carry_21_col192) + (M31_524288))];
+                let carry_22_col193 =
+                    (((conv_mod_tmp_71feb_21[22]) + (carry_21_col192)) * (M31_4194304));
+                *row[193] = carry_22_col193;
+                *sub_component_inputs.range_check_20_h[2] = [((carry_22_col193) + (M31_524288))];
+                *lookup_data.range_check_20_h_2 = [((carry_22_col193) + (M31_524288))];
+                let carry_23_col194 =
+                    (((conv_mod_tmp_71feb_21[23]) + (carry_22_col193)) * (M31_4194304));
+                *row[194] = carry_23_col194;
+                *sub_component_inputs.range_check_20[3] = [((carry_23_col194) + (M31_524288))];
+                *lookup_data.range_check_20_3 = [((carry_23_col194) + (M31_524288))];
+                let carry_24_col195 =
+                    (((conv_mod_tmp_71feb_21[24]) + (carry_23_col194)) * (M31_4194304));
+                *row[195] = carry_24_col195;
+                *sub_component_inputs.range_check_20_b[3] = [((carry_24_col195) + (M31_524288))];
+                *lookup_data.range_check_20_b_3 = [((carry_24_col195) + (M31_524288))];
+                let carry_25_col196 =
+                    (((conv_mod_tmp_71feb_21[25]) + (carry_24_col195)) * (M31_4194304));
+                *row[196] = carry_25_col196;
+                *sub_component_inputs.range_check_20_c[3] = [((carry_25_col196) + (M31_524288))];
+                *lookup_data.range_check_20_c_3 = [((carry_25_col196) + (M31_524288))];
+                let carry_26_col197 =
+                    (((conv_mod_tmp_71feb_21[26]) + (carry_25_col196)) * (M31_4194304));
+                *row[197] = carry_26_col197;
+                *sub_component_inputs.range_check_20_d[3] = [((carry_26_col197) + (M31_524288))];
+                *lookup_data.range_check_20_d_3 = [((carry_26_col197) + (M31_524288))];
 
                 let result_x_tmp_71feb_23 = ((((slope_tmp_71feb_1) * (slope_tmp_71feb_1))
                     - (partial_ec_mul_input.2 .1[0]))
                     - (pedersen_points_table_output_tmp_71feb_0[0]));
-                let result_x_limb_0_col184 = result_x_tmp_71feb_23.get_m31(0);
-                *row[184] = result_x_limb_0_col184;
-                let result_x_limb_1_col185 = result_x_tmp_71feb_23.get_m31(1);
-                *row[185] = result_x_limb_1_col185;
-                let result_x_limb_2_col186 = result_x_tmp_71feb_23.get_m31(2);
-                *row[186] = result_x_limb_2_col186;
-                let result_x_limb_3_col187 = result_x_tmp_71feb_23.get_m31(3);
-                *row[187] = result_x_limb_3_col187;
-                let result_x_limb_4_col188 = result_x_tmp_71feb_23.get_m31(4);
-                *row[188] = result_x_limb_4_col188;
-                let result_x_limb_5_col189 = result_x_tmp_71feb_23.get_m31(5);
-                *row[189] = result_x_limb_5_col189;
-                let result_x_limb_6_col190 = result_x_tmp_71feb_23.get_m31(6);
-                *row[190] = result_x_limb_6_col190;
-                let result_x_limb_7_col191 = result_x_tmp_71feb_23.get_m31(7);
-                *row[191] = result_x_limb_7_col191;
-                let result_x_limb_8_col192 = result_x_tmp_71feb_23.get_m31(8);
-                *row[192] = result_x_limb_8_col192;
-                let result_x_limb_9_col193 = result_x_tmp_71feb_23.get_m31(9);
-                *row[193] = result_x_limb_9_col193;
-                let result_x_limb_10_col194 = result_x_tmp_71feb_23.get_m31(10);
-                *row[194] = result_x_limb_10_col194;
-                let result_x_limb_11_col195 = result_x_tmp_71feb_23.get_m31(11);
-                *row[195] = result_x_limb_11_col195;
-                let result_x_limb_12_col196 = result_x_tmp_71feb_23.get_m31(12);
-                *row[196] = result_x_limb_12_col196;
-                let result_x_limb_13_col197 = result_x_tmp_71feb_23.get_m31(13);
-                *row[197] = result_x_limb_13_col197;
-                let result_x_limb_14_col198 = result_x_tmp_71feb_23.get_m31(14);
-                *row[198] = result_x_limb_14_col198;
-                let result_x_limb_15_col199 = result_x_tmp_71feb_23.get_m31(15);
-                *row[199] = result_x_limb_15_col199;
-                let result_x_limb_16_col200 = result_x_tmp_71feb_23.get_m31(16);
-                *row[200] = result_x_limb_16_col200;
-                let result_x_limb_17_col201 = result_x_tmp_71feb_23.get_m31(17);
-                *row[201] = result_x_limb_17_col201;
-                let result_x_limb_18_col202 = result_x_tmp_71feb_23.get_m31(18);
-                *row[202] = result_x_limb_18_col202;
-                let result_x_limb_19_col203 = result_x_tmp_71feb_23.get_m31(19);
-                *row[203] = result_x_limb_19_col203;
-                let result_x_limb_20_col204 = result_x_tmp_71feb_23.get_m31(20);
-                *row[204] = result_x_limb_20_col204;
-                let result_x_limb_21_col205 = result_x_tmp_71feb_23.get_m31(21);
-                *row[205] = result_x_limb_21_col205;
-                let result_x_limb_22_col206 = result_x_tmp_71feb_23.get_m31(22);
-                *row[206] = result_x_limb_22_col206;
-                let result_x_limb_23_col207 = result_x_tmp_71feb_23.get_m31(23);
-                *row[207] = result_x_limb_23_col207;
-                let result_x_limb_24_col208 = result_x_tmp_71feb_23.get_m31(24);
-                *row[208] = result_x_limb_24_col208;
-                let result_x_limb_25_col209 = result_x_tmp_71feb_23.get_m31(25);
-                *row[209] = result_x_limb_25_col209;
-                let result_x_limb_26_col210 = result_x_tmp_71feb_23.get_m31(26);
-                *row[210] = result_x_limb_26_col210;
-                let result_x_limb_27_col211 = result_x_tmp_71feb_23.get_m31(27);
-                *row[211] = result_x_limb_27_col211;
+                let result_x_limb_0_col198 = result_x_tmp_71feb_23.get_m31(0);
+                *row[198] = result_x_limb_0_col198;
+                let result_x_limb_1_col199 = result_x_tmp_71feb_23.get_m31(1);
+                *row[199] = result_x_limb_1_col199;
+                let result_x_limb_2_col200 = result_x_tmp_71feb_23.get_m31(2);
+                *row[200] = result_x_limb_2_col200;
+                let result_x_limb_3_col201 = result_x_tmp_71feb_23.get_m31(3);
+                *row[201] = result_x_limb_3_col201;
+                let result_x_limb_4_col202 = result_x_tmp_71feb_23.get_m31(4);
+                *row[202] = result_x_limb_4_col202;
+                let result_x_limb_5_col203 = result_x_tmp_71feb_23.get_m31(5);
+                *row[203] = result_x_limb_5_col203;
+                let result_x_limb_6_col204 = result_x_tmp_71feb_23.get_m31(6);
+                *row[204] = result_x_limb_6_col204;
+                let result_x_limb_7_col205 = result_x_tmp_71feb_23.get_m31(7);
+                *row[205] = result_x_limb_7_col205;
+                let result_x_limb_8_col206 = result_x_tmp_71feb_23.get_m31(8);
+                *row[206] = result_x_limb_8_col206;
+                let result_x_limb_9_col207 = result_x_tmp_71feb_23.get_m31(9);
+                *row[207] = result_x_limb_9_col207;
+                let result_x_limb_10_col208 = result_x_tmp_71feb_23.get_m31(10);
+                *row[208] = result_x_limb_10_col208;
+                let result_x_limb_11_col209 = result_x_tmp_71feb_23.get_m31(11);
+                *row[209] = result_x_limb_11_col209;
+                let result_x_limb_12_col210 = result_x_tmp_71feb_23.get_m31(12);
+                *row[210] = result_x_limb_12_col210;
+                let result_x_limb_13_col211 = result_x_tmp_71feb_23.get_m31(13);
+                *row[211] = result_x_limb_13_col211;
+                let result_x_limb_14_col212 = result_x_tmp_71feb_23.get_m31(14);
+                *row[212] = result_x_limb_14_col212;
+                let result_x_limb_15_col213 = result_x_tmp_71feb_23.get_m31(15);
+                *row[213] = result_x_limb_15_col213;
+                let result_x_limb_16_col214 = result_x_tmp_71feb_23.get_m31(16);
+                *row[214] = result_x_limb_16_col214;
+                let result_x_limb_17_col215 = result_x_tmp_71feb_23.get_m31(17);
+                *row[215] = result_x_limb_17_col215;
+                let result_x_limb_18_col216 = result_x_tmp_71feb_23.get_m31(18);
+                *row[216] = result_x_limb_18_col216;
+                let result_x_limb_19_col217 = result_x_tmp_71feb_23.get_m31(19);
+                *row[217] = result_x_limb_19_col217;
+                let result_x_limb_20_col218 = result_x_tmp_71feb_23.get_m31(20);
+                *row[218] = result_x_limb_20_col218;
+                let result_x_limb_21_col219 = result_x_tmp_71feb_23.get_m31(21);
+                *row[219] = result_x_limb_21_col219;
+                let result_x_limb_22_col220 = result_x_tmp_71feb_23.get_m31(22);
+                *row[220] = result_x_limb_22_col220;
+                let result_x_limb_23_col221 = result_x_tmp_71feb_23.get_m31(23);
+                *row[221] = result_x_limb_23_col221;
+                let result_x_limb_24_col222 = result_x_tmp_71feb_23.get_m31(24);
+                *row[222] = result_x_limb_24_col222;
+                let result_x_limb_25_col223 = result_x_tmp_71feb_23.get_m31(25);
+                *row[223] = result_x_limb_25_col223;
+                let result_x_limb_26_col224 = result_x_tmp_71feb_23.get_m31(26);
+                *row[224] = result_x_limb_26_col224;
+                let result_x_limb_27_col225 = result_x_tmp_71feb_23.get_m31(27);
+                *row[225] = result_x_limb_27_col225;
 
                 // Range Check Mem Value N 28.
 
                 *sub_component_inputs.range_check_9_9[2] =
-                    [result_x_limb_0_col184, result_x_limb_1_col185];
-                *lookup_data.range_check_9_9_2 = [result_x_limb_0_col184, result_x_limb_1_col185];
+                    [result_x_limb_0_col198, result_x_limb_1_col199];
+                *lookup_data.range_check_9_9_2 = [result_x_limb_0_col198, result_x_limb_1_col199];
                 *sub_component_inputs.range_check_9_9_b[2] =
-                    [result_x_limb_2_col186, result_x_limb_3_col187];
-                *lookup_data.range_check_9_9_b_2 = [result_x_limb_2_col186, result_x_limb_3_col187];
+                    [result_x_limb_2_col200, result_x_limb_3_col201];
+                *lookup_data.range_check_9_9_b_2 = [result_x_limb_2_col200, result_x_limb_3_col201];
                 *sub_component_inputs.range_check_9_9_c[2] =
-                    [result_x_limb_4_col188, result_x_limb_5_col189];
-                *lookup_data.range_check_9_9_c_2 = [result_x_limb_4_col188, result_x_limb_5_col189];
+                    [result_x_limb_4_col202, result_x_limb_5_col203];
+                *lookup_data.range_check_9_9_c_2 = [result_x_limb_4_col202, result_x_limb_5_col203];
                 *sub_component_inputs.range_check_9_9_d[2] =
-                    [result_x_limb_6_col190, result_x_limb_7_col191];
-                *lookup_data.range_check_9_9_d_2 = [result_x_limb_6_col190, result_x_limb_7_col191];
+                    [result_x_limb_6_col204, result_x_limb_7_col205];
+                *lookup_data.range_check_9_9_d_2 = [result_x_limb_6_col204, result_x_limb_7_col205];
                 *sub_component_inputs.range_check_9_9_e[2] =
-                    [result_x_limb_8_col192, result_x_limb_9_col193];
-                *lookup_data.range_check_9_9_e_2 = [result_x_limb_8_col192, result_x_limb_9_col193];
+                    [result_x_limb_8_col206, result_x_limb_9_col207];
+                *lookup_data.range_check_9_9_e_2 = [result_x_limb_8_col206, result_x_limb_9_col207];
                 *sub_component_inputs.range_check_9_9_f[2] =
-                    [result_x_limb_10_col194, result_x_limb_11_col195];
+                    [result_x_limb_10_col208, result_x_limb_11_col209];
                 *lookup_data.range_check_9_9_f_2 =
-                    [result_x_limb_10_col194, result_x_limb_11_col195];
+                    [result_x_limb_10_col208, result_x_limb_11_col209];
                 *sub_component_inputs.range_check_9_9_g[1] =
-                    [result_x_limb_12_col196, result_x_limb_13_col197];
+                    [result_x_limb_12_col210, result_x_limb_13_col211];
                 *lookup_data.range_check_9_9_g_1 =
-                    [result_x_limb_12_col196, result_x_limb_13_col197];
+                    [result_x_limb_12_col210, result_x_limb_13_col211];
                 *sub_component_inputs.range_check_9_9_h[1] =
-                    [result_x_limb_14_col198, result_x_limb_15_col199];
+                    [result_x_limb_14_col212, result_x_limb_15_col213];
                 *lookup_data.range_check_9_9_h_1 =
-                    [result_x_limb_14_col198, result_x_limb_15_col199];
+                    [result_x_limb_14_col212, result_x_limb_15_col213];
                 *sub_component_inputs.range_check_9_9[3] =
-                    [result_x_limb_16_col200, result_x_limb_17_col201];
-                *lookup_data.range_check_9_9_3 = [result_x_limb_16_col200, result_x_limb_17_col201];
+                    [result_x_limb_16_col214, result_x_limb_17_col215];
+                *lookup_data.range_check_9_9_3 = [result_x_limb_16_col214, result_x_limb_17_col215];
                 *sub_component_inputs.range_check_9_9_b[3] =
-                    [result_x_limb_18_col202, result_x_limb_19_col203];
+                    [result_x_limb_18_col216, result_x_limb_19_col217];
                 *lookup_data.range_check_9_9_b_3 =
-                    [result_x_limb_18_col202, result_x_limb_19_col203];
+                    [result_x_limb_18_col216, result_x_limb_19_col217];
                 *sub_component_inputs.range_check_9_9_c[3] =
-                    [result_x_limb_20_col204, result_x_limb_21_col205];
+                    [result_x_limb_20_col218, result_x_limb_21_col219];
                 *lookup_data.range_check_9_9_c_3 =
-                    [result_x_limb_20_col204, result_x_limb_21_col205];
+                    [result_x_limb_20_col218, result_x_limb_21_col219];
                 *sub_component_inputs.range_check_9_9_d[3] =
-                    [result_x_limb_22_col206, result_x_limb_23_col207];
+                    [result_x_limb_22_col220, result_x_limb_23_col221];
                 *lookup_data.range_check_9_9_d_3 =
-                    [result_x_limb_22_col206, result_x_limb_23_col207];
+                    [result_x_limb_22_col220, result_x_limb_23_col221];
                 *sub_component_inputs.range_check_9_9_e[3] =
-                    [result_x_limb_24_col208, result_x_limb_25_col209];
+                    [result_x_limb_24_col222, result_x_limb_25_col223];
                 *lookup_data.range_check_9_9_e_3 =
-                    [result_x_limb_24_col208, result_x_limb_25_col209];
+                    [result_x_limb_24_col222, result_x_limb_25_col223];
                 *sub_component_inputs.range_check_9_9_f[3] =
-                    [result_x_limb_26_col210, result_x_limb_27_col211];
+                    [result_x_limb_26_col224, result_x_limb_27_col225];
                 *lookup_data.range_check_9_9_f_3 =
-                    [result_x_limb_26_col210, result_x_limb_27_col211];
+                    [result_x_limb_26_col224, result_x_limb_27_col225];
 
                 // Verify Mul 252.
 
@@ -2463,124 +2495,124 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_24 = [
-                    ((slope_limb_0_col128) * (slope_limb_0_col128)),
-                    (((slope_limb_0_col128) * (slope_limb_1_col129))
-                        + ((slope_limb_1_col129) * (slope_limb_0_col128))),
-                    ((((slope_limb_0_col128) * (slope_limb_2_col130))
-                        + ((slope_limb_1_col129) * (slope_limb_1_col129)))
-                        + ((slope_limb_2_col130) * (slope_limb_0_col128))),
-                    (((((slope_limb_0_col128) * (slope_limb_3_col131))
-                        + ((slope_limb_1_col129) * (slope_limb_2_col130)))
-                        + ((slope_limb_2_col130) * (slope_limb_1_col129)))
-                        + ((slope_limb_3_col131) * (slope_limb_0_col128))),
-                    ((((((slope_limb_0_col128) * (slope_limb_4_col132))
-                        + ((slope_limb_1_col129) * (slope_limb_3_col131)))
-                        + ((slope_limb_2_col130) * (slope_limb_2_col130)))
-                        + ((slope_limb_3_col131) * (slope_limb_1_col129)))
-                        + ((slope_limb_4_col132) * (slope_limb_0_col128))),
-                    (((((((slope_limb_0_col128) * (slope_limb_5_col133))
-                        + ((slope_limb_1_col129) * (slope_limb_4_col132)))
-                        + ((slope_limb_2_col130) * (slope_limb_3_col131)))
-                        + ((slope_limb_3_col131) * (slope_limb_2_col130)))
-                        + ((slope_limb_4_col132) * (slope_limb_1_col129)))
-                        + ((slope_limb_5_col133) * (slope_limb_0_col128))),
-                    ((((((((slope_limb_0_col128) * (slope_limb_6_col134))
-                        + ((slope_limb_1_col129) * (slope_limb_5_col133)))
-                        + ((slope_limb_2_col130) * (slope_limb_4_col132)))
-                        + ((slope_limb_3_col131) * (slope_limb_3_col131)))
-                        + ((slope_limb_4_col132) * (slope_limb_2_col130)))
-                        + ((slope_limb_5_col133) * (slope_limb_1_col129)))
-                        + ((slope_limb_6_col134) * (slope_limb_0_col128))),
-                    (((((((slope_limb_1_col129) * (slope_limb_6_col134))
-                        + ((slope_limb_2_col130) * (slope_limb_5_col133)))
-                        + ((slope_limb_3_col131) * (slope_limb_4_col132)))
-                        + ((slope_limb_4_col132) * (slope_limb_3_col131)))
-                        + ((slope_limb_5_col133) * (slope_limb_2_col130)))
-                        + ((slope_limb_6_col134) * (slope_limb_1_col129))),
-                    ((((((slope_limb_2_col130) * (slope_limb_6_col134))
-                        + ((slope_limb_3_col131) * (slope_limb_5_col133)))
-                        + ((slope_limb_4_col132) * (slope_limb_4_col132)))
-                        + ((slope_limb_5_col133) * (slope_limb_3_col131)))
-                        + ((slope_limb_6_col134) * (slope_limb_2_col130))),
-                    (((((slope_limb_3_col131) * (slope_limb_6_col134))
-                        + ((slope_limb_4_col132) * (slope_limb_5_col133)))
-                        + ((slope_limb_5_col133) * (slope_limb_4_col132)))
-                        + ((slope_limb_6_col134) * (slope_limb_3_col131))),
-                    ((((slope_limb_4_col132) * (slope_limb_6_col134))
-                        + ((slope_limb_5_col133) * (slope_limb_5_col133)))
-                        + ((slope_limb_6_col134) * (slope_limb_4_col132))),
-                    (((slope_limb_5_col133) * (slope_limb_6_col134))
-                        + ((slope_limb_6_col134) * (slope_limb_5_col133))),
-                    ((slope_limb_6_col134) * (slope_limb_6_col134)),
+                    ((slope_limb_0_col142) * (slope_limb_0_col142)),
+                    (((slope_limb_0_col142) * (slope_limb_1_col143))
+                        + ((slope_limb_1_col143) * (slope_limb_0_col142))),
+                    ((((slope_limb_0_col142) * (slope_limb_2_col144))
+                        + ((slope_limb_1_col143) * (slope_limb_1_col143)))
+                        + ((slope_limb_2_col144) * (slope_limb_0_col142))),
+                    (((((slope_limb_0_col142) * (slope_limb_3_col145))
+                        + ((slope_limb_1_col143) * (slope_limb_2_col144)))
+                        + ((slope_limb_2_col144) * (slope_limb_1_col143)))
+                        + ((slope_limb_3_col145) * (slope_limb_0_col142))),
+                    ((((((slope_limb_0_col142) * (slope_limb_4_col146))
+                        + ((slope_limb_1_col143) * (slope_limb_3_col145)))
+                        + ((slope_limb_2_col144) * (slope_limb_2_col144)))
+                        + ((slope_limb_3_col145) * (slope_limb_1_col143)))
+                        + ((slope_limb_4_col146) * (slope_limb_0_col142))),
+                    (((((((slope_limb_0_col142) * (slope_limb_5_col147))
+                        + ((slope_limb_1_col143) * (slope_limb_4_col146)))
+                        + ((slope_limb_2_col144) * (slope_limb_3_col145)))
+                        + ((slope_limb_3_col145) * (slope_limb_2_col144)))
+                        + ((slope_limb_4_col146) * (slope_limb_1_col143)))
+                        + ((slope_limb_5_col147) * (slope_limb_0_col142))),
+                    ((((((((slope_limb_0_col142) * (slope_limb_6_col148))
+                        + ((slope_limb_1_col143) * (slope_limb_5_col147)))
+                        + ((slope_limb_2_col144) * (slope_limb_4_col146)))
+                        + ((slope_limb_3_col145) * (slope_limb_3_col145)))
+                        + ((slope_limb_4_col146) * (slope_limb_2_col144)))
+                        + ((slope_limb_5_col147) * (slope_limb_1_col143)))
+                        + ((slope_limb_6_col148) * (slope_limb_0_col142))),
+                    (((((((slope_limb_1_col143) * (slope_limb_6_col148))
+                        + ((slope_limb_2_col144) * (slope_limb_5_col147)))
+                        + ((slope_limb_3_col145) * (slope_limb_4_col146)))
+                        + ((slope_limb_4_col146) * (slope_limb_3_col145)))
+                        + ((slope_limb_5_col147) * (slope_limb_2_col144)))
+                        + ((slope_limb_6_col148) * (slope_limb_1_col143))),
+                    ((((((slope_limb_2_col144) * (slope_limb_6_col148))
+                        + ((slope_limb_3_col145) * (slope_limb_5_col147)))
+                        + ((slope_limb_4_col146) * (slope_limb_4_col146)))
+                        + ((slope_limb_5_col147) * (slope_limb_3_col145)))
+                        + ((slope_limb_6_col148) * (slope_limb_2_col144))),
+                    (((((slope_limb_3_col145) * (slope_limb_6_col148))
+                        + ((slope_limb_4_col146) * (slope_limb_5_col147)))
+                        + ((slope_limb_5_col147) * (slope_limb_4_col146)))
+                        + ((slope_limb_6_col148) * (slope_limb_3_col145))),
+                    ((((slope_limb_4_col146) * (slope_limb_6_col148))
+                        + ((slope_limb_5_col147) * (slope_limb_5_col147)))
+                        + ((slope_limb_6_col148) * (slope_limb_4_col146))),
+                    (((slope_limb_5_col147) * (slope_limb_6_col148))
+                        + ((slope_limb_6_col148) * (slope_limb_5_col147))),
+                    ((slope_limb_6_col148) * (slope_limb_6_col148)),
                 ];
                 let z2_tmp_71feb_25 = [
-                    ((slope_limb_7_col135) * (slope_limb_7_col135)),
-                    (((slope_limb_7_col135) * (slope_limb_8_col136))
-                        + ((slope_limb_8_col136) * (slope_limb_7_col135))),
-                    ((((slope_limb_7_col135) * (slope_limb_9_col137))
-                        + ((slope_limb_8_col136) * (slope_limb_8_col136)))
-                        + ((slope_limb_9_col137) * (slope_limb_7_col135))),
-                    (((((slope_limb_7_col135) * (slope_limb_10_col138))
-                        + ((slope_limb_8_col136) * (slope_limb_9_col137)))
-                        + ((slope_limb_9_col137) * (slope_limb_8_col136)))
-                        + ((slope_limb_10_col138) * (slope_limb_7_col135))),
-                    ((((((slope_limb_7_col135) * (slope_limb_11_col139))
-                        + ((slope_limb_8_col136) * (slope_limb_10_col138)))
-                        + ((slope_limb_9_col137) * (slope_limb_9_col137)))
-                        + ((slope_limb_10_col138) * (slope_limb_8_col136)))
-                        + ((slope_limb_11_col139) * (slope_limb_7_col135))),
-                    (((((((slope_limb_7_col135) * (slope_limb_12_col140))
-                        + ((slope_limb_8_col136) * (slope_limb_11_col139)))
-                        + ((slope_limb_9_col137) * (slope_limb_10_col138)))
-                        + ((slope_limb_10_col138) * (slope_limb_9_col137)))
-                        + ((slope_limb_11_col139) * (slope_limb_8_col136)))
-                        + ((slope_limb_12_col140) * (slope_limb_7_col135))),
-                    ((((((((slope_limb_7_col135) * (slope_limb_13_col141))
-                        + ((slope_limb_8_col136) * (slope_limb_12_col140)))
-                        + ((slope_limb_9_col137) * (slope_limb_11_col139)))
-                        + ((slope_limb_10_col138) * (slope_limb_10_col138)))
-                        + ((slope_limb_11_col139) * (slope_limb_9_col137)))
-                        + ((slope_limb_12_col140) * (slope_limb_8_col136)))
-                        + ((slope_limb_13_col141) * (slope_limb_7_col135))),
-                    (((((((slope_limb_8_col136) * (slope_limb_13_col141))
-                        + ((slope_limb_9_col137) * (slope_limb_12_col140)))
-                        + ((slope_limb_10_col138) * (slope_limb_11_col139)))
-                        + ((slope_limb_11_col139) * (slope_limb_10_col138)))
-                        + ((slope_limb_12_col140) * (slope_limb_9_col137)))
-                        + ((slope_limb_13_col141) * (slope_limb_8_col136))),
-                    ((((((slope_limb_9_col137) * (slope_limb_13_col141))
-                        + ((slope_limb_10_col138) * (slope_limb_12_col140)))
-                        + ((slope_limb_11_col139) * (slope_limb_11_col139)))
-                        + ((slope_limb_12_col140) * (slope_limb_10_col138)))
-                        + ((slope_limb_13_col141) * (slope_limb_9_col137))),
-                    (((((slope_limb_10_col138) * (slope_limb_13_col141))
-                        + ((slope_limb_11_col139) * (slope_limb_12_col140)))
-                        + ((slope_limb_12_col140) * (slope_limb_11_col139)))
-                        + ((slope_limb_13_col141) * (slope_limb_10_col138))),
-                    ((((slope_limb_11_col139) * (slope_limb_13_col141))
-                        + ((slope_limb_12_col140) * (slope_limb_12_col140)))
-                        + ((slope_limb_13_col141) * (slope_limb_11_col139))),
-                    (((slope_limb_12_col140) * (slope_limb_13_col141))
-                        + ((slope_limb_13_col141) * (slope_limb_12_col140))),
-                    ((slope_limb_13_col141) * (slope_limb_13_col141)),
+                    ((slope_limb_7_col149) * (slope_limb_7_col149)),
+                    (((slope_limb_7_col149) * (slope_limb_8_col150))
+                        + ((slope_limb_8_col150) * (slope_limb_7_col149))),
+                    ((((slope_limb_7_col149) * (slope_limb_9_col151))
+                        + ((slope_limb_8_col150) * (slope_limb_8_col150)))
+                        + ((slope_limb_9_col151) * (slope_limb_7_col149))),
+                    (((((slope_limb_7_col149) * (slope_limb_10_col152))
+                        + ((slope_limb_8_col150) * (slope_limb_9_col151)))
+                        + ((slope_limb_9_col151) * (slope_limb_8_col150)))
+                        + ((slope_limb_10_col152) * (slope_limb_7_col149))),
+                    ((((((slope_limb_7_col149) * (slope_limb_11_col153))
+                        + ((slope_limb_8_col150) * (slope_limb_10_col152)))
+                        + ((slope_limb_9_col151) * (slope_limb_9_col151)))
+                        + ((slope_limb_10_col152) * (slope_limb_8_col150)))
+                        + ((slope_limb_11_col153) * (slope_limb_7_col149))),
+                    (((((((slope_limb_7_col149) * (slope_limb_12_col154))
+                        + ((slope_limb_8_col150) * (slope_limb_11_col153)))
+                        + ((slope_limb_9_col151) * (slope_limb_10_col152)))
+                        + ((slope_limb_10_col152) * (slope_limb_9_col151)))
+                        + ((slope_limb_11_col153) * (slope_limb_8_col150)))
+                        + ((slope_limb_12_col154) * (slope_limb_7_col149))),
+                    ((((((((slope_limb_7_col149) * (slope_limb_13_col155))
+                        + ((slope_limb_8_col150) * (slope_limb_12_col154)))
+                        + ((slope_limb_9_col151) * (slope_limb_11_col153)))
+                        + ((slope_limb_10_col152) * (slope_limb_10_col152)))
+                        + ((slope_limb_11_col153) * (slope_limb_9_col151)))
+                        + ((slope_limb_12_col154) * (slope_limb_8_col150)))
+                        + ((slope_limb_13_col155) * (slope_limb_7_col149))),
+                    (((((((slope_limb_8_col150) * (slope_limb_13_col155))
+                        + ((slope_limb_9_col151) * (slope_limb_12_col154)))
+                        + ((slope_limb_10_col152) * (slope_limb_11_col153)))
+                        + ((slope_limb_11_col153) * (slope_limb_10_col152)))
+                        + ((slope_limb_12_col154) * (slope_limb_9_col151)))
+                        + ((slope_limb_13_col155) * (slope_limb_8_col150))),
+                    ((((((slope_limb_9_col151) * (slope_limb_13_col155))
+                        + ((slope_limb_10_col152) * (slope_limb_12_col154)))
+                        + ((slope_limb_11_col153) * (slope_limb_11_col153)))
+                        + ((slope_limb_12_col154) * (slope_limb_10_col152)))
+                        + ((slope_limb_13_col155) * (slope_limb_9_col151))),
+                    (((((slope_limb_10_col152) * (slope_limb_13_col155))
+                        + ((slope_limb_11_col153) * (slope_limb_12_col154)))
+                        + ((slope_limb_12_col154) * (slope_limb_11_col153)))
+                        + ((slope_limb_13_col155) * (slope_limb_10_col152))),
+                    ((((slope_limb_11_col153) * (slope_limb_13_col155))
+                        + ((slope_limb_12_col154) * (slope_limb_12_col154)))
+                        + ((slope_limb_13_col155) * (slope_limb_11_col153))),
+                    (((slope_limb_12_col154) * (slope_limb_13_col155))
+                        + ((slope_limb_13_col155) * (slope_limb_12_col154))),
+                    ((slope_limb_13_col155) * (slope_limb_13_col155)),
                 ];
                 let x_sum_tmp_71feb_26 = [
-                    ((slope_limb_0_col128) + (slope_limb_7_col135)),
-                    ((slope_limb_1_col129) + (slope_limb_8_col136)),
-                    ((slope_limb_2_col130) + (slope_limb_9_col137)),
-                    ((slope_limb_3_col131) + (slope_limb_10_col138)),
-                    ((slope_limb_4_col132) + (slope_limb_11_col139)),
-                    ((slope_limb_5_col133) + (slope_limb_12_col140)),
-                    ((slope_limb_6_col134) + (slope_limb_13_col141)),
+                    ((slope_limb_0_col142) + (slope_limb_7_col149)),
+                    ((slope_limb_1_col143) + (slope_limb_8_col150)),
+                    ((slope_limb_2_col144) + (slope_limb_9_col151)),
+                    ((slope_limb_3_col145) + (slope_limb_10_col152)),
+                    ((slope_limb_4_col146) + (slope_limb_11_col153)),
+                    ((slope_limb_5_col147) + (slope_limb_12_col154)),
+                    ((slope_limb_6_col148) + (slope_limb_13_col155)),
                 ];
                 let y_sum_tmp_71feb_27 = [
-                    ((slope_limb_0_col128) + (slope_limb_7_col135)),
-                    ((slope_limb_1_col129) + (slope_limb_8_col136)),
-                    ((slope_limb_2_col130) + (slope_limb_9_col137)),
-                    ((slope_limb_3_col131) + (slope_limb_10_col138)),
-                    ((slope_limb_4_col132) + (slope_limb_11_col139)),
-                    ((slope_limb_5_col133) + (slope_limb_12_col140)),
-                    ((slope_limb_6_col134) + (slope_limb_13_col141)),
+                    ((slope_limb_0_col142) + (slope_limb_7_col149)),
+                    ((slope_limb_1_col143) + (slope_limb_8_col150)),
+                    ((slope_limb_2_col144) + (slope_limb_9_col151)),
+                    ((slope_limb_3_col145) + (slope_limb_10_col152)),
+                    ((slope_limb_4_col146) + (slope_limb_11_col153)),
+                    ((slope_limb_5_col147) + (slope_limb_12_col154)),
+                    ((slope_limb_6_col148) + (slope_limb_13_col155)),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_28 = [
                     z0_tmp_71feb_24[0],
@@ -2689,124 +2721,124 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_29 = [
-                    ((slope_limb_14_col142) * (slope_limb_14_col142)),
-                    (((slope_limb_14_col142) * (slope_limb_15_col143))
-                        + ((slope_limb_15_col143) * (slope_limb_14_col142))),
-                    ((((slope_limb_14_col142) * (slope_limb_16_col144))
-                        + ((slope_limb_15_col143) * (slope_limb_15_col143)))
-                        + ((slope_limb_16_col144) * (slope_limb_14_col142))),
-                    (((((slope_limb_14_col142) * (slope_limb_17_col145))
-                        + ((slope_limb_15_col143) * (slope_limb_16_col144)))
-                        + ((slope_limb_16_col144) * (slope_limb_15_col143)))
-                        + ((slope_limb_17_col145) * (slope_limb_14_col142))),
-                    ((((((slope_limb_14_col142) * (slope_limb_18_col146))
-                        + ((slope_limb_15_col143) * (slope_limb_17_col145)))
-                        + ((slope_limb_16_col144) * (slope_limb_16_col144)))
-                        + ((slope_limb_17_col145) * (slope_limb_15_col143)))
-                        + ((slope_limb_18_col146) * (slope_limb_14_col142))),
-                    (((((((slope_limb_14_col142) * (slope_limb_19_col147))
-                        + ((slope_limb_15_col143) * (slope_limb_18_col146)))
-                        + ((slope_limb_16_col144) * (slope_limb_17_col145)))
-                        + ((slope_limb_17_col145) * (slope_limb_16_col144)))
-                        + ((slope_limb_18_col146) * (slope_limb_15_col143)))
-                        + ((slope_limb_19_col147) * (slope_limb_14_col142))),
-                    ((((((((slope_limb_14_col142) * (slope_limb_20_col148))
-                        + ((slope_limb_15_col143) * (slope_limb_19_col147)))
-                        + ((slope_limb_16_col144) * (slope_limb_18_col146)))
-                        + ((slope_limb_17_col145) * (slope_limb_17_col145)))
-                        + ((slope_limb_18_col146) * (slope_limb_16_col144)))
-                        + ((slope_limb_19_col147) * (slope_limb_15_col143)))
-                        + ((slope_limb_20_col148) * (slope_limb_14_col142))),
-                    (((((((slope_limb_15_col143) * (slope_limb_20_col148))
-                        + ((slope_limb_16_col144) * (slope_limb_19_col147)))
-                        + ((slope_limb_17_col145) * (slope_limb_18_col146)))
-                        + ((slope_limb_18_col146) * (slope_limb_17_col145)))
-                        + ((slope_limb_19_col147) * (slope_limb_16_col144)))
-                        + ((slope_limb_20_col148) * (slope_limb_15_col143))),
-                    ((((((slope_limb_16_col144) * (slope_limb_20_col148))
-                        + ((slope_limb_17_col145) * (slope_limb_19_col147)))
-                        + ((slope_limb_18_col146) * (slope_limb_18_col146)))
-                        + ((slope_limb_19_col147) * (slope_limb_17_col145)))
-                        + ((slope_limb_20_col148) * (slope_limb_16_col144))),
-                    (((((slope_limb_17_col145) * (slope_limb_20_col148))
-                        + ((slope_limb_18_col146) * (slope_limb_19_col147)))
-                        + ((slope_limb_19_col147) * (slope_limb_18_col146)))
-                        + ((slope_limb_20_col148) * (slope_limb_17_col145))),
-                    ((((slope_limb_18_col146) * (slope_limb_20_col148))
-                        + ((slope_limb_19_col147) * (slope_limb_19_col147)))
-                        + ((slope_limb_20_col148) * (slope_limb_18_col146))),
-                    (((slope_limb_19_col147) * (slope_limb_20_col148))
-                        + ((slope_limb_20_col148) * (slope_limb_19_col147))),
-                    ((slope_limb_20_col148) * (slope_limb_20_col148)),
+                    ((slope_limb_14_col156) * (slope_limb_14_col156)),
+                    (((slope_limb_14_col156) * (slope_limb_15_col157))
+                        + ((slope_limb_15_col157) * (slope_limb_14_col156))),
+                    ((((slope_limb_14_col156) * (slope_limb_16_col158))
+                        + ((slope_limb_15_col157) * (slope_limb_15_col157)))
+                        + ((slope_limb_16_col158) * (slope_limb_14_col156))),
+                    (((((slope_limb_14_col156) * (slope_limb_17_col159))
+                        + ((slope_limb_15_col157) * (slope_limb_16_col158)))
+                        + ((slope_limb_16_col158) * (slope_limb_15_col157)))
+                        + ((slope_limb_17_col159) * (slope_limb_14_col156))),
+                    ((((((slope_limb_14_col156) * (slope_limb_18_col160))
+                        + ((slope_limb_15_col157) * (slope_limb_17_col159)))
+                        + ((slope_limb_16_col158) * (slope_limb_16_col158)))
+                        + ((slope_limb_17_col159) * (slope_limb_15_col157)))
+                        + ((slope_limb_18_col160) * (slope_limb_14_col156))),
+                    (((((((slope_limb_14_col156) * (slope_limb_19_col161))
+                        + ((slope_limb_15_col157) * (slope_limb_18_col160)))
+                        + ((slope_limb_16_col158) * (slope_limb_17_col159)))
+                        + ((slope_limb_17_col159) * (slope_limb_16_col158)))
+                        + ((slope_limb_18_col160) * (slope_limb_15_col157)))
+                        + ((slope_limb_19_col161) * (slope_limb_14_col156))),
+                    ((((((((slope_limb_14_col156) * (slope_limb_20_col162))
+                        + ((slope_limb_15_col157) * (slope_limb_19_col161)))
+                        + ((slope_limb_16_col158) * (slope_limb_18_col160)))
+                        + ((slope_limb_17_col159) * (slope_limb_17_col159)))
+                        + ((slope_limb_18_col160) * (slope_limb_16_col158)))
+                        + ((slope_limb_19_col161) * (slope_limb_15_col157)))
+                        + ((slope_limb_20_col162) * (slope_limb_14_col156))),
+                    (((((((slope_limb_15_col157) * (slope_limb_20_col162))
+                        + ((slope_limb_16_col158) * (slope_limb_19_col161)))
+                        + ((slope_limb_17_col159) * (slope_limb_18_col160)))
+                        + ((slope_limb_18_col160) * (slope_limb_17_col159)))
+                        + ((slope_limb_19_col161) * (slope_limb_16_col158)))
+                        + ((slope_limb_20_col162) * (slope_limb_15_col157))),
+                    ((((((slope_limb_16_col158) * (slope_limb_20_col162))
+                        + ((slope_limb_17_col159) * (slope_limb_19_col161)))
+                        + ((slope_limb_18_col160) * (slope_limb_18_col160)))
+                        + ((slope_limb_19_col161) * (slope_limb_17_col159)))
+                        + ((slope_limb_20_col162) * (slope_limb_16_col158))),
+                    (((((slope_limb_17_col159) * (slope_limb_20_col162))
+                        + ((slope_limb_18_col160) * (slope_limb_19_col161)))
+                        + ((slope_limb_19_col161) * (slope_limb_18_col160)))
+                        + ((slope_limb_20_col162) * (slope_limb_17_col159))),
+                    ((((slope_limb_18_col160) * (slope_limb_20_col162))
+                        + ((slope_limb_19_col161) * (slope_limb_19_col161)))
+                        + ((slope_limb_20_col162) * (slope_limb_18_col160))),
+                    (((slope_limb_19_col161) * (slope_limb_20_col162))
+                        + ((slope_limb_20_col162) * (slope_limb_19_col161))),
+                    ((slope_limb_20_col162) * (slope_limb_20_col162)),
                 ];
                 let z2_tmp_71feb_30 = [
-                    ((slope_limb_21_col149) * (slope_limb_21_col149)),
-                    (((slope_limb_21_col149) * (slope_limb_22_col150))
-                        + ((slope_limb_22_col150) * (slope_limb_21_col149))),
-                    ((((slope_limb_21_col149) * (slope_limb_23_col151))
-                        + ((slope_limb_22_col150) * (slope_limb_22_col150)))
-                        + ((slope_limb_23_col151) * (slope_limb_21_col149))),
-                    (((((slope_limb_21_col149) * (slope_limb_24_col152))
-                        + ((slope_limb_22_col150) * (slope_limb_23_col151)))
-                        + ((slope_limb_23_col151) * (slope_limb_22_col150)))
-                        + ((slope_limb_24_col152) * (slope_limb_21_col149))),
-                    ((((((slope_limb_21_col149) * (slope_limb_25_col153))
-                        + ((slope_limb_22_col150) * (slope_limb_24_col152)))
-                        + ((slope_limb_23_col151) * (slope_limb_23_col151)))
-                        + ((slope_limb_24_col152) * (slope_limb_22_col150)))
-                        + ((slope_limb_25_col153) * (slope_limb_21_col149))),
-                    (((((((slope_limb_21_col149) * (slope_limb_26_col154))
-                        + ((slope_limb_22_col150) * (slope_limb_25_col153)))
-                        + ((slope_limb_23_col151) * (slope_limb_24_col152)))
-                        + ((slope_limb_24_col152) * (slope_limb_23_col151)))
-                        + ((slope_limb_25_col153) * (slope_limb_22_col150)))
-                        + ((slope_limb_26_col154) * (slope_limb_21_col149))),
-                    ((((((((slope_limb_21_col149) * (slope_limb_27_col155))
-                        + ((slope_limb_22_col150) * (slope_limb_26_col154)))
-                        + ((slope_limb_23_col151) * (slope_limb_25_col153)))
-                        + ((slope_limb_24_col152) * (slope_limb_24_col152)))
-                        + ((slope_limb_25_col153) * (slope_limb_23_col151)))
-                        + ((slope_limb_26_col154) * (slope_limb_22_col150)))
-                        + ((slope_limb_27_col155) * (slope_limb_21_col149))),
-                    (((((((slope_limb_22_col150) * (slope_limb_27_col155))
-                        + ((slope_limb_23_col151) * (slope_limb_26_col154)))
-                        + ((slope_limb_24_col152) * (slope_limb_25_col153)))
-                        + ((slope_limb_25_col153) * (slope_limb_24_col152)))
-                        + ((slope_limb_26_col154) * (slope_limb_23_col151)))
-                        + ((slope_limb_27_col155) * (slope_limb_22_col150))),
-                    ((((((slope_limb_23_col151) * (slope_limb_27_col155))
-                        + ((slope_limb_24_col152) * (slope_limb_26_col154)))
-                        + ((slope_limb_25_col153) * (slope_limb_25_col153)))
-                        + ((slope_limb_26_col154) * (slope_limb_24_col152)))
-                        + ((slope_limb_27_col155) * (slope_limb_23_col151))),
-                    (((((slope_limb_24_col152) * (slope_limb_27_col155))
-                        + ((slope_limb_25_col153) * (slope_limb_26_col154)))
-                        + ((slope_limb_26_col154) * (slope_limb_25_col153)))
-                        + ((slope_limb_27_col155) * (slope_limb_24_col152))),
-                    ((((slope_limb_25_col153) * (slope_limb_27_col155))
-                        + ((slope_limb_26_col154) * (slope_limb_26_col154)))
-                        + ((slope_limb_27_col155) * (slope_limb_25_col153))),
-                    (((slope_limb_26_col154) * (slope_limb_27_col155))
-                        + ((slope_limb_27_col155) * (slope_limb_26_col154))),
-                    ((slope_limb_27_col155) * (slope_limb_27_col155)),
+                    ((slope_limb_21_col163) * (slope_limb_21_col163)),
+                    (((slope_limb_21_col163) * (slope_limb_22_col164))
+                        + ((slope_limb_22_col164) * (slope_limb_21_col163))),
+                    ((((slope_limb_21_col163) * (slope_limb_23_col165))
+                        + ((slope_limb_22_col164) * (slope_limb_22_col164)))
+                        + ((slope_limb_23_col165) * (slope_limb_21_col163))),
+                    (((((slope_limb_21_col163) * (slope_limb_24_col166))
+                        + ((slope_limb_22_col164) * (slope_limb_23_col165)))
+                        + ((slope_limb_23_col165) * (slope_limb_22_col164)))
+                        + ((slope_limb_24_col166) * (slope_limb_21_col163))),
+                    ((((((slope_limb_21_col163) * (slope_limb_25_col167))
+                        + ((slope_limb_22_col164) * (slope_limb_24_col166)))
+                        + ((slope_limb_23_col165) * (slope_limb_23_col165)))
+                        + ((slope_limb_24_col166) * (slope_limb_22_col164)))
+                        + ((slope_limb_25_col167) * (slope_limb_21_col163))),
+                    (((((((slope_limb_21_col163) * (slope_limb_26_col168))
+                        + ((slope_limb_22_col164) * (slope_limb_25_col167)))
+                        + ((slope_limb_23_col165) * (slope_limb_24_col166)))
+                        + ((slope_limb_24_col166) * (slope_limb_23_col165)))
+                        + ((slope_limb_25_col167) * (slope_limb_22_col164)))
+                        + ((slope_limb_26_col168) * (slope_limb_21_col163))),
+                    ((((((((slope_limb_21_col163) * (slope_limb_27_col169))
+                        + ((slope_limb_22_col164) * (slope_limb_26_col168)))
+                        + ((slope_limb_23_col165) * (slope_limb_25_col167)))
+                        + ((slope_limb_24_col166) * (slope_limb_24_col166)))
+                        + ((slope_limb_25_col167) * (slope_limb_23_col165)))
+                        + ((slope_limb_26_col168) * (slope_limb_22_col164)))
+                        + ((slope_limb_27_col169) * (slope_limb_21_col163))),
+                    (((((((slope_limb_22_col164) * (slope_limb_27_col169))
+                        + ((slope_limb_23_col165) * (slope_limb_26_col168)))
+                        + ((slope_limb_24_col166) * (slope_limb_25_col167)))
+                        + ((slope_limb_25_col167) * (slope_limb_24_col166)))
+                        + ((slope_limb_26_col168) * (slope_limb_23_col165)))
+                        + ((slope_limb_27_col169) * (slope_limb_22_col164))),
+                    ((((((slope_limb_23_col165) * (slope_limb_27_col169))
+                        + ((slope_limb_24_col166) * (slope_limb_26_col168)))
+                        + ((slope_limb_25_col167) * (slope_limb_25_col167)))
+                        + ((slope_limb_26_col168) * (slope_limb_24_col166)))
+                        + ((slope_limb_27_col169) * (slope_limb_23_col165))),
+                    (((((slope_limb_24_col166) * (slope_limb_27_col169))
+                        + ((slope_limb_25_col167) * (slope_limb_26_col168)))
+                        + ((slope_limb_26_col168) * (slope_limb_25_col167)))
+                        + ((slope_limb_27_col169) * (slope_limb_24_col166))),
+                    ((((slope_limb_25_col167) * (slope_limb_27_col169))
+                        + ((slope_limb_26_col168) * (slope_limb_26_col168)))
+                        + ((slope_limb_27_col169) * (slope_limb_25_col167))),
+                    (((slope_limb_26_col168) * (slope_limb_27_col169))
+                        + ((slope_limb_27_col169) * (slope_limb_26_col168))),
+                    ((slope_limb_27_col169) * (slope_limb_27_col169)),
                 ];
                 let x_sum_tmp_71feb_31 = [
-                    ((slope_limb_14_col142) + (slope_limb_21_col149)),
-                    ((slope_limb_15_col143) + (slope_limb_22_col150)),
-                    ((slope_limb_16_col144) + (slope_limb_23_col151)),
-                    ((slope_limb_17_col145) + (slope_limb_24_col152)),
-                    ((slope_limb_18_col146) + (slope_limb_25_col153)),
-                    ((slope_limb_19_col147) + (slope_limb_26_col154)),
-                    ((slope_limb_20_col148) + (slope_limb_27_col155)),
+                    ((slope_limb_14_col156) + (slope_limb_21_col163)),
+                    ((slope_limb_15_col157) + (slope_limb_22_col164)),
+                    ((slope_limb_16_col158) + (slope_limb_23_col165)),
+                    ((slope_limb_17_col159) + (slope_limb_24_col166)),
+                    ((slope_limb_18_col160) + (slope_limb_25_col167)),
+                    ((slope_limb_19_col161) + (slope_limb_26_col168)),
+                    ((slope_limb_20_col162) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_32 = [
-                    ((slope_limb_14_col142) + (slope_limb_21_col149)),
-                    ((slope_limb_15_col143) + (slope_limb_22_col150)),
-                    ((slope_limb_16_col144) + (slope_limb_23_col151)),
-                    ((slope_limb_17_col145) + (slope_limb_24_col152)),
-                    ((slope_limb_18_col146) + (slope_limb_25_col153)),
-                    ((slope_limb_19_col147) + (slope_limb_26_col154)),
-                    ((slope_limb_20_col148) + (slope_limb_27_col155)),
+                    ((slope_limb_14_col156) + (slope_limb_21_col163)),
+                    ((slope_limb_15_col157) + (slope_limb_22_col164)),
+                    ((slope_limb_16_col158) + (slope_limb_23_col165)),
+                    ((slope_limb_17_col159) + (slope_limb_24_col166)),
+                    ((slope_limb_18_col160) + (slope_limb_25_col167)),
+                    ((slope_limb_19_col161) + (slope_limb_26_col168)),
+                    ((slope_limb_20_col162) + (slope_limb_27_col169)),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_33 = [
                     z0_tmp_71feb_29[0],
@@ -2913,36 +2945,36 @@ fn write_trace_simd(
                 ];
 
                 let x_sum_tmp_71feb_34 = [
-                    ((slope_limb_0_col128) + (slope_limb_14_col142)),
-                    ((slope_limb_1_col129) + (slope_limb_15_col143)),
-                    ((slope_limb_2_col130) + (slope_limb_16_col144)),
-                    ((slope_limb_3_col131) + (slope_limb_17_col145)),
-                    ((slope_limb_4_col132) + (slope_limb_18_col146)),
-                    ((slope_limb_5_col133) + (slope_limb_19_col147)),
-                    ((slope_limb_6_col134) + (slope_limb_20_col148)),
-                    ((slope_limb_7_col135) + (slope_limb_21_col149)),
-                    ((slope_limb_8_col136) + (slope_limb_22_col150)),
-                    ((slope_limb_9_col137) + (slope_limb_23_col151)),
-                    ((slope_limb_10_col138) + (slope_limb_24_col152)),
-                    ((slope_limb_11_col139) + (slope_limb_25_col153)),
-                    ((slope_limb_12_col140) + (slope_limb_26_col154)),
-                    ((slope_limb_13_col141) + (slope_limb_27_col155)),
+                    ((slope_limb_0_col142) + (slope_limb_14_col156)),
+                    ((slope_limb_1_col143) + (slope_limb_15_col157)),
+                    ((slope_limb_2_col144) + (slope_limb_16_col158)),
+                    ((slope_limb_3_col145) + (slope_limb_17_col159)),
+                    ((slope_limb_4_col146) + (slope_limb_18_col160)),
+                    ((slope_limb_5_col147) + (slope_limb_19_col161)),
+                    ((slope_limb_6_col148) + (slope_limb_20_col162)),
+                    ((slope_limb_7_col149) + (slope_limb_21_col163)),
+                    ((slope_limb_8_col150) + (slope_limb_22_col164)),
+                    ((slope_limb_9_col151) + (slope_limb_23_col165)),
+                    ((slope_limb_10_col152) + (slope_limb_24_col166)),
+                    ((slope_limb_11_col153) + (slope_limb_25_col167)),
+                    ((slope_limb_12_col154) + (slope_limb_26_col168)),
+                    ((slope_limb_13_col155) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_35 = [
-                    ((slope_limb_0_col128) + (slope_limb_14_col142)),
-                    ((slope_limb_1_col129) + (slope_limb_15_col143)),
-                    ((slope_limb_2_col130) + (slope_limb_16_col144)),
-                    ((slope_limb_3_col131) + (slope_limb_17_col145)),
-                    ((slope_limb_4_col132) + (slope_limb_18_col146)),
-                    ((slope_limb_5_col133) + (slope_limb_19_col147)),
-                    ((slope_limb_6_col134) + (slope_limb_20_col148)),
-                    ((slope_limb_7_col135) + (slope_limb_21_col149)),
-                    ((slope_limb_8_col136) + (slope_limb_22_col150)),
-                    ((slope_limb_9_col137) + (slope_limb_23_col151)),
-                    ((slope_limb_10_col138) + (slope_limb_24_col152)),
-                    ((slope_limb_11_col139) + (slope_limb_25_col153)),
-                    ((slope_limb_12_col140) + (slope_limb_26_col154)),
-                    ((slope_limb_13_col141) + (slope_limb_27_col155)),
+                    ((slope_limb_0_col142) + (slope_limb_14_col156)),
+                    ((slope_limb_1_col143) + (slope_limb_15_col157)),
+                    ((slope_limb_2_col144) + (slope_limb_16_col158)),
+                    ((slope_limb_3_col145) + (slope_limb_17_col159)),
+                    ((slope_limb_4_col146) + (slope_limb_18_col160)),
+                    ((slope_limb_5_col147) + (slope_limb_19_col161)),
+                    ((slope_limb_6_col148) + (slope_limb_20_col162)),
+                    ((slope_limb_7_col149) + (slope_limb_21_col163)),
+                    ((slope_limb_8_col150) + (slope_limb_22_col164)),
+                    ((slope_limb_9_col151) + (slope_limb_23_col165)),
+                    ((slope_limb_10_col152) + (slope_limb_24_col166)),
+                    ((slope_limb_11_col153) + (slope_limb_25_col167)),
+                    ((slope_limb_12_col154) + (slope_limb_26_col168)),
+                    ((slope_limb_13_col155) + (slope_limb_27_col169)),
                 ];
 
                 // Single Karatsuba N 7.
@@ -3311,89 +3343,103 @@ fn write_trace_simd(
 
                 let conv_tmp_71feb_42 = [
                     ((double_karatsuba_1454b_output_tmp_71feb_41[0])
-                        - (((input_limb_16_col16) + (pedersen_points_table_output_limb_0_col72))
-                            + (result_x_limb_0_col184))),
+                        - (((input_limb_30_col30) + (pedersen_points_table_output_limb_0_col86))
+                            + (result_x_limb_0_col198))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[1])
-                        - (((input_limb_17_col17) + (pedersen_points_table_output_limb_1_col73))
-                            + (result_x_limb_1_col185))),
+                        - (((input_limb_31_col31) + (pedersen_points_table_output_limb_1_col87))
+                            + (result_x_limb_1_col199))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[2])
-                        - (((input_limb_18_col18) + (pedersen_points_table_output_limb_2_col74))
-                            + (result_x_limb_2_col186))),
+                        - (((input_limb_32_col32) + (pedersen_points_table_output_limb_2_col88))
+                            + (result_x_limb_2_col200))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[3])
-                        - (((input_limb_19_col19) + (pedersen_points_table_output_limb_3_col75))
-                            + (result_x_limb_3_col187))),
+                        - (((input_limb_33_col33) + (pedersen_points_table_output_limb_3_col89))
+                            + (result_x_limb_3_col201))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[4])
-                        - (((input_limb_20_col20) + (pedersen_points_table_output_limb_4_col76))
-                            + (result_x_limb_4_col188))),
+                        - (((input_limb_34_col34) + (pedersen_points_table_output_limb_4_col90))
+                            + (result_x_limb_4_col202))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[5])
-                        - (((input_limb_21_col21) + (pedersen_points_table_output_limb_5_col77))
-                            + (result_x_limb_5_col189))),
+                        - (((input_limb_35_col35) + (pedersen_points_table_output_limb_5_col91))
+                            + (result_x_limb_5_col203))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[6])
-                        - (((input_limb_22_col22) + (pedersen_points_table_output_limb_6_col78))
-                            + (result_x_limb_6_col190))),
+                        - (((input_limb_36_col36) + (pedersen_points_table_output_limb_6_col92))
+                            + (result_x_limb_6_col204))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[7])
-                        - (((input_limb_23_col23) + (pedersen_points_table_output_limb_7_col79))
-                            + (result_x_limb_7_col191))),
+                        - (((input_limb_37_col37) + (pedersen_points_table_output_limb_7_col93))
+                            + (result_x_limb_7_col205))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[8])
-                        - (((input_limb_24_col24) + (pedersen_points_table_output_limb_8_col80))
-                            + (result_x_limb_8_col192))),
+                        - (((input_limb_38_col38) + (pedersen_points_table_output_limb_8_col94))
+                            + (result_x_limb_8_col206))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[9])
-                        - (((input_limb_25_col25) + (pedersen_points_table_output_limb_9_col81))
-                            + (result_x_limb_9_col193))),
+                        - (((input_limb_39_col39) + (pedersen_points_table_output_limb_9_col95))
+                            + (result_x_limb_9_col207))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[10])
-                        - (((input_limb_26_col26) + (pedersen_points_table_output_limb_10_col82))
-                            + (result_x_limb_10_col194))),
+                        - (((input_limb_40_col40) + (pedersen_points_table_output_limb_10_col96))
+                            + (result_x_limb_10_col208))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[11])
-                        - (((input_limb_27_col27) + (pedersen_points_table_output_limb_11_col83))
-                            + (result_x_limb_11_col195))),
+                        - (((input_limb_41_col41) + (pedersen_points_table_output_limb_11_col97))
+                            + (result_x_limb_11_col209))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[12])
-                        - (((input_limb_28_col28) + (pedersen_points_table_output_limb_12_col84))
-                            + (result_x_limb_12_col196))),
+                        - (((input_limb_42_col42) + (pedersen_points_table_output_limb_12_col98))
+                            + (result_x_limb_12_col210))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[13])
-                        - (((input_limb_29_col29) + (pedersen_points_table_output_limb_13_col85))
-                            + (result_x_limb_13_col197))),
+                        - (((input_limb_43_col43) + (pedersen_points_table_output_limb_13_col99))
+                            + (result_x_limb_13_col211))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[14])
-                        - (((input_limb_30_col30) + (pedersen_points_table_output_limb_14_col86))
-                            + (result_x_limb_14_col198))),
+                        - (((input_limb_44_col44)
+                            + (pedersen_points_table_output_limb_14_col100))
+                            + (result_x_limb_14_col212))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[15])
-                        - (((input_limb_31_col31) + (pedersen_points_table_output_limb_15_col87))
-                            + (result_x_limb_15_col199))),
+                        - (((input_limb_45_col45)
+                            + (pedersen_points_table_output_limb_15_col101))
+                            + (result_x_limb_15_col213))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[16])
-                        - (((input_limb_32_col32) + (pedersen_points_table_output_limb_16_col88))
-                            + (result_x_limb_16_col200))),
+                        - (((input_limb_46_col46)
+                            + (pedersen_points_table_output_limb_16_col102))
+                            + (result_x_limb_16_col214))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[17])
-                        - (((input_limb_33_col33) + (pedersen_points_table_output_limb_17_col89))
-                            + (result_x_limb_17_col201))),
+                        - (((input_limb_47_col47)
+                            + (pedersen_points_table_output_limb_17_col103))
+                            + (result_x_limb_17_col215))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[18])
-                        - (((input_limb_34_col34) + (pedersen_points_table_output_limb_18_col90))
-                            + (result_x_limb_18_col202))),
+                        - (((input_limb_48_col48)
+                            + (pedersen_points_table_output_limb_18_col104))
+                            + (result_x_limb_18_col216))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[19])
-                        - (((input_limb_35_col35) + (pedersen_points_table_output_limb_19_col91))
-                            + (result_x_limb_19_col203))),
+                        - (((input_limb_49_col49)
+                            + (pedersen_points_table_output_limb_19_col105))
+                            + (result_x_limb_19_col217))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[20])
-                        - (((input_limb_36_col36) + (pedersen_points_table_output_limb_20_col92))
-                            + (result_x_limb_20_col204))),
+                        - (((input_limb_50_col50)
+                            + (pedersen_points_table_output_limb_20_col106))
+                            + (result_x_limb_20_col218))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[21])
-                        - (((input_limb_37_col37) + (pedersen_points_table_output_limb_21_col93))
-                            + (result_x_limb_21_col205))),
+                        - (((input_limb_51_col51)
+                            + (pedersen_points_table_output_limb_21_col107))
+                            + (result_x_limb_21_col219))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[22])
-                        - (((input_limb_38_col38) + (pedersen_points_table_output_limb_22_col94))
-                            + (result_x_limb_22_col206))),
+                        - (((input_limb_52_col52)
+                            + (pedersen_points_table_output_limb_22_col108))
+                            + (result_x_limb_22_col220))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[23])
-                        - (((input_limb_39_col39) + (pedersen_points_table_output_limb_23_col95))
-                            + (result_x_limb_23_col207))),
+                        - (((input_limb_53_col53)
+                            + (pedersen_points_table_output_limb_23_col109))
+                            + (result_x_limb_23_col221))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[24])
-                        - (((input_limb_40_col40) + (pedersen_points_table_output_limb_24_col96))
-                            + (result_x_limb_24_col208))),
+                        - (((input_limb_54_col54)
+                            + (pedersen_points_table_output_limb_24_col110))
+                            + (result_x_limb_24_col222))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[25])
-                        - (((input_limb_41_col41) + (pedersen_points_table_output_limb_25_col97))
-                            + (result_x_limb_25_col209))),
+                        - (((input_limb_55_col55)
+                            + (pedersen_points_table_output_limb_25_col111))
+                            + (result_x_limb_25_col223))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[26])
-                        - (((input_limb_42_col42) + (pedersen_points_table_output_limb_26_col98))
-                            + (result_x_limb_26_col210))),
+                        - (((input_limb_56_col56)
+                            + (pedersen_points_table_output_limb_26_col112))
+                            + (result_x_limb_26_col224))),
                     ((double_karatsuba_1454b_output_tmp_71feb_41[27])
-                        - (((input_limb_43_col43) + (pedersen_points_table_output_limb_27_col99))
-                            + (result_x_limb_27_col211))),
+                        - (((input_limb_57_col57)
+                            + (pedersen_points_table_output_limb_27_col113))
+                            + (result_x_limb_27_col225))),
                     double_karatsuba_1454b_output_tmp_71feb_41[28],
                     double_karatsuba_1454b_output_tmp_71feb_41[29],
                     double_karatsuba_1454b_output_tmp_71feb_41[30],
@@ -3513,259 +3559,259 @@ fn write_trace_simd(
                             << (UInt32_9)))
                         + (UInt32_131072))
                         & (UInt32_262143));
-                let k_col212 = ((k_mod_2_18_biased_tmp_71feb_44.low().as_m31())
+                let k_col226 = ((k_mod_2_18_biased_tmp_71feb_44.low().as_m31())
                     + (((k_mod_2_18_biased_tmp_71feb_44.high().as_m31()) - (M31_2)) * (M31_65536)));
-                *row[212] = k_col212;
-                *sub_component_inputs.range_check_20[4] = [((k_col212) + (M31_524288))];
-                *lookup_data.range_check_20_4 = [((k_col212) + (M31_524288))];
-                let carry_0_col213 = (((conv_mod_tmp_71feb_43[0]) - (k_col212)) * (M31_4194304));
-                *row[213] = carry_0_col213;
-                *sub_component_inputs.range_check_20_b[4] = [((carry_0_col213) + (M31_524288))];
-                *lookup_data.range_check_20_b_4 = [((carry_0_col213) + (M31_524288))];
-                let carry_1_col214 =
-                    (((conv_mod_tmp_71feb_43[1]) + (carry_0_col213)) * (M31_4194304));
-                *row[214] = carry_1_col214;
-                *sub_component_inputs.range_check_20_c[4] = [((carry_1_col214) + (M31_524288))];
-                *lookup_data.range_check_20_c_4 = [((carry_1_col214) + (M31_524288))];
-                let carry_2_col215 =
-                    (((conv_mod_tmp_71feb_43[2]) + (carry_1_col214)) * (M31_4194304));
-                *row[215] = carry_2_col215;
-                *sub_component_inputs.range_check_20_d[4] = [((carry_2_col215) + (M31_524288))];
-                *lookup_data.range_check_20_d_4 = [((carry_2_col215) + (M31_524288))];
-                let carry_3_col216 =
-                    (((conv_mod_tmp_71feb_43[3]) + (carry_2_col215)) * (M31_4194304));
-                *row[216] = carry_3_col216;
-                *sub_component_inputs.range_check_20_e[3] = [((carry_3_col216) + (M31_524288))];
-                *lookup_data.range_check_20_e_3 = [((carry_3_col216) + (M31_524288))];
-                let carry_4_col217 =
-                    (((conv_mod_tmp_71feb_43[4]) + (carry_3_col216)) * (M31_4194304));
-                *row[217] = carry_4_col217;
-                *sub_component_inputs.range_check_20_f[3] = [((carry_4_col217) + (M31_524288))];
-                *lookup_data.range_check_20_f_3 = [((carry_4_col217) + (M31_524288))];
-                let carry_5_col218 =
-                    (((conv_mod_tmp_71feb_43[5]) + (carry_4_col217)) * (M31_4194304));
-                *row[218] = carry_5_col218;
-                *sub_component_inputs.range_check_20_g[3] = [((carry_5_col218) + (M31_524288))];
-                *lookup_data.range_check_20_g_3 = [((carry_5_col218) + (M31_524288))];
-                let carry_6_col219 =
-                    (((conv_mod_tmp_71feb_43[6]) + (carry_5_col218)) * (M31_4194304));
-                *row[219] = carry_6_col219;
-                *sub_component_inputs.range_check_20_h[3] = [((carry_6_col219) + (M31_524288))];
-                *lookup_data.range_check_20_h_3 = [((carry_6_col219) + (M31_524288))];
-                let carry_7_col220 =
-                    (((conv_mod_tmp_71feb_43[7]) + (carry_6_col219)) * (M31_4194304));
-                *row[220] = carry_7_col220;
-                *sub_component_inputs.range_check_20[5] = [((carry_7_col220) + (M31_524288))];
-                *lookup_data.range_check_20_5 = [((carry_7_col220) + (M31_524288))];
-                let carry_8_col221 =
-                    (((conv_mod_tmp_71feb_43[8]) + (carry_7_col220)) * (M31_4194304));
-                *row[221] = carry_8_col221;
-                *sub_component_inputs.range_check_20_b[5] = [((carry_8_col221) + (M31_524288))];
-                *lookup_data.range_check_20_b_5 = [((carry_8_col221) + (M31_524288))];
-                let carry_9_col222 =
-                    (((conv_mod_tmp_71feb_43[9]) + (carry_8_col221)) * (M31_4194304));
-                *row[222] = carry_9_col222;
-                *sub_component_inputs.range_check_20_c[5] = [((carry_9_col222) + (M31_524288))];
-                *lookup_data.range_check_20_c_5 = [((carry_9_col222) + (M31_524288))];
-                let carry_10_col223 =
-                    (((conv_mod_tmp_71feb_43[10]) + (carry_9_col222)) * (M31_4194304));
-                *row[223] = carry_10_col223;
-                *sub_component_inputs.range_check_20_d[5] = [((carry_10_col223) + (M31_524288))];
-                *lookup_data.range_check_20_d_5 = [((carry_10_col223) + (M31_524288))];
-                let carry_11_col224 =
-                    (((conv_mod_tmp_71feb_43[11]) + (carry_10_col223)) * (M31_4194304));
-                *row[224] = carry_11_col224;
-                *sub_component_inputs.range_check_20_e[4] = [((carry_11_col224) + (M31_524288))];
-                *lookup_data.range_check_20_e_4 = [((carry_11_col224) + (M31_524288))];
-                let carry_12_col225 =
-                    (((conv_mod_tmp_71feb_43[12]) + (carry_11_col224)) * (M31_4194304));
-                *row[225] = carry_12_col225;
-                *sub_component_inputs.range_check_20_f[4] = [((carry_12_col225) + (M31_524288))];
-                *lookup_data.range_check_20_f_4 = [((carry_12_col225) + (M31_524288))];
-                let carry_13_col226 =
-                    (((conv_mod_tmp_71feb_43[13]) + (carry_12_col225)) * (M31_4194304));
-                *row[226] = carry_13_col226;
-                *sub_component_inputs.range_check_20_g[4] = [((carry_13_col226) + (M31_524288))];
-                *lookup_data.range_check_20_g_4 = [((carry_13_col226) + (M31_524288))];
-                let carry_14_col227 =
-                    (((conv_mod_tmp_71feb_43[14]) + (carry_13_col226)) * (M31_4194304));
-                *row[227] = carry_14_col227;
-                *sub_component_inputs.range_check_20_h[4] = [((carry_14_col227) + (M31_524288))];
-                *lookup_data.range_check_20_h_4 = [((carry_14_col227) + (M31_524288))];
-                let carry_15_col228 =
-                    (((conv_mod_tmp_71feb_43[15]) + (carry_14_col227)) * (M31_4194304));
-                *row[228] = carry_15_col228;
-                *sub_component_inputs.range_check_20[6] = [((carry_15_col228) + (M31_524288))];
-                *lookup_data.range_check_20_6 = [((carry_15_col228) + (M31_524288))];
-                let carry_16_col229 =
-                    (((conv_mod_tmp_71feb_43[16]) + (carry_15_col228)) * (M31_4194304));
-                *row[229] = carry_16_col229;
-                *sub_component_inputs.range_check_20_b[6] = [((carry_16_col229) + (M31_524288))];
-                *lookup_data.range_check_20_b_6 = [((carry_16_col229) + (M31_524288))];
-                let carry_17_col230 =
-                    (((conv_mod_tmp_71feb_43[17]) + (carry_16_col229)) * (M31_4194304));
-                *row[230] = carry_17_col230;
-                *sub_component_inputs.range_check_20_c[6] = [((carry_17_col230) + (M31_524288))];
-                *lookup_data.range_check_20_c_6 = [((carry_17_col230) + (M31_524288))];
-                let carry_18_col231 =
-                    (((conv_mod_tmp_71feb_43[18]) + (carry_17_col230)) * (M31_4194304));
-                *row[231] = carry_18_col231;
-                *sub_component_inputs.range_check_20_d[6] = [((carry_18_col231) + (M31_524288))];
-                *lookup_data.range_check_20_d_6 = [((carry_18_col231) + (M31_524288))];
-                let carry_19_col232 =
-                    (((conv_mod_tmp_71feb_43[19]) + (carry_18_col231)) * (M31_4194304));
-                *row[232] = carry_19_col232;
-                *sub_component_inputs.range_check_20_e[5] = [((carry_19_col232) + (M31_524288))];
-                *lookup_data.range_check_20_e_5 = [((carry_19_col232) + (M31_524288))];
-                let carry_20_col233 =
-                    (((conv_mod_tmp_71feb_43[20]) + (carry_19_col232)) * (M31_4194304));
-                *row[233] = carry_20_col233;
-                *sub_component_inputs.range_check_20_f[5] = [((carry_20_col233) + (M31_524288))];
-                *lookup_data.range_check_20_f_5 = [((carry_20_col233) + (M31_524288))];
-                let carry_21_col234 = ((((conv_mod_tmp_71feb_43[21]) - ((M31_136) * (k_col212)))
-                    + (carry_20_col233))
+                *row[226] = k_col226;
+                *sub_component_inputs.range_check_20[4] = [((k_col226) + (M31_524288))];
+                *lookup_data.range_check_20_4 = [((k_col226) + (M31_524288))];
+                let carry_0_col227 = (((conv_mod_tmp_71feb_43[0]) - (k_col226)) * (M31_4194304));
+                *row[227] = carry_0_col227;
+                *sub_component_inputs.range_check_20_b[4] = [((carry_0_col227) + (M31_524288))];
+                *lookup_data.range_check_20_b_4 = [((carry_0_col227) + (M31_524288))];
+                let carry_1_col228 =
+                    (((conv_mod_tmp_71feb_43[1]) + (carry_0_col227)) * (M31_4194304));
+                *row[228] = carry_1_col228;
+                *sub_component_inputs.range_check_20_c[4] = [((carry_1_col228) + (M31_524288))];
+                *lookup_data.range_check_20_c_4 = [((carry_1_col228) + (M31_524288))];
+                let carry_2_col229 =
+                    (((conv_mod_tmp_71feb_43[2]) + (carry_1_col228)) * (M31_4194304));
+                *row[229] = carry_2_col229;
+                *sub_component_inputs.range_check_20_d[4] = [((carry_2_col229) + (M31_524288))];
+                *lookup_data.range_check_20_d_4 = [((carry_2_col229) + (M31_524288))];
+                let carry_3_col230 =
+                    (((conv_mod_tmp_71feb_43[3]) + (carry_2_col229)) * (M31_4194304));
+                *row[230] = carry_3_col230;
+                *sub_component_inputs.range_check_20_e[3] = [((carry_3_col230) + (M31_524288))];
+                *lookup_data.range_check_20_e_3 = [((carry_3_col230) + (M31_524288))];
+                let carry_4_col231 =
+                    (((conv_mod_tmp_71feb_43[4]) + (carry_3_col230)) * (M31_4194304));
+                *row[231] = carry_4_col231;
+                *sub_component_inputs.range_check_20_f[3] = [((carry_4_col231) + (M31_524288))];
+                *lookup_data.range_check_20_f_3 = [((carry_4_col231) + (M31_524288))];
+                let carry_5_col232 =
+                    (((conv_mod_tmp_71feb_43[5]) + (carry_4_col231)) * (M31_4194304));
+                *row[232] = carry_5_col232;
+                *sub_component_inputs.range_check_20_g[3] = [((carry_5_col232) + (M31_524288))];
+                *lookup_data.range_check_20_g_3 = [((carry_5_col232) + (M31_524288))];
+                let carry_6_col233 =
+                    (((conv_mod_tmp_71feb_43[6]) + (carry_5_col232)) * (M31_4194304));
+                *row[233] = carry_6_col233;
+                *sub_component_inputs.range_check_20_h[3] = [((carry_6_col233) + (M31_524288))];
+                *lookup_data.range_check_20_h_3 = [((carry_6_col233) + (M31_524288))];
+                let carry_7_col234 =
+                    (((conv_mod_tmp_71feb_43[7]) + (carry_6_col233)) * (M31_4194304));
+                *row[234] = carry_7_col234;
+                *sub_component_inputs.range_check_20[5] = [((carry_7_col234) + (M31_524288))];
+                *lookup_data.range_check_20_5 = [((carry_7_col234) + (M31_524288))];
+                let carry_8_col235 =
+                    (((conv_mod_tmp_71feb_43[8]) + (carry_7_col234)) * (M31_4194304));
+                *row[235] = carry_8_col235;
+                *sub_component_inputs.range_check_20_b[5] = [((carry_8_col235) + (M31_524288))];
+                *lookup_data.range_check_20_b_5 = [((carry_8_col235) + (M31_524288))];
+                let carry_9_col236 =
+                    (((conv_mod_tmp_71feb_43[9]) + (carry_8_col235)) * (M31_4194304));
+                *row[236] = carry_9_col236;
+                *sub_component_inputs.range_check_20_c[5] = [((carry_9_col236) + (M31_524288))];
+                *lookup_data.range_check_20_c_5 = [((carry_9_col236) + (M31_524288))];
+                let carry_10_col237 =
+                    (((conv_mod_tmp_71feb_43[10]) + (carry_9_col236)) * (M31_4194304));
+                *row[237] = carry_10_col237;
+                *sub_component_inputs.range_check_20_d[5] = [((carry_10_col237) + (M31_524288))];
+                *lookup_data.range_check_20_d_5 = [((carry_10_col237) + (M31_524288))];
+                let carry_11_col238 =
+                    (((conv_mod_tmp_71feb_43[11]) + (carry_10_col237)) * (M31_4194304));
+                *row[238] = carry_11_col238;
+                *sub_component_inputs.range_check_20_e[4] = [((carry_11_col238) + (M31_524288))];
+                *lookup_data.range_check_20_e_4 = [((carry_11_col238) + (M31_524288))];
+                let carry_12_col239 =
+                    (((conv_mod_tmp_71feb_43[12]) + (carry_11_col238)) * (M31_4194304));
+                *row[239] = carry_12_col239;
+                *sub_component_inputs.range_check_20_f[4] = [((carry_12_col239) + (M31_524288))];
+                *lookup_data.range_check_20_f_4 = [((carry_12_col239) + (M31_524288))];
+                let carry_13_col240 =
+                    (((conv_mod_tmp_71feb_43[13]) + (carry_12_col239)) * (M31_4194304));
+                *row[240] = carry_13_col240;
+                *sub_component_inputs.range_check_20_g[4] = [((carry_13_col240) + (M31_524288))];
+                *lookup_data.range_check_20_g_4 = [((carry_13_col240) + (M31_524288))];
+                let carry_14_col241 =
+                    (((conv_mod_tmp_71feb_43[14]) + (carry_13_col240)) * (M31_4194304));
+                *row[241] = carry_14_col241;
+                *sub_component_inputs.range_check_20_h[4] = [((carry_14_col241) + (M31_524288))];
+                *lookup_data.range_check_20_h_4 = [((carry_14_col241) + (M31_524288))];
+                let carry_15_col242 =
+                    (((conv_mod_tmp_71feb_43[15]) + (carry_14_col241)) * (M31_4194304));
+                *row[242] = carry_15_col242;
+                *sub_component_inputs.range_check_20[6] = [((carry_15_col242) + (M31_524288))];
+                *lookup_data.range_check_20_6 = [((carry_15_col242) + (M31_524288))];
+                let carry_16_col243 =
+                    (((conv_mod_tmp_71feb_43[16]) + (carry_15_col242)) * (M31_4194304));
+                *row[243] = carry_16_col243;
+                *sub_component_inputs.range_check_20_b[6] = [((carry_16_col243) + (M31_524288))];
+                *lookup_data.range_check_20_b_6 = [((carry_16_col243) + (M31_524288))];
+                let carry_17_col244 =
+                    (((conv_mod_tmp_71feb_43[17]) + (carry_16_col243)) * (M31_4194304));
+                *row[244] = carry_17_col244;
+                *sub_component_inputs.range_check_20_c[6] = [((carry_17_col244) + (M31_524288))];
+                *lookup_data.range_check_20_c_6 = [((carry_17_col244) + (M31_524288))];
+                let carry_18_col245 =
+                    (((conv_mod_tmp_71feb_43[18]) + (carry_17_col244)) * (M31_4194304));
+                *row[245] = carry_18_col245;
+                *sub_component_inputs.range_check_20_d[6] = [((carry_18_col245) + (M31_524288))];
+                *lookup_data.range_check_20_d_6 = [((carry_18_col245) + (M31_524288))];
+                let carry_19_col246 =
+                    (((conv_mod_tmp_71feb_43[19]) + (carry_18_col245)) * (M31_4194304));
+                *row[246] = carry_19_col246;
+                *sub_component_inputs.range_check_20_e[5] = [((carry_19_col246) + (M31_524288))];
+                *lookup_data.range_check_20_e_5 = [((carry_19_col246) + (M31_524288))];
+                let carry_20_col247 =
+                    (((conv_mod_tmp_71feb_43[20]) + (carry_19_col246)) * (M31_4194304));
+                *row[247] = carry_20_col247;
+                *sub_component_inputs.range_check_20_f[5] = [((carry_20_col247) + (M31_524288))];
+                *lookup_data.range_check_20_f_5 = [((carry_20_col247) + (M31_524288))];
+                let carry_21_col248 = ((((conv_mod_tmp_71feb_43[21]) - ((M31_136) * (k_col226)))
+                    + (carry_20_col247))
                     * (M31_4194304));
-                *row[234] = carry_21_col234;
-                *sub_component_inputs.range_check_20_g[5] = [((carry_21_col234) + (M31_524288))];
-                *lookup_data.range_check_20_g_5 = [((carry_21_col234) + (M31_524288))];
-                let carry_22_col235 =
-                    (((conv_mod_tmp_71feb_43[22]) + (carry_21_col234)) * (M31_4194304));
-                *row[235] = carry_22_col235;
-                *sub_component_inputs.range_check_20_h[5] = [((carry_22_col235) + (M31_524288))];
-                *lookup_data.range_check_20_h_5 = [((carry_22_col235) + (M31_524288))];
-                let carry_23_col236 =
-                    (((conv_mod_tmp_71feb_43[23]) + (carry_22_col235)) * (M31_4194304));
-                *row[236] = carry_23_col236;
-                *sub_component_inputs.range_check_20[7] = [((carry_23_col236) + (M31_524288))];
-                *lookup_data.range_check_20_7 = [((carry_23_col236) + (M31_524288))];
-                let carry_24_col237 =
-                    (((conv_mod_tmp_71feb_43[24]) + (carry_23_col236)) * (M31_4194304));
-                *row[237] = carry_24_col237;
-                *sub_component_inputs.range_check_20_b[7] = [((carry_24_col237) + (M31_524288))];
-                *lookup_data.range_check_20_b_7 = [((carry_24_col237) + (M31_524288))];
-                let carry_25_col238 =
-                    (((conv_mod_tmp_71feb_43[25]) + (carry_24_col237)) * (M31_4194304));
-                *row[238] = carry_25_col238;
-                *sub_component_inputs.range_check_20_c[7] = [((carry_25_col238) + (M31_524288))];
-                *lookup_data.range_check_20_c_7 = [((carry_25_col238) + (M31_524288))];
-                let carry_26_col239 =
-                    (((conv_mod_tmp_71feb_43[26]) + (carry_25_col238)) * (M31_4194304));
-                *row[239] = carry_26_col239;
-                *sub_component_inputs.range_check_20_d[7] = [((carry_26_col239) + (M31_524288))];
-                *lookup_data.range_check_20_d_7 = [((carry_26_col239) + (M31_524288))];
+                *row[248] = carry_21_col248;
+                *sub_component_inputs.range_check_20_g[5] = [((carry_21_col248) + (M31_524288))];
+                *lookup_data.range_check_20_g_5 = [((carry_21_col248) + (M31_524288))];
+                let carry_22_col249 =
+                    (((conv_mod_tmp_71feb_43[22]) + (carry_21_col248)) * (M31_4194304));
+                *row[249] = carry_22_col249;
+                *sub_component_inputs.range_check_20_h[5] = [((carry_22_col249) + (M31_524288))];
+                *lookup_data.range_check_20_h_5 = [((carry_22_col249) + (M31_524288))];
+                let carry_23_col250 =
+                    (((conv_mod_tmp_71feb_43[23]) + (carry_22_col249)) * (M31_4194304));
+                *row[250] = carry_23_col250;
+                *sub_component_inputs.range_check_20[7] = [((carry_23_col250) + (M31_524288))];
+                *lookup_data.range_check_20_7 = [((carry_23_col250) + (M31_524288))];
+                let carry_24_col251 =
+                    (((conv_mod_tmp_71feb_43[24]) + (carry_23_col250)) * (M31_4194304));
+                *row[251] = carry_24_col251;
+                *sub_component_inputs.range_check_20_b[7] = [((carry_24_col251) + (M31_524288))];
+                *lookup_data.range_check_20_b_7 = [((carry_24_col251) + (M31_524288))];
+                let carry_25_col252 =
+                    (((conv_mod_tmp_71feb_43[25]) + (carry_24_col251)) * (M31_4194304));
+                *row[252] = carry_25_col252;
+                *sub_component_inputs.range_check_20_c[7] = [((carry_25_col252) + (M31_524288))];
+                *lookup_data.range_check_20_c_7 = [((carry_25_col252) + (M31_524288))];
+                let carry_26_col253 =
+                    (((conv_mod_tmp_71feb_43[26]) + (carry_25_col252)) * (M31_4194304));
+                *row[253] = carry_26_col253;
+                *sub_component_inputs.range_check_20_d[7] = [((carry_26_col253) + (M31_524288))];
+                *lookup_data.range_check_20_d_7 = [((carry_26_col253) + (M31_524288))];
 
                 let result_y_tmp_71feb_45 = (((slope_tmp_71feb_1)
                     * ((partial_ec_mul_input.2 .1[0]) - (result_x_tmp_71feb_23)))
                     - (partial_ec_mul_input.2 .1[1]));
-                let result_y_limb_0_col240 = result_y_tmp_71feb_45.get_m31(0);
-                *row[240] = result_y_limb_0_col240;
-                let result_y_limb_1_col241 = result_y_tmp_71feb_45.get_m31(1);
-                *row[241] = result_y_limb_1_col241;
-                let result_y_limb_2_col242 = result_y_tmp_71feb_45.get_m31(2);
-                *row[242] = result_y_limb_2_col242;
-                let result_y_limb_3_col243 = result_y_tmp_71feb_45.get_m31(3);
-                *row[243] = result_y_limb_3_col243;
-                let result_y_limb_4_col244 = result_y_tmp_71feb_45.get_m31(4);
-                *row[244] = result_y_limb_4_col244;
-                let result_y_limb_5_col245 = result_y_tmp_71feb_45.get_m31(5);
-                *row[245] = result_y_limb_5_col245;
-                let result_y_limb_6_col246 = result_y_tmp_71feb_45.get_m31(6);
-                *row[246] = result_y_limb_6_col246;
-                let result_y_limb_7_col247 = result_y_tmp_71feb_45.get_m31(7);
-                *row[247] = result_y_limb_7_col247;
-                let result_y_limb_8_col248 = result_y_tmp_71feb_45.get_m31(8);
-                *row[248] = result_y_limb_8_col248;
-                let result_y_limb_9_col249 = result_y_tmp_71feb_45.get_m31(9);
-                *row[249] = result_y_limb_9_col249;
-                let result_y_limb_10_col250 = result_y_tmp_71feb_45.get_m31(10);
-                *row[250] = result_y_limb_10_col250;
-                let result_y_limb_11_col251 = result_y_tmp_71feb_45.get_m31(11);
-                *row[251] = result_y_limb_11_col251;
-                let result_y_limb_12_col252 = result_y_tmp_71feb_45.get_m31(12);
-                *row[252] = result_y_limb_12_col252;
-                let result_y_limb_13_col253 = result_y_tmp_71feb_45.get_m31(13);
-                *row[253] = result_y_limb_13_col253;
-                let result_y_limb_14_col254 = result_y_tmp_71feb_45.get_m31(14);
-                *row[254] = result_y_limb_14_col254;
-                let result_y_limb_15_col255 = result_y_tmp_71feb_45.get_m31(15);
-                *row[255] = result_y_limb_15_col255;
-                let result_y_limb_16_col256 = result_y_tmp_71feb_45.get_m31(16);
-                *row[256] = result_y_limb_16_col256;
-                let result_y_limb_17_col257 = result_y_tmp_71feb_45.get_m31(17);
-                *row[257] = result_y_limb_17_col257;
-                let result_y_limb_18_col258 = result_y_tmp_71feb_45.get_m31(18);
-                *row[258] = result_y_limb_18_col258;
-                let result_y_limb_19_col259 = result_y_tmp_71feb_45.get_m31(19);
-                *row[259] = result_y_limb_19_col259;
-                let result_y_limb_20_col260 = result_y_tmp_71feb_45.get_m31(20);
-                *row[260] = result_y_limb_20_col260;
-                let result_y_limb_21_col261 = result_y_tmp_71feb_45.get_m31(21);
-                *row[261] = result_y_limb_21_col261;
-                let result_y_limb_22_col262 = result_y_tmp_71feb_45.get_m31(22);
-                *row[262] = result_y_limb_22_col262;
-                let result_y_limb_23_col263 = result_y_tmp_71feb_45.get_m31(23);
-                *row[263] = result_y_limb_23_col263;
-                let result_y_limb_24_col264 = result_y_tmp_71feb_45.get_m31(24);
-                *row[264] = result_y_limb_24_col264;
-                let result_y_limb_25_col265 = result_y_tmp_71feb_45.get_m31(25);
-                *row[265] = result_y_limb_25_col265;
-                let result_y_limb_26_col266 = result_y_tmp_71feb_45.get_m31(26);
-                *row[266] = result_y_limb_26_col266;
-                let result_y_limb_27_col267 = result_y_tmp_71feb_45.get_m31(27);
-                *row[267] = result_y_limb_27_col267;
+                let result_y_limb_0_col254 = result_y_tmp_71feb_45.get_m31(0);
+                *row[254] = result_y_limb_0_col254;
+                let result_y_limb_1_col255 = result_y_tmp_71feb_45.get_m31(1);
+                *row[255] = result_y_limb_1_col255;
+                let result_y_limb_2_col256 = result_y_tmp_71feb_45.get_m31(2);
+                *row[256] = result_y_limb_2_col256;
+                let result_y_limb_3_col257 = result_y_tmp_71feb_45.get_m31(3);
+                *row[257] = result_y_limb_3_col257;
+                let result_y_limb_4_col258 = result_y_tmp_71feb_45.get_m31(4);
+                *row[258] = result_y_limb_4_col258;
+                let result_y_limb_5_col259 = result_y_tmp_71feb_45.get_m31(5);
+                *row[259] = result_y_limb_5_col259;
+                let result_y_limb_6_col260 = result_y_tmp_71feb_45.get_m31(6);
+                *row[260] = result_y_limb_6_col260;
+                let result_y_limb_7_col261 = result_y_tmp_71feb_45.get_m31(7);
+                *row[261] = result_y_limb_7_col261;
+                let result_y_limb_8_col262 = result_y_tmp_71feb_45.get_m31(8);
+                *row[262] = result_y_limb_8_col262;
+                let result_y_limb_9_col263 = result_y_tmp_71feb_45.get_m31(9);
+                *row[263] = result_y_limb_9_col263;
+                let result_y_limb_10_col264 = result_y_tmp_71feb_45.get_m31(10);
+                *row[264] = result_y_limb_10_col264;
+                let result_y_limb_11_col265 = result_y_tmp_71feb_45.get_m31(11);
+                *row[265] = result_y_limb_11_col265;
+                let result_y_limb_12_col266 = result_y_tmp_71feb_45.get_m31(12);
+                *row[266] = result_y_limb_12_col266;
+                let result_y_limb_13_col267 = result_y_tmp_71feb_45.get_m31(13);
+                *row[267] = result_y_limb_13_col267;
+                let result_y_limb_14_col268 = result_y_tmp_71feb_45.get_m31(14);
+                *row[268] = result_y_limb_14_col268;
+                let result_y_limb_15_col269 = result_y_tmp_71feb_45.get_m31(15);
+                *row[269] = result_y_limb_15_col269;
+                let result_y_limb_16_col270 = result_y_tmp_71feb_45.get_m31(16);
+                *row[270] = result_y_limb_16_col270;
+                let result_y_limb_17_col271 = result_y_tmp_71feb_45.get_m31(17);
+                *row[271] = result_y_limb_17_col271;
+                let result_y_limb_18_col272 = result_y_tmp_71feb_45.get_m31(18);
+                *row[272] = result_y_limb_18_col272;
+                let result_y_limb_19_col273 = result_y_tmp_71feb_45.get_m31(19);
+                *row[273] = result_y_limb_19_col273;
+                let result_y_limb_20_col274 = result_y_tmp_71feb_45.get_m31(20);
+                *row[274] = result_y_limb_20_col274;
+                let result_y_limb_21_col275 = result_y_tmp_71feb_45.get_m31(21);
+                *row[275] = result_y_limb_21_col275;
+                let result_y_limb_22_col276 = result_y_tmp_71feb_45.get_m31(22);
+                *row[276] = result_y_limb_22_col276;
+                let result_y_limb_23_col277 = result_y_tmp_71feb_45.get_m31(23);
+                *row[277] = result_y_limb_23_col277;
+                let result_y_limb_24_col278 = result_y_tmp_71feb_45.get_m31(24);
+                *row[278] = result_y_limb_24_col278;
+                let result_y_limb_25_col279 = result_y_tmp_71feb_45.get_m31(25);
+                *row[279] = result_y_limb_25_col279;
+                let result_y_limb_26_col280 = result_y_tmp_71feb_45.get_m31(26);
+                *row[280] = result_y_limb_26_col280;
+                let result_y_limb_27_col281 = result_y_tmp_71feb_45.get_m31(27);
+                *row[281] = result_y_limb_27_col281;
 
                 // Range Check Mem Value N 28.
 
                 *sub_component_inputs.range_check_9_9[4] =
-                    [result_y_limb_0_col240, result_y_limb_1_col241];
-                *lookup_data.range_check_9_9_4 = [result_y_limb_0_col240, result_y_limb_1_col241];
+                    [result_y_limb_0_col254, result_y_limb_1_col255];
+                *lookup_data.range_check_9_9_4 = [result_y_limb_0_col254, result_y_limb_1_col255];
                 *sub_component_inputs.range_check_9_9_b[4] =
-                    [result_y_limb_2_col242, result_y_limb_3_col243];
-                *lookup_data.range_check_9_9_b_4 = [result_y_limb_2_col242, result_y_limb_3_col243];
+                    [result_y_limb_2_col256, result_y_limb_3_col257];
+                *lookup_data.range_check_9_9_b_4 = [result_y_limb_2_col256, result_y_limb_3_col257];
                 *sub_component_inputs.range_check_9_9_c[4] =
-                    [result_y_limb_4_col244, result_y_limb_5_col245];
-                *lookup_data.range_check_9_9_c_4 = [result_y_limb_4_col244, result_y_limb_5_col245];
+                    [result_y_limb_4_col258, result_y_limb_5_col259];
+                *lookup_data.range_check_9_9_c_4 = [result_y_limb_4_col258, result_y_limb_5_col259];
                 *sub_component_inputs.range_check_9_9_d[4] =
-                    [result_y_limb_6_col246, result_y_limb_7_col247];
-                *lookup_data.range_check_9_9_d_4 = [result_y_limb_6_col246, result_y_limb_7_col247];
+                    [result_y_limb_6_col260, result_y_limb_7_col261];
+                *lookup_data.range_check_9_9_d_4 = [result_y_limb_6_col260, result_y_limb_7_col261];
                 *sub_component_inputs.range_check_9_9_e[4] =
-                    [result_y_limb_8_col248, result_y_limb_9_col249];
-                *lookup_data.range_check_9_9_e_4 = [result_y_limb_8_col248, result_y_limb_9_col249];
+                    [result_y_limb_8_col262, result_y_limb_9_col263];
+                *lookup_data.range_check_9_9_e_4 = [result_y_limb_8_col262, result_y_limb_9_col263];
                 *sub_component_inputs.range_check_9_9_f[4] =
-                    [result_y_limb_10_col250, result_y_limb_11_col251];
+                    [result_y_limb_10_col264, result_y_limb_11_col265];
                 *lookup_data.range_check_9_9_f_4 =
-                    [result_y_limb_10_col250, result_y_limb_11_col251];
+                    [result_y_limb_10_col264, result_y_limb_11_col265];
                 *sub_component_inputs.range_check_9_9_g[2] =
-                    [result_y_limb_12_col252, result_y_limb_13_col253];
+                    [result_y_limb_12_col266, result_y_limb_13_col267];
                 *lookup_data.range_check_9_9_g_2 =
-                    [result_y_limb_12_col252, result_y_limb_13_col253];
+                    [result_y_limb_12_col266, result_y_limb_13_col267];
                 *sub_component_inputs.range_check_9_9_h[2] =
-                    [result_y_limb_14_col254, result_y_limb_15_col255];
+                    [result_y_limb_14_col268, result_y_limb_15_col269];
                 *lookup_data.range_check_9_9_h_2 =
-                    [result_y_limb_14_col254, result_y_limb_15_col255];
+                    [result_y_limb_14_col268, result_y_limb_15_col269];
                 *sub_component_inputs.range_check_9_9[5] =
-                    [result_y_limb_16_col256, result_y_limb_17_col257];
-                *lookup_data.range_check_9_9_5 = [result_y_limb_16_col256, result_y_limb_17_col257];
+                    [result_y_limb_16_col270, result_y_limb_17_col271];
+                *lookup_data.range_check_9_9_5 = [result_y_limb_16_col270, result_y_limb_17_col271];
                 *sub_component_inputs.range_check_9_9_b[5] =
-                    [result_y_limb_18_col258, result_y_limb_19_col259];
+                    [result_y_limb_18_col272, result_y_limb_19_col273];
                 *lookup_data.range_check_9_9_b_5 =
-                    [result_y_limb_18_col258, result_y_limb_19_col259];
+                    [result_y_limb_18_col272, result_y_limb_19_col273];
                 *sub_component_inputs.range_check_9_9_c[5] =
-                    [result_y_limb_20_col260, result_y_limb_21_col261];
+                    [result_y_limb_20_col274, result_y_limb_21_col275];
                 *lookup_data.range_check_9_9_c_5 =
-                    [result_y_limb_20_col260, result_y_limb_21_col261];
+                    [result_y_limb_20_col274, result_y_limb_21_col275];
                 *sub_component_inputs.range_check_9_9_d[5] =
-                    [result_y_limb_22_col262, result_y_limb_23_col263];
+                    [result_y_limb_22_col276, result_y_limb_23_col277];
                 *lookup_data.range_check_9_9_d_5 =
-                    [result_y_limb_22_col262, result_y_limb_23_col263];
+                    [result_y_limb_22_col276, result_y_limb_23_col277];
                 *sub_component_inputs.range_check_9_9_e[5] =
-                    [result_y_limb_24_col264, result_y_limb_25_col265];
+                    [result_y_limb_24_col278, result_y_limb_25_col279];
                 *lookup_data.range_check_9_9_e_5 =
-                    [result_y_limb_24_col264, result_y_limb_25_col265];
+                    [result_y_limb_24_col278, result_y_limb_25_col279];
                 *sub_component_inputs.range_check_9_9_f[5] =
-                    [result_y_limb_26_col266, result_y_limb_27_col267];
+                    [result_y_limb_26_col280, result_y_limb_27_col281];
                 *lookup_data.range_check_9_9_f_5 =
-                    [result_y_limb_26_col266, result_y_limb_27_col267];
+                    [result_y_limb_26_col280, result_y_limb_27_col281];
 
                 // Verify Mul 252.
 
@@ -3774,222 +3820,222 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_46 = [
-                    ((slope_limb_0_col128) * ((input_limb_16_col16) - (result_x_limb_0_col184))),
-                    (((slope_limb_0_col128) * ((input_limb_17_col17) - (result_x_limb_1_col185)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    ((((slope_limb_0_col128)
-                        * ((input_limb_18_col18) - (result_x_limb_2_col186)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185))))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    (((((slope_limb_0_col128)
-                        * ((input_limb_19_col19) - (result_x_limb_3_col187)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186))))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185))))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    ((((((slope_limb_0_col128)
-                        * ((input_limb_20_col20) - (result_x_limb_4_col188)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187))))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186))))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185))))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    (((((((slope_limb_0_col128)
-                        * ((input_limb_21_col21) - (result_x_limb_5_col189)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188))))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187))))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186))))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185))))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    ((((((((slope_limb_0_col128)
-                        * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_1_col129)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189))))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188))))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187))))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186))))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185))))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_16_col16) - (result_x_limb_0_col184)))),
-                    (((((((slope_limb_1_col129)
-                        * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_2_col130)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189))))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188))))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187))))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186))))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_17_col17) - (result_x_limb_1_col185)))),
-                    ((((((slope_limb_2_col130)
-                        * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_3_col131)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189))))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188))))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187))))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_18_col18) - (result_x_limb_2_col186)))),
-                    (((((slope_limb_3_col131)
-                        * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_4_col132)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189))))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188))))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_19_col19) - (result_x_limb_3_col187)))),
-                    ((((slope_limb_4_col132)
-                        * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_5_col133)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189))))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_20_col20) - (result_x_limb_4_col188)))),
-                    (((slope_limb_5_col133) * ((input_limb_22_col22) - (result_x_limb_6_col190)))
-                        + ((slope_limb_6_col134)
-                            * ((input_limb_21_col21) - (result_x_limb_5_col189)))),
-                    ((slope_limb_6_col134) * ((input_limb_22_col22) - (result_x_limb_6_col190))),
+                    ((slope_limb_0_col142) * ((input_limb_30_col30) - (result_x_limb_0_col198))),
+                    (((slope_limb_0_col142) * ((input_limb_31_col31) - (result_x_limb_1_col199)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    ((((slope_limb_0_col142)
+                        * ((input_limb_32_col32) - (result_x_limb_2_col200)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199))))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    (((((slope_limb_0_col142)
+                        * ((input_limb_33_col33) - (result_x_limb_3_col201)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200))))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199))))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    ((((((slope_limb_0_col142)
+                        * ((input_limb_34_col34) - (result_x_limb_4_col202)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201))))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200))))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199))))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    (((((((slope_limb_0_col142)
+                        * ((input_limb_35_col35) - (result_x_limb_5_col203)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202))))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201))))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200))))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199))))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    ((((((((slope_limb_0_col142)
+                        * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_1_col143)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203))))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202))))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201))))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200))))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199))))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_30_col30) - (result_x_limb_0_col198)))),
+                    (((((((slope_limb_1_col143)
+                        * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_2_col144)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203))))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202))))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201))))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200))))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_31_col31) - (result_x_limb_1_col199)))),
+                    ((((((slope_limb_2_col144)
+                        * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_3_col145)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203))))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202))))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201))))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_32_col32) - (result_x_limb_2_col200)))),
+                    (((((slope_limb_3_col145)
+                        * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_4_col146)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203))))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202))))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_33_col33) - (result_x_limb_3_col201)))),
+                    ((((slope_limb_4_col146)
+                        * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_5_col147)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203))))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_34_col34) - (result_x_limb_4_col202)))),
+                    (((slope_limb_5_col147) * ((input_limb_36_col36) - (result_x_limb_6_col204)))
+                        + ((slope_limb_6_col148)
+                            * ((input_limb_35_col35) - (result_x_limb_5_col203)))),
+                    ((slope_limb_6_col148) * ((input_limb_36_col36) - (result_x_limb_6_col204))),
                 ];
                 let z2_tmp_71feb_47 = [
-                    ((slope_limb_7_col135) * ((input_limb_23_col23) - (result_x_limb_7_col191))),
-                    (((slope_limb_7_col135) * ((input_limb_24_col24) - (result_x_limb_8_col192)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    ((((slope_limb_7_col135)
-                        * ((input_limb_25_col25) - (result_x_limb_9_col193)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192))))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    (((((slope_limb_7_col135)
-                        * ((input_limb_26_col26) - (result_x_limb_10_col194)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193))))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192))))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    ((((((slope_limb_7_col135)
-                        * ((input_limb_27_col27) - (result_x_limb_11_col195)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194))))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193))))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192))))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    (((((((slope_limb_7_col135)
-                        * ((input_limb_28_col28) - (result_x_limb_12_col196)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195))))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194))))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193))))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192))))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    ((((((((slope_limb_7_col135)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_8_col136)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196))))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195))))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194))))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193))))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192))))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_23_col23) - (result_x_limb_7_col191)))),
-                    (((((((slope_limb_8_col136)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_9_col137)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196))))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195))))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194))))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193))))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_24_col24) - (result_x_limb_8_col192)))),
-                    ((((((slope_limb_9_col137)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_10_col138)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196))))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195))))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194))))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_25_col25) - (result_x_limb_9_col193)))),
-                    (((((slope_limb_10_col138)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_11_col139)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196))))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195))))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_26_col26) - (result_x_limb_10_col194)))),
-                    ((((slope_limb_11_col139)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_12_col140)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196))))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_27_col27) - (result_x_limb_11_col195)))),
-                    (((slope_limb_12_col140)
-                        * ((input_limb_29_col29) - (result_x_limb_13_col197)))
-                        + ((slope_limb_13_col141)
-                            * ((input_limb_28_col28) - (result_x_limb_12_col196)))),
-                    ((slope_limb_13_col141) * ((input_limb_29_col29) - (result_x_limb_13_col197))),
+                    ((slope_limb_7_col149) * ((input_limb_37_col37) - (result_x_limb_7_col205))),
+                    (((slope_limb_7_col149) * ((input_limb_38_col38) - (result_x_limb_8_col206)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    ((((slope_limb_7_col149)
+                        * ((input_limb_39_col39) - (result_x_limb_9_col207)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206))))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    (((((slope_limb_7_col149)
+                        * ((input_limb_40_col40) - (result_x_limb_10_col208)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207))))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206))))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    ((((((slope_limb_7_col149)
+                        * ((input_limb_41_col41) - (result_x_limb_11_col209)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208))))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207))))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206))))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    (((((((slope_limb_7_col149)
+                        * ((input_limb_42_col42) - (result_x_limb_12_col210)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209))))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208))))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207))))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206))))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    ((((((((slope_limb_7_col149)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_8_col150)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210))))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209))))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208))))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207))))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206))))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_37_col37) - (result_x_limb_7_col205)))),
+                    (((((((slope_limb_8_col150)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_9_col151)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210))))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209))))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208))))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207))))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_38_col38) - (result_x_limb_8_col206)))),
+                    ((((((slope_limb_9_col151)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_10_col152)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210))))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209))))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208))))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_39_col39) - (result_x_limb_9_col207)))),
+                    (((((slope_limb_10_col152)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_11_col153)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210))))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209))))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_40_col40) - (result_x_limb_10_col208)))),
+                    ((((slope_limb_11_col153)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_12_col154)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210))))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_41_col41) - (result_x_limb_11_col209)))),
+                    (((slope_limb_12_col154)
+                        * ((input_limb_43_col43) - (result_x_limb_13_col211)))
+                        + ((slope_limb_13_col155)
+                            * ((input_limb_42_col42) - (result_x_limb_12_col210)))),
+                    ((slope_limb_13_col155) * ((input_limb_43_col43) - (result_x_limb_13_col211))),
                 ];
                 let x_sum_tmp_71feb_48 = [
-                    ((slope_limb_0_col128) + (slope_limb_7_col135)),
-                    ((slope_limb_1_col129) + (slope_limb_8_col136)),
-                    ((slope_limb_2_col130) + (slope_limb_9_col137)),
-                    ((slope_limb_3_col131) + (slope_limb_10_col138)),
-                    ((slope_limb_4_col132) + (slope_limb_11_col139)),
-                    ((slope_limb_5_col133) + (slope_limb_12_col140)),
-                    ((slope_limb_6_col134) + (slope_limb_13_col141)),
+                    ((slope_limb_0_col142) + (slope_limb_7_col149)),
+                    ((slope_limb_1_col143) + (slope_limb_8_col150)),
+                    ((slope_limb_2_col144) + (slope_limb_9_col151)),
+                    ((slope_limb_3_col145) + (slope_limb_10_col152)),
+                    ((slope_limb_4_col146) + (slope_limb_11_col153)),
+                    ((slope_limb_5_col147) + (slope_limb_12_col154)),
+                    ((slope_limb_6_col148) + (slope_limb_13_col155)),
                 ];
                 let y_sum_tmp_71feb_49 = [
-                    (((input_limb_16_col16) - (result_x_limb_0_col184))
-                        + ((input_limb_23_col23) - (result_x_limb_7_col191))),
-                    (((input_limb_17_col17) - (result_x_limb_1_col185))
-                        + ((input_limb_24_col24) - (result_x_limb_8_col192))),
-                    (((input_limb_18_col18) - (result_x_limb_2_col186))
-                        + ((input_limb_25_col25) - (result_x_limb_9_col193))),
-                    (((input_limb_19_col19) - (result_x_limb_3_col187))
-                        + ((input_limb_26_col26) - (result_x_limb_10_col194))),
-                    (((input_limb_20_col20) - (result_x_limb_4_col188))
-                        + ((input_limb_27_col27) - (result_x_limb_11_col195))),
-                    (((input_limb_21_col21) - (result_x_limb_5_col189))
-                        + ((input_limb_28_col28) - (result_x_limb_12_col196))),
-                    (((input_limb_22_col22) - (result_x_limb_6_col190))
-                        + ((input_limb_29_col29) - (result_x_limb_13_col197))),
+                    (((input_limb_30_col30) - (result_x_limb_0_col198))
+                        + ((input_limb_37_col37) - (result_x_limb_7_col205))),
+                    (((input_limb_31_col31) - (result_x_limb_1_col199))
+                        + ((input_limb_38_col38) - (result_x_limb_8_col206))),
+                    (((input_limb_32_col32) - (result_x_limb_2_col200))
+                        + ((input_limb_39_col39) - (result_x_limb_9_col207))),
+                    (((input_limb_33_col33) - (result_x_limb_3_col201))
+                        + ((input_limb_40_col40) - (result_x_limb_10_col208))),
+                    (((input_limb_34_col34) - (result_x_limb_4_col202))
+                        + ((input_limb_41_col41) - (result_x_limb_11_col209))),
+                    (((input_limb_35_col35) - (result_x_limb_5_col203))
+                        + ((input_limb_42_col42) - (result_x_limb_12_col210))),
+                    (((input_limb_36_col36) - (result_x_limb_6_col204))
+                        + ((input_limb_43_col43) - (result_x_limb_13_col211))),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_50 = [
                     z0_tmp_71feb_46[0],
@@ -4098,225 +4144,225 @@ fn write_trace_simd(
                 // Single Karatsuba N 7.
 
                 let z0_tmp_71feb_51 = [
-                    ((slope_limb_14_col142) * ((input_limb_30_col30) - (result_x_limb_14_col198))),
-                    (((slope_limb_14_col142)
-                        * ((input_limb_31_col31) - (result_x_limb_15_col199)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    ((((slope_limb_14_col142)
-                        * ((input_limb_32_col32) - (result_x_limb_16_col200)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199))))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    (((((slope_limb_14_col142)
-                        * ((input_limb_33_col33) - (result_x_limb_17_col201)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200))))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199))))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    ((((((slope_limb_14_col142)
-                        * ((input_limb_34_col34) - (result_x_limb_18_col202)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201))))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200))))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199))))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    (((((((slope_limb_14_col142)
-                        * ((input_limb_35_col35) - (result_x_limb_19_col203)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202))))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201))))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200))))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199))))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    ((((((((slope_limb_14_col142)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_15_col143)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203))))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202))))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201))))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200))))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199))))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_30_col30) - (result_x_limb_14_col198)))),
-                    (((((((slope_limb_15_col143)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_16_col144)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203))))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202))))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201))))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200))))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_31_col31) - (result_x_limb_15_col199)))),
-                    ((((((slope_limb_16_col144)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_17_col145)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203))))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202))))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201))))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_32_col32) - (result_x_limb_16_col200)))),
-                    (((((slope_limb_17_col145)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_18_col146)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203))))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202))))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_33_col33) - (result_x_limb_17_col201)))),
-                    ((((slope_limb_18_col146)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_19_col147)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203))))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_34_col34) - (result_x_limb_18_col202)))),
-                    (((slope_limb_19_col147)
-                        * ((input_limb_36_col36) - (result_x_limb_20_col204)))
-                        + ((slope_limb_20_col148)
-                            * ((input_limb_35_col35) - (result_x_limb_19_col203)))),
-                    ((slope_limb_20_col148) * ((input_limb_36_col36) - (result_x_limb_20_col204))),
+                    ((slope_limb_14_col156) * ((input_limb_44_col44) - (result_x_limb_14_col212))),
+                    (((slope_limb_14_col156)
+                        * ((input_limb_45_col45) - (result_x_limb_15_col213)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    ((((slope_limb_14_col156)
+                        * ((input_limb_46_col46) - (result_x_limb_16_col214)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213))))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    (((((slope_limb_14_col156)
+                        * ((input_limb_47_col47) - (result_x_limb_17_col215)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214))))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213))))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    ((((((slope_limb_14_col156)
+                        * ((input_limb_48_col48) - (result_x_limb_18_col216)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215))))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214))))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213))))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    (((((((slope_limb_14_col156)
+                        * ((input_limb_49_col49) - (result_x_limb_19_col217)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216))))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215))))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214))))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213))))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    ((((((((slope_limb_14_col156)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_15_col157)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217))))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216))))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215))))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214))))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213))))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_44_col44) - (result_x_limb_14_col212)))),
+                    (((((((slope_limb_15_col157)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_16_col158)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217))))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216))))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215))))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214))))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_45_col45) - (result_x_limb_15_col213)))),
+                    ((((((slope_limb_16_col158)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_17_col159)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217))))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216))))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215))))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_46_col46) - (result_x_limb_16_col214)))),
+                    (((((slope_limb_17_col159)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_18_col160)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217))))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216))))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_47_col47) - (result_x_limb_17_col215)))),
+                    ((((slope_limb_18_col160)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_19_col161)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217))))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_48_col48) - (result_x_limb_18_col216)))),
+                    (((slope_limb_19_col161)
+                        * ((input_limb_50_col50) - (result_x_limb_20_col218)))
+                        + ((slope_limb_20_col162)
+                            * ((input_limb_49_col49) - (result_x_limb_19_col217)))),
+                    ((slope_limb_20_col162) * ((input_limb_50_col50) - (result_x_limb_20_col218))),
                 ];
                 let z2_tmp_71feb_52 = [
-                    ((slope_limb_21_col149) * ((input_limb_37_col37) - (result_x_limb_21_col205))),
-                    (((slope_limb_21_col149)
-                        * ((input_limb_38_col38) - (result_x_limb_22_col206)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    ((((slope_limb_21_col149)
-                        * ((input_limb_39_col39) - (result_x_limb_23_col207)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206))))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    (((((slope_limb_21_col149)
-                        * ((input_limb_40_col40) - (result_x_limb_24_col208)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207))))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206))))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    ((((((slope_limb_21_col149)
-                        * ((input_limb_41_col41) - (result_x_limb_25_col209)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208))))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207))))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206))))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    (((((((slope_limb_21_col149)
-                        * ((input_limb_42_col42) - (result_x_limb_26_col210)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209))))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208))))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207))))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206))))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    ((((((((slope_limb_21_col149)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_22_col150)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210))))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209))))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208))))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207))))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206))))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_37_col37) - (result_x_limb_21_col205)))),
-                    (((((((slope_limb_22_col150)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_23_col151)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210))))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209))))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208))))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207))))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_38_col38) - (result_x_limb_22_col206)))),
-                    ((((((slope_limb_23_col151)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_24_col152)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210))))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209))))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208))))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_39_col39) - (result_x_limb_23_col207)))),
-                    (((((slope_limb_24_col152)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_25_col153)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210))))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209))))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_40_col40) - (result_x_limb_24_col208)))),
-                    ((((slope_limb_25_col153)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_26_col154)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210))))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_41_col41) - (result_x_limb_25_col209)))),
-                    (((slope_limb_26_col154)
-                        * ((input_limb_43_col43) - (result_x_limb_27_col211)))
-                        + ((slope_limb_27_col155)
-                            * ((input_limb_42_col42) - (result_x_limb_26_col210)))),
-                    ((slope_limb_27_col155) * ((input_limb_43_col43) - (result_x_limb_27_col211))),
+                    ((slope_limb_21_col163) * ((input_limb_51_col51) - (result_x_limb_21_col219))),
+                    (((slope_limb_21_col163)
+                        * ((input_limb_52_col52) - (result_x_limb_22_col220)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    ((((slope_limb_21_col163)
+                        * ((input_limb_53_col53) - (result_x_limb_23_col221)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220))))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    (((((slope_limb_21_col163)
+                        * ((input_limb_54_col54) - (result_x_limb_24_col222)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221))))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220))))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    ((((((slope_limb_21_col163)
+                        * ((input_limb_55_col55) - (result_x_limb_25_col223)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222))))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221))))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220))))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    (((((((slope_limb_21_col163)
+                        * ((input_limb_56_col56) - (result_x_limb_26_col224)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223))))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222))))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221))))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220))))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    ((((((((slope_limb_21_col163)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_22_col164)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224))))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223))))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222))))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221))))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220))))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_51_col51) - (result_x_limb_21_col219)))),
+                    (((((((slope_limb_22_col164)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_23_col165)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224))))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223))))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222))))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221))))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_52_col52) - (result_x_limb_22_col220)))),
+                    ((((((slope_limb_23_col165)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_24_col166)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224))))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223))))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222))))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_53_col53) - (result_x_limb_23_col221)))),
+                    (((((slope_limb_24_col166)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_25_col167)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224))))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223))))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_54_col54) - (result_x_limb_24_col222)))),
+                    ((((slope_limb_25_col167)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_26_col168)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224))))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_55_col55) - (result_x_limb_25_col223)))),
+                    (((slope_limb_26_col168)
+                        * ((input_limb_57_col57) - (result_x_limb_27_col225)))
+                        + ((slope_limb_27_col169)
+                            * ((input_limb_56_col56) - (result_x_limb_26_col224)))),
+                    ((slope_limb_27_col169) * ((input_limb_57_col57) - (result_x_limb_27_col225))),
                 ];
                 let x_sum_tmp_71feb_53 = [
-                    ((slope_limb_14_col142) + (slope_limb_21_col149)),
-                    ((slope_limb_15_col143) + (slope_limb_22_col150)),
-                    ((slope_limb_16_col144) + (slope_limb_23_col151)),
-                    ((slope_limb_17_col145) + (slope_limb_24_col152)),
-                    ((slope_limb_18_col146) + (slope_limb_25_col153)),
-                    ((slope_limb_19_col147) + (slope_limb_26_col154)),
-                    ((slope_limb_20_col148) + (slope_limb_27_col155)),
+                    ((slope_limb_14_col156) + (slope_limb_21_col163)),
+                    ((slope_limb_15_col157) + (slope_limb_22_col164)),
+                    ((slope_limb_16_col158) + (slope_limb_23_col165)),
+                    ((slope_limb_17_col159) + (slope_limb_24_col166)),
+                    ((slope_limb_18_col160) + (slope_limb_25_col167)),
+                    ((slope_limb_19_col161) + (slope_limb_26_col168)),
+                    ((slope_limb_20_col162) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_54 = [
-                    (((input_limb_30_col30) - (result_x_limb_14_col198))
-                        + ((input_limb_37_col37) - (result_x_limb_21_col205))),
-                    (((input_limb_31_col31) - (result_x_limb_15_col199))
-                        + ((input_limb_38_col38) - (result_x_limb_22_col206))),
-                    (((input_limb_32_col32) - (result_x_limb_16_col200))
-                        + ((input_limb_39_col39) - (result_x_limb_23_col207))),
-                    (((input_limb_33_col33) - (result_x_limb_17_col201))
-                        + ((input_limb_40_col40) - (result_x_limb_24_col208))),
-                    (((input_limb_34_col34) - (result_x_limb_18_col202))
-                        + ((input_limb_41_col41) - (result_x_limb_25_col209))),
-                    (((input_limb_35_col35) - (result_x_limb_19_col203))
-                        + ((input_limb_42_col42) - (result_x_limb_26_col210))),
-                    (((input_limb_36_col36) - (result_x_limb_20_col204))
-                        + ((input_limb_43_col43) - (result_x_limb_27_col211))),
+                    (((input_limb_44_col44) - (result_x_limb_14_col212))
+                        + ((input_limb_51_col51) - (result_x_limb_21_col219))),
+                    (((input_limb_45_col45) - (result_x_limb_15_col213))
+                        + ((input_limb_52_col52) - (result_x_limb_22_col220))),
+                    (((input_limb_46_col46) - (result_x_limb_16_col214))
+                        + ((input_limb_53_col53) - (result_x_limb_23_col221))),
+                    (((input_limb_47_col47) - (result_x_limb_17_col215))
+                        + ((input_limb_54_col54) - (result_x_limb_24_col222))),
+                    (((input_limb_48_col48) - (result_x_limb_18_col216))
+                        + ((input_limb_55_col55) - (result_x_limb_25_col223))),
+                    (((input_limb_49_col49) - (result_x_limb_19_col217))
+                        + ((input_limb_56_col56) - (result_x_limb_26_col224))),
+                    (((input_limb_50_col50) - (result_x_limb_20_col218))
+                        + ((input_limb_57_col57) - (result_x_limb_27_col225))),
                 ];
                 let single_karatsuba_n_7_output_tmp_71feb_55 = [
                     z0_tmp_71feb_51[0],
@@ -4423,50 +4469,50 @@ fn write_trace_simd(
                 ];
 
                 let x_sum_tmp_71feb_56 = [
-                    ((slope_limb_0_col128) + (slope_limb_14_col142)),
-                    ((slope_limb_1_col129) + (slope_limb_15_col143)),
-                    ((slope_limb_2_col130) + (slope_limb_16_col144)),
-                    ((slope_limb_3_col131) + (slope_limb_17_col145)),
-                    ((slope_limb_4_col132) + (slope_limb_18_col146)),
-                    ((slope_limb_5_col133) + (slope_limb_19_col147)),
-                    ((slope_limb_6_col134) + (slope_limb_20_col148)),
-                    ((slope_limb_7_col135) + (slope_limb_21_col149)),
-                    ((slope_limb_8_col136) + (slope_limb_22_col150)),
-                    ((slope_limb_9_col137) + (slope_limb_23_col151)),
-                    ((slope_limb_10_col138) + (slope_limb_24_col152)),
-                    ((slope_limb_11_col139) + (slope_limb_25_col153)),
-                    ((slope_limb_12_col140) + (slope_limb_26_col154)),
-                    ((slope_limb_13_col141) + (slope_limb_27_col155)),
+                    ((slope_limb_0_col142) + (slope_limb_14_col156)),
+                    ((slope_limb_1_col143) + (slope_limb_15_col157)),
+                    ((slope_limb_2_col144) + (slope_limb_16_col158)),
+                    ((slope_limb_3_col145) + (slope_limb_17_col159)),
+                    ((slope_limb_4_col146) + (slope_limb_18_col160)),
+                    ((slope_limb_5_col147) + (slope_limb_19_col161)),
+                    ((slope_limb_6_col148) + (slope_limb_20_col162)),
+                    ((slope_limb_7_col149) + (slope_limb_21_col163)),
+                    ((slope_limb_8_col150) + (slope_limb_22_col164)),
+                    ((slope_limb_9_col151) + (slope_limb_23_col165)),
+                    ((slope_limb_10_col152) + (slope_limb_24_col166)),
+                    ((slope_limb_11_col153) + (slope_limb_25_col167)),
+                    ((slope_limb_12_col154) + (slope_limb_26_col168)),
+                    ((slope_limb_13_col155) + (slope_limb_27_col169)),
                 ];
                 let y_sum_tmp_71feb_57 = [
-                    (((input_limb_16_col16) - (result_x_limb_0_col184))
-                        + ((input_limb_30_col30) - (result_x_limb_14_col198))),
-                    (((input_limb_17_col17) - (result_x_limb_1_col185))
-                        + ((input_limb_31_col31) - (result_x_limb_15_col199))),
-                    (((input_limb_18_col18) - (result_x_limb_2_col186))
-                        + ((input_limb_32_col32) - (result_x_limb_16_col200))),
-                    (((input_limb_19_col19) - (result_x_limb_3_col187))
-                        + ((input_limb_33_col33) - (result_x_limb_17_col201))),
-                    (((input_limb_20_col20) - (result_x_limb_4_col188))
-                        + ((input_limb_34_col34) - (result_x_limb_18_col202))),
-                    (((input_limb_21_col21) - (result_x_limb_5_col189))
-                        + ((input_limb_35_col35) - (result_x_limb_19_col203))),
-                    (((input_limb_22_col22) - (result_x_limb_6_col190))
-                        + ((input_limb_36_col36) - (result_x_limb_20_col204))),
-                    (((input_limb_23_col23) - (result_x_limb_7_col191))
-                        + ((input_limb_37_col37) - (result_x_limb_21_col205))),
-                    (((input_limb_24_col24) - (result_x_limb_8_col192))
-                        + ((input_limb_38_col38) - (result_x_limb_22_col206))),
-                    (((input_limb_25_col25) - (result_x_limb_9_col193))
-                        + ((input_limb_39_col39) - (result_x_limb_23_col207))),
-                    (((input_limb_26_col26) - (result_x_limb_10_col194))
-                        + ((input_limb_40_col40) - (result_x_limb_24_col208))),
-                    (((input_limb_27_col27) - (result_x_limb_11_col195))
-                        + ((input_limb_41_col41) - (result_x_limb_25_col209))),
-                    (((input_limb_28_col28) - (result_x_limb_12_col196))
-                        + ((input_limb_42_col42) - (result_x_limb_26_col210))),
-                    (((input_limb_29_col29) - (result_x_limb_13_col197))
-                        + ((input_limb_43_col43) - (result_x_limb_27_col211))),
+                    (((input_limb_30_col30) - (result_x_limb_0_col198))
+                        + ((input_limb_44_col44) - (result_x_limb_14_col212))),
+                    (((input_limb_31_col31) - (result_x_limb_1_col199))
+                        + ((input_limb_45_col45) - (result_x_limb_15_col213))),
+                    (((input_limb_32_col32) - (result_x_limb_2_col200))
+                        + ((input_limb_46_col46) - (result_x_limb_16_col214))),
+                    (((input_limb_33_col33) - (result_x_limb_3_col201))
+                        + ((input_limb_47_col47) - (result_x_limb_17_col215))),
+                    (((input_limb_34_col34) - (result_x_limb_4_col202))
+                        + ((input_limb_48_col48) - (result_x_limb_18_col216))),
+                    (((input_limb_35_col35) - (result_x_limb_5_col203))
+                        + ((input_limb_49_col49) - (result_x_limb_19_col217))),
+                    (((input_limb_36_col36) - (result_x_limb_6_col204))
+                        + ((input_limb_50_col50) - (result_x_limb_20_col218))),
+                    (((input_limb_37_col37) - (result_x_limb_7_col205))
+                        + ((input_limb_51_col51) - (result_x_limb_21_col219))),
+                    (((input_limb_38_col38) - (result_x_limb_8_col206))
+                        + ((input_limb_52_col52) - (result_x_limb_22_col220))),
+                    (((input_limb_39_col39) - (result_x_limb_9_col207))
+                        + ((input_limb_53_col53) - (result_x_limb_23_col221))),
+                    (((input_limb_40_col40) - (result_x_limb_10_col208))
+                        + ((input_limb_54_col54) - (result_x_limb_24_col222))),
+                    (((input_limb_41_col41) - (result_x_limb_11_col209))
+                        + ((input_limb_55_col55) - (result_x_limb_25_col223))),
+                    (((input_limb_42_col42) - (result_x_limb_12_col210))
+                        + ((input_limb_56_col56) - (result_x_limb_26_col224))),
+                    (((input_limb_43_col43) - (result_x_limb_13_col211))
+                        + ((input_limb_57_col57) - (result_x_limb_27_col225))),
                 ];
 
                 // Single Karatsuba N 7.
@@ -4835,61 +4881,61 @@ fn write_trace_simd(
 
                 let conv_tmp_71feb_64 = [
                     ((double_karatsuba_1454b_output_tmp_71feb_63[0])
-                        - ((input_limb_44_col44) + (result_y_limb_0_col240))),
+                        - ((input_limb_58_col58) + (result_y_limb_0_col254))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[1])
-                        - ((input_limb_45_col45) + (result_y_limb_1_col241))),
+                        - ((input_limb_59_col59) + (result_y_limb_1_col255))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[2])
-                        - ((input_limb_46_col46) + (result_y_limb_2_col242))),
+                        - ((input_limb_60_col60) + (result_y_limb_2_col256))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[3])
-                        - ((input_limb_47_col47) + (result_y_limb_3_col243))),
+                        - ((input_limb_61_col61) + (result_y_limb_3_col257))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[4])
-                        - ((input_limb_48_col48) + (result_y_limb_4_col244))),
+                        - ((input_limb_62_col62) + (result_y_limb_4_col258))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[5])
-                        - ((input_limb_49_col49) + (result_y_limb_5_col245))),
+                        - ((input_limb_63_col63) + (result_y_limb_5_col259))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[6])
-                        - ((input_limb_50_col50) + (result_y_limb_6_col246))),
+                        - ((input_limb_64_col64) + (result_y_limb_6_col260))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[7])
-                        - ((input_limb_51_col51) + (result_y_limb_7_col247))),
+                        - ((input_limb_65_col65) + (result_y_limb_7_col261))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[8])
-                        - ((input_limb_52_col52) + (result_y_limb_8_col248))),
+                        - ((input_limb_66_col66) + (result_y_limb_8_col262))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[9])
-                        - ((input_limb_53_col53) + (result_y_limb_9_col249))),
+                        - ((input_limb_67_col67) + (result_y_limb_9_col263))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[10])
-                        - ((input_limb_54_col54) + (result_y_limb_10_col250))),
+                        - ((input_limb_68_col68) + (result_y_limb_10_col264))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[11])
-                        - ((input_limb_55_col55) + (result_y_limb_11_col251))),
+                        - ((input_limb_69_col69) + (result_y_limb_11_col265))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[12])
-                        - ((input_limb_56_col56) + (result_y_limb_12_col252))),
+                        - ((input_limb_70_col70) + (result_y_limb_12_col266))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[13])
-                        - ((input_limb_57_col57) + (result_y_limb_13_col253))),
+                        - ((input_limb_71_col71) + (result_y_limb_13_col267))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[14])
-                        - ((input_limb_58_col58) + (result_y_limb_14_col254))),
+                        - ((input_limb_72_col72) + (result_y_limb_14_col268))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[15])
-                        - ((input_limb_59_col59) + (result_y_limb_15_col255))),
+                        - ((input_limb_73_col73) + (result_y_limb_15_col269))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[16])
-                        - ((input_limb_60_col60) + (result_y_limb_16_col256))),
+                        - ((input_limb_74_col74) + (result_y_limb_16_col270))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[17])
-                        - ((input_limb_61_col61) + (result_y_limb_17_col257))),
+                        - ((input_limb_75_col75) + (result_y_limb_17_col271))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[18])
-                        - ((input_limb_62_col62) + (result_y_limb_18_col258))),
+                        - ((input_limb_76_col76) + (result_y_limb_18_col272))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[19])
-                        - ((input_limb_63_col63) + (result_y_limb_19_col259))),
+                        - ((input_limb_77_col77) + (result_y_limb_19_col273))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[20])
-                        - ((input_limb_64_col64) + (result_y_limb_20_col260))),
+                        - ((input_limb_78_col78) + (result_y_limb_20_col274))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[21])
-                        - ((input_limb_65_col65) + (result_y_limb_21_col261))),
+                        - ((input_limb_79_col79) + (result_y_limb_21_col275))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[22])
-                        - ((input_limb_66_col66) + (result_y_limb_22_col262))),
+                        - ((input_limb_80_col80) + (result_y_limb_22_col276))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[23])
-                        - ((input_limb_67_col67) + (result_y_limb_23_col263))),
+                        - ((input_limb_81_col81) + (result_y_limb_23_col277))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[24])
-                        - ((input_limb_68_col68) + (result_y_limb_24_col264))),
+                        - ((input_limb_82_col82) + (result_y_limb_24_col278))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[25])
-                        - ((input_limb_69_col69) + (result_y_limb_25_col265))),
+                        - ((input_limb_83_col83) + (result_y_limb_25_col279))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[26])
-                        - ((input_limb_70_col70) + (result_y_limb_26_col266))),
+                        - ((input_limb_84_col84) + (result_y_limb_26_col280))),
                     ((double_karatsuba_1454b_output_tmp_71feb_63[27])
-                        - ((input_limb_71_col71) + (result_y_limb_27_col267))),
+                        - ((input_limb_85_col85) + (result_y_limb_27_col281))),
                     double_karatsuba_1454b_output_tmp_71feb_63[28],
                     double_karatsuba_1454b_output_tmp_71feb_63[29],
                     double_karatsuba_1454b_output_tmp_71feb_63[30],
@@ -5009,146 +5055,146 @@ fn write_trace_simd(
                             << (UInt32_9)))
                         + (UInt32_131072))
                         & (UInt32_262143));
-                let k_col268 = ((k_mod_2_18_biased_tmp_71feb_66.low().as_m31())
+                let k_col282 = ((k_mod_2_18_biased_tmp_71feb_66.low().as_m31())
                     + (((k_mod_2_18_biased_tmp_71feb_66.high().as_m31()) - (M31_2)) * (M31_65536)));
-                *row[268] = k_col268;
-                *sub_component_inputs.range_check_20[8] = [((k_col268) + (M31_524288))];
-                *lookup_data.range_check_20_8 = [((k_col268) + (M31_524288))];
-                let carry_0_col269 = (((conv_mod_tmp_71feb_65[0]) - (k_col268)) * (M31_4194304));
-                *row[269] = carry_0_col269;
-                *sub_component_inputs.range_check_20_b[8] = [((carry_0_col269) + (M31_524288))];
-                *lookup_data.range_check_20_b_8 = [((carry_0_col269) + (M31_524288))];
-                let carry_1_col270 =
-                    (((conv_mod_tmp_71feb_65[1]) + (carry_0_col269)) * (M31_4194304));
-                *row[270] = carry_1_col270;
-                *sub_component_inputs.range_check_20_c[8] = [((carry_1_col270) + (M31_524288))];
-                *lookup_data.range_check_20_c_8 = [((carry_1_col270) + (M31_524288))];
-                let carry_2_col271 =
-                    (((conv_mod_tmp_71feb_65[2]) + (carry_1_col270)) * (M31_4194304));
-                *row[271] = carry_2_col271;
-                *sub_component_inputs.range_check_20_d[8] = [((carry_2_col271) + (M31_524288))];
-                *lookup_data.range_check_20_d_8 = [((carry_2_col271) + (M31_524288))];
-                let carry_3_col272 =
-                    (((conv_mod_tmp_71feb_65[3]) + (carry_2_col271)) * (M31_4194304));
-                *row[272] = carry_3_col272;
-                *sub_component_inputs.range_check_20_e[6] = [((carry_3_col272) + (M31_524288))];
-                *lookup_data.range_check_20_e_6 = [((carry_3_col272) + (M31_524288))];
-                let carry_4_col273 =
-                    (((conv_mod_tmp_71feb_65[4]) + (carry_3_col272)) * (M31_4194304));
-                *row[273] = carry_4_col273;
-                *sub_component_inputs.range_check_20_f[6] = [((carry_4_col273) + (M31_524288))];
-                *lookup_data.range_check_20_f_6 = [((carry_4_col273) + (M31_524288))];
-                let carry_5_col274 =
-                    (((conv_mod_tmp_71feb_65[5]) + (carry_4_col273)) * (M31_4194304));
-                *row[274] = carry_5_col274;
-                *sub_component_inputs.range_check_20_g[6] = [((carry_5_col274) + (M31_524288))];
-                *lookup_data.range_check_20_g_6 = [((carry_5_col274) + (M31_524288))];
-                let carry_6_col275 =
-                    (((conv_mod_tmp_71feb_65[6]) + (carry_5_col274)) * (M31_4194304));
-                *row[275] = carry_6_col275;
-                *sub_component_inputs.range_check_20_h[6] = [((carry_6_col275) + (M31_524288))];
-                *lookup_data.range_check_20_h_6 = [((carry_6_col275) + (M31_524288))];
-                let carry_7_col276 =
-                    (((conv_mod_tmp_71feb_65[7]) + (carry_6_col275)) * (M31_4194304));
-                *row[276] = carry_7_col276;
-                *sub_component_inputs.range_check_20[9] = [((carry_7_col276) + (M31_524288))];
-                *lookup_data.range_check_20_9 = [((carry_7_col276) + (M31_524288))];
-                let carry_8_col277 =
-                    (((conv_mod_tmp_71feb_65[8]) + (carry_7_col276)) * (M31_4194304));
-                *row[277] = carry_8_col277;
-                *sub_component_inputs.range_check_20_b[9] = [((carry_8_col277) + (M31_524288))];
-                *lookup_data.range_check_20_b_9 = [((carry_8_col277) + (M31_524288))];
-                let carry_9_col278 =
-                    (((conv_mod_tmp_71feb_65[9]) + (carry_8_col277)) * (M31_4194304));
-                *row[278] = carry_9_col278;
-                *sub_component_inputs.range_check_20_c[9] = [((carry_9_col278) + (M31_524288))];
-                *lookup_data.range_check_20_c_9 = [((carry_9_col278) + (M31_524288))];
-                let carry_10_col279 =
-                    (((conv_mod_tmp_71feb_65[10]) + (carry_9_col278)) * (M31_4194304));
-                *row[279] = carry_10_col279;
-                *sub_component_inputs.range_check_20_d[9] = [((carry_10_col279) + (M31_524288))];
-                *lookup_data.range_check_20_d_9 = [((carry_10_col279) + (M31_524288))];
-                let carry_11_col280 =
-                    (((conv_mod_tmp_71feb_65[11]) + (carry_10_col279)) * (M31_4194304));
-                *row[280] = carry_11_col280;
-                *sub_component_inputs.range_check_20_e[7] = [((carry_11_col280) + (M31_524288))];
-                *lookup_data.range_check_20_e_7 = [((carry_11_col280) + (M31_524288))];
-                let carry_12_col281 =
-                    (((conv_mod_tmp_71feb_65[12]) + (carry_11_col280)) * (M31_4194304));
-                *row[281] = carry_12_col281;
-                *sub_component_inputs.range_check_20_f[7] = [((carry_12_col281) + (M31_524288))];
-                *lookup_data.range_check_20_f_7 = [((carry_12_col281) + (M31_524288))];
-                let carry_13_col282 =
-                    (((conv_mod_tmp_71feb_65[13]) + (carry_12_col281)) * (M31_4194304));
-                *row[282] = carry_13_col282;
-                *sub_component_inputs.range_check_20_g[7] = [((carry_13_col282) + (M31_524288))];
-                *lookup_data.range_check_20_g_7 = [((carry_13_col282) + (M31_524288))];
-                let carry_14_col283 =
-                    (((conv_mod_tmp_71feb_65[14]) + (carry_13_col282)) * (M31_4194304));
-                *row[283] = carry_14_col283;
-                *sub_component_inputs.range_check_20_h[7] = [((carry_14_col283) + (M31_524288))];
-                *lookup_data.range_check_20_h_7 = [((carry_14_col283) + (M31_524288))];
-                let carry_15_col284 =
-                    (((conv_mod_tmp_71feb_65[15]) + (carry_14_col283)) * (M31_4194304));
-                *row[284] = carry_15_col284;
-                *sub_component_inputs.range_check_20[10] = [((carry_15_col284) + (M31_524288))];
-                *lookup_data.range_check_20_10 = [((carry_15_col284) + (M31_524288))];
-                let carry_16_col285 =
-                    (((conv_mod_tmp_71feb_65[16]) + (carry_15_col284)) * (M31_4194304));
-                *row[285] = carry_16_col285;
-                *sub_component_inputs.range_check_20_b[10] = [((carry_16_col285) + (M31_524288))];
-                *lookup_data.range_check_20_b_10 = [((carry_16_col285) + (M31_524288))];
-                let carry_17_col286 =
-                    (((conv_mod_tmp_71feb_65[17]) + (carry_16_col285)) * (M31_4194304));
-                *row[286] = carry_17_col286;
-                *sub_component_inputs.range_check_20_c[10] = [((carry_17_col286) + (M31_524288))];
-                *lookup_data.range_check_20_c_10 = [((carry_17_col286) + (M31_524288))];
-                let carry_18_col287 =
-                    (((conv_mod_tmp_71feb_65[18]) + (carry_17_col286)) * (M31_4194304));
-                *row[287] = carry_18_col287;
-                *sub_component_inputs.range_check_20_d[10] = [((carry_18_col287) + (M31_524288))];
-                *lookup_data.range_check_20_d_10 = [((carry_18_col287) + (M31_524288))];
-                let carry_19_col288 =
-                    (((conv_mod_tmp_71feb_65[19]) + (carry_18_col287)) * (M31_4194304));
-                *row[288] = carry_19_col288;
-                *sub_component_inputs.range_check_20_e[8] = [((carry_19_col288) + (M31_524288))];
-                *lookup_data.range_check_20_e_8 = [((carry_19_col288) + (M31_524288))];
-                let carry_20_col289 =
-                    (((conv_mod_tmp_71feb_65[20]) + (carry_19_col288)) * (M31_4194304));
-                *row[289] = carry_20_col289;
-                *sub_component_inputs.range_check_20_f[8] = [((carry_20_col289) + (M31_524288))];
-                *lookup_data.range_check_20_f_8 = [((carry_20_col289) + (M31_524288))];
-                let carry_21_col290 = ((((conv_mod_tmp_71feb_65[21]) - ((M31_136) * (k_col268)))
-                    + (carry_20_col289))
+                *row[282] = k_col282;
+                *sub_component_inputs.range_check_20[8] = [((k_col282) + (M31_524288))];
+                *lookup_data.range_check_20_8 = [((k_col282) + (M31_524288))];
+                let carry_0_col283 = (((conv_mod_tmp_71feb_65[0]) - (k_col282)) * (M31_4194304));
+                *row[283] = carry_0_col283;
+                *sub_component_inputs.range_check_20_b[8] = [((carry_0_col283) + (M31_524288))];
+                *lookup_data.range_check_20_b_8 = [((carry_0_col283) + (M31_524288))];
+                let carry_1_col284 =
+                    (((conv_mod_tmp_71feb_65[1]) + (carry_0_col283)) * (M31_4194304));
+                *row[284] = carry_1_col284;
+                *sub_component_inputs.range_check_20_c[8] = [((carry_1_col284) + (M31_524288))];
+                *lookup_data.range_check_20_c_8 = [((carry_1_col284) + (M31_524288))];
+                let carry_2_col285 =
+                    (((conv_mod_tmp_71feb_65[2]) + (carry_1_col284)) * (M31_4194304));
+                *row[285] = carry_2_col285;
+                *sub_component_inputs.range_check_20_d[8] = [((carry_2_col285) + (M31_524288))];
+                *lookup_data.range_check_20_d_8 = [((carry_2_col285) + (M31_524288))];
+                let carry_3_col286 =
+                    (((conv_mod_tmp_71feb_65[3]) + (carry_2_col285)) * (M31_4194304));
+                *row[286] = carry_3_col286;
+                *sub_component_inputs.range_check_20_e[6] = [((carry_3_col286) + (M31_524288))];
+                *lookup_data.range_check_20_e_6 = [((carry_3_col286) + (M31_524288))];
+                let carry_4_col287 =
+                    (((conv_mod_tmp_71feb_65[4]) + (carry_3_col286)) * (M31_4194304));
+                *row[287] = carry_4_col287;
+                *sub_component_inputs.range_check_20_f[6] = [((carry_4_col287) + (M31_524288))];
+                *lookup_data.range_check_20_f_6 = [((carry_4_col287) + (M31_524288))];
+                let carry_5_col288 =
+                    (((conv_mod_tmp_71feb_65[5]) + (carry_4_col287)) * (M31_4194304));
+                *row[288] = carry_5_col288;
+                *sub_component_inputs.range_check_20_g[6] = [((carry_5_col288) + (M31_524288))];
+                *lookup_data.range_check_20_g_6 = [((carry_5_col288) + (M31_524288))];
+                let carry_6_col289 =
+                    (((conv_mod_tmp_71feb_65[6]) + (carry_5_col288)) * (M31_4194304));
+                *row[289] = carry_6_col289;
+                *sub_component_inputs.range_check_20_h[6] = [((carry_6_col289) + (M31_524288))];
+                *lookup_data.range_check_20_h_6 = [((carry_6_col289) + (M31_524288))];
+                let carry_7_col290 =
+                    (((conv_mod_tmp_71feb_65[7]) + (carry_6_col289)) * (M31_4194304));
+                *row[290] = carry_7_col290;
+                *sub_component_inputs.range_check_20[9] = [((carry_7_col290) + (M31_524288))];
+                *lookup_data.range_check_20_9 = [((carry_7_col290) + (M31_524288))];
+                let carry_8_col291 =
+                    (((conv_mod_tmp_71feb_65[8]) + (carry_7_col290)) * (M31_4194304));
+                *row[291] = carry_8_col291;
+                *sub_component_inputs.range_check_20_b[9] = [((carry_8_col291) + (M31_524288))];
+                *lookup_data.range_check_20_b_9 = [((carry_8_col291) + (M31_524288))];
+                let carry_9_col292 =
+                    (((conv_mod_tmp_71feb_65[9]) + (carry_8_col291)) * (M31_4194304));
+                *row[292] = carry_9_col292;
+                *sub_component_inputs.range_check_20_c[9] = [((carry_9_col292) + (M31_524288))];
+                *lookup_data.range_check_20_c_9 = [((carry_9_col292) + (M31_524288))];
+                let carry_10_col293 =
+                    (((conv_mod_tmp_71feb_65[10]) + (carry_9_col292)) * (M31_4194304));
+                *row[293] = carry_10_col293;
+                *sub_component_inputs.range_check_20_d[9] = [((carry_10_col293) + (M31_524288))];
+                *lookup_data.range_check_20_d_9 = [((carry_10_col293) + (M31_524288))];
+                let carry_11_col294 =
+                    (((conv_mod_tmp_71feb_65[11]) + (carry_10_col293)) * (M31_4194304));
+                *row[294] = carry_11_col294;
+                *sub_component_inputs.range_check_20_e[7] = [((carry_11_col294) + (M31_524288))];
+                *lookup_data.range_check_20_e_7 = [((carry_11_col294) + (M31_524288))];
+                let carry_12_col295 =
+                    (((conv_mod_tmp_71feb_65[12]) + (carry_11_col294)) * (M31_4194304));
+                *row[295] = carry_12_col295;
+                *sub_component_inputs.range_check_20_f[7] = [((carry_12_col295) + (M31_524288))];
+                *lookup_data.range_check_20_f_7 = [((carry_12_col295) + (M31_524288))];
+                let carry_13_col296 =
+                    (((conv_mod_tmp_71feb_65[13]) + (carry_12_col295)) * (M31_4194304));
+                *row[296] = carry_13_col296;
+                *sub_component_inputs.range_check_20_g[7] = [((carry_13_col296) + (M31_524288))];
+                *lookup_data.range_check_20_g_7 = [((carry_13_col296) + (M31_524288))];
+                let carry_14_col297 =
+                    (((conv_mod_tmp_71feb_65[14]) + (carry_13_col296)) * (M31_4194304));
+                *row[297] = carry_14_col297;
+                *sub_component_inputs.range_check_20_h[7] = [((carry_14_col297) + (M31_524288))];
+                *lookup_data.range_check_20_h_7 = [((carry_14_col297) + (M31_524288))];
+                let carry_15_col298 =
+                    (((conv_mod_tmp_71feb_65[15]) + (carry_14_col297)) * (M31_4194304));
+                *row[298] = carry_15_col298;
+                *sub_component_inputs.range_check_20[10] = [((carry_15_col298) + (M31_524288))];
+                *lookup_data.range_check_20_10 = [((carry_15_col298) + (M31_524288))];
+                let carry_16_col299 =
+                    (((conv_mod_tmp_71feb_65[16]) + (carry_15_col298)) * (M31_4194304));
+                *row[299] = carry_16_col299;
+                *sub_component_inputs.range_check_20_b[10] = [((carry_16_col299) + (M31_524288))];
+                *lookup_data.range_check_20_b_10 = [((carry_16_col299) + (M31_524288))];
+                let carry_17_col300 =
+                    (((conv_mod_tmp_71feb_65[17]) + (carry_16_col299)) * (M31_4194304));
+                *row[300] = carry_17_col300;
+                *sub_component_inputs.range_check_20_c[10] = [((carry_17_col300) + (M31_524288))];
+                *lookup_data.range_check_20_c_10 = [((carry_17_col300) + (M31_524288))];
+                let carry_18_col301 =
+                    (((conv_mod_tmp_71feb_65[18]) + (carry_17_col300)) * (M31_4194304));
+                *row[301] = carry_18_col301;
+                *sub_component_inputs.range_check_20_d[10] = [((carry_18_col301) + (M31_524288))];
+                *lookup_data.range_check_20_d_10 = [((carry_18_col301) + (M31_524288))];
+                let carry_19_col302 =
+                    (((conv_mod_tmp_71feb_65[19]) + (carry_18_col301)) * (M31_4194304));
+                *row[302] = carry_19_col302;
+                *sub_component_inputs.range_check_20_e[8] = [((carry_19_col302) + (M31_524288))];
+                *lookup_data.range_check_20_e_8 = [((carry_19_col302) + (M31_524288))];
+                let carry_20_col303 =
+                    (((conv_mod_tmp_71feb_65[20]) + (carry_19_col302)) * (M31_4194304));
+                *row[303] = carry_20_col303;
+                *sub_component_inputs.range_check_20_f[8] = [((carry_20_col303) + (M31_524288))];
+                *lookup_data.range_check_20_f_8 = [((carry_20_col303) + (M31_524288))];
+                let carry_21_col304 = ((((conv_mod_tmp_71feb_65[21]) - ((M31_136) * (k_col282)))
+                    + (carry_20_col303))
                     * (M31_4194304));
-                *row[290] = carry_21_col290;
-                *sub_component_inputs.range_check_20_g[8] = [((carry_21_col290) + (M31_524288))];
-                *lookup_data.range_check_20_g_8 = [((carry_21_col290) + (M31_524288))];
-                let carry_22_col291 =
-                    (((conv_mod_tmp_71feb_65[22]) + (carry_21_col290)) * (M31_4194304));
-                *row[291] = carry_22_col291;
-                *sub_component_inputs.range_check_20_h[8] = [((carry_22_col291) + (M31_524288))];
-                *lookup_data.range_check_20_h_8 = [((carry_22_col291) + (M31_524288))];
-                let carry_23_col292 =
-                    (((conv_mod_tmp_71feb_65[23]) + (carry_22_col291)) * (M31_4194304));
-                *row[292] = carry_23_col292;
-                *sub_component_inputs.range_check_20[11] = [((carry_23_col292) + (M31_524288))];
-                *lookup_data.range_check_20_11 = [((carry_23_col292) + (M31_524288))];
-                let carry_24_col293 =
-                    (((conv_mod_tmp_71feb_65[24]) + (carry_23_col292)) * (M31_4194304));
-                *row[293] = carry_24_col293;
-                *sub_component_inputs.range_check_20_b[11] = [((carry_24_col293) + (M31_524288))];
-                *lookup_data.range_check_20_b_11 = [((carry_24_col293) + (M31_524288))];
-                let carry_25_col294 =
-                    (((conv_mod_tmp_71feb_65[25]) + (carry_24_col293)) * (M31_4194304));
-                *row[294] = carry_25_col294;
-                *sub_component_inputs.range_check_20_c[11] = [((carry_25_col294) + (M31_524288))];
-                *lookup_data.range_check_20_c_11 = [((carry_25_col294) + (M31_524288))];
-                let carry_26_col295 =
-                    (((conv_mod_tmp_71feb_65[26]) + (carry_25_col294)) * (M31_4194304));
-                *row[295] = carry_26_col295;
-                *sub_component_inputs.range_check_20_d[11] = [((carry_26_col295) + (M31_524288))];
-                *lookup_data.range_check_20_d_11 = [((carry_26_col295) + (M31_524288))];
+                *row[304] = carry_21_col304;
+                *sub_component_inputs.range_check_20_g[8] = [((carry_21_col304) + (M31_524288))];
+                *lookup_data.range_check_20_g_8 = [((carry_21_col304) + (M31_524288))];
+                let carry_22_col305 =
+                    (((conv_mod_tmp_71feb_65[22]) + (carry_21_col304)) * (M31_4194304));
+                *row[305] = carry_22_col305;
+                *sub_component_inputs.range_check_20_h[8] = [((carry_22_col305) + (M31_524288))];
+                *lookup_data.range_check_20_h_8 = [((carry_22_col305) + (M31_524288))];
+                let carry_23_col306 =
+                    (((conv_mod_tmp_71feb_65[23]) + (carry_22_col305)) * (M31_4194304));
+                *row[306] = carry_23_col306;
+                *sub_component_inputs.range_check_20[11] = [((carry_23_col306) + (M31_524288))];
+                *lookup_data.range_check_20_11 = [((carry_23_col306) + (M31_524288))];
+                let carry_24_col307 =
+                    (((conv_mod_tmp_71feb_65[24]) + (carry_23_col306)) * (M31_4194304));
+                *row[307] = carry_24_col307;
+                *sub_component_inputs.range_check_20_b[11] = [((carry_24_col307) + (M31_524288))];
+                *lookup_data.range_check_20_b_11 = [((carry_24_col307) + (M31_524288))];
+                let carry_25_col308 =
+                    (((conv_mod_tmp_71feb_65[25]) + (carry_24_col307)) * (M31_4194304));
+                *row[308] = carry_25_col308;
+                *sub_component_inputs.range_check_20_c[11] = [((carry_25_col308) + (M31_524288))];
+                *lookup_data.range_check_20_c_11 = [((carry_25_col308) + (M31_524288))];
+                let carry_26_col309 =
+                    (((conv_mod_tmp_71feb_65[26]) + (carry_25_col308)) * (M31_4194304));
+                *row[309] = carry_26_col309;
+                *sub_component_inputs.range_check_20_d[11] = [((carry_26_col309) + (M31_524288))];
+                *lookup_data.range_check_20_d_11 = [((carry_26_col309) + (M31_524288))];
 
                 let ec_add_output_tmp_71feb_67 = [result_x_tmp_71feb_23, result_y_tmp_71feb_45];
 
@@ -5225,6 +5271,20 @@ fn write_trace_simd(
                     input_limb_69_col69,
                     input_limb_70_col70,
                     input_limb_71_col71,
+                    input_limb_72_col72,
+                    input_limb_73_col73,
+                    input_limb_74_col74,
+                    input_limb_75_col75,
+                    input_limb_76_col76,
+                    input_limb_77_col77,
+                    input_limb_78_col78,
+                    input_limb_79_col79,
+                    input_limb_80_col80,
+                    input_limb_81_col81,
+                    input_limb_82_col82,
+                    input_limb_83_col83,
+                    input_limb_84_col84,
+                    input_limb_85_col85,
                 ];
                 *lookup_data.partial_ec_mul_1 = [
                     input_limb_0_col0,
@@ -5242,65 +5302,79 @@ fn write_trace_simd(
                     input_limb_13_col13,
                     input_limb_14_col14,
                     input_limb_15_col15,
+                    input_limb_16_col16,
+                    input_limb_17_col17,
+                    input_limb_18_col18,
+                    input_limb_19_col19,
+                    input_limb_20_col20,
+                    input_limb_21_col21,
+                    input_limb_22_col22,
+                    input_limb_23_col23,
+                    input_limb_24_col24,
+                    input_limb_25_col25,
+                    input_limb_26_col26,
+                    input_limb_27_col27,
+                    input_limb_28_col28,
+                    input_limb_29_col29,
                     M31_0,
-                    result_x_limb_0_col184,
-                    result_x_limb_1_col185,
-                    result_x_limb_2_col186,
-                    result_x_limb_3_col187,
-                    result_x_limb_4_col188,
-                    result_x_limb_5_col189,
-                    result_x_limb_6_col190,
-                    result_x_limb_7_col191,
-                    result_x_limb_8_col192,
-                    result_x_limb_9_col193,
-                    result_x_limb_10_col194,
-                    result_x_limb_11_col195,
-                    result_x_limb_12_col196,
-                    result_x_limb_13_col197,
-                    result_x_limb_14_col198,
-                    result_x_limb_15_col199,
-                    result_x_limb_16_col200,
-                    result_x_limb_17_col201,
-                    result_x_limb_18_col202,
-                    result_x_limb_19_col203,
-                    result_x_limb_20_col204,
-                    result_x_limb_21_col205,
-                    result_x_limb_22_col206,
-                    result_x_limb_23_col207,
-                    result_x_limb_24_col208,
-                    result_x_limb_25_col209,
-                    result_x_limb_26_col210,
-                    result_x_limb_27_col211,
-                    result_y_limb_0_col240,
-                    result_y_limb_1_col241,
-                    result_y_limb_2_col242,
-                    result_y_limb_3_col243,
-                    result_y_limb_4_col244,
-                    result_y_limb_5_col245,
-                    result_y_limb_6_col246,
-                    result_y_limb_7_col247,
-                    result_y_limb_8_col248,
-                    result_y_limb_9_col249,
-                    result_y_limb_10_col250,
-                    result_y_limb_11_col251,
-                    result_y_limb_12_col252,
-                    result_y_limb_13_col253,
-                    result_y_limb_14_col254,
-                    result_y_limb_15_col255,
-                    result_y_limb_16_col256,
-                    result_y_limb_17_col257,
-                    result_y_limb_18_col258,
-                    result_y_limb_19_col259,
-                    result_y_limb_20_col260,
-                    result_y_limb_21_col261,
-                    result_y_limb_22_col262,
-                    result_y_limb_23_col263,
-                    result_y_limb_24_col264,
-                    result_y_limb_25_col265,
-                    result_y_limb_26_col266,
-                    result_y_limb_27_col267,
+                    result_x_limb_0_col198,
+                    result_x_limb_1_col199,
+                    result_x_limb_2_col200,
+                    result_x_limb_3_col201,
+                    result_x_limb_4_col202,
+                    result_x_limb_5_col203,
+                    result_x_limb_6_col204,
+                    result_x_limb_7_col205,
+                    result_x_limb_8_col206,
+                    result_x_limb_9_col207,
+                    result_x_limb_10_col208,
+                    result_x_limb_11_col209,
+                    result_x_limb_12_col210,
+                    result_x_limb_13_col211,
+                    result_x_limb_14_col212,
+                    result_x_limb_15_col213,
+                    result_x_limb_16_col214,
+                    result_x_limb_17_col215,
+                    result_x_limb_18_col216,
+                    result_x_limb_19_col217,
+                    result_x_limb_20_col218,
+                    result_x_limb_21_col219,
+                    result_x_limb_22_col220,
+                    result_x_limb_23_col221,
+                    result_x_limb_24_col222,
+                    result_x_limb_25_col223,
+                    result_x_limb_26_col224,
+                    result_x_limb_27_col225,
+                    result_y_limb_0_col254,
+                    result_y_limb_1_col255,
+                    result_y_limb_2_col256,
+                    result_y_limb_3_col257,
+                    result_y_limb_4_col258,
+                    result_y_limb_5_col259,
+                    result_y_limb_6_col260,
+                    result_y_limb_7_col261,
+                    result_y_limb_8_col262,
+                    result_y_limb_9_col263,
+                    result_y_limb_10_col264,
+                    result_y_limb_11_col265,
+                    result_y_limb_12_col266,
+                    result_y_limb_13_col267,
+                    result_y_limb_14_col268,
+                    result_y_limb_15_col269,
+                    result_y_limb_16_col270,
+                    result_y_limb_17_col271,
+                    result_y_limb_18_col272,
+                    result_y_limb_19_col273,
+                    result_y_limb_20_col274,
+                    result_y_limb_21_col275,
+                    result_y_limb_22_col276,
+                    result_y_limb_23_col277,
+                    result_y_limb_24_col278,
+                    result_y_limb_25_col279,
+                    result_y_limb_26_col280,
+                    result_y_limb_27_col281,
                 ];
-                *row[296] = enabler_col.packed_at(row_index);
+                *row[310] = enabler_col.packed_at(row_index);
             },
         );
 
@@ -5309,8 +5383,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    partial_ec_mul_0: Vec<[PackedM31; 72]>,
-    partial_ec_mul_1: Vec<[PackedM31; 72]>,
+    partial_ec_mul_0: Vec<[PackedM31; 86]>,
+    partial_ec_mul_1: Vec<[PackedM31; 86]>,
     pedersen_points_table_0: Vec<[PackedM31; 57]>,
     range_check_20_0: Vec<[PackedM31; 1]>,
     range_check_20_1: Vec<[PackedM31; 1]>,
