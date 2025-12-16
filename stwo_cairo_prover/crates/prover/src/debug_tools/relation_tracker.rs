@@ -1,5 +1,4 @@
 use cairo_air::air::{CairoComponents, PublicData};
-use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::{chain, Itertools};
 use num_traits::{One, Zero};
@@ -125,7 +124,6 @@ fn cairo_relation_entries(
         blake_sigma,
         triple_xor_32,
         verify_bitwise_xor_12,
-        builtins,
         memory_address_to_id,
         memory_id_to_value,
         range_checks,
@@ -134,6 +132,13 @@ fn cairo_relation_entries(
         verify_bitwise_xor_8,
         verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
+        add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
         pedersen_context,
         poseidon_context,
     } = cairo_components;
@@ -234,40 +239,15 @@ fn cairo_relation_entries(
         add_to_relation_option(blake_sigma, trace),
         add_to_relation_option(triple_xor_32, trace),
         add_to_relation_option(verify_bitwise_xor_12, trace),
+        add_to_relation_option(add_mod_builtin, trace),
+        add_to_relation_option(bitwise_builtin, trace),
+        add_to_relation_option(pedersen_builtin, trace),
+        add_to_relation_option(poseidon_builtin, trace),
+        add_to_relation_option(mul_mod_builtin, trace),
+        add_to_relation_option(range_check_96_builtin, trace),
+        add_to_relation_option(range_check_128_builtin, trace),
     )
     .collect_vec();
-
-    // Builtins
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        entries.extend(add_to_relation_entries(add_mod, trace));
-    }
-    if let Some(bitwise) = bitwise_builtin {
-        entries.extend(add_to_relation_entries(bitwise, trace));
-    }
-    if let Some(pederson) = pedersen_builtin {
-        entries.extend(add_to_relation_entries(pederson, trace));
-    }
-    if let Some(poseidon) = poseidon_builtin {
-        entries.extend(add_to_relation_entries(poseidon, trace));
-    }
-    if let Some(mul_mod) = mul_mod_builtin {
-        entries.extend(add_to_relation_entries(mul_mod, trace));
-    }
-    if let Some(rc_96) = range_check_96_builtin {
-        entries.extend(add_to_relation_entries(rc_96, trace));
-    }
-    if let Some(rc_128) = range_check_128_builtin {
-        entries.extend(add_to_relation_entries(rc_128, trace));
-    }
 
     if let Some(cairo_air::poseidon::air::Components {
         poseidon_aggregator,

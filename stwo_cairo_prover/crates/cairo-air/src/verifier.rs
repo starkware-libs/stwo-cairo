@@ -19,7 +19,6 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::air::{lookup_sum, CairoClaim, CairoComponents};
-use crate::builtins_air::BuiltinsClaim;
 use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
 use crate::public_data::{
@@ -50,7 +49,7 @@ fn verify_claim(claim: &CairoClaim) {
             },
     } = &claim.public_data;
 
-    verify_builtins(&claim.builtins, public_segments);
+    verify_builtins(claim, public_segments);
 
     verify_program(program, public_segments);
 
@@ -112,7 +111,7 @@ struct BuiltinClaim {
     log_size: u32,
 }
 
-fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmentRanges) {
+fn verify_builtins(claim: &CairoClaim, segment_ranges: &PublicSegmentRanges) {
     let PublicSegmentRanges {
         output,
         pedersen,
@@ -155,7 +154,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         ($name:ident) => {
             paste! {
                 check_builtin(
-                    builtins_claim.[<$name _builtin>]
+                    claim.[<$name _builtin>]
                         .map(|claim| BuiltinClaim {
                             segment_start: claim.[<$name _builtin_segment_start>],
                             log_size: claim.log_size,
@@ -170,23 +169,19 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
 
     // All other supported builtins.
     check_builtin(
-        builtins_claim
-            .range_check_128_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+        claim.range_check_128_builtin.map(|claim| BuiltinClaim {
+            segment_start: claim.range_check_builtin_segment_start,
+            log_size: claim.log_size,
+        }),
         range_check_128,
         "range_check_128",
         RANGE_CHECK_MEMORY_CELLS,
     );
     check_builtin(
-        builtins_claim
-            .range_check_96_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check96_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+        claim.range_check_96_builtin.map(|claim| BuiltinClaim {
+            segment_start: claim.range_check96_builtin_segment_start,
+            log_size: claim.log_size,
+        }),
         range_check_96,
         "range_check_96",
         RANGE_CHECK_MEMORY_CELLS,

@@ -3,7 +3,6 @@
 use serde::{Deserialize, Serialize};
 
 pub mod air;
-pub mod builtins_air;
 pub mod components;
 pub mod pedersen;
 pub mod poseidon;
