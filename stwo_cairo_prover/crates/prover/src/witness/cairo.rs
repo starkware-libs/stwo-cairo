@@ -7,7 +7,6 @@ use stwo_cairo_adapter::ProverInput;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
 use tracing::{span, Level};
 
-use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
 use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
 use super::public_data::create_public_data;
 use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
@@ -19,12 +18,12 @@ use crate::witness::components::poseidon::{
 };
 use crate::witness::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
-    generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs,
-    jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, memory_address_to_id,
-    memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode, ret_opcode,
-    verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_8_b,
-    verify_bitwise_xor_9, verify_instruction,
+    assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
+    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
+    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm,
+    memory_address_to_id, memory_id_to_big, mul_opcode, mul_opcode_small, qm_31_add_mul_opcode,
+    ret_opcode, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7,
+    verify_bitwise_xor_8, verify_bitwise_xor_8_b, verify_bitwise_xor_9, verify_instruction,
 };
 use crate::witness::utils::TreeBuilder;
 
@@ -57,7 +56,11 @@ pub struct CairoClaimGenerator {
 
     // Internal components.
     verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
-    blake_context_trace_generator: BlakeContextClaimGenerator,
+    blake_round_trace_generator: blake_round::ClaimGenerator,
+    blake_g_trace_generator: blake_g::ClaimGenerator,
+    blake_sigma_trace_generator: blake_round_sigma::ClaimGenerator,
+    triple_xor_32_trace_generator: triple_xor_32::ClaimGenerator,
+    verify_bitwise_xor_12_trace_generator: verify_bitwise_xor_12::ClaimGenerator,
     builtins: BuiltinsClaimGenerator,
     pedersen_context_trace_generator: PedersenContextClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
@@ -294,7 +297,11 @@ impl CairoClaimGenerator {
         let public_data =
             create_public_data(&memory, initial_state, final_state, public_segment_context);
 
-        let blake_context_trace_generator = BlakeContextClaimGenerator::new(memory);
+        let blake_round_trace_generator = blake_round::ClaimGenerator::new(memory);
+        let blake_g_trace_generator = blake_g::ClaimGenerator::new();
+        let blake_sigma_trace_generator = blake_round_sigma::ClaimGenerator::new();
+        let triple_xor_32_trace_generator = triple_xor_32::ClaimGenerator::new();
+        let verify_bitwise_xor_12_trace_generator = verify_bitwise_xor_12::ClaimGenerator::new();
 
         Self {
             public_data,
@@ -319,7 +326,11 @@ impl CairoClaimGenerator {
             qm31,
             ret,
             verify_instruction_trace_generator,
-            blake_context_trace_generator,
+            blake_round_trace_generator,
+            blake_g_trace_generator,
+            blake_sigma_trace_generator,
+            triple_xor_32_trace_generator,
+            verify_bitwise_xor_12_trace_generator,
             builtins,
             pedersen_context_trace_generator,
             poseidon_context_trace_generator,
@@ -417,8 +428,8 @@ impl CairoClaimGenerator {
                     &self.verify_instruction_trace_generator,
                     &self.range_checks_trace_generator.rc_7_2_5_trace_generator,
                     &self.verify_bitwise_xor_8_trace_generator,
-                    &mut self.blake_context_trace_generator.blake_round,
-                    &mut self.blake_context_trace_generator.triple_xor_32,
+                    &mut self.blake_round_trace_generator,
+                    &mut self.triple_xor_32_trace_generator,
                 )
             })
             .unzip();
@@ -603,18 +614,69 @@ impl CairoClaimGenerator {
                 &self.memory_address_to_id_trace_generator,
                 &self.memory_id_to_value_trace_generator,
             );
-        let (blake_context_claim, blake_context_interaction_gen) =
-            self.blake_context_trace_generator.write_trace(
-                tree_builder,
-                &self.memory_address_to_id_trace_generator,
-                &self.memory_id_to_value_trace_generator,
-                &self.range_checks_trace_generator,
-                &self.verify_bitwise_xor_4_trace_generator,
-                &self.verify_bitwise_xor_7_trace_generator,
-                &self.verify_bitwise_xor_8_trace_generator,
-                &self.verify_bitwise_xor_8_b_trace_generator,
-                &self.verify_bitwise_xor_9_trace_generator,
-            );
+        let (
+            blake_round_claim,
+            blake_g_claim,
+            blake_sigma_claim,
+            triple_xor_32_claim,
+            verify_bitwise_xor_12_claim,
+            blake_round_interaction_gen,
+            blake_g_interaction_gen,
+            blake_sigma_interaction_gen,
+            triple_xor_32_interaction_gen,
+            verify_bitwise_xor_12_interaction_gen,
+        ) = if self.blake_round_trace_generator.is_empty() {
+            (None, None, None, None, None, None, None, None, None, None)
+        } else {
+            let (blake_round_claim, blake_round_interaction_gen) =
+                self.blake_round_trace_generator.write_trace(
+                    tree_builder,
+                    &mut self.blake_g_trace_generator,
+                    &self.blake_sigma_trace_generator,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                    &self.range_checks_trace_generator.rc_7_2_5_trace_generator,
+                );
+
+            let (blake_g_claim, blake_g_interaction_gen) =
+                self.blake_g_trace_generator.write_trace(
+                    tree_builder,
+                    &self.verify_bitwise_xor_8_trace_generator,
+                    &self.verify_bitwise_xor_8_b_trace_generator,
+                    &self.verify_bitwise_xor_12_trace_generator,
+                    &self.verify_bitwise_xor_4_trace_generator,
+                    &self.verify_bitwise_xor_7_trace_generator,
+                    &self.verify_bitwise_xor_9_trace_generator,
+                );
+
+            let (blake_sigma_claim, blake_sigma_interaction_gen) =
+                self.blake_sigma_trace_generator.write_trace(tree_builder);
+
+            let (triple_xor_32_claim, triple_xor_32_interaction_gen) =
+                self.triple_xor_32_trace_generator.write_trace(
+                    tree_builder,
+                    &self.verify_bitwise_xor_8_trace_generator,
+                    &self.verify_bitwise_xor_8_b_trace_generator,
+                );
+
+            let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) = self
+                .verify_bitwise_xor_12_trace_generator
+                .write_trace(tree_builder);
+
+            (
+                Some(blake_round_claim),
+                Some(blake_g_claim),
+                Some(blake_sigma_claim),
+                Some(triple_xor_32_claim),
+                Some(verify_bitwise_xor_12_claim),
+                Some(blake_round_interaction_gen),
+                Some(blake_g_interaction_gen),
+                Some(blake_sigma_interaction_gen),
+                Some(triple_xor_32_interaction_gen),
+                Some(verify_bitwise_xor_12_interaction_gen),
+            )
+        };
+
         let (builtins_claim, builtins_interaction_gen) = self.builtins.write_trace(
             tree_builder,
             &self.memory_address_to_id_trace_generator,
@@ -700,7 +762,11 @@ impl CairoClaimGenerator {
                 qm31,
                 ret,
                 verify_instruction: verify_instruction_claim,
-                blake_context: blake_context_claim,
+                blake_round: blake_round_claim,
+                blake_g: blake_g_claim,
+                blake_sigma: blake_sigma_claim,
+                triple_xor_32: triple_xor_32_claim,
+                verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
                 builtins: builtins_claim,
                 pedersen_context: pedersen_context_claim,
                 poseidon_context: poseidon_context_claim,
@@ -735,7 +801,11 @@ impl CairoClaimGenerator {
                 qm31: qm31_interaction_gens,
                 ret_interaction_gens,
                 verify_instruction_interaction_gen,
-                blake_context_interaction_gen,
+                blake_round_interaction_gen,
+                blake_g_interaction_gen,
+                blake_sigma_interaction_gen,
+                triple_xor_32_interaction_gen,
+                verify_bitwise_xor_12_interaction_gen,
                 builtins_interaction_gen,
                 pedersen_context_interaction_gen,
                 poseidon_context_interaction_gen,
@@ -774,7 +844,11 @@ pub struct CairoInteractionClaimGenerator {
     qm31: Option<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     ret_interaction_gens: Option<ret_opcode::InteractionClaimGenerator>,
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
-    blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
+    blake_round_interaction_gen: Option<blake_round::InteractionClaimGenerator>,
+    blake_g_interaction_gen: Option<blake_g::InteractionClaimGenerator>,
+    blake_sigma_interaction_gen: Option<blake_round_sigma::InteractionClaimGenerator>,
+    triple_xor_32_interaction_gen: Option<triple_xor_32::InteractionClaimGenerator>,
+    verify_bitwise_xor_12_interaction_gen: Option<verify_bitwise_xor_12::InteractionClaimGenerator>,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
@@ -1016,9 +1090,47 @@ impl CairoInteractionClaimGenerator {
                 &interaction_elements.memory_id_to_value,
                 &interaction_elements.verify_instruction,
             );
-        let blake_context_interaction_claim = self
-            .blake_context_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+        let blake_round_interaction_claim = self.blake_round_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.blake_g,
+                &interaction_elements.blake_round,
+                &interaction_elements.blake_sigma,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_7_2_5,
+            )
+        });
+        let blake_g_interaction_claim = self.blake_g_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_bitwise_xor_8,
+                &interaction_elements.verify_bitwise_xor_8_b,
+                &interaction_elements.verify_bitwise_xor_12,
+                &interaction_elements.verify_bitwise_xor_4,
+                &interaction_elements.verify_bitwise_xor_7,
+                &interaction_elements.verify_bitwise_xor_9,
+                &interaction_elements.blake_g,
+            )
+        });
+        let blake_sigma_interaction_claim = self.blake_sigma_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(tree_builder, &interaction_elements.blake_sigma)
+        });
+        let triple_xor_32_interaction_claim = self.triple_xor_32_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.verify_bitwise_xor_8,
+                &interaction_elements.verify_bitwise_xor_8_b,
+                &interaction_elements.triple_xor_32,
+            )
+        });
+        let verify_bitwise_xor_12_interaction_claim =
+            self.verify_bitwise_xor_12_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.verify_bitwise_xor_12,
+                )
+            });
         let builtins_interaction_claims = self
             .builtins_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
@@ -1087,7 +1199,11 @@ impl CairoInteractionClaimGenerator {
             qm31,
             ret,
             verify_instruction: verify_instruction_interaction_claim,
-            blake_context: blake_context_interaction_claim,
+            blake_round: blake_round_interaction_claim,
+            blake_g: blake_g_interaction_claim,
+            blake_sigma: blake_sigma_interaction_claim,
+            triple_xor_32: triple_xor_32_interaction_claim,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
             builtins: builtins_interaction_claims,
             pedersen_context: pedersen_context_interaction_claim,
             poseidon_context: poseidon_context_interaction_claim,
