@@ -10,8 +10,10 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use super::builtins_air::{BuiltinComponents, BuiltinsClaim, BuiltinsInteractionClaim};
-use super::components::indented_component_display;
+use super::components::{
+    add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
+    pedersen_builtin, poseidon_builtin, range_check_builtin_bits_128, range_check_builtin_bits_96,
+};
 use super::pedersen::air::{
     PedersenContextClaim, PedersenContextComponents, PedersenContextInteractionClaim,
 };
@@ -65,7 +67,13 @@ pub struct CairoClaim {
     pub blake_sigma: Option<blake_round_sigma::Claim>,
     pub triple_xor_32: Option<triple_xor_32::Claim>,
     pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::Claim>,
-    pub builtins: BuiltinsClaim,
+    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
+    pub bitwise_builtin: Option<bitwise_builtin::Claim>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
+    pub pedersen_builtin: Option<pedersen_builtin::Claim>,
+    pub poseidon_builtin: Option<poseidon_builtin::Claim>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
     pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: memory_address_to_id::Claim,
@@ -109,7 +117,13 @@ impl CairoClaim {
             blake_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
@@ -200,7 +214,27 @@ impl CairoClaim {
         channel.mix_u64(verify_bitwise_xor_12.is_some() as u64);
         verify_bitwise_xor_12.inspect(|c| c.mix_into(channel));
 
-        builtins.mix_into(channel);
+        channel.mix_u64(add_mod_builtin.is_some() as u64);
+        add_mod_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(bitwise_builtin.is_some() as u64);
+        bitwise_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(mul_mod_builtin.is_some() as u64);
+        mul_mod_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(pedersen_builtin.is_some() as u64);
+        pedersen_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(poseidon_builtin.is_some() as u64);
+        poseidon_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(range_check_96_builtin.is_some() as u64);
+        range_check_96_builtin.inspect(|c| c.mix_into(channel));
+
+        channel.mix_u64(range_check_128_builtin.is_some() as u64);
+        range_check_128_builtin.inspect(|c| c.mix_into(channel));
+
         pedersen_context.mix_into(channel);
         poseidon_context.mix_into(channel);
         memory_address_to_id.mix_into(channel);
@@ -257,7 +291,20 @@ impl CairoClaim {
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
         self.verify_bitwise_xor_12
             .inspect(|c| log_sizes_list.push(c.log_sizes()));
-        log_sizes_list.push(self.builtins.log_sizes());
+        self.add_mod_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.bitwise_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.mul_mod_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.pedersen_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.poseidon_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_96_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
+        self.range_check_128_builtin
+            .inspect(|c| log_sizes_list.push(c.log_sizes()));
         log_sizes_list.push(self.pedersen_context.log_sizes());
         log_sizes_list.push(self.poseidon_context.log_sizes());
         log_sizes_list.push(self.memory_address_to_id.log_sizes());
@@ -300,7 +347,13 @@ impl CairoClaim {
             blake_sigma: _,
             triple_xor_32,
             verify_bitwise_xor_12: _,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id: _,
@@ -446,7 +499,55 @@ impl CairoClaim {
             accumulate_relation_uses(relation_uses, ret_opcode::RELATION_USES_PER_ROW, c.log_size)
         });
 
-        builtins.accumulate_relation_uses(relation_uses);
+        add_mod_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                add_mod_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        bitwise_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                bitwise_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        mul_mod_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                mul_mod_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        pedersen_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                pedersen_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        poseidon_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                poseidon_builtin::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        range_check_96_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                range_check_builtin_bits_96::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
+        range_check_128_builtin.inspect(|c| {
+            accumulate_relation_uses(
+                relation_uses,
+                range_check_builtin_bits_128::RELATION_USES_PER_ROW,
+                c.log_size,
+            )
+        });
 
         blake_round.inspect(|c| {
             accumulate_relation_uses(
@@ -519,7 +620,13 @@ pub struct CairoInteractionClaim {
     pub blake_sigma: Option<blake_round_sigma::InteractionClaim>,
     pub triple_xor_32: Option<triple_xor_32::InteractionClaim>,
     pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::InteractionClaim>,
-    pub builtins: BuiltinsInteractionClaim,
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
+    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
+    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
+    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
     pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
@@ -561,7 +668,14 @@ impl CairoInteractionClaim {
         self.verify_bitwise_xor_12
             .as_ref()
             .inspect(|c| c.mix_into(channel));
-        self.builtins.mix_into(channel);
+        self.add_mod_builtin.inspect(|c| c.mix_into(channel));
+        self.bitwise_builtin.inspect(|c| c.mix_into(channel));
+        self.mul_mod_builtin.inspect(|c| c.mix_into(channel));
+        self.pedersen_builtin.inspect(|c| c.mix_into(channel));
+        self.poseidon_builtin.inspect(|c| c.mix_into(channel));
+        self.range_check_96_builtin.inspect(|c| c.mix_into(channel));
+        self.range_check_128_builtin
+            .inspect(|c| c.mix_into(channel));
         self.pedersen_context.mix_into(channel);
         self.poseidon_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
@@ -759,7 +873,55 @@ pub fn lookup_sum(
             assert!(claim.verify_bitwise_xor_12.is_some(), "verify_bitwise_xor_12 interaction claim is present but verify_bitwise_xor_12 claim isn't");
             sum += ic.claimed_sum;
         });
-    sum += interaction_claim.builtins.sum();
+    interaction_claim.add_mod_builtin.inspect(|ic| {
+        assert!(
+            claim.add_mod_builtin.is_some(),
+            "add_mod_builtin interaction claim is present but add_mod_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.bitwise_builtin.inspect(|ic| {
+        assert!(
+            claim.bitwise_builtin.is_some(),
+            "bitwise_builtin interaction claim is present but bitwise_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.mul_mod_builtin.inspect(|ic| {
+        assert!(
+            claim.mul_mod_builtin.is_some(),
+            "mul_mod_builtin interaction claim is present but mul_mod_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.pedersen_builtin.inspect(|ic| {
+        assert!(
+            claim.pedersen_builtin.is_some(),
+            "pedersen_builtin interaction claim is present but pedersen_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.poseidon_builtin.inspect(|ic| {
+        assert!(
+            claim.poseidon_builtin.is_some(),
+            "poseidon_builtin interaction claim is present but poseidon_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_96_builtin.inspect(|ic| {
+        assert!(
+            claim.range_check_96_builtin.is_some(),
+            "range_check_96_builtin interaction claim is present but range_check_96_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
+    interaction_claim.range_check_128_builtin.inspect(|ic| {
+        assert!(
+            claim.range_check_128_builtin.is_some(),
+            "range_check_128_builtin interaction claim is present but range_check_128_builtin claim isn't"
+        );
+        sum += ic.claimed_sum;
+    });
     sum += interaction_claim.pedersen_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += interaction_claim.memory_address_to_id.claimed_sum;
@@ -801,7 +963,13 @@ pub struct CairoComponents {
     pub blake_sigma: Option<blake_round_sigma::Component>,
     pub triple_xor_32: Option<triple_xor_32::Component>,
     pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::Component>,
-    pub builtins: BuiltinComponents,
+    pub add_mod_builtin: Option<add_mod_builtin::Component>,
+    pub bitwise_builtin: Option<bitwise_builtin::Component>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::Component>,
+    pub pedersen_builtin: Option<pedersen_builtin::Component>,
+    pub poseidon_builtin: Option<poseidon_builtin::Component>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
     pub pedersen_context: PedersenContextComponents,
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
@@ -1442,12 +1610,140 @@ impl CairoComponents {
                 interaction_claim.claimed_sum,
             )
         });
-        let builtin_components = BuiltinComponents::new(
-            tree_span_provider,
-            &cairo_claim.builtins,
-            interaction_elements,
-            &interaction_claim.builtins,
-        );
+        let add_mod_builtin_component = cairo_claim.add_mod_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.add_mod_builtin.unwrap();
+            add_mod_builtin::Component::new(
+                tree_span_provider,
+                add_mod_builtin::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let bitwise_builtin_component = cairo_claim.bitwise_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.bitwise_builtin.unwrap();
+            bitwise_builtin::Component::new(
+                tree_span_provider,
+                bitwise_builtin::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    verify_bitwise_xor_9_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_9
+                        .clone(),
+                    verify_bitwise_xor_8_lookup_elements: interaction_elements
+                        .verify_bitwise_xor_8
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let mul_mod_builtin_component = cairo_claim.mul_mod_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.mul_mod_builtin.unwrap();
+            mul_mod_builtin::Component::new(
+                tree_span_provider,
+                mul_mod_builtin::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    range_check_12_lookup_elements: interaction_elements.range_checks.rc_12.clone(),
+                    range_check_18_lookup_elements: interaction_elements.range_checks.rc_18.clone(),
+                    range_check_3_6_6_3_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_3_6_6_3
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let pedersen_builtin_component = cairo_claim.pedersen_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.pedersen_builtin.unwrap();
+            pedersen_builtin::Component::new(
+                tree_span_provider,
+                pedersen_builtin::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+                    pedersen_points_table_lookup_elements: interaction_elements
+                        .pedersen_points_table
+                        .clone(),
+                    range_check_5_4_lookup_elements: interaction_elements
+                        .range_checks
+                        .rc_5_4
+                        .clone(),
+                    range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let poseidon_builtin_component = cairo_claim.poseidon_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.poseidon_builtin.unwrap();
+            poseidon_builtin::Component::new(
+                tree_span_provider,
+                poseidon_builtin::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    poseidon_aggregator_lookup_elements: interaction_elements
+                        .poseidon_aggregator
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let range_check_96_builtin_component = cairo_claim.range_check_96_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.range_check_96_builtin.unwrap();
+            range_check_builtin_bits_96::Component::new(
+                tree_span_provider,
+                range_check_builtin_bits_96::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                    range_check_6_lookup_elements: interaction_elements.range_checks.rc_6.clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
+        let range_check_128_builtin_component = cairo_claim.range_check_128_builtin.map(|claim| {
+            let interaction_claim = interaction_claim.range_check_128_builtin.unwrap();
+            range_check_builtin_bits_128::Component::new(
+                tree_span_provider,
+                range_check_builtin_bits_128::Eval {
+                    claim,
+                    memory_address_to_id_lookup_elements: interaction_elements
+                        .memory_address_to_id
+                        .clone(),
+                    memory_id_to_big_lookup_elements: interaction_elements
+                        .memory_id_to_value
+                        .clone(),
+                },
+                interaction_claim.claimed_sum,
+            )
+        });
         let pedersen_context = PedersenContextComponents::new(
             tree_span_provider,
             &cairo_claim.pedersen_context,
@@ -1580,7 +1876,13 @@ impl CairoComponents {
             blake_sigma: blake_sigma_component,
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
-            builtins: builtin_components,
+            add_mod_builtin: add_mod_builtin_component,
+            bitwise_builtin: bitwise_builtin_component,
+            mul_mod_builtin: mul_mod_builtin_component,
+            pedersen_builtin: pedersen_builtin_component,
+            poseidon_builtin: poseidon_builtin_component,
+            range_check_96_builtin: range_check_96_builtin_component,
+            range_check_128_builtin: range_check_128_builtin_component,
             pedersen_context,
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
@@ -1676,7 +1978,27 @@ impl CairoComponents {
         self.verify_bitwise_xor_12
             .as_ref()
             .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
-        provers.extend(self.builtins.provers());
+        self.add_mod_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.bitwise_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.mul_mod_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.pedersen_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.poseidon_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.range_check_96_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
+        self.range_check_128_builtin
+            .as_ref()
+            .inspect(|c| provers.push(*c as &dyn ComponentProver<SimdBackend>));
         provers.extend(self.pedersen_context.provers());
         provers.extend(self.poseidon_context.provers());
         provers.push(&self.memory_address_to_id as &dyn ComponentProver<SimdBackend>);
@@ -1913,7 +2235,62 @@ impl std::fmt::Display for CairoComponents {
                 .map(indented_component_display)
                 .unwrap_or_default()
         )?;
-        writeln!(f, "Builtins: {}", self.builtins)?;
+        writeln!(
+            f,
+            "AddModBuiltin: {}",
+            self.add_mod_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "BitwiseBuiltin: {}",
+            self.bitwise_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "MulModBuiltin: {}",
+            self.mul_mod_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "PedersenBuiltin: {}",
+            self.pedersen_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "PoseidonBuiltin: {}",
+            self.poseidon_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "RangeCheck96Builtin: {}",
+            self.range_check_96_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
+        writeln!(
+            f,
+            "RangeCheck128Builtin: {}",
+            self.range_check_128_builtin
+                .as_ref()
+                .map(indented_component_display)
+                .unwrap_or_default()
+        )?;
         writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
         writeln!(
