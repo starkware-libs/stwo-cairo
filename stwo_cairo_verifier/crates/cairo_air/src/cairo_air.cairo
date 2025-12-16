@@ -1,9 +1,11 @@
 use components::add_ap_opcode::InteractionClaimImpl as AddApOpcodeInteractionClaimImpl;
+use components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractionClaimImpl;
 use components::add_opcode::InteractionClaimImpl as AddOpcodeInteractionClaimImpl;
 use components::add_opcode_small::InteractionClaimImpl as AddOpcodeSmallInteractionClaimImpl;
 use components::assert_eq_opcode::InteractionClaimImpl as AssertEqOpcodeInteractionClaimImpl;
 use components::assert_eq_opcode_double_deref::InteractionClaimImpl as AssertEqOpcodeDoubleDerefInteractionClaimImpl;
 use components::assert_eq_opcode_imm::InteractionClaimImpl as AssertEqOpcodeImmInteractionClaimImpl;
+use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
 use components::blake_compress_opcode::InteractionClaimImpl as BlakeCompressOpcodeInteractionClaimImpl;
 use components::blake_g::InteractionClaimImpl as BlakeGInteractionClaimImpl;
 use components::blake_round::InteractionClaimImpl as BlakeRoundInteractionClaimImpl;
@@ -21,9 +23,14 @@ use components::memory_address_to_id::InteractionClaimImpl as MemoryAddressToIdI
 use components::memory_id_to_big::{
     InteractionClaimImpl as MemoryIdToBigInteractionClaimImpl, LARGE_MEMORY_VALUE_ID_BASE,
 };
+use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
 use components::mul_opcode::InteractionClaimImpl as MulOpcodeInteractionClaimImpl;
 use components::mul_opcode_small::InteractionClaimImpl as MulOpcodeSmallInteractionClaimImpl;
+use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
+use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
 use components::qm_31_add_mul_opcode::InteractionClaimImpl as Qm31AddMulOpcodeInteractionClaimImpl;
+use components::range_check_builtin_bits_128::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
+use components::range_check_builtin_bits_96::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
 use components::ret_opcode::InteractionClaimImpl as RetOpcodeInteractionClaimImpl;
 use components::triple_xor_32::InteractionClaimImpl as TripleXor32InteractionClaimImpl;
 use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor12InteractionClaimImpl;
@@ -35,16 +42,17 @@ use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9I
 use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
-use stwo_cairo_air::builtins::*;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use stwo_cairo_air::claim::ClaimTrait;
 use stwo_cairo_air::components::{
-    add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
-    assert_eq_opcode_imm, blake_compress_opcode, blake_g, blake_round, blake_round_sigma,
-    call_opcode_abs, call_opcode_rel_imm, generic_opcode, jnz_opcode_non_taken, jnz_opcode_taken,
-    jump_opcode_abs, jump_opcode_double_deref, jump_opcode_rel, jump_opcode_rel_imm, mul_opcode,
-    mul_opcode_small, qm_31_add_mul_opcode, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
+    add_ap_opcode, add_mod_builtin, add_opcode, add_opcode_small, assert_eq_opcode,
+    assert_eq_opcode_double_deref, assert_eq_opcode_imm, bitwise_builtin, blake_compress_opcode,
+    blake_g, blake_round, blake_round_sigma, call_opcode_abs, call_opcode_rel_imm, generic_opcode,
+    jnz_opcode_non_taken, jnz_opcode_taken, jump_opcode_abs, jump_opcode_double_deref,
+    jump_opcode_rel, jump_opcode_rel_imm, mul_mod_builtin, mul_opcode, mul_opcode_small,
+    pedersen_builtin, poseidon_builtin, qm_31_add_mul_opcode, range_check_builtin_bits_128,
+    range_check_builtin_bits_96, ret_opcode, triple_xor_32, verify_bitwise_xor_12,
 };
 use crate::P_U32;
 
@@ -60,9 +68,6 @@ pub mod poseidon_context_imports {
 }
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use poseidon_context_imports::*;
-use stwo_cairo_air::builtins::{
-    BuiltinsClaim, BuiltinsInteractionClaim, BuiltinsInteractionClaimImpl,
-};
 use stwo_cairo_air::pedersen::{
     PedersenContextClaim, PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
 };
@@ -161,7 +166,13 @@ pub struct CairoClaim {
     pub blake_round_sigma: Option<components::blake_round_sigma::Claim>,
     pub triple_xor_32: Option<components::triple_xor_32::Claim>,
     pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Claim>,
-    pub builtins: BuiltinsClaim,
+    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
+    pub bitwise_builtin: Option<bitwise_builtin::Claim>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
+    pub pedersen_builtin: Option<pedersen_builtin::Claim>,
+    pub poseidon_builtin: Option<poseidon_builtin::Claim>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::Claim>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::Claim>,
     pub pedersen_context: PedersenContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: components::memory_address_to_id::Claim,
@@ -257,7 +268,27 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             log_sizes_list.append(claim.log_sizes());
         }
 
-        log_sizes_list.append(self.builtins.log_sizes());
+        if let Some(claim) = self.add_mod_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.bitwise_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.mul_mod_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.pedersen_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.poseidon_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_96_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
+        if let Some(claim) = self.range_check_128_builtin {
+            log_sizes_list.append(claim.log_sizes());
+        }
         log_sizes_list.append(self.pedersen_context.log_sizes());
         log_sizes_list.append(self.poseidon_context.log_sizes());
         log_sizes_list.append(self.memory_address_to_id.log_sizes());
@@ -316,7 +347,13 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             blake_round_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
@@ -502,7 +539,48 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         } else {
             channel.mix_u64(0);
         }
-        builtins.mix_into(ref channel);
+        if let Some(claim) = add_mod_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = bitwise_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = mul_mod_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = pedersen_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = poseidon_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = range_check_96_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
+        if let Some(claim) = range_check_128_builtin {
+            channel.mix_u64(1);
+            claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
+        }
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
@@ -544,7 +622,13 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             blake_round_sigma: _,
             triple_xor_32,
             verify_bitwise_xor_12: _,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id: _,
@@ -630,7 +714,27 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         if let Some(claim) = triple_xor_32 {
             claim.accumulate_relation_uses(ref relation_uses);
         }
-        builtins.accumulate_relation_uses(ref relation_uses);
+        if let Some(claim) = add_mod_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = bitwise_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = mul_mod_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = pedersen_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = poseidon_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = range_check_96_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = range_check_128_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
         pedersen_context.accumulate_relation_uses(ref relation_uses);
         poseidon_context.accumulate_relation_uses(ref relation_uses);
         verify_instruction.accumulate_relation_uses(ref relation_uses);
@@ -667,7 +771,13 @@ pub struct CairoInteractionClaim {
     pub blake_round_sigma: Option<components::blake_round_sigma::InteractionClaim>,
     pub triple_xor_32: Option<components::triple_xor_32::InteractionClaim>,
     pub verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::InteractionClaim>,
-    pub builtins: BuiltinsInteractionClaim,
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
+    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
+    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
+    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
+    pub range_check_96_builtin: Option<range_check_builtin_bits_96::InteractionClaim>,
+    pub range_check_128_builtin: Option<range_check_builtin_bits_128::InteractionClaim>,
     pub pedersen_context: PedersenContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
@@ -710,7 +820,13 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             blake_round_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
@@ -799,7 +915,27 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         if let Some(claim) = verify_bitwise_xor_12 {
             claim.mix_into(ref channel);
         }
-        builtins.mix_into(ref channel);
+        if let Some(claim) = add_mod_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = bitwise_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = mul_mod_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = pedersen_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = poseidon_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = range_check_96_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = range_check_128_builtin {
+            claim.mix_into(ref channel);
+        }
         pedersen_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
@@ -851,7 +987,13 @@ pub fn lookup_sum(
         blake_round_sigma,
         triple_xor_32,
         verify_bitwise_xor_12,
-        builtins,
+        add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
         pedersen_context,
         poseidon_context,
         memory_address_to_id,
@@ -1014,7 +1156,55 @@ pub fn lookup_sum(
         );
         sum += *interaction_claim.claimed_sum;
     }
-    sum += builtins.sum();
+    if let Some(interaction_claim) = add_mod_builtin {
+        assert!(
+            claim.add_mod_builtin.is_some(),
+            "add_mod_builtin interaction claim is present but add_mod_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = bitwise_builtin {
+        assert!(
+            claim.bitwise_builtin.is_some(),
+            "bitwise_builtin interaction claim is present but bitwise_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = mul_mod_builtin {
+        assert!(
+            claim.mul_mod_builtin.is_some(),
+            "mul_mod_builtin interaction claim is present but mul_mod_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = pedersen_builtin {
+        assert!(
+            claim.pedersen_builtin.is_some(),
+            "pedersen_builtin interaction claim is present but pedersen_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = poseidon_builtin {
+        assert!(
+            claim.poseidon_builtin.is_some(),
+            "poseidon_builtin interaction claim is present but poseidon_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = range_check_96_builtin {
+        assert!(
+            claim.range_check_96_builtin.is_some(),
+            "range_check_96_builtin interaction claim is present but range_check_96_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
+    if let Some(interaction_claim) = range_check_128_builtin {
+        assert!(
+            claim.range_check_128_builtin.is_some(),
+            "range_check_128_builtin interaction claim is present but range_check_128_builtin claim isn't",
+        );
+        sum += *interaction_claim.claimed_sum;
+    }
     sum += pedersen_context.sum();
     sum += poseidon_context.sum();
     sum += *memory_address_to_id.claimed_sum;
@@ -1057,7 +1247,13 @@ pub struct CairoAir {
     blake_round_sigma: Option<components::blake_round_sigma::Component>,
     triple_xor_32: Option<components::triple_xor_32::Component>,
     verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
-    builtins: BuiltinComponents,
+    add_mod_builtin: Option<add_mod_builtin::Component>,
+    bitwise_builtin: Option<bitwise_builtin::Component>,
+    mul_mod_builtin: Option<mul_mod_builtin::Component>,
+    pedersen_builtin: Option<pedersen_builtin::Component>,
+    poseidon_builtin: Option<poseidon_builtin::Component>,
+    range_check_96_builtin: Option<range_check_builtin_bits_96::Component>,
+    range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
     pedersen_context: PedersenContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
@@ -1403,9 +1599,76 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
-        );
+        let add_mod_builtin_component = cairo_claim
+            .add_mod_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.add_mod_builtin.unwrap();
+                    add_mod_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let bitwise_builtin_component = cairo_claim
+            .bitwise_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.bitwise_builtin.unwrap();
+                    bitwise_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let mul_mod_builtin_component = cairo_claim
+            .mul_mod_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.mul_mod_builtin.unwrap();
+                    mul_mod_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let pedersen_builtin_component = cairo_claim
+            .pedersen_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.pedersen_builtin.unwrap();
+                    pedersen_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let poseidon_builtin_component = cairo_claim
+            .poseidon_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_builtin.unwrap();
+                    poseidon_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let range_check_96_builtin_component = cairo_claim
+            .range_check_96_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_96_builtin.unwrap();
+                    range_check_builtin_bits_96::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let range_check_128_builtin_component = cairo_claim
+            .range_check_128_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_128_builtin.unwrap();
+                    range_check_builtin_bits_128::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let pedersen_context_components = PedersenContextComponentsImpl::new(
             cairo_claim.pedersen_context, interaction_elements, interaction_claim.pedersen_context,
@@ -1526,7 +1789,13 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             blake_round_sigma: blake_round_sigma_component,
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
-            builtins: builtins_components,
+            add_mod_builtin: add_mod_builtin_component,
+            bitwise_builtin: bitwise_builtin_component,
+            mul_mod_builtin: mul_mod_builtin_component,
+            pedersen_builtin: pedersen_builtin_component,
+            poseidon_builtin: poseidon_builtin_component,
+            range_check_96_builtin: range_check_96_builtin_component,
+            range_check_128_builtin: range_check_128_builtin_component,
             pedersen_context: pedersen_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
@@ -1597,7 +1866,13 @@ pub impl CairoAirImpl of Air<CairoAir> {
             blake_round_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            add_mod_builtin,
+            bitwise_builtin,
+            mul_mod_builtin,
+            pedersen_builtin,
+            poseidon_builtin,
+            range_check_96_builtin,
+            range_check_128_builtin,
             pedersen_context,
             poseidon_context,
             memory_address_to_id,
@@ -1895,15 +2170,83 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        builtins
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = add_mod_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = bitwise_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = mul_mod_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = pedersen_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_96_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_128_builtin {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         pedersen_context
             .evaluate_constraints_at_point(
                 ref sum,
@@ -2039,7 +2382,8 @@ pub struct CairoAir {
     blake_round_sigma: Option<components::blake_round_sigma::Component>,
     triple_xor_32: Option<components::triple_xor_32::Component>,
     verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
-    builtins: BuiltinComponents,
+    bitwise_builtin: Option<bitwise_builtin::Component>,
+    range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
         Array<components::memory_id_to_big::BigComponent>,
@@ -2375,9 +2719,26 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
-        );
+        let bitwise_builtin_component = cairo_claim
+            .bitwise_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.bitwise_builtin.unwrap();
+                    bitwise_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let range_check_128_builtin_component = cairo_claim
+            .range_check_128_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_128_builtin.unwrap();
+                    range_check_builtin_bits_128::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let verifyinstruction_component = components::verify_instruction::NewComponentImpl::new(
             cairo_claim.verify_instruction,
@@ -2489,7 +2850,8 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             blake_round_sigma: blake_round_sigma_component,
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
-            builtins: builtins_components,
+            bitwise_builtin: bitwise_builtin_component,
+            range_check_128_builtin: range_check_128_builtin_component,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
             range_checks: range_checks_components,
@@ -2558,7 +2920,8 @@ pub impl CairoAirImpl of Air<CairoAir> {
             blake_round_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            bitwise_builtin,
+            range_check_128_builtin,
             memory_address_to_id,
             memory_id_to_value,
             range_checks,
@@ -2843,15 +3206,28 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        builtins
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = bitwise_builtin {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_128_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         memory_address_to_id
             .evaluate_constraints_at_point(
                 ref sum,
@@ -2968,7 +3344,9 @@ pub struct CairoAir {
     blake_round_sigma: Option<components::blake_round_sigma::Component>,
     triple_xor_32: Option<components::triple_xor_32::Component>,
     verify_bitwise_xor_12: Option<components::verify_bitwise_xor_12::Component>,
-    builtins: BuiltinComponents,
+    bitwise_builtin: Option<bitwise_builtin::Component>,
+    poseidon_builtin: Option<poseidon_builtin::Component>,
+    range_check_128_builtin: Option<range_check_builtin_bits_128::Component>,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
@@ -3305,9 +3683,37 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
                 },
             );
 
-        let builtins_components = BuiltinComponentsImpl::new(
-            cairo_claim.builtins, interaction_elements, interaction_claim.builtins,
-        );
+        let bitwise_builtin_component = cairo_claim
+            .bitwise_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.bitwise_builtin.unwrap();
+                    bitwise_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+        let poseidon_builtin_component = cairo_claim
+            .poseidon_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.poseidon_builtin.unwrap();
+                    poseidon_builtin::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
+
+        let range_check_128_builtin_component = cairo_claim
+            .range_check_128_builtin
+            .map(
+                |claim| {
+                    let interaction_claim = interaction_claim.range_check_128_builtin.unwrap();
+                    range_check_builtin_bits_128::NewComponentImpl::new(
+                        @claim, @interaction_claim, interaction_elements,
+                    )
+                },
+            );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
             cairo_claim.poseidon_context, interaction_elements, interaction_claim.poseidon_context,
@@ -3423,7 +3829,9 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             blake_round_sigma: blake_round_sigma_component,
             triple_xor_32: triple_xor_32_component,
             verify_bitwise_xor_12: verify_bitwise_xor_12_component,
-            builtins: builtins_components,
+            bitwise_builtin: bitwise_builtin_component,
+            poseidon_builtin: poseidon_builtin_component,
+            range_check_128_builtin: range_check_128_builtin_component,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
@@ -3493,7 +3901,9 @@ pub impl CairoAirImpl of Air<CairoAir> {
             blake_round_sigma,
             triple_xor_32,
             verify_bitwise_xor_12,
-            builtins,
+            bitwise_builtin,
+            poseidon_builtin,
+            range_check_128_builtin,
             poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
@@ -3779,15 +4189,39 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     point,
                 );
         }
-        builtins
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
+        if let Some(component) = bitwise_builtin {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = poseidon_builtin {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+        if let Some(component) = range_check_128_builtin {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
         poseidon_context
             .evaluate_constraints_at_point(
                 ref sum,
