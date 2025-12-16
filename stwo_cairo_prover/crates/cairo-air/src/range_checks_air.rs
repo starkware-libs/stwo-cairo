@@ -12,10 +12,9 @@ use crate::components::{
     indented_component_display, range_check_11, range_check_12, range_check_18, range_check_18_b,
     range_check_20, range_check_20_b, range_check_20_c, range_check_20_d, range_check_20_e,
     range_check_20_f, range_check_20_g, range_check_20_h, range_check_3_3_3_3_3,
-    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_5_4,
-    range_check_6, range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b,
-    range_check_9_9_c, range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g,
-    range_check_9_9_h,
+    range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
+    range_check_7_2_5, range_check_8, range_check_9_9, range_check_9_9_b, range_check_9_9_c,
+    range_check_9_9_d, range_check_9_9_e, range_check_9_9_f, range_check_9_9_g, range_check_9_9_h,
 };
 use crate::relations;
 
@@ -37,7 +36,6 @@ pub struct RangeChecksClaim {
     pub rc_20_h: range_check_20_h::Claim,
     pub rc_4_3: range_check_4_3::Claim,
     pub rc_4_4: range_check_4_4::Claim,
-    pub rc_5_4: range_check_5_4::Claim,
     pub rc_9_9: range_check_9_9::Claim,
     pub rc_9_9_b: range_check_9_9_b::Claim,
     pub rc_9_9_c: range_check_9_9_c::Claim,
@@ -69,7 +67,6 @@ impl RangeChecksClaim {
         self.rc_20_h.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
-        self.rc_5_4.mix_into(channel);
         self.rc_9_9.mix_into(channel);
         self.rc_9_9_b.mix_into(channel);
         self.rc_9_9_c.mix_into(channel);
@@ -103,7 +100,6 @@ impl RangeChecksClaim {
                 self.rc_20_h.log_sizes(),
                 self.rc_4_3.log_sizes(),
                 self.rc_4_4.log_sizes(),
-                self.rc_5_4.log_sizes(),
                 self.rc_9_9.log_sizes(),
                 self.rc_9_9_b.log_sizes(),
                 self.rc_9_9_c.log_sizes(),
@@ -140,7 +136,6 @@ pub struct RangeChecksInteractionClaim {
     pub rc_20_h: range_check_20_h::InteractionClaim,
     pub rc_4_3: range_check_4_3::InteractionClaim,
     pub rc_4_4: range_check_4_4::InteractionClaim,
-    pub rc_5_4: range_check_5_4::InteractionClaim,
     pub rc_9_9: range_check_9_9::InteractionClaim,
     pub rc_9_9_b: range_check_9_9_b::InteractionClaim,
     pub rc_9_9_c: range_check_9_9_c::InteractionClaim,
@@ -172,7 +167,6 @@ impl RangeChecksInteractionClaim {
         self.rc_20_h.mix_into(channel);
         self.rc_4_3.mix_into(channel);
         self.rc_4_4.mix_into(channel);
-        self.rc_5_4.mix_into(channel);
         self.rc_9_9.mix_into(channel);
         self.rc_9_9_b.mix_into(channel);
         self.rc_9_9_c.mix_into(channel);
@@ -205,7 +199,6 @@ impl RangeChecksInteractionClaim {
         sum += self.rc_20_h.claimed_sum;
         sum += self.rc_4_3.claimed_sum;
         sum += self.rc_4_4.claimed_sum;
-        sum += self.rc_5_4.claimed_sum;
         sum += self.rc_9_9.claimed_sum;
         sum += self.rc_9_9_b.claimed_sum;
         sum += self.rc_9_9_c.claimed_sum;
@@ -239,7 +232,6 @@ pub struct RangeChecksInteractionElements {
     pub rc_20_h: relations::RangeCheck_20_H,
     pub rc_4_3: relations::RangeCheck_4_3,
     pub rc_4_4: relations::RangeCheck_4_4,
-    pub rc_5_4: relations::RangeCheck_5_4,
     pub rc_9_9: relations::RangeCheck_9_9,
     pub rc_9_9_b: relations::RangeCheck_9_9_B,
     pub rc_9_9_c: relations::RangeCheck_9_9_C,
@@ -273,7 +265,6 @@ impl RangeChecksInteractionElements {
             rc_20_h: relations::RangeCheck_20_H::draw(channel),
             rc_4_3: relations::RangeCheck_4_3::draw(channel),
             rc_4_4: relations::RangeCheck_4_4::draw(channel),
-            rc_5_4: relations::RangeCheck_5_4::draw(channel),
             rc_9_9: relations::RangeCheck_9_9::draw(channel),
             rc_9_9_b: relations::RangeCheck_9_9_B::draw(channel),
             rc_9_9_c: relations::RangeCheck_9_9_C::draw(channel),
@@ -307,7 +298,6 @@ pub struct RangeChecksComponents {
     pub rc_20_h: range_check_20_h::Component,
     pub rc_4_3: range_check_4_3::Component,
     pub rc_4_4: range_check_4_4::Component,
-    pub rc_5_4: range_check_5_4::Component,
     pub rc_9_9: range_check_9_9::Component,
     pub rc_9_9_b: range_check_9_9_b::Component,
     pub rc_9_9_c: range_check_9_9_c::Component,
@@ -455,14 +445,6 @@ impl RangeChecksComponents {
             },
             interaction_claim.rc_4_4.claimed_sum,
         );
-        let rc_5_4_component = range_check_5_4::Component::new(
-            tree_span_provider,
-            range_check_5_4::Eval {
-                claim: range_check_5_4::Claim {},
-                range_check_5_4_lookup_elements: interaction_elements.rc_5_4.clone(),
-            },
-            interaction_claim.rc_5_4.claimed_sum,
-        );
         let rc_9_9_component = range_check_9_9::Component::new(
             tree_span_provider,
             range_check_9_9::Eval {
@@ -576,7 +558,6 @@ impl RangeChecksComponents {
             rc_20_h: rc_20_h_component,
             rc_4_3: rc_4_3_component,
             rc_4_4: rc_4_4_component,
-            rc_5_4: rc_5_4_component,
             rc_9_9: rc_9_9_component,
             rc_9_9_b: rc_9_9_b_component,
             rc_9_9_c: rc_9_9_c_component,
@@ -610,7 +591,6 @@ impl RangeChecksComponents {
             &self.rc_20_h as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_3 as &dyn ComponentProver<SimdBackend>,
             &self.rc_4_4 as &dyn ComponentProver<SimdBackend>,
-            &self.rc_5_4 as &dyn ComponentProver<SimdBackend>,
             &self.rc_9_9 as &dyn ComponentProver<SimdBackend>,
             &self.rc_9_9_b as &dyn ComponentProver<SimdBackend>,
             &self.rc_9_9_c as &dyn ComponentProver<SimdBackend>,
@@ -700,11 +680,6 @@ impl std::fmt::Display for RangeChecksComponents {
             f,
             "RangeCheck4_4: {}",
             indented_component_display(&self.rc_4_4)
-        )?;
-        writeln!(
-            f,
-            "RangeCheck5_4: {}",
-            indented_component_display(&self.rc_5_4)
         )?;
         writeln!(
             f,

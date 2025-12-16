@@ -81,7 +81,7 @@ impl PackedPartialEcMul {
 
 #[cfg(test)]
 mod tests {
-    use starknet_curve::curve_params::{PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
+    use starknet_curve::curve_params::{PEDERSEN_P0, PEDERSEN_P1, PEDERSEN_P2, SHIFT_POINT};
     use starknet_types_core::curve::ProjectivePoint;
     use starknet_types_core::felt::Felt;
     use stwo_cairo_common::preprocessed_columns::pedersen::BITS_PER_WINDOW;
@@ -108,6 +108,39 @@ mod tests {
         let p2 = ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).unwrap();
         let shift_point = ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y()).unwrap();
         let expected_new_accumulator = (p1 + &p2 * Felt::from(5678 << BITS_PER_WINDOW)
+            - shift_point)
+            .to_affine()
+            .unwrap();
+
+        assert_eq!(new_chain, chain);
+        assert_eq!(new_round, round + M31::from_u32_unchecked(1));
+        assert_eq!(new_m_shifted, expected_new_m_shifted);
+        assert_eq!(expected_new_accumulator.x(), new_accumulator[0].into());
+        assert_eq!(expected_new_accumulator.y(), new_accumulator[1].into());
+    }
+
+    #[test]
+    fn test_deduce_output_high_window() {
+        let chain = M31::from_u32_unchecked(1234);
+        let round = M31::from_u32_unchecked(13);
+        let mut m_shifted = [M31::from_u32_unchecked(0); 14];
+        m_shifted[0] = M31::from_u32_unchecked(32773); // (2<<14) + 5
+        m_shifted[1] = M31::from_u32_unchecked(9999);
+        let accumulator = [PEDERSEN_P1.x().into(), PEDERSEN_P1.y().into()];
+
+        let (new_chain, new_round, (new_m_shifted, new_accumulator)) =
+            PartialEcMul::deduce_output(chain, round, (m_shifted, accumulator));
+
+        let mut expected_new_m_shifted = [M31::from_u32_unchecked(0); 14];
+        expected_new_m_shifted[0] = M31::from_u32_unchecked(9999);
+
+        let p0 = ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).unwrap();
+        let p1 = ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).unwrap();
+        let shift_point = ProjectivePoint::from_affine(SHIFT_POINT.x(), SHIFT_POINT.y()).unwrap();
+        let shifted_p0 = &p0
+            * (Felt::from(1u128 << (BITS_PER_WINDOW * 7))
+                * Felt::from(1u128 << (BITS_PER_WINDOW * 6)));
+        let expected_new_accumulator = (&p1 * Felt::from(3) + &shifted_p0 * Felt::from(5)
             - shift_point)
             .to_affine()
             .unwrap();
