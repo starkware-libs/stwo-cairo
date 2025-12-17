@@ -28,9 +28,9 @@ impl BlakeContextClaimGenerator {
     pub fn new(memory: Memory, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let blake_round = blake_round::ClaimGenerator::new(memory);
         let blake_g = blake_g::ClaimGenerator::new();
-        let blake_sigma = blake_round_sigma::ClaimGenerator::new(preprocessed_trace);
+        let blake_sigma = blake_round_sigma::ClaimGenerator::new(preprocessed_trace.clone());
         let triple_xor_32 = triple_xor_32::ClaimGenerator::new();
-        let verify_bitwise_xor_12 = verify_bitwise_xor_12::ClaimGenerator::new();
+        let verify_bitwise_xor_12 = verify_bitwise_xor_12::ClaimGenerator::new(preprocessed_trace);
 
         Self {
             blake_round,
