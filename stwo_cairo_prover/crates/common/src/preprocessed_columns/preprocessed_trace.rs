@@ -21,7 +21,7 @@ use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use crate::prover_types::simd::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
