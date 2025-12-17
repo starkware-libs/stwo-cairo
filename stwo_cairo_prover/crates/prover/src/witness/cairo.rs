@@ -4,10 +4,17 @@ use cairo_air::public_data::PublicData;
 use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::ProverInput;
+use stwo_cairo_common::builtins::{
+    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
+    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
 use tracing::{span, Level};
 
-use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
+use super::components::{
+    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin, poseidon_builtin,
+    range_check_builtin_bits_128, range_check_builtin_bits_96,
+};
 use super::public_data::create_public_data;
 use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
 use crate::witness::components::pedersen::{
@@ -61,7 +68,13 @@ pub struct CairoClaimGenerator {
     blake_sigma_trace_generator: Option<blake_round_sigma::ClaimGenerator>,
     triple_xor_32_trace_generator: Option<triple_xor_32::ClaimGenerator>,
     verify_bitwise_xor_12_trace_generator: Option<verify_bitwise_xor_12::ClaimGenerator>,
-    builtins: BuiltinsClaimGenerator,
+    add_mod_builtin_trace_generator: Option<add_mod_builtin::ClaimGenerator>,
+    bitwise_builtin_trace_generator: Option<bitwise_builtin::ClaimGenerator>,
+    mul_mod_builtin_trace_generator: Option<mul_mod_builtin::ClaimGenerator>,
+    pedersen_builtin_trace_generator: Option<pedersen_builtin::ClaimGenerator>,
+    poseidon_builtin_trace_generator: Option<poseidon_builtin::ClaimGenerator>,
+    range_check_96_builtin_trace_generator: Option<range_check_builtin_bits_96::ClaimGenerator>,
+    range_check_128_builtin_trace_generator: Option<range_check_builtin_bits_128::ClaimGenerator>,
     pedersen_context_trace_generator: PedersenContextClaimGenerator,
     poseidon_context_trace_generator: PoseidonContextClaimGenerator,
     memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
@@ -269,7 +282,97 @@ impl CairoClaimGenerator {
             ret_opcode::ClaimGenerator::new(state_transitions.casm_states_by_opcode.ret_opcode)
         });
         let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
-        let builtins = BuiltinsClaimGenerator::new(builtin_segments);
+        let add_mod_builtin_trace_generator = builtin_segments.add_mod.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(ADD_MOD_MEMORY_CELLS),
+                "add mod segment length is not a multiple of it's cells_per_instance"
+            );
+            let n_instances = segment_length / ADD_MOD_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "add mod instances number is not a power of two"
+            );
+            add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+        let bitwise_builtin_trace_generator = builtin_segments.bitwise.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(BITWISE_MEMORY_CELLS),
+                "bitwise segment length is not a multiple of it's cells_per_instance"
+            );
+            let n_instances = segment_length / BITWISE_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "bitwise instances number is not a power of two"
+            );
+            bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+        let mul_mod_builtin_trace_generator = builtin_segments.mul_mod.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(MUL_MOD_MEMORY_CELLS),
+                "mul mod segment length is not a multiple of it's cells_per_instance"
+            );
+            let n_instances = segment_length / MUL_MOD_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "mul mod instances number is not a power of two"
+            );
+            mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+        let pedersen_builtin_trace_generator = builtin_segments.pedersen.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(PEDERSEN_MEMORY_CELLS),
+                "pedersen segment length is not a multiple of it's cells_per_instance"
+            );
+            let n_instances = segment_length / PEDERSEN_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "pedersen instances number is not a power of two"
+            );
+            pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+        let poseidon_builtin_trace_generator = builtin_segments.poseidon.map(|segment| {
+            let segment_length = segment.stop_ptr - segment.begin_addr;
+            assert!(
+                segment_length.is_multiple_of(POSEIDON_MEMORY_CELLS),
+                "poseidon segment length is not a multiple of it's cells_per_instance"
+            );
+            let n_instances = segment_length / POSEIDON_MEMORY_CELLS;
+            assert!(
+                n_instances.is_power_of_two(),
+                "poseidon instances number is not a power of two"
+            );
+            poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+        });
+        let range_check_96_builtin_trace_generator =
+            builtin_segments.range_check_bits_96.map(|segment| {
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check_bits_96 instances number is not a power of two"
+                );
+                range_check_builtin_bits_96::ClaimGenerator::new(
+                    n_instances.ilog2(),
+                    segment.begin_addr as u32,
+                )
+            });
+        let range_check_128_builtin_trace_generator =
+            builtin_segments.range_check_bits_128.map(|segment| {
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                let n_instances = segment_length / RANGE_CHECK_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check_bits_128 instances number is not a power of two"
+                );
+                range_check_builtin_bits_128::ClaimGenerator::new(
+                    n_instances.ilog2(),
+                    segment.begin_addr as u32,
+                )
+            });
         let pedersen_context_trace_generator = PedersenContextClaimGenerator::new();
         let poseidon_context_trace_generator = PoseidonContextClaimGenerator::new();
         let memory_address_to_id_trace_generator =
@@ -343,7 +446,13 @@ impl CairoClaimGenerator {
             blake_sigma_trace_generator,
             triple_xor_32_trace_generator,
             verify_bitwise_xor_12_trace_generator,
-            builtins,
+            add_mod_builtin_trace_generator,
+            bitwise_builtin_trace_generator,
+            mul_mod_builtin_trace_generator,
+            pedersen_builtin_trace_generator,
+            poseidon_builtin_trace_generator,
+            range_check_96_builtin_trace_generator,
+            range_check_128_builtin_trace_generator,
             pedersen_context_trace_generator,
             poseidon_context_trace_generator,
             memory_address_to_id_trace_generator,
@@ -678,21 +787,98 @@ impl CairoClaimGenerator {
             .map(|gen| gen.write_trace(tree_builder))
             .unzip();
 
-        let (builtins_claim, builtins_interaction_gen) = self.builtins.write_trace(
-            tree_builder,
-            &self.memory_address_to_id_trace_generator,
-            &self.memory_id_to_value_trace_generator,
-            &mut self.pedersen_context_trace_generator,
-            &self.range_checks_trace_generator.rc_5_4_trace_generator,
-            &self.range_checks_trace_generator.rc_8_trace_generator,
-            &mut self.poseidon_context_trace_generator,
-            &self.range_checks_trace_generator.rc_6_trace_generator,
-            &self.range_checks_trace_generator.rc_12_trace_generator,
-            &self.range_checks_trace_generator.rc_18_trace_generator,
-            &self.range_checks_trace_generator.rc_3_6_6_3_trace_generator,
-            &self.verify_bitwise_xor_8_trace_generator,
-            &self.verify_bitwise_xor_9_trace_generator,
-        );
+        let (add_mod_builtin_claim, add_mod_builtin_interaction_gen) = self
+            .add_mod_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (bitwise_builtin_claim, bitwise_builtin_interaction_gen) = self
+            .bitwise_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                    &self.verify_bitwise_xor_9_trace_generator,
+                    &self.verify_bitwise_xor_8_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (mul_mod_builtin_claim, mul_mod_builtin_interaction_gen) = self
+            .mul_mod_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                    &self.range_checks_trace_generator.rc_12_trace_generator,
+                    &self.range_checks_trace_generator.rc_3_6_6_3_trace_generator,
+                    &self.range_checks_trace_generator.rc_18_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (pedersen_builtin_claim, pedersen_builtin_interaction_gen) = self
+            .pedersen_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                    &self.range_checks_trace_generator.rc_5_4_trace_generator,
+                    &self.range_checks_trace_generator.rc_8_trace_generator,
+                    &self
+                        .pedersen_context_trace_generator
+                        .pedersen_points_table_trace_generator,
+                    &mut self
+                        .pedersen_context_trace_generator
+                        .partial_ec_mul_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = self
+            .poseidon_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self
+                        .poseidon_context_trace_generator
+                        .poseidon_aggregator_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (range_check_96_builtin_claim, range_check_96_builtin_interaction_gen) = self
+            .range_check_96_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                    &self.range_checks_trace_generator.rc_6_trace_generator,
+                )
+            })
+            .unzip();
+
+        let (range_check_128_builtin_claim, range_check_128_builtin_interaction_gen) = self
+            .range_check_128_builtin_trace_generator
+            .map(|gen| {
+                gen.write_trace(
+                    tree_builder,
+                    &self.memory_address_to_id_trace_generator,
+                    &self.memory_id_to_value_trace_generator,
+                )
+            })
+            .unzip();
         let (pedersen_context_claim, pedersen_context_interaction_gen) = self
             .pedersen_context_trace_generator
             .write_trace(tree_builder, &self.range_checks_trace_generator);
@@ -768,7 +954,13 @@ impl CairoClaimGenerator {
                 blake_sigma: blake_sigma_claim,
                 triple_xor_32: triple_xor_32_claim,
                 verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
-                builtins: builtins_claim,
+                add_mod_builtin: add_mod_builtin_claim,
+                bitwise_builtin: bitwise_builtin_claim,
+                mul_mod_builtin: mul_mod_builtin_claim,
+                pedersen_builtin: pedersen_builtin_claim,
+                poseidon_builtin: poseidon_builtin_claim,
+                range_check_96_builtin: range_check_96_builtin_claim,
+                range_check_128_builtin: range_check_128_builtin_claim,
                 pedersen_context: pedersen_context_claim,
                 poseidon_context: poseidon_context_claim,
                 memory_address_to_id: memory_address_to_id_claim,
@@ -807,7 +999,13 @@ impl CairoClaimGenerator {
                 blake_sigma_interaction_gen,
                 triple_xor_32_interaction_gen,
                 verify_bitwise_xor_12_interaction_gen,
-                builtins_interaction_gen,
+                add_mod_builtin_interaction_gen,
+                bitwise_builtin_interaction_gen,
+                mul_mod_builtin_interaction_gen,
+                pedersen_builtin_interaction_gen,
+                poseidon_builtin_interaction_gen,
+                range_check_96_builtin_interaction_gen,
+                range_check_128_builtin_interaction_gen,
                 pedersen_context_interaction_gen,
                 poseidon_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
@@ -850,7 +1048,15 @@ pub struct CairoInteractionClaimGenerator {
     blake_sigma_interaction_gen: Option<blake_round_sigma::InteractionClaimGenerator>,
     triple_xor_32_interaction_gen: Option<triple_xor_32::InteractionClaimGenerator>,
     verify_bitwise_xor_12_interaction_gen: Option<verify_bitwise_xor_12::InteractionClaimGenerator>,
-    builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
+    add_mod_builtin_interaction_gen: Option<add_mod_builtin::InteractionClaimGenerator>,
+    bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
+    mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
+    pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
+    poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
+    range_check_96_builtin_interaction_gen:
+        Option<range_check_builtin_bits_96::InteractionClaimGenerator>,
+    range_check_128_builtin_interaction_gen:
+        Option<range_check_builtin_bits_128::InteractionClaimGenerator>,
     pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
@@ -1132,9 +1338,67 @@ impl CairoInteractionClaimGenerator {
                     &interaction_elements.verify_bitwise_xor_12,
                 )
             });
-        let builtins_interaction_claims = self
-            .builtins_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+        let add_mod_builtin_interaction_claim = self.add_mod_builtin_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+            )
+        });
+        let bitwise_builtin_interaction_claim = self.bitwise_builtin_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.verify_bitwise_xor_9,
+                &interaction_elements.verify_bitwise_xor_8,
+            )
+        });
+        let mul_mod_builtin_interaction_claim = self.mul_mod_builtin_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_12,
+                &interaction_elements.range_checks.rc_3_6_6_3,
+                &interaction_elements.range_checks.rc_18,
+            )
+        });
+        let pedersen_builtin_interaction_claim = self.pedersen_builtin_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.range_checks.rc_5_4,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.memory_id_to_value,
+                &interaction_elements.range_checks.rc_8,
+                &interaction_elements.pedersen_points_table,
+                &interaction_elements.partial_ec_mul,
+            )
+        });
+        let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(|gen| {
+            gen.write_interaction_trace(
+                tree_builder,
+                &interaction_elements.memory_address_to_id,
+                &interaction_elements.poseidon_aggregator,
+            )
+        });
+        let range_check_96_builtin_interaction_claim =
+            self.range_check_96_builtin_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.range_checks.rc_6,
+                    &interaction_elements.memory_id_to_value,
+                )
+            });
+        let range_check_128_builtin_interaction_claim =
+            self.range_check_128_builtin_interaction_gen.map(|gen| {
+                gen.write_interaction_trace(
+                    tree_builder,
+                    &interaction_elements.memory_address_to_id,
+                    &interaction_elements.memory_id_to_value,
+                )
+            });
         let pedersen_context_interaction_claim = self
             .pedersen_context_interaction_gen
             .write_interaction_trace(tree_builder, interaction_elements);
@@ -1205,7 +1469,13 @@ impl CairoInteractionClaimGenerator {
             blake_sigma: blake_sigma_interaction_claim,
             triple_xor_32: triple_xor_32_interaction_claim,
             verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
-            builtins: builtins_interaction_claims,
+            add_mod_builtin: add_mod_builtin_interaction_claim,
+            bitwise_builtin: bitwise_builtin_interaction_claim,
+            mul_mod_builtin: mul_mod_builtin_interaction_claim,
+            pedersen_builtin: pedersen_builtin_interaction_claim,
+            poseidon_builtin: poseidon_builtin_interaction_claim,
+            range_check_96_builtin: range_check_96_builtin_interaction_claim,
+            range_check_128_builtin: range_check_128_builtin_interaction_claim,
             pedersen_context: pedersen_context_interaction_claim,
             poseidon_context: poseidon_context_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,

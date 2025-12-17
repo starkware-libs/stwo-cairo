@@ -1,7 +1,6 @@
 use std::ops::Deref;
 
 use cairo_air::air::CairoComponents;
-use cairo_air::builtins_air::BuiltinComponents;
 use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;
@@ -77,7 +76,6 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         blake_sigma,
         triple_xor_32,
         verify_bitwise_xor_12,
-        builtins,
         pedersen_context,
         poseidon_context,
         memory_address_to_id,
@@ -88,6 +86,13 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         verify_bitwise_xor_8,
         verify_bitwise_xor_8_b,
         verify_bitwise_xor_9,
+        add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
     } = cairo_components;
     let RangeChecksComponents {
         rc_6,
@@ -204,37 +209,27 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     verify_bitwise_xor_12
         .as_ref()
         .inspect(|c| assert_component(c, &trace));
-
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        assert_component(add_mod, &trace);
-    }
-    if let Some(mul_mod) = mul_mod_builtin {
-        assert_component(mul_mod, &trace);
-    }
-    if let Some(bitwise) = bitwise_builtin {
-        assert_component(bitwise, &trace);
-    }
-    if let Some(pedersen) = pedersen_builtin {
-        assert_component(pedersen, &trace);
-    }
-    if let Some(poseidon) = poseidon_builtin {
-        assert_component(poseidon, &trace);
-    }
-    if let Some(rc_96) = range_check_96_builtin {
-        assert_component(rc_96, &trace);
-    }
-    if let Some(rc_128) = range_check_128_builtin {
-        assert_component(rc_128, &trace);
-    }
+    add_mod_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    mul_mod_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    bitwise_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    pedersen_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    poseidon_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    range_check_96_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    range_check_128_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
     if let Some(cairo_air::pedersen::air::Components {
         partial_ec_mul,
         pedersen_points_table,
