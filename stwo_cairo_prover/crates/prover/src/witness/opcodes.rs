@@ -288,8 +288,11 @@ impl OpcodesClaimGenerator {
                     verify_instruction_trace_generator,
                     &range_checks_trace_generator.rc_7_2_5_trace_generator,
                     verify_bitwise_xor_8_trace_generator,
-                    &mut blake_context_trace_generator.blake_round,
-                    &mut blake_context_trace_generator.triple_xor_32,
+                    blake_context_trace_generator.blake_round.as_mut().unwrap(),
+                    blake_context_trace_generator
+                        .triple_xor_32
+                        .as_mut()
+                        .unwrap(),
                 )
             })
             .unzip();
