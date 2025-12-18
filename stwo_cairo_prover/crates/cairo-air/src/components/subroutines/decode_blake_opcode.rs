@@ -52,10 +52,7 @@ impl DecodeBlakeOpcode {
         high_14_ms_bits_col32: E::F,
         high_5_ms_bits_col33: E::F,
         dst_id_col34: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
-        range_check_7_2_5_lookup_elements: &relations::RangeCheck_7_2_5,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 4] {
         let M31_1 = E::F::from(M31::from(1));
@@ -75,7 +72,7 @@ impl DecodeBlakeOpcode {
                 op1_base_fp_col5.clone(),
                 ap_update_add_1_col6.clone(),
                 opcode_extension_col7.clone(),
-                verify_instruction_lookup_elements,
+                common_lookup_elements,
                 eval,
             );
         // OpcodeExtension is either Blake or BlakeFinalize.
@@ -99,8 +96,7 @@ impl DecodeBlakeOpcode {
             op0_limb_2_col12.clone(),
             op0_limb_3_col13.clone(),
             partial_limb_msb_col14.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         // mem1_base.
@@ -119,8 +115,7 @@ impl DecodeBlakeOpcode {
             op1_limb_2_col19.clone(),
             op1_limb_3_col20.clone(),
             partial_limb_msb_col21.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         ReadPositiveNumBits29::evaluate(
@@ -131,8 +126,7 @@ impl DecodeBlakeOpcode {
             ap_limb_2_col25.clone(),
             ap_limb_3_col26.clone(),
             partial_limb_msb_col27.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         // mem_dst_base.
@@ -151,9 +145,7 @@ impl DecodeBlakeOpcode {
             high_14_ms_bits_col32.clone(),
             high_5_ms_bits_col33.clone(),
             dst_id_col34.clone(),
-            range_check_7_2_5_lookup_elements,
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         [

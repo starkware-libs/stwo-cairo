@@ -22,10 +22,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 3] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub range_check_8_lookup_elements: relations::RangeCheck_8,
-    pub partial_ec_mul_lookup_elements: relations::PartialEcMul,
-    pub pedersen_aggregator_lookup_elements: relations::PedersenAggregator,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -84,9 +81,11 @@ impl FrameworkEval for Eval {
         let M31_156 = E::F::from(M31::from(156));
         let M31_160 = E::F::from(M31::from(160));
         let M31_162 = E::F::from(M31::from(162));
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
         let M31_169 = E::F::from(M31::from(169));
         let M31_191 = E::F::from(M31::from(191));
         let M31_199 = E::F::from(M31::from(199));
+        let M31_1996297333 = E::F::from(M31::from(1996297333));
         let M31_2 = E::F::from(M31::from(2));
         let M31_20 = E::F::from(M31::from(20));
         let M31_202 = E::F::from(M31::from(202));
@@ -129,6 +128,7 @@ impl FrameworkEval for Eval {
         let M31_72 = E::F::from(M31::from(72));
         let M31_79 = E::F::from(M31::from(79));
         let M31_97 = E::F::from(M31::from(97));
+        let M31_979869365 = E::F::from(M31::from(979869365));
         let M31_98 = E::F::from(M31::from(98));
         let seq = eval.get_preprocessed_column(Seq::new(self.log_size()).id());
         let input_limb_0_col0 = eval.next_trace_mask();
@@ -368,7 +368,7 @@ impl FrameworkEval for Eval {
             value_limb_25_col28.clone(),
             value_limb_26_col29.clone(),
             value_limb_27_col30.clone(),
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadPositiveKnownIdNumBits252::evaluate(
@@ -401,7 +401,7 @@ impl FrameworkEval for Eval {
             value_limb_25_col56.clone(),
             value_limb_26_col57.clone(),
             value_limb_27_col58.clone(),
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         VerifyReduced252::evaluate(
@@ -438,7 +438,7 @@ impl FrameworkEval for Eval {
             ms_limb_is_max_col59.clone(),
             ms_and_mid_limbs_are_max_col60.clone(),
             rc_input_col61.clone(),
-            &self.range_check_8_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         VerifyReduced252::evaluate(
@@ -475,15 +475,16 @@ impl FrameworkEval for Eval {
             ms_limb_is_max_col62.clone(),
             ms_and_mid_limbs_are_max_col63.clone(),
             rc_input_col64.clone(),
-            &self.range_check_8_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let partial_ec_mul_chain_tmp_tmp_c48a1_8 =
             eval.add_intermediate((seq.clone() * M31_2.clone()));
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::one(),
             &[
+                M31_979869365.clone(),
                 partial_ec_mul_chain_tmp_tmp_c48a1_8.clone(),
                 M31_0.clone(),
                 (value_limb_0_col3.clone() + (value_limb_1_col4.clone() * M31_512.clone())),
@@ -560,9 +561,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_979869365.clone(),
                 partial_ec_mul_chain_tmp_tmp_c48a1_8.clone(),
                 M31_14.clone(),
                 partial_ec_mul_output_limb_0_col65.clone(),
@@ -641,9 +643,10 @@ impl FrameworkEval for Eval {
         let partial_ec_mul_chain_id_tmp_c48a1_23 =
             eval.add_intermediate((partial_ec_mul_chain_tmp_tmp_c48a1_8.clone() + M31_1.clone()));
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::one(),
             &[
+                M31_979869365.clone(),
                 partial_ec_mul_chain_id_tmp_c48a1_23.clone(),
                 M31_14.clone(),
                 (value_limb_0_col31.clone() + (value_limb_1_col32.clone() * M31_512.clone())),
@@ -720,9 +723,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.partial_ec_mul_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_979869365.clone(),
                 partial_ec_mul_chain_id_tmp_c48a1_23.clone(),
                 M31_28.clone(),
                 partial_ec_mul_output_limb_0_col135.clone(),
@@ -799,9 +803,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1662111297.clone(),
                 input_limb_2_col2.clone(),
                 partial_ec_mul_output_limb_14_col149.clone(),
                 partial_ec_mul_output_limb_15_col150.clone(),
@@ -835,9 +840,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_aggregator_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity),
             &[
+                M31_1996297333.clone(),
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
                 input_limb_2_col2.clone(),
@@ -865,10 +871,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            range_check_8_lookup_elements: relations::RangeCheck_8::dummy(),
-            partial_ec_mul_lookup_elements: relations::PartialEcMul::dummy(),
-            pedersen_aggregator_lookup_elements: relations::PedersenAggregator::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

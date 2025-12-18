@@ -25,13 +25,13 @@ impl ReadSmall {
         value_limb_2_col5: E::F,
         remainder_bits_col6: E::F,
         partial_limb_msb_col7: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 1] {
         let M31_0 = E::F::from(M31::from(0));
         let M31_1 = E::F::from(M31::from(1));
         let M31_134217728 = E::F::from(M31::from(134217728));
+        let M31_1662111297 = E::F::from(M31::from(1662111297));
         let M31_262144 = E::F::from(M31::from(262144));
         let M31_512 = E::F::from(M31::from(512));
         let M31_536870912 = E::F::from(M31::from(536870912));
@@ -39,20 +39,28 @@ impl ReadSmall {
         ReadId::evaluate(
             [read_small_input.clone()],
             id_col0.clone(),
-            memory_address_to_id_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [decode_small_sign_output_tmp_ceaaf_5_limb3_7_high_bits, decode_small_sign_output_tmp_ceaaf_5_limbs4_to_20, decode_small_sign_output_tmp_ceaaf_5_limb21, decode_small_sign_output_tmp_ceaaf_5_limb27] =
-            DecodeSmallSign::evaluate([], msb_col1.clone(), mid_limbs_set_col2.clone(), eval);
+            DecodeSmallSign::evaluate(
+                [],
+                msb_col1.clone(),
+                mid_limbs_set_col2.clone(),
+                common_lookup_elements,
+                eval,
+            );
         CondRangeCheck2::evaluate(
             [remainder_bits_col6.clone(), M31_1.clone()],
             partial_limb_msb_col7.clone(),
+            common_lookup_elements,
             eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1662111297.clone(),
                 id_col0.clone(),
                 value_limb_0_col3.clone(),
                 value_limb_1_col4.clone(),

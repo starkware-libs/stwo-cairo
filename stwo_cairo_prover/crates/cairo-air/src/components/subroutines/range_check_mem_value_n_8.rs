@@ -14,43 +14,49 @@ impl RangeCheckMemValueN8 {
     #[allow(clippy::too_many_arguments)]
     pub fn evaluate<E: EvalAtRow>(
         [range_check_mem_value_n_8_input_limb_0, range_check_mem_value_n_8_input_limb_1, range_check_mem_value_n_8_input_limb_2, range_check_mem_value_n_8_input_limb_3, range_check_mem_value_n_8_input_limb_4, range_check_mem_value_n_8_input_limb_5, range_check_mem_value_n_8_input_limb_6, range_check_mem_value_n_8_input_limb_7]: [E::F; 8],
-        range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
+        let M31_1864236857 = E::F::from(M31::from(1864236857));
+        let M31_1881014476 = E::F::from(M31::from(1881014476));
+        let M31_1897792095 = E::F::from(M31::from(1897792095));
+        let M31_517791011 = E::F::from(M31::from(517791011));
+
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_517791011.clone(),
                 range_check_mem_value_n_8_input_limb_0.clone(),
                 range_check_mem_value_n_8_input_limb_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_b_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1897792095.clone(),
                 range_check_mem_value_n_8_input_limb_2.clone(),
                 range_check_mem_value_n_8_input_limb_3.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_c_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1881014476.clone(),
                 range_check_mem_value_n_8_input_limb_4.clone(),
                 range_check_mem_value_n_8_input_limb_5.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            range_check_9_9_d_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1864236857.clone(),
                 range_check_mem_value_n_8_input_limb_6.clone(),
                 range_check_mem_value_n_8_input_limb_7.clone(),
             ],

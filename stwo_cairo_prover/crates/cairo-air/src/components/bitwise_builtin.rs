@@ -28,10 +28,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 4] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub memory_id_to_big_lookup_elements: relations::MemoryIdToBig,
-    pub verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9,
-    pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -208,8 +205,7 @@ impl FrameworkEval for Eval {
             op0_limb_25_col26.clone(),
             op0_limb_26_col27.clone(),
             op0_limb_27_col28.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         ReadPositiveNumBits252::evaluate(
@@ -247,14 +243,13 @@ impl FrameworkEval for Eval {
             op1_limb_25_col55.clone(),
             op1_limb_26_col56.clone(),
             op1_limb_27_col57.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         BitwiseXorNumBits9::evaluate(
             [op0_limb_0_col1.clone(), op1_limb_0_col30.clone()],
             xor_col58.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_12 = eval.add_intermediate(
@@ -264,7 +259,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_1_col2.clone(), op1_limb_1_col31.clone()],
             xor_col59.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_15 = eval.add_intermediate(
@@ -274,7 +269,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_2_col3.clone(), op1_limb_2_col32.clone()],
             xor_col60.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_18 = eval.add_intermediate(
@@ -284,7 +279,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_3_col4.clone(), op1_limb_3_col33.clone()],
             xor_col61.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_21 = eval.add_intermediate(
@@ -294,7 +289,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_4_col5.clone(), op1_limb_4_col34.clone()],
             xor_col62.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_24 = eval.add_intermediate(
@@ -304,7 +299,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_5_col6.clone(), op1_limb_5_col35.clone()],
             xor_col63.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_27 = eval.add_intermediate(
@@ -314,7 +309,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_6_col7.clone(), op1_limb_6_col36.clone()],
             xor_col64.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_30 = eval.add_intermediate(
@@ -324,7 +319,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_7_col8.clone(), op1_limb_7_col37.clone()],
             xor_col65.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_33 = eval.add_intermediate(
@@ -334,7 +329,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_8_col9.clone(), op1_limb_8_col38.clone()],
             xor_col66.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_36 = eval.add_intermediate(
@@ -344,7 +339,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_9_col10.clone(), op1_limb_9_col39.clone()],
             xor_col67.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_39 = eval.add_intermediate(
@@ -354,7 +349,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_10_col11.clone(), op1_limb_10_col40.clone()],
             xor_col68.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_42 = eval.add_intermediate(
@@ -364,7 +359,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_11_col12.clone(), op1_limb_11_col41.clone()],
             xor_col69.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_45 = eval.add_intermediate(
@@ -374,7 +369,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_12_col13.clone(), op1_limb_12_col42.clone()],
             xor_col70.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_48 = eval.add_intermediate(
@@ -384,7 +379,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_13_col14.clone(), op1_limb_13_col43.clone()],
             xor_col71.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_51 = eval.add_intermediate(
@@ -394,7 +389,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_14_col15.clone(), op1_limb_14_col44.clone()],
             xor_col72.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_54 = eval.add_intermediate(
@@ -404,7 +399,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_15_col16.clone(), op1_limb_15_col45.clone()],
             xor_col73.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_57 = eval.add_intermediate(
@@ -414,7 +409,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_16_col17.clone(), op1_limb_16_col46.clone()],
             xor_col74.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_60 = eval.add_intermediate(
@@ -424,7 +419,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_17_col18.clone(), op1_limb_17_col47.clone()],
             xor_col75.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_63 = eval.add_intermediate(
@@ -434,7 +429,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_18_col19.clone(), op1_limb_18_col48.clone()],
             xor_col76.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_66 = eval.add_intermediate(
@@ -444,7 +439,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_19_col20.clone(), op1_limb_19_col49.clone()],
             xor_col77.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_69 = eval.add_intermediate(
@@ -454,7 +449,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_20_col21.clone(), op1_limb_20_col50.clone()],
             xor_col78.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_72 = eval.add_intermediate(
@@ -464,7 +459,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_21_col22.clone(), op1_limb_21_col51.clone()],
             xor_col79.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_75 = eval.add_intermediate(
@@ -474,7 +469,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_22_col23.clone(), op1_limb_22_col52.clone()],
             xor_col80.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_78 = eval.add_intermediate(
@@ -484,7 +479,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_23_col24.clone(), op1_limb_23_col53.clone()],
             xor_col81.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_81 = eval.add_intermediate(
@@ -494,7 +489,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_24_col25.clone(), op1_limb_24_col54.clone()],
             xor_col82.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_84 = eval.add_intermediate(
@@ -504,7 +499,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_25_col26.clone(), op1_limb_25_col55.clone()],
             xor_col83.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_87 = eval.add_intermediate(
@@ -514,7 +509,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits9::evaluate(
             [op0_limb_26_col27.clone(), op1_limb_26_col56.clone()],
             xor_col84.clone(),
-            &self.verify_bitwise_xor_9_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_90 = eval.add_intermediate(
@@ -524,7 +519,7 @@ impl FrameworkEval for Eval {
         BitwiseXorNumBits8::evaluate(
             [op0_limb_27_col28.clone(), op1_limb_27_col57.clone()],
             xor_col85.clone(),
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         let and_tmp_efb2a_93 = eval.add_intermediate(
@@ -566,8 +561,7 @@ impl FrameworkEval for Eval {
                 and_tmp_efb2a_93.clone(),
             ],
             and_id_col86.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         MemVerify::evaluate(
@@ -605,8 +599,7 @@ impl FrameworkEval for Eval {
                 xor_col85.clone(),
             ],
             xor_id_col87.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         MemVerify::evaluate(
@@ -644,8 +637,7 @@ impl FrameworkEval for Eval {
                 (and_tmp_efb2a_93.clone() + xor_col85.clone()),
             ],
             or_id_col88.clone(),
-            &self.memory_address_to_id_lookup_elements,
-            &self.memory_id_to_big_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.finalize_logup_in_pairs();
@@ -672,10 +664,7 @@ mod tests {
                 log_size: 4,
                 bitwise_builtin_segment_start: rng.gen::<u32>(),
             },
-            memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            memory_id_to_big_lookup_elements: relations::MemoryIdToBig::dummy(),
-            verify_bitwise_xor_9_lookup_elements: relations::VerifyBitwiseXor_9::dummy(),
-            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

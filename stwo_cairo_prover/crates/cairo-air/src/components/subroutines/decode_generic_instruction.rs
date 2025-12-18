@@ -33,7 +33,7 @@ impl DecodeGenericInstruction {
         opcode_call_col15: E::F,
         opcode_ret_col16: E::F,
         opcode_assert_eq_col17: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 8] {
         let M31_1 = E::F::from(M31::from(1));
@@ -59,7 +59,7 @@ impl DecodeGenericInstruction {
                 opcode_call_col15.clone(),
                 opcode_ret_col16.clone(),
                 opcode_assert_eq_col17.clone(),
-                verify_instruction_lookup_elements,
+                common_lookup_elements,
                 eval,
             );
         let op1_base_op0_tmp_62f3c_21 = eval.add_intermediate(

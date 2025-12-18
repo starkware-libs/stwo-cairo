@@ -94,6 +94,8 @@ fn write_trace_simd(
     };
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
+    let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
+    let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
     let UInt16_1 = PackedUInt16::broadcast(UInt16::from(1));
     let UInt16_2 = PackedUInt16::broadcast(UInt16::from(2));
     let seq = Seq::new(log_size);
@@ -120,6 +122,7 @@ fn write_trace_simd(
             *sub_component_inputs.memory_address_to_id[0] =
                 ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq));
             *lookup_data.memory_address_to_id_0 = [
+                M31_1444891767,
                 ((PackedM31::broadcast(M31::from(range_check_builtin_segment_start))) + (seq)),
                 value_id_col0,
             ];
@@ -170,6 +173,7 @@ fn write_trace_simd(
 
             *sub_component_inputs.memory_id_to_big[0] = value_id_col0;
             *lookup_data.memory_id_to_big_0 = [
+                M31_1662111297,
                 value_id_col0,
                 value_limb_0_col1,
                 value_limb_1_col2,
@@ -243,8 +247,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_id_to_big_0: Vec<[PackedM31; 30]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -255,8 +259,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id: &relations::MemoryAddressToId,
-        memory_id_to_big: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
@@ -269,8 +272,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = memory_id_to_big.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

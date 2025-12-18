@@ -84,6 +84,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_502259093 = PackedM31::broadcast(M31::from(502259093));
     let range_check_3_3_3_3_3_column_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "range_check_3_3_3_3_3_column_0".to_owned(),
     });
@@ -115,6 +116,7 @@ fn write_trace_simd(
             let range_check_3_3_3_3_3_column_4 =
                 range_check_3_3_3_3_3_column_4.packed_at(row_index);
             *lookup_data.range_check_3_3_3_3_3_0 = [
+                M31_502259093,
                 range_check_3_3_3_3_3_column_0,
                 range_check_3_3_3_3_3_column_1,
                 range_check_3_3_3_3_3_column_2,
@@ -131,7 +133,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    range_check_3_3_3_3_3_0: Vec<[PackedM31; 5]>,
+    range_check_3_3_3_3_3_0: Vec<[PackedM31; 6]>,
     mults: Vec<PackedM31>,
 }
 
@@ -142,7 +144,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        range_check_3_3_3_3_3: &relations::RangeCheck_3_3_3_3_3,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -155,7 +157,7 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = range_check_3_3_3_3_3.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

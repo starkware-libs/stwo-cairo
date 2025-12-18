@@ -6,6 +6,7 @@ use crate::prelude::*;
 pub fn cond_range_check_2_evaluate(
     input: [QM31; 2],
     partial_limb_msb_col0: QM31,
+    common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,

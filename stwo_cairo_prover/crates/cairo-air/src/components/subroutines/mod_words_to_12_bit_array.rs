@@ -24,9 +24,10 @@ impl ModWordsTo12BitArray {
         limb5b_1_col7: E::F,
         limb6b_1_col8: E::F,
         limb9b_1_col9: E::F,
-        range_check_3_6_6_3_lookup_elements: &relations::RangeCheck_3_6_6_3,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 16] {
+        let M31_1005786011 = E::F::from(M31::from(1005786011));
         let M31_512 = E::F::from(M31::from(512));
         let M31_64 = E::F::from(M31::from(64));
         let M31_8 = E::F::from(M31::from(8));
@@ -40,9 +41,10 @@ impl ModWordsTo12BitArray {
                 - (limb2b_0_col1.clone() * M31_64.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_3_6_6_3_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1005786011.clone(),
                 limb1a_0_tmp_f4497_1.clone(),
                 limb1b_0_col0.clone(),
                 limb2a_0_tmp_f4497_3.clone(),
@@ -59,9 +61,10 @@ impl ModWordsTo12BitArray {
                 - (limb6b_0_col3.clone() * M31_64.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_3_6_6_3_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1005786011.clone(),
                 limb5a_0_tmp_f4497_5.clone(),
                 limb5b_0_col2.clone(),
                 limb6a_0_tmp_f4497_7.clone(),
@@ -82,9 +85,10 @@ impl ModWordsTo12BitArray {
                 - (limb2b_1_col6.clone() * M31_64.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_3_6_6_3_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1005786011.clone(),
                 limb1a_1_tmp_f4497_11.clone(),
                 limb1b_1_col5.clone(),
                 limb2a_1_tmp_f4497_13.clone(),
@@ -101,9 +105,10 @@ impl ModWordsTo12BitArray {
                 - (limb6b_1_col8.clone() * M31_64.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_3_6_6_3_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1005786011.clone(),
                 limb5a_1_tmp_f4497_15.clone(),
                 limb5b_1_col7.clone(),
                 limb6a_1_tmp_f4497_17.clone(),
@@ -116,9 +121,10 @@ impl ModWordsTo12BitArray {
                 - (limb9b_1_col9.clone() * M31_8.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            range_check_3_6_6_3_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1005786011.clone(),
                 limb9a_0_tmp_f4497_9.clone(),
                 limb9b_0_col4.clone(),
                 limb9b_1_col9.clone(),

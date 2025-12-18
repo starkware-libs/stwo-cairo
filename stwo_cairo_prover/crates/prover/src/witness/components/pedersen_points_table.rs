@@ -70,6 +70,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_1125747331 = PackedM31::broadcast(M31::from(1125747331));
     let seq_23 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "seq_23".to_owned(),
     });
@@ -304,6 +305,7 @@ fn write_trace_simd(
             let pedersen_points_54 = pedersen_points_54.packed_at(row_index);
             let pedersen_points_55 = pedersen_points_55.packed_at(row_index);
             *lookup_data.pedersen_points_table_0 = [
+                M31_1125747331,
                 seq_23,
                 pedersen_points_0,
                 pedersen_points_1,
@@ -372,7 +374,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    pedersen_points_table_0: Vec<[PackedM31; 57]>,
+    pedersen_points_table_0: Vec<[PackedM31; 58]>,
     mults: Vec<PackedM31>,
 }
 
@@ -383,7 +385,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        pedersen_points_table: &relations::PedersenPointsTable,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -396,7 +398,7 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values, mults)| {
-                let denom = pedersen_points_table.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults, denom);
             });
         col_gen.finalize_col();

@@ -222,24 +222,7 @@ impl EvalOperands {
         res_limb_25_col201: E::F,
         res_limb_26_col202: E::F,
         res_limb_27_col203: E::F,
-        memory_address_to_id_lookup_elements: &relations::MemoryAddressToId,
-        memory_id_to_big_lookup_elements: &relations::MemoryIdToBig,
-        range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
-        range_check_20_lookup_elements: &relations::RangeCheck_20,
-        range_check_20_b_lookup_elements: &relations::RangeCheck_20_B,
-        range_check_20_c_lookup_elements: &relations::RangeCheck_20_C,
-        range_check_20_d_lookup_elements: &relations::RangeCheck_20_D,
-        range_check_20_e_lookup_elements: &relations::RangeCheck_20_E,
-        range_check_20_f_lookup_elements: &relations::RangeCheck_20_F,
-        range_check_20_g_lookup_elements: &relations::RangeCheck_20_G,
-        range_check_20_h_lookup_elements: &relations::RangeCheck_20_H,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
@@ -282,8 +265,7 @@ impl EvalOperands {
             dst_limb_25_col27.clone(),
             dst_limb_26_col28.clone(),
             dst_limb_27_col29.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         // op0_src.
@@ -324,8 +306,7 @@ impl EvalOperands {
             op0_limb_25_col57.clone(),
             op0_limb_26_col58.clone(),
             op0_limb_27_col59.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let [cond_felt_252_as_addr_output_tmp_3172c_12] = CondFelt252AsAddr::evaluate(
@@ -361,6 +342,7 @@ impl EvalOperands {
                 eval_operands_input_op1_base_op0.clone(),
             ],
             partial_limb_msb_col60.clone(),
+            common_lookup_elements,
             eval,
         );
         // op1_src.
@@ -404,8 +386,7 @@ impl EvalOperands {
             op1_limb_25_col88.clone(),
             op1_limb_26_col89.clone(),
             op1_limb_27_col90.clone(),
-            memory_address_to_id_lookup_elements,
-            memory_id_to_big_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         Add252::evaluate(
@@ -496,14 +477,7 @@ impl EvalOperands {
             add_res_limb_26_col117.clone(),
             add_res_limb_27_col118.clone(),
             sub_p_bit_col119.clone(),
-            range_check_9_9_lookup_elements,
-            range_check_9_9_b_lookup_elements,
-            range_check_9_9_c_lookup_elements,
-            range_check_9_9_d_lookup_elements,
-            range_check_9_9_e_lookup_elements,
-            range_check_9_9_f_lookup_elements,
-            range_check_9_9_g_lookup_elements,
-            range_check_9_9_h_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         Mul252::evaluate(
@@ -621,22 +595,7 @@ impl EvalOperands {
             carry_24_col173.clone(),
             carry_25_col174.clone(),
             carry_26_col175.clone(),
-            range_check_9_9_lookup_elements,
-            range_check_9_9_b_lookup_elements,
-            range_check_9_9_c_lookup_elements,
-            range_check_9_9_d_lookup_elements,
-            range_check_9_9_e_lookup_elements,
-            range_check_9_9_f_lookup_elements,
-            range_check_9_9_g_lookup_elements,
-            range_check_9_9_h_lookup_elements,
-            range_check_20_lookup_elements,
-            range_check_20_b_lookup_elements,
-            range_check_20_c_lookup_elements,
-            range_check_20_d_lookup_elements,
-            range_check_20_e_lookup_elements,
-            range_check_20_f_lookup_elements,
-            range_check_20_g_lookup_elements,
-            range_check_20_h_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         let not_pc_update_jnz_tmp_3172c_54 =

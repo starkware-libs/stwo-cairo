@@ -7,6 +7,7 @@ use crate::prelude::*;
 pub fn cond_felt_252_as_addr_evaluate(
     input: [QM31; 29],
     partial_limb_msb_col0: QM31,
+    common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
@@ -75,6 +76,7 @@ pub fn cond_felt_252_as_addr_evaluate(
     cond_range_check_2_evaluate(
         [cond_felt_252_as_addr_input_limb_3, cond_felt_252_as_addr_input_limb_28],
         partial_limb_msb_col0,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,

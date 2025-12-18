@@ -45,14 +45,7 @@ impl Add252 {
         add_res_limb_26_col26: E::F,
         add_res_limb_27_col27: E::F,
         sub_p_bit_col28: E::F,
-        range_check_9_9_lookup_elements: &relations::RangeCheck_9_9,
-        range_check_9_9_b_lookup_elements: &relations::RangeCheck_9_9_B,
-        range_check_9_9_c_lookup_elements: &relations::RangeCheck_9_9_C,
-        range_check_9_9_d_lookup_elements: &relations::RangeCheck_9_9_D,
-        range_check_9_9_e_lookup_elements: &relations::RangeCheck_9_9_E,
-        range_check_9_9_f_lookup_elements: &relations::RangeCheck_9_9_F,
-        range_check_9_9_g_lookup_elements: &relations::RangeCheck_9_9_G,
-        range_check_9_9_h_lookup_elements: &relations::RangeCheck_9_9_H,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         RangeCheckMemValueN28::evaluate(
@@ -86,14 +79,7 @@ impl Add252 {
                 add_res_limb_26_col26.clone(),
                 add_res_limb_27_col27.clone(),
             ],
-            range_check_9_9_lookup_elements,
-            range_check_9_9_b_lookup_elements,
-            range_check_9_9_c_lookup_elements,
-            range_check_9_9_d_lookup_elements,
-            range_check_9_9_e_lookup_elements,
-            range_check_9_9_f_lookup_elements,
-            range_check_9_9_g_lookup_elements,
-            range_check_9_9_h_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         VerifyAdd252::evaluate(
@@ -184,6 +170,7 @@ impl Add252 {
                 add_res_limb_27_col27.clone(),
             ],
             sub_p_bit_col28.clone(),
+            common_lookup_elements,
             eval,
         );
         []

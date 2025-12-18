@@ -3,7 +3,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::air::{lookup_sum, CairoComponents};
+use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
@@ -89,7 +90,7 @@ where
     // Draw interaction elements.
     let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
     channel.mix_u64(interaction_pow);
-    let interaction_elements = CairoInteractionElements::draw(channel);
+    let interaction_elements = CommonLookupElements::draw(channel);
 
     // Interaction trace.
     let span = span!(Level::INFO, "Interaction trace").entered();

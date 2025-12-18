@@ -16,6 +16,7 @@ pub fn linear_combination_n_2_coefs_1_1_evaluate(
     combination_limb_8_col8: QM31,
     combination_limb_9_col9: QM31,
     p_coef_col10: QM31,
+    common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,

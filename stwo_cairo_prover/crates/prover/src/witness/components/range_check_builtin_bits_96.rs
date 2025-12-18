@@ -104,6 +104,9 @@ fn write_trace_simd(
     };
 
     let M31_0 = PackedM31::broadcast(M31::from(0));
+    let M31_1185356339 = PackedM31::broadcast(M31::from(1185356339));
+    let M31_1444891767 = PackedM31::broadcast(M31::from(1444891767));
+    let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
     let seq = Seq::new(log_size);
 
     (
@@ -128,6 +131,7 @@ fn write_trace_simd(
             *sub_component_inputs.memory_address_to_id[0] =
                 ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start))) + (seq));
             *lookup_data.memory_address_to_id_0 = [
+                M31_1444891767,
                 ((PackedM31::broadcast(M31::from(range_check96_builtin_segment_start))) + (seq)),
                 value_id_col0,
             ];
@@ -162,10 +166,11 @@ fn write_trace_simd(
             // Range Check Last Limb Bits In Ms Limb 6.
 
             *sub_component_inputs.range_check_6[0] = [value_limb_10_col11];
-            *lookup_data.range_check_6_0 = [value_limb_10_col11];
+            *lookup_data.range_check_6_0 = [M31_1185356339, value_limb_10_col11];
 
             *sub_component_inputs.memory_id_to_big[0] = value_id_col0;
             *lookup_data.memory_id_to_big_0 = [
+                M31_1662111297,
                 value_id_col0,
                 value_limb_0_col1,
                 value_limb_1_col2,
@@ -239,9 +244,9 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    memory_address_to_id_0: Vec<[PackedM31; 2]>,
-    memory_id_to_big_0: Vec<[PackedM31; 29]>,
-    range_check_6_0: Vec<[PackedM31; 1]>,
+    memory_address_to_id_0: Vec<[PackedM31; 3]>,
+    memory_id_to_big_0: Vec<[PackedM31; 30]>,
+    range_check_6_0: Vec<[PackedM31; 2]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -252,9 +257,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id: &relations::MemoryAddressToId,
-        range_check_6: &relations::RangeCheck_6,
-        memory_id_to_big: &relations::MemoryIdToBig,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
@@ -267,8 +270,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = range_check_6.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -278,7 +281,7 @@ impl InteractionClaimGenerator {
         (col_gen.par_iter_mut(), &self.lookup_data.memory_id_to_big_0)
             .into_par_iter()
             .for_each(|(writer, values)| {
-                let denom = memory_id_to_big.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(PackedQM31::one(), denom);
             });
         col_gen.finalize_col();

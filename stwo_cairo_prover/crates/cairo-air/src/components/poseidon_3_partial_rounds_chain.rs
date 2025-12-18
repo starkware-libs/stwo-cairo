@@ -33,12 +33,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 6] = [
 
 pub struct Eval {
     pub claim: Claim,
-    pub poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys,
-    pub cube_252_lookup_elements: relations::Cube252,
-    pub range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4,
-    pub range_check_4_4_lookup_elements: relations::RangeCheck_4_4,
-    pub range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27,
-    pub poseidon_3_partial_rounds_chain_lookup_elements: relations::Poseidon3PartialRoundsChain,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -83,6 +78,8 @@ impl FrameworkEval for Eval {
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
         let M31_1 = E::F::from(M31::from(1));
+        let M31_1024310512 = E::F::from(M31::from(1024310512));
+        let M31_1343313504 = E::F::from(M31::from(1343313504));
         let input_limb_0_col0 = eval.next_trace_mask();
         let input_limb_1_col1 = eval.next_trace_mask();
         let input_limb_2_col2 = eval.next_trace_mask();
@@ -256,9 +253,10 @@ impl FrameworkEval for Eval {
         eval.add_constraint(enabler.clone() * enabler.clone() - enabler.clone());
 
         eval.add_to_relation(RelationEntry::new(
-            &self.poseidon_round_keys_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1024310512.clone(),
                 input_limb_1_col1.clone(),
                 poseidon_round_keys_output_limb_0_col42.clone(),
                 poseidon_round_keys_output_limb_1_col43.clone(),
@@ -378,10 +376,7 @@ impl FrameworkEval for Eval {
             combination_limb_8_col101.clone(),
             combination_limb_9_col102.clone(),
             p_coef_col103.clone(),
-            &self.cube_252_lookup_elements,
-            &self.range_check_4_4_4_4_lookup_elements,
-            &self.range_check_4_4_lookup_elements,
-            &self.range_check_252_width_27_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         PoseidonPartialRound::evaluate(
@@ -469,10 +464,7 @@ impl FrameworkEval for Eval {
             combination_limb_8_col133.clone(),
             combination_limb_9_col134.clone(),
             p_coef_col135.clone(),
-            &self.cube_252_lookup_elements,
-            &self.range_check_4_4_4_4_lookup_elements,
-            &self.range_check_4_4_lookup_elements,
-            &self.range_check_252_width_27_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         PoseidonPartialRound::evaluate(
@@ -560,16 +552,14 @@ impl FrameworkEval for Eval {
             combination_limb_8_col165.clone(),
             combination_limb_9_col166.clone(),
             p_coef_col167.clone(),
-            &self.cube_252_lookup_elements,
-            &self.range_check_4_4_4_4_lookup_elements,
-            &self.range_check_4_4_lookup_elements,
-            &self.range_check_252_width_27_lookup_elements,
+            &self.common_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.poseidon_3_partial_rounds_chain_lookup_elements,
+            &self.common_lookup_elements,
             E::EF::from(enabler.clone()),
             &[
+                M31_1343313504.clone(),
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),
                 input_limb_2_col2.clone(),
@@ -616,9 +606,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.poseidon_3_partial_rounds_chain_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(enabler.clone()),
             &[
+                M31_1343313504.clone(),
                 input_limb_0_col0.clone(),
                 (input_limb_1_col1.clone() + M31_1.clone()),
                 cube_252_output_limb_0_col104.clone(),
@@ -685,13 +676,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim { log_size: 4 },
-            poseidon_round_keys_lookup_elements: relations::PoseidonRoundKeys::dummy(),
-            cube_252_lookup_elements: relations::Cube252::dummy(),
-            range_check_4_4_4_4_lookup_elements: relations::RangeCheck_4_4_4_4::dummy(),
-            range_check_4_4_lookup_elements: relations::RangeCheck_4_4::dummy(),
-            range_check_252_width_27_lookup_elements: relations::RangeCheck252Width27::dummy(),
-            poseidon_3_partial_rounds_chain_lookup_elements:
-                relations::Poseidon3PartialRoundsChain::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

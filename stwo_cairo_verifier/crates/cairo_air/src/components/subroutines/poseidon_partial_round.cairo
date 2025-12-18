@@ -39,10 +39,7 @@ pub fn poseidon_partial_round_evaluate(
     combination_limb_8_col29: QM31,
     combination_limb_9_col30: QM31,
     p_coef_col31: QM31,
-    cube_252_lookup_elements: @crate::Cube252Elements,
-    range_check_4_4_4_4_lookup_elements: @crate::RangeCheck_4_4_4_4Elements,
-    range_check_4_4_lookup_elements: @crate::RangeCheck_4_4Elements,
-    range_check_252_width_27_lookup_elements: @crate::RangeCheck252Width27Elements,
+    common_lookup_elements: @CommonLookupElements,
     ref cube_252_sum_0: QM31,
     ref range_check_4_4_4_4_sum_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
@@ -106,20 +103,22 @@ pub fn poseidon_partial_round_evaluate(
     ] =
         input;
 
-    cube_252_sum_0 = cube_252_lookup_elements
+    cube_252_sum_0 = common_lookup_elements
         .combine_qm31(
             [
-                poseidon_partial_round_input_z2_limb_0, poseidon_partial_round_input_z2_limb_1,
-                poseidon_partial_round_input_z2_limb_2, poseidon_partial_round_input_z2_limb_3,
-                poseidon_partial_round_input_z2_limb_4, poseidon_partial_round_input_z2_limb_5,
-                poseidon_partial_round_input_z2_limb_6, poseidon_partial_round_input_z2_limb_7,
-                poseidon_partial_round_input_z2_limb_8, poseidon_partial_round_input_z2_limb_9,
-                cube_252_output_limb_0_col0, cube_252_output_limb_1_col1,
-                cube_252_output_limb_2_col2, cube_252_output_limb_3_col3,
-                cube_252_output_limb_4_col4, cube_252_output_limb_5_col5,
-                cube_252_output_limb_6_col6, cube_252_output_limb_7_col7,
-                cube_252_output_limb_8_col8, cube_252_output_limb_9_col9,
-            ],
+                qm31_const::<1987997202, 0, 0, 0>(), poseidon_partial_round_input_z2_limb_0,
+                poseidon_partial_round_input_z2_limb_1, poseidon_partial_round_input_z2_limb_2,
+                poseidon_partial_round_input_z2_limb_3, poseidon_partial_round_input_z2_limb_4,
+                poseidon_partial_round_input_z2_limb_5, poseidon_partial_round_input_z2_limb_6,
+                poseidon_partial_round_input_z2_limb_7, poseidon_partial_round_input_z2_limb_8,
+                poseidon_partial_round_input_z2_limb_9, cube_252_output_limb_0_col0,
+                cube_252_output_limb_1_col1, cube_252_output_limb_2_col2,
+                cube_252_output_limb_3_col3, cube_252_output_limb_4_col4,
+                cube_252_output_limb_5_col5, cube_252_output_limb_6_col6,
+                cube_252_output_limb_7_col7, cube_252_output_limb_8_col8,
+                cube_252_output_limb_9_col9,
+            ]
+                .span(),
         );
     linear_combination_n_6_coefs_4_2_3_1_m1_1_evaluate(
         [
@@ -168,8 +167,7 @@ pub fn poseidon_partial_round_evaluate(
         combination_limb_8_col18,
         combination_limb_9_col19,
         p_coef_col20,
-        range_check_4_4_4_4_lookup_elements,
-        range_check_4_4_lookup_elements,
+        common_lookup_elements,
         ref range_check_4_4_4_4_sum_1,
         ref range_check_4_4_4_4_sum_2,
         ref range_check_4_4_sum_3,
@@ -178,14 +176,15 @@ pub fn poseidon_partial_round_evaluate(
         random_coeff,
     );
 
-    range_check_252_width_27_sum_4 = range_check_252_width_27_lookup_elements
+    range_check_252_width_27_sum_4 = common_lookup_elements
         .combine_qm31(
             [
-                combination_limb_0_col10, combination_limb_1_col11, combination_limb_2_col12,
-                combination_limb_3_col13, combination_limb_4_col14, combination_limb_5_col15,
-                combination_limb_6_col16, combination_limb_7_col17, combination_limb_8_col18,
-                combination_limb_9_col19,
-            ],
+                qm31_const::<1090315331, 0, 0, 0>(), combination_limb_0_col10,
+                combination_limb_1_col11, combination_limb_2_col12, combination_limb_3_col13,
+                combination_limb_4_col14, combination_limb_5_col15, combination_limb_6_col16,
+                combination_limb_7_col17, combination_limb_8_col18, combination_limb_9_col19,
+            ]
+                .span(),
         );
     linear_combination_n_1_coefs_2_evaluate(
         [
@@ -205,6 +204,7 @@ pub fn poseidon_partial_round_evaluate(
         combination_limb_8_col29,
         combination_limb_9_col30,
         p_coef_col31,
+        common_lookup_elements,
         ref sum,
         domain_vanishing_eval_inv,
         random_coeff,
