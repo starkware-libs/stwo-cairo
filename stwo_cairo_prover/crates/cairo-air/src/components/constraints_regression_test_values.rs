@@ -229,7 +229,7 @@ pub const VERIFY_BITWISE_XOR_9: Expect = expect![[r#"
     (1084186033 + 1944126042i) + (1899018540 + 496255699i)u
 "#]];
 pub const VERIFY_BITWISE_XOR_12: Expect = expect![[r#"
-    (1123038480 + 1394742325i) + (1700172795 + 1334968195i)u
+    (271618984 + 716415572i) + (1162434803 + 168934829i)u
 "#]];
 pub const VERIFY_INSTRUCTION: Expect = expect![[r#"
     (1751946169 + 1684131734i) + (814276776 + 1152537782i)u

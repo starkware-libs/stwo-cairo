@@ -10,13 +10,13 @@ pub const NUM_PREPROCESSED_COLUMNS: u32 = 105;
 pub const PREPROCESSED_COLUMN_LOG_SIZE: [u32; NUM_PREPROCESSED_COLUMNS] = [
     25, // Seq(25)
     24, // Seq(24)
+    24, // BitwiseXor((12, 0))
+    24, // BitwiseXor((12, 1))
+    24, // BitwiseXor((12, 2))
     23, // Seq(23)
     22, // Seq(22)
     21, // Seq(21)
     20, // Seq(20)
-    20, // BitwiseXor((10, 0))
-    20, // BitwiseXor((10, 1))
-    20, // BitwiseXor((10, 2))
     19, // Seq(19)
     18, // Seq(18)
     18, // BitwiseXor((9, 0))
@@ -118,13 +118,13 @@ pub const PREPROCESSED_COLUMN_LOG_SIZE: [u32; NUM_PREPROCESSED_COLUMNS] = [
 
 pub const SEQ_25_IDX: u32 = 0; // Seq(25)
 pub const SEQ_24_IDX: u32 = 1; // Seq(24)
-pub const SEQ_23_IDX: u32 = 2; // Seq(23)
-pub const SEQ_22_IDX: u32 = 3; // Seq(22)
-pub const SEQ_21_IDX: u32 = 4; // Seq(21)
-pub const SEQ_20_IDX: u32 = 5; // Seq(20)
-pub const BITWISE_XOR_10_0_IDX: u32 = 6; // BitwiseXor((10, 0))
-pub const BITWISE_XOR_10_1_IDX: u32 = 7; // BitwiseXor((10, 1))
-pub const BITWISE_XOR_10_2_IDX: u32 = 8; // BitwiseXor((10, 2))
+pub const BITWISE_XOR_12_0_IDX: u32 = 2; // BitwiseXor((12, 0))
+pub const BITWISE_XOR_12_1_IDX: u32 = 3; // BitwiseXor((12, 1))
+pub const BITWISE_XOR_12_2_IDX: u32 = 4; // BitwiseXor((12, 2))
+pub const SEQ_23_IDX: u32 = 5; // Seq(23)
+pub const SEQ_22_IDX: u32 = 6; // Seq(22)
+pub const SEQ_21_IDX: u32 = 7; // Seq(21)
+pub const SEQ_20_IDX: u32 = 8; // Seq(20)
 pub const SEQ_19_IDX: u32 = 9; // Seq(19)
 pub const SEQ_18_IDX: u32 = 10; // Seq(18)
 pub const BITWISE_XOR_9_0_IDX: u32 = 11; // BitwiseXor((9, 0))
@@ -312,8 +312,8 @@ pub fn seq_column_idx(log_size: u32) -> PreprocessedColumnIdx {
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x44642ae57f21f9663ceada738b875b21217d9b86c83a471eef9cefcb8f46a00,
-        1 => 0x4df863f813821c29d36b9d6c797c6fd53557b6baf59c71bb15bb01f23b12b98,
+        0 => 0x26e9bf05a142f87bda951a095a743273c59e8a202843393d08a2b9363bab29e,
+        1 => 0x6ee3d1cf9d52a8bc039050a707a7daf617acf072dcd6b9b3fa9a23a790d8708,
         2 => 0x71944a190ebd4721f696f8d1c5e7a95e8efc70d104d7391b0de4ac965baba70,
         3 => 0x5d83b175ae26614b615d51c92927272a7b5b50a74afa6b84536142db0a25728,
         4 => 0x6ba5cf14072a327807b33acc97bb365a796f9bedfcabde9461a25131205ff83,

@@ -258,7 +258,7 @@ pub mod tests {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
         let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
-        let pp_tree = Arc::new(testing_preprocessed_tree(20));
+        let pp_tree = Arc::new(testing_preprocessed_tree(24));
         assert_cairo_constraints(input, pp_tree);
     }
 
