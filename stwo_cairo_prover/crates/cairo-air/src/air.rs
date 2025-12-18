@@ -106,9 +106,17 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
+pub trait ClaimTrait {
+    fn mix_into(&self, channel: &mut impl Channel);
+    fn log_sizes(&self) -> TreeVec<Vec<u32>>;
+    fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict);
+}
+
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
+    pub components: HashMap<String, Box<dyn ClaimTrait>>,
+
     pub opcodes: OpcodeClaim,
     pub verify_instruction: verify_instruction::Claim,
     pub blake_context: BlakeContextClaim,
@@ -130,6 +138,7 @@ impl CairoClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         let Self {
             public_data,
+            components: _,
             opcodes,
             verify_instruction,
             blake_context,
@@ -188,6 +197,7 @@ impl CairoClaim {
     pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
         let Self {
             public_data: _,
+            components: _,
             opcodes,
             verify_instruction,
             blake_context,
@@ -633,9 +643,16 @@ impl CairoInteractionElements {
     }
 }
 
+pub trait InteractionClaimTrait {
+    fn mix_into(&self, channel: &mut impl Channel);
+    fn sum(&self) -> QM31;
+}
+
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
+    pub components: HashMap<String, Box<dyn InteractionClaimTrait>>,
+
     pub verify_instruction: verify_instruction::InteractionClaim,
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,

@@ -1,4 +1,5 @@
 use std::array;
+use std::collections::HashMap;
 use std::sync::Arc;
 
 use cairo_air::air::{
@@ -119,11 +120,19 @@ fn extract_sections_from_memory(
     }
 }
 
+pub trait ClaimGeneratorTrait {
+    fn write_trace(
+        self,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    ) -> (Box<dyn ClaimTrait>, Box<dyn InteractionClaimTrait>);
+}
+
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
 /// [`CairoInteractionClaim`], [`CairoComponents`], [`CairoInteractionElements`].
 pub struct CairoClaimGenerator {
     public_data: PublicData,
+    components: HashMap<String, Box<dyn ClaimGeneratorTrait>>,
 
     opcodes: OpcodesClaimGenerator,
 
@@ -367,7 +376,17 @@ impl CairoClaimGenerator {
     }
 }
 
+pub trait InteractionClaimGeneratorTrait {
+    fn write_interaction_trace(
+        self,
+        tree_builder: &mut impl TreeBuilder<SimdBackend>,
+        interaction_elements: &CairoInteractionElements,
+    ) -> Box<dyn InteractionClaimTrait>;
+}
+
 pub struct CairoInteractionClaimGenerator {
+    components: HashMap<String, Box<dyn InteractionClaimGeneratorTrait>>,
+
     opcodes_interaction_gen: OpcodesInteractionClaimGenerator,
     verify_instruction_interaction_gen: verify_instruction::InteractionClaimGenerator,
     blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
