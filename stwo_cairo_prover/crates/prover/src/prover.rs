@@ -577,7 +577,7 @@ pub mod tests {
                     pcs_config: PcsConfig::default(),
                     preprocessed_trace: PreProcessedTraceVariant::Canonical,
                     channel_salt: None,
-                    store_polynomials_coefficients: false,
+                    store_polynomials_coefficients: true,
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();

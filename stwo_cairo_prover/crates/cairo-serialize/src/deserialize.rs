@@ -164,7 +164,7 @@ where
         let commitments = TreeVec(Vec::<H::Hash>::deserialize(data));
         let sampled_values = TreeVec(Vec::<ColumnVec<Vec<SecureField>>>::deserialize(data));
         let decommitments = TreeVec(Vec::<MerkleDecommitmentLifted<H>>::deserialize(data));
-        let queried_values = TreeVec(Vec::<Vec<BaseField>>::deserialize(data));
+        let queried_values = TreeVec(Vec::<Vec<Vec<BaseField>>>::deserialize(data));
         let proof_of_work: u64 = u64::deserialize(data);
         let fri_proof = FriProof::deserialize(data);
         CommitmentSchemeProof {
