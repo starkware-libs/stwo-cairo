@@ -33,7 +33,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-pub(crate) const LOG_MAX_ROWS: u32 = 26;
+pub(crate) const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -87,7 +87,7 @@ where
     tree_builder.commit(channel);
 
     // Draw interaction elements.
-    let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
+    let interaction_pow = SimdBackend::grind(channel, 10);
     channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
