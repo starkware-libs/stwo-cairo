@@ -33,7 +33,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-pub(crate) const LOG_MAX_ROWS: u32 = 26;
+pub(crate) const LOG_MAX_ROWS: u32 = 22;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -87,7 +87,7 @@ where
     tree_builder.commit(channel);
 
     // Draw interaction elements.
-    let interaction_pow = SimdBackend::grind(channel, INTERACTION_POW_BITS);
+    let interaction_pow = SimdBackend::grind(channel, 10);
     channel.mix_u64(interaction_pow);
     let interaction_elements = CairoInteractionElements::draw(channel);
 
@@ -202,7 +202,7 @@ pub fn create_and_serialize_proof(
             channel_salt: None,
             pcs_config: PcsConfig {
                 // Stay within 500ms on M3.
-                pow_bits: 26,
+                pow_bits: 10,
                 fri_config: FriConfig {
                     log_last_layer_degree_bound: 0,
                     // Blowup factor > 1 significantly degrades proving speed.
