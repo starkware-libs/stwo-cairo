@@ -24,7 +24,7 @@ use crate::prover_types::simd::LOG_N_LANES;
 const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 
 // Used by every builtin for a read of the memory.
-pub const MAX_SEQUENCE_LOG_SIZE: u32 = 21;
+pub const MAX_SEQUENCE_LOG_SIZE: u32 = 20;
 
 pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
