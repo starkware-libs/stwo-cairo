@@ -62,30 +62,18 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
-        sub_component_inputs
-            .range_check_7_2_5
-            .iter()
-            .for_each(|inputs| {
-                range_check_7_2_5_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_4_3
-            .iter()
-            .for_each(|inputs| {
-                range_check_4_3_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.range_check_7_2_5 {
+            range_check_7_2_5_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_4_3 {
+            range_check_4_3_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.memory_address_to_id {
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.memory_id_to_big {
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

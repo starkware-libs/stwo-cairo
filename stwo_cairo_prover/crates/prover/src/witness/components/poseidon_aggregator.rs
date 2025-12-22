@@ -71,51 +71,30 @@ impl ClaimGenerator {
             range_check_4_4_state,
             poseidon_3_partial_rounds_chain_state,
         );
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .poseidon_full_round_chain
-            .iter()
-            .for_each(|inputs| {
-                poseidon_full_round_chain_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_252_width_27
-            .iter()
-            .for_each(|inputs| {
-                range_check_252_width_27_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs.cube_252.iter().for_each(|inputs| {
-            cube_252_state.add_packed_inputs(inputs, 0);
-        });
-        sub_component_inputs
-            .range_check_3_3_3_3_3
-            .iter()
-            .for_each(|inputs| {
-                range_check_3_3_3_3_3_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_4_4_4_4
-            .iter()
-            .for_each(|inputs| {
-                range_check_4_4_4_4_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_4_4
-            .iter()
-            .for_each(|inputs| {
-                range_check_4_4_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .poseidon_3_partial_rounds_chain
-            .iter()
-            .for_each(|inputs| {
-                poseidon_3_partial_rounds_chain_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.memory_id_to_big {
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.poseidon_full_round_chain {
+            poseidon_full_round_chain_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_252_width_27 {
+            range_check_252_width_27_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.cube_252 {
+            cube_252_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_3_3_3_3_3 {
+            range_check_3_3_3_3_3_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_4_4_4_4 {
+            range_check_4_4_4_4_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_4_4 {
+            range_check_4_4_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.poseidon_3_partial_rounds_chain {
+            poseidon_3_partial_rounds_chain_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

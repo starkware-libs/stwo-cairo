@@ -37,18 +37,12 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             memory_id_to_big_state,
         );
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.memory_address_to_id {
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.memory_id_to_big {
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (
