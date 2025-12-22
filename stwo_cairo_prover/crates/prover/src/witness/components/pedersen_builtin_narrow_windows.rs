@@ -37,18 +37,12 @@ impl ClaimGenerator {
             memory_address_to_id_state,
             pedersen_aggregator_window_bits_9_state,
         );
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .pedersen_aggregator_window_bits_9
-            .iter()
-            .for_each(|inputs| {
-                pedersen_aggregator_window_bits_9_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.memory_address_to_id {
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.pedersen_aggregator_window_bits_9 {
+            pedersen_aggregator_window_bits_9_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

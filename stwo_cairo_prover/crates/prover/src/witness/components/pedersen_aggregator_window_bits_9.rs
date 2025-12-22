@@ -60,24 +60,15 @@ impl ClaimGenerator {
             range_check_8_state,
             partial_ec_mul_window_bits_9_state,
         );
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_8
-            .iter()
-            .for_each(|inputs| {
-                range_check_8_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .partial_ec_mul_window_bits_9
-            .iter()
-            .for_each(|inputs| {
-                partial_ec_mul_window_bits_9_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.memory_id_to_big {
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_8 {
+            range_check_8_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.partial_ec_mul_window_bits_9 {
+            partial_ec_mul_window_bits_9_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (
