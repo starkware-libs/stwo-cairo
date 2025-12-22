@@ -311,7 +311,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             partial_ec_mul_output_limb_67_col202,
             partial_ec_mul_output_limb_68_col203,
             partial_ec_mul_output_limb_69_col204,
-            enabler,
+            pedersen_aggregator_multiplicity,
         ]: [Span<QM31>; 206] =
             (*trace_mask_values
             .multi_pop_front()
@@ -1043,7 +1043,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [pedersen_aggregator_multiplicity]: [QM31; 1] = (*pedersen_aggregator_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -1380,7 +1383,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            pedersen_aggregator_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             memory_id_to_big_sum_0,
@@ -1405,7 +1408,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    pedersen_aggregator_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_id_to_big_sum_0: QM31,
@@ -1549,7 +1552,7 @@ fn lookup_constraints(
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_10
         * pedersen_aggregator_sum_11)
-        + (memory_id_to_big_sum_10 * enabler)
+        + (memory_id_to_big_sum_10 * pedersen_aggregator_multiplicity)
         - pedersen_aggregator_sum_11)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;

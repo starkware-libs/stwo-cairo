@@ -7,7 +7,6 @@ use components::verify_bitwise_xor_12::InteractionClaimImpl as VerifyBitwiseXor1
 use components::verify_bitwise_xor_4::InteractionClaimImpl as VerifyBitwiseXor4InteractionClaimImpl;
 use components::verify_bitwise_xor_7::InteractionClaimImpl as VerifyBitwiseXor7InteractionClaimImpl;
 use components::verify_bitwise_xor_8::InteractionClaimImpl as VerifyBitwiseXor8InteractionClaimImpl;
-use components::verify_bitwise_xor_8_b::InteractionClaimImpl as VerifyBitwiseXor8BInteractionClaimImpl;
 use components::verify_bitwise_xor_9::InteractionClaimImpl as VerifyBitwiseXor9InteractionClaimImpl;
 use components::verify_instruction::InteractionClaimImpl as VerifyInstructionInteractionClaimImpl;
 use core::box::BoxImpl;
@@ -146,7 +145,6 @@ pub struct CairoClaim {
     pub verify_bitwise_xor_4: components::verify_bitwise_xor_4::Claim,
     pub verify_bitwise_xor_7: components::verify_bitwise_xor_7::Claim,
     pub verify_bitwise_xor_8: components::verify_bitwise_xor_8::Claim,
-    pub verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Claim,
     pub verify_bitwise_xor_9: components::verify_bitwise_xor_9::Claim,
     // ...
 }
@@ -161,7 +159,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
                 self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
                 self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
                 self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
-                self.verify_bitwise_xor_8_b.log_sizes(), self.verify_bitwise_xor_9.log_sizes(),
+                self.verify_bitwise_xor_9.log_sizes(),
             ],
         );
 
@@ -192,7 +190,6 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
         } = self;
 
@@ -209,7 +206,6 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         verify_bitwise_xor_4.mix_into(ref channel);
         verify_bitwise_xor_7.mix_into(ref channel);
         verify_bitwise_xor_8.mix_into(ref channel);
-        verify_bitwise_xor_8_b.mix_into(ref channel);
         verify_bitwise_xor_9.mix_into(ref channel);
     }
 
@@ -228,7 +224,6 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             verify_bitwise_xor_4: _,
             verify_bitwise_xor_7: _,
             verify_bitwise_xor_8: _,
-            verify_bitwise_xor_8_b: _,
             verify_bitwise_xor_9: _,
         } = self;
         // NOTE: The following components do not USE relations:
@@ -261,7 +256,6 @@ pub struct CairoInteractionClaim {
     pub verify_bitwise_xor_4: components::verify_bitwise_xor_4::InteractionClaim,
     pub verify_bitwise_xor_7: components::verify_bitwise_xor_7::InteractionClaim,
     pub verify_bitwise_xor_8: components::verify_bitwise_xor_8::InteractionClaim,
-    pub verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::InteractionClaim,
     pub verify_bitwise_xor_9: components::verify_bitwise_xor_9::InteractionClaim,
 }
 
@@ -281,7 +275,6 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
         } = self;
 
@@ -297,7 +290,6 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         verify_bitwise_xor_4.mix_into(ref channel);
         verify_bitwise_xor_7.mix_into(ref channel);
         verify_bitwise_xor_8.mix_into(ref channel);
-        verify_bitwise_xor_8_b.mix_into(ref channel);
         verify_bitwise_xor_9.mix_into(ref channel);
     }
 }
@@ -381,7 +373,6 @@ pub struct CairoAir {
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
-    verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
     /// The degree bound of the cairo air.
     composition_log_degree_bound: u32,
@@ -486,13 +477,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             interaction_elements,
         );
 
-        let verify_bitwise_xor_8_b_component =
-            components::verify_bitwise_xor_8_b::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8_b,
-            interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
-        );
-
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
@@ -513,7 +497,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
-            verify_bitwise_xor_8_b: verify_bitwise_xor_8_b_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
             composition_log_degree_bound,
         }
@@ -561,7 +544,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
             composition_log_degree_bound: _,
         } = self;
@@ -687,15 +669,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        verify_bitwise_xor_8_b
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
                 ref sum,
@@ -729,7 +702,6 @@ pub struct CairoAir {
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
-    verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
     /// The degree bound of the cairo air.
     composition_log_degree_bound: u32,
@@ -826,13 +798,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             interaction_elements,
         );
 
-        let verify_bitwise_xor_8_b_component =
-            components::verify_bitwise_xor_8_b::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8_b,
-            interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
-        );
-
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
@@ -851,7 +816,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
-            verify_bitwise_xor_8_b: verify_bitwise_xor_8_b_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
             composition_log_degree_bound,
         }
@@ -898,7 +862,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
             composition_log_degree_bound: _,
         } = self;
@@ -1005,15 +968,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 random_coeff,
                 point,
             );
-        verify_bitwise_xor_8_b
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
                 ref sum,
@@ -1049,7 +1003,6 @@ pub struct CairoAir {
     verify_bitwise_xor_4: components::verify_bitwise_xor_4::Component,
     verify_bitwise_xor_7: components::verify_bitwise_xor_7::Component,
     verify_bitwise_xor_8: components::verify_bitwise_xor_8::Component,
-    verify_bitwise_xor_8_b: components::verify_bitwise_xor_8_b::Component,
     verify_bitwise_xor_9: components::verify_bitwise_xor_9::Component,
     /// The degree bound of the cairo air.
     composition_log_degree_bound: u32,
@@ -1150,13 +1103,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             interaction_elements,
         );
 
-        let verify_bitwise_xor_8_b_component =
-            components::verify_bitwise_xor_8_b::NewComponentImpl::new(
-            cairo_claim.verify_bitwise_xor_8_b,
-            interaction_claim.verify_bitwise_xor_8_b,
-            interaction_elements,
-        );
-
         let verify_bitwise_xor_9_component =
             components::verify_bitwise_xor_9::NewComponentImpl::new(
             cairo_claim.verify_bitwise_xor_9,
@@ -1176,7 +1122,6 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             verify_bitwise_xor_4: verify_bitwise_xor_4_component,
             verify_bitwise_xor_7: verify_bitwise_xor_7_component,
             verify_bitwise_xor_8: verify_bitwise_xor_8_component,
-            verify_bitwise_xor_8_b: verify_bitwise_xor_8_b_component,
             verify_bitwise_xor_9: verify_bitwise_xor_9_component,
             composition_log_degree_bound,
         }
@@ -1224,7 +1169,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
             verify_bitwise_xor_4,
             verify_bitwise_xor_7,
             verify_bitwise_xor_8,
-            verify_bitwise_xor_8_b,
             verify_bitwise_xor_9,
             composition_log_degree_bound: _,
         } = self;
@@ -1332,15 +1276,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         verify_bitwise_xor_8
-            .evaluate_constraints_at_point(
-                ref sum,
-                ref preprocessed_mask_values,
-                ref trace_mask_values,
-                ref interaction_trace_mask_values,
-                random_coeff,
-                point,
-            );
-        verify_bitwise_xor_8_b
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,

@@ -336,7 +336,7 @@ impl FrameworkEval for Eval {
         let partial_ec_mul_output_limb_67_col202 = eval.next_trace_mask();
         let partial_ec_mul_output_limb_68_col203 = eval.next_trace_mask();
         let partial_ec_mul_output_limb_69_col204 = eval.next_trace_mask();
-        let multiplicity = eval.next_trace_mask();
+        let multiplicity_0 = eval.next_trace_mask();
 
         ReadPositiveKnownIdNumBits252::evaluate(
             [input_limb_0_col0.clone()],
@@ -836,7 +836,7 @@ impl FrameworkEval for Eval {
 
         eval.add_to_relation(RelationEntry::new(
             &self.pedersen_aggregator_lookup_elements,
-            -E::EF::from(multiplicity),
+            -E::EF::from(multiplicity_0),
             &[
                 input_limb_0_col0.clone(),
                 input_limb_1_col1.clone(),

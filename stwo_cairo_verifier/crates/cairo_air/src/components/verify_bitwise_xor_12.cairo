@@ -81,8 +81,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let bitwise_xor_12_1 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_12_1_IDX);
         let bitwise_xor_12_2 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_12_2_IDX);
 
-        let [enabler]: [Span<QM31>; 1] = (*trace_mask_values.multi_pop_front().unwrap()).unbox();
-        let [enabler]: [QM31; 1] = (*enabler.try_into().unwrap()).unbox();
+        let [verify_bitwise_xor_12_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
+            .multi_pop_front()
+            .unwrap())
+            .unbox();
+        let [verify_bitwise_xor_12_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_12_multiplicity
+            .try_into()
+            .unwrap())
+            .unbox();
 
         core::internal::revoke_ap_tracking();
 
@@ -95,7 +101,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
-            enabler,
+            verify_bitwise_xor_12_multiplicity,
             column_size,
             ref interaction_trace_mask_values,
             verify_bitwise_xor_12_sum_0,
@@ -109,7 +115,7 @@ fn lookup_constraints(
     domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
-    enabler: QM31,
+    verify_bitwise_xor_12_multiplicity: QM31,
     column_size: M31,
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     verify_bitwise_xor_12_sum_0: QM31,
@@ -135,7 +141,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * verify_bitwise_xor_12_sum_0)
-        + enabler)
+        + verify_bitwise_xor_12_multiplicity)
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
 }

@@ -62,19 +62,19 @@ impl ClaimGenerator {
             .memory_id_to_big
             .iter()
             .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs);
+                memory_id_to_big_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .range_check_8
             .iter()
             .for_each(|inputs| {
-                range_check_8_state.add_packed_inputs(inputs);
+                range_check_8_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
             .partial_ec_mul
             .iter()
             .for_each(|inputs| {
-                partial_ec_mul_state.add_packed_inputs(inputs);
+                partial_ec_mul_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -87,17 +87,17 @@ impl ClaimGenerator {
         )
     }
 
-    pub fn add_input(&self, input: &InputType) {
+    pub fn add_input(&self, input: &InputType, _relation_index: usize) {
         self.mults
             .entry(*input)
             .or_insert_with(|| AtomicU32::new(0))
             .fetch_add(1, Ordering::Relaxed);
     }
 
-    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType]) {
+    pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
         packed_inputs.into_par_iter().for_each(|packed_input| {
             packed_input.unpack().into_par_iter().for_each(|input| {
-                self.add_input(&input);
+                self.add_input(&input, relation_index);
             });
         });
     }
@@ -535,7 +535,7 @@ fn write_trace_simd(
                 input_limb_2_col2;
             *lookup_data.memory_id_to_big_2 = [input_limb_2_col2, partial_ec_mul_output_limb_14_col149, partial_ec_mul_output_limb_15_col150, partial_ec_mul_output_limb_16_col151, partial_ec_mul_output_limb_17_col152, partial_ec_mul_output_limb_18_col153, partial_ec_mul_output_limb_19_col154, partial_ec_mul_output_limb_20_col155, partial_ec_mul_output_limb_21_col156, partial_ec_mul_output_limb_22_col157, partial_ec_mul_output_limb_23_col158, partial_ec_mul_output_limb_24_col159, partial_ec_mul_output_limb_25_col160, partial_ec_mul_output_limb_26_col161, partial_ec_mul_output_limb_27_col162, partial_ec_mul_output_limb_28_col163, partial_ec_mul_output_limb_29_col164, partial_ec_mul_output_limb_30_col165, partial_ec_mul_output_limb_31_col166, partial_ec_mul_output_limb_32_col167, partial_ec_mul_output_limb_33_col168, partial_ec_mul_output_limb_34_col169, partial_ec_mul_output_limb_35_col170, partial_ec_mul_output_limb_36_col171, partial_ec_mul_output_limb_37_col172, partial_ec_mul_output_limb_38_col173, partial_ec_mul_output_limb_39_col174, partial_ec_mul_output_limb_40_col175, partial_ec_mul_output_limb_41_col176];*lookup_data.pedersen_aggregator_0 = [input_limb_0_col0, input_limb_1_col1, input_limb_2_col2];let mult_at_row = *mults.get(row_index).unwrap_or(&PackedM31::zero());
             *row[205] = mult_at_row;
-            *lookup_data.mults = mult_at_row;
+            *lookup_data.mults_0 = mult_at_row;
         });
 
     (trace, lookup_data, sub_component_inputs)
@@ -555,7 +555,7 @@ struct LookupData {
     range_check_8_1: Vec<[PackedM31; 1]>,
     range_check_8_2: Vec<[PackedM31; 1]>,
     range_check_8_3: Vec<[PackedM31; 1]>,
-    mults: Vec<PackedM31>,
+    mults_0: Vec<PackedM31>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -649,13 +649,13 @@ impl InteractionClaimGenerator {
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_id_to_big_2,
             &self.lookup_data.pedersen_aggregator_0,
-            self.lookup_data.mults,
+            self.lookup_data.mults_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1, mults)| {
+            .for_each(|(writer, values0, values1, mults_0)| {
                 let denom0: PackedQM31 = memory_id_to_big.combine(values0);
                 let denom1: PackedQM31 = pedersen_aggregator.combine(values1);
-                writer.write_frac(denom1 - denom0 * mults, denom0 * denom1);
+                writer.write_frac(denom1 - denom0 * mults_0, denom0 * denom1);
             });
         col_gen.finalize_col();
 
