@@ -317,6 +317,6 @@ mod tests {
                 point,
             );
         preprocessed_trace.validate_usage();
-        assert_eq!(sum, QM31Trait::from_fixed_array(RANGE_CHECK_BUILTIN_BITS_96_SAMPLE_EVAL_RESULT))
+        assert_eq!(sum, QM31Trait::from_fixed_array(RANGE_CHECK_96_BUILTIN_SAMPLE_EVAL_RESULT))
     }
 }

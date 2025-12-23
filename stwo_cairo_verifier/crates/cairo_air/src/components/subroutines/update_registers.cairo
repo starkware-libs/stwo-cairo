@@ -2,7 +2,7 @@
 
 use crate::components::subroutines::cond_felt_252_as_addr::cond_felt_252_as_addr_evaluate;
 use crate::components::subroutines::cond_felt_252_as_rel_imm::cond_felt_252_as_rel_imm_evaluate;
-use crate::components::subroutines::range_check_ap::range_check_ap_evaluate;
+use crate::components::subroutines::range_check_29::range_check_29_evaluate;
 use crate::prelude::*;
 
 
@@ -21,7 +21,7 @@ pub fn update_registers_evaluate(
     next_pc_jnz_col10: QM31,
     next_pc_col11: QM31,
     next_ap_col12: QM31,
-    range_check_ap_bot11bits_col13: QM31,
+    range_check_29_bot11bits_col13: QM31,
     next_fp_col14: QM31,
     range_check_18_lookup_elements: @crate::RangeCheck_18Elements,
     range_check_11_lookup_elements: @crate::RangeCheck_11Elements,
@@ -313,9 +313,9 @@ pub fn update_registers_evaluate(
             + (update_registers_input_opcode_call * qm31_const::<2, 0, 0, 0>()))))
         * domain_vanishing_eval_inv;
     sum = sum * random_coeff + constraint_quotient;
-    range_check_ap_evaluate(
+    range_check_29_evaluate(
         next_ap_col12,
-        range_check_ap_bot11bits_col13,
+        range_check_29_bot11bits_col13,
         range_check_18_lookup_elements,
         range_check_11_lookup_elements,
         ref range_check_18_sum_0,

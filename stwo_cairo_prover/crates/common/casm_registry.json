@@ -1,8 +1,9 @@
 {
-  "air_version": "f55204f4",
+  "air_version": "a2f99ae1",
   "air_fns": {
     "range_check_9_9": {
       "trace_type": "Component",
+      "log_height": 18,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -26,6 +27,7 @@
     },
     "memory_id_to_small": {
       "trace_type": "Memory",
+      "log_height": null,
       "num_state_cols": 8,
       "use_lookup_cols": {
         "RangeCheck_9_9": 1,
@@ -57,6 +59,7 @@
     },
     "memory_address_to_id": {
       "trace_type": "Memory",
+      "log_height": null,
       "num_state_cols": 1,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -73,6 +76,7 @@
     },
     "memory_id_to_big": {
       "trace_type": "Memory",
+      "log_height": null,
       "num_state_cols": 28,
       "use_lookup_cols": {
         "RangeCheck_9_9": 2,
@@ -116,6 +120,7 @@
     },
     "verify_bitwise_xor_9": {
       "trace_type": "Component",
+      "log_height": 18,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -132,6 +137,7 @@
     },
     "verify_bitwise_xor_8": {
       "trace_type": "Component",
+      "log_height": 16,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -149,6 +155,7 @@
     },
     "bitwise_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 89,
       "use_lookup_cols": {
         "MemoryAddressToId": 5,
@@ -183,8 +190,9 @@
       "max_instances_uses_limit": 79536431,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_builtin_bits_128": {
+    "range_check_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 17,
       "use_lookup_cols": {
         "MemoryAddressToId": 1,
@@ -215,6 +223,7 @@
     },
     "range_check_6": {
       "trace_type": "Component",
+      "log_height": 6,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -229,8 +238,9 @@
       "max_instances_uses_limit": 2147483647,
       "max_instances_rows_limit": 268435456
     },
-    "range_check_builtin_bits_96": {
+    "range_check96_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 12,
       "use_lookup_cols": {
         "MemoryAddressToId": 1,
@@ -264,6 +274,7 @@
     },
     "add_mod_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 267,
       "use_lookup_cols": {
         "MemoryAddressToId": 29,
@@ -294,6 +305,7 @@
     },
     "range_check_12": {
       "trace_type": "Component",
+      "log_height": 12,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -310,6 +322,7 @@
     },
     "range_check_3_6_6_3": {
       "trace_type": "Component",
+      "log_height": 18,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -326,6 +339,7 @@
     },
     "range_check_18": {
       "trace_type": "Component",
+      "log_height": 18,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -343,6 +357,7 @@
     },
     "mul_mod_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 426,
       "use_lookup_cols": {
         "MemoryAddressToId": 29,
@@ -382,6 +397,7 @@
     },
     "range_check_20": {
       "trace_type": "Component",
+      "log_height": 20,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -405,6 +421,7 @@
     },
     "cube_252": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 140,
       "use_lookup_cols": {
         "RangeCheck_9_9": 6,
@@ -472,6 +489,7 @@
     },
     "poseidon_round_keys": {
       "trace_type": "Component",
+      "log_height": 6,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -488,6 +506,7 @@
     },
     "range_check_3_3_3_3_3": {
       "trace_type": "Component",
+      "log_height": 15,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -504,6 +523,7 @@
     },
     "poseidon_full_round_chain": {
       "trace_type": "ChainRound",
+      "log_height": null,
       "num_state_cols": 125,
       "use_lookup_cols": {
         "Cube252": 3,
@@ -550,6 +570,7 @@
     },
     "range_check_252_width_27": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 19,
       "use_lookup_cols": {
         "RangeCheck_9_9": 1,
@@ -590,6 +611,7 @@
     },
     "range_check_4_4_4_4": {
       "trace_type": "Component",
+      "log_height": 16,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -606,6 +628,7 @@
     },
     "range_check_4_4": {
       "trace_type": "Component",
+      "log_height": 8,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -622,6 +645,7 @@
     },
     "poseidon_3_partial_rounds_chain": {
       "trace_type": "ChainRound",
+      "log_height": null,
       "num_state_cols": 168,
       "use_lookup_cols": {
         "PoseidonRoundKeys": 1,
@@ -676,6 +700,7 @@
     },
     "poseidon_aggregator": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 341,
       "use_lookup_cols": {
         "MemoryIdToBig": 6,
@@ -740,6 +765,7 @@
     },
     "poseidon_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 6,
       "use_lookup_cols": {
         "MemoryAddressToId": 6,
@@ -790,6 +816,7 @@
     },
     "range_check_8": {
       "trace_type": "Component",
+      "log_height": 8,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -806,6 +833,7 @@
     },
     "pedersen_points_table": {
       "trace_type": "Component",
+      "log_height": 23,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -822,6 +850,7 @@
     },
     "partial_ec_mul": {
       "trace_type": "ChainRound",
+      "log_height": null,
       "num_state_cols": 296,
       "use_lookup_cols": {
         "PedersenPointsTable": 1,
@@ -893,6 +922,7 @@
     },
     "pedersen_aggregator": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 205,
       "use_lookup_cols": {
         "MemoryIdToBig": 3,
@@ -939,6 +969,7 @@
     },
     "pedersen_builtin": {
       "trace_type": "Builtin",
+      "log_height": null,
       "num_state_cols": 3,
       "use_lookup_cols": {
         "MemoryAddressToId": 3,
@@ -982,6 +1013,7 @@
     },
     "range_check_7_2_5": {
       "trace_type": "Component",
+      "log_height": 14,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -998,6 +1030,7 @@
     },
     "range_check_4_3": {
       "trace_type": "Component",
+      "log_height": 7,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1014,6 +1047,7 @@
     },
     "verify_instruction": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 16,
       "use_lookup_cols": {
         "RangeCheck_7_2_5": 1,
@@ -1052,6 +1086,7 @@
     },
     "range_check_11": {
       "trace_type": "Component",
+      "log_height": 11,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1068,6 +1103,7 @@
     },
     "generic_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 242,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1151,6 +1187,7 @@
     },
     "add_ap_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 16,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1194,6 +1231,7 @@
     },
     "add_opcode_small": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 38,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1231,6 +1269,7 @@
     },
     "add_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 102,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1268,6 +1307,7 @@
     },
     "assert_eq_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 11,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1303,6 +1343,7 @@
     },
     "assert_eq_opcode_double_deref": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 18,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1340,6 +1381,7 @@
     },
     "assert_eq_opcode_imm": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 8,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1375,6 +1417,7 @@
     },
     "call_opcode_abs": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 24,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1412,6 +1455,7 @@
     },
     "call_opcode_rel_imm": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 23,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1449,6 +1493,7 @@
     },
     "jnz_opcode_taken": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 46,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1486,6 +1531,7 @@
     },
     "jnz_opcode_non_taken": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 8,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1523,6 +1569,7 @@
     },
     "jump_opcode_rel_imm": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 12,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1560,6 +1607,7 @@
     },
     "jump_opcode_rel": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 15,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1597,6 +1645,7 @@
     },
     "jump_opcode_double_deref": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 20,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1634,6 +1683,7 @@
     },
     "jump_opcode_abs": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 13,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1671,6 +1721,7 @@
     },
     "mul_opcode_small": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 36,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1711,6 +1762,7 @@
     },
     "mul_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 129,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1772,6 +1824,7 @@
     },
     "ret_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 15,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1809,6 +1862,7 @@
     },
     "qm_31_add_mul_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 72,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
@@ -1849,6 +1903,7 @@
     },
     "blake_round_sigma": {
       "trace_type": "Component",
+      "log_height": 4,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1865,6 +1920,7 @@
     },
     "verify_bitwise_xor_12": {
       "trace_type": "Component",
+      "log_height": 24,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1881,6 +1937,7 @@
     },
     "verify_bitwise_xor_4": {
       "trace_type": "Component",
+      "log_height": 8,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1897,6 +1954,7 @@
     },
     "verify_bitwise_xor_7": {
       "trace_type": "Component",
+      "log_height": 14,
       "num_state_cols": 0,
       "use_lookup_cols": {},
       "yield_lookup_cols": {
@@ -1913,6 +1971,7 @@
     },
     "blake_g": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 52,
       "use_lookup_cols": {
         "VerifyBitwiseXor_8": 4,
@@ -1950,6 +2009,7 @@
     },
     "blake_round": {
       "trace_type": "ChainRound",
+      "log_height": null,
       "num_state_cols": 211,
       "use_lookup_cols": {
         "BlakeRoundSigma": 1,
@@ -1999,6 +2059,7 @@
     },
     "triple_xor_32": {
       "trace_type": "Component",
+      "log_height": null,
       "num_state_cols": 20,
       "use_lookup_cols": {
         "VerifyBitwiseXor_8": 4,
@@ -2024,6 +2085,7 @@
     },
     "blake_compress_opcode": {
       "trace_type": "Opcode",
+      "log_height": null,
       "num_state_cols": 173,
       "use_lookup_cols": {
         "VerifyInstruction": 1,
