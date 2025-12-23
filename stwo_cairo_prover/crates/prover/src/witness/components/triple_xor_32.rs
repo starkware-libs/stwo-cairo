@@ -37,18 +37,12 @@ impl ClaimGenerator {
 
         let (trace, lookup_data, sub_component_inputs) =
             write_trace_simd(self.packed_inputs, n_rows, verify_bitwise_xor_8_state);
-        sub_component_inputs
-            .verify_bitwise_xor_8
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_8_b
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 1);
-            });
+        for inputs in sub_component_inputs.verify_bitwise_xor_8 {
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_8_b {
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 1);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

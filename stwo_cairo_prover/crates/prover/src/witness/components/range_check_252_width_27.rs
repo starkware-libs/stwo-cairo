@@ -42,48 +42,27 @@ impl ClaimGenerator {
             range_check_9_9_state,
             range_check_18_state,
         );
-        sub_component_inputs
-            .range_check_9_9
-            .iter()
-            .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_18
-            .iter()
-            .for_each(|inputs| {
-                range_check_18_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_9_9_b
-            .iter()
-            .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs, 1);
-            });
-        sub_component_inputs
-            .range_check_18_b
-            .iter()
-            .for_each(|inputs| {
-                range_check_18_state.add_packed_inputs(inputs, 1);
-            });
-        sub_component_inputs
-            .range_check_9_9_c
-            .iter()
-            .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs, 2);
-            });
-        sub_component_inputs
-            .range_check_9_9_d
-            .iter()
-            .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs, 3);
-            });
-        sub_component_inputs
-            .range_check_9_9_e
-            .iter()
-            .for_each(|inputs| {
-                range_check_9_9_state.add_packed_inputs(inputs, 4);
-            });
+        for inputs in sub_component_inputs.range_check_9_9 {
+            range_check_9_9_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_18 {
+            range_check_18_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_9_9_b {
+            range_check_9_9_state.add_packed_inputs(&inputs, 1);
+        }
+        for inputs in sub_component_inputs.range_check_18_b {
+            range_check_18_state.add_packed_inputs(&inputs, 1);
+        }
+        for inputs in sub_component_inputs.range_check_9_9_c {
+            range_check_9_9_state.add_packed_inputs(&inputs, 2);
+        }
+        for inputs in sub_component_inputs.range_check_9_9_d {
+            range_check_9_9_state.add_packed_inputs(&inputs, 3);
+        }
+        for inputs in sub_component_inputs.range_check_9_9_e {
+            range_check_9_9_state.add_packed_inputs(&inputs, 4);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

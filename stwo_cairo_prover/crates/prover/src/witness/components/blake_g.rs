@@ -51,42 +51,24 @@ impl ClaimGenerator {
             verify_bitwise_xor_7_state,
             verify_bitwise_xor_9_state,
         );
-        sub_component_inputs
-            .verify_bitwise_xor_8
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_8_b
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_8_state.add_packed_inputs(inputs, 1);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_12
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_12_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_4
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_4_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_7
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_7_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .verify_bitwise_xor_9
-            .iter()
-            .for_each(|inputs| {
-                verify_bitwise_xor_9_state.add_packed_inputs(inputs, 0);
-            });
+        for inputs in sub_component_inputs.verify_bitwise_xor_8 {
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_8_b {
+            verify_bitwise_xor_8_state.add_packed_inputs(&inputs, 1);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_12 {
+            verify_bitwise_xor_12_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_4 {
+            verify_bitwise_xor_4_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_7 {
+            verify_bitwise_xor_7_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.verify_bitwise_xor_9 {
+            verify_bitwise_xor_9_state.add_packed_inputs(&inputs, 0);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (

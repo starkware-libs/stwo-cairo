@@ -44,72 +44,39 @@ impl ClaimGenerator {
             verify_instruction_state,
             range_check_20_state,
         );
-        sub_component_inputs
-            .verify_instruction
-            .iter()
-            .for_each(|inputs| {
-                verify_instruction_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .memory_address_to_id
-            .iter()
-            .for_each(|inputs| {
-                memory_address_to_id_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .memory_id_to_big
-            .iter()
-            .for_each(|inputs| {
-                memory_id_to_big_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_20
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 0);
-            });
-        sub_component_inputs
-            .range_check_20_b
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 1);
-            });
-        sub_component_inputs
-            .range_check_20_c
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 2);
-            });
-        sub_component_inputs
-            .range_check_20_d
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 3);
-            });
-        sub_component_inputs
-            .range_check_20_e
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 4);
-            });
-        sub_component_inputs
-            .range_check_20_f
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 5);
-            });
-        sub_component_inputs
-            .range_check_20_g
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 6);
-            });
-        sub_component_inputs
-            .range_check_20_h
-            .iter()
-            .for_each(|inputs| {
-                range_check_20_state.add_packed_inputs(inputs, 7);
-            });
+        for inputs in sub_component_inputs.verify_instruction {
+            verify_instruction_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.memory_address_to_id {
+            memory_address_to_id_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.memory_id_to_big {
+            memory_id_to_big_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_20 {
+            range_check_20_state.add_packed_inputs(&inputs, 0);
+        }
+        for inputs in sub_component_inputs.range_check_20_b {
+            range_check_20_state.add_packed_inputs(&inputs, 1);
+        }
+        for inputs in sub_component_inputs.range_check_20_c {
+            range_check_20_state.add_packed_inputs(&inputs, 2);
+        }
+        for inputs in sub_component_inputs.range_check_20_d {
+            range_check_20_state.add_packed_inputs(&inputs, 3);
+        }
+        for inputs in sub_component_inputs.range_check_20_e {
+            range_check_20_state.add_packed_inputs(&inputs, 4);
+        }
+        for inputs in sub_component_inputs.range_check_20_f {
+            range_check_20_state.add_packed_inputs(&inputs, 5);
+        }
+        for inputs in sub_component_inputs.range_check_20_g {
+            range_check_20_state.add_packed_inputs(&inputs, 6);
+        }
+        for inputs in sub_component_inputs.range_check_20_h {
+            range_check_20_state.add_packed_inputs(&inputs, 7);
+        }
         tree_builder.extend_evals(trace.to_evals());
 
         (
