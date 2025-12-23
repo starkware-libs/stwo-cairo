@@ -1,9 +1,8 @@
 use std::ops::Deref;
 use std::sync::Arc;
 
-use cairo_air::air::{CairoComponents, CairoInteractionElements};
-use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
+use cairo_air::air::CairoComponents;
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::Itertools;
 use stwo::core::channel::Blake2sChannel;
@@ -52,21 +51,6 @@ pub fn assert_component<E: FrameworkEval + Sync>(
 // * `cairo_components` - The components constraints to check.
 fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &CairoComponents) {
     let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = cairo_components;
-    let OpcodeComponents {
         add,
         add_small,
         add_ap,
@@ -87,7 +71,29 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         mul_small,
         qm31,
         ret,
-    } = opcodes;
+        verify_instruction,
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
+        pedersen_context,
+        poseidon_context,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_9,
+        add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
+    } = cairo_components;
     let RangeChecksComponents {
         rc_6,
         rc_8,
@@ -103,27 +109,36 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
         rc_4_4_4_4,
         rc_3_3_3_3_3,
     } = range_checks;
-    assert_many(add, &trace);
-    assert_many(add_small, &trace);
-    assert_many(add_ap, &trace);
-    assert_many(assert_eq, &trace);
-    assert_many(assert_eq_imm, &trace);
-    assert_many(assert_eq_double_deref, &trace);
-    assert_many(blake, &trace);
-    assert_many(call, &trace);
-    assert_many(call_rel_imm, &trace);
-    assert_many(generic, &trace);
-    assert_many(jnz, &trace);
-    assert_many(jnz_taken, &trace);
-    assert_many(jump, &trace);
-    assert_many(jump_double_deref, &trace);
-    assert_many(jump_rel, &trace);
-    assert_many(jump_rel_imm, &trace);
-    assert_many(mul, &trace);
-    assert_many(mul_small, &trace);
-    assert_many(qm31, &trace);
-    assert_many(ret, &trace);
-
+    add.as_ref().inspect(|c| assert_component(c, &trace));
+    add_small.as_ref().inspect(|c| assert_component(c, &trace));
+    add_ap.as_ref().inspect(|c| assert_component(c, &trace));
+    assert_eq.as_ref().inspect(|c| assert_component(c, &trace));
+    assert_eq_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    assert_eq_double_deref
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    blake.as_ref().inspect(|c| assert_component(c, &trace));
+    call.as_ref().inspect(|c| assert_component(c, &trace));
+    call_rel_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    generic.as_ref().inspect(|c| assert_component(c, &trace));
+    jnz.as_ref().inspect(|c| assert_component(c, &trace));
+    jnz_taken.as_ref().inspect(|c| assert_component(c, &trace));
+    jump.as_ref().inspect(|c| assert_component(c, &trace));
+    jump_double_deref
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    jump_rel.as_ref().inspect(|c| assert_component(c, &trace));
+    jump_rel_imm
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    mul.as_ref().inspect(|c| assert_component(c, &trace));
+    mul_small.as_ref().inspect(|c| assert_component(c, &trace));
+    qm31.as_ref().inspect(|c| assert_component(c, &trace));
+    ret.as_ref().inspect(|c| assert_component(c, &trace));
     assert_component(verify_instruction, &trace);
     assert_component(rc_6, &trace);
     assert_component(rc_8, &trace);
@@ -148,51 +163,40 @@ fn assert_cairo_components(trace: TreeVec<Vec<&Vec<M31>>>, cairo_components: &Ca
     }
     assert_component(&memory_id_to_value.1, &trace);
 
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        assert_component(blake_round, &trace);
-        assert_component(blake_g, &trace);
-        assert_component(blake_sigma, &trace);
-        assert_component(triple_xor_32, &trace);
-        assert_component(verify_bitwise_xor_12, &trace);
-    }
-
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        assert_component(add_mod, &trace);
-    }
-    if let Some(mul_mod) = mul_mod_builtin {
-        assert_component(mul_mod, &trace);
-    }
-    if let Some(bitwise) = bitwise_builtin {
-        assert_component(bitwise, &trace);
-    }
-    if let Some(pedersen) = pedersen_builtin {
-        assert_component(pedersen, &trace);
-    }
-    if let Some(poseidon) = poseidon_builtin {
-        assert_component(poseidon, &trace);
-    }
-    if let Some(rc_96) = range_check_96_builtin {
-        assert_component(rc_96, &trace);
-    }
-    if let Some(rc_128) = range_check_128_builtin {
-        assert_component(rc_128, &trace);
-    }
+    blake_round
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    blake_g.as_ref().inspect(|c| assert_component(c, &trace));
+    blake_sigma
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    triple_xor_32
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    verify_bitwise_xor_12
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    add_mod_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    mul_mod_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    bitwise_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    pedersen_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    poseidon_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    range_check_96_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
+    range_check_128_builtin
+        .as_ref()
+        .inspect(|c| assert_component(c, &trace));
     if let Some(cairo_air::pedersen::air::Components {
         pedersen_aggregator,
         partial_ec_mul,
@@ -251,11 +255,4 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
     );
 
     assert_cairo_components(commitment_scheme.trace_domain_evaluations(), &components);
-}
-
-fn assert_many<E: FrameworkEval + Sync>(
-    components: &[FrameworkComponent<E>],
-    trace: &TreeVec<Vec<&Vec<M31>>>,
-) {
-    components.iter().for_each(|x| assert_component(x, trace));
 }

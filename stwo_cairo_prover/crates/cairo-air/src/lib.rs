@@ -3,10 +3,7 @@
 use serde::{Deserialize, Serialize};
 
 pub mod air;
-pub mod blake;
-pub mod builtins_air;
 pub mod components;
-pub mod opcodes_air;
 pub mod pedersen;
 pub mod poseidon;
 pub mod range_checks_air;
@@ -16,7 +13,10 @@ pub mod utils;
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
-pub use air::CairoProof;
+pub mod cairo_interaction_elements;
+pub mod cairo_proof;
+pub mod public_data;
+pub use cairo_proof::CairoProof;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 /// The preprocessed trace used for the prover.

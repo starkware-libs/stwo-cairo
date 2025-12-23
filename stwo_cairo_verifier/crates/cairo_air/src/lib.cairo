@@ -58,6 +58,13 @@ use hash_imports::*;
 
 pub mod cairo_air;
 use cairo_air::*;
+use stwo_cairo_air::components::{
+    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin, poseidon_builtin,
+    range_check_builtin_bits_128, range_check_builtin_bits_96,
+};
+
+pub mod cairo_interaction_elements;
+pub use cairo_interaction_elements::{CairoInteractionElements, CairoInteractionElementsImpl};
 
 pub mod cairo_component;
 pub mod components;
@@ -96,14 +103,6 @@ use pedersen::PedersenContextInteractionClaimImpl;
 pub mod poseidon;
 use poseidon::PoseidonContextInteractionClaimImpl;
 
-pub mod blake;
-use blake::BlakeContextInteractionClaimImpl;
-
-pub mod builtins;
-use builtins::{BuiltinsClaim, BuiltinsInteractionClaimImpl};
-
-pub mod opcodes;
-use opcodes::OpcodeInteractionClaimImpl;
 
 pub mod range_checks;
 use range_checks::RangeChecksInteractionClaimImpl;
@@ -269,50 +268,6 @@ pub fn verify_cairo(proof: CairoProof) {
     );
 }
 
-
-pub fn lookup_sum(
-    claim: @CairoClaim,
-    elements: @CairoInteractionElements,
-    interaction_claim: @CairoInteractionClaim,
-) -> QM31 {
-    let mut sum = claim.public_data.logup_sum(elements);
-    // If the table is padded, take the sum of the non-padded values.
-    // Otherwise, the claimed_sum is the total_sum.
-    // TODO(Ohad): hide this logic behind `InteractionClaim`, and only sum here.
-
-    // TODO(Andrew): double check this is correct order.
-    let CairoInteractionClaim {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        pedersen_context,
-        poseidon_context,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-    } = interaction_claim;
-
-    sum += opcodes.sum();
-    sum += *verify_instruction.claimed_sum;
-    sum += blake_context.sum();
-    sum += builtins.sum();
-    sum += pedersen_context.sum();
-    sum += poseidon_context.sum();
-    sum += *memory_address_to_id.claimed_sum;
-    sum += memory_id_to_value.sum();
-    sum += range_checks.sum();
-    sum += *verify_bitwise_xor_4.claimed_sum;
-    sum += *verify_bitwise_xor_7.claimed_sum;
-    sum += *verify_bitwise_xor_8.claimed_sum;
-    sum += *verify_bitwise_xor_9.claimed_sum;
-    sum
-}
-
 /// Verifies the claim of the Cairo proof.
 ///
 /// # Panics
@@ -329,7 +284,16 @@ fn verify_claim(claim: @CairoClaim) {
         },
     } = claim.public_data;
 
-    verify_builtins(claim.builtins, public_segments);
+    verify_builtins(
+        claim.add_mod_builtin,
+        claim.bitwise_builtin,
+        claim.mul_mod_builtin,
+        claim.pedersen_builtin,
+        claim.poseidon_builtin,
+        claim.range_check_96_builtin,
+        claim.range_check_128_builtin,
+        public_segments,
+    );
     verify_program(*program, public_segments);
 
     let initial_pc: u32 = (*initial_pc).into();
@@ -375,13 +339,22 @@ fn verify_claim(claim: @CairoClaim) {
 /// Checks that the ranges given by `segment_ranges` are valid given the claim.
 ///
 /// `segment_ranges` specifies the memory segments for each builtin used by the Cairo program.
-/// `builtins_claim` describes the address ranges that are verified by the builtins AIR.
+/// Each builtin claim describes the address ranges that are verified by the builtins AIR.
 ///
 /// This function ensures that all builtin segments are fully contained within the address ranges
 /// verified by the builtins AIR.
 /// The builtins keccak, ec_op, and ecdsa, are not supported, and therefore it's checked that their
 /// segments are empty.
-fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmentRanges) {
+fn verify_builtins(
+    add_mod_builtin: @Option<add_mod_builtin::Claim>,
+    bitwise_builtin: @Option<bitwise_builtin::Claim>,
+    mul_mod_builtin: @Option<mul_mod_builtin::Claim>,
+    pedersen_builtin: @Option<pedersen_builtin::Claim>,
+    poseidon_builtin: @Option<poseidon_builtin::Claim>,
+    range_check_96_builtin: @Option<range_check_builtin_bits_96::Claim>,
+    range_check_128_builtin: @Option<range_check_builtin_bits_128::Claim>,
+    segment_ranges: @PublicSegmentRanges,
+) {
     let PublicSegmentRanges {
         ec_op: ec_op_segment_range,
         ecdsa: ecdsa_segment_range,
@@ -406,15 +379,6 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
     assert!(output_segment_range.start_ptr.value <= output_segment_range.stop_ptr.value);
 
     // All other supported builtins.
-    let BuiltinsClaim {
-        range_check_128_builtin,
-        range_check_96_builtin,
-        bitwise_builtin,
-        add_mod_builtin,
-        mul_mod_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-    } = builtins_claim;
     check_builtin(
         range_check_128_builtin
             .map(
@@ -904,4 +868,3 @@ impl CairoVerificationErrorDisplay of core::fmt::Display<CairoVerificationError>
         }
     }
 }
-

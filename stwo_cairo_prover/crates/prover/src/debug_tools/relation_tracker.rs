@@ -1,6 +1,4 @@
 use cairo_air::air::{CairoComponents, PublicData};
-use cairo_air::builtins_air::BuiltinComponents;
-use cairo_air::opcodes_air::OpcodeComponents;
 use cairo_air::range_checks_air::RangeChecksComponents;
 use itertools::{chain, Itertools};
 use num_traits::{One, Zero};
@@ -100,21 +98,6 @@ fn cairo_relation_entries(
     trace: &TreeVec<Vec<&Vec<M31>>>,
 ) -> Vec<RelationTrackerEntry> {
     let CairoComponents {
-        opcodes,
-        verify_instruction,
-        blake_context,
-        builtins,
-        memory_address_to_id,
-        memory_id_to_value,
-        range_checks,
-        verify_bitwise_xor_4,
-        verify_bitwise_xor_7,
-        verify_bitwise_xor_8,
-        verify_bitwise_xor_9,
-        pedersen_context,
-        poseidon_context,
-    } = cairo_components;
-    let OpcodeComponents {
         add,
         add_small,
         add_ap,
@@ -135,7 +118,29 @@ fn cairo_relation_entries(
         mul_small,
         qm31,
         ret,
-    } = opcodes;
+        verify_instruction,
+        blake_round,
+        blake_g,
+        blake_sigma,
+        triple_xor_32,
+        verify_bitwise_xor_12,
+        memory_address_to_id,
+        memory_id_to_value,
+        range_checks,
+        verify_bitwise_xor_4,
+        verify_bitwise_xor_7,
+        verify_bitwise_xor_8,
+        verify_bitwise_xor_9,
+        add_mod_builtin,
+        bitwise_builtin,
+        mul_mod_builtin,
+        pedersen_builtin,
+        poseidon_builtin,
+        range_check_96_builtin,
+        range_check_128_builtin,
+        pedersen_context,
+        poseidon_context,
+    } = cairo_components;
 
     let RangeChecksComponents {
         rc_6,
@@ -154,26 +159,26 @@ fn cairo_relation_entries(
     } = range_checks;
 
     let mut entries = chain!(
-        add_to_relation_entries_many(add, trace),
-        add_to_relation_entries_many(add_small, trace),
-        add_to_relation_entries_many(add_ap, trace),
-        add_to_relation_entries_many(assert_eq, trace),
-        add_to_relation_entries_many(assert_eq_imm, trace),
-        add_to_relation_entries_many(assert_eq_double_deref, trace),
-        add_to_relation_entries_many(blake, trace),
-        add_to_relation_entries_many(call, trace),
-        add_to_relation_entries_many(call_rel_imm, trace),
-        add_to_relation_entries_many(generic, trace),
-        add_to_relation_entries_many(jnz, trace),
-        add_to_relation_entries_many(jnz_taken, trace),
-        add_to_relation_entries_many(jump, trace),
-        add_to_relation_entries_many(jump_double_deref, trace),
-        add_to_relation_entries_many(jump_rel, trace),
-        add_to_relation_entries_many(jump_rel_imm, trace),
-        add_to_relation_entries_many(mul, trace),
-        add_to_relation_entries_many(mul_small, trace),
-        add_to_relation_entries_many(qm31, trace),
-        add_to_relation_entries_many(ret, trace),
+        add_to_relation_option(add, trace),
+        add_to_relation_option(add_small, trace),
+        add_to_relation_option(add_ap, trace),
+        add_to_relation_option(assert_eq, trace),
+        add_to_relation_option(assert_eq_imm, trace),
+        add_to_relation_option(assert_eq_double_deref, trace),
+        add_to_relation_option(blake, trace),
+        add_to_relation_option(call, trace),
+        add_to_relation_option(call_rel_imm, trace),
+        add_to_relation_option(generic, trace),
+        add_to_relation_option(jnz, trace),
+        add_to_relation_option(jnz_taken, trace),
+        add_to_relation_option(jump, trace),
+        add_to_relation_option(jump_double_deref, trace),
+        add_to_relation_option(jump_rel, trace),
+        add_to_relation_option(jump_rel_imm, trace),
+        add_to_relation_option(mul, trace),
+        add_to_relation_option(mul_small, trace),
+        add_to_relation_option(qm31, trace),
+        add_to_relation_option(ret, trace),
         add_to_relation_entries(verify_instruction, trace),
         add_to_relation_entries(rc_6, trace),
         add_to_relation_entries(rc_8, trace),
@@ -195,57 +200,20 @@ fn cairo_relation_entries(
         add_to_relation_entries(memory_address_to_id, trace),
         add_to_relation_entries_many(&memory_id_to_value.0, trace),
         add_to_relation_entries(&memory_id_to_value.1, trace),
+        add_to_relation_option(blake_round, trace),
+        add_to_relation_option(blake_g, trace),
+        add_to_relation_option(blake_sigma, trace),
+        add_to_relation_option(triple_xor_32, trace),
+        add_to_relation_option(verify_bitwise_xor_12, trace),
+        add_to_relation_option(add_mod_builtin, trace),
+        add_to_relation_option(bitwise_builtin, trace),
+        add_to_relation_option(pedersen_builtin, trace),
+        add_to_relation_option(poseidon_builtin, trace),
+        add_to_relation_option(mul_mod_builtin, trace),
+        add_to_relation_option(range_check_96_builtin, trace),
+        add_to_relation_option(range_check_128_builtin, trace),
     )
     .collect_vec();
-
-    if let Some(cairo_air::blake::air::Components {
-        blake_round,
-        blake_g,
-        blake_sigma,
-        triple_xor_32,
-        verify_bitwise_xor_12,
-    }) = &blake_context.components
-    {
-        entries.extend(chain!(
-            add_to_relation_entries(blake_round, trace),
-            add_to_relation_entries(blake_g, trace),
-            add_to_relation_entries(blake_sigma, trace),
-            add_to_relation_entries(triple_xor_32, trace),
-            add_to_relation_entries(verify_bitwise_xor_12, trace),
-        ));
-    }
-
-    // Builtins
-    let BuiltinComponents {
-        add_mod_builtin,
-        bitwise_builtin,
-        pedersen_builtin,
-        poseidon_builtin,
-        mul_mod_builtin,
-        range_check_96_builtin,
-        range_check_128_builtin,
-    } = builtins;
-    if let Some(add_mod) = add_mod_builtin {
-        entries.extend(add_to_relation_entries(add_mod, trace));
-    }
-    if let Some(bitwise) = bitwise_builtin {
-        entries.extend(add_to_relation_entries(bitwise, trace));
-    }
-    if let Some(pederson) = pedersen_builtin {
-        entries.extend(add_to_relation_entries(pederson, trace));
-    }
-    if let Some(poseidon) = poseidon_builtin {
-        entries.extend(add_to_relation_entries(poseidon, trace));
-    }
-    if let Some(mul_mod) = mul_mod_builtin {
-        entries.extend(add_to_relation_entries(mul_mod, trace));
-    }
-    if let Some(rc_96) = range_check_96_builtin {
-        entries.extend(add_to_relation_entries(rc_96, trace));
-    }
-    if let Some(rc_128) = range_check_128_builtin {
-        entries.extend(add_to_relation_entries(rc_128, trace));
-    }
 
     if let Some(cairo_air::poseidon::air::Components {
         poseidon_aggregator,
@@ -290,6 +258,16 @@ fn add_to_relation_entries_many<E: FrameworkEval>(
         .iter()
         .flat_map(|x| add_to_relation_entries(x, trace))
         .collect()
+}
+
+fn add_to_relation_option<E: FrameworkEval>(
+    component: &Option<FrameworkComponent<E>>,
+    trace: &TreeVec<Vec<&Vec<M31>>>,
+) -> Vec<RelationTrackerEntry> {
+    component
+        .as_ref()
+        .map(|c| add_to_relation_entries(c, trace))
+        .unwrap_or_default()
 }
 
 /// Reduces the polynomial to a minimal degree polynomial that evaluates to the same values.
