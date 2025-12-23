@@ -4,11 +4,12 @@ use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
+use crate::cairo_interaction_elements::CairoInteractionElements;
 use crate::components::prelude::*;
 use crate::components::{
     indented_component_display, partial_ec_mul, pedersen_aggregator, pedersen_points_table,
 };
+use crate::utils::{accumulate_relation_uses, RelationUsesDict};
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextClaim {

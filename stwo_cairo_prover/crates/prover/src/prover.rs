@@ -3,7 +3,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::air::{lookup_sum, CairoComponents};
+use cairo_air::cairo_interaction_elements::CairoInteractionElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
@@ -664,7 +665,6 @@ pub mod tests {
                 let poseidon_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
-                        .builtins
                         .poseidon_builtin
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
@@ -687,7 +687,6 @@ pub mod tests {
                 let poseidon_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
-                        .builtins
                         .poseidon_builtin
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
@@ -727,7 +726,6 @@ pub mod tests {
                 let pedersen_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
-                        .builtins
                         .pedersen_builtin
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,
@@ -750,7 +748,6 @@ pub mod tests {
                 let pedersen_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
-                        .builtins
                         .pedersen_builtin
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,

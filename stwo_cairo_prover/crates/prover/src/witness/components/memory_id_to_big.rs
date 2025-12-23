@@ -575,9 +575,7 @@ impl InteractionClaimGenerator {
 
 #[cfg(test)]
 mod tests {
-    use std::sync::Arc;
-
-    use cairo_air::air::CairoInteractionElements;
+    use cairo_air::cairo_interaction_elements::CairoInteractionElements;
     use cairo_air::components::memory_id_to_big::{self, SmallEval};
     use cairo_air::PreProcessedTraceVariant;
     use itertools::Itertools;
@@ -597,6 +595,7 @@ mod tests {
     use crate::debug_tools::assert_constraints::assert_component;
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
     use crate::witness::components::{memory_address_to_id, range_check_9_9};
+    use crate::witness::prelude::Arc;
 
     #[test]
     fn test_memory_constraints() {
