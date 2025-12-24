@@ -15,7 +15,7 @@ use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::Felt252;
 use clap::ValueEnum;
 use serde_json::from_reader;
-use stwo_cairo_adapter::adapter::adapt;
+use stwo_cairo_adapter::adapter::adapt_from_extracted_data;
 use stwo_cairo_adapter::ProverInput;
 
 #[derive(Clone, Debug, ValueEnum)]
@@ -62,10 +62,10 @@ pub fn run_and_adapt(
 
             let mut exec_scopes = ExecutionScopes::new();
             if let Some(args) = args {
-                // Insert the program input into the execution scopes if exists
+                // Insert the program input into the execution scopes if exists.
                 exec_scopes.insert_value("program_input", read_to_string(args)?);
             }
-            // Insert the program object into the execution scopes
+            // Insert the program object into the execution scopes.
             exec_scopes.insert_value("program_object", program.clone());
 
             (
@@ -76,12 +76,40 @@ pub fn run_and_adapt(
         }
     };
 
-    adapt(&cairo_run_program_with_initial_scope(
-        &program,
-        &cairo_run_config,
-        hints.as_mut(),
-        exec_scopes,
-    )?)
+    // Extract data from runner before adaptation to reduce peak memory usage.
+    // This pattern allows the CairoRunner (VM + PIE ~11GB) to be dropped before
+    // the expensive relocation and padding operations (~9GB) begin, reducing
+    // peak memory from ~27.5GB to ~16-18GB.
+    let (relocatable_trace, relocatable_memory, public_memory_offsets, builtin_segments) = {
+        let cairo_runner = cairo_run_program_with_initial_scope(
+            &program,
+            &cairo_run_config,
+            hints.as_mut(),
+            exec_scopes,
+        )?;
+
+        // Extract all needed data.
+        let relocatable_trace = cairo_runner.get_relocatable_trace()?.to_vec();
+        let relocatable_memory = cairo_runner.get_relocatable_memory();
+        let public_memory_offsets = cairo_runner.vm.segments.public_memory_offsets.clone();
+        let builtin_segments = cairo_runner.get_builtin_segments();
+
+        // Runner is dropped here, freeing ~11GB (VM + PIE).
+        (
+            relocatable_trace,
+            relocatable_memory,
+            public_memory_offsets,
+            builtin_segments,
+        )
+    };
+
+    // Now perform adaptation with extracted data.
+    adapt_from_extracted_data(
+        relocatable_trace,
+        relocatable_memory,
+        public_memory_offsets,
+        builtin_segments,
+    )
 }
 
 fn get_program_and_hints_from_executable(
