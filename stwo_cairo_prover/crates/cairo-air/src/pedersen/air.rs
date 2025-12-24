@@ -7,7 +7,8 @@ use stwo_constraint_framework::TraceLocationAllocator;
 use crate::air::{accumulate_relation_uses, CairoInteractionElements, RelationUsesDict};
 use crate::components::prelude::*;
 use crate::components::{
-    indented_component_display, partial_ec_mul, pedersen_aggregator, pedersen_points_table,
+    indented_component_display, partial_ec_mul_window_bits_18, pedersen_aggregator_window_bits_18,
+    pedersen_points_table_window_bits_18,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -37,9 +38,9 @@ impl PedersenContextClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
-    pub pedersen_aggregator: pedersen_aggregator::Claim,
-    pub partial_ec_mul: partial_ec_mul::Claim,
-    pub pedersen_points_table: pedersen_points_table::Claim,
+    pub pedersen_aggregator: pedersen_aggregator_window_bits_18::Claim,
+    pub partial_ec_mul: partial_ec_mul_window_bits_18::Claim,
+    pub pedersen_points_table: pedersen_points_table_window_bits_18::Claim,
 }
 impl Claim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -71,13 +72,13 @@ impl Claim {
 
         accumulate_relation_uses(
             relation_uses,
-            pedersen_aggregator::RELATION_USES_PER_ROW,
+            pedersen_aggregator_window_bits_18::RELATION_USES_PER_ROW,
             pedersen_aggregator.log_size,
         );
 
         accumulate_relation_uses(
             relation_uses,
-            partial_ec_mul::RELATION_USES_PER_ROW,
+            partial_ec_mul_window_bits_18::RELATION_USES_PER_ROW,
             partial_ec_mul.log_size,
         );
     }
@@ -104,9 +105,9 @@ impl PedersenContextInteractionClaim {
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
-    pub pedersen_aggregator: pedersen_aggregator::InteractionClaim,
-    pub partial_ec_mul: partial_ec_mul::InteractionClaim,
-    pub pedersen_points_table: pedersen_points_table::InteractionClaim,
+    pub pedersen_aggregator: pedersen_aggregator_window_bits_18::InteractionClaim,
+    pub partial_ec_mul: partial_ec_mul_window_bits_18::InteractionClaim,
+    pub pedersen_points_table: pedersen_points_table_window_bits_18::InteractionClaim,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
@@ -159,9 +160,9 @@ impl std::fmt::Display for PedersenContextComponents {
 }
 
 pub struct Components {
-    pub pedersen_aggregator: pedersen_aggregator::Component,
-    pub partial_ec_mul: partial_ec_mul::Component,
-    pub pedersen_points_table: pedersen_points_table::Component,
+    pub pedersen_aggregator: pedersen_aggregator_window_bits_18::Component,
+    pub partial_ec_mul: partial_ec_mul_window_bits_18::Component,
+    pub pedersen_points_table: pedersen_points_table_window_bits_18::Component,
 }
 impl Components {
     fn new(
@@ -170,26 +171,30 @@ impl Components {
         interaction_elements: &CairoInteractionElements,
         interaction_claim: &InteractionClaim,
     ) -> Self {
-        let pedersen_aggregator_component = pedersen_aggregator::Component::new(
+        let pedersen_aggregator_component = pedersen_aggregator_window_bits_18::Component::new(
             tree_span_provider,
-            pedersen_aggregator::Eval {
+            pedersen_aggregator_window_bits_18::Eval {
                 claim: claim.claim.as_ref().unwrap().pedersen_aggregator,
-                pedersen_aggregator_lookup_elements: interaction_elements
-                    .pedersen_aggregator
+                pedersen_aggregator_window_bits_18_lookup_elements: interaction_elements
+                    .pedersen_aggregator_window_bits_18
                     .clone(),
                 memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
+                partial_ec_mul_window_bits_18_lookup_elements: interaction_elements
+                    .partial_ec_mul_window_bits_18
+                    .clone(),
                 range_check_8_lookup_elements: interaction_elements.range_checks.rc_8.clone(),
             },
             interaction_claim.pedersen_aggregator.claimed_sum,
         );
-        let partial_ec_mul_component = partial_ec_mul::Component::new(
+        let partial_ec_mul_component = partial_ec_mul_window_bits_18::Component::new(
             tree_span_provider,
-            partial_ec_mul::Eval {
+            partial_ec_mul_window_bits_18::Eval {
                 claim: claim.claim.as_ref().unwrap().partial_ec_mul,
-                partial_ec_mul_lookup_elements: interaction_elements.partial_ec_mul.clone(),
-                pedersen_points_table_lookup_elements: interaction_elements
-                    .pedersen_points_table
+                partial_ec_mul_window_bits_18_lookup_elements: interaction_elements
+                    .partial_ec_mul_window_bits_18
+                    .clone(),
+                pedersen_points_table_window_bits_18_lookup_elements: interaction_elements
+                    .pedersen_points_table_window_bits_18
                     .clone(),
                 range_check_20_lookup_elements: interaction_elements.range_checks.rc_20.clone(),
                 range_check_20_b_lookup_elements: interaction_elements.range_checks.rc_20_b.clone(),
@@ -232,12 +237,12 @@ impl Components {
             interaction_claim.partial_ec_mul.claimed_sum,
         );
 
-        let pedersen_points_table_component = pedersen_points_table::Component::new(
+        let pedersen_points_table_component = pedersen_points_table_window_bits_18::Component::new(
             tree_span_provider,
-            pedersen_points_table::Eval {
+            pedersen_points_table_window_bits_18::Eval {
                 claim: claim.claim.as_ref().unwrap().pedersen_points_table,
-                pedersen_points_table_lookup_elements: interaction_elements
-                    .pedersen_points_table
+                pedersen_points_table_window_bits_18_lookup_elements: interaction_elements
+                    .pedersen_points_table_window_bits_18
                     .clone(),
             },
             interaction_claim.pedersen_points_table.claimed_sum,
@@ -263,17 +268,17 @@ impl std::fmt::Display for Components {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(
             f,
-            "PedersenAggregator: {}",
+            "PedersenAggregatorWindowBits18: {}",
             indented_component_display(&self.pedersen_aggregator)
         )?;
         writeln!(
             f,
-            "PartialEcMul: {}",
+            "PartialEcMulWindowBits18: {}",
             indented_component_display(&self.partial_ec_mul)
         )?;
         writeln!(
             f,
-            "PedersenPointsTable: {}",
+            "PedersenPointsTableWindowBits18: {}",
             indented_component_display(&self.pedersen_points_table)
         )?;
 

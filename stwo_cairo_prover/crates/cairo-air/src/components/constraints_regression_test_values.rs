@@ -84,17 +84,29 @@ pub const MUL_OPCODE_SMALL: Expect = expect![[r#"
 pub const MUL_OPCODE: Expect = expect![[r#"
     (1765238355 + 567102279i) + (1303576643 + 132743394i)u
 "#]];
-pub const PEDERSEN_AGGREGATOR: Expect = expect![[r#"
-    (1935068275 + 861457484i) + (903392461 + 608363705i)u
+pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18: Expect = expect![[r#"
+    (1980892305 + 1192852776i) + (2018848343 + 196592292i)u
 "#]];
-pub const PARTIAL_EC_MUL: Expect = expect![[r#"
-    (895051799 + 1568254972i) + (1038712019 + 2090679041i)u
+pub const PARTIAL_EC_MUL_WINDOW_BITS_18: Expect = expect![[r#"
+    (146656971 + 1750289659i) + (814512454 + 687712601i)u
 "#]];
 pub const PEDERSEN_BUILTIN: Expect = expect![[r#"
-    (1510178630 + 1309842420i) + (2057566104 + 833830564i)u
+    (1808925099 + 753230822i) + (42686547 + 2033625829i)u
 "#]];
-pub const PEDERSEN_POINTS_TABLE: Expect = expect![[r#"
-    (2016504587 + 1568791972i) + (1116506128 + 884768463i)u
+pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_18: Expect = expect![[r#"
+    (1004818116 + 1065177826i) + (1216060647 + 1851936019i)u
+"#]];
+pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_9: Expect = expect![[r#"
+    (1111482501 + 2007448485i) + (1810727464 + 1777973334i)u
+"#]];
+pub const PARTIAL_EC_MUL_WINDOW_BITS_9: Expect = expect![[r#"
+    (153451934 + 888543997i) + (2110246339 + 288604758i)u
+"#]];
+pub const PEDERSEN_BUILTIN_NARROW_WINDOWS: Expect = expect![[r#"
+    (1486551945 + 16542734i) + (1248194977 + 513363283i)u
+"#]];
+pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_9: Expect = expect![[r#"
+    (349400795 + 445481261i) + (1527930447 + 1118027142i)u
 "#]];
 pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN: Expect = expect![[r#"
     (2033262826 + 667964543i) + (319252363 + 1402641406i)u

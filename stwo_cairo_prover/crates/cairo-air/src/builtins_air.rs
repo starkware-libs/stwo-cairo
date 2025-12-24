@@ -251,8 +251,8 @@ impl BuiltinComponents {
                     memory_address_to_id_lookup_elements: interaction_elements
                         .memory_address_to_id
                         .clone(),
-                    pedersen_aggregator_lookup_elements: interaction_elements
-                        .pedersen_aggregator
+                    pedersen_aggregator_window_bits_18_lookup_elements: interaction_elements
+                        .pedersen_aggregator_window_bits_18
                         .clone(),
                 },
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,

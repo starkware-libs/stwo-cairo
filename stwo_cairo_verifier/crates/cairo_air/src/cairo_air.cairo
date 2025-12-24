@@ -70,11 +70,17 @@ pub type MemoryIdToBigElements = LookupElements<29>;
 
 pub type OpcodesElements = LookupElements<3>;
 
-pub type PedersenAggregatorElements = LookupElements<3>;
+pub type PedersenAggregatorWindowBits18Elements = LookupElements<3>;
 
-pub type PartialEcMulElements = LookupElements<72>;
+pub type PartialEcMulWindowBits18Elements = LookupElements<72>;
 
-pub type PedersenPointsTableElements = LookupElements<57>;
+pub type PedersenPointsTableWindowBits18Elements = LookupElements<57>;
+
+pub type PedersenAggregatorWindowBits9Elements = LookupElements<3>;
+
+pub type PartialEcMulWindowBits9Elements = LookupElements<86>;
+
+pub type PedersenPointsTableWindowBits9Elements = LookupElements<57>;
 
 pub type PoseidonFullRoundChainElements = LookupElements<32>;
 
@@ -308,9 +314,12 @@ pub struct CairoInteractionElements {
     pub cube_252: Cube252Elements,
     pub poseidon_round_keys: PoseidonRoundKeysElements,
     pub range_check_252_width_27: RangeCheck252Width27Elements,
-    pub pedersen_aggregator: PedersenAggregatorElements,
-    pub partial_ec_mul: PartialEcMulElements,
-    pub pedersen_points_table: PedersenPointsTableElements,
+    pub pedersen_aggregator_window_bits_18: PedersenAggregatorWindowBits18Elements,
+    pub partial_ec_mul_window_bits_18: PartialEcMulWindowBits18Elements,
+    pub pedersen_points_table_window_bits_18: PedersenPointsTableWindowBits18Elements,
+    pub pedersen_aggregator_window_bits_9: PedersenAggregatorWindowBits9Elements,
+    pub partial_ec_mul_window_bits_9: PartialEcMulWindowBits9Elements,
+    pub pedersen_points_table_window_bits_9: PedersenPointsTableWindowBits9Elements,
     pub memory_address_to_id: MemoryAddressToIdElements,
     pub memory_id_to_value: MemoryIdToBigElements,
     pub range_checks: RangeChecksInteractionElements,
@@ -338,9 +347,12 @@ pub impl CairoInteractionElementsImpl of CairoInteractionElementsTrait {
             cube_252: LookupElementsImpl::draw(ref channel),
             poseidon_round_keys: LookupElementsImpl::draw(ref channel),
             range_check_252_width_27: LookupElementsImpl::draw(ref channel),
-            pedersen_aggregator: LookupElementsImpl::draw(ref channel),
-            partial_ec_mul: LookupElementsImpl::draw(ref channel),
-            pedersen_points_table: LookupElementsImpl::draw(ref channel),
+            pedersen_aggregator_window_bits_18: LookupElementsImpl::draw(ref channel),
+            partial_ec_mul_window_bits_18: LookupElementsImpl::draw(ref channel),
+            pedersen_points_table_window_bits_18: LookupElementsImpl::draw(ref channel),
+            pedersen_aggregator_window_bits_9: LookupElementsImpl::draw(ref channel),
+            partial_ec_mul_window_bits_9: LookupElementsImpl::draw(ref channel),
+            pedersen_points_table_window_bits_9: LookupElementsImpl::draw(ref channel),
             memory_address_to_id: LookupElementsImpl::draw(ref channel),
             memory_id_to_value: LookupElementsImpl::draw(ref channel),
             range_checks: RangeChecksInteractionElementsImpl::draw(ref channel),

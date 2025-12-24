@@ -9,7 +9,7 @@ use starknet_curve::curve_params::{
 };
 use starknet_types_core::curve::ProjectivePoint;
 use starknet_types_core::felt::Felt;
-use stwo::core::fields::m31::BaseField;
+use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
@@ -22,19 +22,15 @@ use super::felt_batch_inverse::felt_batch_inverse;
 use super::preprocessed_trace::PreProcessedColumn;
 use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
-pub static PEDERSEN_TABLE: LazyLock<PedersenPointsTable> = LazyLock::new(PedersenPointsTable::new);
+pub static PEDERSEN_TABLE_9: LazyLock<PedersenPointsTable<9>> =
+    LazyLock::new(PedersenPointsTable::new);
+pub static PEDERSEN_TABLE_18: LazyLock<PedersenPointsTable<18>> =
+    LazyLock::new(PedersenPointsTable::new);
 
 pub const PEDERSEN_TABLE_N_COLUMNS: usize = FELT252_N_WORDS * 2;
 
-pub const BITS_PER_WINDOW: usize = 18;
-pub const NUM_WINDOWS: usize = 252usize.div_ceil(BITS_PER_WINDOW);
-pub const ROWS_PER_WINDOW: usize = 1 << BITS_PER_WINDOW;
-pub const BITS_IN_LAST_WINDOW: usize = 14;
-pub const ROWS_IN_LAST_WINDOW: usize = 1 << BITS_IN_LAST_WINDOW;
-
-pub const P_0_SECTION_START: usize = 0;
-pub const P_2_SECTION_START: usize = P_0_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
-pub const PEDERSEN_TABLE_N_ROWS: usize = P_2_SECTION_START + NUM_WINDOWS * ROWS_PER_WINDOW;
+pub type PedersenPointsWindowBits9 = PedersenPoints<9>;
+pub type PedersenPointsWindowBits18 = PedersenPoints<18>;
 
 // We don't use starknet_types_core::curve::AffinePoint because, as of 10/2025,
 // its .x() and .y() getters are slow.
@@ -45,19 +41,28 @@ pub struct SimpleAffinePoint {
 }
 
 #[derive(Debug)]
-pub struct PedersenPoints {
+pub struct PedersenPoints<const WINDOW_BITS: usize> {
     index: usize,
 }
 
-impl PedersenPoints {
+impl<const WINDOW_BITS: usize> PedersenPoints<WINDOW_BITS> {
     pub fn new(col: usize) -> Self {
         Self { index: col }
     }
+
+    pub fn get_data(&self) -> &Vec<M31> {
+        match WINDOW_BITS {
+            9 => &PEDERSEN_TABLE_9.column_data[self.index],
+            18 => &PEDERSEN_TABLE_18.column_data[self.index],
+            _ => panic!("Unsupported window_bits value {WINDOW_BITS}"),
+        }
+    }
 }
 
-impl PreProcessedColumn for PedersenPoints {
+impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS> {
     fn log_size(&self) -> u32 {
-        PEDERSEN_TABLE_N_ROWS.next_power_of_two().ilog2()
+        let n_rows = (2 * 252 / WINDOW_BITS) << WINDOW_BITS;
+        n_rows.next_power_of_two().ilog2()
     }
 
     fn id(&self) -> PreProcessedColumnId {
@@ -67,8 +72,7 @@ impl PreProcessedColumn for PedersenPoints {
     }
 
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        let array = PEDERSEN_TABLE.column_data[self.index]
-            [(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
+        let array = self.get_data()[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
             .try_into()
             .unwrap();
         PackedM31::from_array(array)
@@ -77,40 +81,51 @@ impl PreProcessedColumn for PedersenPoints {
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
-            BaseColumn::from_cpu(PEDERSEN_TABLE.column_data[self.index].clone()),
+            BaseColumn::from_cpu(self.get_data().clone()),
         )
     }
 }
 
-// A table with 2**23 rows, each containing a point on the Pedersen elliptic curve.
+// TODO(DanC): Fix documentation.
+// A table with 2**15 rows, each containing a point on the Pedersen elliptic curve.
 // The table is divided into 2 sections:
-// 1a. First 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_0
-// 1b. The 14th block of 2**18 rows: Row k + (l << 14) contains
-//       -P_shift + 2**(18*13) * k * P_0 + l * P_1
-// 2a. Next 13 blocks of 2**18 rows: Row k of block b contains -P_shift + 2**(18*b) * k * P_2
-// 2b. The last block of 2**18 rows: Row k + (l << 14) contains
-//       -P_shift + 2**(18*13) * k * P_2 + l * P_3
-pub struct PedersenPointsTable {
+// 1a. First 27 blocks of 2**9 rows: Row k of block b contains -P_shift + 2**(9*b) * k * P_0
+// 1b. The 28th block of 2**9 rows: Row k + (l << 5) contains
+//       -P_shift + 2**(9*27) * k * P_0 + l * P_1
+// 2a. Next 27 blocks of 2**9 rows: Row k of block b contains -P_shift + 2**(9*b) * k * P_2
+// 2b. The last block of 2**9 rows: Row k + (l << 5) contains
+//       -P_shift + 2**(9*13) * k * P_2 + l * P_3
+pub struct PedersenPointsTable<const WINDOW_BITS: usize> {
     // The one copy of the column contents. Shared by all column instances.
     column_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS],
 
     rows: Vec<SimpleAffinePoint>,
 }
 
-impl PedersenPointsTable {
+impl<const WINDOW_BITS: usize> PedersenPointsTable<WINDOW_BITS> {
     #[allow(dead_code)] //  Will be used by the deduce_output of PartialEcMul
     pub fn get_row(&self, index: usize) -> SimpleAffinePoint {
         self.rows[index].clone()
     }
 
     pub fn get_row_coordinates(&self, index: usize) -> [Felt252; 2] {
-        let x_f252: Felt252 = PEDERSEN_TABLE.rows[index].x.into();
-        let y_f252: Felt252 = PEDERSEN_TABLE.rows[index].y.into();
-        [x_f252, y_f252]
+        match WINDOW_BITS {
+            9 => {
+                let x_f252: Felt252 = PEDERSEN_TABLE_9.rows[index].x.into();
+                let y_f252: Felt252 = PEDERSEN_TABLE_9.rows[index].y.into();
+                [x_f252, y_f252]
+            }
+            18 => {
+                let x_f252: Felt252 = PEDERSEN_TABLE_18.rows[index].x.into();
+                let y_f252: Felt252 = PEDERSEN_TABLE_18.rows[index].y.into();
+                [x_f252, y_f252]
+            }
+            _ => panic!("Unsupported window_bits value {WINDOW_BITS}"),
+        }
     }
 
     fn new() -> Self {
-        let rows = create_table_rows();
+        let rows = create_table_rows(WINDOW_BITS);
         Self {
             column_data: rows_to_columns(&rows),
             rows,
@@ -151,17 +166,20 @@ fn create_block(
         .collect()
 }
 
-fn create_low_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
+fn create_low_section(window_bits: usize, point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
+    let num_windows = 252 / window_bits;
+    let rows_per_window = 1 << window_bits;
+
     let start_point =
         ProjectivePoint::new_unchecked(SHIFT_POINT.x(), SHIFT_POINT.y(), Felt::ONE).neg();
-    (0..(NUM_WINDOWS - 1))
+    (0..(num_windows - 1))
         .into_par_iter()
         .map(|window| {
             let mut base_point = point.clone();
-            for _ in 0..(window * BITS_PER_WINDOW) {
+            for _ in 0..(window * window_bits) {
                 base_point = base_point.double();
             }
-            create_block(&start_point, &base_point, ROWS_PER_WINDOW)
+            create_block(&start_point, &base_point, rows_per_window)
         })
         .collect::<Vec<_>>()
         .into_iter()
@@ -169,11 +187,16 @@ fn create_low_section(point: &ProjectivePoint) -> Vec<SimpleAffinePoint> {
 }
 
 fn create_high_section(
+    window_bits: usize,
     low_point: &ProjectivePoint,
     high_point: &ProjectivePoint,
 ) -> Vec<SimpleAffinePoint> {
+    let num_windows = 252 / window_bits;
+    let bits_in_last_window = window_bits - 4;
+    let rows_in_last_window = 1 << bits_in_last_window;
+
     let mut raised_low_point = low_point.clone();
-    for _ in 0..((NUM_WINDOWS - 1) * BITS_PER_WINDOW) {
+    for _ in 0..((num_windows - 1) * window_bits) {
         raised_low_point = raised_low_point.double();
     }
     let first_start_point =
@@ -182,14 +205,16 @@ fn create_high_section(
         .into_par_iter()
         .map(|window: u32| {
             let start_point = first_start_point.clone() + (high_point * window);
-            create_block(&start_point.clone(), &raised_low_point, ROWS_IN_LAST_WINDOW)
+            create_block(&start_point.clone(), &raised_low_point, rows_in_last_window)
         })
         .collect::<Vec<_>>()
         .into_iter()
         .concat()
 }
 
-fn create_table_rows() -> Vec<SimpleAffinePoint> {
+fn create_table_rows(window_bits: usize) -> Vec<SimpleAffinePoint> {
+    assert_eq!(252 % window_bits, 0);
+    let num_windows = 252 / window_bits;
     let mut rows = vec![];
     let points = [
         &ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
@@ -197,12 +222,12 @@ fn create_table_rows() -> Vec<SimpleAffinePoint> {
         &ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).expect("P2 is on curve"),
         &ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve"),
     ];
-    rows.extend(create_low_section(points[0]));
-    rows.extend(create_high_section(points[0], points[1]));
-    rows.extend(create_low_section(points[2]));
-    rows.extend(create_high_section(points[2], points[3]));
+    rows.extend(create_low_section(window_bits, points[0]));
+    rows.extend(create_high_section(window_bits, points[0], points[1]));
+    rows.extend(create_low_section(window_bits, points[2]));
+    rows.extend(create_high_section(window_bits, points[2], points[3]));
 
-    assert!(rows.len() == ((2 * 14) << 18));
+    assert!(rows.len() == ((2 * num_windows) << window_bits));
 
     let padded_size = rows.len().next_power_of_two();
     for _ in 0..(padded_size - rows.len()) {

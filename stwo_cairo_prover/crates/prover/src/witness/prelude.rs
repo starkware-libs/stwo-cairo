@@ -23,7 +23,9 @@ pub use stwo::prover::poly::BitReversedOrder;
 pub use stwo_air_utils::trace::component_trace::ComponentTrace;
 pub use stwo_air_utils_derive::{IterMut, ParIterMut, Uninitialized};
 pub use stwo_cairo_common::preprocessed_columns::bitwise_xor::BitwiseXor;
-pub use stwo_cairo_common::preprocessed_columns::pedersen::PedersenPoints;
+pub use stwo_cairo_common::preprocessed_columns::pedersen::{
+    PedersenPointsWindowBits18, PedersenPointsWindowBits9,
+};
 pub use stwo_cairo_common::preprocessed_columns::poseidon::PoseidonRoundKeys;
 pub use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
     PreProcessedColumn, PreProcessedTrace, Seq,
@@ -36,7 +38,10 @@ pub use stwo_constraint_framework::{LogupTraceGenerator, Relation};
 pub use crate::witness::fast_deduction::blake::{
     BlakeRound, PackedBlakeG, PackedBlakeRoundSigma, PackedTripleXor32,
 };
-pub use crate::witness::fast_deduction::pedersen::{PackedPartialEcMul, PackedPedersenPointsTable};
+pub use crate::witness::fast_deduction::pedersen::{
+    PackedPartialEcMulWindowBits18, PackedPartialEcMulWindowBits9,
+    PackedPedersenPointsTableWindowBits18, PackedPedersenPointsTableWindowBits9,
+};
 pub use crate::witness::fast_deduction::poseidon::{
     PackedCube252, PackedPoseidon3PartialRoundsChain, PackedPoseidonFullRoundChain,
     PackedPoseidonRoundKeys,

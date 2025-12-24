@@ -1,4 +1,4 @@
-// AIR version a2f99ae1
+// AIR version 4b1289f2
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 243099712 }, M31 { inner: 2111907600 }, M31 { inner: 156811844 },
@@ -112,21 +112,37 @@ pub const MUL_OPCODE_SMALL_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1978309527 }, M31 { inner: 307829809 }, M31 { inner: 771956690 },
     M31 { inner: 339038298 },
 ];
-pub const PARTIAL_EC_MUL_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 1710714702 }, M31 { inner: 1269545248 }, M31 { inner: 1597466063 },
-    M31 { inner: 1296059504 },
+pub const PARTIAL_EC_MUL_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 816939938 }, M31 { inner: 115319756 }, M31 { inner: 1841587297 },
+    M31 { inner: 282899721 },
 ];
-pub const PEDERSEN_AGGREGATOR_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 610049255 }, M31 { inner: 1946332123 }, M31 { inner: 1196408088 },
-    M31 { inner: 1804726845 },
+pub const PARTIAL_EC_MUL_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 2075421089 }, M31 { inner: 948279798 }, M31 { inner: 60666865 },
+    M31 { inner: 1530423091 },
+];
+pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 740331848 }, M31 { inner: 2061590218 }, M31 { inner: 1790470802 },
+    M31 { inner: 726267044 },
+];
+pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 102028168 }, M31 { inner: 1517988129 }, M31 { inner: 1078930587 },
+    M31 { inner: 161587074 },
+];
+pub const PEDERSEN_BUILTIN_NARROW_WINDOWS_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1650429742 }, M31 { inner: 811936743 }, M31 { inner: 1812296945 },
+    M31 { inner: 165600014 },
 ];
 pub const PEDERSEN_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 315661575 }, M31 { inner: 1611684037 }, M31 { inner: 1536329558 },
-    M31 { inner: 686796114 },
+    M31 { inner: 1103635981 }, M31 { inner: 1884127872 }, M31 { inner: 870854096 },
+    M31 { inner: 455407892 },
 ];
-pub const PEDERSEN_POINTS_TABLE_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 115227068 }, M31 { inner: 1074293557 }, M31 { inner: 2080316822 },
-    M31 { inner: 909166275 },
+pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1821765043 }, M31 { inner: 1003557876 }, M31 { inner: 1254434038 },
+    M31 { inner: 1697346067 },
+];
+pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
+    M31 { inner: 1870044669 }, M31 { inner: 1950207336 }, M31 { inner: 1693744622 },
+    M31 { inner: 707684289 },
 ];
 pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1497275374 }, M31 { inner: 1553397994 }, M31 { inner: 270550909 },

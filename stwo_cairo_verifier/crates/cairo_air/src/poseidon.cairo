@@ -1,5 +1,4 @@
 use components::cube_252::InteractionClaimImpl as Cube252InteractionClaimImpl;
-use components::partial_ec_mul::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
 use components::poseidon_3_partial_rounds_chain::InteractionClaimImpl as Poseidon3PartialRoundsChainInteractionClaimImpl;
 use components::poseidon_aggregator::InteractionClaimImpl as PoseidonAggregatorInteractionClaimImpl;
 use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;

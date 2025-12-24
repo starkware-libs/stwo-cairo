@@ -3,7 +3,7 @@
 #![allow(unused_parens)]
 use cairo_air::components::pedersen_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 
-use crate::witness::components::{memory_address_to_id, pedersen_aggregator};
+use crate::witness::components::{memory_address_to_id, pedersen_aggregator_window_bits_18};
 use crate::witness::prelude::*;
 
 #[derive(Default)]
@@ -25,7 +25,7 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
-        pedersen_aggregator_state: &pedersen_aggregator::ClaimGenerator,
+        pedersen_aggregator_window_bits_18_state: &pedersen_aggregator_window_bits_18::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let log_size = self.log_size;
 
@@ -33,7 +33,7 @@ impl ClaimGenerator {
             log_size,
             self.pedersen_builtin_segment_start,
             memory_address_to_id_state,
-            pedersen_aggregator_state,
+            pedersen_aggregator_window_bits_18_state,
         );
         sub_component_inputs
             .memory_address_to_id
@@ -42,10 +42,10 @@ impl ClaimGenerator {
                 memory_address_to_id_state.add_packed_inputs(inputs, 0);
             });
         sub_component_inputs
-            .pedersen_aggregator
+            .pedersen_aggregator_window_bits_18
             .iter()
             .for_each(|inputs| {
-                pedersen_aggregator_state.add_packed_inputs(inputs, 0);
+                pedersen_aggregator_window_bits_18_state.add_packed_inputs(inputs, 0);
             });
         tree_builder.extend_evals(trace.to_evals());
 
@@ -65,7 +65,8 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     memory_address_to_id: [Vec<memory_address_to_id::PackedInputType>; 3],
-    pedersen_aggregator: [Vec<pedersen_aggregator::PackedInputType>; 1],
+    pedersen_aggregator_window_bits_18:
+        [Vec<pedersen_aggregator_window_bits_18::PackedInputType>; 1],
 }
 
 #[allow(clippy::useless_conversion)]
@@ -76,7 +77,7 @@ fn write_trace_simd(
     log_size: u32,
     pedersen_builtin_segment_start: u32,
     memory_address_to_id_state: &memory_address_to_id::ClaimGenerator,
-    pedersen_aggregator_state: &pedersen_aggregator::ClaimGenerator,
+    pedersen_aggregator_window_bits_18_state: &pedersen_aggregator_window_bits_18::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
     LookupData,
@@ -105,48 +106,48 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
             let seq = seq.packed_at(row_index);
-            let instance_addr_tmp_d00c6_0 = (((seq) * (M31_3))
+            let instance_addr_tmp_3bd90_0 = (((seq) * (M31_3))
                 + (PackedM31::broadcast(M31::from(pedersen_builtin_segment_start))));
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_d00c6_1 =
-                memory_address_to_id_state.deduce_output(instance_addr_tmp_d00c6_0);
-            let input_state_0_id_col0 = memory_address_to_id_value_tmp_d00c6_1;
+            let memory_address_to_id_value_tmp_3bd90_1 =
+                memory_address_to_id_state.deduce_output(instance_addr_tmp_3bd90_0);
+            let input_state_0_id_col0 = memory_address_to_id_value_tmp_3bd90_1;
             *row[0] = input_state_0_id_col0;
-            *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_d00c6_0;
+            *sub_component_inputs.memory_address_to_id[0] = instance_addr_tmp_3bd90_0;
             *lookup_data.memory_address_to_id_0 =
-                [instance_addr_tmp_d00c6_0, input_state_0_id_col0];
+                [instance_addr_tmp_3bd90_0, input_state_0_id_col0];
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_d00c6_3 =
-                memory_address_to_id_state.deduce_output(((instance_addr_tmp_d00c6_0) + (M31_1)));
-            let input_state_1_id_col1 = memory_address_to_id_value_tmp_d00c6_3;
+            let memory_address_to_id_value_tmp_3bd90_3 =
+                memory_address_to_id_state.deduce_output(((instance_addr_tmp_3bd90_0) + (M31_1)));
+            let input_state_1_id_col1 = memory_address_to_id_value_tmp_3bd90_3;
             *row[1] = input_state_1_id_col1;
-            *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_d00c6_0) + (M31_1));
+            *sub_component_inputs.memory_address_to_id[1] = ((instance_addr_tmp_3bd90_0) + (M31_1));
             *lookup_data.memory_address_to_id_1 = [
-                ((instance_addr_tmp_d00c6_0) + (M31_1)),
+                ((instance_addr_tmp_3bd90_0) + (M31_1)),
                 input_state_1_id_col1,
             ];
 
             // Read Id.
 
-            let memory_address_to_id_value_tmp_d00c6_5 =
-                memory_address_to_id_state.deduce_output(((instance_addr_tmp_d00c6_0) + (M31_2)));
-            let output_state_id_col2 = memory_address_to_id_value_tmp_d00c6_5;
+            let memory_address_to_id_value_tmp_3bd90_5 =
+                memory_address_to_id_state.deduce_output(((instance_addr_tmp_3bd90_0) + (M31_2)));
+            let output_state_id_col2 = memory_address_to_id_value_tmp_3bd90_5;
             *row[2] = output_state_id_col2;
-            *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_d00c6_0) + (M31_2));
+            *sub_component_inputs.memory_address_to_id[2] = ((instance_addr_tmp_3bd90_0) + (M31_2));
             *lookup_data.memory_address_to_id_2 = [
-                ((instance_addr_tmp_d00c6_0) + (M31_2)),
+                ((instance_addr_tmp_3bd90_0) + (M31_2)),
                 output_state_id_col2,
             ];
 
-            *sub_component_inputs.pedersen_aggregator[0] = (
+            *sub_component_inputs.pedersen_aggregator_window_bits_18[0] = (
                 [input_state_0_id_col0, input_state_1_id_col1],
                 output_state_id_col2,
             );
-            *lookup_data.pedersen_aggregator_0 = [
+            *lookup_data.pedersen_aggregator_window_bits_18_0 = [
                 input_state_0_id_col0,
                 input_state_1_id_col1,
                 output_state_id_col2,
@@ -161,7 +162,7 @@ struct LookupData {
     memory_address_to_id_0: Vec<[PackedM31; 2]>,
     memory_address_to_id_1: Vec<[PackedM31; 2]>,
     memory_address_to_id_2: Vec<[PackedM31; 2]>,
-    pedersen_aggregator_0: Vec<[PackedM31; 3]>,
+    pedersen_aggregator_window_bits_18_0: Vec<[PackedM31; 3]>,
 }
 
 pub struct InteractionClaimGenerator {
@@ -173,7 +174,7 @@ impl InteractionClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_address_to_id: &relations::MemoryAddressToId,
-        pedersen_aggregator: &relations::PedersenAggregator,
+        pedersen_aggregator_window_bits_18: &relations::PedersenAggregatorWindowBits18,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
@@ -196,12 +197,12 @@ impl InteractionClaimGenerator {
         (
             col_gen.par_iter_mut(),
             &self.lookup_data.memory_address_to_id_2,
-            &self.lookup_data.pedersen_aggregator_0,
+            &self.lookup_data.pedersen_aggregator_window_bits_18_0,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = memory_address_to_id.combine(values0);
-                let denom1: PackedQM31 = pedersen_aggregator.combine(values1);
+                let denom1: PackedQM31 = pedersen_aggregator_window_bits_18.combine(values1);
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();

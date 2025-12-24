@@ -1,7 +1,7 @@
-use components::partial_ec_mul::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
-use components::pedersen_aggregator::InteractionClaimImpl as PedersenAggregatorInteractionClaimImpl;
+use components::partial_ec_mul_window_bits_18::InteractionClaimImpl as PartialEcMulInteractionClaimImpl;
+use components::pedersen_aggregator_window_bits_18::InteractionClaimImpl as PedersenAggregatorInteractionClaimImpl;
 use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
-use components::pedersen_points_table::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
+use components::pedersen_points_table_window_bits_18::InteractionClaimImpl as PedersenPointsTableInteractionClaimImpl;
 use core::box::BoxImpl;
 use core::num::traits::Zero;
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -26,9 +26,9 @@ use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 
 #[derive(Drop, Serde)]
 pub struct PedersenClaim {
-    pub pedersen_aggregator: components::pedersen_aggregator::Claim,
-    pub partial_ec_mul: components::partial_ec_mul::Claim,
-    pub pedersen_points_table: components::pedersen_points_table::Claim,
+    pub pedersen_aggregator: components::pedersen_aggregator_window_bits_18::Claim,
+    pub partial_ec_mul: components::partial_ec_mul_window_bits_18::Claim,
+    pub pedersen_points_table: components::pedersen_points_table_window_bits_18::Claim,
 }
 
 pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
@@ -59,9 +59,9 @@ pub impl PedersenClaimImpl of ClaimTrait<PedersenClaim> {
 
 #[derive(Drop, Serde)]
 pub struct PedersenInteractionClaim {
-    pub pedersen_aggregator: components::pedersen_aggregator::InteractionClaim,
-    pub partial_ec_mul: components::partial_ec_mul::InteractionClaim,
-    pub pedersen_points_table: components::pedersen_points_table::InteractionClaim,
+    pub pedersen_aggregator: components::pedersen_aggregator_window_bits_18::InteractionClaim,
+    pub partial_ec_mul: components::partial_ec_mul_window_bits_18::InteractionClaim,
+    pub pedersen_points_table: components::pedersen_points_table_window_bits_18::InteractionClaim,
 }
 
 #[generate_trait]
@@ -186,9 +186,9 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
 #[cfg(not(feature: "poseidon252_verifier"))]
 #[derive(Drop)]
 pub struct PedersenComponents {
-    pub pedersen_aggregator: components::pedersen_aggregator::Component,
-    pub partial_ec_mul: components::partial_ec_mul::Component,
-    pub pedersen_points_table: components::pedersen_points_table::Component,
+    pub pedersen_aggregator: components::pedersen_aggregator_window_bits_18::Component,
+    pub partial_ec_mul: components::partial_ec_mul_window_bits_18::Component,
+    pub pedersen_points_table: components::pedersen_points_table_window_bits_18::Component,
 }
 
 #[cfg(not(feature: "poseidon252_verifier"))]
@@ -199,16 +199,18 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         interaction_elements: @CairoInteractionElements,
         interaction_claim: @PedersenInteractionClaim,
     ) -> PedersenComponents {
-        let pedersen_aggregator_component = components::pedersen_aggregator::NewComponentImpl::new(
+        let pedersen_aggregator_component =
+            components::pedersen_aggregator_window_bits_18::NewComponentImpl::new(
             claim.pedersen_aggregator, interaction_claim.pedersen_aggregator, interaction_elements,
         );
 
-        let partial_ec_mul_component = components::partial_ec_mul::NewComponentImpl::new(
+        let partial_ec_mul_component =
+            components::partial_ec_mul_window_bits_18::NewComponentImpl::new(
             claim.partial_ec_mul, interaction_claim.partial_ec_mul, interaction_elements,
         );
 
         let pedersen_points_table_component =
-            components::pedersen_points_table::NewComponentImpl::new(
+            components::pedersen_points_table_window_bits_18::NewComponentImpl::new(
             claim.pedersen_points_table,
             interaction_claim.pedersen_points_table,
             interaction_elements,
