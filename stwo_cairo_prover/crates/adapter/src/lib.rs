@@ -1,7 +1,7 @@
+pub use std::collections::HashMap;
 use std::ops::Deref;
 
 use builtins::BuiltinSegments;
-pub use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 #[cfg(feature = "extract-mem-trace")]
 use cairo_vm::vm::trace::trace_entry::RelocatedTraceEntry;
