@@ -49,9 +49,12 @@ impl Relocator {
     /// Relocates the given memory segment by segment.
     pub fn relocate_memory(&self, memory: &[Vec<Option<MaybeRelocatable>>]) -> Vec<MemoryEntry> {
         let _span = span!(Level::INFO, "get_relocated_memory").entered();
-        let mut res = vec![];
+
+        // Pre-allocate with exact size to avoid realloc overhead.
+        let total_size: usize = memory.iter().map(|seg| seg.len()).sum();
+        let mut res = Vec::with_capacity(total_size);
+
         for (segment_index, segment) in memory.iter().enumerate() {
-            let mut relocated_segment = vec![];
             for (offset, value) in segment.iter().enumerate() {
                 let address = self.calc_relocated_addr(segment_index, offset) as u64;
                 let value = if let Some(val) = value {
@@ -70,9 +73,8 @@ impl Relocator {
                     // If this cell is None, fill with zero.
                     [0; 8]
                 };
-                relocated_segment.push(MemoryEntry { address, value });
+                res.push(MemoryEntry { address, value });
             }
-            res.extend(relocated_segment);
         }
         assert!(
             res.len() <= MEMORY_ADDRESS_BOUND,
@@ -122,7 +124,8 @@ impl Relocator {
     // Relocates the trace entries according to the relocation table.
     pub fn relocate_trace(&self, relocatble_trace: &[TraceEntry]) -> Vec<RelocatedTraceEntry> {
         let _span = span!(Level::INFO, "relocate_trace").entered();
-        let mut res = vec![];
+        // Pre-allocate with exact size to avoid realloc overhead.
+        let mut res = Vec::with_capacity(relocatble_trace.len());
         for entry in relocatble_trace {
             res.push(RelocatedTraceEntry {
                 pc: self.relocation_table[entry.pc.segment_index as usize] as usize
@@ -142,7 +145,9 @@ impl Relocator {
         public_addresses: &HashMap<usize, Vec<(usize, usize)>>,
     ) -> Vec<u32> {
         let _span = span!(Level::INFO, "relocate_public_addresses").entered();
-        let mut res = vec![];
+        // Pre-allocate with exact size to avoid realloc overhead.
+        let total_size: usize = public_addresses.values().map(|v| v.len()).sum();
+        let mut res = Vec::with_capacity(total_size);
         for (segment_index, offsets) in public_addresses {
             let base_addr = self.relocation_table[*segment_index];
 
