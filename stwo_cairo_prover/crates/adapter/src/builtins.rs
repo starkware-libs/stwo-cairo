@@ -38,14 +38,14 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
-    pub add_mod: Option<MemorySegmentAddresses>,
-    pub bitwise: Option<MemorySegmentAddresses>,
+    pub add_mod_builtin: Option<MemorySegmentAddresses>,
+    pub bitwise_builtin: Option<MemorySegmentAddresses>,
     pub output: Option<MemorySegmentAddresses>,
-    pub mul_mod: Option<MemorySegmentAddresses>,
-    pub pedersen: Option<MemorySegmentAddresses>,
-    pub poseidon: Option<MemorySegmentAddresses>,
-    pub range_check_bits_96: Option<MemorySegmentAddresses>,
-    pub range_check_bits_128: Option<MemorySegmentAddresses>,
+    pub mul_mod_builtin: Option<MemorySegmentAddresses>,
+    pub pedersen_builtin: Option<MemorySegmentAddresses>,
+    pub poseidon_builtin: Option<MemorySegmentAddresses>,
+    pub range_check96_builtin: Option<MemorySegmentAddresses>,
+    pub range_check_builtin: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -59,19 +59,39 @@ impl BuiltinSegments {
             );
         };
 
-        insert_builtin(BuiltinName::add_mod, &self.add_mod, ADD_MOD_MEMORY_CELLS);
-        insert_builtin(BuiltinName::bitwise, &self.bitwise, BITWISE_MEMORY_CELLS);
-        insert_builtin(BuiltinName::mul_mod, &self.mul_mod, MUL_MOD_MEMORY_CELLS);
-        insert_builtin(BuiltinName::pedersen, &self.pedersen, PEDERSEN_MEMORY_CELLS);
-        insert_builtin(BuiltinName::poseidon, &self.poseidon, POSEIDON_MEMORY_CELLS);
+        insert_builtin(
+            BuiltinName::add_mod,
+            &self.add_mod_builtin,
+            ADD_MOD_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::bitwise,
+            &self.bitwise_builtin,
+            BITWISE_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::mul_mod,
+            &self.mul_mod_builtin,
+            MUL_MOD_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::pedersen,
+            &self.pedersen_builtin,
+            PEDERSEN_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::poseidon,
+            &self.poseidon_builtin,
+            POSEIDON_MEMORY_CELLS,
+        );
         insert_builtin(
             BuiltinName::range_check,
-            &self.range_check_bits_128,
+            &self.range_check_builtin,
             RANGE_CHECK_MEMORY_CELLS,
         );
         insert_builtin(
             BuiltinName::range_check96,
-            &self.range_check_bits_96,
+            &self.range_check96_builtin,
             RANGE_CHECK_MEMORY_CELLS,
         );
         insert_builtin(BuiltinName::output, &self.output, OUTPUT_MEMORY_CELLS);
@@ -88,56 +108,56 @@ impl BuiltinSegments {
     // TODO (ohadn): relocate this function if a more appropriate place is found.
     // TODO (Stav): remove when the new adapter flow is used.
     pub fn pad_builtin_segments(&mut self, memory: &mut MemoryBuilder) {
-        if let Some(segment) = &self.add_mod {
-            self.add_mod = Some(pad_segment(
+        if let Some(segment) = &self.add_mod_builtin {
+            self.add_mod_builtin = Some(pad_segment(
                 segment,
                 memory,
                 ADD_MOD_MEMORY_CELLS as u32,
                 Some("add_mod"),
             ));
         }
-        if let Some(segment) = &self.bitwise {
-            self.bitwise = Some(pad_segment(
+        if let Some(segment) = &self.bitwise_builtin {
+            self.bitwise_builtin = Some(pad_segment(
                 segment,
                 memory,
                 BITWISE_MEMORY_CELLS as u32,
                 Some("bitwise"),
             ));
         }
-        if let Some(segment) = &self.mul_mod {
-            self.mul_mod = Some(pad_segment(
+        if let Some(segment) = &self.mul_mod_builtin {
+            self.mul_mod_builtin = Some(pad_segment(
                 segment,
                 memory,
                 MUL_MOD_MEMORY_CELLS as u32,
                 Some("mul_mod"),
             ));
         }
-        if let Some(segment) = &self.pedersen {
-            self.pedersen = Some(pad_segment(
+        if let Some(segment) = &self.pedersen_builtin {
+            self.pedersen_builtin = Some(pad_segment(
                 segment,
                 memory,
                 PEDERSEN_MEMORY_CELLS as u32,
                 Some("pedersen"),
             ));
         }
-        if let Some(segment) = &self.poseidon {
-            self.poseidon = Some(pad_segment(
+        if let Some(segment) = &self.poseidon_builtin {
+            self.poseidon_builtin = Some(pad_segment(
                 segment,
                 memory,
                 POSEIDON_MEMORY_CELLS as u32,
                 Some("poseidon"),
             ));
         }
-        if let Some(segment) = &self.range_check_bits_96 {
-            self.range_check_bits_96 = Some(pad_segment(
+        if let Some(segment) = &self.range_check96_builtin {
+            self.range_check96_builtin = Some(pad_segment(
                 segment,
                 memory,
                 RANGE_CHECK_MEMORY_CELLS as u32,
                 Some("range_check_96"),
             ));
         }
-        if let Some(segment) = &self.range_check_bits_128 {
-            self.range_check_bits_128 = Some(pad_segment(
+        if let Some(segment) = &self.range_check_builtin {
+            self.range_check_builtin = Some(pad_segment(
                 segment,
                 memory,
                 RANGE_CHECK_MEMORY_CELLS as u32,
@@ -333,7 +353,7 @@ mod test_builtin_segments {
         assert_eq!(cells_per_instance, instance_example.len());
         let begin_addr = 23581;
         let stop_ptr = begin_addr + cells_per_instance * num_instances;
-        builtin_segments.bitwise = Some(MemorySegmentAddresses {
+        builtin_segments.bitwise_builtin = Some(MemorySegmentAddresses {
             begin_addr,
             stop_ptr,
         });
@@ -345,7 +365,7 @@ mod test_builtin_segments {
         let &MemorySegmentAddresses {
             begin_addr: new_begin_addr,
             stop_ptr: new_stop_ptr,
-        } = builtin_segments.bitwise.as_ref().unwrap();
+        } = builtin_segments.bitwise_builtin.as_ref().unwrap();
         assert_eq!(new_begin_addr, begin_addr);
         let segment_length = new_stop_ptr - new_begin_addr;
         assert_eq!(segment_length % cells_per_instance, 0);
