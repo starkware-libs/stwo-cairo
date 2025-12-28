@@ -46,6 +46,7 @@ getrandom_v3 = { version = "0.3", package = "getrandom", features = ["wasm_js"] 
 
 [dev-dependencies]
 dev-utils.workspace = true
+generic-tests = "0.1.3"
 stwo_cairo_utils.workspace = true
 tempfile = "3.19.1"
 test-log = { version = "0.2.17", features = ["trace"] }

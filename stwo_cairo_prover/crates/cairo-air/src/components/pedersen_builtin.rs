@@ -10,7 +10,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
         uses: 3,
     },
     RelationUse {
-        relation_id: "PedersenAggregator",
+        relation_id: "PedersenAggregatorWindowBits18",
         uses: 1,
     },
 ];
@@ -18,7 +18,8 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 2] = [
 pub struct Eval {
     pub claim: Claim,
     pub memory_address_to_id_lookup_elements: relations::MemoryAddressToId,
-    pub pedersen_aggregator_lookup_elements: relations::PedersenAggregator,
+    pub pedersen_aggregator_window_bits_18_lookup_elements:
+        relations::PedersenAggregatorWindowBits18,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -72,30 +73,30 @@ impl FrameworkEval for Eval {
         let input_state_1_id_col1 = eval.next_trace_mask();
         let output_state_id_col2 = eval.next_trace_mask();
 
-        let instance_addr_tmp_d00c6_0 = eval.add_intermediate(
+        let instance_addr_tmp_3bd90_0 = eval.add_intermediate(
             ((seq.clone() * M31_3.clone())
                 + E::F::from(M31::from(self.claim.pedersen_builtin_segment_start))),
         );
         ReadId::evaluate(
-            [instance_addr_tmp_d00c6_0.clone()],
+            [instance_addr_tmp_3bd90_0.clone()],
             input_state_0_id_col0.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_d00c6_0.clone() + M31_1.clone())],
+            [(instance_addr_tmp_3bd90_0.clone() + M31_1.clone())],
             input_state_1_id_col1.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         ReadId::evaluate(
-            [(instance_addr_tmp_d00c6_0.clone() + M31_2.clone())],
+            [(instance_addr_tmp_3bd90_0.clone() + M31_2.clone())],
             output_state_id_col2.clone(),
             &self.memory_address_to_id_lookup_elements,
             &mut eval,
         );
         eval.add_to_relation(RelationEntry::new(
-            &self.pedersen_aggregator_lookup_elements,
+            &self.pedersen_aggregator_window_bits_18_lookup_elements,
             E::EF::one(),
             &[
                 input_state_0_id_col0.clone(),
@@ -129,7 +130,8 @@ mod tests {
                 pedersen_builtin_segment_start: rng.gen::<u32>(),
             },
             memory_address_to_id_lookup_elements: relations::MemoryAddressToId::dummy(),
-            pedersen_aggregator_lookup_elements: relations::PedersenAggregator::dummy(),
+            pedersen_aggregator_window_bits_18_lookup_elements:
+                relations::PedersenAggregatorWindowBits18::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
