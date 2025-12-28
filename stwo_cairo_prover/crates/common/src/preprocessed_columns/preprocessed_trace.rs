@@ -26,6 +26,11 @@ const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 
+// The total number of trace cells in the canonical preprocessed trace.
+pub const CANONICAL_SIZE: u32 = 590286448;
+// The total number of trace cells in the canonical without pedersen preprocessed trace.
+pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 120524400;
+
 pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
     fn log_size(&self) -> u32;
@@ -63,7 +68,12 @@ impl PreProcessedTrace {
 
         let columns = chain!(canonical_without_pedersen, pedersen_points)
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-            .collect();
+            .collect_vec();
+
+        assert!(
+            CANONICAL_SIZE == columns.iter().map(|col| 1 << col.log_size()).sum(),
+            "Canonical preprocessed trace has unexpected size"
+        );
 
         Self::from_columns(columns)
     }
@@ -89,7 +99,12 @@ impl PreProcessedTrace {
 
         let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
-            .collect();
+            .collect_vec();
+
+        assert!(
+            CANONICAL_WITHOUT_PEDERSEN_SIZE == columns.iter().map(|col| 1 << col.log_size()).sum(),
+            "Canonical without pedersen preprocessed trace has unexpected size"
+        );
 
         Self::from_columns(columns)
     }
