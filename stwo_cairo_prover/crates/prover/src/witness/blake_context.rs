@@ -1,126 +1,87 @@
-use std::sync::Arc;
-
 use cairo_air::blake::air::{
     BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
 };
 use cairo_air::relations::CommonLookupElements;
 use stwo::prover::backend::simd::SimdBackend;
-use stwo_cairo_adapter::memory::Memory;
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 use tracing::{span, Level};
 
 use crate::witness::components::{
-    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big, triple_xor_32,
-    verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
-    verify_bitwise_xor_9,
+    blake_g, blake_round, blake_round_sigma, memory_address_to_id, memory_id_to_big,
+    range_check_7_2_5, triple_xor_32, verify_bitwise_xor_12, verify_bitwise_xor_4,
+    verify_bitwise_xor_7, verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
-use crate::witness::range_checks::RangeChecksClaimGenerator;
 use crate::witness::utils::TreeBuilder;
 
-pub struct BlakeContextClaimGenerator {
-    pub blake_round: Option<blake_round::ClaimGenerator>,
-    pub blake_g: Option<blake_g::ClaimGenerator>,
-    pub blake_sigma: Option<blake_round_sigma::ClaimGenerator>,
-    pub triple_xor_32: Option<triple_xor_32::ClaimGenerator>,
-    pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::ClaimGenerator>,
-}
-impl BlakeContextClaimGenerator {
-    pub fn new(memory: Arc<Memory>, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
-        let blake_round = Some(blake_round::ClaimGenerator::new(memory));
-        let blake_g = Some(blake_g::ClaimGenerator::new());
-        let blake_sigma = Some(blake_round_sigma::ClaimGenerator::new(
-            preprocessed_trace.clone(),
-        ));
-        let triple_xor_32 = Some(triple_xor_32::ClaimGenerator::new());
-        let verify_bitwise_xor_12 = Some(verify_bitwise_xor_12::ClaimGenerator::new(
-            preprocessed_trace,
-        ));
-
-        Self {
-            blake_round,
-            blake_g,
-            blake_sigma,
-            triple_xor_32,
-            verify_bitwise_xor_12,
-        }
-    }
-
-    pub fn write_trace(
-        self,
-        tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        memory_address_to_id_trace_generator: &memory_address_to_id::ClaimGenerator,
-        memory_id_to_value_trace_generator: &memory_id_to_big::ClaimGenerator,
-        range_checks_trace_generator: &RangeChecksClaimGenerator,
-        verify_bitwise_xor_4_trace_generator: &verify_bitwise_xor_4::ClaimGenerator,
-        verify_bitwise_xor_7_trace_generator: &verify_bitwise_xor_7::ClaimGenerator,
-        verify_bitwise_xor_8_trace_generator: &verify_bitwise_xor_8::ClaimGenerator,
-        verify_bitwise_xor_9_trace_generator: &verify_bitwise_xor_9::ClaimGenerator,
-    ) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
-        let span = span!(Level::INFO, "write blake context trace").entered();
-        if self.blake_round.as_ref().is_none_or(|tg| tg.is_empty()) {
-            return (
-                BlakeContextClaim { claim: None },
-                BlakeContextInteractionClaimGenerator { gen: None },
-            );
-        }
-        let Self {
-            blake_round,
-            blake_g,
-            blake_sigma,
-            triple_xor_32,
-            verify_bitwise_xor_12,
-        } = self;
-        let blake_round = blake_round.expect("Should have blake context components at this point");
-        let mut blake_g = blake_g.expect("Should have blake context components at this point");
-        let blake_sigma = blake_sigma.expect("Should have blake context components at this point");
-        let triple_xor_32 =
-            triple_xor_32.expect("Should have blake context components at this point");
-        let verify_bitwise_xor_12 =
-            verify_bitwise_xor_12.expect("Should have blake context components at this point");
-
-        let (blake_round_claim, blake_round_interaction_gen) = blake_round.write_trace(
-            tree_builder,
-            &blake_sigma,
-            memory_address_to_id_trace_generator,
-            memory_id_to_value_trace_generator,
-            &range_checks_trace_generator.rc_7_2_5_trace_generator,
-            &mut blake_g,
+pub fn blake_context_write_trace(
+    blake_round: Option<blake_round::ClaimGenerator>,
+    blake_g: Option<blake_g::ClaimGenerator>,
+    blake_sigma: Option<blake_round_sigma::ClaimGenerator>,
+    triple_xor_32: Option<triple_xor_32::ClaimGenerator>,
+    verify_bitwise_xor_12: Option<verify_bitwise_xor_12::ClaimGenerator>,
+    tree_builder: &mut impl TreeBuilder<SimdBackend>,
+    memory_address_to_id_trace_generator: Option<&memory_address_to_id::ClaimGenerator>,
+    memory_id_to_value_trace_generator: Option<&memory_id_to_big::ClaimGenerator>,
+    rc_7_2_5_trace_generator: Option<&range_check_7_2_5::ClaimGenerator>,
+    verify_bitwise_xor_4_trace_generator: Option<&verify_bitwise_xor_4::ClaimGenerator>,
+    verify_bitwise_xor_7_trace_generator: Option<&verify_bitwise_xor_7::ClaimGenerator>,
+    verify_bitwise_xor_8_trace_generator: Option<&verify_bitwise_xor_8::ClaimGenerator>,
+    verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
+) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
+    let span = span!(Level::INFO, "write blake context trace").entered();
+    if blake_round.as_ref().is_none_or(|tg| tg.is_empty()) {
+        return (
+            BlakeContextClaim { claim: None },
+            BlakeContextInteractionClaimGenerator { gen: None },
         );
-        let (blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
-            tree_builder,
-            verify_bitwise_xor_8_trace_generator,
-            &verify_bitwise_xor_12,
-            verify_bitwise_xor_4_trace_generator,
-            verify_bitwise_xor_7_trace_generator,
-            verify_bitwise_xor_9_trace_generator,
-        );
-        let (blake_sigma_claim, blake_sigma_interaction_gen) =
-            blake_sigma.write_trace(tree_builder);
-        let (triple_xor_32_claim, triple_xor_32_interaction_gen) =
-            triple_xor_32.write_trace(tree_builder, verify_bitwise_xor_8_trace_generator);
-        let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
-            verify_bitwise_xor_12.write_trace(tree_builder);
-        span.exit();
-
-        let claim = Some(Claim {
-            blake_round: blake_round_claim,
-            blake_g: blake_g_claim,
-            blake_sigma: blake_sigma_claim,
-            triple_xor_32: triple_xor_32_claim,
-            verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
-        });
-        let gen = Some(InteractionClaimGenerator {
-            blake_round_interaction_gen,
-            blake_g_interaction_gen,
-            blake_sigma_interaction_gen,
-            triple_xor_32_interaction_gen,
-            verify_bitwise_xor_12_interaction_gen,
-        });
-        (
-            BlakeContextClaim { claim },
-            BlakeContextInteractionClaimGenerator { gen },
-        )
     }
+    let blake_round = blake_round.expect("Should have blake context components at this point");
+    let mut blake_g = blake_g.expect("Should have blake context components at this point");
+    let blake_sigma = blake_sigma.expect("Should have blake context components at this point");
+    let triple_xor_32 = triple_xor_32.expect("Should have blake context components at this point");
+    let verify_bitwise_xor_12 =
+        verify_bitwise_xor_12.expect("Should have blake context components at this point");
+
+    let (blake_round_claim, blake_round_interaction_gen) = blake_round.write_trace(
+        tree_builder,
+        &blake_sigma,
+        memory_address_to_id_trace_generator.unwrap(),
+        memory_id_to_value_trace_generator.unwrap(),
+        rc_7_2_5_trace_generator.unwrap(),
+        &mut blake_g,
+    );
+    let (blake_g_claim, blake_g_interaction_gen) = blake_g.write_trace(
+        tree_builder,
+        verify_bitwise_xor_8_trace_generator.unwrap(),
+        &verify_bitwise_xor_12,
+        verify_bitwise_xor_4_trace_generator.unwrap(),
+        verify_bitwise_xor_7_trace_generator.unwrap(),
+        verify_bitwise_xor_9_trace_generator.unwrap(),
+    );
+    let (blake_sigma_claim, blake_sigma_interaction_gen) = blake_sigma.write_trace(tree_builder);
+    let (triple_xor_32_claim, triple_xor_32_interaction_gen) =
+        triple_xor_32.write_trace(tree_builder, verify_bitwise_xor_8_trace_generator.unwrap());
+    let (verify_bitwise_xor_12_claim, verify_bitwise_xor_12_interaction_gen) =
+        verify_bitwise_xor_12.write_trace(tree_builder);
+    span.exit();
+
+    let claim = Some(Claim {
+        blake_round: blake_round_claim,
+        blake_g: blake_g_claim,
+        blake_sigma: blake_sigma_claim,
+        triple_xor_32: triple_xor_32_claim,
+        verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
+    });
+    let gen = Some(InteractionClaimGenerator {
+        blake_round_interaction_gen,
+        blake_g_interaction_gen,
+        blake_sigma_interaction_gen,
+        triple_xor_32_interaction_gen,
+        verify_bitwise_xor_12_interaction_gen,
+    });
+    (
+        BlakeContextClaim { claim },
+        BlakeContextInteractionClaimGenerator { gen },
+    )
 }
 
 pub struct BlakeContextInteractionClaimGenerator {

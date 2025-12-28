@@ -1,10 +1,11 @@
-pub const ADD_MOD_MEMORY_CELLS: usize = 7;
-pub const BITWISE_MEMORY_CELLS: usize = 5;
+pub const ADD_MOD_BUILTIN_MEMORY_CELLS: usize = 7;
+pub const BITWISE_BUILTIN_MEMORY_CELLS: usize = 5;
 pub const EC_OP_MEMORY_CELLS: usize = 7;
 pub const ECDSA_MEMORY_CELLS: usize = 2;
 pub const KECCAK_MEMORY_CELLS: usize = 16;
-pub const MUL_MOD_MEMORY_CELLS: usize = 7;
-pub const PEDERSEN_MEMORY_CELLS: usize = 3;
-pub const POSEIDON_MEMORY_CELLS: usize = 6;
-pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
+pub const MUL_MOD_BUILTIN_MEMORY_CELLS: usize = 7;
+pub const PEDERSEN_BUILTIN_MEMORY_CELLS: usize = 3;
+pub const POSEIDON_BUILTIN_MEMORY_CELLS: usize = 6;
+pub const RANGE_CHECK_BUILTIN_MEMORY_CELLS: usize = 1;
+pub const RANGE_CHECK_96_BUILTIN_MEMORY_CELLS: usize = 1;
 pub const OUTPUT_MEMORY_CELLS: usize = 1;

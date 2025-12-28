@@ -6,9 +6,10 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use serde::{Deserialize, Serialize};
 use stwo_cairo_common::builtins::{
-    ADD_MOD_MEMORY_CELLS, BITWISE_MEMORY_CELLS, ECDSA_MEMORY_CELLS, EC_OP_MEMORY_CELLS,
-    KECCAK_MEMORY_CELLS, MUL_MOD_MEMORY_CELLS, OUTPUT_MEMORY_CELLS, PEDERSEN_MEMORY_CELLS,
-    POSEIDON_MEMORY_CELLS, RANGE_CHECK_MEMORY_CELLS,
+    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, ECDSA_MEMORY_CELLS,
+    EC_OP_MEMORY_CELLS, KECCAK_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS, OUTPUT_MEMORY_CELLS,
+    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
+    RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{info, span, Level};
@@ -36,14 +37,14 @@ impl From<VMMemorySegmentAddresses> for MemorySegmentAddresses {
 /// This struct holds the builtins used in a Cairo program.
 #[derive(Debug, Default, Serialize, Deserialize, Clone)]
 pub struct BuiltinSegments {
-    pub add_mod: Option<MemorySegmentAddresses>,
-    pub bitwise: Option<MemorySegmentAddresses>,
+    pub add_mod_builtin: Option<MemorySegmentAddresses>,
+    pub bitwise_builtin: Option<MemorySegmentAddresses>,
     pub output: Option<MemorySegmentAddresses>,
-    pub mul_mod: Option<MemorySegmentAddresses>,
-    pub pedersen: Option<MemorySegmentAddresses>,
-    pub poseidon: Option<MemorySegmentAddresses>,
-    pub range_check_bits_96: Option<MemorySegmentAddresses>,
-    pub range_check_bits_128: Option<MemorySegmentAddresses>,
+    pub mul_mod_builtin: Option<MemorySegmentAddresses>,
+    pub pedersen_builtin: Option<MemorySegmentAddresses>,
+    pub poseidon_builtin: Option<MemorySegmentAddresses>,
+    pub range_check96_builtin: Option<MemorySegmentAddresses>,
+    pub range_check_builtin: Option<MemorySegmentAddresses>,
 }
 
 impl BuiltinSegments {
@@ -57,20 +58,40 @@ impl BuiltinSegments {
             );
         };
 
-        insert_builtin(BuiltinName::add_mod, &self.add_mod, ADD_MOD_MEMORY_CELLS);
-        insert_builtin(BuiltinName::bitwise, &self.bitwise, BITWISE_MEMORY_CELLS);
-        insert_builtin(BuiltinName::mul_mod, &self.mul_mod, MUL_MOD_MEMORY_CELLS);
-        insert_builtin(BuiltinName::pedersen, &self.pedersen, PEDERSEN_MEMORY_CELLS);
-        insert_builtin(BuiltinName::poseidon, &self.poseidon, POSEIDON_MEMORY_CELLS);
+        insert_builtin(
+            BuiltinName::add_mod,
+            &self.add_mod_builtin,
+            ADD_MOD_BUILTIN_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::bitwise,
+            &self.bitwise_builtin,
+            BITWISE_BUILTIN_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::mul_mod,
+            &self.mul_mod_builtin,
+            MUL_MOD_BUILTIN_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::pedersen,
+            &self.pedersen_builtin,
+            PEDERSEN_BUILTIN_MEMORY_CELLS,
+        );
+        insert_builtin(
+            BuiltinName::poseidon,
+            &self.poseidon_builtin,
+            POSEIDON_BUILTIN_MEMORY_CELLS,
+        );
         insert_builtin(
             BuiltinName::range_check,
-            &self.range_check_bits_128,
-            RANGE_CHECK_MEMORY_CELLS,
+            &self.range_check_builtin,
+            RANGE_CHECK_BUILTIN_MEMORY_CELLS,
         );
         insert_builtin(
             BuiltinName::range_check96,
-            &self.range_check_bits_96,
-            RANGE_CHECK_MEMORY_CELLS,
+            &self.range_check96_builtin,
+            RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
         );
         insert_builtin(BuiltinName::output, &self.output, OUTPUT_MEMORY_CELLS);
         counts
@@ -98,16 +119,16 @@ impl BuiltinSegments {
             }
 
             let cells_per_instance = match builtin_name {
-                BuiltinName::add_mod => ADD_MOD_MEMORY_CELLS,
-                BuiltinName::bitwise => BITWISE_MEMORY_CELLS,
+                BuiltinName::add_mod => ADD_MOD_BUILTIN_MEMORY_CELLS,
+                BuiltinName::bitwise => BITWISE_BUILTIN_MEMORY_CELLS,
                 BuiltinName::ec_op => EC_OP_MEMORY_CELLS,
                 BuiltinName::ecdsa => ECDSA_MEMORY_CELLS,
                 BuiltinName::keccak => KECCAK_MEMORY_CELLS,
-                BuiltinName::mul_mod => MUL_MOD_MEMORY_CELLS,
-                BuiltinName::pedersen => PEDERSEN_MEMORY_CELLS,
-                BuiltinName::poseidon => POSEIDON_MEMORY_CELLS,
-                BuiltinName::range_check96 => RANGE_CHECK_MEMORY_CELLS,
-                BuiltinName::range_check => RANGE_CHECK_MEMORY_CELLS,
+                BuiltinName::mul_mod => MUL_MOD_BUILTIN_MEMORY_CELLS,
+                BuiltinName::pedersen => PEDERSEN_BUILTIN_MEMORY_CELLS,
+                BuiltinName::poseidon => POSEIDON_BUILTIN_MEMORY_CELLS,
+                BuiltinName::range_check96 => RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
+                BuiltinName::range_check => RANGE_CHECK_BUILTIN_MEMORY_CELLS,
                 _ => panic!("Invalid builtin name"),
             };
             assert!(
@@ -161,7 +182,7 @@ fn get_memory_segment_size(segment: &MemorySegmentAddresses) -> usize {
 #[cfg(test)]
 mod test_builtin_segments {
     use super::*;
-    use crate::builtins::BITWISE_MEMORY_CELLS;
+    use crate::builtins::BITWISE_BUILTIN_MEMORY_CELLS;
 
     #[test]
     fn test_pad_relocatble_builtin_segments() {
@@ -194,7 +215,7 @@ mod test_builtin_segments {
             &builtin_segments,
         );
 
-        assert!(relocatable_memory[0].len() == 32 * BITWISE_MEMORY_CELLS);
+        assert!(relocatable_memory[0].len() == 32 * BITWISE_BUILTIN_MEMORY_CELLS);
         assert!(relocatable_memory[1].len() == 16 * EC_OP_MEMORY_CELLS);
         assert!(relocatable_memory[2].len() == 10);
 
@@ -218,7 +239,7 @@ mod test_builtin_segments {
     )]
     fn test_builtin_segment_invalid_size() {
         let mul_mod_segment =
-            vec![Some(MaybeRelocatable::Int(7.into())); MUL_MOD_MEMORY_CELLS * 123 + 3];
+            vec![Some(MaybeRelocatable::Int(7.into())); MUL_MOD_BUILTIN_MEMORY_CELLS * 123 + 3];
         let mut relocatable_memory = [mul_mod_segment];
         let builtin_segments = BTreeMap::from([(0, BuiltinName::mul_mod)]);
 

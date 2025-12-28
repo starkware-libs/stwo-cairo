@@ -6,30 +6,35 @@ use cairo_air::air::{
     PublicSegmentRanges, SegmentRange,
 };
 use cairo_air::relations::CommonLookupElements;
+use indexmap::IndexSet;
 use itertools::Itertools;
-use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
-use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
-    PreProcessedTrace, MAX_SEQUENCE_LOG_SIZE,
-};
+use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
 use tracing::{span, Level};
 
-use super::blake_context::{BlakeContextClaimGenerator, BlakeContextInteractionClaimGenerator};
-use super::builtins::{BuiltinsClaimGenerator, BuiltinsInteractionClaimGenerator};
-use super::opcodes::{OpcodesClaimGenerator, OpcodesInteractionClaimGenerator};
-use super::range_checks::{RangeChecksClaimGenerator, RangeChecksInteractionClaimGenerator};
+use super::builtins::BuiltinsInteractionClaimGenerator;
+use super::opcodes::OpcodesInteractionClaimGenerator;
+use super::range_checks::RangeChecksInteractionClaimGenerator;
+use crate::witness::blake_context::{
+    blake_context_write_trace, BlakeContextInteractionClaimGenerator,
+};
+use crate::witness::builtins::{builtins_write_trace, get_builtins};
+use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenerator};
 use crate::witness::components::pedersen::{
-    PedersenContextClaimGenerator, PedersenContextInteractionClaimGenerator,
+    pedersen_context_write_trace, PedersenContextInteractionClaimGenerator,
 };
 use crate::witness::components::poseidon::{
-    PoseidonContextClaimGenerator, PoseidonContextInteractionClaimGenerator,
+    poseidon_context_write_trace, PoseidonContextInteractionClaimGenerator,
 };
 use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
+use crate::witness::opcodes::{get_opcodes, opcodes_write_trace};
+use crate::witness::prelude::{PreProcessedTrace, M31};
+use crate::witness::range_checks::{get_range_checks, range_checks_write_trace};
 use crate::witness::utils::TreeBuilder;
 
 fn extract_public_segments(
@@ -120,202 +125,234 @@ fn extract_sections_from_memory(
     }
 }
 
-/// Responsible for generating the CairoClaim and writing the trace.
+/// CairoClaimGenerator responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
 /// [`CairoInteractionClaim`], [`CairoComponents`].
-pub struct CairoClaimGenerator {
-    public_data: PublicData,
+pub fn create_cairo_claim_generator(
+    ProverInput {
+        state_transitions,
+        memory,
+        public_memory_addresses,
+        builtin_segments,
+        public_segment_context,
+        ..
+    }: ProverInput,
+    preprocessed_trace: Arc<PreProcessedTrace>,
+) -> CairoClaimGenerator {
+    let initial_state = state_transitions.initial_state;
+    let final_state = state_transitions.final_state;
 
-    opcodes: OpcodesClaimGenerator,
+    let mut all_components = IndexSet::new();
+    for opcode in get_opcodes(&state_transitions.casm_states_by_opcode) {
+        all_components.extend(get_sub_components(opcode));
+    }
+    for builtin in get_builtins(&builtin_segments) {
+        all_components.extend(get_sub_components(builtin));
+    }
+    // TODO(Stav): remove after range checks and verify bitwise xor are optional in the claim.
+    all_components.extend(get_range_checks());
+    all_components.insert("verify_bitwise_xor_4");
+    all_components.insert("verify_bitwise_xor_7");
+    all_components.insert("verify_bitwise_xor_8");
+    all_components.insert("verify_bitwise_xor_9");
 
-    // Internal components.
-    verify_instruction_trace_generator: verify_instruction::ClaimGenerator,
-    blake_context_trace_generator: BlakeContextClaimGenerator,
-    builtins: BuiltinsClaimGenerator,
-    pedersen_context_trace_generator: PedersenContextClaimGenerator,
-    poseidon_context_trace_generator: PoseidonContextClaimGenerator,
-    memory_address_to_id_trace_generator: memory_address_to_id::ClaimGenerator,
-    memory_id_to_value_trace_generator: memory_id_to_big::ClaimGenerator,
-    range_checks_trace_generator: RangeChecksClaimGenerator,
-    verify_bitwise_xor_4_trace_generator: verify_bitwise_xor_4::ClaimGenerator,
-    verify_bitwise_xor_7_trace_generator: verify_bitwise_xor_7::ClaimGenerator,
-    verify_bitwise_xor_8_trace_generator: verify_bitwise_xor_8::ClaimGenerator,
-    verify_bitwise_xor_9_trace_generator: verify_bitwise_xor_9::ClaimGenerator,
-    // ...
-}
-impl CairoClaimGenerator {
-    pub fn new(
-        ProverInput {
-            state_transitions,
-            memory,
-            public_memory_addresses,
-            builtin_segments,
-            public_segment_context,
-            ..
-        }: ProverInput,
-        preprocessed_trace: Arc<PreProcessedTrace>,
-    ) -> Self {
-        let initial_state = state_transitions.initial_state;
-        let final_state = state_transitions.final_state;
-        let opcodes = OpcodesClaimGenerator::new(state_transitions);
-        let verify_instruction_trace_generator = verify_instruction::ClaimGenerator::new();
-        let builtins = BuiltinsClaimGenerator::new(builtin_segments);
-        let pedersen_context_trace_generator =
-            PedersenContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let poseidon_context_trace_generator =
-            PoseidonContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let memory = Arc::new(memory);
-        let memory_address_to_id_trace_generator =
-            memory_address_to_id::ClaimGenerator::new(Arc::clone(&memory));
-        let memory_id_to_value_trace_generator =
-            memory_id_to_big::ClaimGenerator::new(Arc::clone(&memory));
-        let range_checks_trace_generator =
-            RangeChecksClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let verify_bitwise_xor_4_trace_generator =
-            verify_bitwise_xor_4::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let verify_bitwise_xor_7_trace_generator =
-            verify_bitwise_xor_7::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let verify_bitwise_xor_8_trace_generator =
-            verify_bitwise_xor_8::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
-        let verify_bitwise_xor_9_trace_generator =
-            verify_bitwise_xor_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
+    // Public data.
+    let initial_pc = initial_state.pc.0;
+    let initial_ap = initial_state.ap.0;
+    let final_ap = final_state.ap.0;
+    let public_memory = extract_sections_from_memory(
+        &memory,
+        initial_pc,
+        initial_ap,
+        final_ap,
+        public_segment_context,
+    );
 
-        // Yield public memory.
-        for addr in public_memory_addresses
-            .iter()
-            .copied()
-            .map(M31::from_u32_unchecked)
-        {
-            let id = memory_address_to_id_trace_generator.get_id(addr);
-            memory_address_to_id_trace_generator.add_input(&addr);
-            memory_id_to_value_trace_generator.add_input(&id);
-        }
+    let public_data = PublicData {
+        public_memory,
+        initial_state,
+        final_state,
+    };
 
-        // Public data.
-        let initial_pc = initial_state.pc.0;
-        let initial_ap = initial_state.ap.0;
-        let final_ap = final_state.ap.0;
-        let public_memory = extract_sections_from_memory(
-            &memory,
-            initial_pc,
-            initial_ap,
-            final_ap,
-            public_segment_context,
-        );
+    let mut cairo_claim_generator = CairoClaimGenerator {
+        public_data,
+        ..Default::default()
+    };
+    cairo_claim_generator.fill_components(
+        &all_components,
+        state_transitions.casm_states_by_opcode,
+        &builtin_segments,
+        Arc::new(memory),
+        preprocessed_trace,
+    );
 
-        let public_data = PublicData {
-            public_memory,
-            initial_state,
-            final_state,
-        };
-
-        let blake_context_trace_generator =
-            BlakeContextClaimGenerator::new(Arc::clone(&memory), preprocessed_trace);
-
-        Self {
-            public_data,
-            opcodes,
-            verify_instruction_trace_generator,
-            blake_context_trace_generator,
-            builtins,
-            pedersen_context_trace_generator,
-            poseidon_context_trace_generator,
-            memory_address_to_id_trace_generator,
-            memory_id_to_value_trace_generator,
-            range_checks_trace_generator,
-            verify_bitwise_xor_4_trace_generator,
-            verify_bitwise_xor_7_trace_generator,
-            verify_bitwise_xor_8_trace_generator,
-            verify_bitwise_xor_9_trace_generator,
-        }
+    let memory_address_to_id_trace_generator =
+        cairo_claim_generator.memory_address_to_id.as_ref().unwrap();
+    let memory_id_to_value_trace_generator =
+        cairo_claim_generator.memory_id_to_big.as_ref().unwrap();
+    // Yield public memory.
+    for addr in public_memory_addresses
+        .iter()
+        .copied()
+        .map(M31::from_u32_unchecked)
+    {
+        let id = memory_address_to_id_trace_generator.get_id(addr);
+        memory_address_to_id_trace_generator.add_input(&addr);
+        memory_id_to_value_trace_generator.add_input(&id);
     }
 
+    cairo_claim_generator
+}
+
+impl CairoClaimGenerator {
     pub fn write_trace(
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
-        let (opcodes_claim, opcodes_interaction_gen) = self.opcodes.write_trace(
+        let (opcodes_claim, opcodes_interaction_gen) = opcodes_write_trace(
+            self.add_opcode,
+            self.add_opcode_small,
+            self.add_ap_opcode,
+            self.assert_eq_opcode,
+            self.assert_eq_opcode_imm,
+            self.assert_eq_opcode_double_deref,
+            self.blake_compress_opcode,
+            self.call_opcode_abs,
+            self.call_opcode_rel_imm,
+            self.generic_opcode,
+            self.jnz_opcode_non_taken,
+            self.jnz_opcode_taken,
+            self.jump_opcode_abs,
+            self.jump_opcode_double_deref,
+            self.jump_opcode_rel,
+            self.jump_opcode_rel_imm,
+            self.mul_opcode,
+            self.mul_opcode_small,
+            self.qm_31_add_mul_opcode,
+            self.ret_opcode,
             tree_builder,
-            &mut self.blake_context_trace_generator,
-            &self.memory_address_to_id_trace_generator,
-            &self.memory_id_to_value_trace_generator,
-            &self.range_checks_trace_generator,
-            &self.verify_instruction_trace_generator,
-            &mut self.verify_bitwise_xor_8_trace_generator,
+            &mut self.blake_round,
+            &mut self.triple_xor_32,
+            self.memory_address_to_id.as_ref(),
+            self.memory_id_to_big.as_ref(),
+            self.range_check_7_2_5.as_ref(),
+            self.range_check_11.as_ref(),
+            self.range_check_18.as_ref(),
+            self.range_check_20.as_ref(),
+            self.range_check_4_4_4_4.as_ref(),
+            self.range_check_9_9.as_ref(),
+            self.verify_instruction.as_ref(),
+            self.verify_bitwise_xor_8.as_mut(),
         );
         span.exit();
         let span = span!(Level::INFO, "internal component trace").entered();
         let (verify_instruction_claim, verify_instruction_interaction_gen) =
-            self.verify_instruction_trace_generator.write_trace(
+            self.verify_instruction.unwrap().write_trace(
                 tree_builder,
-                &self.range_checks_trace_generator.rc_7_2_5_trace_generator,
-                &self.range_checks_trace_generator.rc_4_3_trace_generator,
-                &self.memory_address_to_id_trace_generator,
-                &self.memory_id_to_value_trace_generator,
+                self.range_check_7_2_5.as_ref().unwrap(),
+                self.range_check_4_3.as_ref().unwrap(),
+                self.memory_address_to_id.as_ref().unwrap(),
+                self.memory_id_to_big.as_ref().unwrap(),
             );
-        let (blake_context_claim, blake_context_interaction_gen) =
-            self.blake_context_trace_generator.write_trace(
-                tree_builder,
-                &self.memory_address_to_id_trace_generator,
-                &self.memory_id_to_value_trace_generator,
-                &self.range_checks_trace_generator,
-                &self.verify_bitwise_xor_4_trace_generator,
-                &self.verify_bitwise_xor_7_trace_generator,
-                &self.verify_bitwise_xor_8_trace_generator,
-                &self.verify_bitwise_xor_9_trace_generator,
-            );
-        let (builtins_claim, builtins_interaction_gen) = self.builtins.write_trace(
+        let (blake_context_claim, blake_context_interaction_gen) = blake_context_write_trace(
+            self.blake_round,
+            self.blake_g,
+            self.blake_round_sigma,
+            self.triple_xor_32,
+            self.verify_bitwise_xor_12,
             tree_builder,
-            &self.memory_address_to_id_trace_generator,
-            &self.memory_id_to_value_trace_generator,
-            &mut self.pedersen_context_trace_generator,
-            &mut self.poseidon_context_trace_generator,
-            &self.range_checks_trace_generator.rc_6_trace_generator,
-            &self.range_checks_trace_generator.rc_12_trace_generator,
-            &self.range_checks_trace_generator.rc_18_trace_generator,
-            &self.range_checks_trace_generator.rc_3_6_6_3_trace_generator,
-            &self.verify_bitwise_xor_8_trace_generator,
-            &self.verify_bitwise_xor_9_trace_generator,
+            self.memory_address_to_id.as_ref(),
+            self.memory_id_to_big.as_ref(),
+            self.range_check_7_2_5.as_ref(),
+            self.verify_bitwise_xor_4.as_ref(),
+            self.verify_bitwise_xor_7.as_ref(),
+            self.verify_bitwise_xor_8.as_ref(),
+            self.verify_bitwise_xor_9.as_ref(),
+        );
+        let (builtins_claim, builtins_interaction_gen) = builtins_write_trace(
+            self.add_mod_builtin,
+            self.bitwise_builtin,
+            self.mul_mod_builtin,
+            self.pedersen_builtin,
+            self.poseidon_builtin,
+            self.range_check96_builtin,
+            self.range_check_builtin,
+            tree_builder,
+            self.memory_address_to_id.as_ref(),
+            self.memory_id_to_big.as_ref(),
+            self.pedersen_aggregator_window_bits_18.as_ref(),
+            self.poseidon_aggregator.as_ref(),
+            self.range_check_6.as_ref(),
+            self.range_check_12.as_ref(),
+            self.range_check_18.as_ref(),
+            self.range_check_3_6_6_3.as_ref(),
+            self.verify_bitwise_xor_8.as_ref(),
+            self.verify_bitwise_xor_9.as_ref(),
         );
         let (pedersen_context_claim, pedersen_context_interaction_gen) =
-            self.pedersen_context_trace_generator.write_trace(
+            pedersen_context_write_trace(
+                self.pedersen_aggregator_window_bits_18,
+                self.partial_ec_mul_window_bits_18,
+                self.pedersen_points_table_window_bits_18,
                 tree_builder,
-                &self.memory_id_to_value_trace_generator,
-                &self.range_checks_trace_generator,
+                self.memory_id_to_big.as_ref(),
+                self.range_check_8.as_ref(),
+                self.range_check_9_9.as_ref(),
+                self.range_check_20.as_ref(),
             );
         let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            self.poseidon_context_trace_generator.write_trace(
+            poseidon_context_write_trace(
+                self.poseidon_aggregator,
+                self.poseidon_3_partial_rounds_chain,
+                self.poseidon_full_round_chain,
+                self.cube_252,
+                self.poseidon_round_keys,
+                self.range_check_252_width_27,
                 tree_builder,
-                &self.memory_id_to_value_trace_generator,
-                &self.range_checks_trace_generator,
+                self.memory_id_to_big.as_ref(),
+                self.range_check_3_3_3_3_3.as_ref(),
+                self.range_check_4_4_4_4.as_ref(),
+                self.range_check_4_4.as_ref(),
+                self.range_check_9_9.as_ref(),
+                self.range_check_18.as_ref(),
+                self.range_check_20.as_ref(),
             );
-        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) = self
-            .memory_address_to_id_trace_generator
-            .write_trace(tree_builder);
+        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
+            self.memory_address_to_id.unwrap().write_trace(tree_builder);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
         const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
-            self.memory_id_to_value_trace_generator.write_trace(
+            self.memory_id_to_big.unwrap().write_trace(
                 tree_builder,
-                &self.range_checks_trace_generator.rc_9_9_trace_generator,
+                self.range_check_9_9.as_ref().unwrap(),
                 LOG_MAX_BIG_SIZE,
             );
-        let (range_checks_claim, range_checks_interaction_gen) =
-            self.range_checks_trace_generator.write_trace(tree_builder);
-        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) = self
-            .verify_bitwise_xor_4_trace_generator
-            .write_trace(tree_builder);
-        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) = self
-            .verify_bitwise_xor_7_trace_generator
-            .write_trace(tree_builder);
-        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) = self
-            .verify_bitwise_xor_8_trace_generator
-            .write_trace(tree_builder);
-        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) = self
-            .verify_bitwise_xor_9_trace_generator
-            .write_trace(tree_builder);
+        let (range_checks_claim, range_checks_interaction_gen) = range_checks_write_trace(
+            self.range_check_6,
+            self.range_check_8,
+            self.range_check_11,
+            self.range_check_12,
+            self.range_check_18,
+            self.range_check_20,
+            self.range_check_4_3,
+            self.range_check_4_4,
+            self.range_check_9_9,
+            self.range_check_7_2_5,
+            self.range_check_3_6_6_3,
+            self.range_check_4_4_4_4,
+            self.range_check_3_3_3_3_3,
+            tree_builder,
+        );
+        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) =
+            self.verify_bitwise_xor_4.unwrap().write_trace(tree_builder);
+        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) =
+            self.verify_bitwise_xor_7.unwrap().write_trace(tree_builder);
+        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) =
+            self.verify_bitwise_xor_8.unwrap().write_trace(tree_builder);
+        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) =
+            self.verify_bitwise_xor_9.unwrap().write_trace(tree_builder);
         span.exit();
         (
             CairoClaim {
