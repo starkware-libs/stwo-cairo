@@ -26,6 +26,9 @@ const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 
+pub const CANONICAL_SIZE: u32 = 590286448;
+pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 120524400;
+
 pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
     fn log_size(&self) -> u32;
@@ -65,7 +68,13 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect();
 
-        Self::from_columns(columns)
+        let ppt = Self::from_columns(columns);
+        assert!(
+            ppt.log_sizes().iter().fold(0, |acc, &x| acc + (1 << x)) == CANONICAL_SIZE,
+            "Canonical preprocessed trace has unexpected size"
+        );
+
+        ppt
     }
 
     /// Generates a canonical preprocessed trace without the `Pedersen` points. Used in proving
@@ -91,7 +100,14 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect();
 
-        Self::from_columns(columns)
+        let ppt = Self::from_columns(columns);
+        assert!(
+            ppt.log_sizes().iter().fold(0, |acc, &x| acc + (1 << x))
+                == CANONICAL_WITHOUT_PEDERSEN_SIZE,
+            "Canonical without pedersen preprocessed trace has unexpected size"
+        );
+
+        ppt
     }
 
     pub fn log_sizes(&self) -> Vec<u32> {
