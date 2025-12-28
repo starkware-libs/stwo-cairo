@@ -3547,6 +3547,7 @@ dependencies = [
  "getrandom 0.2.16",
  "getrandom 0.3.4",
  "hex",
+ "indexmap",
  "itertools 0.12.1",
  "num-traits",
  "paste",
