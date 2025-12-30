@@ -10,13 +10,18 @@ use stwo_cairo_common::builtins::{
 
 use crate::witness::components::{
     add_mod_builtin, bitwise_builtin, memory_address_to_id, memory_id_to_big, mul_mod_builtin,
-    pedersen_aggregator_window_bits_18, pedersen_builtin, poseidon_aggregator, poseidon_builtin,
-    range_check96_builtin, range_check_12, range_check_18, range_check_3_6_6_3, range_check_6,
-    range_check_builtin, verify_bitwise_xor_8, verify_bitwise_xor_9,
+    pedersen_aggregator_window_bits_18, pedersen_aggregator_window_bits_9, pedersen_builtin,
+    pedersen_builtin_narrow_windows, poseidon_aggregator, poseidon_builtin, range_check96_builtin,
+    range_check_12, range_check_18, range_check_3_6_6_3, range_check_6, range_check_builtin,
+    verify_bitwise_xor_8, verify_bitwise_xor_9,
 };
+use crate::witness::prelude::*;
 use crate::witness::utils::TreeBuilder;
 
-pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
+pub fn get_builtins(
+    builtin_segments: &BuiltinSegments,
+    preprocessed_trace: Arc<PreProcessedTrace>,
+) -> Vec<&'static str> {
     let mut builtins = vec![];
 
     if let Some(segment) = builtin_segments.add_mod_builtin {
@@ -69,7 +74,17 @@ pub fn get_builtins(builtin_segments: &BuiltinSegments) -> Vec<&'static str> {
             n_instances.is_power_of_two(),
             "pedersen instances number is not a power of two"
         );
-        builtins.push("pedersen_builtin");
+        if preprocessed_trace.has_column(&PreProcessedColumnId {
+            id: "pedersen_points_0".to_owned(),
+        }) {
+            builtins.push("pedersen_builtin");
+        } else if preprocessed_trace.has_column(&PreProcessedColumnId {
+            id: "pedersen_points_small_0".to_owned(),
+        }) {
+            builtins.push("pedersen_builtin_narrow_windows");
+        } else {
+            panic!("Missing pedersen points in the preprocessed trace.")
+        }
     }
     if let Some(segment) = builtin_segments.poseidon_builtin {
         let segment_length = segment.stop_ptr - segment.begin_addr;
@@ -119,6 +134,7 @@ pub fn builtins_write_trace(
     bitwise_builtin: Option<bitwise_builtin::ClaimGenerator>,
     mul_mod_builtin: Option<mul_mod_builtin::ClaimGenerator>,
     pedersen_builtin: Option<pedersen_builtin::ClaimGenerator>,
+    pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::ClaimGenerator>,
     poseidon_builtin: Option<poseidon_builtin::ClaimGenerator>,
     range_check_96_builtin: Option<range_check96_builtin::ClaimGenerator>,
     range_check_128_builtin: Option<range_check_builtin::ClaimGenerator>,
@@ -127,6 +143,9 @@ pub fn builtins_write_trace(
     memory_id_to_value_trace_generator: Option<&memory_id_to_big::ClaimGenerator>,
     pedersen_aggregator_trace_generator: Option<
         &pedersen_aggregator_window_bits_18::ClaimGenerator,
+    >,
+    pedersen_aggregator_window_bits_9_trace_generator: Option<
+        &pedersen_aggregator_window_bits_9::ClaimGenerator,
     >,
     poseidon_aggregator_trace_generator: Option<&poseidon_aggregator::ClaimGenerator>,
     range_check_6_trace_generator: Option<&range_check_6::ClaimGenerator>,
@@ -177,6 +196,16 @@ pub fn builtins_write_trace(
             )
         })
         .unzip();
+    let (pedersen_builtin_narrow_windows_claim, pedersen_builtin_narrow_windows_interaction_gen) =
+        pedersen_builtin_narrow_windows
+            .map(|pedersen_builtin_trace_generator| {
+                pedersen_builtin_trace_generator.write_trace(
+                    tree_builder,
+                    memory_address_to_id_trace_generator.unwrap(),
+                    pedersen_aggregator_window_bits_9_trace_generator.unwrap(),
+                )
+            })
+            .unzip();
     let (poseidon_builtin_claim, poseidon_builtin_interaction_gen) = poseidon_builtin
         .map(|poseidon_builtin_trace_generator| {
             poseidon_builtin_trace_generator.write_trace(
@@ -215,6 +244,7 @@ pub fn builtins_write_trace(
             bitwise_builtin: bitwise_builtin_claim,
             mul_mod_builtin: mul_mod_builtin_claim,
             pedersen_builtin: pedersen_builtin_claim,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_claim,
             poseidon_builtin: poseidon_builtin_claim,
             range_check_96_builtin: range_check_96_builtin_claim,
             range_check_128_builtin: range_check_128_builtin_claim,
@@ -224,6 +254,7 @@ pub fn builtins_write_trace(
             bitwise_builtin_interaction_gen,
             mul_mod_builtin_interaction_gen,
             pedersen_builtin_interaction_gen,
+            pedersen_builtin_narrow_windows_interaction_gen,
             poseidon_builtin_interaction_gen,
             range_check_96_builtin_interaction_gen,
             range_check_128_builtin_interaction_gen,
@@ -236,6 +267,8 @@ pub struct BuiltinsInteractionClaimGenerator {
     bitwise_builtin_interaction_gen: Option<bitwise_builtin::InteractionClaimGenerator>,
     mul_mod_builtin_interaction_gen: Option<mul_mod_builtin::InteractionClaimGenerator>,
     pedersen_builtin_interaction_gen: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pedersen_builtin_narrow_windows_interaction_gen:
+        Option<pedersen_builtin_narrow_windows::InteractionClaimGenerator>,
     poseidon_builtin_interaction_gen: Option<poseidon_builtin::InteractionClaimGenerator>,
     range_check_96_builtin_interaction_gen:
         Option<range_check96_builtin::InteractionClaimGenerator>,
@@ -271,6 +304,12 @@ impl BuiltinsInteractionClaimGenerator {
                     pedersen_builtin_interaction_gen
                         .write_interaction_trace(tree_builder, common_lookup_elements)
                 });
+        let pedersen_builtin_narrow_windows_interaction_claim = self
+            .pedersen_builtin_narrow_windows_interaction_gen
+            .map(|pedersen_builtin_narrow_windows_interaction_gen| {
+                pedersen_builtin_narrow_windows_interaction_gen
+                    .write_interaction_trace(tree_builder, common_lookup_elements)
+            });
         let poseidon_builtin_interaction_claim = self.poseidon_builtin_interaction_gen.map(
             |poseidon_builtin_interaction_gen: poseidon_builtin::InteractionClaimGenerator| {
                 poseidon_builtin_interaction_gen
@@ -295,6 +334,7 @@ impl BuiltinsInteractionClaimGenerator {
             bitwise_builtin: bitwise_builtin_interaction_claim,
             mul_mod_builtin: mul_mod_builtin_interaction_claim,
             pedersen_builtin: pedersen_builtin_interaction_claim,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_interaction_claim,
             poseidon_builtin: poseidon_builtin_interaction_claim,
             range_check_96_builtin: range_check_96_builtin_interaction_claim,
             range_check_128_builtin: range_check_128_builtin_interaction_claim,

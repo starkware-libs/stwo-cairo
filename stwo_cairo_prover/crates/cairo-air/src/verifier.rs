@@ -8,11 +8,7 @@ use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::pcs::CommitmentSchemeVerifier;
 use stwo::core::verifier::{verify, VerificationError};
-use stwo_cairo_common::builtins::{
-    ADD_MOD_BUILTIN_MEMORY_CELLS, BITWISE_BUILTIN_MEMORY_CELLS, MUL_MOD_BUILTIN_MEMORY_CELLS,
-    PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
-    RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
-};
+use stwo_cairo_common::builtins::*;
 use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, LOG_MEMORY_ADDRESS_BOUND};
 use stwo_cairo_common::prover_types::cpu::{CasmState, PRIME};
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
@@ -192,10 +188,32 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         "range_check_96",
         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
     );
+    if let Some(claim) = builtins_claim.pedersen_builtin {
+        check_builtin(
+            Some(BuiltinClaim {
+                segment_start: claim.pedersen_builtin_segment_start,
+                log_size: claim.log_size,
+            }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_BUILTIN_MEMORY_CELLS,
+        );
+    } else {
+        check_builtin(
+            builtins_claim
+                .pedersen_builtin_narrow_windows
+                .map(|claim| BuiltinClaim {
+                    segment_start: claim.pedersen_builtin_segment_start,
+                    log_size: claim.log_size,
+                }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS,
+        );
+    };
     check_builtin_generic!(bitwise);
     check_builtin_generic!(add_mod);
     check_builtin_generic!(mul_mod);
-    check_builtin_generic!(pedersen);
     check_builtin_generic!(poseidon);
 }
 

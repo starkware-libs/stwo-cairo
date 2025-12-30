@@ -66,8 +66,14 @@ impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS
     }
 
     fn id(&self) -> PreProcessedColumnId {
-        PreProcessedColumnId {
-            id: format!("pedersen_points_{}", self.index),
+        match WINDOW_BITS {
+            9 => PreProcessedColumnId {
+                id: format!("pedersen_points_small_{}", self.index),
+            },
+            18 => PreProcessedColumnId {
+                id: format!("pedersen_points_{}", self.index),
+            },
+            _ => panic!("Unsupported window_bits value {WINDOW_BITS}"),
         }
     }
 

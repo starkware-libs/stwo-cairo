@@ -1,4 +1,4 @@
-// AIR version 1a148714
+// AIR version 60f9e560
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 113181118 }, M31 { inner: 1598560738 }, M31 { inner: 1654831899 },
@@ -141,8 +141,8 @@ pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1544141576 },
 ];
 pub const PEDERSEN_POINTS_TABLE_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 744989230 }, M31 { inner: 111904508 }, M31 { inner: 629881021 },
-    M31 { inner: 407739582 },
+    M31 { inner: 1373390669 }, M31 { inner: 444805603 }, M31 { inner: 25079461 },
+    M31 { inner: 1553943505 },
 ];
 pub const POSEIDON_3_PARTIAL_ROUNDS_CHAIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1926880489 }, M31 { inner: 1551609281 }, M31 { inner: 66463842 },
