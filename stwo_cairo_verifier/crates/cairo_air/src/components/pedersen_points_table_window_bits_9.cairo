@@ -73,62 +73,118 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let column_size = m31(pow2(log_size));
         let mut pedersen_points_table_window_bits_9_sum_0: QM31 = Zero::zero();
         let seq_15 = preprocessed_mask_values.get_and_mark_used(SEQ_15_IDX);
-        let pedersen_points_0 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_0_IDX);
-        let pedersen_points_1 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_1_IDX);
-        let pedersen_points_2 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_2_IDX);
-        let pedersen_points_3 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_3_IDX);
-        let pedersen_points_4 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_4_IDX);
-        let pedersen_points_5 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_5_IDX);
-        let pedersen_points_6 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_6_IDX);
-        let pedersen_points_7 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_7_IDX);
-        let pedersen_points_8 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_8_IDX);
-        let pedersen_points_9 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_9_IDX);
-        let pedersen_points_10 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_10_IDX);
-        let pedersen_points_11 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_11_IDX);
-        let pedersen_points_12 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_12_IDX);
-        let pedersen_points_13 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_13_IDX);
-        let pedersen_points_14 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_14_IDX);
-        let pedersen_points_15 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_15_IDX);
-        let pedersen_points_16 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_16_IDX);
-        let pedersen_points_17 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_17_IDX);
-        let pedersen_points_18 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_18_IDX);
-        let pedersen_points_19 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_19_IDX);
-        let pedersen_points_20 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_20_IDX);
-        let pedersen_points_21 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_21_IDX);
-        let pedersen_points_22 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_22_IDX);
-        let pedersen_points_23 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_23_IDX);
-        let pedersen_points_24 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_24_IDX);
-        let pedersen_points_25 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_25_IDX);
-        let pedersen_points_26 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_26_IDX);
-        let pedersen_points_27 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_27_IDX);
-        let pedersen_points_28 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_28_IDX);
-        let pedersen_points_29 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_29_IDX);
-        let pedersen_points_30 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_30_IDX);
-        let pedersen_points_31 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_31_IDX);
-        let pedersen_points_32 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_32_IDX);
-        let pedersen_points_33 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_33_IDX);
-        let pedersen_points_34 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_34_IDX);
-        let pedersen_points_35 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_35_IDX);
-        let pedersen_points_36 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_36_IDX);
-        let pedersen_points_37 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_37_IDX);
-        let pedersen_points_38 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_38_IDX);
-        let pedersen_points_39 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_39_IDX);
-        let pedersen_points_40 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_40_IDX);
-        let pedersen_points_41 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_41_IDX);
-        let pedersen_points_42 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_42_IDX);
-        let pedersen_points_43 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_43_IDX);
-        let pedersen_points_44 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_44_IDX);
-        let pedersen_points_45 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_45_IDX);
-        let pedersen_points_46 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_46_IDX);
-        let pedersen_points_47 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_47_IDX);
-        let pedersen_points_48 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_48_IDX);
-        let pedersen_points_49 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_49_IDX);
-        let pedersen_points_50 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_50_IDX);
-        let pedersen_points_51 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_51_IDX);
-        let pedersen_points_52 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_52_IDX);
-        let pedersen_points_53 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_53_IDX);
-        let pedersen_points_54 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_54_IDX);
-        let pedersen_points_55 = preprocessed_mask_values.get_and_mark_used(PEDERSEN_POINTS_55_IDX);
+        let pedersen_points_small_0 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_0_IDX);
+        let pedersen_points_small_1 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_1_IDX);
+        let pedersen_points_small_2 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_2_IDX);
+        let pedersen_points_small_3 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_3_IDX);
+        let pedersen_points_small_4 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_4_IDX);
+        let pedersen_points_small_5 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_5_IDX);
+        let pedersen_points_small_6 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_6_IDX);
+        let pedersen_points_small_7 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_7_IDX);
+        let pedersen_points_small_8 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_8_IDX);
+        let pedersen_points_small_9 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_9_IDX);
+        let pedersen_points_small_10 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_10_IDX);
+        let pedersen_points_small_11 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_11_IDX);
+        let pedersen_points_small_12 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_12_IDX);
+        let pedersen_points_small_13 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_13_IDX);
+        let pedersen_points_small_14 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_14_IDX);
+        let pedersen_points_small_15 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_15_IDX);
+        let pedersen_points_small_16 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_16_IDX);
+        let pedersen_points_small_17 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_17_IDX);
+        let pedersen_points_small_18 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_18_IDX);
+        let pedersen_points_small_19 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_19_IDX);
+        let pedersen_points_small_20 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_20_IDX);
+        let pedersen_points_small_21 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_21_IDX);
+        let pedersen_points_small_22 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_22_IDX);
+        let pedersen_points_small_23 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_23_IDX);
+        let pedersen_points_small_24 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_24_IDX);
+        let pedersen_points_small_25 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_25_IDX);
+        let pedersen_points_small_26 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_26_IDX);
+        let pedersen_points_small_27 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_27_IDX);
+        let pedersen_points_small_28 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_28_IDX);
+        let pedersen_points_small_29 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_29_IDX);
+        let pedersen_points_small_30 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_30_IDX);
+        let pedersen_points_small_31 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_31_IDX);
+        let pedersen_points_small_32 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_32_IDX);
+        let pedersen_points_small_33 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_33_IDX);
+        let pedersen_points_small_34 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_34_IDX);
+        let pedersen_points_small_35 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_35_IDX);
+        let pedersen_points_small_36 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_36_IDX);
+        let pedersen_points_small_37 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_37_IDX);
+        let pedersen_points_small_38 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_38_IDX);
+        let pedersen_points_small_39 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_39_IDX);
+        let pedersen_points_small_40 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_40_IDX);
+        let pedersen_points_small_41 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_41_IDX);
+        let pedersen_points_small_42 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_42_IDX);
+        let pedersen_points_small_43 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_43_IDX);
+        let pedersen_points_small_44 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_44_IDX);
+        let pedersen_points_small_45 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_45_IDX);
+        let pedersen_points_small_46 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_46_IDX);
+        let pedersen_points_small_47 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_47_IDX);
+        let pedersen_points_small_48 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_48_IDX);
+        let pedersen_points_small_49 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_49_IDX);
+        let pedersen_points_small_50 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_50_IDX);
+        let pedersen_points_small_51 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_51_IDX);
+        let pedersen_points_small_52 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_52_IDX);
+        let pedersen_points_small_53 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_53_IDX);
+        let pedersen_points_small_54 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_54_IDX);
+        let pedersen_points_small_55 = preprocessed_mask_values
+            .get_and_mark_used(PEDERSEN_POINTS_SMALL_55_IDX);
 
         let [pedersen_points_table_window_bits_9_multiplicity]: [Span<QM31>; 1] =
             (*trace_mask_values
@@ -147,21 +203,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .common_lookup_elements
             .combine_qm31(
                 [
-                    qm31_const::<1791500038, 0, 0, 0>(), seq_15, pedersen_points_0,
-                    pedersen_points_1, pedersen_points_2, pedersen_points_3, pedersen_points_4,
-                    pedersen_points_5, pedersen_points_6, pedersen_points_7, pedersen_points_8,
-                    pedersen_points_9, pedersen_points_10, pedersen_points_11, pedersen_points_12,
-                    pedersen_points_13, pedersen_points_14, pedersen_points_15, pedersen_points_16,
-                    pedersen_points_17, pedersen_points_18, pedersen_points_19, pedersen_points_20,
-                    pedersen_points_21, pedersen_points_22, pedersen_points_23, pedersen_points_24,
-                    pedersen_points_25, pedersen_points_26, pedersen_points_27, pedersen_points_28,
-                    pedersen_points_29, pedersen_points_30, pedersen_points_31, pedersen_points_32,
-                    pedersen_points_33, pedersen_points_34, pedersen_points_35, pedersen_points_36,
-                    pedersen_points_37, pedersen_points_38, pedersen_points_39, pedersen_points_40,
-                    pedersen_points_41, pedersen_points_42, pedersen_points_43, pedersen_points_44,
-                    pedersen_points_45, pedersen_points_46, pedersen_points_47, pedersen_points_48,
-                    pedersen_points_49, pedersen_points_50, pedersen_points_51, pedersen_points_52,
-                    pedersen_points_53, pedersen_points_54, pedersen_points_55,
+                    qm31_const::<1791500038, 0, 0, 0>(), seq_15, pedersen_points_small_0,
+                    pedersen_points_small_1, pedersen_points_small_2, pedersen_points_small_3,
+                    pedersen_points_small_4, pedersen_points_small_5, pedersen_points_small_6,
+                    pedersen_points_small_7, pedersen_points_small_8, pedersen_points_small_9,
+                    pedersen_points_small_10, pedersen_points_small_11, pedersen_points_small_12,
+                    pedersen_points_small_13, pedersen_points_small_14, pedersen_points_small_15,
+                    pedersen_points_small_16, pedersen_points_small_17, pedersen_points_small_18,
+                    pedersen_points_small_19, pedersen_points_small_20, pedersen_points_small_21,
+                    pedersen_points_small_22, pedersen_points_small_23, pedersen_points_small_24,
+                    pedersen_points_small_25, pedersen_points_small_26, pedersen_points_small_27,
+                    pedersen_points_small_28, pedersen_points_small_29, pedersen_points_small_30,
+                    pedersen_points_small_31, pedersen_points_small_32, pedersen_points_small_33,
+                    pedersen_points_small_34, pedersen_points_small_35, pedersen_points_small_36,
+                    pedersen_points_small_37, pedersen_points_small_38, pedersen_points_small_39,
+                    pedersen_points_small_40, pedersen_points_small_41, pedersen_points_small_42,
+                    pedersen_points_small_43, pedersen_points_small_44, pedersen_points_small_45,
+                    pedersen_points_small_46, pedersen_points_small_47, pedersen_points_small_48,
+                    pedersen_points_small_49, pedersen_points_small_50, pedersen_points_small_51,
+                    pedersen_points_small_52, pedersen_points_small_53, pedersen_points_small_54,
+                    pedersen_points_small_55,
                 ]
                     .span(),
             );
