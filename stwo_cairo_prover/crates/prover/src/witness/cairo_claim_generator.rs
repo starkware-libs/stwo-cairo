@@ -46,6 +46,12 @@ pub struct CairoClaimGenerator {
     pub verify_instruction: Option<verify_instruction::ClaimGenerator>,
     pub range_check_4_3: Option<range_check_4_3::ClaimGenerator>,
     pub range_check_7_2_5: Option<range_check_7_2_5::ClaimGenerator>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::ClaimGenerator>,
+    pub pedersen_aggregator_window_bits_9:
+        Option<pedersen_aggregator_window_bits_9::ClaimGenerator>,
+    pub partial_ec_mul_window_bits_9: Option<partial_ec_mul_window_bits_9::ClaimGenerator>,
+    pub pedersen_points_table_window_bits_9:
+        Option<pedersen_points_table_window_bits_9::ClaimGenerator>,
     pub pedersen_builtin: Option<pedersen_builtin::ClaimGenerator>,
     pub pedersen_aggregator_window_bits_18:
         Option<pedersen_aggregator_window_bits_18::ClaimGenerator>,
@@ -90,115 +96,140 @@ impl CairoClaimGenerator {
         memory: Arc<Memory>,
         preprocessed_trace: Arc<PreProcessedTrace>,
     ) {
-        self.blake_compress_opcode = components.contains(&"blake_compress_opcode").then(|| {
+        self.blake_compress_opcode = components.contains("blake_compress_opcode").then(|| {
             blake_compress_opcode::ClaimGenerator::new(casm_states_by_opcode.blake_compress_opcode)
         });
         self.triple_xor_32 = components
-            .contains(&"triple_xor_32")
+            .contains("triple_xor_32")
             .then(|| triple_xor_32::ClaimGenerator::new());
         self.blake_round = components
-            .contains(&"blake_round")
+            .contains("blake_round")
             .then(|| blake_round::ClaimGenerator::new(memory.clone()));
         self.blake_g = components
-            .contains(&"blake_g")
+            .contains("blake_g")
             .then(|| blake_g::ClaimGenerator::new());
         self.verify_bitwise_xor_7 = components
-            .contains(&"verify_bitwise_xor_7")
+            .contains("verify_bitwise_xor_7")
             .then(|| verify_bitwise_xor_7::ClaimGenerator::new(preprocessed_trace.clone()));
         self.verify_bitwise_xor_4 = components
-            .contains(&"verify_bitwise_xor_4")
+            .contains("verify_bitwise_xor_4")
             .then(|| verify_bitwise_xor_4::ClaimGenerator::new(preprocessed_trace.clone()));
         self.verify_bitwise_xor_12 = components
-            .contains(&"verify_bitwise_xor_12")
+            .contains("verify_bitwise_xor_12")
             .then(|| verify_bitwise_xor_12::ClaimGenerator::new(preprocessed_trace.clone()));
         self.blake_round_sigma = components
-            .contains(&"blake_round_sigma")
+            .contains("blake_round_sigma")
             .then(|| blake_round_sigma::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.qm_31_add_mul_opcode = components.contains(&"qm_31_add_mul_opcode").then(|| {
+        self.qm_31_add_mul_opcode = components.contains("qm_31_add_mul_opcode").then(|| {
             qm_31_add_mul_opcode::ClaimGenerator::new(casm_states_by_opcode.qm_31_add_mul_opcode)
         });
         self.ret_opcode = components
-            .contains(&"ret_opcode")
+            .contains("ret_opcode")
             .then(|| ret_opcode::ClaimGenerator::new(casm_states_by_opcode.ret_opcode));
         self.mul_opcode = components
-            .contains(&"mul_opcode")
+            .contains("mul_opcode")
             .then(|| mul_opcode::ClaimGenerator::new(casm_states_by_opcode.mul_opcode));
         self.mul_opcode_small = components
-            .contains(&"mul_opcode_small")
+            .contains("mul_opcode_small")
             .then(|| mul_opcode_small::ClaimGenerator::new(casm_states_by_opcode.mul_opcode_small));
         self.jump_opcode_abs = components
-            .contains(&"jump_opcode_abs")
+            .contains("jump_opcode_abs")
             .then(|| jump_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_abs));
         self.jump_opcode_double_deref =
-            components.contains(&"jump_opcode_double_deref").then(|| {
+            components.contains("jump_opcode_double_deref").then(|| {
                 jump_opcode_double_deref::ClaimGenerator::new(
                     casm_states_by_opcode.jump_opcode_double_deref,
                 )
             });
         self.jump_opcode_rel = components
-            .contains(&"jump_opcode_rel")
+            .contains("jump_opcode_rel")
             .then(|| jump_opcode_rel::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_rel));
-        self.jump_opcode_rel_imm = components.contains(&"jump_opcode_rel_imm").then(|| {
+        self.jump_opcode_rel_imm = components.contains("jump_opcode_rel_imm").then(|| {
             jump_opcode_rel_imm::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_rel_imm)
         });
-        self.jnz_opcode_non_taken = components.contains(&"jnz_opcode_non_taken").then(|| {
+        self.jnz_opcode_non_taken = components.contains("jnz_opcode_non_taken").then(|| {
             jnz_opcode_non_taken::ClaimGenerator::new(casm_states_by_opcode.jnz_opcode_non_taken)
         });
         self.jnz_opcode_taken = components
-            .contains(&"jnz_opcode_taken")
+            .contains("jnz_opcode_taken")
             .then(|| jnz_opcode_taken::ClaimGenerator::new(casm_states_by_opcode.jnz_opcode_taken));
-        self.call_opcode_rel_imm = components.contains(&"call_opcode_rel_imm").then(|| {
+        self.call_opcode_rel_imm = components.contains("call_opcode_rel_imm").then(|| {
             call_opcode_rel_imm::ClaimGenerator::new(casm_states_by_opcode.call_opcode_rel_imm)
         });
         self.call_opcode_abs = components
-            .contains(&"call_opcode_abs")
+            .contains("call_opcode_abs")
             .then(|| call_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.call_opcode_abs));
-        self.assert_eq_opcode_imm = components.contains(&"assert_eq_opcode_imm").then(|| {
+        self.assert_eq_opcode_imm = components.contains("assert_eq_opcode_imm").then(|| {
             assert_eq_opcode_imm::ClaimGenerator::new(casm_states_by_opcode.assert_eq_opcode_imm)
         });
         self.assert_eq_opcode_double_deref = components
-            .contains(&"assert_eq_opcode_double_deref")
+            .contains("assert_eq_opcode_double_deref")
             .then(|| {
                 assert_eq_opcode_double_deref::ClaimGenerator::new(
                     casm_states_by_opcode.assert_eq_opcode_double_deref,
                 )
             });
         self.assert_eq_opcode = components
-            .contains(&"assert_eq_opcode")
+            .contains("assert_eq_opcode")
             .then(|| assert_eq_opcode::ClaimGenerator::new(casm_states_by_opcode.assert_eq_opcode));
         self.add_opcode = components
-            .contains(&"add_opcode")
+            .contains("add_opcode")
             .then(|| add_opcode::ClaimGenerator::new(casm_states_by_opcode.add_opcode));
         self.add_opcode_small = components
-            .contains(&"add_opcode_small")
+            .contains("add_opcode_small")
             .then(|| add_opcode_small::ClaimGenerator::new(casm_states_by_opcode.add_opcode_small));
         self.add_ap_opcode = components
-            .contains(&"add_ap_opcode")
+            .contains("add_ap_opcode")
             .then(|| add_ap_opcode::ClaimGenerator::new(casm_states_by_opcode.add_ap_opcode));
         self.generic_opcode = components
-            .contains(&"generic_opcode")
+            .contains("generic_opcode")
             .then(|| generic_opcode::ClaimGenerator::new(casm_states_by_opcode.generic_opcode));
         self.range_check_11 = components
-            .contains(&"range_check_11")
+            .contains("range_check_11")
             .then(|| range_check_11::ClaimGenerator::new(preprocessed_trace.clone()));
         self.verify_instruction = components
-            .contains(&"verify_instruction")
+            .contains("verify_instruction")
             .then(|| verify_instruction::ClaimGenerator::new());
         self.range_check_4_3 = components
-            .contains(&"range_check_4_3")
+            .contains("range_check_4_3")
             .then(|| range_check_4_3::ClaimGenerator::new(preprocessed_trace.clone()));
         self.range_check_7_2_5 = components
-            .contains(&"range_check_7_2_5")
+            .contains("range_check_7_2_5")
             .then(|| range_check_7_2_5::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.pedersen_builtin = components.contains(&"pedersen_builtin").then(|| {
-            let segment = builtin_segments.pedersen_builtin.unwrap();
-
+        self.pedersen_builtin_narrow_windows = components.contains("pedersen_builtin_narrow_windows").then(|| {
+        let segment = builtin_segments.get_segment_by_name("pedersen_builtin_narrow_windows").unwrap();
+        let segment_length = segment.stop_ptr - segment.begin_addr;
+        assert!(
+            segment_length.is_multiple_of(PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS),
+            "pedersen_builtin_narrow_windows segment length is not a multiple of it's cells_per_instance"
+        );
+        let n_instances = segment_length / PEDERSEN_BUILTIN_NARROW_WINDOWS_MEMORY_CELLS;
+        assert!(
+            n_instances.is_power_of_two(),
+            "pedersen_builtin_narrow_windows instances number is not a power of two"
+        );
+        pedersen_builtin_narrow_windows::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+    });
+        self.pedersen_aggregator_window_bits_9 = components
+            .contains("pedersen_aggregator_window_bits_9")
+            .then(|| pedersen_aggregator_window_bits_9::ClaimGenerator::new());
+        self.partial_ec_mul_window_bits_9 = components
+            .contains("partial_ec_mul_window_bits_9")
+            .then(|| partial_ec_mul_window_bits_9::ClaimGenerator::new());
+        self.pedersen_points_table_window_bits_9 = components
+            .contains("pedersen_points_table_window_bits_9")
+            .then(|| {
+                pedersen_points_table_window_bits_9::ClaimGenerator::new(preprocessed_trace.clone())
+            });
+        self.pedersen_builtin = components.contains("pedersen_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("pedersen_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
                 "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -207,30 +238,30 @@ impl CairoClaimGenerator {
             pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
         self.pedersen_aggregator_window_bits_18 = components
-            .contains(&"pedersen_aggregator_window_bits_18")
+            .contains("pedersen_aggregator_window_bits_18")
             .then(|| pedersen_aggregator_window_bits_18::ClaimGenerator::new());
         self.partial_ec_mul_window_bits_18 = components
-            .contains(&"partial_ec_mul_window_bits_18")
+            .contains("partial_ec_mul_window_bits_18")
             .then(|| partial_ec_mul_window_bits_18::ClaimGenerator::new());
         self.pedersen_points_table_window_bits_18 = components
-            .contains(&"pedersen_points_table_window_bits_18")
+            .contains("pedersen_points_table_window_bits_18")
             .then(|| {
                 pedersen_points_table_window_bits_18::ClaimGenerator::new(
                     preprocessed_trace.clone(),
                 )
             });
         self.range_check_8 = components
-            .contains(&"range_check_8")
+            .contains("range_check_8")
             .then(|| range_check_8::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.poseidon_builtin = components.contains(&"poseidon_builtin").then(|| {
-            let segment = builtin_segments.poseidon_builtin.unwrap();
-
+        self.poseidon_builtin = components.contains("poseidon_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("poseidon_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
                 "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -239,44 +270,44 @@ impl CairoClaimGenerator {
             poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
         self.poseidon_aggregator = components
-            .contains(&"poseidon_aggregator")
+            .contains("poseidon_aggregator")
             .then(|| poseidon_aggregator::ClaimGenerator::new());
         self.poseidon_3_partial_rounds_chain = components
-            .contains(&"poseidon_3_partial_rounds_chain")
+            .contains("poseidon_3_partial_rounds_chain")
             .then(|| poseidon_3_partial_rounds_chain::ClaimGenerator::new());
         self.range_check_4_4 = components
-            .contains(&"range_check_4_4")
+            .contains("range_check_4_4")
             .then(|| range_check_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
         self.range_check_4_4_4_4 = components
-            .contains(&"range_check_4_4_4_4")
+            .contains("range_check_4_4_4_4")
             .then(|| range_check_4_4_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
         self.range_check_252_width_27 = components
-            .contains(&"range_check_252_width_27")
+            .contains("range_check_252_width_27")
             .then(|| range_check_252_width_27::ClaimGenerator::new());
         self.poseidon_full_round_chain = components
-            .contains(&"poseidon_full_round_chain")
+            .contains("poseidon_full_round_chain")
             .then(|| poseidon_full_round_chain::ClaimGenerator::new());
         self.range_check_3_3_3_3_3 = components
-            .contains(&"range_check_3_3_3_3_3")
+            .contains("range_check_3_3_3_3_3")
             .then(|| range_check_3_3_3_3_3::ClaimGenerator::new(preprocessed_trace.clone()));
         self.poseidon_round_keys = components
-            .contains(&"poseidon_round_keys")
+            .contains("poseidon_round_keys")
             .then(|| poseidon_round_keys::ClaimGenerator::new(preprocessed_trace.clone()));
         self.cube_252 = components
-            .contains(&"cube_252")
+            .contains("cube_252")
             .then(|| cube_252::ClaimGenerator::new());
         self.range_check_20 = components
-            .contains(&"range_check_20")
+            .contains("range_check_20")
             .then(|| range_check_20::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.mul_mod_builtin = components.contains(&"mul_mod_builtin").then(|| {
-            let segment = builtin_segments.mul_mod_builtin.unwrap();
-
+        self.mul_mod_builtin = components.contains("mul_mod_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("mul_mod_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
                 "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -285,23 +316,23 @@ impl CairoClaimGenerator {
             mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
         self.range_check_18 = components
-            .contains(&"range_check_18")
+            .contains("range_check_18")
             .then(|| range_check_18::ClaimGenerator::new(preprocessed_trace.clone()));
         self.range_check_3_6_6_3 = components
-            .contains(&"range_check_3_6_6_3")
+            .contains("range_check_3_6_6_3")
             .then(|| range_check_3_6_6_3::ClaimGenerator::new(preprocessed_trace.clone()));
         self.range_check_12 = components
-            .contains(&"range_check_12")
+            .contains("range_check_12")
             .then(|| range_check_12::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.add_mod_builtin = components.contains(&"add_mod_builtin").then(|| {
-            let segment = builtin_segments.add_mod_builtin.unwrap();
-
+        self.add_mod_builtin = components.contains("add_mod_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("add_mod_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
                 "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -309,15 +340,15 @@ impl CairoClaimGenerator {
             );
             add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
-        self.range_check96_builtin = components.contains(&"range_check96_builtin").then(|| {
-            let segment = builtin_segments.range_check96_builtin.unwrap();
-
+        self.range_check96_builtin = components.contains("range_check96_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("range_check96_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
                 "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -329,17 +360,17 @@ impl CairoClaimGenerator {
             )
         });
         self.range_check_6 = components
-            .contains(&"range_check_6")
+            .contains("range_check_6")
             .then(|| range_check_6::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_builtin = components.contains(&"range_check_builtin").then(|| {
-            let segment = builtin_segments.range_check_builtin.unwrap();
-
+        self.range_check_builtin = components.contains("range_check_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("range_check_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
                 "range_check_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -347,15 +378,15 @@ impl CairoClaimGenerator {
             );
             range_check_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
-        self.bitwise_builtin = components.contains(&"bitwise_builtin").then(|| {
-            let segment = builtin_segments.bitwise_builtin.unwrap();
-
+        self.bitwise_builtin = components.contains("bitwise_builtin").then(|| {
+            let segment = builtin_segments
+                .get_segment_by_name("bitwise_builtin")
+                .unwrap();
             let segment_length = segment.stop_ptr - segment.begin_addr;
             assert!(
                 segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
                 "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
             );
-
             let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
             assert!(
                 n_instances.is_power_of_two(),
@@ -364,19 +395,19 @@ impl CairoClaimGenerator {
             bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
         });
         self.verify_bitwise_xor_8 = components
-            .contains(&"verify_bitwise_xor_8")
+            .contains("verify_bitwise_xor_8")
             .then(|| verify_bitwise_xor_8::ClaimGenerator::new(preprocessed_trace.clone()));
         self.verify_bitwise_xor_9 = components
-            .contains(&"verify_bitwise_xor_9")
+            .contains("verify_bitwise_xor_9")
             .then(|| verify_bitwise_xor_9::ClaimGenerator::new(preprocessed_trace.clone()));
         self.memory_id_to_big = components
-            .contains(&"memory_id_to_big")
+            .contains("memory_id_to_big")
             .then(|| memory_id_to_big::ClaimGenerator::new(memory.clone()));
         self.range_check_9_9 = components
-            .contains(&"range_check_9_9")
+            .contains("range_check_9_9")
             .then(|| range_check_9_9::ClaimGenerator::new(preprocessed_trace.clone()));
         self.memory_address_to_id = components
-            .contains(&"memory_address_to_id")
+            .contains("memory_address_to_id")
             .then(|| memory_address_to_id::ClaimGenerator::new(memory.clone()));
     }
 }
@@ -696,6 +727,19 @@ pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
                 "partial_ec_mul_window_bits_18",
                 "pedersen_aggregator_window_bits_18",
                 "pedersen_builtin",
+            ]
+        }
+        "pedersen_builtin_narrow_windows" => {
+            vec![
+                "memory_address_to_id",
+                "range_check_9_9",
+                "memory_id_to_big",
+                "range_check_8",
+                "pedersen_points_table_window_bits_9",
+                "range_check_20",
+                "partial_ec_mul_window_bits_9",
+                "pedersen_aggregator_window_bits_9",
+                "pedersen_builtin_narrow_windows",
             ]
         }
         _ => panic!("Unknown component: {component_name}"),
