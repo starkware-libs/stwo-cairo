@@ -21,15 +21,15 @@ use crate::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
 use crate::prover_types::simd::LOG_N_LANES;
 
 // Size to initialize the preprocessed trace with for `PreprocessedColumn::BitwiseXor`.
-const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 12];
+const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
 
 // The total number of trace cells in the canonical preprocessed trace.
-pub const CANONICAL_SIZE: u32 = 590286448;
+pub const CANONICAL_SIZE: u32 = 543100528;
 // The total number of trace cells in the canonical without pedersen preprocessed trace.
-pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 120524400;
+pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 73338480;
 
 pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;

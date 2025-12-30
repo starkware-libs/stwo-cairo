@@ -14,7 +14,6 @@ use crate::witness::components::{
     verify_bitwise_xor_12, verify_bitwise_xor_4, verify_bitwise_xor_7, verify_bitwise_xor_8,
     verify_bitwise_xor_9,
 };
-use crate::witness::prelude::*;
 use crate::witness::range_checks::RangeChecksClaimGenerator;
 use crate::witness::utils::TreeBuilder;
 
@@ -27,19 +26,6 @@ pub struct BlakeContextClaimGenerator {
 }
 impl BlakeContextClaimGenerator {
     pub fn new(memory: Memory, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
-        if !preprocessed_trace.has_column(&PreProcessedColumnId {
-            id: "bitwise_xor_12_0".to_owned(),
-        }) {
-            // This is a preprocessed trace without the Pedersen points table - Don't
-            // create Pedersen components.
-            return Self {
-                blake_round: None,
-                blake_g: None,
-                blake_sigma: None,
-                triple_xor_32: None,
-                verify_bitwise_xor_12: None,
-            };
-        }
         let blake_round = Some(blake_round::ClaimGenerator::new(memory));
         let blake_g = Some(blake_g::ClaimGenerator::new());
         let blake_sigma = Some(blake_round_sigma::ClaimGenerator::new(
