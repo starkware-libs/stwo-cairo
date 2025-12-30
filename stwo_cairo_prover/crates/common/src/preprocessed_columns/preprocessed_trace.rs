@@ -25,11 +25,14 @@ const XOR_N_BITS: [u32; 5] = [4, 7, 8, 9, 10];
 
 // Used by every builtin for a read of the memory.
 pub const MAX_SEQUENCE_LOG_SIZE: u32 = 25;
+pub const SMALL_MAX_SEQUENCE_LOG_SIZE: u32 = 20;
 
 // The total number of trace cells in the canonical preprocessed trace.
 pub const CANONICAL_SIZE: u32 = 543100528;
 // The total number of trace cells in the canonical without pedersen preprocessed trace.
 pub const CANONICAL_WITHOUT_PEDERSEN_SIZE: u32 = 73338480;
+// The total number of trace cells in the small canonical preprocessed trace.
+pub const CANONICAL_SMALL: u32 = 10161776;
 
 pub trait PreProcessedColumn: Send + Sync {
     fn packed_at(&self, vec_row: usize) -> PackedM31;
@@ -70,8 +73,9 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect_vec();
 
-        assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>() == CANONICAL_SIZE,
+        assert_eq!(
+            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
+            CANONICAL_SIZE,
             "Canonical preprocessed trace has unexpected size"
         );
 
@@ -101,10 +105,52 @@ impl PreProcessedTrace {
             .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
             .collect_vec();
 
-        assert!(
-            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>()
-                == CANONICAL_WITHOUT_PEDERSEN_SIZE,
+        assert_eq!(
+            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
+            CANONICAL_WITHOUT_PEDERSEN_SIZE,
             "Canonical without pedersen preprocessed trace has unexpected size"
+        );
+
+        Self::from_columns(columns)
+    }
+
+    /// Generates a small canonical preprocessed trace with smaller `Pedersen` points and expanded
+    /// verify_bitwise_xor_12.
+    pub fn canonical_small() -> Self {
+        let seq = (LOG_N_LANES..=SMALL_MAX_SEQUENCE_LOG_SIZE)
+            .map(|x| Box::new(Seq::new(x)) as Box<dyn PreProcessedColumn>);
+        let bitwise_xor = XOR_N_BITS
+            .map(|n_bits| {
+                (0..3).map(move |col_index| {
+                    Box::new(BitwiseXor::new(n_bits, col_index)) as Box<dyn PreProcessedColumn>
+                })
+            })
+            .into_iter()
+            .flatten();
+        let range_check = gen_range_check_columns();
+        let poseidon_keys = (0..POSEIDON_N_WORDS)
+            .map(|x| Box::new(PoseidonRoundKeys::new(x)) as Box<dyn PreProcessedColumn>);
+        let blake_sigma = (0..N_BLAKE_SIGMA_COLS)
+            .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
+
+        let pedersen_points = (0..PEDERSEN_TABLE_N_COLUMNS)
+            .map(|x| Box::new(PedersenPoints::<9>::new(x)) as Box<dyn PreProcessedColumn>);
+
+        let columns = chain!(
+            seq,
+            bitwise_xor,
+            range_check,
+            poseidon_keys,
+            blake_sigma,
+            pedersen_points
+        )
+        .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+        .collect_vec();
+
+        assert_eq!(
+            columns.iter().map(|col| 1 << col.log_size()).sum::<u32>(),
+            CANONICAL_SMALL,
+            "Canonical small preprocessed trace has unexpected size"
         );
 
         Self::from_columns(columns)

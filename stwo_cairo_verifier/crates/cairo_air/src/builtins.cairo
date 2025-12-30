@@ -2,6 +2,7 @@ use components::add_mod_builtin::InteractionClaimImpl as AddModBuiltinInteractio
 use components::bitwise_builtin::InteractionClaimImpl as BitwiseBuiltinInteractionClaimImpl;
 use components::mul_mod_builtin::InteractionClaimImpl as MulModBuiltinInteractionClaimImpl;
 use components::pedersen_builtin::InteractionClaimImpl as PedersenBuiltinInteractionClaimImpl;
+use components::pedersen_builtin_narrow_windows::InteractionClaimImpl as PedersenBuiltinNarrowWindowsInteractionClaimImpl;
 use components::poseidon_builtin::InteractionClaimImpl as PoseidonBuiltinInteractionClaimImpl;
 use components::range_check96_builtin::InteractionClaimImpl as RangeCheckBuiltinBits96InteractionClaimImpl;
 use components::range_check_builtin::InteractionClaimImpl as RangeCheckBuiltinBits128InteractionClaimImpl;
@@ -26,6 +27,7 @@ pub struct BuiltinsClaim {
     pub bitwise_builtin: Option<components::bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Claim>,
+    pub pedersen_builtin_narrow_windows: Option<components::pedersen_builtin_narrow_windows::Claim>,
     pub poseidon_builtin: Option<components::poseidon_builtin::Claim>,
     pub range_check_96_builtin: Option<components::range_check96_builtin::Claim>,
     pub range_check_128_builtin: Option<components::range_check_builtin::Claim>,
@@ -38,6 +40,7 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -52,6 +55,9 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = pedersen_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = pedersen_builtin_narrow_windows {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = poseidon_builtin {
@@ -71,6 +77,7 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -90,6 +97,10 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
         }
 
         if let Some(claim) = pedersen_builtin {
+            log_sizes.append(claim.log_sizes());
+        }
+
+        if let Some(claim) = pedersen_builtin_narrow_windows {
             log_sizes.append(claim.log_sizes());
         }
 
@@ -114,6 +125,7 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -129,6 +141,9 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = pedersen_builtin {
+            claim.accumulate_relation_uses(ref relation_uses);
+        }
+        if let Some(claim) = pedersen_builtin_narrow_windows {
             claim.accumulate_relation_uses(ref relation_uses);
         }
         if let Some(claim) = poseidon_builtin {
@@ -149,6 +164,9 @@ pub struct BuiltinsInteractionClaim {
     pub bitwise_builtin: Option<components::bitwise_builtin::InteractionClaim>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<components::pedersen_builtin::InteractionClaim>,
+    pub pedersen_builtin_narrow_windows: Option<
+        components::pedersen_builtin_narrow_windows::InteractionClaim,
+    >,
     pub poseidon_builtin: Option<components::poseidon_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<components::range_check96_builtin::InteractionClaim>,
     pub range_check_128_builtin: Option<components::range_check_builtin::InteractionClaim>,
@@ -162,6 +180,7 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -177,6 +196,9 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = pedersen_builtin {
+            claim.mix_into(ref channel);
+        }
+        if let Some(claim) = pedersen_builtin_narrow_windows {
             claim.mix_into(ref channel);
         }
         if let Some(claim) = poseidon_builtin {
@@ -196,6 +218,7 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -215,6 +238,10 @@ pub impl BuiltinsInteractionClaimImpl of BuiltinsInteractionClaimTrait {
         }
 
         if let Some(claim) = pedersen_builtin {
+            sum += *claim.claimed_sum;
+        }
+
+        if let Some(claim) = pedersen_builtin_narrow_windows {
             sum += *claim.claimed_sum;
         }
 
@@ -242,6 +269,9 @@ pub struct BuiltinComponents {
     pub bitwise_builtin: Option<components::bitwise_builtin::Component>,
     pub mul_mod_builtin: Option<components::mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<components::pedersen_builtin::Component>,
+    pub pedersen_builtin_narrow_windows: Option<
+        components::pedersen_builtin_narrow_windows::Component,
+    >,
     pub poseidon_builtin: Option<components::poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<components::range_check96_builtin::Component>,
     pub range_check_128_builtin: Option<components::range_check_builtin::Component>,
@@ -278,6 +308,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             add_mod_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
         } = claim;
 
@@ -295,6 +326,13 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
 
         let pedersen_builtin_component = components::pedersen_builtin::NewComponentImpl::try_new(
             pedersen_builtin, interaction_claim.pedersen_builtin, common_lookup_elements,
+        );
+
+        let pedersen_builtin_narrow_windows_component =
+            components::pedersen_builtin_narrow_windows::NewComponentImpl::try_new(
+            pedersen_builtin_narrow_windows,
+            interaction_claim.pedersen_builtin_narrow_windows,
+            common_lookup_elements,
         );
 
         let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
@@ -320,6 +358,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin: bitwise_builtin_component,
             mul_mod_builtin: mul_mod_builtin_component,
             pedersen_builtin: pedersen_builtin_component,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -340,6 +379,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -382,6 +422,18 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         }
 
         if let Option::Some(component) = pedersen_builtin.as_snap() {
+            component
+                .evaluate_constraints_at_point(
+                    ref sum,
+                    ref preprocessed_mask_values,
+                    ref trace_mask_values,
+                    ref interaction_trace_mask_values,
+                    random_coeff,
+                    point,
+                );
+        }
+
+        if let Option::Some(component) = pedersen_builtin_narrow_windows.as_snap() {
             component
                 .evaluate_constraints_at_point(
                     ref sum,
@@ -446,6 +498,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             add_mod_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
         } = claim;
         assert!(
@@ -454,6 +507,10 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         assert!(add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none());
         assert!(mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none());
         assert!(pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none());
+        assert!(
+            pedersen_builtin_narrow_windows.is_none()
+                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+        );
         assert!(poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none());
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
@@ -525,6 +582,7 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             add_mod_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
         } = claim;
         assert!(
@@ -533,6 +591,10 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
         assert!(add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none());
         assert!(mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none());
         assert!(pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none());
+        assert!(
+            pedersen_builtin_narrow_windows.is_none()
+                && interaction_claim.pedersen_builtin_narrow_windows.is_none(),
+        );
 
         let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
             bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,

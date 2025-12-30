@@ -95,6 +95,9 @@ pub const RANGE_CHECK_MEMORY_CELLS: usize = 1;
 pub mod pedersen;
 use pedersen::PedersenContextInteractionClaimImpl;
 
+pub mod pedersen_narrow_windows;
+use pedersen_narrow_windows::PedersenContextInteractionClaimImpl as PedersenNarrowWindowsContextInteractionClaimImpl;
+
 pub mod poseidon;
 use poseidon::PoseidonContextInteractionClaimImpl;
 
@@ -289,6 +292,7 @@ pub fn lookup_sum(
         blake_context,
         builtins,
         pedersen_context,
+        pedersen_narrow_windows_context,
         poseidon_context,
         memory_address_to_id,
         memory_id_to_value,
@@ -304,6 +308,7 @@ pub fn lookup_sum(
     sum += blake_context.sum();
     sum += builtins.sum();
     sum += pedersen_context.sum();
+    sum += pedersen_narrow_windows_context.sum();
     sum += poseidon_context.sum();
     sum += *memory_address_to_id.claimed_sum;
     sum += memory_id_to_value.sum();
@@ -415,6 +420,7 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         add_mod_builtin,
         mul_mod_builtin,
         pedersen_builtin,
+        pedersen_builtin_narrow_windows,
         poseidon_builtin,
     } = builtins_claim;
     check_builtin(
@@ -479,18 +485,31 @@ fn verify_builtins(builtins_claim: @BuiltinsClaim, segment_ranges: @PublicSegmen
         *mul_mod_segment_range,
         MUL_MOD_MEMORY_CELLS,
     );
-    check_builtin(
-        pedersen_builtin
-            .map(
-                |
-                    claim,
-                | BuiltinClaim {
-                    segment_start: claim.pedersen_builtin_segment_start, log_size: claim.log_size,
+    if let Some(claim) = pedersen_builtin {
+        check_builtin(
+            Some(
+                BuiltinClaim {
+                    segment_start: *claim.pedersen_builtin_segment_start, log_size: *claim.log_size,
                 },
             ),
-        *pedersen_segment_range,
-        PEDERSEN_MEMORY_CELLS,
-    );
+            *pedersen_segment_range,
+            PEDERSEN_MEMORY_CELLS,
+        );
+    } else {
+        check_builtin(
+            pedersen_builtin_narrow_windows
+                .map(
+                    |
+                        claim,
+                    | BuiltinClaim {
+                        segment_start: claim.pedersen_builtin_segment_start,
+                        log_size: claim.log_size,
+                    },
+                ),
+            *pedersen_segment_range,
+            PEDERSEN_MEMORY_CELLS,
+        );
+    }
     check_builtin(
         poseidon_builtin
             .map(

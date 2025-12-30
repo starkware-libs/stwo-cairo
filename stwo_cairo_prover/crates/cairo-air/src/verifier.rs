@@ -191,10 +191,32 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         "range_check_96",
         RANGE_CHECK_MEMORY_CELLS,
     );
+    if let Some(claim) = builtins_claim.pedersen_builtin {
+        check_builtin(
+            Some(BuiltinClaim {
+                segment_start: claim.pedersen_builtin_segment_start,
+                log_size: claim.log_size,
+            }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_MEMORY_CELLS,
+        );
+    } else {
+        check_builtin(
+            builtins_claim
+                .pedersen_builtin_narrow_windows
+                .map(|claim| BuiltinClaim {
+                    segment_start: claim.pedersen_builtin_segment_start,
+                    log_size: claim.log_size,
+                }),
+            pedersen,
+            "pedersen",
+            PEDERSEN_MEMORY_CELLS,
+        );
+    };
     check_builtin_generic!(bitwise);
     check_builtin_generic!(add_mod);
     check_builtin_generic!(mul_mod);
-    check_builtin_generic!(pedersen);
     check_builtin_generic!(poseidon);
 }
 

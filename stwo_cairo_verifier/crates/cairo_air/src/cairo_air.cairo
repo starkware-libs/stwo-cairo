@@ -25,6 +25,15 @@ pub mod pedersen_context_imports {
 }
 #[cfg(not(feature: "poseidon252_verifier"))]
 use pedersen_context_imports::*;
+#[cfg(not(feature: "poseidon252_verifier"))]
+pub mod pedersen_narrow_windows_context_imports {
+    pub use stwo_cairo_air::pedersen_narrow_windows::{
+        PedersenContextComponents as PedersenNarrowWindowsContextComponents,
+        PedersenContextComponentsImpl as PedersenNarrowWindowsContextComponentsImpl,
+    };
+}
+#[cfg(not(feature: "poseidon252_verifier"))]
+use pedersen_narrow_windows_context_imports::*;
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 pub mod poseidon_context_imports {
     pub use stwo_cairo_air::poseidon::{PoseidonContextComponents, PoseidonContextComponentsImpl};
@@ -40,6 +49,11 @@ use stwo_cairo_air::builtins::{
 };
 use stwo_cairo_air::pedersen::{
     PedersenContextClaim, PedersenContextInteractionClaim, PedersenContextInteractionClaimImpl,
+};
+use stwo_cairo_air::pedersen_narrow_windows::{
+    PedersenContextClaim as PedersenNarrowWindowsContextClaim,
+    PedersenContextInteractionClaim as PedersenNarrowWindowsContextInteractionClaim,
+    PedersenContextInteractionClaimImpl as PedersenNarrowWindowsContextInteractionClaimImpl,
 };
 use stwo_cairo_air::poseidon::{
     PoseidonContextClaim, PoseidonContextInteractionClaim, PoseidonContextInteractionClaimImpl,
@@ -97,6 +111,7 @@ pub struct CairoClaim {
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: components::memory_address_to_id::Claim,
     pub memory_id_to_value: components::memory_id_to_big::Claim,
@@ -114,11 +129,11 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             array![
                 self.opcodes.log_sizes(), self.verify_instruction.log_sizes(),
                 self.blake_context.log_sizes(), self.builtins.log_sizes(),
-                self.pedersen_context.log_sizes(), self.poseidon_context.log_sizes(),
-                self.memory_address_to_id.log_sizes(), self.memory_id_to_value.log_sizes(),
-                self.range_checks.log_sizes(), self.verify_bitwise_xor_4.log_sizes(),
-                self.verify_bitwise_xor_7.log_sizes(), self.verify_bitwise_xor_8.log_sizes(),
-                self.verify_bitwise_xor_9.log_sizes(),
+                self.pedersen_context.log_sizes(), self.pedersen_narrow_windows_context.log_sizes(),
+                self.poseidon_context.log_sizes(), self.memory_address_to_id.log_sizes(),
+                self.memory_id_to_value.log_sizes(), self.range_checks.log_sizes(),
+                self.verify_bitwise_xor_4.log_sizes(), self.verify_bitwise_xor_7.log_sizes(),
+                self.verify_bitwise_xor_8.log_sizes(), self.verify_bitwise_xor_9.log_sizes(),
             ],
         );
 
@@ -142,6 +157,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
@@ -158,6 +174,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         blake_context.mix_into(ref channel);
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
+        pedersen_narrow_windows_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
@@ -176,6 +193,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id: _,
             memory_id_to_value,
@@ -194,6 +212,7 @@ pub impl CairoClaimImpl of ClaimTrait<CairoClaim> {
         blake_context.accumulate_relation_uses(ref relation_uses);
         builtins.accumulate_relation_uses(ref relation_uses);
         pedersen_context.accumulate_relation_uses(ref relation_uses);
+        pedersen_narrow_windows_context.accumulate_relation_uses(ref relation_uses);
         poseidon_context.accumulate_relation_uses(ref relation_uses);
         verify_instruction.accumulate_relation_uses(ref relation_uses);
         memory_id_to_value.accumulate_relation_uses(ref relation_uses);
@@ -208,6 +227,7 @@ pub struct CairoInteractionClaim {
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: components::memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: components::memory_id_to_big::InteractionClaim,
@@ -227,6 +247,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
@@ -242,6 +263,7 @@ pub impl CairoInteractionClaimImpl of CairoInteractionClaimTrace {
         blake_context.mix_into(ref channel);
         builtins.mix_into(ref channel);
         pedersen_context.mix_into(ref channel);
+        pedersen_narrow_windows_context.mix_into(ref channel);
         poseidon_context.mix_into(ref channel);
         memory_address_to_id.mix_into(ref channel);
         memory_id_to_value.mix_into(ref channel);
@@ -261,6 +283,7 @@ pub struct CairoAir {
     blake_context: BlakeContextComponents,
     builtins: BuiltinComponents,
     pedersen_context: PedersenContextComponents,
+    pedersen_narrow_windows_context: PedersenNarrowWindowsContextComponents,
     poseidon_context: PoseidonContextComponents,
     memory_address_to_id: components::memory_address_to_id::Component,
     memory_id_to_value: (
@@ -298,6 +321,13 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             cairo_claim.pedersen_context,
             common_lookup_elements,
             interaction_claim.pedersen_context,
+        );
+
+        let pedersen_narrow_windows_context_components =
+            PedersenNarrowWindowsContextComponentsImpl::new(
+            cairo_claim.pedersen_narrow_windows_context,
+            common_lookup_elements,
+            interaction_claim.pedersen_narrow_windows_context,
         );
 
         let poseidon_context_components = PoseidonContextComponentsImpl::new(
@@ -389,6 +419,7 @@ pub impl CairoAirNewImpl of CairoAirNewTrait {
             blake_context: blake_context_component,
             builtins: builtins_components,
             pedersen_context: pedersen_context_components,
+            pedersen_narrow_windows_context: pedersen_narrow_windows_context_components,
             poseidon_context: poseidon_context_components,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (memory_id_to_value_components, small_memory_id_to_value_component),
@@ -431,6 +462,7 @@ pub impl CairoAirImpl of Air<CairoAir> {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
@@ -478,6 +510,15 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 point,
             );
         pedersen_context
+            .evaluate_constraints_at_point(
+                ref sum,
+                ref preprocessed_mask_values,
+                ref trace_mask_values,
+                ref interaction_trace_mask_values,
+                random_coeff,
+                point,
+            );
+        pedersen_narrow_windows_context
             .evaluate_constraints_at_point(
                 ref sum,
                 ref preprocessed_mask_values,
