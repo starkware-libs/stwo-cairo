@@ -249,16 +249,28 @@ pub mod tests {
     use std::sync::Arc;
 
     use dev_utils::utils::get_compiled_cairo_program_path;
-    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::testing_preprocessed_tree;
+    use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{
+        testing_preprocessed_tree, PreProcessedTrace,
+    };
     use stwo_cairo_utils::vm_utils::{run_and_adapt, ProgramType};
 
     use crate::debug_tools::assert_constraints::assert_cairo_constraints;
+
     #[test]
     fn test_all_cairo_constraints() {
         let compiled_program =
             get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
         let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
         let pp_tree = Arc::new(testing_preprocessed_tree(24));
+        assert_cairo_constraints(input, pp_tree);
+    }
+
+    #[test]
+    fn test_all_cairo_constraints_small_ppt() {
+        let compiled_program =
+            get_compiled_cairo_program_path("test_prove_verify_all_opcode_components");
+        let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+        let pp_tree = Arc::new(PreProcessedTrace::canonical_small());
         assert_cairo_constraints(input, pp_tree);
     }
 
@@ -586,6 +598,25 @@ pub mod tests {
             }
 
             #[test]
+            fn test_prove_verify_all_builtins_canonical_small() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_all_builtins");
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+                assert_all_builtins_in_input(&input);
+                let prover_params = ProverParameters {
+                    channel_hash: ChannelHash::Blake2s,
+                    pcs_config: PcsConfig::default(),
+                    preprocessed_trace: PreProcessedTraceVariant::CanonicalSmall,
+                    channel_salt: None,
+                    store_polynomials_coefficients: false,
+                };
+                let cairo_proof =
+                    prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
+                    .unwrap();
+            }
+
+            #[test]
             fn test_add_mod_builtin_constraints() {
                 let compiled_program =
                     get_compiled_cairo_program_path("test_prove_verify_add_mod_builtin");
@@ -618,6 +649,14 @@ pub mod tests {
                     get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
                 let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
                 assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical()));
+            }
+
+            #[test]
+            fn test_pedersen_narrow_windows_builtin_constraints() {
+                let compiled_program =
+                    get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
+                let input = run_and_adapt(&compiled_program, ProgramType::Json, None).unwrap();
+                assert_cairo_constraints(input, Arc::new(PreProcessedTrace::canonical_small()));
             }
 
             #[test]

@@ -112,6 +112,7 @@ fn cairo_relation_entries(
         verify_bitwise_xor_8,
         verify_bitwise_xor_9,
         pedersen_context,
+        pedersen_narrow_windows_context,
         poseidon_context,
     } = cairo_components;
     let OpcodeComponents {
@@ -220,6 +221,7 @@ fn cairo_relation_entries(
         add_mod_builtin,
         bitwise_builtin,
         pedersen_builtin,
+        pedersen_builtin_narrow_windows,
         poseidon_builtin,
         mul_mod_builtin,
         range_check_96_builtin,
@@ -231,8 +233,11 @@ fn cairo_relation_entries(
     if let Some(bitwise) = bitwise_builtin {
         entries.extend(add_to_relation_entries(bitwise, trace));
     }
-    if let Some(pederson) = pedersen_builtin {
-        entries.extend(add_to_relation_entries(pederson, trace));
+    if let Some(pedersen) = pedersen_builtin {
+        entries.extend(add_to_relation_entries(pedersen, trace));
+    }
+    if let Some(pedersen_narrow_windows) = pedersen_builtin_narrow_windows {
+        entries.extend(add_to_relation_entries(pedersen_narrow_windows, trace));
     }
     if let Some(poseidon) = poseidon_builtin {
         entries.extend(add_to_relation_entries(poseidon, trace));
@@ -271,6 +276,19 @@ fn cairo_relation_entries(
         pedersen_points_table,
         partial_ec_mul,
     }) = &pedersen_context.components
+    {
+        entries.extend(chain!(
+            add_to_relation_entries(pedersen_aggregator, trace),
+            add_to_relation_entries(pedersen_points_table, trace),
+            add_to_relation_entries(partial_ec_mul, trace),
+        ));
+    }
+
+    if let Some(cairo_air::pedersen_narrow_windows::air::Components {
+        pedersen_aggregator,
+        pedersen_points_table,
+        partial_ec_mul,
+    }) = &pedersen_narrow_windows_context.components
     {
         entries.extend(chain!(
             add_to_relation_entries(pedersen_aggregator, trace),
