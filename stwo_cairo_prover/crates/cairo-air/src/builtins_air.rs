@@ -13,7 +13,8 @@ use super::air::CairoInteractionElements;
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
-    pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_builtin,
+    pedersen_builtin, pedersen_builtin_narrow_windows, poseidon_builtin, range_check96_builtin,
+    range_check_builtin,
 };
 
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -22,6 +23,7 @@ pub struct BuiltinsClaim {
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
     pub pedersen_builtin: Option<pedersen_builtin::Claim>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::Claim>,
     pub poseidon_builtin: Option<poseidon_builtin::Claim>,
     pub range_check_96_builtin: Option<range_check96_builtin::Claim>,
     pub range_check_128_builtin: Option<range_check_builtin::Claim>,
@@ -39,6 +41,9 @@ impl BuiltinsClaim {
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
             pedersen_builtin.mix_into(channel);
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            pedersen_builtin_narrow_windows.mix_into(channel);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             poseidon_builtin.mix_into(channel);
@@ -65,6 +70,9 @@ impl BuiltinsClaim {
             self.pedersen_builtin
                 .map(|pedersen_builtin| pedersen_builtin.log_sizes())
                 .into_iter(),
+            self.pedersen_builtin_narrow_windows
+                .map(|pedersen_builtin_narrow_windows| pedersen_builtin_narrow_windows.log_sizes())
+                .into_iter(),
             self.poseidon_builtin
                 .map(|poseidon_builtin| poseidon_builtin.log_sizes())
                 .into_iter(),
@@ -82,6 +90,7 @@ impl BuiltinsClaim {
             bitwise_builtin,
             mul_mod_builtin,
             pedersen_builtin,
+            pedersen_builtin_narrow_windows,
             poseidon_builtin,
             range_check_96_builtin,
             range_check_128_builtin,
@@ -103,6 +112,10 @@ impl BuiltinsClaim {
         relation_uses!(bitwise_builtin, bitwise_builtin);
         relation_uses!(mul_mod_builtin, mul_mod_builtin);
         relation_uses!(pedersen_builtin, pedersen_builtin);
+        relation_uses!(
+            pedersen_builtin_narrow_windows,
+            pedersen_builtin_narrow_windows
+        );
         relation_uses!(poseidon_builtin, poseidon_builtin);
         relation_uses!(range_check_96_builtin, range_check96_builtin);
         relation_uses!(range_check_128_builtin, range_check_builtin);
@@ -115,6 +128,7 @@ pub struct BuiltinsInteractionClaim {
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
     pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
     pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::InteractionClaim>,
     pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
     pub range_check_96_builtin: Option<range_check96_builtin::InteractionClaim>,
     pub range_check_128_builtin: Option<range_check_builtin::InteractionClaim>,
@@ -132,6 +146,9 @@ impl BuiltinsInteractionClaim {
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
             pedersen_builtin.mix_into(channel);
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            pedersen_builtin_narrow_windows.mix_into(channel);
         }
         if let Some(poseidon_builtin) = self.poseidon_builtin {
             poseidon_builtin.mix_into(channel)
@@ -158,6 +175,9 @@ impl BuiltinsInteractionClaim {
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
             sum += pedersen_builtin.claimed_sum;
         }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            sum += pedersen_builtin_narrow_windows.claimed_sum;
+        }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             sum += poseidon_builtin.claimed_sum;
         }
@@ -175,6 +195,7 @@ pub struct BuiltinComponents {
     pub bitwise_builtin: Option<bitwise_builtin::Component>,
     pub mul_mod_builtin: Option<mul_mod_builtin::Component>,
     pub pedersen_builtin: Option<pedersen_builtin::Component>,
+    pub pedersen_builtin_narrow_windows: Option<pedersen_builtin_narrow_windows::Component>,
     pub poseidon_builtin: Option<poseidon_builtin::Component>,
     pub range_check_96_builtin: Option<range_check96_builtin::Component>,
     pub range_check_128_builtin: Option<range_check_builtin::Component>,
@@ -258,6 +279,27 @@ impl BuiltinComponents {
                 interaction_claim.pedersen_builtin.unwrap().claimed_sum,
             )
         });
+        let pedersen_builtin_narrow_windows_component =
+            claim
+                .pedersen_builtin_narrow_windows
+                .map(|pedersen_builtin_narrow_windows| {
+                    pedersen_builtin_narrow_windows::Component::new(
+                        tree_span_provider,
+                        pedersen_builtin_narrow_windows::Eval {
+                            claim: pedersen_builtin_narrow_windows,
+                            memory_address_to_id_lookup_elements: interaction_elements
+                                .memory_address_to_id
+                                .clone(),
+                            pedersen_aggregator_window_bits_9_lookup_elements: interaction_elements
+                                .pedersen_aggregator_window_bits_9
+                                .clone(),
+                        },
+                        interaction_claim
+                            .pedersen_builtin_narrow_windows
+                            .unwrap()
+                            .claimed_sum,
+                    )
+                });
         let poseidon_builtin_component = claim.poseidon_builtin.map(|poseidon_builtin| {
             poseidon_builtin::Component::new(
                 tree_span_provider,
@@ -322,6 +364,7 @@ impl BuiltinComponents {
             bitwise_builtin: bitwise_builtin_component,
             mul_mod_builtin: mul_mod_builtin_component,
             pedersen_builtin: pedersen_builtin_component,
+            pedersen_builtin_narrow_windows: pedersen_builtin_narrow_windows_component,
             poseidon_builtin: poseidon_builtin_component,
             range_check_96_builtin: range_check_96_builtin_component,
             range_check_128_builtin: range_check_128_builtin_component,
@@ -341,6 +384,9 @@ impl BuiltinComponents {
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
             vec.push(pedersen_builtin as &dyn ComponentProver<SimdBackend>);
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            vec.push(pedersen_builtin_narrow_windows as &dyn ComponentProver<SimdBackend>);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
             vec.push(poseidon_builtin as &dyn ComponentProver<SimdBackend>);
@@ -376,6 +422,13 @@ impl std::fmt::Display for BuiltinComponents {
                 f,
                 "MulModBuiltin: {}",
                 indented_component_display(mul_mod_builtin)
+            )?;
+        }
+        if let Some(pedersen_builtin_narrow_windows) = &self.pedersen_builtin_narrow_windows {
+            writeln!(
+                f,
+                "PedersenNarrowWindowsBuiltin: {}",
+                indented_component_display(pedersen_builtin_narrow_windows)
             )?;
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
