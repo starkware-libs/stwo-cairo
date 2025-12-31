@@ -1,10 +1,10 @@
-// This file was created by the AIR team.
-
 use crate::components::prelude::*;
-
-pub const N_TRACE_COLUMNS: usize = 1;
-pub const LOG_SIZE: u32 = 24;
-pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
+pub const ELEM_BITS: u32 = 12;
+pub const EXPAND_BITS: u32 = 2;
+pub const LIMB_BITS: u32 = ELEM_BITS - EXPAND_BITS;
+pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
+pub const N_MULT_COLUMNS: usize = 1 << (EXPAND_BITS * 2);
+pub const N_TRACE_COLUMNS: usize = N_MULT_COLUMNS;
 
 pub struct Eval {
     pub claim: Claim,
@@ -16,7 +16,8 @@ pub struct Claim {}
 impl Claim {
     pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
         let trace_log_sizes = vec![LOG_SIZE; N_TRACE_COLUMNS];
-        let interaction_log_sizes = vec![LOG_SIZE; SECURE_EXTENSION_DEGREE];
+        let interaction_log_sizes =
+            vec![LOG_SIZE; SECURE_EXTENSION_DEGREE * N_MULT_COLUMNS.div_ceil(2)];
         TreeVec::new(vec![vec![], trace_log_sizes, interaction_log_sizes])
     }
 
@@ -44,30 +45,35 @@ impl FrameworkEval for Eval {
         self.log_size() + 1
     }
 
-    #[allow(unused_parens)]
-    #[allow(clippy::double_parens)]
-    #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
-        let bitwise_xor_12_0 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_12_0".to_owned(),
+        // al, bl are the constant columns for the inputs: All pairs of elements in [0,
+        // 2^LIMB_BITS).
+        // cl is the constant column for the xor: al ^ bl.
+        let a_low = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_10_0".to_owned(),
         });
-        let bitwise_xor_12_1 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_12_1".to_owned(),
+        let b_low = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_10_1".to_owned(),
         });
-        let bitwise_xor_12_2 = eval.get_preprocessed_column(PreProcessedColumnId {
-            id: "bitwise_xor_12_2".to_owned(),
+        let c_low = eval.get_preprocessed_column(PreProcessedColumnId {
+            id: "bitwise_xor_10_2".to_owned(),
         });
-        let multiplicity_0 = eval.next_trace_mask();
 
-        eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_12_lookup_elements,
-            -E::EF::from(multiplicity_0),
-            &[
-                bitwise_xor_12_0.clone(),
-                bitwise_xor_12_1.clone(),
-                bitwise_xor_12_2.clone(),
-            ],
-        ));
+        for i in 0..1 << EXPAND_BITS {
+            for j in 0..1 << EXPAND_BITS {
+                let multiplicity = eval.next_trace_mask();
+
+                let a = a_low.clone() + E::F::from(M31(i << LIMB_BITS));
+                let b = b_low.clone() + E::F::from(M31(j << LIMB_BITS));
+                let c = c_low.clone() + E::F::from(M31((i ^ j) << LIMB_BITS));
+
+                eval.add_to_relation(RelationEntry::new(
+                    &self.verify_bitwise_xor_12_lookup_elements,
+                    -E::EF::from(multiplicity),
+                    &[a, b, c],
+                ));
+            }
+        }
 
         eval.finalize_logup_in_pairs();
         eval
@@ -92,6 +98,7 @@ mod tests {
             claim: Claim {},
             verify_bitwise_xor_12_lookup_elements: relations::VerifyBitwiseXor_12::dummy(),
         };
+
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();
 

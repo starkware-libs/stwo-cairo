@@ -1,19 +1,22 @@
-// This file was created by the AIR team.
-
 use crate::prelude::*;
 
-pub const N_TRACE_COLUMNS: usize = 1;
-const LOG_SIZE: u32 = 24;
+mod constraints;
+
+pub const ELEM_BITS: u32 = 12;
+
+pub const EXPAND_BITS: u32 = 2;
+
+pub const LOG_SIZE: u32 = (ELEM_BITS - EXPAND_BITS) * 2;
+
 
 #[derive(Drop, Serde, Copy)]
 pub struct Claim {}
 
 pub impl ClaimImpl of ClaimTrait<Claim> {
     fn log_sizes(self: @Claim) -> TreeArray<Span<u32>> {
-        let log_size = LOG_SIZE;
-        let preprocessed_log_sizes = array![log_size].span();
-        let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 4].span();
+        let preprocessed_log_sizes = array![LOG_SIZE].span();
+        let trace_log_sizes = [LOG_SIZE; 16].span();
+        let interaction_log_sizes = [LOG_SIZE; QM31_EXTENSION_DEGREE * 8].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -71,77 +74,42 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let log_size = LOG_SIZE;
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
-        let claimed_sum = *self.interaction_claim.claimed_sum;
-        let column_size = m31(pow2(log_size));
-        let mut verify_bitwise_xor_12_sum_0: QM31 = Zero::zero();
-        let bitwise_xor_12_0 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_12_0_IDX);
-        let bitwise_xor_12_1 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_12_1_IDX);
-        let bitwise_xor_12_2 = preprocessed_mask_values.get_and_mark_used(BITWISE_XOR_12_2_IDX);
-
-        let [verify_bitwise_xor_12_multiplicity]: [Span<QM31>; 1] = (*trace_mask_values
-            .multi_pop_front()
-            .unwrap())
-            .unbox();
-        let [verify_bitwise_xor_12_multiplicity]: [QM31; 1] = (*verify_bitwise_xor_12_multiplicity
-            .try_into()
-            .unwrap())
-            .unbox();
-
-        core::internal::revoke_ap_tracking();
-
-        verify_bitwise_xor_12_sum_0 = self
+        let VerifyBitwiseXor_12_z = *self.verify_bitwise_xor_12_lookup_elements.z;
+        let mut verify_bitwise_xor_12_alpha_powers = self
             .verify_bitwise_xor_12_lookup_elements
-            .combine_qm31([bitwise_xor_12_0, bitwise_xor_12_1, bitwise_xor_12_2]);
+            .alpha_powers
+            .span();
+        let VerifyBitwiseXor_12_alpha0 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_12_alpha1 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
+        let VerifyBitwiseXor_12_alpha2 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
 
-        lookup_constraints(
-            ref sum,
-            domain_vanishing_eval_inv,
-            random_coeff,
+        let claimed_sum = *self.interaction_claim.claimed_sum;
+
+        let params = constraints::ConstraintParams {
+            VerifyBitwiseXor_12_alpha0,
+            VerifyBitwiseXor_12_alpha1,
+            VerifyBitwiseXor_12_alpha2,
+            VerifyBitwiseXor_12_z,
             claimed_sum,
-            verify_bitwise_xor_12_multiplicity,
-            column_size,
+            bitwise_xor_10_0: preprocessed_mask_values
+                .get_and_mark_used(preprocessed_columns::BITWISE_XOR_10_0_IDX),
+            bitwise_xor_10_1: preprocessed_mask_values
+                .get_and_mark_used(preprocessed_columns::BITWISE_XOR_10_1_IDX),
+            bitwise_xor_10_2: preprocessed_mask_values
+                .get_and_mark_used(preprocessed_columns::BITWISE_XOR_10_2_IDX),
+            column_size: pow2(LOG_SIZE).try_into().unwrap(),
+        };
+
+        let trace_domain = CanonicCosetImpl::new(LOG_SIZE);
+        let vanish_eval = trace_domain.eval_vanishing(point);
+
+        constraints::evaluate_constraints_at_point(
+            ref sum,
+            ref trace_mask_values,
             ref interaction_trace_mask_values,
-            verify_bitwise_xor_12_sum_0,
+            params,
+            random_coeff,
+            vanish_eval.inverse(),
         );
     }
-}
-
-
-fn lookup_constraints(
-    ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
-    random_coeff: QM31,
-    claimed_sum: QM31,
-    verify_bitwise_xor_12_multiplicity: QM31,
-    column_size: M31,
-    ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
-    verify_bitwise_xor_12_sum_0: QM31,
-) {
-    let [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]: [Span<QM31>; 4] =
-        (*interaction_trace_mask_values
-        .multi_pop_front()
-        .unwrap())
-        .unbox();
-
-    let [trace_2_col0_neg1, trace_2_col0]: [QM31; 2] = (*trace_2_col0.try_into().unwrap()).unbox();
-    let [trace_2_col1_neg1, trace_2_col1]: [QM31; 2] = (*trace_2_col1.try_into().unwrap()).unbox();
-    let [trace_2_col2_neg1, trace_2_col2]: [QM31; 2] = (*trace_2_col2.try_into().unwrap()).unbox();
-    let [trace_2_col3_neg1, trace_2_col3]: [QM31; 2] = (*trace_2_col3.try_into().unwrap()).unbox();
-
-    core::internal::revoke_ap_tracking();
-
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
-        [trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3],
-    )
-        - QM31Impl::from_partial_evals(
-            [trace_2_col0_neg1, trace_2_col1_neg1, trace_2_col2_neg1, trace_2_col3_neg1],
-        )
-        + (claimed_sum * (column_size.inverse().into())))
-        * verify_bitwise_xor_12_sum_0)
-        + verify_bitwise_xor_12_multiplicity)
-        * domain_vanishing_eval_inv;
-    sum = sum * random_coeff + constraint_quotient;
 }
