@@ -103,13 +103,13 @@ impl Relocator {
             };
 
             match builtin_name {
-                BuiltinName::range_check => res.range_check_bits_128 = segment,
-                BuiltinName::pedersen => res.pedersen = segment,
-                BuiltinName::bitwise => res.bitwise = segment,
-                BuiltinName::poseidon => res.poseidon = segment,
-                BuiltinName::range_check96 => res.range_check_bits_96 = segment,
-                BuiltinName::add_mod => res.add_mod = segment,
-                BuiltinName::mul_mod => res.mul_mod = segment,
+                BuiltinName::range_check => res.range_check_builtin = segment,
+                BuiltinName::pedersen => res.pedersen_builtin = segment,
+                BuiltinName::bitwise => res.bitwise_builtin = segment,
+                BuiltinName::poseidon => res.poseidon_builtin = segment,
+                BuiltinName::range_check96 => res.range_check96_builtin = segment,
+                BuiltinName::add_mod => res.add_mod_builtin = segment,
+                BuiltinName::mul_mod => res.mul_mod_builtin = segment,
                 BuiltinName::output => res.output = segment,
                 BuiltinName::ecdsa | BuiltinName::keccak | BuiltinName::ec_op => {
                     panic!("Builtin {builtin_name} is not supported in Stwo")
@@ -324,14 +324,14 @@ pub mod relocator_tests {
         let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
 
         assert_eq!(
-            builtin_segments.bitwise,
+            builtin_segments.bitwise_builtin,
             Some(MemorySegmentAddresses {
                 begin_addr: 1,
                 stop_ptr: 81
             })
         );
         assert_eq!(
-            builtin_segments.range_check_bits_128,
+            builtin_segments.range_check_builtin,
             Some(MemorySegmentAddresses {
                 begin_addr: 81,
                 stop_ptr: 97

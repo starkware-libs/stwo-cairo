@@ -1,6 +1,23 @@
 {
-  "air_version": "4b1289f2",
+  "air_version": "3ce3c28a",
   "air_fns": {
+    "memory_address_to_id": {
+      "trace_type": "Memory",
+      "log_height": null,
+      "num_state_cols": 1,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "MemoryAddressToId": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 6,
+      "trace_cells_upper_bound": 6,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
     "range_check_9_9": {
       "trace_type": "Component",
       "log_height": 18,
@@ -20,55 +37,6 @@
       "padding_type": "Multiplicity",
       "total_num_trace_cols": 24,
       "trace_cells_upper_bound": 24,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "memory_id_to_small": {
-      "trace_type": "Memory",
-      "log_height": null,
-      "num_state_cols": 8,
-      "use_lookup_cols": {
-        "RangeCheck_9_9": 1,
-        "RangeCheck_9_9_B": 1,
-        "RangeCheck_9_9_C": 1,
-        "RangeCheck_9_9_D": 1
-      },
-      "yield_lookup_cols": {
-        "MemoryIdToBig": 1
-      },
-      "lookup_rows": {
-        "RangeCheck_9_9": 1,
-        "RangeCheck_9_9_B": 1,
-        "RangeCheck_9_9_C": 1,
-        "RangeCheck_9_9_D": 1
-      },
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 21,
-      "trace_cells_upper_bound": 21,
-      "uses_upper_bound": {
-        "range_check_9_9": 1,
-        "range_check_9_9_b": 1,
-        "range_check_9_9_c": 1,
-        "range_check_9_9_d": 1
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "memory_address_to_id": {
-      "trace_type": "Memory",
-      "log_height": null,
-      "num_state_cols": 1,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "MemoryAddressToId": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 6,
-      "trace_cells_upper_bound": 6,
       "uses_upper_bound": {},
       "rows_upper_bound": {},
       "max_instances_uses_limit": 2147483647,
@@ -1010,186 +978,6 @@
       },
       "max_instances_uses_limit": 5592405,
       "max_instances_rows_limit": 8388608
-    },
-    "pedersen_points_table_window_bits_9": {
-      "trace_type": "Component",
-      "log_height": 15,
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "PedersenPointsTableWindowBits9": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
-    "partial_ec_mul_window_bits_9": {
-      "trace_type": "ChainRound",
-      "log_height": null,
-      "num_state_cols": 310,
-      "use_lookup_cols": {
-        "PedersenPointsTableWindowBits9": 1,
-        "RangeCheck_9_9": 6,
-        "RangeCheck_9_9_B": 6,
-        "RangeCheck_9_9_C": 6,
-        "RangeCheck_9_9_D": 6,
-        "RangeCheck_9_9_E": 6,
-        "RangeCheck_9_9_F": 6,
-        "RangeCheck_9_9_G": 3,
-        "RangeCheck_9_9_H": 3,
-        "RangeCheck_20": 12,
-        "RangeCheck_20_B": 12,
-        "RangeCheck_20_C": 12,
-        "RangeCheck_20_D": 12,
-        "RangeCheck_20_E": 9,
-        "RangeCheck_20_F": 9,
-        "RangeCheck_20_G": 9,
-        "RangeCheck_20_H": 9,
-        "PartialEcMulWindowBits9": 1
-      },
-      "yield_lookup_cols": {
-        "PartialEcMulWindowBits9": 1
-      },
-      "lookup_rows": {
-        "PedersenPointsTableWindowBits9": 1,
-        "RangeCheck_9_9": 6,
-        "RangeCheck_9_9_B": 6,
-        "RangeCheck_9_9_C": 6,
-        "RangeCheck_9_9_D": 6,
-        "RangeCheck_9_9_E": 6,
-        "RangeCheck_9_9_F": 6,
-        "RangeCheck_9_9_G": 3,
-        "RangeCheck_9_9_H": 3,
-        "RangeCheck_20": 12,
-        "RangeCheck_20_B": 12,
-        "RangeCheck_20_C": 12,
-        "RangeCheck_20_D": 12,
-        "RangeCheck_20_E": 9,
-        "RangeCheck_20_F": 9,
-        "RangeCheck_20_G": 9,
-        "RangeCheck_20_H": 9
-      },
-      "padding_type": "Enabler",
-      "total_num_trace_cols": 571,
-      "trace_cells_upper_bound": 571,
-      "uses_upper_bound": {
-        "pedersen_points_table_window_bits_9": 1,
-        "range_check_9_9": 6,
-        "range_check_9_9_b": 6,
-        "range_check_9_9_c": 6,
-        "range_check_9_9_d": 6,
-        "range_check_9_9_e": 6,
-        "range_check_9_9_f": 6,
-        "range_check_9_9_g": 3,
-        "range_check_9_9_h": 3,
-        "range_check_20": 12,
-        "range_check_20_b": 12,
-        "range_check_20_c": 12,
-        "range_check_20_d": 12,
-        "range_check_20_e": 9,
-        "range_check_20_f": 9,
-        "range_check_20_g": 9,
-        "range_check_20_h": 9
-      },
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 178956970,
-      "max_instances_rows_limit": 268435456
-    },
-    "pedersen_aggregator_window_bits_9": {
-      "trace_type": "Component",
-      "log_height": null,
-      "num_state_cols": 233,
-      "use_lookup_cols": {
-        "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
-        "PartialEcMulWindowBits9": 2
-      },
-      "yield_lookup_cols": {
-        "PartialEcMulWindowBits9": 2,
-        "PedersenAggregatorWindowBits9": 1
-      },
-      "lookup_rows": {
-        "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
-        "PartialEcMulWindowBits9": 56
-      },
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 258,
-      "trace_cells_upper_bound": 36802,
-      "uses_upper_bound": {
-        "range_check_9_9": 392,
-        "range_check_9_9_b": 392,
-        "range_check_9_9_c": 392,
-        "range_check_9_9_d": 392,
-        "range_check_9_9_e": 392,
-        "range_check_9_9_f": 392,
-        "range_check_9_9_g": 196,
-        "range_check_9_9_h": 196,
-        "range_check_8": 4,
-        "pedersen_points_table_window_bits_9": 64,
-        "range_check_20": 768,
-        "range_check_20_b": 768,
-        "range_check_20_c": 768,
-        "range_check_20_d": 768,
-        "range_check_20_e": 576,
-        "range_check_20_f": 576,
-        "range_check_20_g": 576,
-        "range_check_20_h": 576
-      },
-      "rows_upper_bound": {
-        "partial_ec_mul_window_bits_9": 56
-      },
-      "max_instances_uses_limit": 2796202,
-      "max_instances_rows_limit": 4194304
-    },
-    "pedersen_builtin_narrow_windows": {
-      "trace_type": "Builtin",
-      "log_height": null,
-      "num_state_cols": 3,
-      "use_lookup_cols": {
-        "MemoryAddressToId": 3,
-        "PedersenAggregatorWindowBits9": 1
-      },
-      "yield_lookup_cols": {},
-      "lookup_rows": {
-        "MemoryAddressToId": 3,
-        "PedersenAggregatorWindowBits9": 1
-      },
-      "padding_type": "None",
-      "total_num_trace_cols": 11,
-      "trace_cells_upper_bound": 36813,
-      "uses_upper_bound": {
-        "memory_address_to_id": 3,
-        "range_check_9_9": 392,
-        "range_check_9_9_b": 392,
-        "range_check_9_9_c": 392,
-        "range_check_9_9_d": 392,
-        "range_check_9_9_e": 392,
-        "range_check_9_9_f": 392,
-        "range_check_9_9_g": 196,
-        "range_check_9_9_h": 196,
-        "range_check_8": 4,
-        "pedersen_points_table_window_bits_9": 64,
-        "range_check_20": 768,
-        "range_check_20_b": 768,
-        "range_check_20_c": 768,
-        "range_check_20_d": 768,
-        "range_check_20_e": 576,
-        "range_check_20_f": 576,
-        "range_check_20_g": 576,
-        "range_check_20_h": 576
-      },
-      "rows_upper_bound": {
-        "pedersen_aggregator_window_bits_9": 1,
-        "partial_ec_mul_window_bits_9": 56
-      },
-      "max_instances_uses_limit": 2796202,
-      "max_instances_rows_limit": 4194304
     },
     "range_check_7_2_5": {
       "trace_type": "Component",
@@ -2320,6 +2108,218 @@
       },
       "max_instances_uses_limit": 3715369,
       "max_instances_rows_limit": 2097152
+    },
+    "memory_id_to_small": {
+      "trace_type": "Memory",
+      "log_height": null,
+      "num_state_cols": 8,
+      "use_lookup_cols": {
+        "RangeCheck_9_9": 1,
+        "RangeCheck_9_9_B": 1,
+        "RangeCheck_9_9_C": 1,
+        "RangeCheck_9_9_D": 1
+      },
+      "yield_lookup_cols": {
+        "MemoryIdToBig": 1
+      },
+      "lookup_rows": {
+        "RangeCheck_9_9": 1,
+        "RangeCheck_9_9_B": 1,
+        "RangeCheck_9_9_C": 1,
+        "RangeCheck_9_9_D": 1
+      },
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 21,
+      "trace_cells_upper_bound": 21,
+      "uses_upper_bound": {
+        "range_check_9_9": 1,
+        "range_check_9_9_b": 1,
+        "range_check_9_9_c": 1,
+        "range_check_9_9_d": 1
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "pedersen_points_table_window_bits_9": {
+      "trace_type": "Component",
+      "log_height": 15,
+      "num_state_cols": 0,
+      "use_lookup_cols": {},
+      "yield_lookup_cols": {
+        "PedersenPointsTableWindowBits9": 1
+      },
+      "lookup_rows": {},
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 5,
+      "trace_cells_upper_bound": 5,
+      "uses_upper_bound": {},
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 2147483647,
+      "max_instances_rows_limit": 268435456
+    },
+    "partial_ec_mul_window_bits_9": {
+      "trace_type": "ChainRound",
+      "log_height": null,
+      "num_state_cols": 310,
+      "use_lookup_cols": {
+        "PedersenPointsTableWindowBits9": 1,
+        "RangeCheck_9_9": 6,
+        "RangeCheck_9_9_B": 6,
+        "RangeCheck_9_9_C": 6,
+        "RangeCheck_9_9_D": 6,
+        "RangeCheck_9_9_E": 6,
+        "RangeCheck_9_9_F": 6,
+        "RangeCheck_9_9_G": 3,
+        "RangeCheck_9_9_H": 3,
+        "RangeCheck_20": 12,
+        "RangeCheck_20_B": 12,
+        "RangeCheck_20_C": 12,
+        "RangeCheck_20_D": 12,
+        "RangeCheck_20_E": 9,
+        "RangeCheck_20_F": 9,
+        "RangeCheck_20_G": 9,
+        "RangeCheck_20_H": 9,
+        "PartialEcMulWindowBits9": 1
+      },
+      "yield_lookup_cols": {
+        "PartialEcMulWindowBits9": 1
+      },
+      "lookup_rows": {
+        "PedersenPointsTableWindowBits9": 1,
+        "RangeCheck_9_9": 6,
+        "RangeCheck_9_9_B": 6,
+        "RangeCheck_9_9_C": 6,
+        "RangeCheck_9_9_D": 6,
+        "RangeCheck_9_9_E": 6,
+        "RangeCheck_9_9_F": 6,
+        "RangeCheck_9_9_G": 3,
+        "RangeCheck_9_9_H": 3,
+        "RangeCheck_20": 12,
+        "RangeCheck_20_B": 12,
+        "RangeCheck_20_C": 12,
+        "RangeCheck_20_D": 12,
+        "RangeCheck_20_E": 9,
+        "RangeCheck_20_F": 9,
+        "RangeCheck_20_G": 9,
+        "RangeCheck_20_H": 9
+      },
+      "padding_type": "Enabler",
+      "total_num_trace_cols": 571,
+      "trace_cells_upper_bound": 571,
+      "uses_upper_bound": {
+        "pedersen_points_table_window_bits_9": 1,
+        "range_check_9_9": 6,
+        "range_check_9_9_b": 6,
+        "range_check_9_9_c": 6,
+        "range_check_9_9_d": 6,
+        "range_check_9_9_e": 6,
+        "range_check_9_9_f": 6,
+        "range_check_9_9_g": 3,
+        "range_check_9_9_h": 3,
+        "range_check_20": 12,
+        "range_check_20_b": 12,
+        "range_check_20_c": 12,
+        "range_check_20_d": 12,
+        "range_check_20_e": 9,
+        "range_check_20_f": 9,
+        "range_check_20_g": 9,
+        "range_check_20_h": 9
+      },
+      "rows_upper_bound": {},
+      "max_instances_uses_limit": 178956970,
+      "max_instances_rows_limit": 268435456
+    },
+    "pedersen_aggregator_window_bits_9": {
+      "trace_type": "Component",
+      "log_height": null,
+      "num_state_cols": 233,
+      "use_lookup_cols": {
+        "MemoryIdToBig": 3,
+        "RangeCheck_8": 4,
+        "PartialEcMulWindowBits9": 2
+      },
+      "yield_lookup_cols": {
+        "PartialEcMulWindowBits9": 2,
+        "PedersenAggregatorWindowBits9": 1
+      },
+      "lookup_rows": {
+        "MemoryIdToBig": 3,
+        "RangeCheck_8": 4,
+        "PartialEcMulWindowBits9": 56
+      },
+      "padding_type": "Multiplicity",
+      "total_num_trace_cols": 258,
+      "trace_cells_upper_bound": 36802,
+      "uses_upper_bound": {
+        "range_check_9_9": 392,
+        "range_check_9_9_b": 392,
+        "range_check_9_9_c": 392,
+        "range_check_9_9_d": 392,
+        "range_check_9_9_e": 392,
+        "range_check_9_9_f": 392,
+        "range_check_9_9_g": 196,
+        "range_check_9_9_h": 196,
+        "range_check_8": 4,
+        "pedersen_points_table_window_bits_9": 64,
+        "range_check_20": 768,
+        "range_check_20_b": 768,
+        "range_check_20_c": 768,
+        "range_check_20_d": 768,
+        "range_check_20_e": 576,
+        "range_check_20_f": 576,
+        "range_check_20_g": 576,
+        "range_check_20_h": 576
+      },
+      "rows_upper_bound": {
+        "partial_ec_mul_window_bits_9": 56
+      },
+      "max_instances_uses_limit": 2796202,
+      "max_instances_rows_limit": 4194304
+    },
+    "pedersen_builtin_narrow_windows": {
+      "trace_type": "Builtin",
+      "log_height": null,
+      "num_state_cols": 3,
+      "use_lookup_cols": {
+        "MemoryAddressToId": 3,
+        "PedersenAggregatorWindowBits9": 1
+      },
+      "yield_lookup_cols": {},
+      "lookup_rows": {
+        "MemoryAddressToId": 3,
+        "PedersenAggregatorWindowBits9": 1
+      },
+      "padding_type": "None",
+      "total_num_trace_cols": 11,
+      "trace_cells_upper_bound": 36813,
+      "uses_upper_bound": {
+        "memory_address_to_id": 3,
+        "range_check_9_9": 392,
+        "range_check_9_9_b": 392,
+        "range_check_9_9_c": 392,
+        "range_check_9_9_d": 392,
+        "range_check_9_9_e": 392,
+        "range_check_9_9_f": 392,
+        "range_check_9_9_g": 196,
+        "range_check_9_9_h": 196,
+        "range_check_8": 4,
+        "pedersen_points_table_window_bits_9": 64,
+        "range_check_20": 768,
+        "range_check_20_b": 768,
+        "range_check_20_c": 768,
+        "range_check_20_d": 768,
+        "range_check_20_e": 576,
+        "range_check_20_f": 576,
+        "range_check_20_g": 576,
+        "range_check_20_h": 576
+      },
+      "rows_upper_bound": {
+        "pedersen_aggregator_window_bits_9": 1,
+        "partial_ec_mul_window_bits_9": 56
+      },
+      "max_instances_uses_limit": 2796202,
+      "max_instances_rows_limit": 4194304
     }
   }
 }

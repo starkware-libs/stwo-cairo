@@ -15,8 +15,8 @@ pub struct ClaimGenerator {
 }
 
 impl ClaimGenerator {
-    pub fn new(memory: Memory) -> Self {
-        let state = BlakeRound::new(memory);
+    pub fn new(memory: &Memory) -> Self {
+        let state = BlakeRound::new(memory.clone());
         Self {
             packed_inputs: vec![],
             state,
