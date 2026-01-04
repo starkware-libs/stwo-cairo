@@ -69,19 +69,32 @@ pub fn fri_answers(
         array![];
     let lifting_log_size = max_log_degree_bound + log_blowup_factor;
     let lifting_domain = CanonicCosetImpl::new(lifting_log_size);
+    let lifting_domain_step = lifting_domain.coset.step.mul(1).to_point();
 
     let trace_step = CanonicCosetImpl::new(max_log_degree_bound).coset.step.mul(1).to_point();
     let prev_oods_point = oods_point.add_circle_point_m31(-trace_step);
+    // For a column of log degree bound k, its periodicity samples are evaluated at the point
+    // `oods_point + lifting_domain_step.repeated_double(k + log_blowup_factor)`. Here,
+    // we initialize `periodicity_generator` to
+    // `lifting_domain_step.repeated_double(log_blowup_factor)`.
+    // Then when iterating over log_degree_bounds we double the periodicity step at the end of each
+    // iteration.
+    let mut periodicity_generator = lifting_domain_step;
+    for _ in 0..log_blowup_factor {
+        periodicity_generator = periodicity_generator + periodicity_generator;
+    }
     for column_indices_per_tree_for_degree_bound in column_indices_per_tree_by_degree_bound {
         let (sample_batches, n_cols_per_tree) = sample_batches_for_degree_bound(
             column_indices_per_tree_for_degree_bound,
             samples_with_randomness,
             oods_point,
             prev_oods_point,
+            periodicity_generator,
         );
         let quotient_constants = QuotientConstantsImpl::gen(sample_batches);
         sample_batches_by_log_degree_bound
             .append((sample_batches, n_cols_per_tree, quotient_constants));
+        periodicity_generator = periodicity_generator + periodicity_generator;
     }
 
     // Compute the fri answers.
@@ -119,12 +132,14 @@ fn sample_batches_for_degree_bound(
     sample_values_with_rand: Span<Span<Span<(QM31, QM31)>>>,
     oods_point: CirclePoint<QM31>,
     prev_oods_point: CirclePoint<QM31>,
+    periodicity_generator: CirclePoint<M31>,
 ) -> (Span<ColumnSampleBatch>, TreeArray<usize>) {
     /// The triples (column index, evaluation, random coefficient) at the out of domain point 'Z'.
     let mut col_eval_coeff_triples_at_point = array![];
     /// The triples (column index, evaluation, random coefficient) at the point `Z-g`.
     let mut col_eval_coeff_triples_at_prev_point = array![];
-    /// TODO(Leo): add periodicity checks in next PRs.
+    ///  The (column index, evaluation) pairs at the point `Z + periodicity_generator`.
+    let mut col_eval_coeff_triples_at_point_plus_periodicity = array![];
 
     let mut n_columns_per_tree = array![];
     let mut index = 0;
@@ -137,10 +152,15 @@ fn sample_batches_for_degree_bound(
 
             if let Some(tuple_box) = sample_values_at_column.try_into() {
                 let [
-                    (prev_point_sample, prev_point_rand), (point_sample, point_rand),
-                ]: [(QM31, QM31); 2] =
+                    (periodicity_point_sample, periodicity_point_rand),
+                    (prev_point_sample, prev_point_rand),
+                    (point_sample, point_rand),
+                ]: [(QM31, QM31); 3] =
                     (*tuple_box)
                     .unbox();
+
+                col_eval_coeff_triples_at_point_plus_periodicity
+                    .append((index, periodicity_point_sample, periodicity_point_rand));
                 col_eval_coeff_triples_at_prev_point
                     .append((index, prev_point_sample, prev_point_rand));
                 col_eval_coeff_triples_at_point.append((index, point_sample, point_rand));
@@ -158,15 +178,16 @@ fn sample_batches_for_degree_bound(
     }
 
     let mut sample_batches_by_point: Array<ColumnSampleBatch> = array![];
-    if !col_eval_coeff_triples_at_point.is_empty() {
+    if !col_eval_coeff_triples_at_point_plus_periodicity.is_empty() {
+        let point_plus_periodicity = oods_point.add_circle_point_m31(periodicity_generator);
         sample_batches_by_point
             .append(
                 ColumnSampleBatch {
-                    point: oods_point, cols_vals_and_pows: col_eval_coeff_triples_at_point,
+                    point: point_plus_periodicity,
+                    cols_vals_and_pows: col_eval_coeff_triples_at_point_plus_periodicity,
                 },
             );
     }
-
     if !col_eval_coeff_triples_at_prev_point.is_empty() {
         sample_batches_by_point
             .append(
@@ -176,10 +197,20 @@ fn sample_batches_for_degree_bound(
                 },
             );
     }
+    if !col_eval_coeff_triples_at_point.is_empty() {
+        sample_batches_by_point
+            .append(
+                ColumnSampleBatch {
+                    point: oods_point, cols_vals_and_pows: col_eval_coeff_triples_at_point,
+                },
+            );
+    }
 
     (sample_batches_by_point.span(), n_columns_per_tree)
 }
 
+// TODO(Leo): think about merging the loop in this function with the loop in
+// [`sample_batches_for_degree_bound`].
 fn build_samples_with_randomness(
     sample_values_per_column_per_tree: SampledValues, random_coeff: QM31,
 ) -> Span<Span<Span<(QM31, QM31)>>> {
@@ -189,10 +220,26 @@ fn build_samples_with_randomness(
         let mut new_samples_per_col = array![];
         for sample_values in sample_values_per_column {
             let mut new_samples = array![];
-            // TODO(Leo): add periodicity checks in the next PR.
-            for val in sample_values {
-                new_samples.append((*val, random_pow));
+            // If the column is sampled at OOD point and its neighbor, we add a periodicity sample.
+            // Notice that we add it also when the column is of maximal size, in which case we have
+            // `(periodicity_point, periodicity_sample) == (ood_point, ood_sample)`.
+            if let Some(tuple_box) = (*sample_values).try_into() {
+                let [prev_sample, ood_sample]: [QM31; 2] = (*tuple_box).unbox();
+                // Add periodicity sample.
+                new_samples.append((ood_sample, random_pow));
                 random_pow *= random_coeff;
+
+                new_samples.append((prev_sample, random_pow));
+                random_pow *= random_coeff;
+
+                new_samples.append((ood_sample, random_pow));
+                random_pow *= random_coeff;
+            } else if let Some(point_box) = (*sample_values).try_into() {
+                let [ood_sample]: [QM31; 1] = (*point_box).unbox();
+                new_samples.append((ood_sample, random_pow));
+                random_pow *= random_coeff;
+            } else {
+                assert!(sample_values.is_empty(), "Unexpected number of samples");
             }
             new_samples_per_col.append(new_samples.span());
         }
