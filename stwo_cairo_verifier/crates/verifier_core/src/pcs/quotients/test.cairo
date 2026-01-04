@@ -14,7 +14,7 @@ use crate::utils::{
 use super::{CanonicCosetTrait, accumulate_row_quotients};
 
 /// Expected values were generated in the stwo repo at stwo/src/core/pcs/quotients, commit
-/// 0eb4a52af8a3317e040aef3438251f85e4da1693.
+/// 687bc9ae6b0a5d7c48db74e00c22e13bab0e63fe.
 #[test]
 fn test_fri_answers() {
     let log_blowup_factor = 2;
@@ -63,8 +63,8 @@ fn test_fri_answers() {
         col1_degree_bound,
     );
     assert!(res.len() == 2);
-    assert!(*res[0] == qm31_const::<131767160, 1083041990, 899288613, 1431425829>());
-    assert!(*res[1] == qm31_const::<113115484, 414784867, 764329603, 1012622739>());
+    assert!(*res[0] == qm31_const::<1037270598, 1666156792, 1481464786, 376406587>());
+    assert!(*res[1] == qm31_const::<362741309, 158709031, 140688744, 632848018>());
 }
 
 #[test]

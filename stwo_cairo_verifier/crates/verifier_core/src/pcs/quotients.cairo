@@ -69,19 +69,32 @@ pub fn fri_answers(
         array![];
     let lifting_log_size = max_log_degree_bound + log_blowup_factor;
     let lifting_domain = CanonicCosetImpl::new(lifting_log_size);
+    let lifting_domain_step = lifting_domain.coset.step.mul(1).to_point();
 
     let trace_step = CanonicCosetImpl::new(max_log_degree_bound).coset.step.mul(1).to_point();
     let prev_oods_point = oods_point.add_circle_point_m31(-trace_step);
+    // For a column of log degree bound k, its periodicity samples are evaluated at the point
+    // `oods_point + lifting_domain_step.repeated_double(k + log_blowup_factor)`. Here,
+    // we initialize `periodicity_generator` to
+    // `lifting_domain_step.repeated_double(log_blowup_factor)`.
+    // Then when iterating over log_degree_bounds we double the periodicity step at the end of each
+    // iteration.
+    let mut periodicity_generator = lifting_domain_step;
+    for _ in 0..log_blowup_factor {
+        periodicity_generator = periodicity_generator + periodicity_generator;
+    }
     for column_indices_per_tree_for_degree_bound in column_indices_per_tree_by_degree_bound {
         let (sample_batches, n_cols_per_tree) = sample_batches_for_degree_bound(
             column_indices_per_tree_for_degree_bound,
             samples_with_randomness,
             oods_point,
             prev_oods_point,
+            periodicity_generator,
         );
         let quotient_constants = QuotientConstantsImpl::gen(sample_batches);
         sample_batches_by_log_degree_bound
             .append((sample_batches, n_cols_per_tree, quotient_constants));
+        periodicity_generator = periodicity_generator + periodicity_generator;
     }
 
     // Compute the fri answers.
@@ -119,12 +132,14 @@ fn sample_batches_for_degree_bound(
     sample_values_with_rand: Span<Span<Span<(QM31, QM31)>>>,
     oods_point: CirclePoint<QM31>,
     prev_oods_point: CirclePoint<QM31>,
+    periodicity_generator: CirclePoint<M31>,
 ) -> (Span<ColumnSampleBatch>, TreeArray<usize>) {
     /// The (column index, evaluation) pairs at the out of domain point 'Z'.
     let mut indexed_evaluations_at_point = array![];
     /// The (column index, evaluation) pairs at the point `Z-g`.
     let mut indexed_evaluations_at_prev_point = array![];
-    /// TODO(Leo): add periodicity checks in next PRs.
+    ///  The (column index, evaluation) pairs at the point `Z + periodicity_generator`.
+    let mut indexed_evaluations_at_point_plus_periodicity = array![];
 
     let mut n_columns_per_tree = array![];
     let mut index = 0;
@@ -134,7 +149,23 @@ fn sample_batches_for_degree_bound(
         for column_idx in column_indices {
             // Note that samples_per_column[*column] can be an empty array.
             let mut sample_values_at_column = *samples_per_column[*column_idx];
-            if sample_values_at_column.len() == 2 {
+
+            if sample_values_at_column.len() == 3 {
+                let [
+                    (periodicity_point_sample, periodicity_point_rand),
+                    (prev_point_sample, prev_point_rand),
+                    (point_sample, point_rand),
+                ] =
+                    sample_values_at_column
+                    .multi_pop_front::<3>()
+                    .unwrap()
+                    .unbox();
+                indexed_evaluations_at_point_plus_periodicity
+                    .append((index, periodicity_point_sample, periodicity_point_rand));
+                indexed_evaluations_at_prev_point
+                    .append((index, prev_point_sample, prev_point_rand));
+                indexed_evaluations_at_point.append((index, point_sample, point_rand));
+            } else if sample_values_at_column.len() == 2 {
                 let [(prev_point_sample, prev_point_rand), (point_sample, point_rand)] =
                     sample_values_at_column
                     .multi_pop_front::<2>()
@@ -178,6 +209,17 @@ fn sample_batches_for_degree_bound(
             );
     }
 
+    if !indexed_evaluations_at_point_plus_periodicity.is_empty() {
+        let point_plus_periodicity = oods_point.add_circle_point_m31(periodicity_generator);
+        sample_batches_by_point
+            .append(
+                ColumnSampleBatch {
+                    point: point_plus_periodicity,
+                    cols_vals_and_pows: indexed_evaluations_at_point_plus_periodicity,
+                },
+            );
+    }
+
     (sample_batches_by_point.span(), n_columns_per_tree)
 }
 
@@ -190,7 +232,16 @@ fn build_samples_with_randomness(
         let mut new_samples_per_col = array![];
         for sample_values in sample_values_per_column {
             let mut new_samples = array![];
-            // TODO(Leo): add periodicity checks in the next PR.
+            // If the column is sampled at OOD point and its neighbor, we add a periodicity sample.
+            // Notice that we add it also when the column is of maximal size, in which case we have
+            // `(periodicity_point, periodicity_sample) == (ood_point, ood_sample)`.
+            if sample_values.len() == 2 {
+                // Get the value at the OOD point.
+                let val = sample_values.last().unwrap();
+                new_samples.append((*val, random_pow));
+                random_pow *= random_coeff;
+            }
+
             for val in sample_values {
                 new_samples.append((*val, random_pow));
                 random_pow *= random_coeff;
