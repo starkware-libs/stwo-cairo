@@ -26,4 +26,20 @@ pub trait NewComponent<T> {
         interaction_claim: @Self::InteractionClaim,
         common_lookup_elements: @CommonLookupElements,
     ) -> T;
+
+    fn try_new(
+        claim: @Option<Self::Claim>,
+        interaction_claim: @Option<Self::InteractionClaim>,
+        interaction_elements: @CairoInteractionElements,
+    ) -> Option<
+        T,
+    > {
+        match (claim, interaction_claim) {
+            (
+                Some(claim), Some(interaction_claim),
+            ) => Some(Self::new(claim, interaction_claim, interaction_elements)),
+            (None, None) => None,
+            _ => panic!("inconsistent claim and interaction claim"),
+        }
+    }
 }
