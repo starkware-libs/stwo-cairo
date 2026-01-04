@@ -161,14 +161,14 @@ where
 {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
         let config = <PcsConfig as CairoDeserialize>::deserialize(data);
-        let commitments = TreeVec(<Vec<H::Hash> as CairoDeserialize>::deserialize(data));
+        let commitments = TreeVec(<Vec::<H::Hash> as CairoDeserialize>::deserialize(data));
         let sampled_values =
-            TreeVec(<Vec<ColumnVec<Vec<SecureField>>> as CairoDeserialize>::deserialize(data));
+            TreeVec(<Vec::<ColumnVec<Vec<SecureField>>> as CairoDeserialize>::deserialize(data));
         let decommitments =
-            TreeVec(<Vec<MerkleDecommitmentLifted<H>> as CairoDeserialize>::deserialize(data));
-        let queried_values = TreeVec(<Vec<Vec<BaseField>> as CairoDeserialize>::deserialize(data));
+            TreeVec(<Vec::<MerkleDecommitmentLifted<H>> as CairoDeserialize>::deserialize(data));
+        let queried_values = TreeVec(<Vec::<Vec<BaseField>> as CairoDeserialize>::deserialize(data));
         let proof_of_work: u64 = <u64 as CairoDeserialize>::deserialize(data);
-        let fri_proof = <FriProof<H> as CairoDeserialize>::deserialize(data);
+        let fri_proof = <FriProof::<H> as CairoDeserialize>::deserialize(data);
         Self {
             config,
             commitments,

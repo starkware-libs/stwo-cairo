@@ -13,8 +13,9 @@ use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{
     ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
 };
-use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::{MerkleHasher};
+use crate::vcs::verifier::MerkleVerifier;
+use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
 use crate::{ColumnArray, Hash};
 
 /// Fold step size for circle polynomials.
@@ -370,7 +371,6 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
                     decommitted_values.append(v3.into());
                 };
             }
-
             let column_degree_bound = column_domain_log_size - *self.log_blowup_factor;
             degree_bound_by_column.append(column_degree_bound);
             degree_bound_by_column.append(column_degree_bound);
@@ -379,6 +379,7 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
 
             sparse_evals_by_column.append(sparse_evaluation);
         }
+
         // Check all proof evals have been consumed.
         assert!(
             fri_witness.next().is_none(), "{}", FriVerificationError::FirstLayerEvaluationsInvalid,
@@ -387,19 +388,19 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
             degree_bound_by_column.span(),
         );
+
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
             tree_height: max_column_log_size,
             column_indices_by_log_deg_bound,
         };
-
+        let query_positions = decommitment_positions_by_log_size.get(max_column_log_size.into()).deref();
         merkle_verifier
             .verify(
-                ref decommitment_positions_by_log_size,
+                query_positions,
                 decommitted_values.span(),
                 self.proof.decommitment.clone(),
             );
-
         sparse_evals_by_column
     }
 }
@@ -466,10 +467,12 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             Default::default();
         decommitment_positions_dict
             .insert(column_log_size.into(), NullableTrait::new(decommitment_positions));
-
+let query_positions = decommitment_positions_dict
+            .get(queries.log_domain_size.into())
+            .deref();
         merkle_verifier
             .verify(
-                ref decommitment_positions_dict,
+                query_positions,
                 decommitted_values.span(),
                 (*self.proof.decommitment).clone(),
             );
@@ -528,7 +531,6 @@ fn compute_decommitment_positions_and_rebuild_evals(
         subset_domain_start_indices
             .append(bit_reverse_index(subset_start, queries.log_domain_size));
     }
-
     // Sanity check all the values have been consumed.
     assert!(query_positions.is_empty());
     assert!(query_evals.is_empty());

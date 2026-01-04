@@ -147,17 +147,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let random_coeff = channel.draw_secure_felt();
         let fri_config = config.fri_config;
 
-        // For flat AIRs (with split composition polynomial), the FRI column log degree bounds can
-        // be derived solely from the trace log degree bounds, since these bounds encompass the
-        // bounds of both the interaction trace and the composition trace.
-        let column_log_degree_bounds = get_column_log_degree_bounds(
-            *self.trees[1].column_indices_by_log_deg_bound,
-        )
-            .span();
-
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierTrait::commit(
-            ref channel, fri_config, fri_proof, column_log_degree_bounds,
+            ref channel, fri_config, fri_proof, array![max_log_degree_bound].span(),
         );
 
         // Verify proof of work.
@@ -202,7 +194,6 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             queried_values_per_tree,
             max_log_degree_bound,
         );
-
         // TODO(Leo): remove array in subsequent PR.
         fri_verifier.decommit(queries, array![fri_answers]);
     }
