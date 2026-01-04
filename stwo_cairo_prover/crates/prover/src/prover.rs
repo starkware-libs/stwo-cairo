@@ -3,24 +3,32 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, CairoInteractionElements};
+use cairo_air::air::{
+    lookup_sum, CairoComponents, CairoInteractionElements, VerifierFriendlyCairoProof,
+    VerifierFriendlyStarkProof,
+};
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use itertools::Itertools;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
+use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriConfig;
-use stwo::core::pcs::PcsConfig;
+use stwo::core::pcs::quotients::CommitmentSchemeProof;
+use stwo::core::pcs::{PcsConfig, TreeVec};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::core::proof_of_work::GrindOps;
 use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
 use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
+use stwo_constraint_framework::{INTERACTION_TRACE_IDX, PREPROCESSED_TRACE_IDX};
 use tracing::{event, span, Level};
 
 use crate::witness::cairo::CairoClaimGenerator;
@@ -38,7 +46,7 @@ pub(crate) const LOG_MAX_ROWS: u32 = 26;
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
     prover_params: ProverParameters,
-) -> Result<CairoProof<MC::H>, ProvingError>
+) -> Result<(CairoProof<MC::H>, SortedQueriedValues), ProvingError>
 where
     SimdBackend: BackendForChannel<MC>,
 {
@@ -140,14 +148,24 @@ where
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
 
-    Ok(CairoProof {
+    // Sort and transpose the queried values.
+    let sorted_queried_values: SortedQueriedValues = sort_and_transpose_queried_values(
+        &proof.queried_values,
+        preprocessed_trace.log_sizes(),
+        claim.log_sizes(),
+    );
+
+    let cairo_proof = CairoProof {
         claim,
         interaction_pow,
         interaction_claim,
         stark_proof: proof,
         channel_salt,
-    })
+    };
+    Ok((cairo_proof, sorted_queried_values))
 }
+
+pub type SortedQueriedValues = TreeVec<Vec<BaseField>>;
 
 /// Concrete parameters of the proving system.
 /// Used both for producing and verifying proofs.
@@ -220,11 +238,17 @@ pub fn create_and_serialize_proof(
 
     match proof_params.channel_hash {
         ChannelHash::Blake2s => {
-            let proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
-            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            let (cairo_proof, sorted_queried_values) =
+                prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Blake2sMerkleChannel>(proof, proof_params.preprocessed_trace)?;
+                verify_cairo::<Blake2sMerkleChannel>(
+                    cairo_proof.clone(),
+                    proof_params.preprocessed_trace,
+                )?;
             }
+            let verifier_friendly_cairo_proof =
+                to_verifier_friendly_proof(cairo_proof, sorted_queried_values);
+            serialize_proof_to_file(&verifier_friendly_cairo_proof, &proof_path, proof_format)?;
         }
         #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
         ChannelHash::Poseidon252 => {
@@ -233,15 +257,111 @@ pub fn create_and_serialize_proof(
         #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
         ChannelHash::Poseidon252 => {
             use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
-            let proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
-            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            let (cairo_proof, sorted_queried_values) =
+                prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Poseidon252MerkleChannel>(proof, proof_params.preprocessed_trace)?;
+                verify_cairo::<Poseidon252MerkleChannel>(
+                    cairo_proof.clone(),
+                    proof_params.preprocessed_trace,
+                )?;
             }
+            let verifier_friendly_cairo_proof =
+                to_verifier_friendly_proof(cairo_proof, sorted_queried_values);
+            serialize_proof_to_file(&verifier_friendly_cairo_proof, &proof_path, proof_format)?;
         }
     };
 
     Ok(())
+}
+
+/// A utility function which transforms the order and layout of the queried values of a stwo proof
+/// according to the format expected by the Cairo verifier.
+fn sort_and_transpose_queried_values(
+    queried_values: &TreeVec<Vec<Vec<BaseField>>>,
+    preprocessed_trace_log_sizes: Vec<u32>,
+    trace_and_interaction_trace_log_sizes: TreeVec<Vec<u32>>,
+) -> SortedQueriedValues {
+    debug_assert!(trace_and_interaction_trace_log_sizes[PREPROCESSED_TRACE_IDX].is_empty());
+    debug_assert!(trace_and_interaction_trace_log_sizes.len() == 3);
+    // `all_log_sizes` contains the column log sizes for the preprocessed trace, base trace and
+    // interaction trace.
+    let mut all_log_sizes = trace_and_interaction_trace_log_sizes;
+    all_log_sizes[0] = preprocessed_trace_log_sizes;
+
+    let mut new_queried_values_per_tree = vec![];
+    let n_queries = queried_values[0][0].len();
+    // Sort and transpose the queried values for interaction phases 0, 1, 2, i.e. preprocessed, base
+    // trace, interaction trace.
+    for (queried_values, col_sizes) in queried_values[..=INTERACTION_TRACE_IDX]
+        .iter()
+        .zip_eq(all_log_sizes.iter())
+    {
+        let mut new_queried_values = vec![];
+        let mut sorted_queries = queried_values
+            .iter()
+            .zip_eq(col_sizes.iter())
+            .sorted_by_key(|(_, col_size)| *col_size)
+            .map(|(vals, _)| vals.iter())
+            .collect_vec();
+        for _ in 0..n_queries {
+            new_queried_values.extend(
+                sorted_queries
+                    .iter_mut()
+                    .map(|col_iter| *col_iter.next().unwrap()),
+            );
+        }
+        new_queried_values_per_tree.push(new_queried_values)
+    }
+
+    // Sort and transpose the queried values of the composition polynomial commitment. All columns
+    // in the composition commitment are of the same length so there is no need to sort.
+    let composition_queried_values = &queried_values.last().unwrap();
+    let mut new_queried_values: Vec<BaseField> = vec![];
+    for row_idx in 0..n_queries {
+        new_queried_values.extend(composition_queried_values.iter().map(|vals| vals[row_idx]));
+    }
+    new_queried_values_per_tree.push(new_queried_values);
+    TreeVec(new_queried_values_per_tree)
+}
+
+pub fn to_verifier_friendly_proof<H: MerkleHasherLifted>(
+    cairo_proof: CairoProof<H>,
+    sorted_queried_values: SortedQueriedValues,
+) -> VerifierFriendlyCairoProof<H> {
+    let CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof,
+        channel_salt,
+    } = cairo_proof;
+
+    let CommitmentSchemeProof {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values: _,
+        proof_of_work,
+        fri_proof,
+    } = stark_proof.0;
+
+    let verifier_friendly_stark_proof = VerifierFriendlyStarkProof {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values: sorted_queried_values,
+        proof_of_work,
+        fri_proof,
+    };
+    VerifierFriendlyCairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof: verifier_friendly_stark_proof,
+        channel_salt,
+    }
 }
 
 #[cfg(test)]
@@ -279,7 +399,9 @@ pub mod tests {
         use test_log::test;
 
         use super::*;
-        use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
+        use crate::prover::{
+            prove_cairo, to_verifier_friendly_proof, ChannelHash, ProverParameters,
+        };
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
@@ -295,12 +417,13 @@ pub mod tests {
                 channel_salt: Some(42),
                 store_polynomials_coefficients: false,
             };
-            let cairo_proof =
+            let (cairo_proof, sorted_queried_values) =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
-
+            let verifier_friendly_cairo_proof =
+                to_verifier_friendly_proof(cairo_proof, sorted_queried_values);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&verifier_friendly_cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -364,7 +487,8 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{
-            prove_cairo, ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters,
+            prove_cairo, to_verifier_friendly_proof, ChannelHash, PreProcessedTraceVariant,
+            ProverInput, ProverParameters,
         };
 
         // TODO(Ohad): fine-grained constraints tests.
@@ -397,7 +521,8 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: true,
             };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let (cairo_proof, _) =
+                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
                 .unwrap();
         }
@@ -417,11 +542,13 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: false,
             };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-
+            let (cairo_proof, sorted_queried_values) =
+                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let verifier_friendly_proof =
+                to_verifier_friendly_proof(cairo_proof, sorted_queried_values);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&verifier_friendly_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -479,11 +606,13 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: false,
             };
-            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-
+            let (cairo_proof, sorted_queried_values) =
+                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let verifier_friendly_proof =
+                to_verifier_friendly_proof(cairo_proof, sorted_queried_values);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&verifier_friendly_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -579,7 +708,7 @@ pub mod tests {
                     channel_salt: None,
                     store_polynomials_coefficients: true,
                 };
-                let cairo_proof =
+                let (cairo_proof, _) =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
                 verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
                     .unwrap();
@@ -660,7 +789,8 @@ pub mod tests {
                 let compiled_program_a =
                     get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
                 let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
-                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let (proof_a, _) =
+                    prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let poseidon_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
@@ -683,7 +813,8 @@ pub mod tests {
                 let compiled_program_b =
                     get_compiled_cairo_program_path("test_poseidon_aggregator");
                 let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
-                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let (proof_b, _) =
+                    prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let poseidon_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
@@ -723,7 +854,8 @@ pub mod tests {
                 let compiled_program_a =
                     get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
                 let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
-                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let (proof_a, _) =
+                    prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let pedersen_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
@@ -746,7 +878,8 @@ pub mod tests {
                 let compiled_program_b =
                     get_compiled_cairo_program_path("test_pedersen_aggregator");
                 let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
-                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let (proof_b, _) =
+                    prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let pedersen_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
