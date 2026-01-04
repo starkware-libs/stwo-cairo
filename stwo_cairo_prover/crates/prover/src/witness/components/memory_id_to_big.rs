@@ -1,4 +1,5 @@
 use std::simd::Simd;
+use std::sync::Arc;
 
 use cairo_air::components::memory_id_to_big::{Claim, InteractionClaim, MEMORY_ID_SIZE};
 use cairo_air::relations;
@@ -32,7 +33,7 @@ pub struct ClaimGenerator {
     small_mults: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
-    pub fn new(mem: &Memory) -> Self {
+    pub fn new(mem: Arc<Memory>) -> Self {
         let mut big_values = mem.f252_values.clone();
         let simd_padded_big_size = big_values.len().next_multiple_of(N_LANES);
         big_values.resize(simd_padded_big_size, [0; 8]);
@@ -614,7 +615,7 @@ mod tests {
         for i in n_values..n_values * 2 {
             mem.set(i, MemoryValue::Small(rng.gen()));
         }
-        let memory = mem.build().0;
+        let memory = Arc::new(mem.build().0);
 
         let mut commitment_scheme = MockCommitmentScheme::default();
 
@@ -630,7 +631,7 @@ mod tests {
         // Base trace.
         let mut tree_builder = commitment_scheme.tree_builder();
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
-        let id_to_big = super::ClaimGenerator::new(&memory);
+        let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let (claim, interaction_generator) =
             id_to_big.write_trace(&mut tree_builder, &range_check_9_9, log_max_seq_size);
@@ -707,11 +708,11 @@ mod tests {
         for i in n_large_values..n_large_values + n_small_values {
             mem.set(i, MemoryValue::Small(rng.gen()));
         }
-        let memory = mem.build().0;
+        let memory = Arc::new(mem.build().0);
         let mut commitment_scheme = MockCommitmentScheme::default();
         let mut tree_builder = commitment_scheme.tree_builder();
         let preprocessed_trace = Arc::new(PreProcessedTrace::canonical());
-        let id_to_big = super::ClaimGenerator::new(&memory);
+        let id_to_big = super::ClaimGenerator::new(Arc::clone(&memory));
         let range_check_9_9 = range_check_9_9::ClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let expected_small_log_size = log_max_seq_size;
         let expected_first_big_log_size = log_max_seq_size;
@@ -757,9 +758,9 @@ mod tests {
         for (j, a) in memory_addresses.iter().enumerate() {
             mem.set(*a, value_from_felt252(expected[j]));
         }
-        let (mem, ..) = mem.build();
-        let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(&mem);
-        let id_to_felt = super::ClaimGenerator::new(&mem);
+        let mem = Arc::new(mem.build().0);
+        let memory_address_to_id = memory_address_to_id::ClaimGenerator::new(Arc::clone(&mem));
+        let id_to_felt = super::ClaimGenerator::new(Arc::clone(&mem));
 
         let id = memory_address_to_id.deduce_output(input);
         let output = id_to_felt.deduce_output(id).value;

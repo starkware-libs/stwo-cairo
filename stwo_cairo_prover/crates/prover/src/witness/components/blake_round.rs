@@ -1,4 +1,6 @@
 #![allow(unused_parens)]
+use std::sync::Arc;
+
 use cairo_air::components::blake_round::{Claim, InteractionClaim, N_TRACE_COLUMNS};
 use stwo_cairo_adapter::memory::Memory;
 
@@ -15,7 +17,7 @@ pub struct ClaimGenerator {
 }
 
 impl ClaimGenerator {
-    pub fn new(memory: Memory) -> Self {
+    pub fn new(memory: Arc<Memory>) -> Self {
         let state = BlakeRound::new(memory);
         Self {
             packed_inputs: vec![],

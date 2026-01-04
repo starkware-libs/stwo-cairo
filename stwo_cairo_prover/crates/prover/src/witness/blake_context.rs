@@ -25,7 +25,7 @@ pub struct BlakeContextClaimGenerator {
     pub verify_bitwise_xor_12: Option<verify_bitwise_xor_12::ClaimGenerator>,
 }
 impl BlakeContextClaimGenerator {
-    pub fn new(memory: Memory, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
+    pub fn new(memory: Arc<Memory>, preprocessed_trace: Arc<PreProcessedTrace>) -> Self {
         let blake_round = Some(blake_round::ClaimGenerator::new(memory));
         let blake_g = Some(blake_g::ClaimGenerator::new());
         let blake_sigma = Some(blake_round_sigma::ClaimGenerator::new(

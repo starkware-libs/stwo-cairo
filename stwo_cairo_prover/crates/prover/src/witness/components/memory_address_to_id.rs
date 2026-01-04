@@ -1,6 +1,7 @@
 use std::iter::zip;
 use std::ops::Index;
 use std::simd::Simd;
+use std::sync::Arc;
 
 use cairo_air::components::memory_address_to_id::{
     Claim, InteractionClaim, MEMORY_ADDRESS_TO_ID_SPLIT, N_ID_AND_MULT_COLUMNS_PER_CHUNK,
@@ -68,7 +69,7 @@ pub struct ClaimGenerator {
     multiplicities: AtomicMultiplicityColumn,
 }
 impl ClaimGenerator {
-    pub fn new(memory: &Memory) -> Self {
+    pub fn new(memory: Arc<Memory>) -> Self {
         // Note that while `memory.address_to_id` starts from address 0, the memory component can
         // only yield addresses starting from 1.
         let address_to_raw_id = AddressToId::new(
@@ -220,6 +221,8 @@ impl InteractionClaimGenerator {
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use itertools::Itertools;
     use stwo::core::fields::m31::{BaseField, M31};
     use stwo_cairo_adapter::memory::{MemoryBuilder, MemoryConfig, MemoryEntry};
@@ -237,7 +240,7 @@ mod tests {
             }),
         )
         .build();
-        let memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(&memory);
+        let memory_address_to_id_gen = memory_address_to_id::ClaimGenerator::new(Arc::new(memory));
         let address_usages = [1, 1, 2, 2, 2, 3]
             .into_iter()
             .map(BaseField::from)
