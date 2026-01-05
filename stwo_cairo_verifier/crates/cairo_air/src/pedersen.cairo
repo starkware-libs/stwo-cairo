@@ -154,6 +154,7 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
                 ),
             }
         } else {
+            assert!(interaction_claim.interaction_claim.is_none());
             PedersenContextComponents { components: None }
         }
     }

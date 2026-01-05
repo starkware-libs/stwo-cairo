@@ -165,6 +165,7 @@ pub impl BlakeContextComponentsImpl of BlakeContextComponentsTrait {
                 ),
             }
         } else {
+            assert!(interaction_claim.interaction_claim.is_none());
             BlakeContextComponents { components: None }
         }
     }
