@@ -74,22 +74,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         random_coeff: QM31,
         point: CirclePoint<QM31>,
     ) {
-        let VerifyBitwiseXor_12_z = *self.verify_bitwise_xor_12_lookup_elements.z;
-        let mut verify_bitwise_xor_12_alpha_powers = self
-            .verify_bitwise_xor_12_lookup_elements
-            .alpha_powers
-            .span();
-        let VerifyBitwiseXor_12_alpha0 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
-        let VerifyBitwiseXor_12_alpha1 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
-        let VerifyBitwiseXor_12_alpha2 = *verify_bitwise_xor_12_alpha_powers.pop_front().unwrap();
-
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
         let params = constraints::ConstraintParams {
-            VerifyBitwiseXor_12_alpha0,
-            VerifyBitwiseXor_12_alpha1,
-            VerifyBitwiseXor_12_alpha2,
-            VerifyBitwiseXor_12_z,
+            lookup_elements: self.verify_bitwise_xor_12_lookup_elements,
             claimed_sum,
             bitwise_xor_10_0: preprocessed_mask_values
                 .get_and_mark_used(preprocessed_columns::BITWISE_XOR_10_0_IDX),

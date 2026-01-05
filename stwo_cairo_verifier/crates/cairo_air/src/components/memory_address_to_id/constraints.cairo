@@ -1,4 +1,5 @@
 use crate::prelude::*;
+use crate::utils::*;
 use super::N_INTERACTION_TRACE_QM31_COLUMNS;
 
 #[derive(Drop)]
@@ -7,35 +8,6 @@ pub struct ConstraintParams {
     pub claimed_sum: QM31,
     pub seq: QM31,
     pub column_size: M31,
-}
-
-/// Interpret the mask values as a single `QM31` value.
-pub fn as_qm31(mask_values: @Box<[Span<QM31>; 4]>) -> QM31 {
-    let [column_0, column_1, column_2, column_3]: [Span<QM31>; 4] = mask_values.unbox();
-
-    let [coeff_0]: [QM31; 1] = (*column_0.try_into().unwrap()).unbox();
-    let [coeff_1]: [QM31; 1] = (*column_1.try_into().unwrap()).unbox();
-    let [coeff_2]: [QM31; 1] = (*column_2.try_into().unwrap()).unbox();
-    let [coeff_3]: [QM31; 1] = (*column_3.try_into().unwrap()).unbox();
-
-    QM31Trait::from_partial_evals([coeff_0, coeff_1, coeff_2, coeff_3])
-}
-
-/// Interpret the mask values as two neighboring `QM31` values.
-pub fn as_neighboring_qm31s(mask_values: @Box<[Span<QM31>; 4]>) -> [QM31; 2] {
-    let [column_0, column_1, column_2, column_3]: [Span<QM31>; 4] = mask_values.unbox();
-
-    let [coeff_0_first, coeff_0_second]: [QM31; 2] = (*column_0.try_into().unwrap()).unbox();
-    let [coeff_1_first, coeff_1_second]: [QM31; 2] = (*column_1.try_into().unwrap()).unbox();
-    let [coeff_2_first, coeff_2_second]: [QM31; 2] = (*column_2.try_into().unwrap()).unbox();
-    let [coeff_3_first, coeff_3_second]: [QM31; 2] = (*column_3.try_into().unwrap()).unbox();
-
-    [
-        QM31Trait::from_partial_evals([coeff_0_first, coeff_1_first, coeff_2_first, coeff_3_first]),
-        QM31Trait::from_partial_evals(
-            [coeff_0_second, coeff_1_second, coeff_2_second, coeff_3_second],
-        ),
-    ]
 }
 
 pub fn evaluate_constraints_at_point(

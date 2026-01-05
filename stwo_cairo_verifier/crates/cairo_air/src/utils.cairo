@@ -4,9 +4,10 @@ use core::num::traits::WrappingMul;
 use core::traits::DivRem;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::fields::m31::M31;
+use stwo_verifier_core::fields::qm31::{QM31, QM31Trait};
 use stwo_verifier_core::utils::pow2;
 #[cfg(not(feature: "qm31_opcode"))]
-use crate::{Invertible, QM31, Zero};
+use crate::{Invertible, Zero};
 use super::components::memory_id_to_big;
 
 #[generate_trait]
@@ -141,4 +142,33 @@ pub fn sum_inverses_qm31(values: @Array<QM31>) -> QM31 {
     }
 
     sum + curr_inverse
+}
+
+/// Interpret the mask values as a single `QM31` value.
+pub fn as_qm31(mask_values: @Box<[Span<QM31>; 4]>) -> QM31 {
+    let [column_0, column_1, column_2, column_3]: [Span<QM31>; 4] = mask_values.unbox();
+
+    let [coeff_0]: [QM31; 1] = (*column_0.try_into().unwrap()).unbox();
+    let [coeff_1]: [QM31; 1] = (*column_1.try_into().unwrap()).unbox();
+    let [coeff_2]: [QM31; 1] = (*column_2.try_into().unwrap()).unbox();
+    let [coeff_3]: [QM31; 1] = (*column_3.try_into().unwrap()).unbox();
+
+    QM31Trait::from_partial_evals([coeff_0, coeff_1, coeff_2, coeff_3])
+}
+
+/// Interpret the mask values as two neighboring `QM31` values.
+pub fn as_neighboring_qm31s(mask_values: @Box<[Span<QM31>; 4]>) -> [QM31; 2] {
+    let [column_0, column_1, column_2, column_3]: [Span<QM31>; 4] = mask_values.unbox();
+
+    let [coeff_0_first, coeff_0_second]: [QM31; 2] = (*column_0.try_into().unwrap()).unbox();
+    let [coeff_1_first, coeff_1_second]: [QM31; 2] = (*column_1.try_into().unwrap()).unbox();
+    let [coeff_2_first, coeff_2_second]: [QM31; 2] = (*column_2.try_into().unwrap()).unbox();
+    let [coeff_3_first, coeff_3_second]: [QM31; 2] = (*column_3.try_into().unwrap()).unbox();
+
+    [
+        QM31Trait::from_partial_evals([coeff_0_first, coeff_1_first, coeff_2_first, coeff_3_first]),
+        QM31Trait::from_partial_evals(
+            [coeff_0_second, coeff_1_second, coeff_2_second, coeff_3_second],
+        ),
+    ]
 }
