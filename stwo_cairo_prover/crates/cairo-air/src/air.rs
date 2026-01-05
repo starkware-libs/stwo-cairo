@@ -26,6 +26,11 @@ use super::opcodes_air::{OpcodeClaim, OpcodeComponents, OpcodeInteractionClaim};
 use super::pedersen::air::{
     PedersenContextClaim, PedersenContextComponents, PedersenContextInteractionClaim,
 };
+use super::pedersen_narrow_windows::air::{
+    PedersenContextClaim as PedersenNarrowWindowsContextClaim,
+    PedersenContextComponents as PedersenNarrowWindowsContextComponents,
+    PedersenContextInteractionClaim as PedersenNarrowWindowsContextInteractionClaim,
+};
 use super::poseidon::air::{
     PoseidonContextClaim, PoseidonContextComponents, PoseidonContextInteractionClaim,
 };
@@ -114,6 +119,7 @@ pub struct CairoClaim {
     pub blake_context: BlakeContextClaim,
     pub builtins: BuiltinsClaim,
     pub pedersen_context: PedersenContextClaim,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextClaim,
     pub poseidon_context: PoseidonContextClaim,
     pub memory_address_to_id: memory_address_to_id::Claim,
     pub memory_id_to_value: memory_id_to_big::Claim,
@@ -134,6 +140,7 @@ impl CairoClaim {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id,
             memory_id_to_value,
@@ -149,6 +156,7 @@ impl CairoClaim {
         blake_context.mix_into(channel);
         builtins.mix_into(channel);
         pedersen_context.mix_into(channel);
+        pedersen_narrow_windows_context.mix_into(channel);
         poseidon_context.mix_into(channel);
         memory_address_to_id.mix_into(channel);
         memory_id_to_value.mix_into(channel);
@@ -168,6 +176,7 @@ impl CairoClaim {
             self.blake_context.log_sizes(),
             self.builtins.log_sizes(),
             self.pedersen_context.log_sizes(),
+            self.pedersen_narrow_windows_context.log_sizes(),
             self.poseidon_context.log_sizes(),
             self.memory_address_to_id.log_sizes(),
             self.memory_id_to_value.log_sizes(),
@@ -189,6 +198,7 @@ impl CairoClaim {
             blake_context,
             builtins,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id: _,
             memory_id_to_value,
@@ -207,6 +217,7 @@ impl CairoClaim {
         builtins.accumulate_relation_uses(relation_uses);
         blake_context.accumulate_relation_uses(relation_uses);
         pedersen_context.accumulate_relation_uses(relation_uses);
+        pedersen_narrow_windows_context.accumulate_relation_uses(relation_uses);
         poseidon_context.accumulate_relation_uses(relation_uses);
         accumulate_relation_uses(
             relation_uses,
@@ -649,6 +660,7 @@ pub struct CairoInteractionClaim {
     pub blake_context: BlakeContextInteractionClaim,
     pub builtins: BuiltinsInteractionClaim,
     pub pedersen_context: PedersenContextInteractionClaim,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextInteractionClaim,
     pub poseidon_context: PoseidonContextInteractionClaim,
     pub memory_address_to_id: memory_address_to_id::InteractionClaim,
     pub memory_id_to_value: memory_id_to_big::InteractionClaim,
@@ -665,6 +677,7 @@ impl CairoInteractionClaim {
         self.blake_context.mix_into(channel);
         self.builtins.mix_into(channel);
         self.pedersen_context.mix_into(channel);
+        self.pedersen_narrow_windows_context.mix_into(channel);
         self.poseidon_context.mix_into(channel);
         self.memory_address_to_id.mix_into(channel);
         self.memory_id_to_value.mix_into(channel);
@@ -691,6 +704,7 @@ pub fn lookup_sum(
     sum += interaction_claim.blake_context.sum();
     sum += interaction_claim.builtins.sum();
     sum += interaction_claim.pedersen_context.sum();
+    sum += interaction_claim.pedersen_narrow_windows_context.sum();
     sum += interaction_claim.poseidon_context.sum();
     sum += interaction_claim.memory_address_to_id.claimed_sum;
     sum += interaction_claim.memory_id_to_value.claimed_sum();
@@ -709,6 +723,7 @@ pub struct CairoComponents {
     pub blake_context: BlakeContextComponents,
     pub builtins: BuiltinComponents,
     pub pedersen_context: PedersenContextComponents,
+    pub pedersen_narrow_windows_context: PedersenNarrowWindowsContextComponents,
     pub poseidon_context: PoseidonContextComponents,
     pub memory_address_to_id: memory_address_to_id::Component,
     pub memory_id_to_value: (
@@ -775,6 +790,12 @@ impl CairoComponents {
             &cairo_claim.pedersen_context,
             interaction_elements,
             &interaction_claim.pedersen_context,
+        );
+        let pedersen_narrow_windows_context = PedersenNarrowWindowsContextComponents::new(
+            tree_span_provider,
+            &cairo_claim.pedersen_narrow_windows_context,
+            interaction_elements,
+            &interaction_claim.pedersen_narrow_windows_context,
         );
         let poseidon_context = PoseidonContextComponents::new(
             tree_span_provider,
@@ -874,6 +895,7 @@ impl CairoComponents {
             blake_context,
             builtins: builtin_components,
             pedersen_context,
+            pedersen_narrow_windows_context,
             poseidon_context,
             memory_address_to_id: memory_address_to_id_component,
             memory_id_to_value: (
@@ -895,6 +917,7 @@ impl CairoComponents {
             self.blake_context.provers(),
             self.builtins.provers(),
             self.pedersen_context.provers(),
+            self.pedersen_narrow_windows_context.provers(),
             self.poseidon_context.provers(),
             [&self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
             self.memory_id_to_value
@@ -933,6 +956,7 @@ impl std::fmt::Display for CairoComponents {
         writeln!(f, "BlakeContext: {}", self.blake_context)?;
         writeln!(f, "Builtins: {}", self.builtins)?;
         writeln!(f, "PedersenContext: {}", self.pedersen_context)?;
+        writeln!(f, "PedersenNarrowWindowsContext: {}", self.pedersen_context)?;
         writeln!(f, "PoseidonContext: {}", self.poseidon_context)?;
         writeln!(
             f,
