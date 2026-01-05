@@ -163,9 +163,11 @@ impl CairoClaimGenerator {
             PedersenContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let poseidon_context_trace_generator =
             PoseidonContextClaimGenerator::new(Arc::clone(&preprocessed_trace));
+        let memory = Arc::new(memory);
         let memory_address_to_id_trace_generator =
-            memory_address_to_id::ClaimGenerator::new(&memory);
-        let memory_id_to_value_trace_generator = memory_id_to_big::ClaimGenerator::new(&memory);
+            memory_address_to_id::ClaimGenerator::new(Arc::clone(&memory));
+        let memory_id_to_value_trace_generator =
+            memory_id_to_big::ClaimGenerator::new(Arc::clone(&memory));
         let range_checks_trace_generator =
             RangeChecksClaimGenerator::new(Arc::clone(&preprocessed_trace));
         let verify_bitwise_xor_4_trace_generator =
@@ -207,7 +209,7 @@ impl CairoClaimGenerator {
         };
 
         let blake_context_trace_generator =
-            BlakeContextClaimGenerator::new(memory, preprocessed_trace);
+            BlakeContextClaimGenerator::new(Arc::clone(&memory), preprocessed_trace);
 
         Self {
             public_data,
