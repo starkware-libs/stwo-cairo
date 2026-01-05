@@ -2,9 +2,10 @@ use std::array;
 use std::sync::Arc;
 
 use cairo_air::air::{
-    CairoClaim, CairoInteractionClaim, CairoInteractionElements, MemorySmallValue, PublicData,
-    PublicMemory, PublicSegmentRanges, SegmentRange,
+    CairoClaim, CairoInteractionClaim, MemorySmallValue, PublicData, PublicMemory,
+    PublicSegmentRanges, SegmentRange,
 };
+use cairo_air::relations::CommonLookupElements;
 use itertools::Itertools;
 use stwo::core::fields::m31::M31;
 use stwo::prover::backend::simd::SimdBackend;
@@ -121,7 +122,7 @@ fn extract_sections_from_memory(
 
 /// Responsible for generating the CairoClaim and writing the trace.
 /// NOTE: Order of writing the trace is important, and should be consistent with [`CairoClaim`],
-/// [`CairoInteractionClaim`], [`CairoComponents`], [`CairoInteractionElements`].
+/// [`CairoInteractionClaim`], [`CairoComponents`].
 pub struct CairoClaimGenerator {
     public_data: PublicData,
 
@@ -372,70 +373,48 @@ impl CairoInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
     ) -> CairoInteractionClaim {
         let opcodes_interaction_claims = self
             .opcodes_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_instruction_interaction_claim = self
             .verify_instruction_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.range_checks.rc_7_2_5,
-                &interaction_elements.range_checks.rc_4_3,
-                &interaction_elements.memory_address_to_id,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.verify_instruction,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let blake_context_interaction_claim = self
             .blake_context_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let builtins_interaction_claims = self
             .builtins_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let pedersen_context_interaction_claim = self
             .pedersen_context_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
-            .write_interaction_trace(tree_builder, interaction_elements);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let memory_address_to_id_interaction_claim = self
             .memory_address_to_id_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.memory_address_to_id);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let memory_id_to_value_interaction_claim = self
             .memory_id_to_value_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_checks.rc_9_9,
-                &interaction_elements.range_checks.rc_9_9_b,
-                &interaction_elements.range_checks.rc_9_9_c,
-                &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_checks.rc_9_9_f,
-                &interaction_elements.range_checks.rc_9_9_g,
-                &interaction_elements.range_checks.rc_9_9_h,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
 
         let range_checks_interaction_claim = self
             .range_checks_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.range_checks);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_bitwise_xor_4_interaction_claim = self
             .verify_bitwise_xor_4_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_4);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_bitwise_xor_7_interaction_claim = self
             .verify_bitwise_xor_7_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_7);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_bitwise_xor_8_interaction_claim = self
             .verify_bitwise_xor_8_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.verify_bitwise_xor_8,
-                &interaction_elements.verify_bitwise_xor_8_b,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_bitwise_xor_9_interaction_claim = self
             .verify_bitwise_xor_9_interaction_gen
-            .write_interaction_trace(tree_builder, &interaction_elements.verify_bitwise_xor_9);
+            .write_interaction_trace(tree_builder, common_lookup_elements);
 
         CairoInteractionClaim {
             opcodes: opcodes_interaction_claims,

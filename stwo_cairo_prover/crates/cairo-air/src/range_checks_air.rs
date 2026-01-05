@@ -122,72 +122,6 @@ impl RangeChecksInteractionClaim {
     }
 }
 
-pub struct RangeChecksInteractionElements {
-    pub rc_6: relations::RangeCheck_6,
-    pub rc_8: relations::RangeCheck_8,
-    pub rc_11: relations::RangeCheck_11,
-    pub rc_12: relations::RangeCheck_12,
-    pub rc_18: relations::RangeCheck_18,
-    pub rc_18_b: relations::RangeCheck_18_B,
-    pub rc_20: relations::RangeCheck_20,
-    pub rc_20_b: relations::RangeCheck_20_B,
-    pub rc_20_c: relations::RangeCheck_20_C,
-    pub rc_20_d: relations::RangeCheck_20_D,
-    pub rc_20_e: relations::RangeCheck_20_E,
-    pub rc_20_f: relations::RangeCheck_20_F,
-    pub rc_20_g: relations::RangeCheck_20_G,
-    pub rc_20_h: relations::RangeCheck_20_H,
-    pub rc_4_3: relations::RangeCheck_4_3,
-    pub rc_4_4: relations::RangeCheck_4_4,
-    pub rc_9_9: relations::RangeCheck_9_9,
-    pub rc_9_9_b: relations::RangeCheck_9_9_B,
-    pub rc_9_9_c: relations::RangeCheck_9_9_C,
-    pub rc_9_9_d: relations::RangeCheck_9_9_D,
-    pub rc_9_9_e: relations::RangeCheck_9_9_E,
-    pub rc_9_9_f: relations::RangeCheck_9_9_F,
-    pub rc_9_9_g: relations::RangeCheck_9_9_G,
-    pub rc_9_9_h: relations::RangeCheck_9_9_H,
-    pub rc_7_2_5: relations::RangeCheck_7_2_5,
-    pub rc_3_6_6_3: relations::RangeCheck_3_6_6_3,
-    pub rc_4_4_4_4: relations::RangeCheck_4_4_4_4,
-    pub rc_3_3_3_3_3: relations::RangeCheck_3_3_3_3_3,
-    // ...
-}
-impl RangeChecksInteractionElements {
-    pub fn draw(channel: &mut impl Channel) -> RangeChecksInteractionElements {
-        RangeChecksInteractionElements {
-            rc_6: relations::RangeCheck_6::draw(channel),
-            rc_8: relations::RangeCheck_8::draw(channel),
-            rc_11: relations::RangeCheck_11::draw(channel),
-            rc_12: relations::RangeCheck_12::draw(channel),
-            rc_18: relations::RangeCheck_18::draw(channel),
-            rc_18_b: relations::RangeCheck_18_B::draw(channel),
-            rc_20: relations::RangeCheck_20::draw(channel),
-            rc_20_b: relations::RangeCheck_20_B::draw(channel),
-            rc_20_c: relations::RangeCheck_20_C::draw(channel),
-            rc_20_d: relations::RangeCheck_20_D::draw(channel),
-            rc_20_e: relations::RangeCheck_20_E::draw(channel),
-            rc_20_f: relations::RangeCheck_20_F::draw(channel),
-            rc_20_g: relations::RangeCheck_20_G::draw(channel),
-            rc_20_h: relations::RangeCheck_20_H::draw(channel),
-            rc_4_3: relations::RangeCheck_4_3::draw(channel),
-            rc_4_4: relations::RangeCheck_4_4::draw(channel),
-            rc_9_9: relations::RangeCheck_9_9::draw(channel),
-            rc_9_9_b: relations::RangeCheck_9_9_B::draw(channel),
-            rc_9_9_c: relations::RangeCheck_9_9_C::draw(channel),
-            rc_9_9_d: relations::RangeCheck_9_9_D::draw(channel),
-            rc_9_9_e: relations::RangeCheck_9_9_E::draw(channel),
-            rc_9_9_f: relations::RangeCheck_9_9_F::draw(channel),
-            rc_9_9_g: relations::RangeCheck_9_9_G::draw(channel),
-            rc_9_9_h: relations::RangeCheck_9_9_H::draw(channel),
-            rc_7_2_5: relations::RangeCheck_7_2_5::draw(channel),
-            rc_3_6_6_3: relations::RangeCheck_3_6_6_3::draw(channel),
-            rc_4_4_4_4: relations::RangeCheck_4_4_4_4::draw(channel),
-            rc_3_3_3_3_3: relations::RangeCheck_3_3_3_3_3::draw(channel),
-        }
-    }
-}
-
 pub struct RangeChecksComponents {
     pub rc_6: range_check_6::Component,
     pub rc_8: range_check_8::Component,
@@ -206,14 +140,14 @@ pub struct RangeChecksComponents {
 impl RangeChecksComponents {
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        interaction_elements: &RangeChecksInteractionElements,
+        common_lookup_elements: &relations::CommonLookupElements,
         interaction_claim: &RangeChecksInteractionClaim,
     ) -> Self {
         let rc_6_component = range_check_6::Component::new(
             tree_span_provider,
             range_check_6::Eval {
                 claim: range_check_6::Claim {},
-                range_check_6_lookup_elements: interaction_elements.rc_6.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_6.claimed_sum,
         );
@@ -221,7 +155,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_8::Eval {
                 claim: range_check_8::Claim {},
-                range_check_8_lookup_elements: interaction_elements.rc_8.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_8.claimed_sum,
         );
@@ -229,7 +163,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_11::Eval {
                 claim: range_check_11::Claim {},
-                range_check_11_lookup_elements: interaction_elements.rc_11.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_11.claimed_sum,
         );
@@ -237,7 +171,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_12::Eval {
                 claim: range_check_12::Claim {},
-                range_check_12_lookup_elements: interaction_elements.rc_12.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_12.claimed_sum,
         );
@@ -245,8 +179,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_18::Eval {
                 claim: range_check_18::Claim {},
-                range_check_18_lookup_elements: interaction_elements.rc_18.clone(),
-                range_check_18_b_lookup_elements: interaction_elements.rc_18_b.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_18.claimed_sum,
         );
@@ -254,14 +187,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_20::Eval {
                 claim: range_check_20::Claim {},
-                range_check_20_lookup_elements: interaction_elements.rc_20.clone(),
-                range_check_20_b_lookup_elements: interaction_elements.rc_20_b.clone(),
-                range_check_20_c_lookup_elements: interaction_elements.rc_20_c.clone(),
-                range_check_20_d_lookup_elements: interaction_elements.rc_20_d.clone(),
-                range_check_20_e_lookup_elements: interaction_elements.rc_20_e.clone(),
-                range_check_20_f_lookup_elements: interaction_elements.rc_20_f.clone(),
-                range_check_20_g_lookup_elements: interaction_elements.rc_20_g.clone(),
-                range_check_20_h_lookup_elements: interaction_elements.rc_20_h.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_20.claimed_sum,
         );
@@ -269,7 +195,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_4_3::Eval {
                 claim: range_check_4_3::Claim {},
-                range_check_4_3_lookup_elements: interaction_elements.rc_4_3.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_4_3.claimed_sum,
         );
@@ -277,7 +203,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_4_4::Eval {
                 claim: range_check_4_4::Claim {},
-                range_check_4_4_lookup_elements: interaction_elements.rc_4_4.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_4_4.claimed_sum,
         );
@@ -285,14 +211,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_9_9::Eval {
                 claim: range_check_9_9::Claim {},
-                range_check_9_9_lookup_elements: interaction_elements.rc_9_9.clone(),
-                range_check_9_9_b_lookup_elements: interaction_elements.rc_9_9_b.clone(),
-                range_check_9_9_c_lookup_elements: interaction_elements.rc_9_9_c.clone(),
-                range_check_9_9_d_lookup_elements: interaction_elements.rc_9_9_d.clone(),
-                range_check_9_9_e_lookup_elements: interaction_elements.rc_9_9_e.clone(),
-                range_check_9_9_f_lookup_elements: interaction_elements.rc_9_9_f.clone(),
-                range_check_9_9_g_lookup_elements: interaction_elements.rc_9_9_g.clone(),
-                range_check_9_9_h_lookup_elements: interaction_elements.rc_9_9_h.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_9_9.claimed_sum,
         );
@@ -300,7 +219,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_7_2_5::Eval {
                 claim: range_check_7_2_5::Claim {},
-                range_check_7_2_5_lookup_elements: interaction_elements.rc_7_2_5.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_7_2_5.claimed_sum,
         );
@@ -308,7 +227,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_3_6_6_3::Eval {
                 claim: range_check_3_6_6_3::Claim {},
-                range_check_3_6_6_3_lookup_elements: interaction_elements.rc_3_6_6_3.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_3_6_6_3.claimed_sum,
         );
@@ -316,7 +235,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_4_4_4_4::Eval {
                 claim: range_check_4_4_4_4::Claim {},
-                range_check_4_4_4_4_lookup_elements: interaction_elements.rc_4_4_4_4.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_4_4_4_4.claimed_sum,
         );
@@ -324,7 +243,7 @@ impl RangeChecksComponents {
             tree_span_provider,
             range_check_3_3_3_3_3::Eval {
                 claim: range_check_3_3_3_3_3::Claim {},
-                range_check_3_3_3_3_3_lookup_elements: interaction_elements.rc_3_3_3_3_3.clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.rc_3_3_3_3_3.claimed_sum,
         );

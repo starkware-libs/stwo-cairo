@@ -18,9 +18,9 @@ use core::box::BoxImpl;
 use core::num::traits::Zero;
 use stwo_cairo_air::cairo_component::CairoComponent;
 use stwo_cairo_air::claim::ClaimTrait;
-use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, utils};
+use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
-    LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
+    CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
@@ -28,52 +28,6 @@ use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
 use stwo_verifier_core::{ColumnSpan, TreeArray};
-
-pub mod range_check_elements {
-    use stwo_constraint_framework::LookupElements;
-    pub type RangeCheck_6Elements = LookupElements<1>;
-
-    pub type RangeCheck_8Elements = LookupElements<1>;
-
-    pub type RangeCheck_11Elements = LookupElements<1>;
-
-    pub type RangeCheck_12Elements = LookupElements<1>;
-
-    pub type RangeCheck_18Elements = LookupElements<1>;
-    pub type RangeCheck_18_BElements = LookupElements<1>;
-
-    pub type RangeCheck_20Elements = LookupElements<1>;
-    pub type RangeCheck_20_BElements = LookupElements<1>;
-    pub type RangeCheck_20_CElements = LookupElements<1>;
-    pub type RangeCheck_20_DElements = LookupElements<1>;
-    pub type RangeCheck_20_EElements = LookupElements<1>;
-    pub type RangeCheck_20_FElements = LookupElements<1>;
-    pub type RangeCheck_20_GElements = LookupElements<1>;
-    pub type RangeCheck_20_HElements = LookupElements<1>;
-
-    pub type RangeCheck_9_9Elements = LookupElements<2>;
-    pub type RangeCheck_9_9_BElements = LookupElements<2>;
-    pub type RangeCheck_9_9_CElements = LookupElements<2>;
-    pub type RangeCheck_9_9_DElements = LookupElements<2>;
-    pub type RangeCheck_9_9_EElements = LookupElements<2>;
-    pub type RangeCheck_9_9_FElements = LookupElements<2>;
-    pub type RangeCheck_9_9_GElements = LookupElements<2>;
-    pub type RangeCheck_9_9_HElements = LookupElements<2>;
-
-    pub type RangeCheck_4_3Elements = LookupElements<2>;
-
-    pub type RangeCheck_4_4Elements = LookupElements<2>;
-
-    pub type RangeCheck_7_2_5Elements = LookupElements<3>;
-
-    pub type RangeCheck_3_6_6_3Elements = LookupElements<4>;
-
-    pub type RangeCheck_4_4_4_4Elements = LookupElements<4>;
-
-    pub type RangeCheck_3_3_3_3_3Elements = LookupElements<5>;
-}
-use range_check_elements::*;
-
 
 #[derive(Drop, Serde, Clone)]
 pub struct RangeChecksClaim {
@@ -201,48 +155,48 @@ pub struct RangeChecksComponents {
 pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     fn new(
         claim: @RangeChecksClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
         interaction_claim: @RangeChecksInteractionClaim,
     ) -> RangeChecksComponents {
         RangeChecksComponents {
             rc_6: components::range_check_6::NewComponentImpl::new(
-                claim.rc_6, interaction_claim.rc_6, interaction_elements,
+                claim.rc_6, interaction_claim.rc_6, common_lookup_elements,
             ),
             rc_8: components::range_check_8::NewComponentImpl::new(
-                claim.rc_8, interaction_claim.rc_8, interaction_elements,
+                claim.rc_8, interaction_claim.rc_8, common_lookup_elements,
             ),
             rc_11: components::range_check_11::NewComponentImpl::new(
-                claim.rc_11, interaction_claim.rc_11, interaction_elements,
+                claim.rc_11, interaction_claim.rc_11, common_lookup_elements,
             ),
             rc_12: components::range_check_12::NewComponentImpl::new(
-                claim.rc_12, interaction_claim.rc_12, interaction_elements,
+                claim.rc_12, interaction_claim.rc_12, common_lookup_elements,
             ),
             rc_18: components::range_check_18::NewComponentImpl::new(
-                claim.rc_18, interaction_claim.rc_18, interaction_elements,
+                claim.rc_18, interaction_claim.rc_18, common_lookup_elements,
             ),
             rc_20: components::range_check_20::NewComponentImpl::new(
-                claim.rc_20, interaction_claim.rc_20, interaction_elements,
+                claim.rc_20, interaction_claim.rc_20, common_lookup_elements,
             ),
             rc_4_3: components::range_check_4_3::NewComponentImpl::new(
-                claim.rc_4_3, interaction_claim.rc_4_3, interaction_elements,
+                claim.rc_4_3, interaction_claim.rc_4_3, common_lookup_elements,
             ),
             rc_4_4: components::range_check_4_4::NewComponentImpl::new(
-                claim.rc_4_4, interaction_claim.rc_4_4, interaction_elements,
+                claim.rc_4_4, interaction_claim.rc_4_4, common_lookup_elements,
             ),
             rc_9_9: components::range_check_9_9::NewComponentImpl::new(
-                claim.rc_9_9, interaction_claim.rc_9_9, interaction_elements,
+                claim.rc_9_9, interaction_claim.rc_9_9, common_lookup_elements,
             ),
             rc_7_2_5: components::range_check_7_2_5::NewComponentImpl::new(
-                claim.rc_7_2_5, interaction_claim.rc_7_2_5, interaction_elements,
+                claim.rc_7_2_5, interaction_claim.rc_7_2_5, common_lookup_elements,
             ),
             rc_3_6_6_3: components::range_check_3_6_6_3::NewComponentImpl::new(
-                claim.rc_3_6_6_3, interaction_claim.rc_3_6_6_3, interaction_elements,
+                claim.rc_3_6_6_3, interaction_claim.rc_3_6_6_3, common_lookup_elements,
             ),
             rc_4_4_4_4: components::range_check_4_4_4_4::NewComponentImpl::new(
-                claim.rc_4_4_4_4, interaction_claim.rc_4_4_4_4, interaction_elements,
+                claim.rc_4_4_4_4, interaction_claim.rc_4_4_4_4, common_lookup_elements,
             ),
             rc_3_3_3_3_3: components::range_check_3_3_3_3_3::NewComponentImpl::new(
-                claim.rc_3_3_3_3_3, interaction_claim.rc_3_3_3_3_3, interaction_elements,
+                claim.rc_3_3_3_3_3, interaction_claim.rc_3_3_3_3_3, common_lookup_elements,
             ),
         }
     }
@@ -389,71 +343,3 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
     }
 }
 
-
-#[derive(Drop)]
-pub struct RangeChecksInteractionElements {
-    pub rc_6: RangeCheck_6Elements,
-    pub rc_8: RangeCheck_8Elements,
-    pub rc_11: RangeCheck_11Elements,
-    pub rc_12: RangeCheck_12Elements,
-    pub rc_18: RangeCheck_18Elements,
-    pub rc_18_b: RangeCheck_18Elements,
-    pub rc_20: RangeCheck_20Elements,
-    pub rc_20_b: RangeCheck_20Elements,
-    pub rc_20_c: RangeCheck_20Elements,
-    pub rc_20_d: RangeCheck_20Elements,
-    pub rc_20_e: RangeCheck_20Elements,
-    pub rc_20_f: RangeCheck_20Elements,
-    pub rc_20_g: RangeCheck_20Elements,
-    pub rc_20_h: RangeCheck_20Elements,
-    pub rc_4_3: RangeCheck_4_3Elements,
-    pub rc_4_4: RangeCheck_4_4Elements,
-    pub rc_9_9: RangeCheck_9_9Elements,
-    pub rc_9_9_b: RangeCheck_9_9Elements,
-    pub rc_9_9_c: RangeCheck_9_9Elements,
-    pub rc_9_9_d: RangeCheck_9_9Elements,
-    pub rc_9_9_e: RangeCheck_9_9Elements,
-    pub rc_9_9_f: RangeCheck_9_9Elements,
-    pub rc_9_9_g: RangeCheck_9_9Elements,
-    pub rc_9_9_h: RangeCheck_9_9Elements,
-    pub rc_7_2_5: RangeCheck_7_2_5Elements,
-    pub rc_3_6_6_3: RangeCheck_3_6_6_3Elements,
-    pub rc_4_4_4_4: RangeCheck_4_4_4_4Elements,
-    pub rc_3_3_3_3_3: RangeCheck_3_3_3_3_3Elements,
-}
-
-#[generate_trait]
-pub impl RangeChecksInteractionElementsImpl of RangeChecksInteractionElementsTrait {
-    fn draw(ref channel: Channel) -> RangeChecksInteractionElements {
-        RangeChecksInteractionElements {
-            rc_6: LookupElementsImpl::draw(ref channel),
-            rc_8: LookupElementsImpl::draw(ref channel),
-            rc_11: LookupElementsImpl::draw(ref channel),
-            rc_12: LookupElementsImpl::draw(ref channel),
-            rc_18: LookupElementsImpl::draw(ref channel),
-            rc_18_b: LookupElementsImpl::draw(ref channel),
-            rc_20: LookupElementsImpl::draw(ref channel),
-            rc_20_b: LookupElementsImpl::draw(ref channel),
-            rc_20_c: LookupElementsImpl::draw(ref channel),
-            rc_20_d: LookupElementsImpl::draw(ref channel),
-            rc_20_e: LookupElementsImpl::draw(ref channel),
-            rc_20_f: LookupElementsImpl::draw(ref channel),
-            rc_20_g: LookupElementsImpl::draw(ref channel),
-            rc_20_h: LookupElementsImpl::draw(ref channel),
-            rc_4_3: LookupElementsImpl::draw(ref channel),
-            rc_4_4: LookupElementsImpl::draw(ref channel),
-            rc_9_9: LookupElementsImpl::draw(ref channel),
-            rc_9_9_b: LookupElementsImpl::draw(ref channel),
-            rc_9_9_c: LookupElementsImpl::draw(ref channel),
-            rc_9_9_d: LookupElementsImpl::draw(ref channel),
-            rc_9_9_e: LookupElementsImpl::draw(ref channel),
-            rc_9_9_f: LookupElementsImpl::draw(ref channel),
-            rc_9_9_g: LookupElementsImpl::draw(ref channel),
-            rc_9_9_h: LookupElementsImpl::draw(ref channel),
-            rc_7_2_5: LookupElementsImpl::draw(ref channel),
-            rc_3_6_6_3: LookupElementsImpl::draw(ref channel),
-            rc_4_4_4_4: LookupElementsImpl::draw(ref channel),
-            rc_3_3_3_3_3: LookupElementsImpl::draw(ref channel),
-        }
-    }
-}

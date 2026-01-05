@@ -39,14 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub range_check_9_9_lookup_elements: crate::RangeCheck_9_9Elements,
-    pub range_check_9_9_b_lookup_elements: crate::RangeCheck_9_9_BElements,
-    pub range_check_9_9_c_lookup_elements: crate::RangeCheck_9_9_CElements,
-    pub range_check_9_9_d_lookup_elements: crate::RangeCheck_9_9_DElements,
-    pub range_check_9_9_e_lookup_elements: crate::RangeCheck_9_9_EElements,
-    pub range_check_9_9_f_lookup_elements: crate::RangeCheck_9_9_FElements,
-    pub range_check_9_9_g_lookup_elements: crate::RangeCheck_9_9_GElements,
-    pub range_check_9_9_h_lookup_elements: crate::RangeCheck_9_9_HElements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -56,19 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            range_check_9_9_lookup_elements: interaction_elements.range_checks.rc_9_9.clone(),
-            range_check_9_9_b_lookup_elements: interaction_elements.range_checks.rc_9_9_b.clone(),
-            range_check_9_9_c_lookup_elements: interaction_elements.range_checks.rc_9_9_c.clone(),
-            range_check_9_9_d_lookup_elements: interaction_elements.range_checks.rc_9_9_d.clone(),
-            range_check_9_9_e_lookup_elements: interaction_elements.range_checks.rc_9_9_e.clone(),
-            range_check_9_9_f_lookup_elements: interaction_elements.range_checks.rc_9_9_f.clone(),
-            range_check_9_9_g_lookup_elements: interaction_elements.range_checks.rc_9_9_g.clone(),
-            range_check_9_9_h_lookup_elements: interaction_elements.range_checks.rc_9_9_h.clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -151,36 +137,84 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         range_check_9_9_sum_0 = self
-            .range_check_9_9_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<517791011, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_b_sum_1 = self
-            .range_check_9_9_b_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1897792095, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_c_sum_2 = self
-            .range_check_9_9_c_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1881014476, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_d_sum_3 = self
-            .range_check_9_9_d_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1864236857, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_e_sum_4 = self
-            .range_check_9_9_e_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1847459238, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_f_sum_5 = self
-            .range_check_9_9_f_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1830681619, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_g_sum_6 = self
-            .range_check_9_9_g_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<1813904000, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         range_check_9_9_h_sum_7 = self
-            .range_check_9_9_h_lookup_elements
-            .combine_qm31([range_check_9_9_column_0, range_check_9_9_column_1]);
+            .common_lookup_elements
+            .combine_qm31(
+                [
+                    qm31_const::<2065568285, 0, 0, 0>(), range_check_9_9_column_0,
+                    range_check_9_9_column_1,
+                ]
+                    .span(),
+            );
 
         lookup_constraints(
             ref sum,

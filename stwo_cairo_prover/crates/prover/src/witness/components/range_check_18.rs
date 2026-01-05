@@ -74,6 +74,8 @@ fn write_trace_simd(
         )
     };
 
+    let M31_1109051422 = PackedM31::broadcast(M31::from(1109051422));
+    let M31_1424798916 = PackedM31::broadcast(M31::from(1424798916));
     let seq_18 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "seq_18".to_owned(),
     });
@@ -83,8 +85,8 @@ fn write_trace_simd(
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
             let seq_18 = seq_18.packed_at(row_index);
-            *lookup_data.range_check_18_0 = [seq_18];
-            *lookup_data.range_check_18_b_0 = [seq_18];
+            *lookup_data.range_check_18_0 = [M31_1109051422, seq_18];
+            *lookup_data.range_check_18_b_0 = [M31_1424798916, seq_18];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
@@ -100,8 +102,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    range_check_18_0: Vec<[PackedM31; 1]>,
-    range_check_18_b_0: Vec<[PackedM31; 1]>,
+    range_check_18_0: Vec<[PackedM31; 2]>,
+    range_check_18_b_0: Vec<[PackedM31; 2]>,
     mults_0: Vec<PackedM31>,
     mults_1: Vec<PackedM31>,
 }
@@ -113,8 +115,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        range_check_18: &relations::RangeCheck_18,
-        range_check_18_b: &relations::RangeCheck_18_B,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -129,8 +130,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_0, mults_1)| {
-                let denom0: PackedQM31 = range_check_18.combine(values0);
-                let denom1: PackedQM31 = range_check_18_b.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_1 + denom1 * mults_0), denom0 * denom1);
             });
         col_gen.finalize_col();

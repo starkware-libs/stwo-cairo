@@ -22,12 +22,13 @@ impl DecodeInstruction4B8Cf {
         op1_imm_col5: E::F,
         op1_base_fp_col6: E::F,
         ap_update_add_1_col7: E::F,
-        verify_instruction_lookup_elements: &relations::VerifyInstruction,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 4] {
         let M31_1 = E::F::from(M31::from(1));
         let M31_128 = E::F::from(M31::from(128));
         let M31_16 = E::F::from(M31::from(16));
+        let M31_1719106205 = E::F::from(M31::from(1719106205));
         let M31_256 = E::F::from(M31::from(256));
         let M31_32 = E::F::from(M31::from(32));
         let M31_32768 = E::F::from(M31::from(32768));
@@ -59,9 +60,10 @@ impl DecodeInstruction4B8Cf {
             (ap_update_add_1_col7.clone() * (M31_1.clone() - ap_update_add_1_col7.clone())),
         );
         eval.add_to_relation(RelationEntry::new(
-            verify_instruction_lookup_elements,
+            common_lookup_elements,
             E::EF::one(),
             &[
+                M31_1719106205.clone(),
                 decode_instruction_4b8cf_input_pc.clone(),
                 offset0_col0.clone(),
                 offset1_col1.clone(),

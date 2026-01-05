@@ -84,6 +84,7 @@ fn write_trace_simd(
         )
     };
 
+    let M31_95781001 = PackedM31::broadcast(M31::from(95781001));
     let bitwise_xor_9_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "bitwise_xor_9_0".to_owned(),
     });
@@ -101,8 +102,12 @@ fn write_trace_simd(
             let bitwise_xor_9_0 = bitwise_xor_9_0.packed_at(row_index);
             let bitwise_xor_9_1 = bitwise_xor_9_1.packed_at(row_index);
             let bitwise_xor_9_2 = bitwise_xor_9_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_9_0 =
-                [bitwise_xor_9_0, bitwise_xor_9_1, bitwise_xor_9_2];
+            *lookup_data.verify_bitwise_xor_9_0 = [
+                M31_95781001,
+                bitwise_xor_9_0,
+                bitwise_xor_9_1,
+                bitwise_xor_9_2,
+            ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
@@ -114,7 +119,7 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_9_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_9_0: Vec<[PackedM31; 4]>,
     mults_0: Vec<PackedM31>,
 }
 
@@ -125,7 +130,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_9: &relations::VerifyBitwiseXor_9,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -138,7 +143,7 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values, mults_0)| {
-                let denom = verify_bitwise_xor_9.combine(values);
+                let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });
         col_gen.finalize_col();

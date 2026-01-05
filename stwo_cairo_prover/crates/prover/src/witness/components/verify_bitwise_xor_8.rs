@@ -84,6 +84,8 @@ fn write_trace_simd(
         )
     };
 
+    let M31_112558620 = PackedM31::broadcast(M31::from(112558620));
+    let M31_521092554 = PackedM31::broadcast(M31::from(521092554));
     let bitwise_xor_8_0 = preprocessed_trace.get_column(&PreProcessedColumnId {
         id: "bitwise_xor_8_0".to_owned(),
     });
@@ -101,10 +103,18 @@ fn write_trace_simd(
             let bitwise_xor_8_0 = bitwise_xor_8_0.packed_at(row_index);
             let bitwise_xor_8_1 = bitwise_xor_8_1.packed_at(row_index);
             let bitwise_xor_8_2 = bitwise_xor_8_2.packed_at(row_index);
-            *lookup_data.verify_bitwise_xor_8_0 =
-                [bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2];
-            *lookup_data.verify_bitwise_xor_8_b_0 =
-                [bitwise_xor_8_0, bitwise_xor_8_1, bitwise_xor_8_2];
+            *lookup_data.verify_bitwise_xor_8_0 = [
+                M31_112558620,
+                bitwise_xor_8_0,
+                bitwise_xor_8_1,
+                bitwise_xor_8_2,
+            ];
+            *lookup_data.verify_bitwise_xor_8_b_0 = [
+                M31_521092554,
+                bitwise_xor_8_0,
+                bitwise_xor_8_1,
+                bitwise_xor_8_2,
+            ];
             let mult = &mults[0];
             let mult_at_row = *mult.get(row_index).unwrap_or(&PackedM31::zero());
             *row[0] = mult_at_row;
@@ -120,8 +130,8 @@ fn write_trace_simd(
 
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct LookupData {
-    verify_bitwise_xor_8_0: Vec<[PackedM31; 3]>,
-    verify_bitwise_xor_8_b_0: Vec<[PackedM31; 3]>,
+    verify_bitwise_xor_8_0: Vec<[PackedM31; 4]>,
+    verify_bitwise_xor_8_b_0: Vec<[PackedM31; 4]>,
     mults_0: Vec<PackedM31>,
     mults_1: Vec<PackedM31>,
 }
@@ -133,8 +143,7 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        verify_bitwise_xor_8: &relations::VerifyBitwiseXor_8,
-        verify_bitwise_xor_8_b: &relations::VerifyBitwiseXor_8_B,
+        common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let mut logup_gen = LogupTraceGenerator::new(LOG_SIZE);
 
@@ -149,8 +158,8 @@ impl InteractionClaimGenerator {
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1, mults_0, mults_1)| {
-                let denom0: PackedQM31 = verify_bitwise_xor_8.combine(values0);
-                let denom1: PackedQM31 = verify_bitwise_xor_8_b.combine(values1);
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
                 writer.write_frac(-(denom0 * mults_1 + denom1 * mults_0), denom0 * denom1);
             });
         col_gen.finalize_col();

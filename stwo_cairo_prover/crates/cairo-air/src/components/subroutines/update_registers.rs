@@ -32,8 +32,7 @@ impl UpdateRegisters {
         next_ap_col12: E::F,
         range_check_29_bot11bits_col13: E::F,
         next_fp_col14: E::F,
-        range_check_18_lookup_elements: &relations::RangeCheck_18,
-        range_check_11_lookup_elements: &relations::RangeCheck_11,
+        common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
@@ -74,6 +73,7 @@ impl UpdateRegisters {
                 update_registers_input_opcode_ret.clone(),
             ],
             partial_limb_msb_col0.clone(),
+            common_lookup_elements,
             eval,
         );
         let [cond_felt_252_as_rel_imm_output_tmp_783d5_9] = CondFelt252AsRelImm::evaluate(
@@ -112,6 +112,7 @@ impl UpdateRegisters {
             msb_col1.clone(),
             mid_limbs_set_col2.clone(),
             partial_limb_msb_col3.clone(),
+            common_lookup_elements,
             eval,
         );
         let diff_from_p_tmp_783d5_10 =
@@ -226,6 +227,7 @@ impl UpdateRegisters {
             msb_col7.clone(),
             mid_limbs_set_col8.clone(),
             partial_limb_msb_col9.clone(),
+            common_lookup_elements,
             eval,
         );
         // Constraint1 for conditional jump.
@@ -267,8 +269,7 @@ impl UpdateRegisters {
         RangeCheck29::evaluate(
             [next_ap_col12.clone()],
             range_check_29_bot11bits_col13.clone(),
-            range_check_18_lookup_elements,
-            range_check_11_lookup_elements,
+            common_lookup_elements,
             eval,
         );
         // next_fp.

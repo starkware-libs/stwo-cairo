@@ -8,14 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_20_lookup_elements: relations::RangeCheck_20,
-    pub range_check_20_b_lookup_elements: relations::RangeCheck_20_B,
-    pub range_check_20_c_lookup_elements: relations::RangeCheck_20_C,
-    pub range_check_20_d_lookup_elements: relations::RangeCheck_20_D,
-    pub range_check_20_e_lookup_elements: relations::RangeCheck_20_E,
-    pub range_check_20_f_lookup_elements: relations::RangeCheck_20_F,
-    pub range_check_20_g_lookup_elements: relations::RangeCheck_20_G,
-    pub range_check_20_h_lookup_elements: relations::RangeCheck_20_H,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -55,6 +48,14 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1410849886 = E::F::from(M31::from(1410849886));
+        let M31_447122465 = E::F::from(M31::from(447122465));
+        let M31_463900084 = E::F::from(M31::from(463900084));
+        let M31_480677703 = E::F::from(M31::from(480677703));
+        let M31_497455322 = E::F::from(M31::from(497455322));
+        let M31_514232941 = E::F::from(M31::from(514232941));
+        let M31_531010560 = E::F::from(M31::from(531010560));
+        let M31_682009131 = E::F::from(M31::from(682009131));
         let seq_20 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "seq_20".to_owned(),
         });
@@ -68,51 +69,51 @@ impl FrameworkEval for Eval {
         let multiplicity_7 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
-            std::slice::from_ref(&seq_20),
+            &[M31_1410849886.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_b_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_1),
-            std::slice::from_ref(&seq_20),
+            &[M31_514232941.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_c_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_2),
-            std::slice::from_ref(&seq_20),
+            &[M31_531010560.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_d_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_3),
-            std::slice::from_ref(&seq_20),
+            &[M31_480677703.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_e_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_4),
-            std::slice::from_ref(&seq_20),
+            &[M31_497455322.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_f_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_5),
-            std::slice::from_ref(&seq_20),
+            &[M31_447122465.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_g_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_6),
-            std::slice::from_ref(&seq_20),
+            &[M31_463900084.clone(), seq_20.clone()],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_20_h_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_7),
-            std::slice::from_ref(&seq_20),
+            &[M31_682009131.clone(), seq_20.clone()],
         ));
 
         eval.finalize_logup_in_pairs();
@@ -136,14 +137,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_20_lookup_elements: relations::RangeCheck_20::dummy(),
-            range_check_20_b_lookup_elements: relations::RangeCheck_20_B::dummy(),
-            range_check_20_c_lookup_elements: relations::RangeCheck_20_C::dummy(),
-            range_check_20_d_lookup_elements: relations::RangeCheck_20_D::dummy(),
-            range_check_20_e_lookup_elements: relations::RangeCheck_20_E::dummy(),
-            range_check_20_f_lookup_elements: relations::RangeCheck_20_F::dummy(),
-            range_check_20_g_lookup_elements: relations::RangeCheck_20_G::dummy(),
-            range_check_20_h_lookup_elements: relations::RangeCheck_20_H::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

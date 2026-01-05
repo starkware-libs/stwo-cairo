@@ -1,7 +1,7 @@
-use cairo_air::air::CairoInteractionElements;
 use cairo_air::pedersen::air::{
     Claim, InteractionClaim, PedersenContextClaim, PedersenContextInteractionClaim,
 };
+use cairo_air::relations::CommonLookupElements;
 use tracing::{span, Level};
 
 use crate::witness::components::{
@@ -119,12 +119,12 @@ impl PedersenContextInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
     ) -> PedersenContextInteractionClaim {
         PedersenContextInteractionClaim {
             claim: self
                 .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, interaction_elements)),
+                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
         }
     }
 }
@@ -140,45 +140,17 @@ impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
     ) -> InteractionClaim {
         let pedersen_aggregator_interaction_claim = self
             .pedersen_aggregator_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.memory_id_to_value,
-                &interaction_elements.range_checks.rc_8,
-                &interaction_elements.partial_ec_mul_window_bits_18,
-                &interaction_elements.pedersen_aggregator_window_bits_18,
-            );
-        let partial_ec_mul_interaction_claim =
-            self.partial_ec_mul_interaction_gen.write_interaction_trace(
-                tree_builder,
-                &interaction_elements.pedersen_points_table_window_bits_18,
-                &interaction_elements.range_checks.rc_9_9,
-                &interaction_elements.range_checks.rc_9_9_b,
-                &interaction_elements.range_checks.rc_9_9_c,
-                &interaction_elements.range_checks.rc_9_9_d,
-                &interaction_elements.range_checks.rc_9_9_e,
-                &interaction_elements.range_checks.rc_9_9_f,
-                &interaction_elements.range_checks.rc_9_9_g,
-                &interaction_elements.range_checks.rc_9_9_h,
-                &interaction_elements.range_checks.rc_20,
-                &interaction_elements.range_checks.rc_20_b,
-                &interaction_elements.range_checks.rc_20_c,
-                &interaction_elements.range_checks.rc_20_d,
-                &interaction_elements.range_checks.rc_20_e,
-                &interaction_elements.range_checks.rc_20_f,
-                &interaction_elements.range_checks.rc_20_g,
-                &interaction_elements.range_checks.rc_20_h,
-                &interaction_elements.partial_ec_mul_window_bits_18,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
+        let partial_ec_mul_interaction_claim = self
+            .partial_ec_mul_interaction_gen
+            .write_interaction_trace(tree_builder, common_lookup_elements);
         let pedersen_points_table_interaction_claim = self
             .pedersen_points_table_interaction_gen
-            .write_interaction_trace(
-                tree_builder,
-                &interaction_elements.pedersen_points_table_window_bits_18,
-            );
+            .write_interaction_trace(tree_builder, common_lookup_elements);
 
         InteractionClaim {
             pedersen_aggregator: pedersen_aggregator_interaction_claim,

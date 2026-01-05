@@ -8,8 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8,
-    pub verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -49,6 +48,8 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_112558620 = E::F::from(M31::from(112558620));
+        let M31_521092554 = E::F::from(M31::from(521092554));
         let bitwise_xor_8_0 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "bitwise_xor_8_0".to_owned(),
         });
@@ -62,9 +63,10 @@ impl FrameworkEval for Eval {
         let multiplicity_1 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_8_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
             &[
+                M31_112558620.clone(),
                 bitwise_xor_8_0.clone(),
                 bitwise_xor_8_1.clone(),
                 bitwise_xor_8_2.clone(),
@@ -72,9 +74,10 @@ impl FrameworkEval for Eval {
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.verify_bitwise_xor_8_b_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_1),
             &[
+                M31_521092554.clone(),
                 bitwise_xor_8_0.clone(),
                 bitwise_xor_8_1.clone(),
                 bitwise_xor_8_2.clone(),
@@ -102,8 +105,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            verify_bitwise_xor_8_lookup_elements: relations::VerifyBitwiseXor_8::dummy(),
-            verify_bitwise_xor_8_b_lookup_elements: relations::VerifyBitwiseXor_8_B::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

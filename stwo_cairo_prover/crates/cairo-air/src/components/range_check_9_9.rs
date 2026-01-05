@@ -8,14 +8,7 @@ pub const RELATION_USES_PER_ROW: [RelationUse; 0] = [];
 
 pub struct Eval {
     pub claim: Claim,
-    pub range_check_9_9_lookup_elements: relations::RangeCheck_9_9,
-    pub range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B,
-    pub range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C,
-    pub range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D,
-    pub range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E,
-    pub range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F,
-    pub range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G,
-    pub range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H,
+    pub common_lookup_elements: relations::CommonLookupElements,
 }
 
 #[derive(Copy, Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
@@ -55,6 +48,14 @@ impl FrameworkEval for Eval {
     #[allow(clippy::double_parens)]
     #[allow(non_snake_case)]
     fn evaluate<E: EvalAtRow>(&self, mut eval: E) -> E {
+        let M31_1813904000 = E::F::from(M31::from(1813904000));
+        let M31_1830681619 = E::F::from(M31::from(1830681619));
+        let M31_1847459238 = E::F::from(M31::from(1847459238));
+        let M31_1864236857 = E::F::from(M31::from(1864236857));
+        let M31_1881014476 = E::F::from(M31::from(1881014476));
+        let M31_1897792095 = E::F::from(M31::from(1897792095));
+        let M31_2065568285 = E::F::from(M31::from(2065568285));
+        let M31_517791011 = E::F::from(M31::from(517791011));
         let range_check_9_9_column_0 = eval.get_preprocessed_column(PreProcessedColumnId {
             id: "range_check_9_9_column_0".to_owned(),
         });
@@ -71,72 +72,80 @@ impl FrameworkEval for Eval {
         let multiplicity_7 = eval.next_trace_mask();
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_0),
             &[
+                M31_517791011.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_b_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_1),
             &[
+                M31_1897792095.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_c_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_2),
             &[
+                M31_1881014476.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_d_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_3),
             &[
+                M31_1864236857.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_e_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_4),
             &[
+                M31_1847459238.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_f_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_5),
             &[
+                M31_1830681619.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_g_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_6),
             &[
+                M31_1813904000.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
         ));
 
         eval.add_to_relation(RelationEntry::new(
-            &self.range_check_9_9_h_lookup_elements,
+            &self.common_lookup_elements,
             -E::EF::from(multiplicity_7),
             &[
+                M31_2065568285.clone(),
                 range_check_9_9_column_0.clone(),
                 range_check_9_9_column_1.clone(),
             ],
@@ -163,14 +172,7 @@ mod tests {
         let mut rng = SmallRng::seed_from_u64(0);
         let eval = Eval {
             claim: Claim {},
-            range_check_9_9_lookup_elements: relations::RangeCheck_9_9::dummy(),
-            range_check_9_9_b_lookup_elements: relations::RangeCheck_9_9_B::dummy(),
-            range_check_9_9_c_lookup_elements: relations::RangeCheck_9_9_C::dummy(),
-            range_check_9_9_d_lookup_elements: relations::RangeCheck_9_9_D::dummy(),
-            range_check_9_9_e_lookup_elements: relations::RangeCheck_9_9_E::dummy(),
-            range_check_9_9_f_lookup_elements: relations::RangeCheck_9_9_F::dummy(),
-            range_check_9_9_g_lookup_elements: relations::RangeCheck_9_9_G::dummy(),
-            range_check_9_9_h_lookup_elements: relations::RangeCheck_9_9_H::dummy(),
+            common_lookup_elements: relations::CommonLookupElements::dummy(),
         };
         let expr_eval = eval.evaluate(ExprEvaluator::new());
         let assignment = expr_eval.random_assignment();

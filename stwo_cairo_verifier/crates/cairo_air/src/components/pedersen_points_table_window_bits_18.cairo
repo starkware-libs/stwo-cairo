@@ -39,7 +39,7 @@ pub impl InteractionClaimImpl of InteractionClaimTrait {
 pub struct Component {
     pub claim: Claim,
     pub interaction_claim: InteractionClaim,
-    pub pedersen_points_table_window_bits_18_lookup_elements: crate::PedersenPointsTableWindowBits18Elements,
+    pub common_lookup_elements: CommonLookupElements,
 }
 
 pub impl NewComponentImpl of NewComponent<Component> {
@@ -49,14 +49,12 @@ pub impl NewComponentImpl of NewComponent<Component> {
     fn new(
         claim: @Claim,
         interaction_claim: @InteractionClaim,
-        interaction_elements: @CairoInteractionElements,
+        common_lookup_elements: @CommonLookupElements,
     ) -> Component {
         Component {
             claim: *claim,
             interaction_claim: *interaction_claim,
-            pedersen_points_table_window_bits_18_lookup_elements: interaction_elements
-                .pedersen_points_table_window_bits_18
-                .clone(),
+            common_lookup_elements: common_lookup_elements.clone(),
         }
     }
 }
@@ -149,25 +147,26 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         pedersen_points_table_window_bits_18_sum_0 = self
-            .pedersen_points_table_window_bits_18_lookup_elements
+            .common_lookup_elements
             .combine_qm31(
                 [
-                    seq_23, pedersen_points_0, pedersen_points_1, pedersen_points_2,
-                    pedersen_points_3, pedersen_points_4, pedersen_points_5, pedersen_points_6,
-                    pedersen_points_7, pedersen_points_8, pedersen_points_9, pedersen_points_10,
-                    pedersen_points_11, pedersen_points_12, pedersen_points_13, pedersen_points_14,
-                    pedersen_points_15, pedersen_points_16, pedersen_points_17, pedersen_points_18,
-                    pedersen_points_19, pedersen_points_20, pedersen_points_21, pedersen_points_22,
-                    pedersen_points_23, pedersen_points_24, pedersen_points_25, pedersen_points_26,
-                    pedersen_points_27, pedersen_points_28, pedersen_points_29, pedersen_points_30,
-                    pedersen_points_31, pedersen_points_32, pedersen_points_33, pedersen_points_34,
-                    pedersen_points_35, pedersen_points_36, pedersen_points_37, pedersen_points_38,
-                    pedersen_points_39, pedersen_points_40, pedersen_points_41, pedersen_points_42,
-                    pedersen_points_43, pedersen_points_44, pedersen_points_45, pedersen_points_46,
-                    pedersen_points_47, pedersen_points_48, pedersen_points_49, pedersen_points_50,
-                    pedersen_points_51, pedersen_points_52, pedersen_points_53, pedersen_points_54,
-                    pedersen_points_55,
-                ],
+                    qm31_const::<1444721856, 0, 0, 0>(), seq_23, pedersen_points_0,
+                    pedersen_points_1, pedersen_points_2, pedersen_points_3, pedersen_points_4,
+                    pedersen_points_5, pedersen_points_6, pedersen_points_7, pedersen_points_8,
+                    pedersen_points_9, pedersen_points_10, pedersen_points_11, pedersen_points_12,
+                    pedersen_points_13, pedersen_points_14, pedersen_points_15, pedersen_points_16,
+                    pedersen_points_17, pedersen_points_18, pedersen_points_19, pedersen_points_20,
+                    pedersen_points_21, pedersen_points_22, pedersen_points_23, pedersen_points_24,
+                    pedersen_points_25, pedersen_points_26, pedersen_points_27, pedersen_points_28,
+                    pedersen_points_29, pedersen_points_30, pedersen_points_31, pedersen_points_32,
+                    pedersen_points_33, pedersen_points_34, pedersen_points_35, pedersen_points_36,
+                    pedersen_points_37, pedersen_points_38, pedersen_points_39, pedersen_points_40,
+                    pedersen_points_41, pedersen_points_42, pedersen_points_43, pedersen_points_44,
+                    pedersen_points_45, pedersen_points_46, pedersen_points_47, pedersen_points_48,
+                    pedersen_points_49, pedersen_points_50, pedersen_points_51, pedersen_points_52,
+                    pedersen_points_53, pedersen_points_54, pedersen_points_55,
+                ]
+                    .span(),
             );
 
         lookup_constraints(

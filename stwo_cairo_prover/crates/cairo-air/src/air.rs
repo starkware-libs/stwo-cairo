@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::iter::once;
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;
@@ -31,13 +32,15 @@ use super::poseidon::air::{
 };
 use super::range_checks_air::{
     RangeChecksClaim, RangeChecksComponents, RangeChecksInteractionClaim,
-    RangeChecksInteractionElements,
 };
 use crate::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
-use crate::relations;
+use crate::relations::{
+    self, CommonLookupElements, MEMORY_ADDRESS_TO_ID_RELATION_ID, MEMORY_ID_TO_BIG_RELATION_ID,
+    OPCODES_RELATION_ID,
+};
 use crate::verifier::RelationUse;
 
 #[derive(Serialize, Deserialize)]
@@ -239,7 +242,7 @@ pub struct PublicData {
 }
 impl PublicData {
     /// Sums the logup of the public data.
-    pub fn logup_sum(&self, lookup_elements: &CairoInteractionElements) -> QM31 {
+    pub fn logup_sum(&self, common_lookup_elements: &CommonLookupElements) -> QM31 {
         let mut values_to_inverse = vec![];
         // Use public memory in the memory relations.
         self.public_memory
@@ -250,30 +253,46 @@ impl PublicData {
             )
             .for_each(|(addr, id, val)| {
                 values_to_inverse.push(
-                    <relations::MemoryAddressToId as Relation<M31, QM31>>::combine(
-                        &lookup_elements.memory_address_to_id,
-                        &[M31::from_u32_unchecked(addr), M31::from_u32_unchecked(id)],
+                    <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                        common_lookup_elements,
+                        &[
+                            MEMORY_ADDRESS_TO_ID_RELATION_ID,
+                            M31::from_u32_unchecked(addr),
+                            M31::from_u32_unchecked(id),
+                        ],
                     ),
                 );
-                values_to_inverse.push(<relations::MemoryIdToBig as Relation<M31, QM31>>::combine(
-                    &lookup_elements.memory_id_to_value,
-                    &[
-                        [M31::from_u32_unchecked(id)].as_slice(),
-                        split_f252(val).as_slice(),
-                    ]
-                    .concat(),
-                ));
+                values_to_inverse.push(
+                    <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                        common_lookup_elements,
+                        &[
+                            [MEMORY_ID_TO_BIG_RELATION_ID, M31::from_u32_unchecked(id)].as_slice(),
+                            split_f252(val).as_slice(),
+                        ]
+                        .concat(),
+                    ),
+                );
             });
 
+        let final_state_tuple = once(OPCODES_RELATION_ID)
+            .chain(self.final_state.values())
+            .collect_vec();
+        let initial_state_tuple = once(OPCODES_RELATION_ID)
+            .chain(self.initial_state.values())
+            .collect_vec();
         // Yield initial state and use the final.
-        values_to_inverse.push(<relations::Opcodes as Relation<M31, QM31>>::combine(
-            &lookup_elements.opcodes,
-            &self.final_state.values(),
-        ));
-        values_to_inverse.push(-<relations::Opcodes as Relation<M31, QM31>>::combine(
-            &lookup_elements.opcodes,
-            &self.initial_state.values(),
-        ));
+        values_to_inverse.push(
+            <relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                common_lookup_elements,
+                &final_state_tuple,
+            ),
+        );
+        values_to_inverse.push(
+            -<relations::CommonLookupElements as Relation<M31, QM31>>::combine(
+                common_lookup_elements,
+                &initial_state_tuple,
+            ),
+        );
 
         let inverted_values = QM31::batch_inverse(&values_to_inverse);
         inverted_values.iter().sum::<QM31>()
@@ -571,77 +590,6 @@ impl PublicMemory {
     }
 }
 
-pub struct CairoInteractionElements {
-    pub opcodes: relations::Opcodes,
-    pub verify_instruction: relations::VerifyInstruction,
-    pub blake_round: relations::BlakeRound,
-    pub blake_g: relations::BlakeG,
-    pub blake_sigma: relations::BlakeRoundSigma,
-    pub triple_xor_32: relations::TripleXor32,
-    pub poseidon_aggregator: relations::PoseidonAggregator,
-    pub poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain,
-    pub poseidon_full_round_chain: relations::PoseidonFullRoundChain,
-    pub cube_252: relations::Cube252,
-    pub poseidon_round_keys: relations::PoseidonRoundKeys,
-    pub range_check_252_width_27: relations::RangeCheck252Width27,
-    pub pedersen_aggregator_window_bits_18: relations::PedersenAggregatorWindowBits18,
-    pub partial_ec_mul_window_bits_18: relations::PartialEcMulWindowBits18,
-    pub pedersen_points_table_window_bits_18: relations::PedersenPointsTableWindowBits18,
-    pub pedersen_aggregator_window_bits_9: relations::PedersenAggregatorWindowBits9,
-    pub partial_ec_mul_window_bits_9: relations::PartialEcMulWindowBits9,
-    pub pedersen_points_table_window_bits_9: relations::PedersenPointsTableWindowBits9,
-    pub memory_address_to_id: relations::MemoryAddressToId,
-    pub memory_id_to_value: relations::MemoryIdToBig,
-    pub range_checks: RangeChecksInteractionElements,
-    pub verify_bitwise_xor_4: relations::VerifyBitwiseXor_4,
-    pub verify_bitwise_xor_7: relations::VerifyBitwiseXor_7,
-    pub verify_bitwise_xor_8: relations::VerifyBitwiseXor_8,
-    pub verify_bitwise_xor_8_b: relations::VerifyBitwiseXor_8_B,
-    pub verify_bitwise_xor_9: relations::VerifyBitwiseXor_9,
-    pub verify_bitwise_xor_12: relations::VerifyBitwiseXor_12,
-}
-impl CairoInteractionElements {
-    pub fn draw(channel: &mut impl Channel) -> CairoInteractionElements {
-        CairoInteractionElements {
-            opcodes: relations::Opcodes::draw(channel),
-            verify_instruction: relations::VerifyInstruction::draw(channel),
-            blake_round: relations::BlakeRound::draw(channel),
-            blake_g: relations::BlakeG::draw(channel),
-            blake_sigma: relations::BlakeRoundSigma::draw(channel),
-            triple_xor_32: relations::TripleXor32::draw(channel),
-            poseidon_aggregator: relations::PoseidonAggregator::draw(channel),
-            poseidon_3_partial_rounds_chain: relations::Poseidon3PartialRoundsChain::draw(channel),
-            poseidon_full_round_chain: relations::PoseidonFullRoundChain::draw(channel),
-            cube_252: relations::Cube252::draw(channel),
-            poseidon_round_keys: relations::PoseidonRoundKeys::draw(channel),
-            range_check_252_width_27: relations::RangeCheck252Width27::draw(channel),
-            pedersen_aggregator_window_bits_18: relations::PedersenAggregatorWindowBits18::draw(
-                channel,
-            ),
-            partial_ec_mul_window_bits_18: relations::PartialEcMulWindowBits18::draw(channel),
-            pedersen_points_table_window_bits_18: relations::PedersenPointsTableWindowBits18::draw(
-                channel,
-            ),
-            pedersen_aggregator_window_bits_9: relations::PedersenAggregatorWindowBits9::draw(
-                channel,
-            ),
-            partial_ec_mul_window_bits_9: relations::PartialEcMulWindowBits9::draw(channel),
-            pedersen_points_table_window_bits_9: relations::PedersenPointsTableWindowBits9::draw(
-                channel,
-            ),
-            memory_address_to_id: relations::MemoryAddressToId::draw(channel),
-            memory_id_to_value: relations::MemoryIdToBig::draw(channel),
-            range_checks: RangeChecksInteractionElements::draw(channel),
-            verify_bitwise_xor_4: relations::VerifyBitwiseXor_4::draw(channel),
-            verify_bitwise_xor_7: relations::VerifyBitwiseXor_7::draw(channel),
-            verify_bitwise_xor_8: relations::VerifyBitwiseXor_8::draw(channel),
-            verify_bitwise_xor_8_b: relations::VerifyBitwiseXor_8_B::draw(channel),
-            verify_bitwise_xor_9: relations::VerifyBitwiseXor_9::draw(channel),
-            verify_bitwise_xor_12: relations::VerifyBitwiseXor_12::draw(channel),
-        }
-    }
-}
-
 #[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
@@ -678,11 +626,11 @@ impl CairoInteractionClaim {
 
 pub fn lookup_sum(
     claim: &CairoClaim,
-    elements: &CairoInteractionElements,
+    common_lookup_elements: &CommonLookupElements,
     interaction_claim: &CairoInteractionClaim,
 ) -> SecureField {
     let mut sum = QM31::zero();
-    sum += claim.public_data.logup_sum(elements);
+    sum += claim.public_data.logup_sum(common_lookup_elements);
 
     // If the table is padded, take the sum of the non-padded values.
     // Otherwise, the claimed_sum is the total_sum.
@@ -725,7 +673,7 @@ pub struct CairoComponents {
 impl CairoComponents {
     pub fn new(
         cairo_claim: &CairoClaim,
-        interaction_elements: &CairoInteractionElements,
+        common_lookup_elements: &CommonLookupElements,
         interaction_claim: &CairoInteractionClaim,
         // Describes the structure of the preprocessed trace. Sensitive to order.
         preprocessed_column_ids: &[PreProcessedColumnId],
@@ -736,7 +684,7 @@ impl CairoComponents {
         let opcode_components = OpcodeComponents::new(
             tree_span_provider,
             &cairo_claim.opcodes,
-            interaction_elements,
+            common_lookup_elements,
             &interaction_claim.opcodes,
         );
 
@@ -744,16 +692,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_instruction::Eval {
                 claim: cairo_claim.verify_instruction,
-                memory_address_to_id_lookup_elements: interaction_elements
-                    .memory_address_to_id
-                    .clone(),
-                verify_instruction_lookup_elements: interaction_elements.verify_instruction.clone(),
-                memory_id_to_big_lookup_elements: interaction_elements.memory_id_to_value.clone(),
-                range_check_4_3_lookup_elements: interaction_elements.range_checks.rc_4_3.clone(),
-                range_check_7_2_5_lookup_elements: interaction_elements
-                    .range_checks
-                    .rc_7_2_5
-                    .clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.verify_instruction.claimed_sum,
         );
@@ -761,32 +700,32 @@ impl CairoComponents {
         let blake_context = BlakeContextComponents::new(
             tree_span_provider,
             &cairo_claim.blake_context,
-            interaction_elements,
+            common_lookup_elements,
             &interaction_claim.blake_context,
         );
         let builtin_components = BuiltinComponents::new(
             tree_span_provider,
             &cairo_claim.builtins,
-            interaction_elements,
+            common_lookup_elements,
             &interaction_claim.builtins,
         );
         let pedersen_context = PedersenContextComponents::new(
             tree_span_provider,
             &cairo_claim.pedersen_context,
-            interaction_elements,
+            common_lookup_elements,
             &interaction_claim.pedersen_context,
         );
         let poseidon_context = PoseidonContextComponents::new(
             tree_span_provider,
             &cairo_claim.poseidon_context,
-            interaction_elements,
+            common_lookup_elements,
             &interaction_claim.poseidon_context,
         );
         let memory_address_to_id_component = memory_address_to_id::Component::new(
             tree_span_provider,
             memory_address_to_id::Eval::new(
                 cairo_claim.memory_address_to_id.clone(),
-                interaction_elements.memory_address_to_id.clone(),
+                common_lookup_elements.clone(),
             ),
             interaction_claim.memory_address_to_id.clone().claimed_sum,
         );
@@ -794,26 +733,14 @@ impl CairoComponents {
         let memory_id_to_value_components = memory_id_to_big::big_components_from_claim(
             &cairo_claim.memory_id_to_value.big_log_sizes,
             &interaction_claim.memory_id_to_value.big_claimed_sums,
-            &interaction_elements.memory_id_to_value,
-            &interaction_elements.range_checks.rc_9_9,
-            &interaction_elements.range_checks.rc_9_9_b,
-            &interaction_elements.range_checks.rc_9_9_c,
-            &interaction_elements.range_checks.rc_9_9_d,
-            &interaction_elements.range_checks.rc_9_9_e,
-            &interaction_elements.range_checks.rc_9_9_f,
-            &interaction_elements.range_checks.rc_9_9_g,
-            &interaction_elements.range_checks.rc_9_9_h,
+            &common_lookup_elements.clone(),
             tree_span_provider,
         );
         let small_memory_id_to_value_component = memory_id_to_big::SmallComponent::new(
             tree_span_provider,
             memory_id_to_big::SmallEval::new(
                 cairo_claim.memory_id_to_value.clone(),
-                interaction_elements.memory_id_to_value.clone(),
-                interaction_elements.range_checks.rc_9_9.clone(),
-                interaction_elements.range_checks.rc_9_9_b.clone(),
-                interaction_elements.range_checks.rc_9_9_c.clone(),
-                interaction_elements.range_checks.rc_9_9_d.clone(),
+                common_lookup_elements.clone(),
             ),
             interaction_claim
                 .memory_id_to_value
@@ -822,16 +749,14 @@ impl CairoComponents {
         );
         let range_checks_component = RangeChecksComponents::new(
             tree_span_provider,
-            &interaction_elements.range_checks,
+            common_lookup_elements,
             &interaction_claim.range_checks,
         );
         let verify_bitwise_xor_4_component = verify_bitwise_xor_4::Component::new(
             tree_span_provider,
             verify_bitwise_xor_4::Eval {
                 claim: cairo_claim.verify_bitwise_xor_4,
-                verify_bitwise_xor_4_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_4
-                    .clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.verify_bitwise_xor_4.claimed_sum,
         );
@@ -839,9 +764,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_7::Eval {
                 claim: cairo_claim.verify_bitwise_xor_7,
-                verify_bitwise_xor_7_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_7
-                    .clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.verify_bitwise_xor_7.claimed_sum,
         );
@@ -849,12 +772,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_8::Eval {
                 claim: cairo_claim.verify_bitwise_xor_8,
-                verify_bitwise_xor_8_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8
-                    .clone(),
-                verify_bitwise_xor_8_b_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_8_b
-                    .clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.verify_bitwise_xor_8.claimed_sum,
         );
@@ -862,9 +780,7 @@ impl CairoComponents {
             tree_span_provider,
             verify_bitwise_xor_9::Eval {
                 claim: cairo_claim.verify_bitwise_xor_9,
-                verify_bitwise_xor_9_lookup_elements: interaction_elements
-                    .verify_bitwise_xor_9
-                    .clone(),
+                common_lookup_elements: common_lookup_elements.clone(),
             },
             interaction_claim.verify_bitwise_xor_9.claimed_sum,
         );
