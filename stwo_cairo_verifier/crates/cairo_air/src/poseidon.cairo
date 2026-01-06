@@ -183,6 +183,7 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
                 ),
             }
         } else {
+            assert!(interaction_claim.interaction_claim.is_none());
             PoseidonContextComponents { components: None }
         }
     }
