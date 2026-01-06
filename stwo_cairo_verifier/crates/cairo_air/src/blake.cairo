@@ -11,7 +11,7 @@ use stwo_cairo_air::{CairoInteractionElements, RelationUsesDict, components, uti
 use stwo_constraint_framework::{
     LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::Channel;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -99,7 +99,10 @@ pub struct BlakeContextClaim {
 pub impl BlakeContextClaimImpl of ClaimTrait<BlakeContextClaim> {
     fn mix_into(self: @BlakeContextClaim, ref channel: Channel) {
         if let Some(claim) = self.claim {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 
@@ -128,7 +131,10 @@ pub struct BlakeContextInteractionClaim {
 pub impl BlakeContextInteractionClaimImpl of BlakeContextInteractionClaimTrait {
     fn mix_into(self: @BlakeContextInteractionClaim, ref channel: Channel) {
         if let Some(interaction_claim) = self.interaction_claim {
+            channel.mix_u64(1);
             interaction_claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 
@@ -301,4 +307,3 @@ pub impl BlakeComponentsImpl of BlakeComponentsTrait {
             );
     }
 }
-

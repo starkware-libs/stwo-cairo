@@ -17,7 +17,8 @@ pub struct PoseidonContextClaim {
 }
 impl PoseidonContextClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(claim) = &self.claim {
+        channel.mix_u64(self.claim.is_some() as u64);
+        if let Some(ref claim) = self.claim {
             claim.mix_into(channel);
         }
     }
@@ -116,7 +117,8 @@ pub struct PoseidonContextInteractionClaim {
 }
 impl PoseidonContextInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(claim) = &self.claim {
+        channel.mix_u64(self.claim.is_some() as u64);
+        if let Some(ref claim) = self.claim {
             claim.mix_into(channel);
         }
     }
