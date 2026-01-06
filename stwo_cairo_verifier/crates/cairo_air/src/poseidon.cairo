@@ -17,7 +17,7 @@ use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::Channel;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 #[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
@@ -115,8 +115,11 @@ pub struct PoseidonContextClaim {
 
 pub impl PoseidonContextClaimImpl of ClaimTrait<PoseidonContextClaim> {
     fn mix_into(self: @PoseidonContextClaim, ref channel: Channel) {
-        if let Option::Some(claim) = self.claim {
+        if let Some(claim) = self.claim {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 
@@ -144,7 +147,10 @@ pub struct PoseidonContextInteractionClaim {
 pub impl PoseidonContextInteractionClaimImpl of PoseidonContextInteractionClaimTrait {
     fn mix_into(self: @PoseidonContextInteractionClaim, ref channel: Channel) {
         if let Some(interaction_claim) = self.interaction_claim {
+            channel.mix_u64(1);
             interaction_claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 

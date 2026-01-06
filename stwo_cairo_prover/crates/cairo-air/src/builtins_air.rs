@@ -28,26 +28,33 @@ pub struct BuiltinsClaim {
 }
 impl BuiltinsClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            add_mod_builtin.mix_into(channel);
+        channel.mix_u64(self.add_mod_builtin.is_some() as u64);
+        if let Some(ref claim) = self.add_mod_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(bitwise_builtin) = &self.bitwise_builtin {
-            bitwise_builtin.mix_into(channel);
+        channel.mix_u64(self.bitwise_builtin.is_some() as u64);
+        if let Some(ref claim) = self.bitwise_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            mul_mod_builtin.mix_into(channel);
+        channel.mix_u64(self.mul_mod_builtin.is_some() as u64);
+        if let Some(ref claim) = self.mul_mod_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            pedersen_builtin.mix_into(channel);
+        channel.mix_u64(self.pedersen_builtin.is_some() as u64);
+        if let Some(ref claim) = self.pedersen_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(poseidon_builtin) = &self.poseidon_builtin {
-            poseidon_builtin.mix_into(channel);
+        channel.mix_u64(self.poseidon_builtin.is_some() as u64);
+        if let Some(ref claim) = self.poseidon_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            range_check_96_builtin.mix_into(channel);
+        channel.mix_u64(self.range_check_96_builtin.is_some() as u64);
+        if let Some(ref claim) = self.range_check_96_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
-            range_check_128_builtin.mix_into(channel);
+        channel.mix_u64(self.range_check_128_builtin.is_some() as u64);
+        if let Some(ref claim) = self.range_check_128_builtin {
+            claim.mix_into(channel);
         }
     }
 
@@ -121,26 +128,33 @@ pub struct BuiltinsInteractionClaim {
 }
 impl BuiltinsInteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            add_mod_builtin.mix_into(channel);
+        channel.mix_u64(self.add_mod_builtin.is_some() as u64);
+        if let Some(ref claim) = self.add_mod_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(bitwise_builtin) = self.bitwise_builtin {
-            bitwise_builtin.mix_into(channel)
+        channel.mix_u64(self.bitwise_builtin.is_some() as u64);
+        if let Some(ref claim) = self.bitwise_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            mul_mod_builtin.mix_into(channel);
+        channel.mix_u64(self.mul_mod_builtin.is_some() as u64);
+        if let Some(ref claim) = self.mul_mod_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            pedersen_builtin.mix_into(channel);
+        channel.mix_u64(self.pedersen_builtin.is_some() as u64);
+        if let Some(ref claim) = self.pedersen_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(poseidon_builtin) = self.poseidon_builtin {
-            poseidon_builtin.mix_into(channel)
+        channel.mix_u64(self.poseidon_builtin.is_some() as u64);
+        if let Some(ref claim) = self.poseidon_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            range_check_96_builtin.mix_into(channel);
+        channel.mix_u64(self.range_check_96_builtin.is_some() as u64);
+        if let Some(ref claim) = self.range_check_96_builtin {
+            claim.mix_into(channel);
         }
-        if let Some(range_check_128_builtin) = self.range_check_128_builtin {
-            range_check_128_builtin.mix_into(channel)
+        channel.mix_u64(self.range_check_128_builtin.is_some() as u64);
+        if let Some(ref claim) = self.range_check_128_builtin {
+            claim.mix_into(channel);
         }
     }
 
