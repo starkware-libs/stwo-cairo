@@ -349,19 +349,24 @@ fn verify_claim(claim: @CairoClaim) {
     assert!(initial_ap <= final_ap);
 
     // Sanity check: ensure that the maximum address in the address_to_id component fits within a
-    // 27-bit address space (i.e., is less than 2**27).
-    // Higher addresses are not supported by components that assume 27-bit addresses.
-    assert!(*claim.memory_address_to_id.log_size <= 27_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
+    // 29-bit address space (i.e., is less than 2**29).
+    // Higher addresses are not supported by components that assume 29-bit addresses.
+    assert!(*claim.memory_address_to_id.log_size <= 29_u32 - LOG_MEMORY_ADDRESS_TO_ID_SPLIT);
 
     // Count the number of uses of each relation.
     let mut relation_uses: RelationUsesDict = Default::default();
     claim.accumulate_relation_uses(ref relation_uses);
 
-    // Make sure ap does not overflow P:
-    // Check that the number of uses of the Opcodes relation is leq than 2^29. This bounds the
-    // number of steps of the program by 2^29. An add_ap use can increase ap *to* at most 2^27-1,
-    // and every other step can increase ap by at most 2. Therefore the most ap can increase to with
-    // n_steps steps is 2^27-1 + 2 * (n_steps-1). This is less than P if n_steps <= 2^29.
+    // Check that the number of uses of the Opcodes relation <= 2^29. This bounds the number of
+    // steps of the program by 2^29, ensuring that the registers are bounded by P-(2^29-1)-1 at
+    // the start of each opcode, and that ap/fp/pc + rel_imm does not overflow P.
+    // The register pc: bounded by verify_instraction.
+    // The register ap: add_ap_opcode or generic_opcode can set ap to at most 2^29-1, call_opcode
+    // can increase ap by 2 (but starts with ap < 2^29 because [ap] = fp), and every other step can
+    // increase ap by at most 1. Therefore, after (n_steps - 1) > 1 steps, ap can be at most
+    // 2^29-1 + (n_steps-2).
+    // The register fp: call_opcode and generic_opcode can set fp to ap + 2, where ap < 2^29,
+    // ret_opcode and generic_opcode can set fp to an address, which is less than 2^29.
     let opcodes_uses = relation_uses.get('Opcodes');
     assert!(opcodes_uses <= pow2(29).into());
 
