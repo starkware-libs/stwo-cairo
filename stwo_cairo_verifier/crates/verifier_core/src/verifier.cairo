@@ -24,9 +24,6 @@ const COMPOSITION_SPLIT_FACTOR: u32 = 2_u32.pow(LOG_COMPOSITION_SPLIT_FACTOR);
 /// constraints. For instance, all interaction elements are assumed to be present in it. Therefore,
 /// an AIR is generated only after the initial trace commitment phase.
 pub trait Air<T> {
-    /// The degree of the composition polynomial.
-    fn composition_log_degree_bound(self: @T) -> u32;
-
     /// Evaluates the constraint quotients combination of the AIR at `point`.
     fn eval_composition_polynomial_at_point(
         self: @T,
@@ -44,6 +41,8 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     mut commitment_scheme: CommitmentSchemeVerifier,
     min_security_bits: u32,
     composition_commitment: Hash,
+    // The degree of the composition polynomial.
+    composition_log_degree_bound: u32,
 ) {
     let StarkProof { commitment_scheme_proof } = proof;
 
@@ -58,7 +57,6 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     // The composition polynomial is defined as: Σ_i (composition_random_coeff^i * quotient_i).
     let composition_random_coeff = channel.draw_secure_felt();
 
-    let composition_log_degree_bound = air.composition_log_degree_bound();
     let split_composition_log_degree_bound = composition_log_degree_bound
         - LOG_COMPOSITION_SPLIT_FACTOR;
 
