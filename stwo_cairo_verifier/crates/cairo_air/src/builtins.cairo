@@ -281,79 +281,39 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             poseidon_builtin,
         } = claim;
 
-        let mut add_mod_builtin_component = Option::None;
-        if let Option::Some(claim) = add_mod_builtin {
-            add_mod_builtin_component =
-                Option::Some(
-                    components::add_mod_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.add_mod_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let add_mod_builtin_component = components::add_mod_builtin::NewComponentImpl::try_new(
+            add_mod_builtin, interaction_claim.add_mod_builtin, common_lookup_elements,
+        );
 
-        let mut bitwise_builtin_component = Option::None;
-        if let Option::Some(claim) = bitwise_builtin {
-            bitwise_builtin_component =
-                Option::Some(
-                    components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
+            bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+        );
 
-        let mut mul_mod_builtin_component = Option::None;
-        if let Option::Some(claim) = mul_mod_builtin {
-            mul_mod_builtin_component =
-                Option::Some(
-                    components::mul_mod_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.mul_mod_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let mul_mod_builtin_component = components::mul_mod_builtin::NewComponentImpl::try_new(
+            mul_mod_builtin, interaction_claim.mul_mod_builtin, common_lookup_elements,
+        );
 
-        let mut pedersen_builtin_component = Option::None;
-        if let Option::Some(claim) = pedersen_builtin {
-            pedersen_builtin_component =
-                Option::Some(
-                    components::pedersen_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.pedersen_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let pedersen_builtin_component = components::pedersen_builtin::NewComponentImpl::try_new(
+            pedersen_builtin, interaction_claim.pedersen_builtin, common_lookup_elements,
+        );
 
-        let mut poseidon_builtin_component = Option::None;
-        if let Option::Some(claim) = poseidon_builtin {
-            poseidon_builtin_component =
-                Option::Some(
-                    components::poseidon_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.poseidon_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
+            poseidon_builtin, interaction_claim.poseidon_builtin, common_lookup_elements,
+        );
 
-        let mut range_check_96_builtin_component = Option::None;
-        if let Option::Some(claim) = range_check_96_builtin {
-            range_check_96_builtin_component =
-                Option::Some(
-                    components::range_check96_builtin::NewComponentImpl::new(
-                        claim,
-                        @interaction_claim.range_check_96_builtin.unwrap(),
-                        common_lookup_elements,
-                    ),
-                );
-        }
+        let range_check_96_builtin_component =
+            components::range_check96_builtin::NewComponentImpl::try_new(
+            range_check_96_builtin,
+            interaction_claim.range_check_96_builtin,
+            common_lookup_elements,
+        );
 
-        let mut range_check_128_builtin_component = Option::None;
-        if let Option::Some(claim) = range_check_128_builtin {
-            range_check_128_builtin_component =
-                Option::Some(
-                    components::range_check_builtin::NewComponentImpl::new(
-                        claim,
-                        @interaction_claim.range_check_128_builtin.unwrap(),
-                        common_lookup_elements,
-                    ),
-                );
-        }
+        let range_check_128_builtin_component =
+            components::range_check_builtin::NewComponentImpl::try_new(
+            range_check_128_builtin,
+            interaction_claim.range_check_128_builtin,
+            common_lookup_elements,
+        );
 
         BuiltinComponents {
             add_mod_builtin: add_mod_builtin_component,
@@ -488,33 +448,24 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             pedersen_builtin,
             poseidon_builtin,
         } = claim;
-        assert!(range_check_96_builtin.is_none());
-        assert!(add_mod_builtin.is_none());
-        assert!(mul_mod_builtin.is_none());
-        assert!(pedersen_builtin.is_none());
-        assert!(poseidon_builtin.is_none());
+        assert!(
+            range_check_96_builtin.is_none() && interaction_claim.range_check_96_builtin.is_none(),
+        );
+        assert!(add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none());
+        assert!(mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none());
+        assert!(pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none());
+        assert!(poseidon_builtin.is_none() && interaction_claim.poseidon_builtin.is_none());
 
-        let mut bitwise_builtin_component = Option::None;
-        if let Option::Some(claim) = bitwise_builtin {
-            bitwise_builtin_component =
-                Option::Some(
-                    components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
+            bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+        );
 
-        let mut range_check_128_builtin_component = Option::None;
-        if let Option::Some(claim) = range_check_128_builtin {
-            range_check_128_builtin_component =
-                Option::Some(
-                    components::range_check_builtin::NewComponentImpl::new(
-                        claim,
-                        @interaction_claim.range_check_128_builtin.unwrap(),
-                        common_lookup_elements,
-                    ),
-                );
-        }
+        let range_check_128_builtin_component =
+            components::range_check_builtin::NewComponentImpl::try_new(
+            range_check_128_builtin,
+            interaction_claim.range_check_128_builtin,
+            common_lookup_elements,
+        );
 
         BuiltinComponents {
             bitwise_builtin: bitwise_builtin_component,
@@ -576,42 +527,27 @@ pub impl BuiltinComponentsImpl of BuiltinComponentsTrait {
             pedersen_builtin,
             poseidon_builtin,
         } = claim;
-        assert!(range_check_96_builtin.is_none());
-        assert!(add_mod_builtin.is_none());
-        assert!(mul_mod_builtin.is_none());
-        assert!(pedersen_builtin.is_none());
+        assert!(
+            range_check_96_builtin.is_none() && interaction_claim.range_check_96_builtin.is_none(),
+        );
+        assert!(add_mod_builtin.is_none() && interaction_claim.add_mod_builtin.is_none());
+        assert!(mul_mod_builtin.is_none() && interaction_claim.mul_mod_builtin.is_none());
+        assert!(pedersen_builtin.is_none() && interaction_claim.pedersen_builtin.is_none());
 
-        let mut bitwise_builtin_component = Option::None;
-        if let Option::Some(claim) = bitwise_builtin {
-            bitwise_builtin_component =
-                Option::Some(
-                    components::bitwise_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.bitwise_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let bitwise_builtin_component = components::bitwise_builtin::NewComponentImpl::try_new(
+            bitwise_builtin, interaction_claim.bitwise_builtin, common_lookup_elements,
+        );
 
-        let mut poseidon_builtin_component = Option::None;
-        if let Option::Some(claim) = poseidon_builtin {
-            poseidon_builtin_component =
-                Option::Some(
-                    components::poseidon_builtin::NewComponentImpl::new(
-                        claim, @interaction_claim.poseidon_builtin.unwrap(), common_lookup_elements,
-                    ),
-                );
-        }
+        let poseidon_builtin_component = components::poseidon_builtin::NewComponentImpl::try_new(
+            poseidon_builtin, interaction_claim.poseidon_builtin, common_lookup_elements,
+        );
 
-        let mut range_check_128_builtin_component = Option::None;
-        if let Option::Some(claim) = range_check_128_builtin {
-            range_check_128_builtin_component =
-                Option::Some(
-                    components::range_check_builtin::NewComponentImpl::new(
-                        claim,
-                        @interaction_claim.range_check_128_builtin.unwrap(),
-                        common_lookup_elements,
-                    ),
-                );
-        }
+        let range_check_128_builtin_component =
+            components::range_check_builtin::NewComponentImpl::try_new(
+            range_check_128_builtin,
+            interaction_claim.range_check_128_builtin,
+            common_lookup_elements,
+        );
 
         BuiltinComponents {
             bitwise_builtin: bitwise_builtin_component,
