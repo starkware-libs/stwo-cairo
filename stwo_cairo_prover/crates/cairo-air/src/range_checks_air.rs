@@ -15,7 +15,7 @@ use crate::components::{
 };
 use crate::relations;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksClaim {
     pub rc_6: range_check_6::Claim,
     pub rc_8: range_check_8::Claim,
@@ -70,7 +70,7 @@ impl RangeChecksClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct RangeChecksInteractionClaim {
     pub rc_6: range_check_6::InteractionClaim,
     pub rc_8: range_check_8::InteractionClaim,

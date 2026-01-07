@@ -20,7 +20,7 @@ use crate::components::{
     qm_31_add_mul_opcode, ret_opcode,
 };
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeClaim {
     pub add: Vec<add_opcode::Claim>,
     pub add_small: Vec<add_opcode_small::Claim>,
@@ -159,7 +159,7 @@ impl OpcodeClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct OpcodeInteractionClaim {
     pub add: Vec<add_opcode::InteractionClaim>,
     pub add_small: Vec<add_opcode_small::InteractionClaim>,

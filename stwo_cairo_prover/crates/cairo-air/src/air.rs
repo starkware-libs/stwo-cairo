@@ -1,16 +1,20 @@
 use std::collections::HashMap;
+use std::ops::Deref;
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
-use stwo::core::fields::m31::M31;
+use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
-use stwo::core::pcs::TreeVec;
+use stwo::core::fri::FriProof;
+use stwo::core::pcs::{PcsConfig, TreeVec};
 use stwo::core::proof::StarkProof;
+use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
+use stwo::core::ColumnVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -40,7 +44,7 @@ use crate::components::{
 use crate::relations;
 use crate::verifier::RelationUse;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasherLifted> {
     pub claim: CairoClaim,
     pub interaction_pow: u64,
@@ -90,6 +94,130 @@ where
     }
 }
 
+/// Analogue structure to [`stwo::core::pcs::quotients::CommitmentSchemeProof`] with the difference
+/// that the queried values are in a different layout and order. In a `CommitmentSchemeProof`, the
+/// queried values are organized in a TreeVec<ColumnVec<Vec<M31>>>:
+/// queried_values[tree_idx][col_idx] is a vector of values of the column at index `col_idx` in tree
+/// `tree_idx`, in ascending order of query positions. In `VerifierFriendlyStarkProof`, the queried
+/// values are organized in a TreeVec<Vec<M31>>: `verifier_friendly_queried_values[tree_idx]` is the
+/// concatenation of vectors v_i, 0 <= i < n_queries, where vector v_i consists of the queried
+/// values, at the i-th query position, of the columns of tree `tree_idx`, sorted (stably) in
+/// ascending order by column size.
+/// The reason for having a different layout in the Cairo verifier is that having the queries
+/// in sorted order makes the merkle Verifier more efficient. The downside is that the verifier
+/// needs to sort the sampled values for the fri quotients to match the order of the queries.
+#[derive(Debug, Serialize, Deserialize)]
+pub struct VerifierFriendlyStarkProof<H: MerkleHasherLifted> {
+    pub config: PcsConfig,
+    pub commitments: TreeVec<H::Hash>,
+    pub sampled_values: TreeVec<ColumnVec<Vec<SecureField>>>,
+    pub decommitments: TreeVec<MerkleDecommitmentLifted<H>>,
+    pub queried_values: TreeVec<Vec<BaseField>>,
+    pub proof_of_work: u64,
+    pub fri_proof: FriProof<H>,
+}
+
+/// Analogue of [`CairoProof`] except that its `stark_proof` member has type
+/// [`VerifierFriendlyStarkProof`].
+#[derive(Serialize, Deserialize)]
+pub struct VerifierFriendlyCairoProof<H: MerkleHasherLifted> {
+    pub claim: CairoClaim,
+    pub interaction_pow: u64,
+    pub interaction_claim: CairoInteractionClaim,
+    pub stark_proof: VerifierFriendlyStarkProof<H>,
+    pub channel_salt: Option<u64>,
+}
+
+impl<H: MerkleHasherLifted> CairoSerialize for VerifierFriendlyStarkProof<H>
+where
+    H::Hash: CairoSerialize,
+{
+    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+        let Self {
+            config,
+            commitments,
+            sampled_values,
+            decommitments,
+            queried_values,
+            proof_of_work,
+            fri_proof,
+        } = self;
+        CairoSerialize::serialize(config, output);
+        CairoSerialize::serialize(commitments.deref(), output);
+        CairoSerialize::serialize(sampled_values.deref(), output);
+        CairoSerialize::serialize(decommitments.deref(), output);
+        CairoSerialize::serialize(queried_values.deref(), output);
+        CairoSerialize::serialize(proof_of_work, output);
+        CairoSerialize::serialize(fri_proof, output);
+    }
+}
+
+impl<H: MerkleHasherLifted> CairoDeserialize for VerifierFriendlyStarkProof<H>
+where
+    H::Hash: CairoDeserialize,
+{
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+        let config = <PcsConfig as CairoDeserialize>::deserialize(data);
+        let commitments = TreeVec(<Vec<H::Hash> as CairoDeserialize>::deserialize(data));
+        let sampled_values =
+            TreeVec(<Vec<ColumnVec<Vec<SecureField>>> as CairoDeserialize>::deserialize(data));
+        let decommitments =
+            TreeVec(<Vec<MerkleDecommitmentLifted<H>> as CairoDeserialize>::deserialize(data));
+        let queried_values = TreeVec(<Vec<Vec<BaseField>> as CairoDeserialize>::deserialize(data));
+        let proof_of_work: u64 = <u64 as CairoDeserialize>::deserialize(data);
+        let fri_proof = <FriProof<H> as CairoDeserialize>::deserialize(data);
+        Self {
+            config,
+            commitments,
+            sampled_values,
+            decommitments,
+            queried_values,
+            proof_of_work,
+            fri_proof,
+        }
+    }
+}
+
+impl<H: MerkleHasherLifted> CairoSerialize for VerifierFriendlyCairoProof<H>
+where
+    H::Hash: CairoSerialize,
+{
+    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+        let Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof: verifier_friendly_stark_proof,
+            channel_salt,
+        } = self;
+        CairoSerialize::serialize(claim, output);
+        CairoSerialize::serialize(interaction_pow, output);
+        CairoSerialize::serialize(interaction_claim, output);
+        CairoSerialize::serialize(verifier_friendly_stark_proof, output);
+        CairoSerialize::serialize(channel_salt, output);
+    }
+}
+
+impl<H: MerkleHasherLifted> CairoDeserialize for VerifierFriendlyCairoProof<H>
+where
+    H::Hash: CairoDeserialize,
+{
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+        let claim = CairoDeserialize::deserialize(data);
+        let interaction_pow = CairoDeserialize::deserialize(data);
+        let interaction_claim = CairoDeserialize::deserialize(data);
+        let stark_proof = CairoDeserialize::deserialize(data);
+        let channel_salt = CairoDeserialize::deserialize(data);
+        Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof,
+            channel_salt,
+        }
+    }
+}
+
 pub type RelationUsesDict = HashMap<&'static str, u64>;
 
 /// Accumulates the number of uses of each relation in a map.
@@ -106,7 +234,7 @@ pub fn accumulate_relation_uses<const N: usize>(
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoClaim {
     pub public_data: PublicData,
     pub opcodes: OpcodeClaim,
@@ -231,7 +359,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -503,7 +631,7 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
@@ -642,7 +770,7 @@ impl CairoInteractionElements {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct CairoInteractionClaim {
     pub opcodes: OpcodeInteractionClaim,
     pub verify_instruction: verify_instruction::InteractionClaim,

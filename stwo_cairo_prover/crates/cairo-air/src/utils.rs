@@ -19,8 +19,7 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{INTERACTION_TRACE_IDX, PREPROCESSED_TRACE_IDX};
 use tracing::{span, Level};
 
-use crate::air::{MemorySection, PublicMemory};
-use crate::CairoProof;
+use crate::air::{MemorySection, PublicMemory, VerifierFriendlyCairoProof};
 
 mod json {
     #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
@@ -47,7 +46,7 @@ pub enum ProofFormat {
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
 pub fn serialize_proof_to_file<H: MerkleHasherLifted + Serialize>(
-    proof: &CairoProof<H>,
+    proof: &VerifierFriendlyCairoProof<H>,
     proof_path: &Path,
     proof_format: ProofFormat,
 ) -> Result<(), std::io::Error>
@@ -90,7 +89,7 @@ where
 pub fn deserialize_proof_from_file<H: MerkleHasherLifted + DeserializeOwned>(
     proof_path: &Path,
     proof_format: ProofFormat,
-) -> Result<CairoProof<H>, std::io::Error>
+) -> Result<VerifierFriendlyCairoProof<H>, std::io::Error>
 where
     H::Hash: CairoDeserialize,
 {
