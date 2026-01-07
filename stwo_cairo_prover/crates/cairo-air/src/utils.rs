@@ -9,7 +9,7 @@ use clap::ValueEnum;
 use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use tracing::{span, Level};
 
@@ -40,7 +40,7 @@ pub enum ProofFormat {
 }
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
-pub fn serialize_proof_to_file<H: MerkleHasher + Serialize>(
+pub fn serialize_proof_to_file<H: MerkleHasherLifted + Serialize>(
     proof: &CairoProof<H>,
     proof_path: &Path,
     proof_format: ProofFormat,
@@ -81,7 +81,7 @@ where
 }
 
 /// Deserializes Cairo proof from a file given the desired format.
-pub fn deserialize_proof_from_file<H: MerkleHasher + DeserializeOwned>(
+pub fn deserialize_proof_from_file<H: MerkleHasherLifted + DeserializeOwned>(
     proof_path: &Path,
     proof_format: ProofFormat,
 ) -> Result<CairoProof<H>, std::io::Error>
@@ -248,7 +248,7 @@ mod tests {
 #[cfg(feature = "slow-tests")]
 mod slow_tests {
     use dev_utils::utils::get_proof_file_path;
-    use stwo::core::vcs::blake2_merkle::Blake2sMerkleHasher;
+    use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleHasher;
     use tempfile::NamedTempFile;
 
     use super::*;
