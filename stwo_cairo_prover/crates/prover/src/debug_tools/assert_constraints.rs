@@ -17,7 +17,7 @@ use stwo_constraint_framework::{
 };
 
 use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
-use crate::witness::cairo::CairoClaimGenerator;
+use crate::witness::cairo::create_cairo_claim_generator;
 
 pub fn assert_component<E: FrameworkEval + Sync>(
     component: &FrameworkComponent<E>,
@@ -231,7 +231,8 @@ pub fn assert_cairo_constraints(input: ProverInput, preprocessed_trace: Arc<PreP
     tree_builder.finalize_interaction();
 
     // Base trace.
-    let cairo_claim_generator = CairoClaimGenerator::new(input, Arc::clone(&preprocessed_trace));
+    let cairo_claim_generator =
+        create_cairo_claim_generator(input, Arc::clone(&preprocessed_trace));
     let mut tree_builder = commitment_scheme.tree_builder();
     let (claim, interaction_generator) = cairo_claim_generator.write_trace(&mut tree_builder);
     tree_builder.finalize_interaction();

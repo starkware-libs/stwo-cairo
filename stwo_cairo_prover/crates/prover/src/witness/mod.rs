@@ -1,6 +1,7 @@
 pub mod blake_context;
 pub mod builtins;
 pub mod cairo;
+pub mod cairo_claim_generator;
 pub mod components;
 pub mod fast_deduction;
 pub mod opcodes;

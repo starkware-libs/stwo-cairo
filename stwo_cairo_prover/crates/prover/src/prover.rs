@@ -24,7 +24,7 @@ use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use tracing::{event, span, Level};
 
-use crate::witness::cairo::CairoClaimGenerator;
+use crate::witness::cairo::create_cairo_claim_generator;
 use crate::witness::utils::witness_trace_cells;
 
 mod json {
@@ -77,7 +77,7 @@ where
     tree_builder.commit(channel);
 
     // Run Cairo.
-    let cairo_claim_generator = CairoClaimGenerator::new(input, preprocessed_trace.clone());
+    let cairo_claim_generator = create_cairo_claim_generator(input, preprocessed_trace.clone());
     // Base trace.
     let mut tree_builder = commitment_scheme.tree_builder();
     let span = span!(Level::INFO, "Base trace").entered();

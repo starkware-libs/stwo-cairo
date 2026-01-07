@@ -234,7 +234,7 @@ impl CairoClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default)]
 pub struct PublicData {
     pub public_memory: PublicMemory,
     pub initial_state: CasmState,
@@ -312,7 +312,7 @@ impl PublicData {
 
 // TODO(alonf) Change all the obscure types and structs to a meaningful struct system for the
 // memory.
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, Default)]
 pub struct MemorySmallValue {
     pub id: u32,
     pub value: u32,
@@ -332,7 +332,7 @@ pub type PubMemoryValue = (u32, [u32; 8]);
 // (address, id, value)
 pub type PubMemoryEntry = (u32, u32, [u32; 8]);
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, CairoSerialize, CairoDeserialize, Default)]
 pub struct SegmentRange {
     pub start_ptr: MemorySmallValue,
     pub stop_ptr: MemorySmallValue,
@@ -349,7 +349,7 @@ impl SegmentRange {
     }
 }
 
-#[derive(Clone, Debug, Serialize, Deserialize, Copy)]
+#[derive(Clone, Debug, Serialize, Deserialize, Copy, Default)]
 pub struct PublicSegmentRanges {
     pub output: SegmentRange,
     pub pedersen: Option<SegmentRange>,
@@ -522,7 +522,7 @@ impl PublicSegmentRanges {
 
 pub type MemorySection = Vec<PubMemoryValue>;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize, Default)]
 pub struct PublicMemory {
     pub program: MemorySection,
     pub public_segments: PublicSegmentRanges,
