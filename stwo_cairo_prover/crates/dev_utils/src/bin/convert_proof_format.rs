@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
+use cairo_air::air::VerifierFriendlyCairoProof;
 use cairo_air::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
-use cairo_air::CairoProof;
 use clap::Parser;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -47,7 +47,8 @@ fn convert_proof<H: MerkleHasherLifted + Serialize + DeserializeOwned>(
 where
     H::Hash: CairoSerialize + CairoDeserialize,
 {
-    let proof: CairoProof<H> = deserialize_proof_from_file(input_path, input_format)?;
+    let proof: VerifierFriendlyCairoProof<H> =
+        deserialize_proof_from_file(input_path, input_format)?;
     serialize_proof_to_file::<H>(&proof, output_path, output_format)?;
 
     println!("Successfully converted proof");
