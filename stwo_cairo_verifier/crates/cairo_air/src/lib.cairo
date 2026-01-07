@@ -261,13 +261,13 @@ pub fn verify_cairo(proof: CairoProof) {
     let cairo_air = CairoAirNewImpl::new(@claim, @common_lookup_elements, @interaction_claim);
 
     verify(
-        cairo_air,
-        ref channel,
         stark_proof,
-        commitment_scheme,
-        SECURITY_BITS,
-        composition_commitment,
+        cairo_air,
         cairo_air_log_degree_bound,
+        composition_commitment,
+        commitment_scheme,
+        ref channel,
+        SECURITY_BITS,
     );
 }
 

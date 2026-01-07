@@ -33,16 +33,27 @@ pub trait Air<T> {
     ) -> QM31;
 }
 
-/// Given a commitment to the traces, and an AIR definition, verifies the proof.
+/// Verifies a STARK proof for the given `air`.
+///
+/// # Arguments
+///
+/// - `proof`: the STARK proof to verify.
+/// - `air`: AIR instance defining the constraints for the statement being proven.
+/// - `composition_log_degree_bound`: log2 upper bound on the degree of the composition polynomial.
+/// - `composition_commitment`: commitment to the composition polynomial sent by the prover.
+/// - `commitment_scheme`: verifier-side state for the polynomial commitment scheme used by the
+///    proof, the commitment scheme already holds the commitments for the preprocessed trace, trace,
+///    and interaction trace.
+/// - `channel`: verifier Fiat–Shamir channel used to sample challenges while checking the proof.
+/// - `min_security_bits`: minimum security level to enforce (soundness).
 pub fn verify<A, +Air<A>, +Drop<A>>(
-    air: A,
-    ref channel: Channel,
     proof: StarkProof,
-    mut commitment_scheme: CommitmentSchemeVerifier,
-    min_security_bits: u32,
-    composition_commitment: Hash,
-    // The degree of the composition polynomial.
+    air: A,
     composition_log_degree_bound: u32,
+    composition_commitment: Hash,
+    mut commitment_scheme: CommitmentSchemeVerifier,
+    ref channel: Channel,
+    min_security_bits: u32,
 ) {
     let StarkProof { commitment_scheme_proof } = proof;
 
