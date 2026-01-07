@@ -258,9 +258,8 @@ pub fn verify_cairo(proof: CairoProof) {
     // The maximal constraint degree is 2, so the degree bound for the cairo air is the degree bound
     // of the trace plus 1.
     let cairo_air_log_degree_bound = trace_log_size + 1;
-    let cairo_air = CairoAirNewImpl::new(
-        @claim, @common_lookup_elements, @interaction_claim, cairo_air_log_degree_bound,
-    );
+    let cairo_air = CairoAirNewImpl::new(@claim, @common_lookup_elements, @interaction_claim);
+
     verify(
         cairo_air,
         ref channel,
@@ -268,6 +267,7 @@ pub fn verify_cairo(proof: CairoProof) {
         commitment_scheme,
         SECURITY_BITS,
         composition_commitment,
+        cairo_air_log_degree_bound,
     );
 }
 
