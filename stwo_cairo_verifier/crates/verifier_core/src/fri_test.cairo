@@ -1,3 +1,4 @@
+use crate::utils::SpanExTrait;
 use crate::channel::Channel;
 use crate::circle::{CirclePointIndexImpl, CosetImpl};
 use crate::fields::qm31::qm31_const;
@@ -13,7 +14,6 @@ fn valid_proof_passes_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 4;
     let column_log_size = column_log_bound + config.log_blowup_factor;
-    let column_log_bounds = array![column_log_bound].span();
     let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
     let query_evals = array![array![qm31_const::<1242514872, 0, 0, 0>()].span()];
     let mut proof_data = array![
@@ -40,7 +40,7 @@ fn valid_proof_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(queries, query_evals);
 }
@@ -52,7 +52,6 @@ fn valid_proof_with_constant_last_layer_passes_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 0, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 3;
     let column_log_size = column_log_bound + config.log_blowup_factor;
-    let column_log_bounds = array![column_log_bound].span();
     let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
     let query_evals = array![array![qm31_const::<1059056252, 0, 0, 0>()].span()];
     let mut proof_data = array![
@@ -76,7 +75,7 @@ fn valid_proof_with_constant_last_layer_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(queries, query_evals);
 }
@@ -147,7 +146,7 @@ fn valid_mixed_degree_proof_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, max_column_log_size - config.log_blowup_factor);
 
     verifier.decommit(queries, query_evals_by_column);
 }
@@ -240,7 +239,7 @@ fn mixed_degree_proof_with_queries_sampled_from_channel_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, *column_log_bounds.first().unwrap());
     let (_query_positions_by_log_size, queries) = verifier.sample_query_positions(ref channel);
 
     verifier.decommit(queries, query_evals_by_column);
@@ -254,7 +253,6 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 6;
     let column_log_size = column_log_bound + config.log_blowup_factor;
-    let column_log_bounds = array![column_log_bound].span();
     let queries = Queries { positions: array![5].span(), log_domain_size: column_log_size };
     let query_evals = array![array![qm31_const::<511282811, 0, 0, 0>()].span()];
     let mut proof_data = array![
@@ -293,7 +291,7 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(queries, query_evals);
 }
@@ -305,7 +303,6 @@ fn proof_with_invalid_inner_layer_evaluation_fails_verification() {
 fn proof_with_added_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 3, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 6;
-    let column_log_bounds = array![column_log_bound].span();
     let mut proof_data = array![
         1, 13485189, 0, 0, 0, 7,
         1018772866886356793591132853402474585086454566523929550724544407378948823808,
@@ -344,7 +341,7 @@ fn proof_with_added_layer_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -354,7 +351,6 @@ fn proof_with_added_layer_fails_verification() {
 fn proof_with_removed_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 6;
-    let column_log_bounds = array![column_log_bound].span();
     let mut proof_data = array![
         1, 13485189, 0, 0, 0, 7,
         1018772866886356793591132853402474585086454566523929550724544407378948823808,
@@ -393,7 +389,7 @@ fn proof_with_removed_layer_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -403,7 +399,6 @@ fn proof_with_removed_layer_fails_verification() {
 fn proof_with_invalid_last_layer_degree_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 3 };
     let column_log_bound = 4;
-    let column_log_bounds = array![column_log_bound].span();
     let mut proof_data = array![
         3, 466407290, 0, 0, 0, 1657247602, 0, 0, 0, 183082621, 0, 0, 0, 6,
         2191983833872455433114432226011293834134487075743191836614597135553794517005,
@@ -425,7 +420,7 @@ fn proof_with_invalid_last_layer_degree_fails_verification() {
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
 
-    FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 }
 
 // TODO(andrew): Add back in with new proof data.
@@ -436,7 +431,6 @@ fn proof_with_invalid_last_layer_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 2, log_blowup_factor: 2, n_queries: 3 };
     let column_log_bound = 4;
     let column_log_size = column_log_bound + config.log_blowup_factor;
-    let column_log_bounds = array![column_log_bound].span();
     let queries = Queries { positions: array![1, 7, 8].span(), log_domain_size: column_log_size };
     let query_evals = array![
         array![
@@ -466,7 +460,7 @@ fn proof_with_invalid_last_layer_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(queries, query_evals);
 }
@@ -479,7 +473,6 @@ fn decommit_queries_on_invalid_domain_fails_verification() {
     let config = FriConfig { log_last_layer_degree_bound: 1, log_blowup_factor: 2, n_queries: 1 };
     let column_log_bound = 3;
     let column_log_size = column_log_bound + config.log_blowup_factor;
-    let column_log_bounds = array![column_log_bound].span();
     let invalid_column_log_size = column_log_size - 1;
     let invalid_queries = Queries {
         positions: array![5].span(), log_domain_size: invalid_column_log_size,
@@ -502,7 +495,7 @@ fn decommit_queries_on_invalid_domain_fails_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bounds);
+    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, column_log_bound);
 
     verifier.decommit(invalid_queries, query_evals);
 }
