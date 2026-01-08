@@ -1,3 +1,4 @@
+use core::num::traits::DivRem;
 use stwo_verifier_utils::zip_eq::zip_eq;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CirclePoint;
@@ -7,7 +8,7 @@ use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::fri_answers;
 use crate::utils::{
     ArrayImpl, ColumnsIndicesByLogDegreeBound, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl,
-    group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree,
+    group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::MerkleVerifier;
@@ -18,6 +19,7 @@ use super::PcsConfig;
 
 /// Sanity check that the proof of work is not negligible.
 pub const MIN_POW_BITS: u32 = 20;
+const PREPROCESSED_TRACE_IDX: usize = 0;
 
 /// Sampled mask values.
 ///
@@ -174,12 +176,21 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // TODO(Leo): modify once we change FRI API.
         let query_positions = query_positions_by_log_size.get(lifting_log_size.into()).deref();
         // Verify Merkle decommitments.
+        let mut tree_index = 0;
         for (tree, (queried_values, decommitment)) in zip_eq(
             self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
         ) {
+            let query_positions = if tree_index == PREPROCESSED_TRACE_IDX {
+                let pp_max_log_size = *tree.tree_height;
+                prepare_preprocessed_query_positions(
+                    query_positions, lifting_log_size, pp_max_log_size,
+                )
+            } else {
+                query_positions
+            };
             tree.verify(query_positions, *queried_values, decommitment);
+            tree_index += 1;
         }
-
         // Answer FRI queries.
         let fri_answers = fri_answers(
             self.column_indices_per_tree_by_degree_bound(),
@@ -249,4 +260,35 @@ fn get_column_log_degree_bounds(
     }
 
     log_degree_bounds
+}
+
+fn prepare_preprocessed_query_positions(
+    query_positions: Span<u32>, lifting_log_size: u32, pp_max_log_size: u32,
+) -> Span<u32> {
+    // In this case, there are no preprocessed columns.
+    if pp_max_log_size == 0 {
+        return array![].span();
+    }
+    let mut modified_query_positions: Array<u32> = array![];
+
+    if lifting_log_size < pp_max_log_size {
+        let log_ratio = pp_max_log_size - lifting_log_size;
+        for position in query_positions {
+            // Compute `position >> 1 << (log_ratio + 1)) + (position & 1)`
+            let (half_position, parity) = position.div_rem(2);
+            let lifted_position = half_position * pow2(log_ratio + 1) + parity;
+            modified_query_positions.append(lifted_position);
+        }
+        return modified_query_positions.span();
+    }
+    let log_ratio = lifting_log_size - pp_max_log_size;
+    for position in query_positions {
+        // Compute `(position >> (log_ratio + 1) << 1) + (position & 1)`
+        let (half_position, parity) = position.div_rem(2);
+        let two_pow_log_ratio: NonZero<u32> = pow2(log_ratio).try_into().unwrap();
+        let (shifted_position, _) = half_position.div_rem(two_pow_log_ratio);
+        let folded_position = 2 * shifted_position + parity;
+        modified_query_positions.append(folded_position);
+    }
+    modified_query_positions.span()
 }
