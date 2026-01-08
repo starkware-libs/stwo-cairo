@@ -13,7 +13,7 @@ use stwo_cairo_air::{RelationUsesDict, components, utils};
 use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
-use stwo_verifier_core::channel::Channel;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
@@ -43,25 +43,46 @@ pub impl BuiltinsClaimImpl of ClaimTrait<BuiltinsClaim> {
             range_check_128_builtin,
         } = self;
         if let Some(claim) = add_mod_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = bitwise_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = mul_mod_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = pedersen_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = poseidon_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = range_check_96_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
         if let Some(claim) = range_check_128_builtin {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 

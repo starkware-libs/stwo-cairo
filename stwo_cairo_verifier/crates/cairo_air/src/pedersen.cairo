@@ -14,7 +14,7 @@ use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
-use stwo_verifier_core::channel::Channel;
+use stwo_verifier_core::channel::{Channel, ChannelTrait};
 #[cfg(not(feature: "poseidon252_verifier"))]
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
@@ -86,8 +86,11 @@ pub struct PedersenContextClaim {
 
 pub impl PedersenContextClaimImpl of ClaimTrait<PedersenContextClaim> {
     fn mix_into(self: @PedersenContextClaim, ref channel: Channel) {
-        if let Option::Some(claim) = self.claim {
+        if let Some(claim) = self.claim {
+            channel.mix_u64(1);
             claim.mix_into(ref channel);
+        } else {
+            channel.mix_u64(0);
         }
     }
 

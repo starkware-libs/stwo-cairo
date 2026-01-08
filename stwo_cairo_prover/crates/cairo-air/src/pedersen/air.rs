@@ -18,6 +18,7 @@ pub struct PedersenContextClaim {
 }
 impl PedersenContextClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
+        channel.mix_u64(self.claim.is_some() as u64);
         if let Some(claim) = &self.claim {
             claim.mix_into(channel);
         }
