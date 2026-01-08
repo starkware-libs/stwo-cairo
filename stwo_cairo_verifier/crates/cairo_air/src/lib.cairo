@@ -109,7 +109,6 @@ use opcodes::OpcodeInteractionClaimImpl;
 
 pub mod range_checks;
 use range_checks::RangeChecksInteractionClaimImpl;
-pub use range_checks::range_check_elements::*;
 
 pub mod preprocessed_columns;
 use preprocessed_columns::preprocessed_root;
