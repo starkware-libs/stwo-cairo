@@ -17,7 +17,7 @@ use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
-use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
+use stwo_cairo_common::prover_types::simd_lanes::LOG_N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 

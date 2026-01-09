@@ -11,7 +11,7 @@ use super::preprocessed_trace::PreProcessedColumn;
 use super::preprocessed_utils::pad;
 use crate::preprocessed_columns::poseidon_round_keys::round_keys;
 use crate::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
-use crate::prover_types::simd::N_LANES;
+use crate::prover_types::simd_lanes::N_LANES;
 
 const LOG_N_ROWS: u32 = (N_ROUNDS as u32).next_power_of_two().ilog2();
 const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;

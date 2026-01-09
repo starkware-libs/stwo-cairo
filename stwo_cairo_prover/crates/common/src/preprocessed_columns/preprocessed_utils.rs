@@ -2,7 +2,7 @@ use std::simd::Simd;
 
 use stwo::core::fields::m31::M31;
 
-use crate::prover_types::simd::N_LANES;
+use crate::prover_types::simd_lanes::N_LANES;
 
 // Pads all rows below <padding_offset> with the first row. Uses the <get_m31> function to get the
 // value in a given row and column.

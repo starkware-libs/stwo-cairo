@@ -7,6 +7,7 @@ use serde::{Deserialize, Serialize};
 use starknet_ff::FieldElement;
 use starknet_types_core::felt::Felt as StarknetTypesFelt;
 use stwo::core::channel::Channel;
+#[cfg(feature = "prover")]
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 pub type M31 = stwo::core::fields::m31::M31;
@@ -47,19 +48,8 @@ impl ProverType for M31 {
     }
 }
 
-#[derive(
-    Copy,
-    Clone,
-    Debug,
-    Serialize,
-    Deserialize,
-    Default,
-    Eq,
-    PartialEq,
-    Hash,
-    CairoSerialize,
-    CairoDeserialize,
-)]
+#[derive(Copy, Clone, Debug, Serialize, Deserialize, Default, Eq, PartialEq, Hash)]
+#[cfg_attr(feature = "prover", derive(CairoSerialize, CairoDeserialize))]
 pub struct CasmState {
     pub pc: M31,
     pub ap: M31,
