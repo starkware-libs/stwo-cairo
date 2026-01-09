@@ -1,6 +1,6 @@
 use core::num::traits::Zero;
 use stwo_constraint_framework::{PreprocessedMaskValues, PreprocessedMaskValuesImpl};
-use stwo_verifier_core::channel::{Channel, ChannelTrait};
+use stwo_verifier_core::channel::Channel;
 use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
@@ -10,7 +10,6 @@ use crate::cairo_component::CairoComponent;
 use crate::claim::ClaimTrait;
 use crate::prelude::*;
 use crate::{RelationUsesDict, accumulate_relation_uses};
-use super::super::Invertible;
 use super::super::utils::UsizeImpl;
 
 mod constraints_big;
