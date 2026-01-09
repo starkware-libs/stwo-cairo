@@ -34,7 +34,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-pub(crate) const LOG_MAX_ROWS: u32 = 26;
+pub(crate) const LOG_MAX_ROWS: u32 = 27;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
@@ -44,8 +44,6 @@ where
     SimdBackend: BackendForChannel<MC>,
 {
     let _span = span!(Level::INFO, "prove_cairo").entered();
-    // Composition polynomial domain log size is LOG_MAX_ROWS + 1, double it
-    // because we compute on a half-coset, and account for blowup factor.
     let ProverParameters {
         channel_hash: _,
         channel_salt,
@@ -53,8 +51,15 @@ where
         preprocessed_trace,
         store_polynomials_coefficients,
     } = prover_params;
+
+    let cairo_air_log_degree_bound = 1;
+    let max_domain_size = LOG_MAX_ROWS
+        + std::cmp::max(
+            cairo_air_log_degree_bound,
+            pcs_config.fri_config.log_blowup_factor,
+        );
     let twiddles = SimdBackend::precompute_twiddles(
-        CanonicCoset::new(LOG_MAX_ROWS + pcs_config.fri_config.log_blowup_factor + 2)
+        CanonicCoset::new(max_domain_size)
             .circle_domain()
             .half_coset,
     );
