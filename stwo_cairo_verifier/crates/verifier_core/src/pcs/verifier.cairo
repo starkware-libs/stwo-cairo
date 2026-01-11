@@ -10,7 +10,8 @@ use crate::utils::{
     group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree,
 };
 use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
+use crate::vcs::verifier::MerkleVerifier;
+use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
@@ -127,6 +128,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         oods_point: CirclePoint<QM31>,
         proof: CommitmentSchemeProof,
         ref channel: Channel,
+        max_log_degree_bound: u32,
     ) {
         let CommitmentSchemeProof {
             config,
@@ -168,27 +170,30 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         // Get FRI query positions.
         let (mut query_positions_by_log_size, queries) = fri_verifier
             .sample_query_positions(ref channel);
-
+        let lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
+        // TODO(Leo): modify once we change FRI API.
+        let query_positions = query_positions_by_log_size.get(lifting_log_size.into()).deref();
         // Verify Merkle decommitments.
         for (tree, (queried_values, decommitment)) in zip_eq(
             self.trees.span(), zip_eq(queried_values_per_tree.span(), decommitments),
         ) {
-            tree.verify(ref query_positions_by_log_size, *queried_values, decommitment);
+            tree.verify(query_positions, *queried_values, decommitment);
         }
 
         // Answer FRI queries.
-
         let fri_answers = fri_answers(
             self.column_indices_per_tree_by_degree_bound(),
             fri_config.log_blowup_factor,
             oods_point,
             sampled_values,
             random_coeff,
-            query_positions_by_log_size,
+            query_positions,
             queried_values_per_tree,
+            max_log_degree_bound,
         );
 
-        fri_verifier.decommit(queries, fri_answers);
+        // TODO(Leo): remove array in subsequent PR.
+        fri_verifier.decommit(queries, array![fri_answers]);
     }
 }
 
