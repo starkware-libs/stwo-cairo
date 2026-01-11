@@ -15,7 +15,6 @@ pub fn verify_u_32_evaluate(
     ref memory_address_to_id_sum_1: QM31,
     ref memory_id_to_big_sum_2: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [verify_u_32_input_limb_0, verify_u_32_input_limb_1, verify_u_32_input_limb_2] = input;
@@ -51,7 +50,6 @@ pub fn verify_u_32_evaluate(
         ref memory_address_to_id_sum_1,
         ref memory_id_to_big_sum_2,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
