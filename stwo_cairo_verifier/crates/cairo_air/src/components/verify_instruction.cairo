@@ -80,8 +80,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_7_2_5_sum_0: QM31 = Zero::zero();
@@ -158,7 +156,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_7_2_5_sum_0,
             ref range_check_4_3_sum_1,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         mem_verify_evaluate(
@@ -179,7 +176,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_2,
             ref memory_id_to_big_sum_3,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -196,7 +192,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             verify_instruction_multiplicity,
@@ -214,7 +209,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     verify_instruction_multiplicity: QM31,
@@ -268,8 +262,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_0
         * range_check_4_3_sum_1)
         - range_check_7_2_5_sum_0
-        - range_check_4_3_sum_1)
-        * domain_vanishing_eval_inv;
+        - range_check_4_3_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -279,8 +272,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_2
         * memory_id_to_big_sum_3)
         - memory_address_to_id_sum_2
-        - memory_id_to_big_sum_3)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -292,8 +284,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * verify_instruction_sum_4)
-        + verify_instruction_multiplicity)
-        * domain_vanishing_eval_inv;
+        + verify_instruction_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

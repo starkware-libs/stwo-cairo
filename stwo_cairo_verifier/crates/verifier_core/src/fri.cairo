@@ -13,7 +13,7 @@ use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{
     ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
 };
-use crate::vcs::{MerkleHasher};
+use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::MerkleVerifier;
 use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
 use crate::{ColumnArray, Hash};
@@ -394,13 +394,11 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
             tree_height: max_column_log_size,
             column_indices_by_log_deg_bound,
         };
-        let query_positions = decommitment_positions_by_log_size.get(max_column_log_size.into()).deref();
+        let query_positions = decommitment_positions_by_log_size
+            .get(max_column_log_size.into())
+            .deref();
         merkle_verifier
-            .verify(
-                query_positions,
-                decommitted_values.span(),
-                self.proof.decommitment.clone(),
-            );
+            .verify(query_positions, decommitted_values.span(), self.proof.decommitment.clone());
         sparse_evals_by_column
     }
 }
@@ -467,15 +465,11 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             Default::default();
         decommitment_positions_dict
             .insert(column_log_size.into(), NullableTrait::new(decommitment_positions));
-let query_positions = decommitment_positions_dict
+        let query_positions = decommitment_positions_dict
             .get(queries.log_domain_size.into())
             .deref();
         merkle_verifier
-            .verify(
-                query_positions,
-                decommitted_values.span(),
-                (*self.proof.decommitment).clone(),
-            );
+            .verify(query_positions, decommitted_values.span(), (*self.proof.decommitment).clone());
 
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);

@@ -222,9 +222,8 @@ pub fn verify_cairo(proof: CairoProof) {
 
     let log_blowup_factor = pcs_config.fri_config.log_blowup_factor;
     // Preprocessed trace.
-    // TODO(Leo): uncomment after changing the root.
-    // let expected_preprocessed_root = preprocessed_root(log_blowup_factor);
-    // assert!(preprocessed_commitment == expected_preprocessed_root);
+    let expected_preprocessed_root = preprocessed_root(log_blowup_factor);
+    assert!(preprocessed_commitment == expected_preprocessed_root);
     commitment_scheme
         .commit(preprocessed_commitment, preprocessed_log_sizes, ref channel, log_blowup_factor);
     claim.mix_into(ref channel);
