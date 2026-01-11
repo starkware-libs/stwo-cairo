@@ -104,7 +104,10 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         VerificationError::OodsNotMatching,
     );
 
-    commitment_scheme.verify_values(ood_point, commitment_scheme_proof, ref channel);
+    commitment_scheme
+        .verify_values(
+            ood_point, commitment_scheme_proof, ref channel, split_composition_log_degree_bound,
+        );
 }
 
 fn circle_double_x(x: QM31) -> QM31 {
