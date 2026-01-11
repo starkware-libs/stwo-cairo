@@ -16,7 +16,6 @@ pub fn evaluate_constraints_at_point(
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     params: ConstraintParams,
     random_coeff: QM31,
-    domain_vanishing_eval_inv: QM31,
 ) {
     let ConstraintParams { common_lookup_elements, claimed_sum, seq, column_size } = params;
     let mut range_check_9_9_sum_0: QM31 = Zero::zero();
@@ -89,7 +88,6 @@ pub fn evaluate_constraints_at_point(
         ref range_check_9_9_c_sum_2,
         ref range_check_9_9_d_sum_3,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -107,7 +105,6 @@ pub fn evaluate_constraints_at_point(
 
     lookup_constraints(
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
         claimed_sum,
         enabler,
@@ -124,7 +121,6 @@ pub fn evaluate_constraints_at_point(
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     enabler: QM31,
@@ -178,8 +174,7 @@ fn lookup_constraints(
         * range_check_9_9_sum_0
         * range_check_9_9_b_sum_1)
         - range_check_9_9_sum_0
-        - range_check_9_9_b_sum_1)
-        * domain_vanishing_eval_inv;
+        - range_check_9_9_b_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -189,8 +184,7 @@ fn lookup_constraints(
         * range_check_9_9_c_sum_2
         * range_check_9_9_d_sum_3)
         - range_check_9_9_c_sum_2
-        - range_check_9_9_d_sum_3)
-        * domain_vanishing_eval_inv;
+        - range_check_9_9_d_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -202,16 +196,13 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * memory_id_to_big_sum_4)
-        + enabler)
-        * domain_vanishing_eval_inv;
+        + enabler);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
 mod tests {
     use core::num::traits::Zero;
     use stwo_constraint_framework::LookupElementsTrait;
-    use stwo_verifier_core::circle::CirclePoint;
-    use stwo_verifier_core::fields::Invertible;
     use stwo_verifier_core::fields::m31::m31;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Trait, qm31_const};
     use stwo_verifier_core::poly::circle::CanonicCosetImpl;
@@ -230,10 +221,6 @@ mod tests {
         );
 
         let mut sum: QM31 = Zero::zero();
-        let point = CirclePoint {
-            x: qm31_const::<461666434, 38651694, 1083586041, 510305943>(),
-            y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
-        };
         let mut trace_columns = [
             [qm31_const::<1659099300, 905558730, 651199673, 1375009625>()].span(),
             [qm31_const::<1591990121, 771341002, 584090809, 1375009625>()].span(),
@@ -260,16 +247,9 @@ mod tests {
         let params = ConstraintParams {
             common_lookup_elements, claimed_sum, seq, column_size: m31(pow2(log_size)),
         };
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let random_coeff = qm31_const::<474642921, 876336632, 1911695779, 974600512>();
         evaluate_constraints_at_point(
-            ref sum,
-            ref trace_columns,
-            ref interaction_columns,
-            params,
-            random_coeff,
-            domain_vanishing_eval_inv,
+            ref sum, ref trace_columns, ref interaction_columns, params, random_coeff,
         );
         assert_eq!(sum, QM31Trait::from_fixed_array(MEMORY_ID_TO_SMALL_SAMPLE_EVAL_RESULT))
     }

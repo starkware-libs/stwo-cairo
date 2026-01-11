@@ -171,16 +171,8 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
-        let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
-        let vanish_eval = trace_domain.eval_vanishing(point);
-
         constraints_big::evaluate_constraints_at_point(
-            ref sum,
-            ref trace_mask_values,
-            ref interaction_trace_mask_values,
-            params,
-            random_coeff,
-            vanish_eval.inverse(),
+            ref sum, ref trace_mask_values, ref interaction_trace_mask_values, params, random_coeff,
         );
     }
 }
@@ -224,16 +216,8 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
                 .get_and_mark_used(preprocessed_columns::seq_column_idx(*self.log_n_rows)),
         };
 
-        let trace_domain = CanonicCosetImpl::new(*self.log_n_rows);
-        let vanish_eval = trace_domain.eval_vanishing(point);
-
         constraints_small::evaluate_constraints_at_point(
-            ref sum,
-            ref trace_mask_values,
-            ref interaction_trace_mask_values,
-            params,
-            random_coeff,
-            vanish_eval.inverse(),
+            ref sum, ref trace_mask_values, ref interaction_trace_mask_values, params, random_coeff,
         );
     }
 }
