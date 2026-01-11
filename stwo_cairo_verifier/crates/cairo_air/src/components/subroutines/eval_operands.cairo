@@ -277,7 +277,6 @@ pub fn eval_operands_evaluate(
     ref range_check_20_c_sum_60: QM31,
     ref range_check_20_d_sum_61: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -304,8 +303,7 @@ pub fn eval_operands_evaluate(
     let constraint_quotient = ((dst_src_col0
         - ((eval_operands_input_dst_base_fp * eval_operands_input_fp)
             + ((qm31_const::<1, 0, 0, 0>() - eval_operands_input_dst_base_fp)
-                * eval_operands_input_ap))))
-        * domain_vanishing_eval_inv;
+                * eval_operands_input_ap))));
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (dst_src_col0 + eval_operands_input_offset0),
@@ -342,7 +340,6 @@ pub fn eval_operands_evaluate(
         ref memory_address_to_id_sum_0,
         ref memory_id_to_big_sum_1,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -350,8 +347,7 @@ pub fn eval_operands_evaluate(
     let constraint_quotient = ((op0_src_col30
         - ((eval_operands_input_op0_base_fp * eval_operands_input_fp)
             + ((qm31_const::<1, 0, 0, 0>() - eval_operands_input_op0_base_fp)
-                * eval_operands_input_ap))))
-        * domain_vanishing_eval_inv;
+                * eval_operands_input_ap))));
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (op0_src_col30 + eval_operands_input_offset1),
@@ -388,7 +384,6 @@ pub fn eval_operands_evaluate(
         ref memory_address_to_id_sum_2,
         ref memory_id_to_big_sum_3,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let cond_felt_252_as_addr_output_tmp_3172c_12: QM31 = cond_felt_252_as_addr_evaluate(
@@ -405,7 +400,6 @@ pub fn eval_operands_evaluate(
         partial_limb_msb_col60,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -414,8 +408,7 @@ pub fn eval_operands_evaluate(
         - ((((eval_operands_input_op1_base_fp * eval_operands_input_fp)
             + (eval_operands_input_op1_base_ap * eval_operands_input_ap))
             + (eval_operands_input_op1_imm * eval_operands_input_pc))
-            + (eval_operands_input_op1_base_op0 * cond_felt_252_as_addr_output_tmp_3172c_12))))
-        * domain_vanishing_eval_inv;
+            + (eval_operands_input_op1_base_op0 * cond_felt_252_as_addr_output_tmp_3172c_12))));
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_252_evaluate(
         (op1_src_col61 + eval_operands_input_offset2),
@@ -452,7 +445,6 @@ pub fn eval_operands_evaluate(
         ref memory_address_to_id_sum_4,
         ref memory_id_to_big_sum_5,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     add_252_evaluate(
@@ -517,7 +509,6 @@ pub fn eval_operands_evaluate(
         ref range_check_9_9_e_sum_18,
         ref range_check_9_9_f_sum_19,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     mul_252_evaluate(
@@ -637,7 +628,6 @@ pub fn eval_operands_evaluate(
         ref range_check_20_c_sum_60,
         ref range_check_20_d_sum_61,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let not_pc_update_jnz_tmp_3172c_54: QM31 = (qm31_const::<1, 0, 0, 0>()
@@ -647,224 +637,196 @@ pub fn eval_operands_evaluate(
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_0_col91)
         + (eval_operands_input_res_mul * mul_res_limb_0_col120))
         + (eval_operands_input_res_op1 * op1_limb_0_col63))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_0_col176)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_0_col176)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 1 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_1_col92)
         + (eval_operands_input_res_mul * mul_res_limb_1_col121))
         + (eval_operands_input_res_op1 * op1_limb_1_col64))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_1_col177)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_1_col177)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 2 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_2_col93)
         + (eval_operands_input_res_mul * mul_res_limb_2_col122))
         + (eval_operands_input_res_op1 * op1_limb_2_col65))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_2_col178)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_2_col178)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 3 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_3_col94)
         + (eval_operands_input_res_mul * mul_res_limb_3_col123))
         + (eval_operands_input_res_op1 * op1_limb_3_col66))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_3_col179)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_3_col179)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 4 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_4_col95)
         + (eval_operands_input_res_mul * mul_res_limb_4_col124))
         + (eval_operands_input_res_op1 * op1_limb_4_col67))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_4_col180)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_4_col180)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 5 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_5_col96)
         + (eval_operands_input_res_mul * mul_res_limb_5_col125))
         + (eval_operands_input_res_op1 * op1_limb_5_col68))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_5_col181)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_5_col181)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 6 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_6_col97)
         + (eval_operands_input_res_mul * mul_res_limb_6_col126))
         + (eval_operands_input_res_op1 * op1_limb_6_col69))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_6_col182)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_6_col182)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 7 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_7_col98)
         + (eval_operands_input_res_mul * mul_res_limb_7_col127))
         + (eval_operands_input_res_op1 * op1_limb_7_col70))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_7_col183)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_7_col183)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 8 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_8_col99)
         + (eval_operands_input_res_mul * mul_res_limb_8_col128))
         + (eval_operands_input_res_op1 * op1_limb_8_col71))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_8_col184)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_8_col184)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 9 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_9_col100)
         + (eval_operands_input_res_mul * mul_res_limb_9_col129))
         + (eval_operands_input_res_op1 * op1_limb_9_col72))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_9_col185)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_9_col185)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 10 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_10_col101)
         + (eval_operands_input_res_mul * mul_res_limb_10_col130))
         + (eval_operands_input_res_op1 * op1_limb_10_col73))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_10_col186)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_10_col186)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 11 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_11_col102)
         + (eval_operands_input_res_mul * mul_res_limb_11_col131))
         + (eval_operands_input_res_op1 * op1_limb_11_col74))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_11_col187)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_11_col187)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 12 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_12_col103)
         + (eval_operands_input_res_mul * mul_res_limb_12_col132))
         + (eval_operands_input_res_op1 * op1_limb_12_col75))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_12_col188)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_12_col188)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 13 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_13_col104)
         + (eval_operands_input_res_mul * mul_res_limb_13_col133))
         + (eval_operands_input_res_op1 * op1_limb_13_col76))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_13_col189)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_13_col189)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 14 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_14_col105)
         + (eval_operands_input_res_mul * mul_res_limb_14_col134))
         + (eval_operands_input_res_op1 * op1_limb_14_col77))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_14_col190)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_14_col190)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 15 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_15_col106)
         + (eval_operands_input_res_mul * mul_res_limb_15_col135))
         + (eval_operands_input_res_op1 * op1_limb_15_col78))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_15_col191)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_15_col191)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 16 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_16_col107)
         + (eval_operands_input_res_mul * mul_res_limb_16_col136))
         + (eval_operands_input_res_op1 * op1_limb_16_col79))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_16_col192)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_16_col192)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 17 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_17_col108)
         + (eval_operands_input_res_mul * mul_res_limb_17_col137))
         + (eval_operands_input_res_op1 * op1_limb_17_col80))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_17_col193)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_17_col193)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 18 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_18_col109)
         + (eval_operands_input_res_mul * mul_res_limb_18_col138))
         + (eval_operands_input_res_op1 * op1_limb_18_col81))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_18_col194)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_18_col194)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 19 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_19_col110)
         + (eval_operands_input_res_mul * mul_res_limb_19_col139))
         + (eval_operands_input_res_op1 * op1_limb_19_col82))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_19_col195)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_19_col195)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 20 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_20_col111)
         + (eval_operands_input_res_mul * mul_res_limb_20_col140))
         + (eval_operands_input_res_op1 * op1_limb_20_col83))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_20_col196)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_20_col196)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 21 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_21_col112)
         + (eval_operands_input_res_mul * mul_res_limb_21_col141))
         + (eval_operands_input_res_op1 * op1_limb_21_col84))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_21_col197)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_21_col197)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 22 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_22_col113)
         + (eval_operands_input_res_mul * mul_res_limb_22_col142))
         + (eval_operands_input_res_op1 * op1_limb_22_col85))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_22_col198)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_22_col198)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 23 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_23_col114)
         + (eval_operands_input_res_mul * mul_res_limb_23_col143))
         + (eval_operands_input_res_op1 * op1_limb_23_col86))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_23_col199)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_23_col199)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 24 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_24_col115)
         + (eval_operands_input_res_mul * mul_res_limb_24_col144))
         + (eval_operands_input_res_op1 * op1_limb_24_col87))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_24_col200)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_24_col200)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 25 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_25_col116)
         + (eval_operands_input_res_mul * mul_res_limb_25_col145))
         + (eval_operands_input_res_op1 * op1_limb_25_col88))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_25_col201)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_25_col201)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 26 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_26_col117)
         + (eval_operands_input_res_mul * mul_res_limb_26_col146))
         + (eval_operands_input_res_op1 * op1_limb_26_col89))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_26_col202)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_26_col202)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - constrain limb 27 of res
     let constraint_quotient = (((((eval_operands_input_res_add * add_res_limb_27_col118)
         + (eval_operands_input_res_mul * mul_res_limb_27_col147))
         + (eval_operands_input_res_op1 * op1_limb_27_col90))
-        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_27_col203)))
-        * domain_vanishing_eval_inv;
+        - (not_pc_update_jnz_tmp_3172c_54 * res_limb_27_col203)));
     sum = sum * random_coeff + constraint_quotient;
 
     []

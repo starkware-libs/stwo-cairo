@@ -312,8 +312,8 @@ pub fn seq_column_idx(log_size: u32) -> PreprocessedColumnIdx {
 /// Returns PreProcessedTrace::canonical_without_pedersen root for the given blowup factor.
 pub fn preprocessed_root(log_blowup_factor: u32) -> Hash {
     match log_blowup_factor - 1 {
-        0 => 0x44642ae57f21f9663ceada738b875b21217d9b86c83a471eef9cefcb8f46a00,
-        1 => 0x4df863f813821c29d36b9d6c797c6fd53557b6baf59c71bb15bb01f23b12b98,
+        0 => 0x1fdacd6e29834987926672fcac7fda0577adce49999ad96fb0195e745e9ce0,
+        1 => 0x14103a81a8417d83c41bc877194607103f9e1cb4cb188e5f21b75499709bbb6,
         2 => 0x71944a190ebd4721f696f8d1c5e7a95e8efc70d104d7391b0de4ac965baba70,
         3 => 0x5d83b175ae26614b615d51c92927272a7b5b50a74afa6b84536142db0a25728,
         4 => 0x6ba5cf14072a327807b33acc97bb365a796f9bedfcabde9461a25131205ff83,
