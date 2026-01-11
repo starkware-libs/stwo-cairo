@@ -34,7 +34,7 @@ mod json {
     pub use sonic_rs::from_str;
 }
 
-pub(crate) const LOG_MAX_ROWS: u32 = 27;
+pub(crate) const LOG_MAX_ROWS: u32 = 29;
 
 pub fn prove_cairo<MC: MerkleChannel>(
     input: ProverInput,
