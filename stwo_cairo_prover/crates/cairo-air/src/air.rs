@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::ops::Deref;
 use std::iter::once;
+use std::ops::Deref;
 
 use itertools::{chain, Itertools};
 use num_traits::Zero;

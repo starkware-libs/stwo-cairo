@@ -84,8 +84,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
@@ -707,8 +705,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
-            - opcodes_multiplicity)
-            * domain_vanishing_eval_inv;
+            - opcodes_multiplicity);
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_blake_opcode_output_tmp_53f39_42_limb_0,
@@ -765,7 +762,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_8,
             ref memory_id_to_big_sum_9,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         let [
@@ -863,7 +859,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref verify_bitwise_xor_8_sum_36,
             ref verify_bitwise_xor_8_sum_37,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -965,7 +960,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref triple_xor_32_sum_46,
             ref triple_xor_32_sum_47,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -982,7 +976,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_49,
             ref memory_id_to_big_sum_50,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -999,7 +992,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_52,
             ref memory_id_to_big_sum_53,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1016,7 +1008,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_55,
             ref memory_id_to_big_sum_56,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1033,7 +1024,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_58,
             ref memory_id_to_big_sum_59,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1050,7 +1040,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_61,
             ref memory_id_to_big_sum_62,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1067,7 +1056,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_64,
             ref memory_id_to_big_sum_65,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1084,7 +1072,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_67,
             ref memory_id_to_big_sum_68,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_u_32_evaluate(
@@ -1101,7 +1088,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_70,
             ref memory_id_to_big_sum_71,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -1125,7 +1111,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             opcodes_multiplicity,
@@ -1212,7 +1197,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     opcodes_multiplicity: QM31,
@@ -1609,8 +1593,7 @@ fn lookup_constraints(
         * verify_instruction_sum_0
         * memory_address_to_id_sum_1)
         - verify_instruction_sum_0
-        - memory_address_to_id_sum_1)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1620,8 +1603,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_2
         * memory_address_to_id_sum_3)
         - memory_id_to_big_sum_2
-        - memory_address_to_id_sum_3)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1631,8 +1613,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_4
         * memory_address_to_id_sum_5)
         - memory_id_to_big_sum_4
-        - memory_address_to_id_sum_5)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_5);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1642,8 +1623,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_6
         * range_check_7_2_5_sum_7)
         - memory_id_to_big_sum_6
-        - range_check_7_2_5_sum_7)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_7);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1655,8 +1635,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_8
         * memory_id_to_big_sum_9)
         - memory_address_to_id_sum_8
-        - memory_id_to_big_sum_9)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_9);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1668,8 +1647,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_10
         * memory_address_to_id_sum_11)
         - range_check_7_2_5_sum_10
-        - memory_address_to_id_sum_11)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_11);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1681,8 +1659,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_12
         * range_check_7_2_5_sum_13)
         - memory_id_to_big_sum_12
-        - range_check_7_2_5_sum_13)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_13);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1694,8 +1671,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_14
         * memory_id_to_big_sum_15)
         - memory_address_to_id_sum_14
-        - memory_id_to_big_sum_15)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_15);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1707,8 +1683,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_16
         * memory_address_to_id_sum_17)
         - range_check_7_2_5_sum_16
-        - memory_address_to_id_sum_17)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_17);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1720,8 +1695,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_18
         * range_check_7_2_5_sum_19)
         - memory_id_to_big_sum_18
-        - range_check_7_2_5_sum_19)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_19);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1733,8 +1707,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_20
         * memory_id_to_big_sum_21)
         - memory_address_to_id_sum_20
-        - memory_id_to_big_sum_21)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_21);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1746,8 +1719,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_22
         * memory_address_to_id_sum_23)
         - range_check_7_2_5_sum_22
-        - memory_address_to_id_sum_23)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_23);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1759,8 +1731,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_24
         * range_check_7_2_5_sum_25)
         - memory_id_to_big_sum_24
-        - range_check_7_2_5_sum_25)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_25);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1772,8 +1743,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_26
         * memory_id_to_big_sum_27)
         - memory_address_to_id_sum_26
-        - memory_id_to_big_sum_27)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_27);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1785,8 +1755,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_28
         * memory_address_to_id_sum_29)
         - range_check_7_2_5_sum_28
-        - memory_address_to_id_sum_29)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_29);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1798,8 +1767,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_30
         * range_check_7_2_5_sum_31)
         - memory_id_to_big_sum_30
-        - range_check_7_2_5_sum_31)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_31);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1811,8 +1779,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_32
         * memory_id_to_big_sum_33)
         - memory_address_to_id_sum_32
-        - memory_id_to_big_sum_33)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_33);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1824,8 +1791,7 @@ fn lookup_constraints(
         * verify_bitwise_xor_8_sum_34
         * verify_bitwise_xor_8_sum_35)
         - verify_bitwise_xor_8_sum_34
-        - verify_bitwise_xor_8_sum_35)
-        * domain_vanishing_eval_inv;
+        - verify_bitwise_xor_8_sum_35);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1837,8 +1803,7 @@ fn lookup_constraints(
         * verify_bitwise_xor_8_sum_36
         * verify_bitwise_xor_8_sum_37)
         - verify_bitwise_xor_8_sum_36
-        - verify_bitwise_xor_8_sum_37)
-        * domain_vanishing_eval_inv;
+        - verify_bitwise_xor_8_sum_37);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1850,8 +1815,7 @@ fn lookup_constraints(
         * blake_round_sum_38
         * blake_round_sum_39)
         - blake_round_sum_38
-        + blake_round_sum_39)
-        * domain_vanishing_eval_inv;
+        + blake_round_sum_39);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1863,8 +1827,7 @@ fn lookup_constraints(
         * triple_xor_32_sum_40
         * triple_xor_32_sum_41)
         - triple_xor_32_sum_40
-        - triple_xor_32_sum_41)
-        * domain_vanishing_eval_inv;
+        - triple_xor_32_sum_41);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1876,8 +1839,7 @@ fn lookup_constraints(
         * triple_xor_32_sum_42
         * triple_xor_32_sum_43)
         - triple_xor_32_sum_42
-        - triple_xor_32_sum_43)
-        * domain_vanishing_eval_inv;
+        - triple_xor_32_sum_43);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1889,8 +1851,7 @@ fn lookup_constraints(
         * triple_xor_32_sum_44
         * triple_xor_32_sum_45)
         - triple_xor_32_sum_44
-        - triple_xor_32_sum_45)
-        * domain_vanishing_eval_inv;
+        - triple_xor_32_sum_45);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1902,8 +1863,7 @@ fn lookup_constraints(
         * triple_xor_32_sum_46
         * triple_xor_32_sum_47)
         - triple_xor_32_sum_46
-        - triple_xor_32_sum_47)
-        * domain_vanishing_eval_inv;
+        - triple_xor_32_sum_47);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1915,8 +1875,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_48
         * memory_address_to_id_sum_49)
         - range_check_7_2_5_sum_48
-        - memory_address_to_id_sum_49)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_49);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1928,8 +1887,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_50
         * range_check_7_2_5_sum_51)
         - memory_id_to_big_sum_50
-        - range_check_7_2_5_sum_51)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_51);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1941,8 +1899,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_52
         * memory_id_to_big_sum_53)
         - memory_address_to_id_sum_52
-        - memory_id_to_big_sum_53)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_53);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1954,8 +1911,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_54
         * memory_address_to_id_sum_55)
         - range_check_7_2_5_sum_54
-        - memory_address_to_id_sum_55)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_55);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1967,8 +1923,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_56
         * range_check_7_2_5_sum_57)
         - memory_id_to_big_sum_56
-        - range_check_7_2_5_sum_57)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_57);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1980,8 +1935,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_58
         * memory_id_to_big_sum_59)
         - memory_address_to_id_sum_58
-        - memory_id_to_big_sum_59)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_59);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1993,8 +1947,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_60
         * memory_address_to_id_sum_61)
         - range_check_7_2_5_sum_60
-        - memory_address_to_id_sum_61)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_61);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2006,8 +1959,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_62
         * range_check_7_2_5_sum_63)
         - memory_id_to_big_sum_62
-        - range_check_7_2_5_sum_63)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_63);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2019,8 +1971,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_64
         * memory_id_to_big_sum_65)
         - memory_address_to_id_sum_64
-        - memory_id_to_big_sum_65)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_65);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2032,8 +1983,7 @@ fn lookup_constraints(
         * range_check_7_2_5_sum_66
         * memory_address_to_id_sum_67)
         - range_check_7_2_5_sum_66
-        - memory_address_to_id_sum_67)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_67);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2045,8 +1995,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_68
         * range_check_7_2_5_sum_69)
         - memory_id_to_big_sum_68
-        - range_check_7_2_5_sum_69)
-        * domain_vanishing_eval_inv;
+        - range_check_7_2_5_sum_69);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2058,8 +2007,7 @@ fn lookup_constraints(
         * memory_address_to_id_sum_70
         * memory_id_to_big_sum_71)
         - memory_address_to_id_sum_70
-        - memory_id_to_big_sum_71)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_71);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -2075,8 +2023,7 @@ fn lookup_constraints(
         * opcodes_sum_72
         * opcodes_sum_73)
         + (opcodes_sum_72 * opcodes_multiplicity)
-        - (opcodes_sum_73 * opcodes_multiplicity))
-        * domain_vanishing_eval_inv;
+        - (opcodes_sum_73 * opcodes_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

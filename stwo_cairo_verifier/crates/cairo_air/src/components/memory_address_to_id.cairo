@@ -106,16 +106,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             claimed_sum: *self.interaction_claim.claimed_sum,
         };
 
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let vanish_eval = trace_domain.eval_vanishing(point);
-
         constraints::evaluate_constraints_at_point(
-            ref sum,
-            ref trace_mask_values,
-            ref interaction_trace_mask_values,
-            params,
-            random_coeff,
-            vanish_eval.inverse(),
+            ref sum, ref trace_mask_values, ref interaction_trace_mask_values, params, random_coeff,
         );
     }
 }

@@ -3,9 +3,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents, VerifierFriendlyCairoProof, VerifierFriendlyStarkProof};
+use cairo_air::air::{
+    lookup_sum, CairoComponents, VerifierFriendlyCairoProof, VerifierFriendlyStarkProof,
+};
 use cairo_air::relations::CommonLookupElements;
-use cairo_air::utils::{serialize_proof_to_file, ProofFormat, sort_and_transpose_queried_values, unsort_and_transpose_queried_values};
+use cairo_air::utils::{
+    serialize_proof_to_file, sort_and_transpose_queried_values,
+    unsort_and_transpose_queried_values, ProofFormat,
+};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
@@ -526,8 +531,7 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: true,
             };
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
                 .unwrap();
         }
@@ -547,8 +551,7 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: false,
             };
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let verifier_friendly_proof =
                 to_verifier_friendly_cairo_proof(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -611,8 +614,7 @@ pub mod tests {
                 channel_salt: None,
                 store_polynomials_coefficients: false,
             };
-            let cairo_proof =
-                prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
             let verifier_friendly_proof =
                 to_verifier_friendly_cairo_proof(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
@@ -794,8 +796,7 @@ pub mod tests {
                 let compiled_program_a =
                     get_compiled_cairo_program_path("test_prove_verify_poseidon_builtin");
                 let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
-                let proof_a =
-                    prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let poseidon_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
@@ -818,8 +819,7 @@ pub mod tests {
                 let compiled_program_b =
                     get_compiled_cairo_program_path("test_poseidon_aggregator");
                 let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
-                let proof_b =
-                    prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let poseidon_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
@@ -859,8 +859,7 @@ pub mod tests {
                 let compiled_program_a =
                     get_compiled_cairo_program_path("test_prove_verify_pedersen_builtin");
                 let input_a = run_and_adapt(&compiled_program_a, ProgramType::Json, None).unwrap();
-                let proof_a =
-                    prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
+                let proof_a = prove_cairo::<Blake2sMerkleChannel>(input_a, prover_params).unwrap();
                 let pedersen_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
@@ -883,8 +882,7 @@ pub mod tests {
                 let compiled_program_b =
                     get_compiled_cairo_program_path("test_pedersen_aggregator");
                 let input_b = run_and_adapt(&compiled_program_b, ProgramType::Json, None).unwrap();
-                let proof_b =
-                    prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
+                let proof_b = prove_cairo::<Blake2sMerkleChannel>(input_b, prover_params).unwrap();
                 let pedersen_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim

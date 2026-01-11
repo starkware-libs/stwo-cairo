@@ -71,8 +71,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         channel.mix_commitment(first_layer_proof.commitment);
 
         let commitment_domain_log_size = column_log_bound + config.log_blowup_factor;
-        let commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size)
-                .circle_domain();
+        let commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size).circle_domain();
 
         // TODO(Leo): remove the arrays in next PRs.
         let first_layer = FriFirstLayerVerifier {

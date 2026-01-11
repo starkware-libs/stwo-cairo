@@ -70,8 +70,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = LOG_SIZE;
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut poseidon_round_keys_sum_0: QM31 = Zero::zero();
@@ -169,7 +167,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             poseidon_round_keys_multiplicity,
@@ -183,7 +180,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     poseidon_round_keys_multiplicity: QM31,
@@ -212,7 +208,6 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * poseidon_round_keys_sum_0)
-        + poseidon_round_keys_multiplicity)
-        * domain_vanishing_eval_inv;
+        + poseidon_round_keys_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }

@@ -80,8 +80,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
@@ -174,8 +172,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
-            - opcodes_multiplicity)
-            * domain_vanishing_eval_inv;
+            - opcodes_multiplicity);
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_f1edd_output_tmp_32b66_4_offset2,
@@ -188,7 +185,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         read_positive_num_bits_29_evaluate(
@@ -203,7 +199,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_1,
             ref memory_id_to_big_sum_2,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -212,8 +207,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             + (stored_fp_limb_1_col7 * qm31_const::<512, 0, 0, 0>()))
             + (stored_fp_limb_2_col8 * qm31_const::<262144, 0, 0, 0>()))
             + (stored_fp_limb_3_col9 * qm31_const::<134217728, 0, 0, 0>()))
-            - input_fp_col2))
-            * domain_vanishing_eval_inv;
+            - input_fp_col2));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
             (input_ap_col1 + qm31_const::<1, 0, 0, 0>()),
@@ -227,7 +221,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_3,
             ref memory_id_to_big_sum_4,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -236,15 +229,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             + (stored_ret_pc_limb_1_col13 * qm31_const::<512, 0, 0, 0>()))
             + (stored_ret_pc_limb_2_col14 * qm31_const::<262144, 0, 0, 0>()))
             + (stored_ret_pc_limb_3_col15 * qm31_const::<134217728, 0, 0, 0>()))
-            - (input_pc_col0 + qm31_const::<1, 0, 0, 0>())))
-            * domain_vanishing_eval_inv;
+            - (input_pc_col0 + qm31_const::<1, 0, 0, 0>())));
         sum = sum * random_coeff + constraint_quotient;
 
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col17
             - ((op1_base_fp_col4 * input_fp_col2)
-                + (decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap * input_ap_col1))))
-            * domain_vanishing_eval_inv;
+                + (decode_instruction_f1edd_output_tmp_32b66_4_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         read_positive_num_bits_29_evaluate(
             (mem1_base_col17 + decode_instruction_f1edd_output_tmp_32b66_4_offset2),
@@ -258,7 +249,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_5,
             ref memory_id_to_big_sum_6,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -285,7 +275,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             opcodes_multiplicity,
@@ -307,7 +296,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     opcodes_multiplicity: QM31,
@@ -383,8 +371,7 @@ fn lookup_constraints(
         * verify_instruction_sum_0
         * memory_address_to_id_sum_1)
         - verify_instruction_sum_0
-        - memory_address_to_id_sum_1)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -394,8 +381,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_2
         * memory_address_to_id_sum_3)
         - memory_id_to_big_sum_2
-        - memory_address_to_id_sum_3)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -405,8 +391,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_4
         * memory_address_to_id_sum_5)
         - memory_id_to_big_sum_4
-        - memory_address_to_id_sum_5)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_5);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -416,8 +401,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_6
         * opcodes_sum_7)
         - (memory_id_to_big_sum_6 * opcodes_multiplicity)
-        - opcodes_sum_7)
-        * domain_vanishing_eval_inv;
+        - opcodes_sum_7);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -429,8 +413,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_8)
-        + opcodes_multiplicity)
-        * domain_vanishing_eval_inv;
+        + opcodes_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
