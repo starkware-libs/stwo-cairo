@@ -1,4 +1,3 @@
-use crate::utils::SpanExTrait;
 use crate::channel::Channel;
 use crate::circle::{CirclePointIndexImpl, CosetImpl};
 use crate::fields::qm31::qm31_const;
@@ -6,6 +5,7 @@ use crate::fri::{FriConfig, FriVerifierImpl};
 use crate::poly::circle::CircleEvaluationImpl;
 use crate::poly::line::LineDomainImpl;
 use crate::queries::{Queries, QueriesImpl};
+use crate::utils::SpanExTrait;
 
 // TODO(andrew): Add back in with new proof data.
 #[test]
@@ -146,7 +146,9 @@ fn valid_mixed_degree_proof_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let verifier = FriVerifierImpl::commit(ref channel, config, proof, max_column_log_size - config.log_blowup_factor);
+    let verifier = FriVerifierImpl::commit(
+        ref channel, config, proof, max_column_log_size - config.log_blowup_factor,
+    );
 
     verifier.decommit(queries, query_evals_by_column);
 }
@@ -239,7 +241,9 @@ fn mixed_degree_proof_with_queries_sampled_from_channel_passes_verification() {
         .span();
     let proof = Serde::deserialize(ref proof_data).unwrap();
     let mut channel: Channel = Default::default();
-    let mut verifier = FriVerifierImpl::commit(ref channel, config, proof, *column_log_bounds.first().unwrap());
+    let mut verifier = FriVerifierImpl::commit(
+        ref channel, config, proof, *column_log_bounds.first().unwrap(),
+    );
     let (_query_positions_by_log_size, queries) = verifier.sample_query_positions(ref channel);
 
     verifier.decommit(queries, query_evals_by_column);

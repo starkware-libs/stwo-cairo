@@ -80,8 +80,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut memory_id_to_big_sum_0: QM31 = Zero::zero();
@@ -1123,7 +1121,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.common_lookup_elements,
             ref memory_id_to_big_sum_0,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         read_positive_known_id_num_bits_252_evaluate(
@@ -1159,7 +1156,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.common_lookup_elements,
             ref memory_id_to_big_sum_1,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_reduced_252_evaluate(
@@ -1179,7 +1175,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_8_sum_2,
             ref range_check_8_sum_3,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         verify_reduced_252_evaluate(
@@ -1199,7 +1194,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_8_sum_4,
             ref range_check_8_sum_5,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         let partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8: QM31 = (seq
@@ -1550,7 +1544,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             pedersen_aggregator_window_bits_18_multiplicity,
@@ -1575,7 +1568,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     pedersen_aggregator_window_bits_18_multiplicity: QM31,
@@ -1662,8 +1654,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_0
         * memory_id_to_big_sum_1)
         - memory_id_to_big_sum_0
-        - memory_id_to_big_sum_1)
-        * domain_vanishing_eval_inv;
+        - memory_id_to_big_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1673,8 +1664,7 @@ fn lookup_constraints(
         * range_check_8_sum_2
         * range_check_8_sum_3)
         - range_check_8_sum_2
-        - range_check_8_sum_3)
-        * domain_vanishing_eval_inv;
+        - range_check_8_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1684,8 +1674,7 @@ fn lookup_constraints(
         * range_check_8_sum_4
         * range_check_8_sum_5)
         - range_check_8_sum_4
-        - range_check_8_sum_5)
-        * domain_vanishing_eval_inv;
+        - range_check_8_sum_5);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1695,8 +1684,7 @@ fn lookup_constraints(
         * partial_ec_mul_window_bits_18_sum_6
         * partial_ec_mul_window_bits_18_sum_7)
         - partial_ec_mul_window_bits_18_sum_6
-        + partial_ec_mul_window_bits_18_sum_7)
-        * domain_vanishing_eval_inv;
+        + partial_ec_mul_window_bits_18_sum_7);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1708,8 +1696,7 @@ fn lookup_constraints(
         * partial_ec_mul_window_bits_18_sum_8
         * partial_ec_mul_window_bits_18_sum_9)
         - partial_ec_mul_window_bits_18_sum_8
-        + partial_ec_mul_window_bits_18_sum_9)
-        * domain_vanishing_eval_inv;
+        + partial_ec_mul_window_bits_18_sum_9);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1723,8 +1710,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_10
         * pedersen_aggregator_window_bits_18_sum_11)
         + (memory_id_to_big_sum_10 * pedersen_aggregator_window_bits_18_multiplicity)
-        - pedersen_aggregator_window_bits_18_sum_11)
-        * domain_vanishing_eval_inv;
+        - pedersen_aggregator_window_bits_18_sum_11);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]

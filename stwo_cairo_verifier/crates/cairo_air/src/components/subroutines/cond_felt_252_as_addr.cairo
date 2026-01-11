@@ -9,7 +9,6 @@ pub fn cond_felt_252_as_addr_evaluate(
     partial_limb_msb_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> QM31 {
     let [
@@ -70,15 +69,13 @@ pub fn cond_felt_252_as_addr_evaluate(
             + cond_felt_252_as_addr_input_limb_24)
             + cond_felt_252_as_addr_input_limb_25)
             + cond_felt_252_as_addr_input_limb_26)
-            + cond_felt_252_as_addr_input_limb_27)))
-        * domain_vanishing_eval_inv;
+            + cond_felt_252_as_addr_input_limb_27)));
     sum = sum * random_coeff + constraint_quotient;
     cond_range_check_2_evaluate(
         [cond_felt_252_as_addr_input_limb_3, cond_felt_252_as_addr_input_limb_28],
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

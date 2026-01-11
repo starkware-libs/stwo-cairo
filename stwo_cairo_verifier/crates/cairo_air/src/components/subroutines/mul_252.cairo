@@ -107,7 +107,6 @@ pub fn mul_252_evaluate(
     ref range_check_20_c_sum_40: QM31,
     ref range_check_20_d_sum_41: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -197,7 +196,6 @@ pub fn mul_252_evaluate(
         ref range_check_9_9_e_sum_12,
         ref range_check_9_9_f_sum_13,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     verify_mul_252_evaluate(
@@ -289,7 +287,6 @@ pub fn mul_252_evaluate(
         ref range_check_20_c_sum_40,
         ref range_check_20_d_sum_41,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
