@@ -92,7 +92,6 @@ pub fn create_blake_round_input_evaluate(
     ref verify_bitwise_xor_8_sum_26: QM31,
     ref verify_bitwise_xor_8_sum_27: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
     let [
@@ -115,7 +114,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_1,
         ref memory_id_to_big_sum_2,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -131,7 +129,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_4,
         ref memory_id_to_big_sum_5,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -147,7 +144,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_7,
         ref memory_id_to_big_sum_8,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -163,7 +159,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_10,
         ref memory_id_to_big_sum_11,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -179,7 +174,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_13,
         ref memory_id_to_big_sum_14,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -195,7 +189,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_16,
         ref memory_id_to_big_sum_17,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -211,7 +204,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_19,
         ref memory_id_to_big_sum_20,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_u_32_evaluate(
@@ -227,7 +219,6 @@ pub fn create_blake_round_input_evaluate(
         ref memory_address_to_id_sum_22,
         ref memory_id_to_big_sum_23,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let split_16_low_part_size_8_output_tmp_f95c3_89_limb_0: QM31 =
@@ -236,7 +227,6 @@ pub fn create_blake_round_input_evaluate(
         ms_8_bits_col48,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let split_16_low_part_size_8_output_tmp_f95c3_91_limb_0: QM31 =
@@ -245,7 +235,6 @@ pub fn create_blake_round_input_evaluate(
         ms_8_bits_col49,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
@@ -254,7 +243,6 @@ pub fn create_blake_round_input_evaluate(
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_24,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
@@ -263,7 +251,6 @@ pub fn create_blake_round_input_evaluate(
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_25,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
@@ -272,7 +259,6 @@ pub fn create_blake_round_input_evaluate(
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_26,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     bitwise_xor_num_bits_8_evaluate(
@@ -281,7 +267,6 @@ pub fn create_blake_round_input_evaluate(
         common_lookup_elements,
         ref verify_bitwise_xor_8_sum_27,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

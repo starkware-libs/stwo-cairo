@@ -77,11 +77,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut poseidon_round_keys_sum_0: QM31 = Zero::zero();
@@ -812,8 +809,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         let constraint_quotient = (poseidon_3_partial_rounds_chain_multiplicity
             * poseidon_3_partial_rounds_chain_multiplicity
-            - poseidon_3_partial_rounds_chain_multiplicity)
-            * domain_vanishing_eval_inv;
+            - poseidon_3_partial_rounds_chain_multiplicity);
         sum = sum * random_coeff + constraint_quotient;
 
         poseidon_round_keys_sum_0 = self
@@ -911,7 +907,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_4_4_sum_4,
             ref range_check_252_width_27_sum_5,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         poseidon_partial_round_evaluate(
@@ -975,7 +970,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_4_4_sum_9,
             ref range_check_252_width_27_sum_10,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
         poseidon_partial_round_evaluate(
@@ -1042,7 +1036,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref range_check_4_4_sum_14,
             ref range_check_252_width_27_sum_15,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -1097,7 +1090,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             poseidon_3_partial_rounds_chain_multiplicity,
@@ -1128,7 +1120,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     poseidon_3_partial_rounds_chain_multiplicity: QM31,
@@ -1245,8 +1236,7 @@ fn lookup_constraints(
         * poseidon_round_keys_sum_0
         * cube_252_sum_1)
         - poseidon_round_keys_sum_0
-        - cube_252_sum_1)
-        * domain_vanishing_eval_inv;
+        - cube_252_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1256,8 +1246,7 @@ fn lookup_constraints(
         * range_check_4_4_4_4_sum_2
         * range_check_4_4_4_4_sum_3)
         - range_check_4_4_4_4_sum_2
-        - range_check_4_4_4_4_sum_3)
-        * domain_vanishing_eval_inv;
+        - range_check_4_4_4_4_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1267,8 +1256,7 @@ fn lookup_constraints(
         * range_check_4_4_sum_4
         * range_check_252_width_27_sum_5)
         - range_check_4_4_sum_4
-        - range_check_252_width_27_sum_5)
-        * domain_vanishing_eval_inv;
+        - range_check_252_width_27_sum_5);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1278,8 +1266,7 @@ fn lookup_constraints(
         * cube_252_sum_6
         * range_check_4_4_4_4_sum_7)
         - cube_252_sum_6
-        - range_check_4_4_4_4_sum_7)
-        * domain_vanishing_eval_inv;
+        - range_check_4_4_4_4_sum_7);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1291,8 +1278,7 @@ fn lookup_constraints(
         * range_check_4_4_4_4_sum_8
         * range_check_4_4_sum_9)
         - range_check_4_4_4_4_sum_8
-        - range_check_4_4_sum_9)
-        * domain_vanishing_eval_inv;
+        - range_check_4_4_sum_9);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1304,8 +1290,7 @@ fn lookup_constraints(
         * range_check_252_width_27_sum_10
         * cube_252_sum_11)
         - range_check_252_width_27_sum_10
-        - cube_252_sum_11)
-        * domain_vanishing_eval_inv;
+        - cube_252_sum_11);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1317,8 +1302,7 @@ fn lookup_constraints(
         * range_check_4_4_4_4_sum_12
         * range_check_4_4_4_4_sum_13)
         - range_check_4_4_4_4_sum_12
-        - range_check_4_4_4_4_sum_13)
-        * domain_vanishing_eval_inv;
+        - range_check_4_4_4_4_sum_13);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1330,8 +1314,7 @@ fn lookup_constraints(
         * range_check_4_4_sum_14
         * range_check_252_width_27_sum_15)
         - range_check_4_4_sum_14
-        - range_check_252_width_27_sum_15)
-        * domain_vanishing_eval_inv;
+        - range_check_252_width_27_sum_15);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1345,8 +1328,7 @@ fn lookup_constraints(
         * poseidon_3_partial_rounds_chain_sum_16
         * poseidon_3_partial_rounds_chain_sum_17)
         + (poseidon_3_partial_rounds_chain_sum_16 * poseidon_3_partial_rounds_chain_multiplicity)
-        - (poseidon_3_partial_rounds_chain_sum_17 * poseidon_3_partial_rounds_chain_multiplicity))
-        * domain_vanishing_eval_inv;
+        - (poseidon_3_partial_rounds_chain_sum_17 * poseidon_3_partial_rounds_chain_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
@@ -1359,7 +1341,6 @@ mod tests {
     use stwo_constraint_framework::{
         LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
-    use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
@@ -1381,10 +1362,6 @@ mod tests {
             ),
         };
         let mut sum: QM31 = Zero::zero();
-        let point = CirclePoint {
-            x: qm31_const::<461666434, 38651694, 1083586041, 510305943>(),
-            y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
-        };
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
 
@@ -1581,7 +1558,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                point,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(

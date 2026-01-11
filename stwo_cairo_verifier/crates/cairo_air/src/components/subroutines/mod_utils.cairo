@@ -316,20 +316,17 @@ pub fn mod_utils_evaluate(
     ref memory_address_to_id_sum_51: QM31,
     ref memory_id_to_big_sum_52: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [mod_utils_input_first_addr, mod_utils_input_instance_num] = input;
 
     // Constraint - is_instance_0 is 0 or 1.
     let constraint_quotient = ((is_instance_0_col0
-        * (is_instance_0_col0 - qm31_const::<1, 0, 0, 0>())))
-        * domain_vanishing_eval_inv;
+        * (is_instance_0_col0 - qm31_const::<1, 0, 0, 0>())));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - is_instance_0 is 0 when instance_num is not 0.
-    let constraint_quotient = ((is_instance_0_col0 * mod_utils_input_instance_num))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((is_instance_0_col0 * mod_utils_input_instance_num));
     sum = sum * random_coeff + constraint_quotient;
     let is_instance_0_minus_1_tmp_7b599_1: QM31 = (is_instance_0_col0 - qm31_const::<1, 0, 0, 0>());
     let instance_addr_tmp_7b599_2: QM31 = (mod_utils_input_first_addr
@@ -354,7 +351,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_0,
         ref memory_id_to_big_sum_1,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -375,7 +371,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_2,
         ref memory_id_to_big_sum_3,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -396,7 +391,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_4,
         ref memory_id_to_big_sum_5,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -417,7 +411,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_6,
         ref memory_id_to_big_sum_7,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -432,7 +425,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_8,
         ref memory_id_to_big_sum_9,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -447,7 +439,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_10,
         ref memory_id_to_big_sum_11,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -462,7 +453,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_12,
         ref memory_id_to_big_sum_13,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -477,7 +467,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_14,
         ref memory_id_to_big_sum_15,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -492,7 +481,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_16,
         ref memory_id_to_big_sum_17,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let n_prev_minus_1_tmp_7b599_59: QM31 = ((((n_prev_limb_0_col74
@@ -512,8 +500,7 @@ pub fn mod_utils_evaluate(
         * (n_prev_minus_1_tmp_7b599_59
             - (((n_limb_0_col68 + (n_limb_1_col69 * qm31_const::<512, 0, 0, 0>()))
                 + (n_limb_2_col70 * qm31_const::<262144, 0, 0, 0>()))
-                + (n_limb_3_col71 * qm31_const::<134217728, 0, 0, 0>())))))
-        * domain_vanishing_eval_inv;
+                + (n_limb_3_col71 * qm31_const::<134217728, 0, 0, 0>())))));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Progression of offsets_ptr between instances.
@@ -522,8 +509,7 @@ pub fn mod_utils_evaluate(
             - (((offsets_ptr_prev_limb_0_col62
                 + (offsets_ptr_prev_limb_1_col63 * qm31_const::<512, 0, 0, 0>()))
                 + (offsets_ptr_prev_limb_2_col64 * qm31_const::<262144, 0, 0, 0>()))
-                + (offsets_ptr_prev_limb_3_col65 * qm31_const::<134217728, 0, 0, 0>())))))
-        * domain_vanishing_eval_inv;
+                + (offsets_ptr_prev_limb_3_col65 * qm31_const::<134217728, 0, 0, 0>())))));
     sum = sum * random_coeff + constraint_quotient;
     mem_cond_verify_equal_known_id_evaluate(
         [
@@ -534,7 +520,6 @@ pub fn mod_utils_evaluate(
         common_lookup_elements,
         ref memory_address_to_id_sum_18,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     mem_cond_verify_equal_known_id_evaluate(
@@ -543,7 +528,6 @@ pub fn mod_utils_evaluate(
         common_lookup_elements,
         ref memory_address_to_id_sum_19,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     mem_cond_verify_equal_known_id_evaluate(
@@ -555,7 +539,6 @@ pub fn mod_utils_evaluate(
         common_lookup_elements,
         ref memory_address_to_id_sum_20,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     mem_cond_verify_equal_known_id_evaluate(
@@ -567,7 +550,6 @@ pub fn mod_utils_evaluate(
         common_lookup_elements,
         ref memory_address_to_id_sum_21,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     mem_cond_verify_equal_known_id_evaluate(
@@ -579,7 +561,6 @@ pub fn mod_utils_evaluate(
         common_lookup_elements,
         ref memory_address_to_id_sum_22,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let read_small_output_tmp_7b599_81_limb_0: QM31 = read_small_evaluate(
@@ -596,7 +577,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_23,
         ref memory_id_to_big_sum_24,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let read_small_output_tmp_7b599_91_limb_0: QM31 = read_small_evaluate(
@@ -613,7 +593,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_25,
         ref memory_id_to_big_sum_26,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let read_small_output_tmp_7b599_101_limb_0: QM31 = read_small_evaluate(
@@ -630,7 +609,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_27,
         ref memory_id_to_big_sum_28,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let values_ptr_tmp_7b599_102: QM31 = (((values_ptr_limb_0_col50
@@ -655,7 +633,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_29,
         ref memory_id_to_big_sum_30,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -677,7 +654,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_31,
         ref memory_id_to_big_sum_32,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -699,7 +675,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_33,
         ref memory_id_to_big_sum_34,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -721,7 +696,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_35,
         ref memory_id_to_big_sum_36,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -742,7 +716,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_37,
         ref memory_id_to_big_sum_38,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -764,7 +737,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_39,
         ref memory_id_to_big_sum_40,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -786,7 +758,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_41,
         ref memory_id_to_big_sum_42,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -808,7 +779,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_43,
         ref memory_id_to_big_sum_44,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -829,7 +799,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_45,
         ref memory_id_to_big_sum_46,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -851,7 +820,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_47,
         ref memory_id_to_big_sum_48,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -873,7 +841,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_49,
         ref memory_id_to_big_sum_50,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_99_evaluate(
@@ -895,7 +862,6 @@ pub fn mod_utils_evaluate(
         ref memory_address_to_id_sum_51,
         ref memory_id_to_big_sum_52,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

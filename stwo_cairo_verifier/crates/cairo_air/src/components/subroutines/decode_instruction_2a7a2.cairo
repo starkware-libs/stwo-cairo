@@ -8,7 +8,6 @@ pub fn decode_instruction_2a7a2_evaluate(
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let decode_instruction_2a7a2_input_pc = input;
