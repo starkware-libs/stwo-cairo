@@ -46,7 +46,6 @@ pub fn poseidon_partial_round_evaluate(
     ref range_check_4_4_sum_3: QM31,
     ref range_check_252_width_27_sum_4: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -172,7 +171,6 @@ pub fn poseidon_partial_round_evaluate(
         ref range_check_4_4_4_4_sum_2,
         ref range_check_4_4_sum_3,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -206,7 +204,6 @@ pub fn poseidon_partial_round_evaluate(
         p_coef_col31,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

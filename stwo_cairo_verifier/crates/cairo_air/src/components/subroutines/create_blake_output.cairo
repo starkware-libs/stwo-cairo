@@ -31,7 +31,6 @@ pub fn create_blake_output_evaluate(
     ref triple_xor_32_sum_6: QM31,
     ref triple_xor_32_sum_7: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [

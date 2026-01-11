@@ -448,7 +448,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         verify_instruction
             .evaluate_constraints_at_point(
@@ -457,7 +456,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         blake_context
             .evaluate_constraints_at_point(
@@ -466,7 +464,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         builtins
             .evaluate_constraints_at_point(
@@ -475,7 +472,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         pedersen_context
             .evaluate_constraints_at_point(
@@ -484,7 +480,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         poseidon_context
             .evaluate_constraints_at_point(
@@ -493,7 +488,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         memory_address_to_id
             .evaluate_constraints_at_point(
@@ -502,7 +496,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         let (memory_id_to_value_big, memory_id_to_value_small) = memory_id_to_value;
         for memory_id_to_value_big_component in memory_id_to_value_big.span() {
@@ -513,7 +506,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         memory_id_to_value_small
@@ -523,7 +515,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
 
         range_checks
@@ -533,7 +524,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         verify_bitwise_xor_4
             .evaluate_constraints_at_point(
@@ -542,7 +532,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         verify_bitwise_xor_7
             .evaluate_constraints_at_point(
@@ -551,7 +540,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         verify_bitwise_xor_8
             .evaluate_constraints_at_point(
@@ -560,7 +548,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         verify_bitwise_xor_9
             .evaluate_constraints_at_point(
@@ -569,7 +556,6 @@ pub impl CairoAirImpl of Air<CairoAir> {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
 
         validate_mask_usage(

@@ -13,7 +13,6 @@ pub fn verify_mul_small_evaluate(
     ref range_check_11_sum_1: QM31,
     ref range_check_11_sum_2: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -46,8 +45,7 @@ pub fn verify_mul_small_evaluate(
             + ((((verify_mul_small_input_a_limb_0 * verify_mul_small_input_b_limb_1)
                 + (verify_mul_small_input_a_limb_1 * verify_mul_small_input_b_limb_0))
                 - verify_mul_small_input_c_limb_1)
-                * qm31_const::<512, 0, 0, 0>()))))
-        * domain_vanishing_eval_inv;
+                * qm31_const::<512, 0, 0, 0>()))));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_11_sum_1 = common_lookup_elements
@@ -65,8 +63,7 @@ pub fn verify_mul_small_evaluate(
                 + (verify_mul_small_input_a_limb_2 * verify_mul_small_input_b_limb_1))
                 + (verify_mul_small_input_a_limb_3 * verify_mul_small_input_b_limb_0))
                 - verify_mul_small_input_c_limb_3)
-                * qm31_const::<512, 0, 0, 0>()))))
-        * domain_vanishing_eval_inv;
+                * qm31_const::<512, 0, 0, 0>()))));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_11_sum_2 = common_lookup_elements
@@ -82,16 +79,14 @@ pub fn verify_mul_small_evaluate(
             + ((((verify_mul_small_input_a_limb_2 * verify_mul_small_input_b_limb_3)
                 + (verify_mul_small_input_a_limb_3 * verify_mul_small_input_b_limb_2))
                 - verify_mul_small_input_c_limb_5)
-                * qm31_const::<512, 0, 0, 0>()))))
-        * domain_vanishing_eval_inv;
+                * qm31_const::<512, 0, 0, 0>()))));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - final limb constraint
     let constraint_quotient = ((((carry_5_col2
         + (verify_mul_small_input_a_limb_3 * verify_mul_small_input_b_limb_3))
         - (verify_mul_small_input_c_limb_7 * qm31_const::<512, 0, 0, 0>()))
-        - verify_mul_small_input_c_limb_6))
-        * domain_vanishing_eval_inv;
+        - verify_mul_small_input_c_limb_6));
     sum = sum * random_coeff + constraint_quotient;
 
     []

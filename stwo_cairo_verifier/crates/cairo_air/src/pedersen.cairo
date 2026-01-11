@@ -15,8 +15,6 @@ use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
-#[cfg(not(feature: "poseidon252_verifier"))]
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
@@ -169,7 +167,6 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         if let Option::Some(components) = self.components {
             components
@@ -179,7 +176,6 @@ pub impl PedersenContextComponentsImpl of PedersenContextComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
     }
@@ -234,7 +230,6 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         self
             .pedersen_aggregator
@@ -244,7 +239,6 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .partial_ec_mul
@@ -254,7 +248,6 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .pedersen_points_table
@@ -264,7 +257,6 @@ pub impl PedersenComponentsImpl of PedersenComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
     }
 }
