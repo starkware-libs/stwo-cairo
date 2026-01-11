@@ -105,11 +105,11 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
     let max_trace_domain = CanonicCosetImpl::new(split_composition_log_degree_bound);
     let denominator_inv = max_trace_domain.eval_vanishing(ood_point).inverse();
     // TODO(Leo): uncomment.
-    // assert!(
-    //     composition_oods_eval == numerator * denominator_inv,
-    //     "{}",
-    //     VerificationError::OodsNotMatching,
-    // );
+    assert!(
+        composition_oods_eval == numerator * denominator_inv,
+        "{}",
+        VerificationError::OodsNotMatching,
+    );
 
     commitment_scheme
         .verify_values(
