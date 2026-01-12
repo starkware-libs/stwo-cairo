@@ -112,6 +112,50 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
     }
 }
 
+/// A tree builder that collects evaluations for later extension.
+/// Used to enable parallel computation of traces before sequential tree extension.
+pub struct CollectingTreeBuilder {
+    pub evals: Vec<CircleEvaluation<stwo::prover::backend::simd::SimdBackend, M31, BitReversedOrder>>,
+}
+
+impl CollectingTreeBuilder {
+    pub fn new() -> Self {
+        Self { evals: Vec::new() }
+    }
+
+    /// Extends the real tree builder with all collected evaluations.
+    pub fn write_to<T: TreeBuilder<stwo::prover::backend::simd::SimdBackend>>(
+        self,
+        tree_builder: &mut T,
+    ) {
+        tree_builder.extend_evals(self.evals);
+    }
+}
+
+impl Default for CollectingTreeBuilder {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl TreeBuilder<stwo::prover::backend::simd::SimdBackend> for CollectingTreeBuilder {
+    fn extend_evals(
+        &mut self,
+        columns: impl IntoIterator<Item = CircleEvaluation<stwo::prover::backend::simd::SimdBackend, M31, BitReversedOrder>>,
+    ) -> TreeSubspan {
+        let col_start = self.evals.len();
+        self.evals.extend(columns);
+        let col_end = self.evals.len();
+        // Return a placeholder TreeSubspan - the actual tree_index will be set when
+        // writing to the real tree builder
+        TreeSubspan {
+            tree_index: 0,
+            col_start,
+            col_end,
+        }
+    }
+}
+
 fn tree_trace_cells(tree_log_sizes: TreeVec<Vec<u32>>) -> Vec<u64> {
     tree_log_sizes
         .iter()
