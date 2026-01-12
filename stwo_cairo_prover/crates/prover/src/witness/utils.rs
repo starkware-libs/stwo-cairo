@@ -97,7 +97,7 @@ impl Enabler {
 pub trait TreeBuilder<B: Backend> {
     fn extend_evals(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan;
 }
 
@@ -106,7 +106,7 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
 {
     fn extend_evals(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan {
         self.extend_evals(columns)
     }

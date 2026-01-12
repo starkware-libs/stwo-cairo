@@ -44,7 +44,7 @@ pub struct MockTreeBuilder<'a> {
 impl MockTreeBuilder<'_> {
     pub fn extend_evals<B: Backend>(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) {
         self.evals
             .extend(columns.into_iter().map(|s| s.to_cpu()).collect_vec());
@@ -58,7 +58,7 @@ impl MockTreeBuilder<'_> {
 impl<B: Backend> TreeBuilder<B> for MockTreeBuilder<'_> {
     fn extend_evals(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan {
         let col_start = self.evals.len();
         let tree_index = self.tree_index;
