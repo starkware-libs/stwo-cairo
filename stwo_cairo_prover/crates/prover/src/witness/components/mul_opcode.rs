@@ -7,6 +7,7 @@ use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, range_check_20, verify_instruction,
 };
 use crate::witness::prelude::*;
+use itertools::izip;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -2031,12 +2032,11 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.verify_instruction_0,
             &self.lookup_data.memory_address_to_id_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2045,12 +2045,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
             &self.lookup_data.memory_address_to_id_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2059,12 +2058,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_id_to_big_1,
             &self.lookup_data.memory_address_to_id_2,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2073,12 +2071,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_id_to_big_2,
             &self.lookup_data.range_check_20_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2087,12 +2084,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_b_0,
             &self.lookup_data.range_check_20_c_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2101,12 +2097,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_d_0,
             &self.lookup_data.range_check_20_e_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2115,12 +2110,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_f_0,
             &self.lookup_data.range_check_20_g_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2129,12 +2123,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_h_0,
             &self.lookup_data.range_check_20_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2143,12 +2136,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_b_1,
             &self.lookup_data.range_check_20_c_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2157,12 +2149,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_d_1,
             &self.lookup_data.range_check_20_e_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2171,12 +2162,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_f_1,
             &self.lookup_data.range_check_20_g_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2185,12 +2175,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_h_1,
             &self.lookup_data.range_check_20_2,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2199,12 +2188,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_b_2,
             &self.lookup_data.range_check_20_c_2,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2213,12 +2201,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_d_2,
             &self.lookup_data.range_check_20_e_2,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2227,12 +2214,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_f_2,
             &self.lookup_data.range_check_20_g_2,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2241,12 +2227,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_h_2,
             &self.lookup_data.range_check_20_3,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2255,12 +2240,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_b_3,
             &self.lookup_data.range_check_20_c_3,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -2269,12 +2253,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_20_d_3,
             &self.lookup_data.opcodes_0,
         )
-            .into_par_iter()
             .enumerate()
             .for_each(|(i, (writer, values0, values1))| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
@@ -2285,8 +2268,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
-            .into_par_iter()
+        izip!(col_gen.iter_mut(), &self.lookup_data.opcodes_1)
             .enumerate()
             .for_each(|(i, (writer, values))| {
                 let denom = common_lookup_elements.combine(values);
