@@ -723,7 +723,11 @@ macro_rules! impl_interaction_gen {
                 tree_builder: &mut CollectingTreeBuilder,
                 common_lookup_elements: &CommonLookupElements,
             ) -> Self::Claim {
-                self.write_interaction_trace(tree_builder, common_lookup_elements)
+                let pool = rayon::ThreadPoolBuilder::new()
+                    .num_threads(8)
+                    .build()
+                    .unwrap();
+                pool.install(|| self.write_interaction_trace(tree_builder, common_lookup_elements))
             }
         }
     };
