@@ -2,9 +2,9 @@ use std::array;
 use std::sync::Arc;
 
 use cairo_air::air::{
-    CairoClaim, CairoInteractionClaim, MemorySmallValue, PublicData, PublicMemory,
-    PublicSegmentRanges, SegmentRange,
+    MemorySmallValue, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
 };
+use cairo_air::cairo_claim::{CairoClaim, CairoInteractionClaim};
 use cairo_air::relations::CommonLookupElements;
 use indexmap::IndexSet;
 use itertools::Itertools;
@@ -14,13 +14,12 @@ use stwo_cairo_adapter::{ProverInput, PublicSegmentContext};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LOG_SIZE;
 use tracing::{span, Level};
 
-use super::builtins::BuiltinsInteractionClaimGenerator;
-use super::opcodes::OpcodesInteractionClaimGenerator;
-use super::range_checks::RangeChecksInteractionClaimGenerator;
 use crate::witness::blake_context::{
     blake_context_write_trace, BlakeContextInteractionClaimGenerator,
 };
-use crate::witness::builtins::{builtins_write_trace, get_builtins};
+use crate::witness::builtins::{
+    builtins_write_trace, get_builtins, BuiltinsInteractionClaimGenerator,
+};
 use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenerator};
 use crate::witness::components::pedersen::{
     pedersen_context_write_trace, PedersenContextInteractionClaimGenerator,
@@ -32,9 +31,11 @@ use crate::witness::components::{
     memory_address_to_id, memory_id_to_big, verify_bitwise_xor_4, verify_bitwise_xor_7,
     verify_bitwise_xor_8, verify_bitwise_xor_9, verify_instruction,
 };
-use crate::witness::opcodes::{get_opcodes, opcodes_write_trace};
+use crate::witness::opcodes::{get_opcodes, opcodes_write_trace, OpcodesInteractionClaimGenerator};
 use crate::witness::prelude::{PreProcessedTrace, M31};
-use crate::witness::range_checks::{get_range_checks, range_checks_write_trace};
+use crate::witness::range_checks::{
+    get_range_checks, range_checks_write_trace, RangeChecksInteractionClaimGenerator,
+};
 use crate::witness::utils::TreeBuilder;
 
 fn extract_public_segments(
@@ -210,7 +211,29 @@ impl CairoClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
         let span = span!(Level::INFO, "write opcode trace").entered();
-        let (opcodes_claim, opcodes_interaction_gen) = opcodes_write_trace(
+        let (
+            add_claim,
+            add_small_claim,
+            add_ap_claim,
+            assert_eq_claim,
+            assert_eq_imm_claim,
+            assert_eq_double_deref_claim,
+            blake_claim,
+            call_claim,
+            call_rel_imm_claim,
+            generic_opcode_claim,
+            jnz_claim,
+            jnz_taken_claim,
+            jump_claim,
+            jump_double_deref_claim,
+            jump_rel_claim,
+            jump_rel_imm_claim,
+            mul_claim,
+            mul_small_claim,
+            qm31_claim,
+            ret_claim,
+            opcodes_interaction_gen,
+        ) = opcodes_write_trace(
             self.add_opcode,
             self.add_opcode_small,
             self.add_ap_opcode,
@@ -255,7 +278,14 @@ impl CairoClaimGenerator {
                 self.memory_address_to_id.as_ref().unwrap(),
                 self.memory_id_to_big.as_ref().unwrap(),
             );
-        let (blake_context_claim, blake_context_interaction_gen) = blake_context_write_trace(
+        let (
+            blake_round_claim,
+            blake_g_claim,
+            blake_round_sigma_claim,
+            triple_xor_32_claim,
+            verify_bitwise_xor_12_claim,
+            blake_context_interaction_gen,
+        ) = blake_context_write_trace(
             self.blake_round,
             self.blake_g,
             self.blake_round_sigma,
@@ -270,7 +300,16 @@ impl CairoClaimGenerator {
             self.verify_bitwise_xor_8.as_ref(),
             self.verify_bitwise_xor_9.as_ref(),
         );
-        let (builtins_claim, builtins_interaction_gen) = builtins_write_trace(
+        let (
+            add_mod_builtin_claim,
+            bitwise_builtin_claim,
+            mul_mod_builtin_claim,
+            pedersen_builtin_claim,
+            poseidon_builtin_claim,
+            range_check96_builtin_claim,
+            range_check_builtin_claim,
+            builtins_interaction_gen,
+        ) = builtins_write_trace(
             self.add_mod_builtin,
             self.bitwise_builtin,
             self.mul_mod_builtin,
@@ -290,34 +329,45 @@ impl CairoClaimGenerator {
             self.verify_bitwise_xor_8.as_ref(),
             self.verify_bitwise_xor_9.as_ref(),
         );
-        let (pedersen_context_claim, pedersen_context_interaction_gen) =
-            pedersen_context_write_trace(
-                self.pedersen_aggregator_window_bits_18,
-                self.partial_ec_mul_window_bits_18,
-                self.pedersen_points_table_window_bits_18,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_8.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            poseidon_context_write_trace(
-                self.poseidon_aggregator,
-                self.poseidon_3_partial_rounds_chain,
-                self.poseidon_full_round_chain,
-                self.cube_252,
-                self.poseidon_round_keys,
-                self.range_check_252_width_27,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_3_3_3_3_3.as_ref(),
-                self.range_check_4_4_4_4.as_ref(),
-                self.range_check_4_4.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_18.as_ref(),
-                self.range_check_20.as_ref(),
-            );
+        let (
+            pedersen_aggregator_claim,
+            partial_ec_mul_claim,
+            pedersen_points_table_claim,
+            pedersen_context_interaction_gen,
+        ) = pedersen_context_write_trace(
+            self.pedersen_aggregator_window_bits_18,
+            self.partial_ec_mul_window_bits_18,
+            self.pedersen_points_table_window_bits_18,
+            tree_builder,
+            self.memory_id_to_big.as_ref(),
+            self.range_check_8.as_ref(),
+            self.range_check_9_9.as_ref(),
+            self.range_check_20.as_ref(),
+        );
+        let (
+            poseidon_aggregator_claim,
+            poseidon_3_partial_rounds_chain_claim,
+            poseidon_full_round_chain_claim,
+            cube_252_claim,
+            poseidon_round_keys_claim,
+            range_check_felt_252_width_27_claim,
+            poseidon_context_interaction_gen,
+        ) = poseidon_context_write_trace(
+            self.poseidon_aggregator,
+            self.poseidon_3_partial_rounds_chain,
+            self.poseidon_full_round_chain,
+            self.cube_252,
+            self.poseidon_round_keys,
+            self.range_check_252_width_27,
+            tree_builder,
+            self.memory_id_to_big.as_ref(),
+            self.range_check_3_3_3_3_3.as_ref(),
+            self.range_check_4_4_4_4.as_ref(),
+            self.range_check_4_4.as_ref(),
+            self.range_check_9_9.as_ref(),
+            self.range_check_18.as_ref(),
+            self.range_check_20.as_ref(),
+        );
         let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
             self.memory_address_to_id.unwrap().write_trace(tree_builder);
 
@@ -329,7 +379,22 @@ impl CairoClaimGenerator {
                 self.range_check_9_9.as_ref().unwrap(),
                 LOG_MAX_BIG_SIZE,
             );
-        let (range_checks_claim, range_checks_interaction_gen) = range_checks_write_trace(
+        let (
+            range_check_6_claim,
+            range_check_8_claim,
+            range_check_11_claim,
+            range_check_12_claim,
+            range_check_18_claim,
+            range_check_20_claim,
+            range_check_4_3_claim,
+            range_check_4_4_claim,
+            range_check_9_9_claim,
+            range_check_7_2_5_claim,
+            range_check_3_6_6_3_claim,
+            range_check_4_4_4_4_claim,
+            range_check_3_3_3_3_3_claim,
+            range_checks_interaction_gen,
+        ) = range_checks_write_trace(
             self.range_check_6,
             self.range_check_8,
             self.range_check_11,
@@ -357,34 +422,82 @@ impl CairoClaimGenerator {
         (
             CairoClaim {
                 public_data: self.public_data,
-                opcodes: opcodes_claim,
-                verify_instruction: verify_instruction_claim,
-                blake_context: blake_context_claim,
-                builtins: builtins_claim,
-                pedersen_context: pedersen_context_claim,
-                poseidon_context: poseidon_context_claim,
-                memory_address_to_id: memory_address_to_id_claim,
-                memory_id_to_value: memory_id_to_value_claim,
-                range_checks: range_checks_claim,
-                verify_bitwise_xor_4: verify_bitwise_xor_4_claim,
-                verify_bitwise_xor_7: verify_bitwise_xor_7_claim,
-                verify_bitwise_xor_8: verify_bitwise_xor_8_claim,
-                verify_bitwise_xor_9: verify_bitwise_xor_9_claim,
+                add_opcode: add_claim,
+                add_opcode_small: add_small_claim,
+                add_ap_opcode: add_ap_claim,
+                assert_eq_opcode: assert_eq_claim,
+                assert_eq_opcode_imm: assert_eq_imm_claim,
+                assert_eq_opcode_double_deref: assert_eq_double_deref_claim,
+                blake_compress_opcode: blake_claim,
+                call_opcode_abs: call_claim,
+                call_opcode_rel_imm: call_rel_imm_claim,
+                generic_opcode: generic_opcode_claim,
+                jnz_opcode_non_taken: jnz_claim,
+                jnz_opcode_taken: jnz_taken_claim,
+                jump_opcode_abs: jump_claim,
+                jump_opcode_double_deref: jump_double_deref_claim,
+                jump_opcode_rel: jump_rel_claim,
+                jump_opcode_rel_imm: jump_rel_imm_claim,
+                mul_opcode: mul_claim,
+                mul_opcode_small: mul_small_claim,
+                qm_31_add_mul_opcode: qm31_claim,
+                ret_opcode: ret_claim,
+                verify_instruction: Some(verify_instruction_claim),
+                blake_round: blake_round_claim,
+                blake_g: blake_g_claim,
+                blake_round_sigma: blake_round_sigma_claim,
+                triple_xor_32: triple_xor_32_claim,
+                verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
+                add_mod_builtin: add_mod_builtin_claim,
+                bitwise_builtin: bitwise_builtin_claim,
+                mul_mod_builtin: mul_mod_builtin_claim,
+                pedersen_builtin: pedersen_builtin_claim,
+                poseidon_builtin: poseidon_builtin_claim,
+                range_check96_builtin: range_check96_builtin_claim,
+                range_check_builtin: range_check_builtin_claim,
+                pedersen_aggregator_window_bits_18: pedersen_aggregator_claim,
+                partial_ec_mul_window_bits_18: partial_ec_mul_claim,
+                pedersen_points_table_window_bits_18: pedersen_points_table_claim,
+                poseidon_aggregator: poseidon_aggregator_claim,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain: poseidon_full_round_chain_claim,
+                cube_252: cube_252_claim,
+                poseidon_round_keys: poseidon_round_keys_claim,
+                range_check_252_width_27: range_check_felt_252_width_27_claim,
+                memory_address_to_id: Some(memory_address_to_id_claim),
+                memory_id_to_big: Some(memory_id_to_value_claim),
+                range_check_6: range_check_6_claim,
+                range_check_8: range_check_8_claim,
+                range_check_11: range_check_11_claim,
+                range_check_12: range_check_12_claim,
+                range_check_18: range_check_18_claim,
+                range_check_20: range_check_20_claim,
+                range_check_4_3: range_check_4_3_claim,
+                range_check_4_4: range_check_4_4_claim,
+                range_check_9_9: range_check_9_9_claim,
+                range_check_7_2_5: range_check_7_2_5_claim,
+                range_check_3_6_6_3: range_check_3_6_6_3_claim,
+                range_check_4_4_4_4: range_check_4_4_4_4_claim,
+                range_check_3_3_3_3_3: range_check_3_3_3_3_3_claim,
+                verify_bitwise_xor_4: Some(verify_bitwise_xor_4_claim),
+                verify_bitwise_xor_7: Some(verify_bitwise_xor_7_claim),
+                verify_bitwise_xor_8: Some(verify_bitwise_xor_8_claim),
+                verify_bitwise_xor_9: Some(verify_bitwise_xor_9_claim),
             },
             CairoInteractionClaimGenerator {
                 opcodes_interaction_gen,
                 verify_instruction_interaction_gen,
                 blake_context_interaction_gen,
-                builtins_interaction_gen,
-                pedersen_context_interaction_gen,
-                poseidon_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
-                range_checks_interaction_gen,
                 verify_bitwise_xor_4_interaction_gen,
                 verify_bitwise_xor_7_interaction_gen,
                 verify_bitwise_xor_8_interaction_gen,
                 verify_bitwise_xor_9_interaction_gen,
+                builtins_interaction_gen,
+                pedersen_context_interaction_gen,
+                poseidon_context_interaction_gen,
+                range_checks_interaction_gen,
             },
         )
     }
@@ -412,22 +525,68 @@ impl CairoInteractionClaimGenerator {
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> CairoInteractionClaim {
-        let opcodes_interaction_claims = self
+        let (
+            add_interaction_claim,
+            add_small_interaction_claim,
+            add_ap_interaction_claim,
+            assert_eq_interaction_claim,
+            assert_eq_imm_interaction_claim,
+            assert_eq_double_deref_interaction_claim,
+            blake_interaction_claim,
+            call_interaction_claim,
+            call_rel_imm_interaction_claim,
+            generic_opcode_interaction_claim,
+            jnz_interaction_claim,
+            jnz_taken_interaction_claim,
+            jump_interaction_claim,
+            jump_double_deref_interaction_claim,
+            jump_rel_interaction_claim,
+            jump_rel_imm_interaction_claim,
+            mul_interaction_claim,
+            mul_small_interaction_claim,
+            qm31_interaction_claim,
+            ret_interaction_claim,
+        ) = self
             .opcodes_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_instruction_interaction_claim = self
             .verify_instruction_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_context_interaction_claim = self
+        let (
+            blake_round_interaction_claim,
+            blake_g_interaction_claim,
+            blake_round_sigma_interaction_claim,
+            triple_xor_32_interaction_claim,
+            verify_bitwise_xor_12_interaction_claim,
+        ) = self
             .blake_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let builtins_interaction_claims = self
+        let (
+            add_mod_builtin_interaction_claim,
+            bitwise_builtin_interaction_claim,
+            mul_mod_builtin_interaction_claim,
+            pedersen_builtin_interaction_claim,
+            poseidon_builtin_interaction_claim,
+            range_check96_builtin_interaction_claim,
+            range_check_builtin_interaction_claim,
+        ) = self
             .builtins_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_context_interaction_claim = self
+        let (
+            pedersen_aggregator_interaction_claim,
+            partial_ec_mul_interaction_claim,
+            pedersen_points_table_interaction_claim,
+        ) = self
             .pedersen_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-        let poseidon_context_interaction_claim = self
+        let (
+            poseidon_aggregator_interaction_claim,
+            poseidon_3_partial_rounds_chain_interaction_claim,
+            poseidon_full_round_chain_interaction_claim,
+            cube_252_interaction_claim,
+            poseidon_round_keys_interaction_claim,
+            range_check_felt_252_width_27_interaction_claim,
+        ) = self
             .poseidon_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let memory_address_to_id_interaction_claim = self
@@ -436,8 +595,21 @@ impl CairoInteractionClaimGenerator {
         let memory_id_to_value_interaction_claim = self
             .memory_id_to_value_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
-
-        let range_checks_interaction_claim = self
+        let (
+            range_check_6_interaction_claim,
+            range_check_8_interaction_claim,
+            range_check_11_interaction_claim,
+            range_check_12_interaction_claim,
+            range_check_18_interaction_claim,
+            range_check_20_interaction_claim,
+            range_check_4_3_interaction_claim,
+            range_check_4_4_interaction_claim,
+            range_check_9_9_interaction_claim,
+            range_check_7_2_5_interaction_claim,
+            range_check_3_6_6_3_interaction_claim,
+            range_check_4_4_4_4_interaction_claim,
+            range_check_3_3_3_3_3_interaction_claim,
+        ) = self
             .range_checks_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let verify_bitwise_xor_4_interaction_claim = self
@@ -454,19 +626,67 @@ impl CairoInteractionClaimGenerator {
             .write_interaction_trace(tree_builder, common_lookup_elements);
 
         CairoInteractionClaim {
-            opcodes: opcodes_interaction_claims,
-            verify_instruction: verify_instruction_interaction_claim,
-            blake_context: blake_context_interaction_claim,
-            builtins: builtins_interaction_claims,
-            pedersen_context: pedersen_context_interaction_claim,
-            poseidon_context: poseidon_context_interaction_claim,
-            memory_address_to_id: memory_address_to_id_interaction_claim,
-            memory_id_to_value: memory_id_to_value_interaction_claim,
-            range_checks: range_checks_interaction_claim,
-            verify_bitwise_xor_4: verify_bitwise_xor_4_interaction_claim,
-            verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
-            verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
-            verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+            add_opcode: add_interaction_claim,
+            add_opcode_small: add_small_interaction_claim,
+            add_ap_opcode: add_ap_interaction_claim,
+            assert_eq_opcode: assert_eq_interaction_claim,
+            assert_eq_opcode_imm: assert_eq_imm_interaction_claim,
+            assert_eq_opcode_double_deref: assert_eq_double_deref_interaction_claim,
+            blake_compress_opcode: blake_interaction_claim,
+            call_opcode_abs: call_interaction_claim,
+            call_opcode_rel_imm: call_rel_imm_interaction_claim,
+            generic_opcode: generic_opcode_interaction_claim,
+            jnz_opcode_non_taken: jnz_interaction_claim,
+            jnz_opcode_taken: jnz_taken_interaction_claim,
+            jump_opcode_abs: jump_interaction_claim,
+            jump_opcode_double_deref: jump_double_deref_interaction_claim,
+            jump_opcode_rel: jump_rel_interaction_claim,
+            jump_opcode_rel_imm: jump_rel_imm_interaction_claim,
+            mul_opcode: mul_interaction_claim,
+            mul_opcode_small: mul_small_interaction_claim,
+            qm_31_add_mul_opcode: qm31_interaction_claim,
+            ret_opcode: ret_interaction_claim,
+            verify_instruction: Some(verify_instruction_interaction_claim),
+            blake_round: blake_round_interaction_claim,
+            blake_g: blake_g_interaction_claim,
+            blake_round_sigma: blake_round_sigma_interaction_claim,
+            triple_xor_32: triple_xor_32_interaction_claim,
+            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
+            add_mod_builtin: add_mod_builtin_interaction_claim,
+            bitwise_builtin: bitwise_builtin_interaction_claim,
+            mul_mod_builtin: mul_mod_builtin_interaction_claim,
+            pedersen_builtin: pedersen_builtin_interaction_claim,
+            poseidon_builtin: poseidon_builtin_interaction_claim,
+            range_check96_builtin: range_check96_builtin_interaction_claim,
+            range_check_builtin: range_check_builtin_interaction_claim,
+            pedersen_aggregator_window_bits_18: pedersen_aggregator_interaction_claim,
+            partial_ec_mul_window_bits_18: partial_ec_mul_interaction_claim,
+            pedersen_points_table_window_bits_18: pedersen_points_table_interaction_claim,
+            poseidon_aggregator: poseidon_aggregator_interaction_claim,
+            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
+            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
+            cube_252: cube_252_interaction_claim,
+            poseidon_round_keys: poseidon_round_keys_interaction_claim,
+            range_check_252_width_27: range_check_felt_252_width_27_interaction_claim,
+            memory_address_to_id: Some(memory_address_to_id_interaction_claim),
+            memory_id_to_big: Some(memory_id_to_value_interaction_claim),
+            range_check_6: range_check_6_interaction_claim,
+            range_check_8: range_check_8_interaction_claim,
+            range_check_11: range_check_11_interaction_claim,
+            range_check_12: range_check_12_interaction_claim,
+            range_check_18: range_check_18_interaction_claim,
+            range_check_20: range_check_20_interaction_claim,
+            range_check_4_3: range_check_4_3_interaction_claim,
+            range_check_4_4: range_check_4_4_interaction_claim,
+            range_check_9_9: range_check_9_9_interaction_claim,
+            range_check_7_2_5: range_check_7_2_5_interaction_claim,
+            range_check_3_6_6_3: range_check_3_6_6_3_interaction_claim,
+            range_check_4_4_4_4: range_check_4_4_4_4_interaction_claim,
+            range_check_3_3_3_3_3: range_check_3_3_3_3_3_interaction_claim,
+            verify_bitwise_xor_4: Some(verify_bitwise_xor_4_interaction_claim),
+            verify_bitwise_xor_7: Some(verify_bitwise_xor_7_interaction_claim),
+            verify_bitwise_xor_8: Some(verify_bitwise_xor_8_interaction_claim),
+            verify_bitwise_xor_9: Some(verify_bitwise_xor_9_interaction_claim),
         }
     }
 }

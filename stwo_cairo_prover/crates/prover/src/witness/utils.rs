@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 use std::sync::atomic::{AtomicU32, Ordering};
 
-use cairo_air::air::CairoClaim;
+use cairo_air::cairo_claim::CairoClaim;
 use cairo_air::PreProcessedTraceVariant;
 use itertools::Itertools;
 use num_traits::{One, Zero};

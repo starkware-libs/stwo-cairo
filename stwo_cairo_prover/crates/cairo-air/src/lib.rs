@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 pub mod air;
 pub mod blake;
 pub mod builtins_air;
+pub mod cairo_claim;
 pub mod components;
 pub mod opcodes_air;
 pub mod pedersen;
