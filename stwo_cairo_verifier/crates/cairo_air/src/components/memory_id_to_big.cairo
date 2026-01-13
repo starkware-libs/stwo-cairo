@@ -1,7 +1,6 @@
 use core::num::traits::Zero;
 use stwo_constraint_framework::{PreprocessedMaskValues, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::channel::Channel;
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::{QM31, QM31Serde, QM31_EXTENSION_DEGREE};
 use stwo_verifier_core::poly::circle::CanonicCosetImpl;
 use stwo_verifier_core::utils::{ArrayImpl, pow2};
@@ -160,7 +159,6 @@ pub impl CairoBigComponentImpl of CairoComponent<BigComponent> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let params = constraints_big::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
@@ -206,7 +204,6 @@ pub impl CairoSmallComponentImpl of CairoComponent<SmallComponent> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let params = constraints_small::ConstraintParams {
             column_size: pow2(*self.log_n_rows).try_into().unwrap(),
