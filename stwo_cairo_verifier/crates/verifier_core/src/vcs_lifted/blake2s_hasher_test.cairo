@@ -1,6 +1,6 @@
 use core::box::BoxImpl;
 use crate::fields::m31::m31;
-use crate::vcs::blake2s_hasher::{Blake2sHash, Blake2sMerkleHasher};
+use crate::vcs_lifted::blake2s_hasher::{Blake2sHash, Blake2sMerkleHasher};
 
 #[test]
 fn test_hash_node_with_no_children() {

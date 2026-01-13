@@ -12,7 +12,7 @@ use crate::pcs::verifier::{
 };
 use crate::poly::circle::{CanonicCosetImpl, CanonicCosetTrait};
 use crate::utils::{ArrayImpl, SpanImpl};
-use crate::vcs::MerkleHasher;
+use crate::vcs_lifted::MerkleHasher;
 use crate::{ColumnSpan, Hash, TreeSpan};
 
 // The composition polynomial is split into 2 polynomials, so it will have the same degree bound as

@@ -3,7 +3,7 @@ use core::blake::{blake2s_compress, blake2s_finalize};
 use core::box::BoxImpl;
 use crate::BaseField;
 use crate::fields::m31::{M31, M31Zero};
-use crate::vcs::hasher::MerkleHasher;
+use crate::vcs_lifted::hasher::MerkleHasher;
 
 const M31_ELEMENTS_IN_MSG: usize = 16;
 

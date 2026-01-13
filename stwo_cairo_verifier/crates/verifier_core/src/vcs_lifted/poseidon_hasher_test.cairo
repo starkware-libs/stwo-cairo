@@ -1,5 +1,5 @@
 use crate::fields::m31::m31;
-use crate::vcs::poseidon_hasher::PoseidonMerkleHasher;
+use crate::vcs_lifted::poseidon_hasher::PoseidonMerkleHasher;
 
 #[test]
 fn test_m31() {

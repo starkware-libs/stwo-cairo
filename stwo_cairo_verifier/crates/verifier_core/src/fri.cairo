@@ -13,9 +13,8 @@ use crate::queries::{Queries, QueriesImpl};
 use crate::utils::{
     ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
 };
-use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::MerkleVerifier;
-use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
+use crate::vcs_lifted::MerkleHasher;
+use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierLiftedTrait};
 use crate::{ColumnArray, Hash};
 
 /// Fold step size for circle polynomials.

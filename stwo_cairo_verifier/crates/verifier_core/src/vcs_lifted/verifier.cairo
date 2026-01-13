@@ -3,10 +3,25 @@ use core::fmt::{Debug, Error, Formatter};
 use core::num::traits::DivRem;
 use core::option::OptionTrait;
 use crate::BaseField;
-use crate::utils::{SpanExTrait, pow2};
-use crate::vcs::hasher::MerkleHasher;
-use crate::vcs::verifier::MerkleVerifier;
+use crate::utils::{ColumnsIndicesByLogDegreeBound, SpanExTrait, pow2};
+use crate::vcs_lifted::hasher::MerkleHasher;
 
+pub struct MerkleVerifier<impl H: MerkleHasher> {
+    /// The root of the Merkle tree being verified
+    pub root: H::Hash,
+    // The height of the Merkle tree.
+    //
+    // The height can be computed as log_blowup_factor + column_indices_by_log_deg_bound.len() - 1.
+    pub tree_height: u32,
+    /// Indices of columns, grouped by their associated degree bound.
+    ///
+    /// While the MerkleVerifier itself only needs to know the number of columns for each degree
+    /// bound, we store the full list of indices here because the Polynomial Commitment Scheme (PCS)
+    /// verifier requires access to the actual indices. Keeping this information here avoids the
+    /// need to save us computing 'n_column_by_log_deg_bound' when creating the MerkleVerifier.
+    pub column_indices_by_log_deg_bound: ColumnsIndicesByLogDegreeBound,
+}
+impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
 pub struct MerkleDecommitment<impl H: MerkleHasher> {
     /// Hash values that the verifier needs but cannot deduce from previous computations, in the

@@ -1,7 +1,7 @@
 use core::box::BoxImpl;
 use crate::channel::blake2s::{Blake2sChannel, ChannelTrait, check_leading_zeros};
 use crate::fields::qm31::qm31_const;
-use crate::vcs::blake2s_hasher::Blake2sHash;
+use crate::vcs_lifted::blake2s_hasher::Blake2sHash;
 
 #[test]
 fn test_mix_felts_with_1_felt() {

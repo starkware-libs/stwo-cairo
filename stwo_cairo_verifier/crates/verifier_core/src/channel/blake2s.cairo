@@ -9,7 +9,7 @@ use crate::SecureField;
 use crate::fields::m31::{M31, M31Trait};
 use crate::fields::qm31::QM31Trait;
 use crate::utils::{ArrayImpl, pow2_u64};
-use crate::vcs::blake2s_hasher::Blake2sHash;
+use crate::vcs_lifted::blake2s_hasher::Blake2sHash;
 use super::ChannelTrait;
 
 #[cfg(test)]

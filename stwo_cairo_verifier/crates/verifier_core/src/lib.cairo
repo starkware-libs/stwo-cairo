@@ -29,7 +29,6 @@ pub mod utils;
 #[cfg(test)]
 mod utils_test;
 
-pub mod vcs;
 pub mod vcs_lifted;
 pub mod verifier;
 
@@ -48,7 +47,7 @@ pub type TreeArray<T> = Array<T>;
 pub type TreeSpan<T> = Span<T>;
 
 #[cfg(not(feature: "poseidon252_verifier"))]
-pub type Hash = vcs::blake2s_hasher::Blake2sHash;
+pub type Hash = vcs_lifted::blake2s_hasher::Blake2sHash;
 
 #[cfg(feature: "poseidon252_verifier")]
 pub type Hash = felt252;

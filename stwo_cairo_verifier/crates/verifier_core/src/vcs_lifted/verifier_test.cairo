@@ -3,9 +3,10 @@ mod BlakeTest {
     use core::box::BoxImpl;
     use crate::fields::m31::m31;
     use crate::utils::group_columns_by_degree_bound;
-    use crate::vcs::blake2s_hasher::{Blake2sHash, Blake2sMerkleHasher};
-    use crate::vcs::verifier::MerkleVerifier;
-    use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
+    use crate::vcs_lifted::blake2s_hasher::{Blake2sHash, Blake2sMerkleHasher};
+    use crate::vcs_lifted::verifier::{
+        MerkleDecommitment, MerkleVerifier, MerkleVerifierLiftedTrait,
+    };
 
     fn prepare_verifier_values() -> Array<Blake2sHash> {
         let root = Blake2sHash {

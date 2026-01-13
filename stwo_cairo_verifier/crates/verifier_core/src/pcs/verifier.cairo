@@ -10,9 +10,8 @@ use crate::utils::{
     ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, group_columns_by_degree_bound,
     pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
 };
-use crate::vcs::MerkleHasher;
-use crate::vcs::verifier::MerkleVerifier;
-use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifierLiftedTrait};
+use crate::vcs_lifted::MerkleHasher;
+use crate::vcs_lifted::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierLiftedTrait};
 use crate::verifier::VerificationError;
 use crate::{ColumnSpan, Hash, TreeArray, TreeSpan, queries};
 use super::PcsConfig;
