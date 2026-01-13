@@ -5,7 +5,7 @@ use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::{RelocatedTraceEntry, TraceEntry};
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
-use stwo_cairo_common::prover_types::simd::N_LANES;
+use stwo_cairo_common::prover_types::simd_lanes::N_LANES;
 use tracing::{span, Level};
 
 use crate::builtins::MemorySegmentAddresses;

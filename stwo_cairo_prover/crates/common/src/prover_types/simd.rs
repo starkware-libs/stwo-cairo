@@ -14,11 +14,8 @@ use super::cpu::{
     BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
     PRIME,
 };
+use super::simd_lanes::N_LANES;
 use crate::memory::N_M31_IN_FELT252;
-
-pub const LOG_N_LANES: u32 = 4;
-
-pub const N_LANES: usize = 1 << LOG_N_LANES;
 
 pub const P_BROADCAST: Simd<u32, N_LANES> = Simd::from_array([PRIME; N_LANES]);
 

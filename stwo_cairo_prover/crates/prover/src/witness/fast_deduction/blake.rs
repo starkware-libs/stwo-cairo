@@ -4,7 +4,8 @@ use std::sync::Arc;
 
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_common::preprocessed_columns::blake::{BLAKE_SIGMA, N_BLAKE_SIGMA_COLS};
-use stwo_cairo_common::prover_types::simd::{PackedUInt32, N_LANES};
+use stwo_cairo_common::prover_types::simd::PackedUInt32;
+use stwo_cairo_common::prover_types::simd_lanes::N_LANES;
 
 use crate::stwo::prover::backend::simd::m31::PackedM31;
 
