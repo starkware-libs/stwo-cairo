@@ -1,5 +1,5 @@
 use std::array;
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, MemorySmallValue, PublicData, PublicMemory,
@@ -35,7 +35,7 @@ use crate::witness::components::{
 use crate::witness::opcodes::{get_opcodes, opcodes_write_trace};
 use crate::witness::prelude::{PreProcessedTrace, M31};
 use crate::witness::range_checks::{get_range_checks, range_checks_write_trace};
-use crate::witness::utils::TreeBuilder;
+use crate::witness::utils::{CollectingTreeBuilder, TreeBuilder};
 
 fn extract_public_segments(
     memory: &Memory,
@@ -406,67 +406,200 @@ pub struct CairoInteractionClaimGenerator {
     verify_bitwise_xor_9_interaction_gen: verify_bitwise_xor_9::InteractionClaimGenerator,
     // ...
 }
+/// Helper struct to hold the result of parallel interaction trace computation.
+struct CairoInteractionTraceResult<T> {
+    claim: T,
+    evals: CollectingTreeBuilder,
+}
+
 impl CairoInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> CairoInteractionClaim {
-        let opcodes_interaction_claims = self
-            .opcodes_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_instruction_interaction_claim = self
-            .verify_instruction_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let blake_context_interaction_claim = self
-            .blake_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let builtins_interaction_claims = self
-            .builtins_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_context_interaction_claim = self
-            .pedersen_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let poseidon_context_interaction_claim = self
-            .poseidon_context_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_address_to_id_interaction_claim = self
-            .memory_address_to_id_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let memory_id_to_value_interaction_claim = self
-            .memory_id_to_value_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+        // Use Mutex to store results from parallel tasks
+        let opcodes_result: Mutex<Option<CairoInteractionTraceResult<_>>> = Mutex::new(None);
+        let verify_instruction_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let blake_context_result: Mutex<Option<CairoInteractionTraceResult<_>>> = Mutex::new(None);
+        let builtins_result: Mutex<Option<CairoInteractionTraceResult<_>>> = Mutex::new(None);
+        let pedersen_context_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let poseidon_context_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let memory_address_to_id_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let memory_id_to_value_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let range_checks_result: Mutex<Option<CairoInteractionTraceResult<_>>> = Mutex::new(None);
+        let verify_bitwise_xor_4_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let verify_bitwise_xor_7_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let verify_bitwise_xor_8_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let verify_bitwise_xor_9_result: Mutex<Option<CairoInteractionTraceResult<_>>> =
+            Mutex::new(None);
 
-        let range_checks_interaction_claim = self
-            .range_checks_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_4_interaction_claim = self
-            .verify_bitwise_xor_4_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_7_interaction_claim = self
-            .verify_bitwise_xor_7_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_8_interaction_claim = self
-            .verify_bitwise_xor_8_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let verify_bitwise_xor_9_interaction_claim = self
-            .verify_bitwise_xor_9_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+        // Process all generators in parallel using rayon::scope
+        rayon::scope(|s| {
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .opcodes_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *opcodes_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .verify_instruction_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *verify_instruction_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .blake_context_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *blake_context_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .builtins_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *builtins_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .pedersen_context_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *pedersen_context_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .poseidon_context_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *poseidon_context_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .memory_address_to_id_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *memory_address_to_id_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .memory_id_to_value_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *memory_id_to_value_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .range_checks_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *range_checks_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .verify_bitwise_xor_4_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *verify_bitwise_xor_4_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .verify_bitwise_xor_7_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *verify_bitwise_xor_7_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .verify_bitwise_xor_8_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *verify_bitwise_xor_8_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .verify_bitwise_xor_9_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *verify_bitwise_xor_9_result.lock().unwrap() =
+                    Some(CairoInteractionTraceResult { claim, evals: builder });
+            });
+        });
+
+        // Extract results from mutexes
+        let opcodes_result = opcodes_result.into_inner().unwrap().unwrap();
+        let verify_instruction_result = verify_instruction_result.into_inner().unwrap().unwrap();
+        let blake_context_result = blake_context_result.into_inner().unwrap().unwrap();
+        let builtins_result = builtins_result.into_inner().unwrap().unwrap();
+        let pedersen_context_result = pedersen_context_result.into_inner().unwrap().unwrap();
+        let poseidon_context_result = poseidon_context_result.into_inner().unwrap().unwrap();
+        let memory_address_to_id_result =
+            memory_address_to_id_result.into_inner().unwrap().unwrap();
+        let memory_id_to_value_result = memory_id_to_value_result.into_inner().unwrap().unwrap();
+        let range_checks_result = range_checks_result.into_inner().unwrap().unwrap();
+        let verify_bitwise_xor_4_result =
+            verify_bitwise_xor_4_result.into_inner().unwrap().unwrap();
+        let verify_bitwise_xor_7_result =
+            verify_bitwise_xor_7_result.into_inner().unwrap().unwrap();
+        let verify_bitwise_xor_8_result =
+            verify_bitwise_xor_8_result.into_inner().unwrap().unwrap();
+        let verify_bitwise_xor_9_result =
+            verify_bitwise_xor_9_result.into_inner().unwrap().unwrap();
+
+        // Sequentially extend the tree builder with all collected evaluations in deterministic
+        // order
+        opcodes_result.evals.write_to(tree_builder);
+        verify_instruction_result.evals.write_to(tree_builder);
+        blake_context_result.evals.write_to(tree_builder);
+        builtins_result.evals.write_to(tree_builder);
+        pedersen_context_result.evals.write_to(tree_builder);
+        poseidon_context_result.evals.write_to(tree_builder);
+        memory_address_to_id_result.evals.write_to(tree_builder);
+        memory_id_to_value_result.evals.write_to(tree_builder);
+        range_checks_result.evals.write_to(tree_builder);
+        verify_bitwise_xor_4_result.evals.write_to(tree_builder);
+        verify_bitwise_xor_7_result.evals.write_to(tree_builder);
+        verify_bitwise_xor_8_result.evals.write_to(tree_builder);
+        verify_bitwise_xor_9_result.evals.write_to(tree_builder);
 
         CairoInteractionClaim {
-            opcodes: opcodes_interaction_claims,
-            verify_instruction: verify_instruction_interaction_claim,
-            blake_context: blake_context_interaction_claim,
-            builtins: builtins_interaction_claims,
-            pedersen_context: pedersen_context_interaction_claim,
-            poseidon_context: poseidon_context_interaction_claim,
-            memory_address_to_id: memory_address_to_id_interaction_claim,
-            memory_id_to_value: memory_id_to_value_interaction_claim,
-            range_checks: range_checks_interaction_claim,
-            verify_bitwise_xor_4: verify_bitwise_xor_4_interaction_claim,
-            verify_bitwise_xor_7: verify_bitwise_xor_7_interaction_claim,
-            verify_bitwise_xor_8: verify_bitwise_xor_8_interaction_claim,
-            verify_bitwise_xor_9: verify_bitwise_xor_9_interaction_claim,
+            opcodes: opcodes_result.claim,
+            verify_instruction: verify_instruction_result.claim,
+            blake_context: blake_context_result.claim,
+            builtins: builtins_result.claim,
+            pedersen_context: pedersen_context_result.claim,
+            poseidon_context: poseidon_context_result.claim,
+            memory_address_to_id: memory_address_to_id_result.claim,
+            memory_id_to_value: memory_id_to_value_result.claim,
+            range_checks: range_checks_result.claim,
+            verify_bitwise_xor_4: verify_bitwise_xor_4_result.claim,
+            verify_bitwise_xor_7: verify_bitwise_xor_7_result.claim,
+            verify_bitwise_xor_8: verify_bitwise_xor_8_result.claim,
+            verify_bitwise_xor_9: verify_bitwise_xor_9_result.claim,
         }
     }
 }
