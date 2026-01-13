@@ -22,6 +22,7 @@ use stwo_cairo_common::prover_types::simd::PackedFelt252;
 
 use crate::witness::components::range_check_9_9;
 use crate::witness::prelude::*;
+use itertools::izip;
 use crate::witness::utils::{AtomicMultiplicityColumn, TreeBuilder};
 
 pub type InputType = M31;
@@ -434,8 +435,7 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
             let mut col_gen = big_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), limb0, limb1, limb2, limb3)
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
                         0 => (
@@ -535,8 +535,7 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in self.small_values.iter().tuples().enumerate() {
             let mut col_gen = small_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), limb0, limb1, limb2, limb3)
                 .for_each(|(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 2 {
                         0 => (

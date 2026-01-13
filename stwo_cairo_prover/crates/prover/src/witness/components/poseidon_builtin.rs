@@ -5,6 +5,7 @@ use cairo_air::components::poseidon_builtin::{Claim, InteractionClaim, N_TRACE_C
 
 use crate::witness::components::{memory_address_to_id, poseidon_aggregator};
 use crate::witness::prelude::*;
+use itertools::izip;
 
 #[derive(Default)]
 pub struct ClaimGenerator {
@@ -236,12 +237,11 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.memory_address_to_id_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -250,12 +250,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_address_to_id_2,
             &self.lookup_data.memory_address_to_id_3,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -264,12 +263,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_address_to_id_4,
             &self.lookup_data.memory_address_to_id_5,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -279,11 +277,10 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.poseidon_aggregator_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values)| {
                 let denom = common_lookup_elements.combine(values);
                 writer.write_frac(PackedQM31::one(), denom);

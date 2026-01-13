@@ -4,6 +4,7 @@
 use cairo_air::components::range_check_18::{Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS};
 
 use crate::witness::prelude::*;
+use itertools::izip;
 
 pub type InputType = [M31; 1];
 pub type PackedInputType = [PackedM31; 1];
@@ -121,14 +122,13 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_18_0,
             &self.lookup_data.range_check_18_b_0,
             self.lookup_data.mults_0,
             self.lookup_data.mults_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1, mults_0, mults_1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
