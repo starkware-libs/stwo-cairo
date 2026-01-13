@@ -1,5 +1,8 @@
+use std::sync::Mutex;
+
 use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
 use cairo_air::relations::CommonLookupElements;
+use rayon::prelude::*;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 
@@ -12,7 +15,7 @@ use crate::witness::components::{
     range_check_18, range_check_20, range_check_4_4_4_4, range_check_7_2_5, range_check_9_9,
     ret_opcode, triple_xor_32, verify_bitwise_xor_8, verify_instruction,
 };
-use crate::witness::utils::TreeBuilder;
+use crate::witness::utils::{CollectingTreeBuilder, TreeBuilder};
 
 pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static str> {
     let mut opcodes = vec![];
@@ -422,133 +425,327 @@ pub struct OpcodesInteractionClaimGenerator {
     qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
+/// Helper struct to hold the result of parallel interaction trace computation.
+struct InteractionTraceResult<T> {
+    claims: Vec<T>,
+    evals: Vec<CollectingTreeBuilder>,
+}
+
 impl OpcodesInteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> OpcodeInteractionClaim {
-        let add_interaction_claims = self
-            .add
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let add_small_interaction_claims = self
-            .add_small
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let add_ap_interaction_claims = self
-            .add_ap
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_interaction_claims = self
-            .assert_eq
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_imm_interaction_claims = self
-            .assert_eq_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let assert_eq_double_deref_interaction_claims = self
-            .assert_eq_double_deref
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let blake_interaction_claims = self
-            .blake
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let call_interaction_claims = self
-            .call
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let call_rel_imm_interaction_claims = self
-            .call_rel_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let generic_opcode_interaction_claims = self
-            .generic_opcode_interaction_gens
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jnz_interaction_claims = self
-            .jnz
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jnz_taken_interaction_claims = self
-            .jnz_taken
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_interaction_claims = self
-            .jump
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_double_deref_interaction_claims = self
-            .jump_double_deref
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_rel_interaction_claims = self
-            .jump_rel
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let jump_rel_imm_interaction_claims = self
-            .jump_rel_imm
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let mul_interaction_claims = self
-            .mul
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let mul_small_interaction_claims = self
-            .mul_small
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let qm31_interaction_claims = self
-            .qm31
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        let ret_interaction_claims = self
-            .ret_interaction_gens
-            .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+        // Use Mutex to store results from parallel tasks
+        let add_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let add_small_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let add_ap_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let assert_eq_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let assert_eq_imm_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let assert_eq_double_deref_result: Mutex<Option<InteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let blake_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let call_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let call_rel_imm_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let generic_opcode_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jnz_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jnz_taken_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jump_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jump_double_deref_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jump_rel_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let jump_rel_imm_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let mul_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let mul_small_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let qm31_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+        let ret_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
+
+        // Process all opcode types in parallel using rayon::scope
+        rayon::scope(|s| {
+            s.spawn(|_| {
+                *add_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.add, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *add_small_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.add_small,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *add_ap_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.add_ap,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *assert_eq_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.assert_eq,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *assert_eq_imm_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.assert_eq_imm,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *assert_eq_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.assert_eq_double_deref,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *blake_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.blake, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *call_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.call, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *call_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.call_rel_imm,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *generic_opcode_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.generic_opcode_interaction_gens,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *jnz_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.jnz, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *jnz_taken_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.jnz_taken,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *jump_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.jump, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *jump_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.jump_double_deref,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *jump_rel_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.jump_rel,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *jump_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.jump_rel_imm,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *mul_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.mul, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *mul_small_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.mul_small,
+                    common_lookup_elements,
+                ));
+            });
+            s.spawn(|_| {
+                *qm31_result.lock().unwrap() =
+                    Some(process_interaction_gens(self.qm31, common_lookup_elements));
+            });
+            s.spawn(|_| {
+                *ret_result.lock().unwrap() = Some(process_interaction_gens(
+                    self.ret_interaction_gens,
+                    common_lookup_elements,
+                ));
+            });
+        });
+
+        // Extract results from mutexes
+        let add_result = add_result.into_inner().unwrap().unwrap();
+        let add_small_result = add_small_result.into_inner().unwrap().unwrap();
+        let add_ap_result = add_ap_result.into_inner().unwrap().unwrap();
+        let assert_eq_result = assert_eq_result.into_inner().unwrap().unwrap();
+        let assert_eq_imm_result = assert_eq_imm_result.into_inner().unwrap().unwrap();
+        let assert_eq_double_deref_result =
+            assert_eq_double_deref_result.into_inner().unwrap().unwrap();
+        let blake_result = blake_result.into_inner().unwrap().unwrap();
+        let call_result = call_result.into_inner().unwrap().unwrap();
+        let call_rel_imm_result = call_rel_imm_result.into_inner().unwrap().unwrap();
+        let generic_opcode_result = generic_opcode_result.into_inner().unwrap().unwrap();
+        let jnz_result = jnz_result.into_inner().unwrap().unwrap();
+        let jnz_taken_result = jnz_taken_result.into_inner().unwrap().unwrap();
+        let jump_result = jump_result.into_inner().unwrap().unwrap();
+        let jump_double_deref_result = jump_double_deref_result.into_inner().unwrap().unwrap();
+        let jump_rel_result = jump_rel_result.into_inner().unwrap().unwrap();
+        let jump_rel_imm_result = jump_rel_imm_result.into_inner().unwrap().unwrap();
+        let mul_result = mul_result.into_inner().unwrap().unwrap();
+        let mul_small_result = mul_small_result.into_inner().unwrap().unwrap();
+        let qm31_result = qm31_result.into_inner().unwrap().unwrap();
+        let ret_result = ret_result.into_inner().unwrap().unwrap();
+
+        // Sequentially extend the tree builder with all collected evaluations in deterministic
+        // order
+        for builder in add_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in add_small_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in add_ap_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in assert_eq_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in assert_eq_imm_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in assert_eq_double_deref_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in blake_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in call_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in call_rel_imm_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in generic_opcode_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jnz_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jnz_taken_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jump_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jump_double_deref_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jump_rel_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in jump_rel_imm_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in mul_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in mul_small_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in qm31_result.evals {
+            builder.write_to(tree_builder);
+        }
+        for builder in ret_result.evals {
+            builder.write_to(tree_builder);
+        }
+
         OpcodeInteractionClaim {
-            add: add_interaction_claims,
-            add_small: add_small_interaction_claims,
-            add_ap: add_ap_interaction_claims,
-            assert_eq: assert_eq_interaction_claims,
-            assert_eq_imm: assert_eq_imm_interaction_claims,
-            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
-            blake: blake_interaction_claims,
-            call: call_interaction_claims,
-            call_rel_imm: call_rel_imm_interaction_claims,
-            generic: generic_opcode_interaction_claims,
-            jnz: jnz_interaction_claims,
-            jnz_taken: jnz_taken_interaction_claims,
-            jump: jump_interaction_claims,
-            jump_double_deref: jump_double_deref_interaction_claims,
-            jump_rel: jump_rel_interaction_claims,
-            jump_rel_imm: jump_rel_imm_interaction_claims,
-            mul: mul_interaction_claims,
-            mul_small: mul_small_interaction_claims,
-            qm31: qm31_interaction_claims,
-            ret: ret_interaction_claims,
+            add: add_result.claims,
+            add_small: add_small_result.claims,
+            add_ap: add_ap_result.claims,
+            assert_eq: assert_eq_result.claims,
+            assert_eq_imm: assert_eq_imm_result.claims,
+            assert_eq_double_deref: assert_eq_double_deref_result.claims,
+            blake: blake_result.claims,
+            call: call_result.claims,
+            call_rel_imm: call_rel_imm_result.claims,
+            generic: generic_opcode_result.claims,
+            jnz: jnz_result.claims,
+            jnz_taken: jnz_taken_result.claims,
+            jump: jump_result.claims,
+            jump_double_deref: jump_double_deref_result.claims,
+            jump_rel: jump_rel_result.claims,
+            jump_rel_imm: jump_rel_imm_result.claims,
+            mul: mul_result.claims,
+            mul_small: mul_small_result.claims,
+            qm31: qm31_result.claims,
+            ret: ret_result.claims,
         }
     }
 }
+
+/// Helper trait for interaction generators that can write interaction traces.
+trait InteractionGen: Send {
+    type Claim;
+    fn write_interaction_trace(
+        self,
+        tree_builder: &mut CollectingTreeBuilder,
+        common_lookup_elements: &CommonLookupElements,
+    ) -> Self::Claim;
+}
+
+/// Process a vector of interaction generators in parallel, collecting their results.
+fn process_interaction_gens<G>(
+    gens: Vec<G>,
+    common_lookup_elements: &CommonLookupElements,
+) -> InteractionTraceResult<G::Claim>
+where
+    G: InteractionGen,
+    G::Claim: Send,
+{
+    let results: Vec<_> = gens
+        .into_par_iter()
+        .map(|gen| {
+            let mut builder = CollectingTreeBuilder::new();
+            let claim = gen.write_interaction_trace(&mut builder, common_lookup_elements);
+            (claim, builder)
+        })
+        .collect();
+
+    let (claims, evals): (Vec<_>, Vec<_>) = results.into_iter().unzip();
+    InteractionTraceResult { claims, evals }
+}
+
+// Implement InteractionGen for each opcode's InteractionClaimGenerator
+macro_rules! impl_interaction_gen {
+    ($module:ident) => {
+        impl InteractionGen for $module::InteractionClaimGenerator {
+            type Claim = cairo_air::components::$module::InteractionClaim;
+            fn write_interaction_trace(
+                self,
+                tree_builder: &mut CollectingTreeBuilder,
+                common_lookup_elements: &CommonLookupElements,
+            ) -> Self::Claim {
+                self.write_interaction_trace(tree_builder, common_lookup_elements)
+            }
+        }
+    };
+}
+
+impl_interaction_gen!(add_opcode);
+impl_interaction_gen!(add_opcode_small);
+impl_interaction_gen!(add_ap_opcode);
+impl_interaction_gen!(assert_eq_opcode);
+impl_interaction_gen!(assert_eq_opcode_imm);
+impl_interaction_gen!(assert_eq_opcode_double_deref);
+impl_interaction_gen!(blake_compress_opcode);
+impl_interaction_gen!(call_opcode_abs);
+impl_interaction_gen!(call_opcode_rel_imm);
+impl_interaction_gen!(generic_opcode);
+impl_interaction_gen!(jnz_opcode_non_taken);
+impl_interaction_gen!(jnz_opcode_taken);
+impl_interaction_gen!(jump_opcode_abs);
+impl_interaction_gen!(jump_opcode_double_deref);
+impl_interaction_gen!(jump_opcode_rel);
+impl_interaction_gen!(jump_opcode_rel_imm);
+impl_interaction_gen!(mul_opcode);
+impl_interaction_gen!(mul_opcode_small);
+impl_interaction_gen!(qm_31_add_mul_opcode);
+impl_interaction_gen!(ret_opcode);
