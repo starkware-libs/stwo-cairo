@@ -30,7 +30,6 @@ pub mod utils;
 mod utils_test;
 
 pub mod vcs;
-pub mod vcs_lifted;
 pub mod verifier;
 
 pub use fields::{BaseField, SecureField};
