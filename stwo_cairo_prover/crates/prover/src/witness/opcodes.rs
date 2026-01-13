@@ -1,4 +1,17 @@
-use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
+use cairo_air::components::{
+    add_ap_opcode as add_ap_opcode_claim, add_opcode as add_opcode_claim,
+    add_opcode_small as add_opcode_small_claim, assert_eq_opcode as assert_eq_opcode_claim,
+    assert_eq_opcode_double_deref as assert_eq_opcode_double_deref_claim,
+    assert_eq_opcode_imm as assert_eq_opcode_imm_claim,
+    blake_compress_opcode as blake_compress_opcode_claim, call_opcode_abs as call_opcode_abs_claim,
+    call_opcode_rel_imm as call_opcode_rel_imm_claim, generic_opcode as generic_opcode_claim,
+    jnz_opcode_non_taken as jnz_opcode_non_taken_claim, jnz_opcode_taken as jnz_opcode_taken_claim,
+    jump_opcode_abs as jump_opcode_abs_claim,
+    jump_opcode_double_deref as jump_opcode_double_deref_claim,
+    jump_opcode_rel as jump_opcode_rel_claim, jump_opcode_rel_imm as jump_opcode_rel_imm_claim,
+    mul_opcode as mul_opcode_claim, mul_opcode_small as mul_opcode_small_claim,
+    qm_31_add_mul_opcode as qm_31_add_mul_opcode_claim, ret_opcode as ret_opcode_claim,
+};
 use cairo_air::relations::CommonLookupElements;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
@@ -83,6 +96,7 @@ pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static s
     opcodes
 }
 
+#[allow(clippy::type_complexity)]
 pub fn opcodes_write_trace(
     add: Option<add_opcode::ClaimGenerator>,
     add_small: Option<add_opcode_small::ClaimGenerator>,
@@ -117,7 +131,29 @@ pub fn opcodes_write_trace(
     rc_9_9_trace_generator: Option<&range_check_9_9::ClaimGenerator>,
     verify_instruction_trace_generator: Option<&verify_instruction::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&mut verify_bitwise_xor_8::ClaimGenerator>,
-) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
+) -> (
+    Option<add_opcode_claim::Claim>,
+    Option<add_opcode_small_claim::Claim>,
+    Option<add_ap_opcode_claim::Claim>,
+    Option<assert_eq_opcode_claim::Claim>,
+    Option<assert_eq_opcode_imm_claim::Claim>,
+    Option<assert_eq_opcode_double_deref_claim::Claim>,
+    Option<blake_compress_opcode_claim::Claim>,
+    Option<call_opcode_abs_claim::Claim>,
+    Option<call_opcode_rel_imm_claim::Claim>,
+    Option<generic_opcode_claim::Claim>,
+    Option<jnz_opcode_non_taken_claim::Claim>,
+    Option<jnz_opcode_taken_claim::Claim>,
+    Option<jump_opcode_abs_claim::Claim>,
+    Option<jump_opcode_double_deref_claim::Claim>,
+    Option<jump_opcode_rel_claim::Claim>,
+    Option<jump_opcode_rel_imm_claim::Claim>,
+    Option<mul_opcode_claim::Claim>,
+    Option<mul_opcode_small_claim::Claim>,
+    Option<qm_31_add_mul_opcode_claim::Claim>,
+    Option<ret_opcode_claim::Claim>,
+    OpcodesInteractionClaimGenerator,
+) {
     let (add_claims, add_interaction_gens) = add
         .map(|gen| {
             gen.write_trace(
@@ -127,8 +163,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (add_small_claims, add_small_interaction_gens) = add_small
         .map(|gen| {
             gen.write_trace(
@@ -138,8 +173,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (add_ap_claims, add_ap_interaction_gens) = add_ap
         .map(|gen| {
             gen.write_trace(
@@ -151,8 +185,7 @@ pub fn opcodes_write_trace(
                 rc_11_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (assert_eq_claims, assert_eq_interaction_gens) = assert_eq
         .map(|gen| {
             gen.write_trace(
@@ -162,8 +195,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (assert_eq_imm_claims, assert_eq_imm_interaction_gens) = assert_eq_imm
         .map(|gen| {
             gen.write_trace(
@@ -173,8 +205,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (assert_eq_double_deref_claims, assert_eq_double_deref_interaction_gens) =
         assert_eq_double_deref
             .map(|gen| {
@@ -185,8 +216,7 @@ pub fn opcodes_write_trace(
                     verify_instruction_trace_generator.unwrap(),
                 )
             })
-            .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-            .unwrap_or_default();
+            .unzip();
     let (blake_claims, blake_interaction_gens) = blake
         .map(|gen| {
             gen.write_trace(
@@ -200,8 +230,7 @@ pub fn opcodes_write_trace(
                 triple_xor_32.as_mut().unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (call_claims, call_interaction_gens) = call
         .map(|gen| {
             gen.write_trace(
@@ -211,8 +240,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (call_rel_imm_claims, call_rel_imm_interaction_gens) = call_rel_imm
         .map(|gen| {
             gen.write_trace(
@@ -222,8 +250,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (generic_opcode_claims, generic_opcode_interaction_gens) = generic
         .map(|gen| {
             gen.write_trace(
@@ -237,8 +264,7 @@ pub fn opcodes_write_trace(
                 rc_11_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jnz_claims, jnz_interaction_gens) = jnz
         .map(|gen| {
             gen.write_trace(
@@ -248,8 +274,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jnz_taken_claims, jnz_taken_interaction_gens) = jnz_taken
         .map(|gen| {
             gen.write_trace(
@@ -259,8 +284,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jump_claims, jump_interaction_gens) = jump
         .map(|gen| {
             gen.write_trace(
@@ -270,8 +294,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jump_double_deref_claims, jump_double_deref_interaction_gens) = jump_double_deref
         .map(|gen| {
             gen.write_trace(
@@ -281,8 +304,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jump_rel_claims, jump_rel_interaction_gens) = jump_rel
         .map(|gen| {
             gen.write_trace(
@@ -292,8 +314,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (jump_rel_imm_claims, jump_rel_imm_interaction_gens) = jump_rel_imm
         .map(|gen| {
             gen.write_trace(
@@ -303,8 +324,7 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (mul_claims, mul_interaction_gens) = mul
         .map(|gen| {
             gen.write_trace(
@@ -315,8 +335,7 @@ pub fn opcodes_write_trace(
                 rc_20_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (mul_small_claims, mul_small_interaction_gens) = mul_small
         .map(|gen| {
             gen.write_trace(
@@ -327,8 +346,7 @@ pub fn opcodes_write_trace(
                 rc_11_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (qm31_claims, qm31_interaction_gens) = qm31
         .map(|gen| {
             gen.write_trace(
@@ -339,8 +357,7 @@ pub fn opcodes_write_trace(
                 rc_4_4_4_4_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     let (ret_claims, ret_interaction_gens) = ret
         .map(|gen| {
             gen.write_trace(
@@ -350,52 +367,51 @@ pub fn opcodes_write_trace(
                 verify_instruction_trace_generator.unwrap(),
             )
         })
-        .map(|(claim, interaction_gen)| (vec![claim], vec![interaction_gen]))
-        .unwrap_or_default();
+        .unzip();
     (
-        OpcodeClaim {
-            add: add_claims,
-            add_small: add_small_claims,
-            add_ap: add_ap_claims,
-            assert_eq: assert_eq_claims,
-            assert_eq_imm: assert_eq_imm_claims,
-            assert_eq_double_deref: assert_eq_double_deref_claims,
-            blake: blake_claims,
-            call: call_claims,
-            call_rel_imm: call_rel_imm_claims,
-            generic: generic_opcode_claims,
-            jnz: jnz_claims,
-            jnz_taken: jnz_taken_claims,
-            jump: jump_claims,
-            jump_double_deref: jump_double_deref_claims,
-            jump_rel: jump_rel_claims,
-            jump_rel_imm: jump_rel_imm_claims,
-            mul: mul_claims,
-            mul_small: mul_small_claims,
-            qm31: qm31_claims,
-            ret: ret_claims,
-        },
+        add_claims,
+        add_small_claims,
+        add_ap_claims,
+        assert_eq_claims,
+        assert_eq_imm_claims,
+        assert_eq_double_deref_claims,
+        blake_claims,
+        call_claims,
+        call_rel_imm_claims,
+        generic_opcode_claims,
+        jnz_claims,
+        jnz_taken_claims,
+        jump_claims,
+        jump_double_deref_claims,
+        jump_rel_claims,
+        jump_rel_imm_claims,
+        mul_claims,
+        mul_small_claims,
+        qm31_claims,
+        ret_claims,
         OpcodesInteractionClaimGenerator {
-            add: add_interaction_gens,
-            add_small: add_small_interaction_gens,
-            add_ap: add_ap_interaction_gens,
-            assert_eq: assert_eq_interaction_gens,
-            assert_eq_imm: assert_eq_imm_interaction_gens,
-            assert_eq_double_deref: assert_eq_double_deref_interaction_gens,
-            blake: blake_interaction_gens,
-            call: call_interaction_gens,
-            call_rel_imm: call_rel_imm_interaction_gens,
-            generic_opcode_interaction_gens,
-            jnz: jnz_interaction_gens,
-            jnz_taken: jnz_taken_interaction_gens,
-            jump: jump_interaction_gens,
-            jump_double_deref: jump_double_deref_interaction_gens,
-            jump_rel: jump_rel_interaction_gens,
-            jump_rel_imm: jump_rel_imm_interaction_gens,
-            mul: mul_interaction_gens,
-            mul_small: mul_small_interaction_gens,
-            qm31: qm31_interaction_gens,
-            ret_interaction_gens,
+            add: add_interaction_gens.into_iter().collect(),
+            add_small: add_small_interaction_gens.into_iter().collect(),
+            add_ap: add_ap_interaction_gens.into_iter().collect(),
+            assert_eq: assert_eq_interaction_gens.into_iter().collect(),
+            assert_eq_imm: assert_eq_imm_interaction_gens.into_iter().collect(),
+            assert_eq_double_deref: assert_eq_double_deref_interaction_gens
+                .into_iter()
+                .collect(),
+            blake: blake_interaction_gens.into_iter().collect(),
+            call: call_interaction_gens.into_iter().collect(),
+            call_rel_imm: call_rel_imm_interaction_gens.into_iter().collect(),
+            generic_opcode_interaction_gens: generic_opcode_interaction_gens.into_iter().collect(),
+            jnz: jnz_interaction_gens.into_iter().collect(),
+            jnz_taken: jnz_taken_interaction_gens.into_iter().collect(),
+            jump: jump_interaction_gens.into_iter().collect(),
+            jump_double_deref: jump_double_deref_interaction_gens.into_iter().collect(),
+            jump_rel: jump_rel_interaction_gens.into_iter().collect(),
+            jump_rel_imm: jump_rel_imm_interaction_gens.into_iter().collect(),
+            mul: mul_interaction_gens.into_iter().collect(),
+            mul_small: mul_small_interaction_gens.into_iter().collect(),
+            qm31: qm31_interaction_gens.into_iter().collect(),
+            ret_interaction_gens: ret_interaction_gens.into_iter().collect(),
         },
     )
 }
@@ -423,132 +439,154 @@ pub struct OpcodesInteractionClaimGenerator {
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
 impl OpcodesInteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> OpcodeInteractionClaim {
+    ) -> (
+        Option<add_opcode_claim::InteractionClaim>,
+        Option<add_opcode_small_claim::InteractionClaim>,
+        Option<add_ap_opcode_claim::InteractionClaim>,
+        Option<assert_eq_opcode_claim::InteractionClaim>,
+        Option<assert_eq_opcode_imm_claim::InteractionClaim>,
+        Option<assert_eq_opcode_double_deref_claim::InteractionClaim>,
+        Option<blake_compress_opcode_claim::InteractionClaim>,
+        Option<call_opcode_abs_claim::InteractionClaim>,
+        Option<call_opcode_rel_imm_claim::InteractionClaim>,
+        Option<generic_opcode_claim::InteractionClaim>,
+        Option<jnz_opcode_non_taken_claim::InteractionClaim>,
+        Option<jnz_opcode_taken_claim::InteractionClaim>,
+        Option<jump_opcode_abs_claim::InteractionClaim>,
+        Option<jump_opcode_double_deref_claim::InteractionClaim>,
+        Option<jump_opcode_rel_claim::InteractionClaim>,
+        Option<jump_opcode_rel_imm_claim::InteractionClaim>,
+        Option<mul_opcode_claim::InteractionClaim>,
+        Option<mul_opcode_small_claim::InteractionClaim>,
+        Option<qm_31_add_mul_opcode_claim::InteractionClaim>,
+        Option<ret_opcode_claim::InteractionClaim>,
+    ) {
         let add_interaction_claims = self
             .add
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let add_small_interaction_claims = self
             .add_small
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let add_ap_interaction_claims = self
             .add_ap
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let assert_eq_interaction_claims = self
             .assert_eq
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let assert_eq_imm_interaction_claims = self
             .assert_eq_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let assert_eq_double_deref_interaction_claims = self
             .assert_eq_double_deref
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let blake_interaction_claims = self
             .blake
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let call_interaction_claims = self
             .call
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let call_rel_imm_interaction_claims = self
             .call_rel_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let generic_opcode_interaction_claims = self
             .generic_opcode_interaction_gens
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jnz_interaction_claims = self
             .jnz
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jnz_taken_interaction_claims = self
             .jnz_taken
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jump_interaction_claims = self
             .jump
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jump_double_deref_interaction_claims = self
             .jump_double_deref
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jump_rel_interaction_claims = self
             .jump_rel
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let jump_rel_imm_interaction_claims = self
             .jump_rel_imm
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let mul_interaction_claims = self
             .mul
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let mul_small_interaction_claims = self
             .mul_small
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let qm31_interaction_claims = self
             .qm31
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
         let ret_interaction_claims = self
             .ret_interaction_gens
             .into_iter()
-            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements))
-            .collect();
-        OpcodeInteractionClaim {
-            add: add_interaction_claims,
-            add_small: add_small_interaction_claims,
-            add_ap: add_ap_interaction_claims,
-            assert_eq: assert_eq_interaction_claims,
-            assert_eq_imm: assert_eq_imm_interaction_claims,
-            assert_eq_double_deref: assert_eq_double_deref_interaction_claims,
-            blake: blake_interaction_claims,
-            call: call_interaction_claims,
-            call_rel_imm: call_rel_imm_interaction_claims,
-            generic: generic_opcode_interaction_claims,
-            jnz: jnz_interaction_claims,
-            jnz_taken: jnz_taken_interaction_claims,
-            jump: jump_interaction_claims,
-            jump_double_deref: jump_double_deref_interaction_claims,
-            jump_rel: jump_rel_interaction_claims,
-            jump_rel_imm: jump_rel_imm_interaction_claims,
-            mul: mul_interaction_claims,
-            mul_small: mul_small_interaction_claims,
-            qm31: qm31_interaction_claims,
-            ret: ret_interaction_claims,
-        }
+            .next()
+            .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements));
+        (
+            add_interaction_claims,
+            add_small_interaction_claims,
+            add_ap_interaction_claims,
+            assert_eq_interaction_claims,
+            assert_eq_imm_interaction_claims,
+            assert_eq_double_deref_interaction_claims,
+            blake_interaction_claims,
+            call_interaction_claims,
+            call_rel_imm_interaction_claims,
+            generic_opcode_interaction_claims,
+            jnz_interaction_claims,
+            jnz_taken_interaction_claims,
+            jump_interaction_claims,
+            jump_double_deref_interaction_claims,
+            jump_rel_interaction_claims,
+            jump_rel_imm_interaction_claims,
+            mul_interaction_claims,
+            mul_small_interaction_claims,
+            qm31_interaction_claims,
+            ret_interaction_claims,
+        )
     }
 }

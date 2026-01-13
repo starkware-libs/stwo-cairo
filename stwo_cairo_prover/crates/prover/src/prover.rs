@@ -3,7 +3,8 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents};
+use cairo_air::air::CairoComponents;
+use cairo_air::cairo_claim::lookup_sum;
 use cairo_air::relations::CommonLookupElements;
 use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
@@ -665,7 +666,6 @@ pub mod tests {
                 let poseidon_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
-                        .builtins
                         .poseidon_builtin
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
@@ -674,10 +674,8 @@ pub mod tests {
 
                 let poseidon_aggregator_log_size_a = proof_a
                     .claim
-                    .poseidon_context
-                    .claim
-                    .expect("Poseidon context is not present in the claim")
                     .poseidon_aggregator
+                    .expect("Poseidon context is not present in the claim")
                     .log_size;
 
                 // Run poseidon builtin with 15 different instances, each one 30 times.
@@ -688,7 +686,6 @@ pub mod tests {
                 let poseidon_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
-                        .builtins
                         .poseidon_builtin
                         .expect("Poseidon builtin is not present in the claim")
                         .log_size,
@@ -697,10 +694,8 @@ pub mod tests {
 
                 let poseidon_aggregator_log_size_b = proof_b
                     .claim
-                    .poseidon_context
-                    .claim
-                    .expect("Poseidon context is not present in the claim")
                     .poseidon_aggregator
+                    .expect("Poseidon context is not present in the claim")
                     .log_size;
 
                 assert_eq!(
@@ -728,7 +723,6 @@ pub mod tests {
                 let pedersen_builtin_size_a = 2u32.pow(
                     proof_a
                         .claim
-                        .builtins
                         .pedersen_builtin
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,
@@ -737,10 +731,8 @@ pub mod tests {
 
                 let pedersen_aggregator_log_size_a = proof_a
                     .claim
-                    .pedersen_context
-                    .claim
+                    .pedersen_aggregator_window_bits_18
                     .expect("Pedersen context is not present in the claim")
-                    .pedersen_aggregator
                     .log_size;
 
                 // Run pedersen builtin with 15 different instances, each one 30 times.
@@ -751,7 +743,6 @@ pub mod tests {
                 let pedersen_builtin_size_b = 2u32.pow(
                     proof_b
                         .claim
-                        .builtins
                         .pedersen_builtin
                         .expect("Pedersen builtin is not present in the claim")
                         .log_size,
@@ -760,10 +751,8 @@ pub mod tests {
 
                 let pedersen_aggregator_log_size_b = proof_b
                     .claim
-                    .pedersen_context
-                    .claim
+                    .pedersen_aggregator_window_bits_18
                     .expect("Pedersen context is not present in the claim")
-                    .pedersen_aggregator
                     .log_size;
 
                 assert_eq!(
