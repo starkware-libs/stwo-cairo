@@ -1,3 +1,5 @@
+use std::sync::Mutex;
+
 use cairo_air::pedersen::air::{
     Claim, InteractionClaim, PedersenContextClaim, PedersenContextInteractionClaim,
 };
@@ -9,7 +11,7 @@ use crate::witness::components::{
     memory_id_to_big, partial_ec_mul_window_bits_18, pedersen_aggregator_window_bits_18,
     pedersen_points_table_window_bits_18, range_check_20, range_check_8, range_check_9_9,
 };
-use crate::witness::utils::TreeBuilder;
+use crate::witness::utils::{CollectingTreeBuilder, TreeBuilder};
 
 pub fn pedersen_context_write_trace(
     pedersen_aggregator_trace_generator: Option<pedersen_aggregator_window_bits_18::ClaimGenerator>,
@@ -102,26 +104,78 @@ struct InteractionClaimGenerator {
     pedersen_points_table_interaction_gen:
         pedersen_points_table_window_bits_18::InteractionClaimGenerator,
 }
+/// Helper struct to hold the result of parallel interaction trace computation.
+struct PedersenInteractionTraceResult<T> {
+    claim: T,
+    evals: CollectingTreeBuilder,
+}
+
 impl InteractionClaimGenerator {
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
     ) -> InteractionClaim {
-        let pedersen_aggregator_interaction_claim = self
-            .pedersen_aggregator_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let partial_ec_mul_interaction_claim = self
-            .partial_ec_mul_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let pedersen_points_table_interaction_claim = self
-            .pedersen_points_table_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
+        // Use Mutex to store results from parallel tasks
+        let pedersen_aggregator_result: Mutex<Option<PedersenInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let partial_ec_mul_result: Mutex<Option<PedersenInteractionTraceResult<_>>> =
+            Mutex::new(None);
+        let pedersen_points_table_result: Mutex<Option<PedersenInteractionTraceResult<_>>> =
+            Mutex::new(None);
+
+        // Process all generators in parallel using rayon::scope
+        rayon::scope(|s| {
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .pedersen_aggregator_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *pedersen_aggregator_result.lock().unwrap() =
+                    Some(PedersenInteractionTraceResult {
+                        claim,
+                        evals: builder,
+                    });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .partial_ec_mul_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *partial_ec_mul_result.lock().unwrap() = Some(PedersenInteractionTraceResult {
+                    claim,
+                    evals: builder,
+                });
+            });
+            s.spawn(|_| {
+                let mut builder = CollectingTreeBuilder::new();
+                let claim = self
+                    .pedersen_points_table_interaction_gen
+                    .write_interaction_trace(&mut builder, common_lookup_elements);
+                *pedersen_points_table_result.lock().unwrap() =
+                    Some(PedersenInteractionTraceResult {
+                        claim,
+                        evals: builder,
+                    });
+            });
+        });
+
+        // Extract results from mutexes
+        let pedersen_aggregator_result = pedersen_aggregator_result.into_inner().unwrap().unwrap();
+        let partial_ec_mul_result = partial_ec_mul_result.into_inner().unwrap().unwrap();
+        let pedersen_points_table_result =
+            pedersen_points_table_result.into_inner().unwrap().unwrap();
+
+        // Sequentially extend the tree builder with all collected evaluations in deterministic
+        // order
+        pedersen_aggregator_result.evals.write_to(tree_builder);
+        partial_ec_mul_result.evals.write_to(tree_builder);
+        pedersen_points_table_result.evals.write_to(tree_builder);
 
         InteractionClaim {
-            pedersen_aggregator: pedersen_aggregator_interaction_claim,
-            partial_ec_mul: partial_ec_mul_interaction_claim,
-            pedersen_points_table: pedersen_points_table_interaction_claim,
+            pedersen_aggregator: pedersen_aggregator_result.claim,
+            partial_ec_mul: partial_ec_mul_result.claim,
+            pedersen_points_table: pedersen_points_table_result.claim,
         }
     }
 }
