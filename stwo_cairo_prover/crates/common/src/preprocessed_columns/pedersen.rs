@@ -1,4 +1,3 @@
-use std::array::from_fn;
 use std::ops::Neg;
 use std::sync::LazyLock;
 
@@ -215,17 +214,38 @@ fn create_high_section(
 fn create_table_rows(window_bits: usize) -> Vec<SimpleAffinePoint> {
     assert_eq!(252 % window_bits, 0);
     let num_windows = 252 / window_bits;
-    let mut rows = vec![];
+
     let points = [
-        &ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
-        &ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve"),
-        &ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).expect("P2 is on curve"),
-        &ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve"),
+        ProjectivePoint::from_affine(PEDERSEN_P0.x(), PEDERSEN_P0.y()).expect("P0 is on curve"),
+        ProjectivePoint::from_affine(PEDERSEN_P1.x(), PEDERSEN_P1.y()).expect("P1 is on curve"),
+        ProjectivePoint::from_affine(PEDERSEN_P2.x(), PEDERSEN_P2.y()).expect("P2 is on curve"),
+        ProjectivePoint::from_affine(PEDERSEN_P3.x(), PEDERSEN_P3.y()).expect("P3 is on curve"),
     ];
-    rows.extend(create_low_section(window_bits, points[0]));
-    rows.extend(create_high_section(window_bits, points[0], points[1]));
-    rows.extend(create_low_section(window_bits, points[2]));
-    rows.extend(create_high_section(window_bits, points[2], points[3]));
+
+    // Compute all 4 sections in parallel.
+    let ((low_section_0, high_section_0), (low_section_2, high_section_2)) = rayon::join(
+        || {
+            rayon::join(
+                || create_low_section(window_bits, &points[0]),
+                || create_high_section(window_bits, &points[0], &points[1]),
+            )
+        },
+        || {
+            rayon::join(
+                || create_low_section(window_bits, &points[2]),
+                || create_high_section(window_bits, &points[2], &points[3]),
+            )
+        },
+    );
+
+    // Combine sections in order.
+    let mut rows = Vec::with_capacity(
+        low_section_0.len() + high_section_0.len() + low_section_2.len() + high_section_2.len(),
+    );
+    rows.extend(low_section_0);
+    rows.extend(high_section_0);
+    rows.extend(low_section_2);
+    rows.extend(high_section_2);
 
     assert!(rows.len() == ((2 * num_windows) << window_bits));
 
@@ -238,20 +258,32 @@ fn create_table_rows(window_bits: usize) -> Vec<SimpleAffinePoint> {
 }
 
 fn rows_to_columns(rows: &[SimpleAffinePoint]) -> [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] {
-    let mut columns_data: [Vec<BaseField>; PEDERSEN_TABLE_N_COLUMNS] =
-        from_fn(|_| Vec::with_capacity(rows.len()));
-    for row in rows {
-        let x_f252: Felt252 = row.x.into();
-        let y_f252: Felt252 = row.y.into();
-        for (col_idx, value) in x_f252
-            .get_limbs()
-            .iter()
-            .chain(y_f252.get_limbs().iter())
-            .enumerate()
-        {
-            columns_data[col_idx].push(*value)
-        }
-    }
+    // Process each column in parallel.
+    let columns_vec: Vec<Vec<BaseField>> = (0..PEDERSEN_TABLE_N_COLUMNS)
+        .into_par_iter()
+        .map(|col_idx| {
+            let mut column = Vec::with_capacity(rows.len());
+            for row in rows {
+                let value = if col_idx < FELT252_N_WORDS {
+                    // X coordinate limbs
+                    let x_f252: Felt252 = row.x.into();
+                    x_f252.get_limbs()[col_idx]
+                } else {
+                    // Y coordinate limbs
+                    let y_f252: Felt252 = row.y.into();
+                    y_f252.get_limbs()[col_idx - FELT252_N_WORDS]
+                };
+                column.push(value);
+            }
+            column
+        })
+        .collect();
 
-    columns_data
+    columns_vec.try_into().unwrap_or_else(|v: Vec<_>| {
+        panic!(
+            "Expected {} columns, got {}",
+            PEDERSEN_TABLE_N_COLUMNS,
+            v.len()
+        )
+    })
 }
