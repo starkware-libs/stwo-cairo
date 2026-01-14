@@ -121,7 +121,44 @@ pub struct RangeChecksInteractionClaimGenerator {
     rc_4_4_4_4_interaction_gen: range_check_4_4_4_4::InteractionClaimGenerator,
     rc_3_3_3_3_3_interaction_gen: range_check_3_3_3_3_3::InteractionClaimGenerator,
 }
+
+/// Parts of the range checks interaction claim generator for parallel processing.
+pub struct RangeChecksInteractionParts {
+    pub rc_6: range_check_6::InteractionClaimGenerator,
+    pub rc_8: range_check_8::InteractionClaimGenerator,
+    pub rc_11: range_check_11::InteractionClaimGenerator,
+    pub rc_12: range_check_12::InteractionClaimGenerator,
+    pub rc_18: range_check_18::InteractionClaimGenerator,
+    pub rc_20: range_check_20::InteractionClaimGenerator,
+    pub rc_4_3: range_check_4_3::InteractionClaimGenerator,
+    pub rc_4_4: range_check_4_4::InteractionClaimGenerator,
+    pub rc_9_9: range_check_9_9::InteractionClaimGenerator,
+    pub rc_7_2_5: range_check_7_2_5::InteractionClaimGenerator,
+    pub rc_3_6_6_3: range_check_3_6_6_3::InteractionClaimGenerator,
+    pub rc_4_4_4_4: range_check_4_4_4_4::InteractionClaimGenerator,
+    pub rc_3_3_3_3_3: range_check_3_3_3_3_3::InteractionClaimGenerator,
+}
+
 impl RangeChecksInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> RangeChecksInteractionParts {
+        RangeChecksInteractionParts {
+            rc_6: self.rc_6_interaction_gen,
+            rc_8: self.rc_8_interaction_gen,
+            rc_11: self.rc_11_interaction_gen,
+            rc_12: self.rc_12_interaction_gen,
+            rc_18: self.rc_18_interaction_gen,
+            rc_20: self.rc_20_interaction_gen,
+            rc_4_3: self.rc_4_3_interaction_gen,
+            rc_4_4: self.rc_4_4_interaction_gen,
+            rc_9_9: self.rc_9_9_interaction_gen,
+            rc_7_2_5: self.rc_7_2_5_interaction_gen,
+            rc_3_6_6_3: self.rc_3_6_6_3_interaction_gen,
+            rc_4_4_4_4: self.rc_4_4_4_4_interaction_gen,
+            rc_3_3_3_3_3: self.rc_3_3_3_3_3_interaction_gen,
+        }
+    }
+
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,

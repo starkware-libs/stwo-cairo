@@ -123,7 +123,30 @@ pub fn poseidon_context_write_trace(
 pub struct PoseidonContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
+
+/// Parts of the poseidon context interaction claim generator for parallel processing.
+pub struct PoseidonContextInteractionParts {
+    pub poseidon_aggregator: poseidon_aggregator::InteractionClaimGenerator,
+    pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::InteractionClaimGenerator,
+    pub poseidon_full_round_chain: poseidon_full_round_chain::InteractionClaimGenerator,
+    pub cube_252: cube_252::InteractionClaimGenerator,
+    pub poseidon_round_keys: poseidon_round_keys::InteractionClaimGenerator,
+    pub range_check_252_width_27: range_check_252_width_27::InteractionClaimGenerator,
+}
+
 impl PoseidonContextInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> Option<PoseidonContextInteractionParts> {
+        self.gen.map(|gen| PoseidonContextInteractionParts {
+            poseidon_aggregator: gen.poseidon_aggregator_interaction_gen,
+            poseidon_3_partial_rounds_chain: gen.poseidon_3_partial_rounds_chain_interaction_gen,
+            poseidon_full_round_chain: gen.poseidon_full_round_chain_interaction_gen,
+            cube_252: gen.cube_252_interaction_gen,
+            poseidon_round_keys: gen.poseidon_round_keys_interaction_gen,
+            range_check_252_width_27: gen.range_check_felt_252_width_27_interaction_gen,
+        })
+    }
+
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,

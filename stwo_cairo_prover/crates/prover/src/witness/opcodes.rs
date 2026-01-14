@@ -425,10 +425,63 @@ pub struct OpcodesInteractionClaimGenerator {
     qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
     ret_interaction_gens: Vec<ret_opcode::InteractionClaimGenerator>,
 }
+
+/// Parts of the opcodes interaction claim generator for parallel processing.
+pub struct OpcodesInteractionParts {
+    pub add: Vec<add_opcode::InteractionClaimGenerator>,
+    pub add_small: Vec<add_opcode_small::InteractionClaimGenerator>,
+    pub add_ap: Vec<add_ap_opcode::InteractionClaimGenerator>,
+    pub assert_eq: Vec<assert_eq_opcode::InteractionClaimGenerator>,
+    pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaimGenerator>,
+    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>,
+    pub blake: Vec<blake_compress_opcode::InteractionClaimGenerator>,
+    pub call: Vec<call_opcode_abs::InteractionClaimGenerator>,
+    pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaimGenerator>,
+    pub generic_opcode: Vec<generic_opcode::InteractionClaimGenerator>,
+    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaimGenerator>,
+    pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaimGenerator>,
+    pub jump: Vec<jump_opcode_abs::InteractionClaimGenerator>,
+    pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaimGenerator>,
+    pub jump_rel: Vec<jump_opcode_rel::InteractionClaimGenerator>,
+    pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaimGenerator>,
+    pub mul: Vec<mul_opcode::InteractionClaimGenerator>,
+    pub mul_small: Vec<mul_opcode_small::InteractionClaimGenerator>,
+    pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>,
+    pub ret: Vec<ret_opcode::InteractionClaimGenerator>,
+}
+
+impl OpcodesInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> OpcodesInteractionParts {
+        OpcodesInteractionParts {
+            add: self.add,
+            add_small: self.add_small,
+            add_ap: self.add_ap,
+            assert_eq: self.assert_eq,
+            assert_eq_imm: self.assert_eq_imm,
+            assert_eq_double_deref: self.assert_eq_double_deref,
+            blake: self.blake,
+            call: self.call,
+            call_rel_imm: self.call_rel_imm,
+            generic_opcode: self.generic_opcode_interaction_gens,
+            jnz: self.jnz,
+            jnz_taken: self.jnz_taken,
+            jump: self.jump,
+            jump_double_deref: self.jump_double_deref,
+            jump_rel: self.jump_rel,
+            jump_rel_imm: self.jump_rel_imm,
+            mul: self.mul,
+            mul_small: self.mul_small,
+            qm31: self.qm31,
+            ret: self.ret_interaction_gens,
+        }
+    }
+}
+
 /// Helper struct to hold the result of parallel interaction trace computation.
-struct InteractionTraceResult<T> {
-    claims: Vec<T>,
-    evals: Vec<CollectingTreeBuilder>,
+pub struct InteractionTraceResult<T> {
+    pub claims: Vec<T>,
+    pub evals: Vec<CollectingTreeBuilder>,
 }
 
 impl OpcodesInteractionClaimGenerator {
@@ -682,7 +735,7 @@ impl OpcodesInteractionClaimGenerator {
 }
 
 /// Helper trait for interaction generators that can write interaction traces.
-trait InteractionGen: Send {
+pub trait InteractionGen: Send {
     type Claim;
     fn write_interaction_trace(
         self,
@@ -692,7 +745,7 @@ trait InteractionGen: Send {
 }
 
 /// Process a vector of interaction generators in parallel, collecting their results.
-fn process_interaction_gens<G>(
+pub fn process_interaction_gens<G>(
     gens: Vec<G>,
     common_lookup_elements: &CommonLookupElements,
 ) -> InteractionTraceResult<G::Claim>

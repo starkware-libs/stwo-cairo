@@ -87,7 +87,28 @@ pub fn blake_context_write_trace(
 pub struct BlakeContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
+
+/// Parts of the blake context interaction claim generator for parallel processing.
+pub struct BlakeContextInteractionParts {
+    pub blake_round: blake_round::InteractionClaimGenerator,
+    pub blake_g: blake_g::InteractionClaimGenerator,
+    pub blake_sigma: blake_round_sigma::InteractionClaimGenerator,
+    pub triple_xor_32: triple_xor_32::InteractionClaimGenerator,
+    pub verify_bitwise_xor_12: verify_bitwise_xor_12::InteractionClaimGenerator,
+}
+
 impl BlakeContextInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> Option<BlakeContextInteractionParts> {
+        self.gen.map(|gen| BlakeContextInteractionParts {
+            blake_round: gen.blake_round_interaction_gen,
+            blake_g: gen.blake_g_interaction_gen,
+            blake_sigma: gen.blake_sigma_interaction_gen,
+            triple_xor_32: gen.triple_xor_32_interaction_gen,
+            verify_bitwise_xor_12: gen.verify_bitwise_xor_12_interaction_gen,
+        })
+    }
+
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,

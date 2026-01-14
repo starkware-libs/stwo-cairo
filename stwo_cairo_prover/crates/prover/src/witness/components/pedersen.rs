@@ -81,7 +81,24 @@ pub fn pedersen_context_write_trace(
 pub struct PedersenContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
+
+/// Parts of the pedersen context interaction claim generator for parallel processing.
+pub struct PedersenContextInteractionParts {
+    pub pedersen_aggregator: pedersen_aggregator_window_bits_18::InteractionClaimGenerator,
+    pub partial_ec_mul: partial_ec_mul_window_bits_18::InteractionClaimGenerator,
+    pub pedersen_points_table: pedersen_points_table_window_bits_18::InteractionClaimGenerator,
+}
+
 impl PedersenContextInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> Option<PedersenContextInteractionParts> {
+        self.gen.map(|gen| PedersenContextInteractionParts {
+            pedersen_aggregator: gen.pedersen_aggregator_interaction_gen,
+            partial_ec_mul: gen.partial_ec_mul_interaction_gen,
+            pedersen_points_table: gen.pedersen_points_table_interaction_gen,
+        })
+    }
+
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
