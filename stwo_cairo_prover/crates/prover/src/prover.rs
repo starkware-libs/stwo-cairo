@@ -5,7 +5,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use cairo_air::air::{lookup_sum, CairoComponents};
 use cairo_air::relations::CommonLookupElements;
-use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
+use cairo_air::utils::{serialize_proof_to_file, to_cairo_proof_sorted, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
 use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use num_traits::Zero;
@@ -226,11 +226,16 @@ pub fn create_and_serialize_proof(
 
     match proof_params.channel_hash {
         ChannelHash::Blake2s => {
-            let proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
-            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Blake2sMerkleChannel>(proof, proof_params.preprocessed_trace)?;
+                verify_cairo::<Blake2sMerkleChannel>(
+                    cairo_proof.clone(),
+                    proof_params.preprocessed_trace,
+                )?;
             }
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof, proof_params.preprocessed_trace);
+            serialize_proof_to_file(&cairo_proof_sorted, &proof_path, proof_format)?;
         }
         #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
         ChannelHash::Poseidon252 => {
@@ -238,12 +243,18 @@ pub fn create_and_serialize_proof(
         }
         #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
         ChannelHash::Poseidon252 => {
+            use cairo_air::utils::to_cairo_proof_sorted;
             use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
-            let proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
-            serialize_proof_to_file(&proof, &proof_path, proof_format)?;
+            let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Poseidon252MerkleChannel>(proof, proof_params.preprocessed_trace)?;
+                verify_cairo::<Poseidon252MerkleChannel>(
+                    cairo_proof.clone(),
+                    proof_params.preprocessed_trace,
+                )?;
             }
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof, proof_params.preprocessed_trace);
+            serialize_proof_to_file(&cairo_proof_sorted, &proof_path, proof_format)?;
         }
     };
 
@@ -285,7 +296,7 @@ pub mod tests {
         use test_log::test;
 
         use super::*;
-        use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
+        use crate::prover::{prove_cairo, to_cairo_proof_sorted, ChannelHash, ProverParameters};
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
@@ -303,10 +314,11 @@ pub mod tests {
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
-
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -370,7 +382,8 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{
-            prove_cairo, ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters,
+            prove_cairo, to_cairo_proof_sorted, ChannelHash, PreProcessedTraceVariant, ProverInput,
+            ProverParameters,
         };
 
         // TODO(Ohad): fine-grained constraints tests.
@@ -424,10 +437,11 @@ pub mod tests {
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -486,10 +500,11 @@ pub mod tests {
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-
+            let cairo_proof_sorted =
+                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
