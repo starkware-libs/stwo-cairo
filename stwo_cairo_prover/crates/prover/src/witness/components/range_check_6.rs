@@ -3,6 +3,8 @@
 #![allow(unused_parens)]
 use cairo_air::components::range_check_6::{Claim, InteractionClaim, LOG_SIZE, N_TRACE_COLUMNS};
 
+use itertools::izip;
+
 use crate::witness::prelude::*;
 
 pub type InputType = [M31; 1];
@@ -113,13 +115,12 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.range_check_6_0,
             self.lookup_data.mults_0,
         )
-            .into_par_iter()
-            .for_each(|(writer, values, mults_0)| {
+        .for_each(|(writer, values, mults_0)| {
                 let denom = common_lookup_elements.combine(values);
                 writer.write_frac(-PackedQM31::one() * mults_0, denom);
             });

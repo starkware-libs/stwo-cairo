@@ -198,8 +198,7 @@ impl InteractionClaimGenerator {
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
         {
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), ids0, ids1, mults0, mults1)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), ids0, ids1, mults0, mults1)
                 .enumerate()
                 .for_each(|(vec_row, (writer, &id0, &id1, &mult0, &mult1))| {
                     let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));
