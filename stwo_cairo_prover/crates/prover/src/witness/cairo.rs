@@ -25,6 +25,10 @@ use crate::witness::cairo_claim_generator::{get_sub_components, CairoClaimGenera
 use crate::witness::components::pedersen::{
     pedersen_context_write_trace, PedersenContextInteractionClaimGenerator,
 };
+use crate::witness::components::pedersen_narrow_windows::{
+    pedersen_context_write_trace as pedersen_narrow_windows_context_write_trace,
+    PedersenContextInteractionClaimGenerator as PedersenNarrowWindowsContextInteractionClaimGenerator,
+};
 use crate::witness::components::poseidon::{
     poseidon_context_write_trace, PoseidonContextInteractionClaimGenerator,
 };
@@ -146,7 +150,7 @@ pub fn create_cairo_claim_generator(
     for opcode in get_opcodes(&state_transitions.casm_states_by_opcode) {
         all_components.extend(get_sub_components(opcode));
     }
-    for builtin in get_builtins(&builtin_segments) {
+    for builtin in get_builtins(&builtin_segments, preprocessed_trace.clone()) {
         all_components.extend(get_sub_components(builtin));
     }
     // TODO(Stav): remove after range checks and verify bitwise xor are optional in the claim.
@@ -275,6 +279,7 @@ impl CairoClaimGenerator {
             self.bitwise_builtin,
             self.mul_mod_builtin,
             self.pedersen_builtin,
+            self.pedersen_builtin_narrow_windows,
             self.poseidon_builtin,
             self.range_check96_builtin,
             self.range_check_builtin,
@@ -282,6 +287,7 @@ impl CairoClaimGenerator {
             self.memory_address_to_id.as_ref(),
             self.memory_id_to_big.as_ref(),
             self.pedersen_aggregator_window_bits_18.as_ref(),
+            self.pedersen_aggregator_window_bits_9.as_ref(),
             self.poseidon_aggregator.as_ref(),
             self.range_check_6.as_ref(),
             self.range_check_12.as_ref(),
@@ -301,6 +307,19 @@ impl CairoClaimGenerator {
                 self.range_check_9_9.as_ref(),
                 self.range_check_20.as_ref(),
             );
+        let (
+            pedersen_narrow_windows_context_claim,
+            pedersen_narrow_windows_context_interaction_gen,
+        ) = pedersen_narrow_windows_context_write_trace(
+            self.pedersen_aggregator_window_bits_9,
+            self.partial_ec_mul_window_bits_9,
+            self.pedersen_points_table_window_bits_9,
+            tree_builder,
+            self.memory_id_to_big.as_ref(),
+            self.range_check_8.as_ref(),
+            self.range_check_9_9.as_ref(),
+            self.range_check_20.as_ref(),
+        );
         let (poseidon_context_claim, poseidon_context_interaction_gen) =
             poseidon_context_write_trace(
                 self.poseidon_aggregator,
@@ -322,6 +341,7 @@ impl CairoClaimGenerator {
             self.memory_address_to_id.unwrap().write_trace(tree_builder);
 
         // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
+        // TODO(AnatG): Use SMALL_MAX_SEQUENCE_LOG_SIZE when using the canonical_small ppt.
         const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
         let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
             self.memory_id_to_big.unwrap().write_trace(
@@ -362,6 +382,7 @@ impl CairoClaimGenerator {
                 blake_context: blake_context_claim,
                 builtins: builtins_claim,
                 pedersen_context: pedersen_context_claim,
+                pedersen_narrow_windows_context: pedersen_narrow_windows_context_claim,
                 poseidon_context: poseidon_context_claim,
                 memory_address_to_id: memory_address_to_id_claim,
                 memory_id_to_value: memory_id_to_value_claim,
@@ -377,6 +398,7 @@ impl CairoClaimGenerator {
                 blake_context_interaction_gen,
                 builtins_interaction_gen,
                 pedersen_context_interaction_gen,
+                pedersen_narrow_windows_context_interaction_gen,
                 poseidon_context_interaction_gen,
                 memory_address_to_id_interaction_gen,
                 memory_id_to_value_interaction_gen,
@@ -396,6 +418,8 @@ pub struct CairoInteractionClaimGenerator {
     blake_context_interaction_gen: BlakeContextInteractionClaimGenerator,
     builtins_interaction_gen: BuiltinsInteractionClaimGenerator,
     pedersen_context_interaction_gen: PedersenContextInteractionClaimGenerator,
+    pedersen_narrow_windows_context_interaction_gen:
+        PedersenNarrowWindowsContextInteractionClaimGenerator,
     poseidon_context_interaction_gen: PoseidonContextInteractionClaimGenerator,
     memory_address_to_id_interaction_gen: memory_address_to_id::InteractionClaimGenerator,
     memory_id_to_value_interaction_gen: memory_id_to_big::InteractionClaimGenerator,
@@ -426,6 +450,9 @@ impl CairoInteractionClaimGenerator {
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let pedersen_context_interaction_claim = self
             .pedersen_context_interaction_gen
+            .write_interaction_trace(tree_builder, common_lookup_elements);
+        let pedersen_narrow_windows_context_interaction_claim = self
+            .pedersen_narrow_windows_context_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let poseidon_context_interaction_claim = self
             .poseidon_context_interaction_gen
@@ -459,6 +486,7 @@ impl CairoInteractionClaimGenerator {
             blake_context: blake_context_interaction_claim,
             builtins: builtins_interaction_claims,
             pedersen_context: pedersen_context_interaction_claim,
+            pedersen_narrow_windows_context: pedersen_narrow_windows_context_interaction_claim,
             poseidon_context: poseidon_context_interaction_claim,
             memory_address_to_id: memory_address_to_id_interaction_claim,
             memory_id_to_value: memory_id_to_value_interaction_claim,

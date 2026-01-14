@@ -34,6 +34,7 @@ pub mod pedersen_aggregator_window_bits_18;
 pub mod pedersen_aggregator_window_bits_9;
 pub mod pedersen_builtin;
 pub mod pedersen_builtin_narrow_windows;
+pub mod pedersen_narrow_windows;
 pub mod pedersen_points_table_window_bits_18;
 pub mod pedersen_points_table_window_bits_9;
 pub mod poseidon_3_partial_rounds_chain;
