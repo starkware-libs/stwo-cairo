@@ -1,5 +1,6 @@
 #![feature(portable_simd)]
 #![feature(array_chunks)]
+use clap::ValueEnum;
 use serde::{Deserialize, Serialize};
 
 pub mod air;
@@ -17,12 +18,12 @@ pub mod utils;
 // TODO(Ohad): verifier crate.
 pub mod verifier;
 
-pub use air::{CairoProof, CairoProofSorted};
+pub use air::CairoProof;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
 
 /// The preprocessed trace used for the prover.
 // TODO(Ohad): move somewhere else.
-#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, ValueEnum)]
 #[serde(rename_all = "snake_case")]
 pub enum PreProcessedTraceVariant {
     Canonical,

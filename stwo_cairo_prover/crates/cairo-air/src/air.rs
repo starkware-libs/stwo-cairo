@@ -6,15 +6,12 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
-use stwo::core::fields::m31::{BaseField, M31};
+use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
-use stwo::core::fri::FriProof;
-use stwo::core::pcs::{PcsConfig, TreeVec};
+use stwo::core::pcs::TreeVec;
 use stwo::core::proof::StarkProof;
-use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::core::ColumnVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_cairo_common::prover_types::cpu::CasmState;
@@ -54,46 +51,6 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
     /// Optional salt used in the channel initialization.
-    pub channel_salt: Option<u64>,
-    pub preprocessed_trace_variant: PreProcessedTraceVariant,
-}
-
-/// Analogue structure to [`stwo::core::pcs::quotients::CommitmentSchemeProof`] with the difference
-/// that the queried values are in a different layout and order. In a `CommitmentSchemeProof`, the
-/// queried values are organized in a TreeVec<ColumnVec<Vec<M31>>>:
-/// queried_values[tree_idx][col_idx] is a vector of values of the column at index `col_idx` in tree
-/// `tree_idx`, in ascending order of query positions. In `CommitmentSchemeProofSorted`, the queried
-/// values are organized in a TreeVec<Vec<M31>>: `sorted_queried_values[tree_idx]` is the
-/// concatenation of vectors v_i, 0 <= i < n_queries, where vector v_i consists of the queried
-/// values, at the i-th query position, of the columns of tree `tree_idx`, sorted (stably) in
-/// ascending order by column size.
-/// The reason for having a different layout in the Cairo verifier is that having the queries
-/// in sorted order makes the merkle Verifier more efficient. The downside is that the verifier
-/// needs to sort the sampled values for the fri quotients to match the order of the queries.
-// TODO(Leo): remove this struct. Only sort/unsort queried vals in Cairo serialization/
-// deserialization of a CairoProof.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CommitmentSchemeProofSorted<H: MerkleHasherLifted> {
-    pub config: PcsConfig,
-    pub commitments: TreeVec<H::Hash>,
-    pub sampled_values: TreeVec<ColumnVec<Vec<SecureField>>>,
-    pub decommitments: TreeVec<MerkleDecommitmentLifted<H>>,
-    pub queried_values: TreeVec<Vec<BaseField>>,
-    pub proof_of_work: u64,
-    pub fri_proof: FriProof<H>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct StarkProofSorted<H: MerkleHasherLifted>(pub CommitmentSchemeProofSorted<H>);
-
-/// Analogue of [`CairoProof`] except that its `stark_proof` member has type
-/// [`StarkProofSorted`].
-#[derive(Serialize, Deserialize)]
-pub struct CairoProofSorted<H: MerkleHasherLifted> {
-    pub claim: CairoClaim,
-    pub interaction_pow: u64,
-    pub interaction_claim: CairoInteractionClaim,
-    pub stark_proof: StarkProofSorted<H>,
     pub channel_salt: Option<u64>,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
