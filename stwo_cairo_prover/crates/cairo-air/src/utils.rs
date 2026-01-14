@@ -11,7 +11,9 @@ use serde::de::DeserializeOwned;
 use serde::{Deserialize, Serialize};
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SECURE_EXTENSION_DEGREE;
+use stwo::core::pcs::quotients::CommitmentSchemeProof;
 use stwo::core::pcs::TreeVec;
+use stwo::core::proof::StarkProof;
 use stwo::core::vcs::blake2_hash::Blake2sHasher;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::core::verifier::COMPOSITION_LOG_SPLIT;
@@ -19,8 +21,10 @@ use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{INTERACTION_TRACE_IDX, PREPROCESSED_TRACE_IDX};
 use tracing::{span, Level};
 
-use crate::air::{MemorySection, PublicMemory};
-use crate::CairoProof;
+use crate::air::{
+    CairoProofSorted, CommitmentSchemeProofSorted, MemorySection, PublicMemory, StarkProofSorted,
+};
+use crate::{CairoProof, PreProcessedTraceVariant};
 
 mod json {
     #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
@@ -47,7 +51,7 @@ pub enum ProofFormat {
 
 /// Serializes Cairo proof given the desired format and writes it to a file.
 pub fn serialize_proof_to_file<H: MerkleHasherLifted + Serialize>(
-    proof: &CairoProof<H>,
+    proof: &CairoProofSorted<H>,
     proof_path: &Path,
     proof_format: ProofFormat,
 ) -> Result<(), std::io::Error>
@@ -90,7 +94,7 @@ where
 pub fn deserialize_proof_from_file<H: MerkleHasherLifted + DeserializeOwned>(
     proof_path: &Path,
     proof_format: ProofFormat,
-) -> Result<CairoProof<H>, std::io::Error>
+) -> Result<CairoProofSorted<H>, std::io::Error>
 where
     H::Hash: CairoDeserialize,
 {
@@ -308,6 +312,110 @@ pub fn unsort_and_transpose_queried_values(
     new_queried_values_per_tree.push(new_queried_values);
 
     TreeVec(new_queried_values_per_tree)
+}
+
+/// Transforms a `CairoProof` into a `CairoProofSorted` by sorting the queried values.
+pub fn to_cairo_proof_sorted<H: MerkleHasherLifted>(
+    cairo_proof: CairoProof<H>,
+    pp_trace_variant: PreProcessedTraceVariant,
+) -> CairoProofSorted<H> {
+    let CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof,
+        channel_salt,
+    } = cairo_proof;
+
+    let CommitmentSchemeProof {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values,
+        proof_of_work,
+        fri_proof,
+    } = stark_proof.0;
+
+    let preprocessed_trace_log_sizes = pp_trace_variant.to_preprocessed_trace().log_sizes();
+    let trace_and_interaction_trace_log_sizes = claim.log_sizes();
+
+    let sorted_queried_values = sort_and_transpose_queried_values(
+        &queried_values,
+        &preprocessed_trace_log_sizes,
+        trace_and_interaction_trace_log_sizes
+            .iter()
+            .map(|c| c.as_slice())
+            .collect(),
+    );
+    let sorted_stark_proof = CommitmentSchemeProofSorted {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values: sorted_queried_values,
+        proof_of_work,
+        fri_proof,
+    };
+    CairoProofSorted {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof: StarkProofSorted(sorted_stark_proof),
+        channel_salt,
+    }
+}
+
+/// Transforms a `CairoProofSorted` into a `CairoProof` by un-sorting the queried values.
+pub fn to_cairo_proof<H: MerkleHasherLifted>(
+    cairo_proof_sorted: CairoProofSorted<H>,
+    pp_trace_variant: PreProcessedTraceVariant,
+) -> CairoProof<H> {
+    let CairoProofSorted {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof,
+        channel_salt,
+    } = cairo_proof_sorted;
+
+    let CommitmentSchemeProofSorted {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values,
+        proof_of_work,
+        fri_proof,
+    } = stark_proof.0;
+
+    let preprocessed_trace_log_sizes = pp_trace_variant.to_preprocessed_trace().log_sizes();
+    let trace_and_interaction_trace_log_sizes = claim.log_sizes();
+
+    let unsorted_queried_values = unsort_and_transpose_queried_values(
+        &queried_values,
+        &preprocessed_trace_log_sizes,
+        trace_and_interaction_trace_log_sizes
+            .iter()
+            .map(|c| c.as_slice())
+            .collect(),
+    );
+    let stark_proof = CommitmentSchemeProof {
+        config,
+        commitments,
+        sampled_values,
+        decommitments,
+        queried_values: unsorted_queried_values,
+        proof_of_work,
+        fri_proof,
+    };
+    CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof: StarkProof(stark_proof),
+        channel_salt,
+    }
 }
 
 #[cfg(test)]
