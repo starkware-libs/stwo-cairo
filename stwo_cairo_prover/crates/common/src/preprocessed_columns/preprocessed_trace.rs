@@ -67,7 +67,7 @@ impl PreProcessedTrace {
             .map(|x| Box::new(PedersenPoints::<18>::new(x)) as Box<dyn PreProcessedColumn>);
 
         let columns = chain!(canonical_without_pedersen, pedersen_points)
-            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .sorted_by_key(|column| column.log_size())
             .collect_vec();
 
         assert!(
@@ -98,7 +98,7 @@ impl PreProcessedTrace {
             .map(|x| Box::new(BlakeSigma::new(x)) as Box<dyn PreProcessedColumn>);
 
         let columns = chain!(seq, bitwise_xor, range_check, poseidon_keys, blake_sigma)
-            .sorted_by_key(|column| std::cmp::Reverse(column.log_size()))
+            .sorted_by_key(|column| column.log_size())
             .collect_vec();
 
         assert!(
@@ -320,14 +320,14 @@ pub mod tests {
     use stwo::prover::backend::Column;
 
     #[test]
-    fn test_columns_are_in_descending_order() {
+    fn test_columns_are_in_ascending_order() {
         let preprocessed_trace = PreProcessedTrace::canonical();
 
         let columns = preprocessed_trace.columns;
 
         assert!(columns
             .windows(2)
-            .all(|w| w[0].log_size() >= w[1].log_size()));
+            .all(|w| w[0].log_size() <= w[1].log_size()));
     }
 
     #[test]
