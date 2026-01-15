@@ -4,6 +4,7 @@ use cairo_vm::stdlib::collections::HashMap;
 use cairo_vm::types::builtin_name::BuiltinName;
 use cairo_vm::types::relocatable::MaybeRelocatable;
 use cairo_vm::vm::trace::trace_entry::{RelocatedTraceEntry, TraceEntry};
+use rayon::prelude::*;
 use stwo_cairo_common::memory::MEMORY_ADDRESS_BOUND;
 use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{span, Level};
@@ -46,36 +47,44 @@ impl Relocator {
         self.relocation_table[segment_index] + offset as u32
     }
 
-    /// Relocates the given memory segment by segment.
+    /// Relocates the given memory segment by segment (parallelized).
     pub fn relocate_memory(&self, memory: &[Vec<Option<MaybeRelocatable>>]) -> Vec<MemoryEntry> {
         let _span = span!(Level::INFO, "get_relocated_memory").entered();
 
-        // Pre-allocate with exact size to avoid realloc overhead.
-        let total_size: usize = memory.iter().map(|seg| seg.len()).sum();
-        let mut res = Vec::with_capacity(total_size);
+        // Process each segment in parallel and collect results
+        let results: Vec<Vec<MemoryEntry>> = memory
+            .par_iter()
+            .enumerate()
+            .map(|(segment_index, segment)| {
+                segment
+                    .iter()
+                    .enumerate()
+                    .map(|(offset, value)| {
+                        let address = self.calc_relocated_addr(segment_index, offset) as u64;
+                        let value = if let Some(val) = value {
+                            let mut relocated_value = [0; 8];
+                            match val {
+                                MaybeRelocatable::RelocatableValue(addr) => {
+                                    relocated_value[0] = self
+                                        .calc_relocated_addr(addr.segment_index as usize, addr.offset)
+                                }
+                                MaybeRelocatable::Int(val) => {
+                                    relocated_value = bytemuck::cast(val.to_bytes_le())
+                                }
+                            };
+                            relocated_value
+                        } else {
+                            // If this cell is None, fill with zero.
+                            [0; 8]
+                        };
+                        MemoryEntry { address, value }
+                    })
+                    .collect()
+            })
+            .collect();
 
-        for (segment_index, segment) in memory.iter().enumerate() {
-            for (offset, value) in segment.iter().enumerate() {
-                let address = self.calc_relocated_addr(segment_index, offset) as u64;
-                let value = if let Some(val) = value {
-                    let mut relocated_value = [0; 8];
-                    match val {
-                        MaybeRelocatable::RelocatableValue(addr) => {
-                            relocated_value[0] =
-                                self.calc_relocated_addr(addr.segment_index as usize, addr.offset)
-                        }
-                        MaybeRelocatable::Int(val) => {
-                            relocated_value = bytemuck::cast(val.to_bytes_le())
-                        }
-                    };
-                    relocated_value
-                } else {
-                    // If this cell is None, fill with zero.
-                    [0; 8]
-                };
-                res.push(MemoryEntry { address, value });
-            }
-        }
+        // Flatten results while preserving order
+        let res: Vec<MemoryEntry> = results.into_iter().flatten().collect();
         assert!(
             res.len() <= MEMORY_ADDRESS_BOUND,
             "Relocated memory size exceeded the maximum address value",
@@ -121,47 +130,52 @@ impl Relocator {
         res
     }
 
-    // Relocates the trace entries according to the relocation table.
+    // Relocates the trace entries according to the relocation table (parallelized).
     pub fn relocate_trace(&self, relocatble_trace: &[TraceEntry]) -> Vec<RelocatedTraceEntry> {
         let _span = span!(Level::INFO, "relocate_trace").entered();
-        // Pre-allocate with exact size to avoid realloc overhead.
-        let mut res = Vec::with_capacity(relocatble_trace.len());
-        for entry in relocatble_trace {
-            res.push(RelocatedTraceEntry {
+        let base_addr = self.relocation_table[1] as usize;
+        relocatble_trace
+            .par_iter()
+            .map(|entry| RelocatedTraceEntry {
                 pc: self.relocation_table[entry.pc.segment_index as usize] as usize
                     + entry.pc.offset,
                 // The segment indexes for `ap` and `fp` are always 1, see
                 // 'https://github.com/lambdaclass/cairo-vm/blob/main/vm/src/vm/trace/mod.rs#L12'.
-                ap: self.relocation_table[1] as usize + entry.ap,
-                fp: self.relocation_table[1] as usize + entry.fp,
+                ap: base_addr + entry.ap,
+                fp: base_addr + entry.fp,
             })
-        }
-        res
+            .collect()
     }
 
-    // Relocates the publoc memory addresses according to the relocation table.
+    // Relocates the public memory addresses according to the relocation table (parallelized).
     pub fn relocate_public_addresses(
         &self,
         public_addresses: &HashMap<usize, Vec<(usize, usize)>>,
     ) -> Vec<u32> {
         let _span = span!(Level::INFO, "relocate_public_addresses").entered();
-        // Pre-allocate with exact size to avoid realloc overhead.
-        let total_size: usize = public_addresses.values().map(|v| v.len()).sum();
-        let mut res = Vec::with_capacity(total_size);
-        for (segment_index, offsets) in public_addresses {
-            let base_addr = self.relocation_table[*segment_index];
+        // Collect HashMap entries to a Vec for parallel iteration
+        let entries: Vec<_> = public_addresses.iter().collect();
+        // Process each segment in parallel
+        let results: Vec<Vec<u32>> = entries
+            .par_iter()
+            .map(|(segment_index, offsets)| {
+                let base_addr = self.relocation_table[**segment_index];
+                let end_addr = self.relocation_table[*segment_index + 1];
+                offsets
+                    .iter()
+                    .map(|(offset, _)| {
+                        let addr = base_addr + *offset as u32;
+                        assert!(
+                            addr < end_addr,
+                            "Offset {offset} is out of segment {segment_index}"
+                        );
+                        addr
+                    })
+                    .collect()
+            })
+            .collect();
 
-            for (offset, _) in offsets {
-                let addr = base_addr + *offset as u32;
-                assert!(
-                    addr < self.relocation_table[segment_index + 1],
-                    "Offset {offset} is out of segment {segment_index}"
-                );
-                res.push(addr);
-            }
-        }
-
-        res
+        results.into_iter().flatten().collect()
     }
 }
 

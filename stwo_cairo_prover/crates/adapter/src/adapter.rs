@@ -16,20 +16,33 @@ pub fn adapt(runner: &CairoRunner) -> Result<ProverInput> {
     info!("Num steps: {:?}", relocatable_trace.len());
     let mut relocatable_memory = runner.get_relocatable_memory();
     let public_memory_offsets = &runner.vm.segments.public_memory_offsets;
-    let builtin_segments = runner.get_builtin_segments();
+    let builtin_segments_map = runner.get_builtin_segments();
 
     // Relocation part.
-    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments);
+    BuiltinSegments::pad_relocatble_builtin_segments(&mut relocatable_memory, &builtin_segments_map);
     let relocator = Relocator::new(&relocatable_memory);
-    let relocated_memory = relocator.relocate_memory(&relocatable_memory);
+
+    // Run all 4 relocation operations in parallel - they only read from relocator
+    let ((relocated_memory, relocated_trace), (builtin_segments, public_memory_addresses)) =
+        rayon::join(
+            || {
+                rayon::join(
+                    || relocator.relocate_memory(&relocatable_memory),
+                    || relocator.relocate_trace(relocatable_trace),
+                )
+            },
+            || {
+                rayon::join(
+                    || relocator.relocate_builtin_segments(&builtin_segments_map),
+                    || relocator.relocate_public_addresses(public_memory_offsets),
+                )
+            },
+        );
 
     #[cfg(feature = "extract-mem-trace")]
     let relocated_memory_clone = relocated_memory.clone();
 
-    let relocated_trace = relocator.relocate_trace(relocatable_trace);
-    let builtin_segments = relocator.relocate_builtin_segments(&builtin_segments);
     info!("Builtin segments: {:?}", builtin_segments);
-    let public_memory_addresses = relocator.relocate_public_addresses(public_memory_offsets);
 
     let memory = MemoryBuilder::from_iter(MemoryConfig::default(), relocated_memory);
     let state_transitions = StateTransitions::from_slice_parallel(&relocated_trace, &memory);
