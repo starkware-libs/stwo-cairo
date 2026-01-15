@@ -3,6 +3,7 @@ use std::sync::Mutex;
 use cairo_air::opcodes_air::{OpcodeClaim, OpcodeInteractionClaim};
 use cairo_air::relations::CommonLookupElements;
 use rayon::prelude::*;
+use rayon::ThreadPoolBuilder;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
 
@@ -461,112 +462,135 @@ impl OpcodesInteractionClaimGenerator {
         let ret_result: Mutex<Option<InteractionTraceResult<_>>> = Mutex::new(None);
 
         // Process all opcode types in parallel using rayon::scope
+        // Each spawn creates its own 2-thread pool for isolated parallelism
         rayon::scope(|s| {
             s.spawn(|_| {
-                *add_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.add, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *add_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.add, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *add_small_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.add_small,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *add_small_result.lock().unwrap() =
+                    Some(pool.install(|| {
+                        process_interaction_gens(self.add_small, common_lookup_elements)
+                    }));
             });
             s.spawn(|_| {
-                *add_ap_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.add_ap,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *add_ap_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.add_ap, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *assert_eq_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.assert_eq,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *assert_eq_result.lock().unwrap() =
+                    Some(pool.install(|| {
+                        process_interaction_gens(self.assert_eq, common_lookup_elements)
+                    }));
             });
             s.spawn(|_| {
-                *assert_eq_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.assert_eq_imm,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *assert_eq_imm_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.assert_eq_imm, common_lookup_elements)
+                }));
             });
             s.spawn(|_| {
-                *assert_eq_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.assert_eq_double_deref,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *assert_eq_double_deref_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.assert_eq_double_deref, common_lookup_elements)
+                }));
             });
             s.spawn(|_| {
-                *blake_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.blake, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *blake_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.blake, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *call_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.call, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *call_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.call, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *call_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.call_rel_imm,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *call_rel_imm_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.call_rel_imm, common_lookup_elements)
+                }));
             });
             s.spawn(|_| {
-                *generic_opcode_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.generic_opcode_interaction_gens,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *generic_opcode_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(
+                        self.generic_opcode_interaction_gens,
+                        common_lookup_elements,
+                    )
+                }));
             });
             s.spawn(|_| {
-                *jnz_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.jnz, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jnz_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.jnz, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *jnz_taken_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.jnz_taken,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jnz_taken_result.lock().unwrap() =
+                    Some(pool.install(|| {
+                        process_interaction_gens(self.jnz_taken, common_lookup_elements)
+                    }));
             });
             s.spawn(|_| {
-                *jump_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.jump, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jump_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.jump, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *jump_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.jump_double_deref,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jump_double_deref_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.jump_double_deref, common_lookup_elements)
+                }));
             });
             s.spawn(|_| {
-                *jump_rel_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.jump_rel,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jump_rel_result.lock().unwrap() =
+                    Some(pool.install(|| {
+                        process_interaction_gens(self.jump_rel, common_lookup_elements)
+                    }));
             });
             s.spawn(|_| {
-                *jump_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.jump_rel_imm,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *jump_rel_imm_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.jump_rel_imm, common_lookup_elements)
+                }));
             });
             s.spawn(|_| {
-                *mul_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.mul, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *mul_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.mul, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *mul_small_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.mul_small,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *mul_small_result.lock().unwrap() =
+                    Some(pool.install(|| {
+                        process_interaction_gens(self.mul_small, common_lookup_elements)
+                    }));
             });
             s.spawn(|_| {
-                *qm31_result.lock().unwrap() =
-                    Some(process_interaction_gens(self.qm31, common_lookup_elements));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *qm31_result.lock().unwrap() = Some(
+                    pool.install(|| process_interaction_gens(self.qm31, common_lookup_elements)),
+                );
             });
             s.spawn(|_| {
-                *ret_result.lock().unwrap() = Some(process_interaction_gens(
-                    self.ret_interaction_gens,
-                    common_lookup_elements,
-                ));
+                let pool = ThreadPoolBuilder::new().num_threads(2).build().unwrap();
+                *ret_result.lock().unwrap() = Some(pool.install(|| {
+                    process_interaction_gens(self.ret_interaction_gens, common_lookup_elements)
+                }));
             });
         });
 
