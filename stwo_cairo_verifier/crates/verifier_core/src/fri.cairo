@@ -145,16 +145,11 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// Output is of the form `(unique_log_sizes, queries_by_log_size)`.
     fn sample_query_positions(
         self: @FriVerifier, ref channel: Channel,
-    ) -> (Felt252Dict<Nullable<Span<usize>>>, Queries) {
-        // TODO(Leo): remove array in next PR.
-        let column_log_sizes = array![self.first_layer.column_commitment_domain.log_size()].span();
-
-        // Column are sorted in descending order by size.
-        let max_column_log_size = *column_log_sizes.first().unwrap();
+    ) -> Queries {
+        let query_domain_log_size = self.first_layer.column_commitment_domain.log_size();
         let n_queries = *self.config.n_queries;
-        let queries = QueriesImpl::generate(ref channel, max_column_log_size, n_queries);
-
-        (get_query_positions_by_log_size(queries, column_log_sizes), queries)
+        let queries = QueriesImpl::generate(ref channel, query_domain_log_size, n_queries);
+        queries
     }
 }
 
