@@ -2,7 +2,6 @@
 use cairo_air::components::partial_ec_mul_window_bits_18::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
-use itertools::izip;
 
 use crate::witness::components::{
     pedersen_points_table_window_bits_18, range_check_20, range_check_9_9,
@@ -5766,849 +5765,914 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.pedersen_points_table_window_bits_18_0,
             &self.lookup_data.range_check_9_9_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_0,
             &self.lookup_data.range_check_9_9_c_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_0,
             &self.lookup_data.range_check_9_9_e_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_0,
             &self.lookup_data.range_check_9_9_g_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_h_0,
             &self.lookup_data.range_check_9_9_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_1,
             &self.lookup_data.range_check_9_9_c_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_1,
             &self.lookup_data.range_check_9_9_e_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_1,
             &self.lookup_data.range_check_20_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_0,
             &self.lookup_data.range_check_20_c_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_0,
             &self.lookup_data.range_check_20_e_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_0,
             &self.lookup_data.range_check_20_g_0,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_0,
             &self.lookup_data.range_check_20_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_1,
             &self.lookup_data.range_check_20_c_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_1,
             &self.lookup_data.range_check_20_e_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_1,
             &self.lookup_data.range_check_20_g_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_1,
             &self.lookup_data.range_check_20_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_2,
             &self.lookup_data.range_check_20_c_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_2,
             &self.lookup_data.range_check_20_e_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_2,
             &self.lookup_data.range_check_20_g_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_2,
             &self.lookup_data.range_check_20_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_3,
             &self.lookup_data.range_check_20_c_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_3,
             &self.lookup_data.range_check_9_9_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_2,
             &self.lookup_data.range_check_9_9_c_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_2,
             &self.lookup_data.range_check_9_9_e_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_2,
             &self.lookup_data.range_check_9_9_g_1,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_h_1,
             &self.lookup_data.range_check_9_9_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_3,
             &self.lookup_data.range_check_9_9_c_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_3,
             &self.lookup_data.range_check_9_9_e_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_3,
             &self.lookup_data.range_check_20_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_4,
             &self.lookup_data.range_check_20_c_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_4,
             &self.lookup_data.range_check_20_e_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_3,
             &self.lookup_data.range_check_20_g_3,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_3,
             &self.lookup_data.range_check_20_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_5,
             &self.lookup_data.range_check_20_c_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_5,
             &self.lookup_data.range_check_20_e_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_4,
             &self.lookup_data.range_check_20_g_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_4,
             &self.lookup_data.range_check_20_6,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_6,
             &self.lookup_data.range_check_20_c_6,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_6,
             &self.lookup_data.range_check_20_e_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_5,
             &self.lookup_data.range_check_20_g_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_5,
             &self.lookup_data.range_check_20_7,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_7,
             &self.lookup_data.range_check_20_c_7,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_7,
             &self.lookup_data.range_check_9_9_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_4,
             &self.lookup_data.range_check_9_9_c_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_4,
             &self.lookup_data.range_check_9_9_e_4,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_4,
             &self.lookup_data.range_check_9_9_g_2,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_h_2,
             &self.lookup_data.range_check_9_9_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_b_5,
             &self.lookup_data.range_check_9_9_c_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_d_5,
             &self.lookup_data.range_check_9_9_e_5,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_9_9_f_5,
             &self.lookup_data.range_check_20_8,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_8,
             &self.lookup_data.range_check_20_c_8,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_8,
             &self.lookup_data.range_check_20_e_6,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_6,
             &self.lookup_data.range_check_20_g_6,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_6,
             &self.lookup_data.range_check_20_9,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_9,
             &self.lookup_data.range_check_20_c_9,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_9,
             &self.lookup_data.range_check_20_e_7,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_7,
             &self.lookup_data.range_check_20_g_7,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_7,
             &self.lookup_data.range_check_20_10,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_10,
             &self.lookup_data.range_check_20_c_10,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_10,
             &self.lookup_data.range_check_20_e_8,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_f_8,
             &self.lookup_data.range_check_20_g_8,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_h_8,
             &self.lookup_data.range_check_20_11,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_b_11,
             &self.lookup_data.range_check_20_c_11,
         )
-        .for_each(|(writer, values0, values1)| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .for_each(|(writer, values0, values1)| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.range_check_20_d_11,
             &self.lookup_data.partial_ec_mul_window_bits_18_0,
         )
-        .enumerate()
-        .for_each(|(i, (writer, values0, values1))| {
-            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-            writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
-        });
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values0, values1))| {
+                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+                writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
+            });
         col_gen.finalize_col();
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
+        (
+            col_gen.par_iter_mut(),
             &self.lookup_data.partial_ec_mul_window_bits_18_1,
         )
-        .enumerate()
-        .for_each(|(i, (writer, values))| {
-            let denom = common_lookup_elements.combine(values);
-            writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
-        });
+            .into_par_iter()
+            .enumerate()
+            .for_each(|(i, (writer, values))| {
+                let denom = common_lookup_elements.combine(values);
+                writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
+            });
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();

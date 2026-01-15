@@ -778,14 +778,21 @@ impl CairoInteractionClaimGenerator {
                     ));
                 });
                 s.spawn(|_| {
-                    *partial_ec_mul_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            pedersen
-                                .partial_ec_mul
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
+                    let limited_pool = rayon::ThreadPoolBuilder::new()
+                        .num_threads(4)
+                        .build()
+                        .unwrap();
+
+                    *partial_ec_mul_result.lock().unwrap() = Some(limited_pool.install(|| {
+                        process_single_gen(
+                            |builder, elems| {
+                                pedersen
+                                    .partial_ec_mul
+                                    .write_interaction_trace(builder, elems)
+                            },
+                            common_lookup_elements,
+                        )
+                    }));
                 });
                 s.spawn(|_| {
                     *pedersen_points_table_result.lock().unwrap() = Some(process_single_gen(
