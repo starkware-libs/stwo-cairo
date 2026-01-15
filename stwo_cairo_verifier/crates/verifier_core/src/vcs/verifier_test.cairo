@@ -2,7 +2,6 @@
 mod BlakeTest {
     use core::box::BoxImpl;
     use crate::fields::m31::m31;
-    use crate::utils::group_columns_by_degree_bound;
     use crate::vcs::blake2s_hasher::{Blake2sHash, Blake2sMerkleHasher};
     use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -62,8 +61,8 @@ mod BlakeTest {
         };
         let queries_position = array![4].span();
         let queried_values = array![m31(0), m31(2), m31(4)].span();
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(array![2, 3, 4].span());
-        MerkleVerifier { root: *test_values[0], tree_height: 4, column_indices_by_log_deg_bound }
+        let column_log_deg_bounds = array![2, 3, 4].span();
+        MerkleVerifier { root: *test_values[0], tree_height: 4, column_log_deg_bounds }
             .verify(queries_position, queried_values, decommitment);
     }
 
@@ -80,8 +79,8 @@ mod BlakeTest {
         // Query the same position twice.
         let queries_position = array![4, 4].span();
         let queried_values = array![m31(0), m31(2), m31(4), m31(0), m31(2), m31(4)].span();
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(array![2, 3, 4].span());
-        MerkleVerifier { root: *test_values[0], tree_height: 4, column_indices_by_log_deg_bound }
+        let column_log_deg_bounds = array![2, 3, 4].span();
+        MerkleVerifier { root: *test_values[0], tree_height: 4, column_log_deg_bounds }
             .verify(queries_position, queried_values, decommitment);
     }
 
@@ -98,8 +97,9 @@ mod BlakeTest {
         // Query the same position twice but give different queried values.
         let queries_position = array![4, 4].span();
         let queried_values = array![m31(0), m31(2), m31(4), m31(0), m31(3), m31(4)].span();
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(array![2, 3, 4].span());
-        MerkleVerifier { root: *test_values[0], tree_height: 4, column_indices_by_log_deg_bound }
+        let column_log_deg_bounds = array![2, 3, 4].span();
+
+        MerkleVerifier { root: *test_values[0], tree_height: 4, column_log_deg_bounds }
             .verify(queries_position, queried_values, decommitment);
     }
 }
