@@ -1,5 +1,7 @@
 {
-  "air_version": "39855187",
+  "air_version": "570c1b95",
+  "canonical_ppt_n_trace_cells": 543100528,
+  "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {
     "memory_address_to_id": {
       "trace_type": "Memory",
