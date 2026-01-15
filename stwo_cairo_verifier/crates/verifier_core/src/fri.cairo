@@ -2,6 +2,7 @@ use core::array::SpanIter;
 use core::dict::Felt252Dict;
 use core::iter::{IntoIterator, Iterator};
 use stwo_verifier_utils::zip_eq::zip_eq;
+use crate::Hash;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::CosetImpl;
 use crate::fields::BatchInvertible;
@@ -15,7 +16,6 @@ use crate::utils::{
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
-use crate::{ColumnArray, Hash};
 
 /// Fold step size for circle polynomials.
 pub const CIRCLE_TO_LINE_FOLD_STEP: u32 = 1;
@@ -70,13 +70,12 @@ pub impl FriVerifierImpl of FriVerifierTrait {
         channel.mix_commitment(first_layer_proof.commitment);
 
         let commitment_domain_log_size = column_log_bound + config.log_blowup_factor;
-        let commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size).circle_domain();
+        let column_commitment_domain = CanonicCosetImpl::new(commitment_domain_log_size).circle_domain();
 
-        // TODO(Leo): remove the arrays in next PRs.
         let first_layer = FriFirstLayerVerifier {
             log_blowup_factor: config.log_blowup_factor,
-            column_log_bounds: array![column_log_bound].span(),
-            column_commitment_domains: array![commitment_domain].span(),
+            column_log_bound: column_log_bound,
+            column_commitment_domain,
             proof: first_layer_proof,
             folding_alpha: channel.draw_secure_felt(),
         };
@@ -127,9 +126,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// Verifies the decommitment stage of FRI.
     ///
     /// The first layer query evals need to be provided in the same order as their commitment.
-    fn decommit(
-        self: FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
-    ) {
+    fn decommit(self: FriVerifier, queries: Queries, first_layer_query_evals: Span<QM31>) {
         let first_layer_sparse_evals = decommit_first_layer(
             @self, queries, first_layer_query_evals,
         );
@@ -149,14 +146,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     fn sample_query_positions(
         self: @FriVerifier, ref channel: Channel,
     ) -> (Felt252Dict<Nullable<Span<usize>>>, Queries) {
-        // The sizes of input circle polynomial commitment domains.
-        let mut column_log_sizes = array![];
-
-        for column_commitment_domain in self.first_layer.column_commitment_domains {
-            column_log_sizes.append(column_commitment_domain.log_size());
-        }
-
-        let column_log_sizes = column_log_sizes.span();
+        // TODO(Leo): remove array in next PR.
+        let column_log_sizes = array![self.first_layer.column_commitment_domain.log_size()].span();
 
         // Column are sorted in descending order by size.
         let max_column_log_size = *column_log_sizes.first().unwrap();
@@ -172,8 +163,8 @@ pub impl FriVerifierImpl of FriVerifierTrait {
 /// Returns the queries and first layer folded column evaluations needed for
 /// verifying the remaining layers.
 fn decommit_first_layer(
-    verifier: @FriVerifier, queries: Queries, first_layer_query_evals: ColumnArray<Span<QM31>>,
-) -> ColumnArray<SparseEvaluation> {
+    verifier: @FriVerifier, queries: Queries, first_layer_query_evals: Span<QM31>,
+) -> SparseEvaluation {
     verifier.first_layer.verify(queries, first_layer_query_evals)
 }
 
@@ -181,55 +172,21 @@ fn decommit_first_layer(
 ///
 /// Returns the queries and query evaluations needed for verifying the last FRI layer.
 fn decommit_inner_layers(
-    verifier: @FriVerifier,
-    queries: Queries,
-    mut first_layer_sparse_evals: ColumnArray<SparseEvaluation>,
+    verifier: @FriVerifier, queries: Queries, mut first_layer_sparse_eval: SparseEvaluation,
 ) -> (Queries, Array<QM31>) {
-    let mut first_layer_column_bounds = *verifier.first_layer.column_log_bounds;
-    let mut first_layer_iter = zip_eq(
-        first_layer_sparse_evals, *verifier.first_layer.column_commitment_domains,
-    );
-    let (Some((sparse_eval, column_domain)), Some(_first_layer_log_degree_bound)) = (
-        first_layer_iter.next(), first_layer_column_bounds.pop_front(),
-    ) else {
-        panic!("at least one inner layer required");
-    };
-
-    let mut layer_query_evals = sparse_eval
-        .fold_circle(*verifier.first_layer.folding_alpha, *column_domain);
+    let mut layer_query_evals = first_layer_sparse_eval
+        .fold_circle(
+            *verifier.first_layer.folding_alpha, *verifier.first_layer.column_commitment_domain,
+        );
 
     let mut layer_queries = queries;
     for layer in verifier.inner_layers.span() {
         let (folded_queries, mut folded_query_evals) = layer
             .verify_and_fold(queries: layer_queries, evals_at_queries: layer_query_evals.span());
 
-        // If the first layer commitment contains a circle polynomial with the same degree bound as
-        // this layer (prior to folding), fold it into the current layer.
-        if first_layer_column_bounds.next_if_eq(layer.log_degree_bound).is_some() {
-            let (sparse_eval, column_domain) = first_layer_iter.next().unwrap();
-
-            let folding_alpha = *layer.folding_alpha;
-            let mut folded_column_evals = sparse_eval.fold_circle(folding_alpha, *column_domain);
-            let folding_alpha_squared = folding_alpha * folding_alpha;
-            folded_query_evals = zip_eq(folded_query_evals, folded_column_evals)
-                .map(
-                    |tuple| {
-                        let (folded_eval, folded_column_eval) = tuple;
-                        QM31Trait::fused_mul_add(
-                            folded_eval, folding_alpha_squared, folded_column_eval,
-                        )
-                    },
-                )
-                .collect();
-        }
-
         layer_queries = folded_queries;
         layer_query_evals = folded_query_evals;
     }
-
-    // Check all values have been consumed.
-    assert!(first_layer_column_bounds.is_empty());
-    assert!(first_layer_iter.next().is_none());
 
     (layer_queries, layer_query_evals)
 }
@@ -291,10 +248,10 @@ struct FriFirstLayerVerifier {
     /// The log blowup factor for all the columns in the first layer.
     log_blowup_factor: u32,
     /// The list of degree bounds of all circle polynomials committed in the first layer.
-    column_log_bounds: Span<u32>,
+    column_log_bound: u32,
     /// The commitment domains of all the circle polynomials in the first layer, sorted in
     /// descending order by size.
-    column_commitment_domains: Span<CircleDomain>,
+    column_commitment_domain: CircleDomain,
     folding_alpha: QM31,
     proof: FriLayerProof,
 }
@@ -312,87 +269,56 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
     /// * There are an invalid number of provided column evals.
     /// * The Merkle decommitment is invalid.
     fn verify(
-        self: @FriFirstLayerVerifier,
-        queries: Queries,
-        mut query_evals_by_column: ColumnArray<Span<QM31>>,
-    ) -> ColumnArray<SparseEvaluation> {
-        // Columns are provided in descending order by size.
-        let max_column_log_size = (*self.column_commitment_domains).first().unwrap().log_size();
-        assert!(queries.log_domain_size == max_column_log_size);
+        self: @FriFirstLayerVerifier, queries: Queries, mut query_evals: Span<QM31>,
+    ) -> SparseEvaluation {
+        let column_domain_log_size = self.column_commitment_domain.log_size();
+        assert!(queries.log_domain_size == column_domain_log_size);
 
-        let mut column_queries = queries;
-        let mut column_commitment_domains = *self.column_commitment_domains;
         let mut fri_witness = (*self.proof.fri_witness).into_iter();
-        let mut decommitment_positions_by_log_size: Felt252Dict = Default::default();
         // For decommitment, each QM31 col must be split into its constituent M31 coordinate cols.
-        let mut degree_bound_by_column = array![];
-        let mut sparse_evals_by_column = array![];
         let mut decommitted_values = array![];
 
-        for (column_domain, column_query_evals) in zip_eq(
-            column_commitment_domains, query_evals_by_column,
-        ) {
-            let column_domain_log_size = column_domain.log_size();
-            let n_folds = column_queries.log_domain_size - column_domain_log_size;
+        let (column_decommitment_positions, sparse_evaluation) =
+            compute_decommitment_positions_and_rebuild_evals(
+            queries, query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
+        );
 
-            if n_folds != 0 {
-                column_queries = column_queries.fold(n_folds);
-            }
-
-            let (column_decommitment_positions, sparse_evaluation) =
-                compute_decommitment_positions_and_rebuild_evals(
-                column_queries, column_query_evals, ref fri_witness, CIRCLE_TO_LINE_FOLD_STEP,
-            );
-
-            // Columns of the same size have the same decommitment positions.
-            // TODO(andrew): Do without nullable.
-            decommitment_positions_by_log_size
-                .insert(
-                    column_domain_log_size.into(),
-                    NullableTrait::new(column_decommitment_positions),
-                );
-
-            for subset_eval in sparse_evaluation.subset_evals.span() {
-                for eval in subset_eval.span() {
-                    // Split the QM31 into its M31 coordinate values.
-                    let [v0, v1, v2, v3] = (*eval).to_fixed_array();
-                    decommitted_values.append(v0.into());
-                    decommitted_values.append(v1.into());
-                    decommitted_values.append(v2.into());
-                    decommitted_values.append(v3.into());
-                };
-            }
-
-            let column_degree_bound = column_domain_log_size - *self.log_blowup_factor;
-            degree_bound_by_column.append(column_degree_bound);
-            degree_bound_by_column.append(column_degree_bound);
-            degree_bound_by_column.append(column_degree_bound);
-            degree_bound_by_column.append(column_degree_bound);
-
-            sparse_evals_by_column.append(sparse_evaluation);
+        for subset_eval in sparse_evaluation.subset_evals.span() {
+            for eval in subset_eval.span() {
+                // Split the QM31 into its M31 coordinate values.
+                let [v0, v1, v2, v3] = (*eval).to_fixed_array();
+                decommitted_values.append(v0.into());
+                decommitted_values.append(v1.into());
+                decommitted_values.append(v2.into());
+                decommitted_values.append(v3.into());
+            };
         }
+
         // Check all proof evals have been consumed.
         assert!(
             fri_witness.next().is_none(), "{}", FriVerificationError::FirstLayerEvaluationsInvalid,
         );
 
+        let degree_bound_by_column = ArrayImpl::new_repeated(
+            n: QM31_EXTENSION_DEGREE, v: *self.column_log_bound,
+        );
         let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
             degree_bound_by_column.span(),
         );
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
-            tree_height: max_column_log_size,
+            tree_height: column_domain_log_size,
             column_indices_by_log_deg_bound,
         };
 
-        // TODO(Leo): modify once we change FRI API.
-        let query_positions = decommitment_positions_by_log_size
-            .get(queries.log_domain_size.into())
-            .deref();
         merkle_verifier
-            .verify(query_positions, decommitted_values.span(), self.proof.decommitment.clone());
+            .verify(
+                column_decommitment_positions,
+                decommitted_values.span(),
+                self.proof.decommitment.clone(),
+            );
 
-        sparse_evals_by_column
+        sparse_evaluation
     }
 }
 
@@ -454,17 +380,12 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
             column_indices_by_log_deg_bound,
         };
 
-        let mut decommitment_positions_dict: Felt252Dict<Nullable<Span<usize>>> =
-            Default::default();
-        decommitment_positions_dict
-            .insert(column_log_size.into(), NullableTrait::new(decommitment_positions));
-
-        // TODO(Leo): modify once we change FRI API.
-        let query_positions = decommitment_positions_dict
-            .get(queries.log_domain_size.into())
-            .deref();
         merkle_verifier
-            .verify(query_positions, decommitted_values.span(), (*self.proof.decommitment).clone());
+            .verify(
+                decommitment_positions,
+                decommitted_values.span(),
+                (*self.proof.decommitment).clone(),
+            );
 
         let folded_queries = queries.fold(FOLD_STEP);
         let folded_evals = sparse_evaluation.fold_line(*self.folding_alpha, *self.domain);
