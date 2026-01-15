@@ -161,11 +161,10 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         channel.mix_u64(proof_of_work_nonce);
 
         // Get FRI query positions.
-        let (mut query_positions_by_log_size, queries) = fri_verifier
+        let queries = fri_verifier
             .sample_query_positions(ref channel);
+        let query_positions = queries.positions; 
         let lifting_log_size = max_log_degree_bound + fri_config.log_blowup_factor;
-        // TODO(Leo): modify once we change FRI API.
-        let query_positions = query_positions_by_log_size.get(lifting_log_size.into()).deref();
         // Verify Merkle decommitments.
         let mut tree_index = 0;
         for (tree, (queried_values, decommitment)) in zip_eq(
