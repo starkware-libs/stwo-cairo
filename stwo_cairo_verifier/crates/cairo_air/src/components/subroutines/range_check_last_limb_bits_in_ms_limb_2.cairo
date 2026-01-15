@@ -9,7 +9,6 @@ pub fn range_check_last_limb_bits_in_ms_limb_2_evaluate(
     partial_limb_msb_col0: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let range_check_last_limb_bits_in_ms_limb_2_input = input;
@@ -18,7 +17,6 @@ pub fn range_check_last_limb_bits_in_ms_limb_2_evaluate(
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
