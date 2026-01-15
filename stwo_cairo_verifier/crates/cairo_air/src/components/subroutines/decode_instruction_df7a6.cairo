@@ -26,91 +26,80 @@ pub fn decode_instruction_df7a6_evaluate(
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 3] {
     let decode_instruction_df7a6_input_pc = input;
 
     // Constraint - Flag dst_base_fp is a bit
-    let constraint_quotient = ((dst_base_fp_col3 * (qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((dst_base_fp_col3
+        * (qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op0_base_fp is a bit
-    let constraint_quotient = ((op0_base_fp_col4 * (qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op0_base_fp_col4
+        * (qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op1_imm is a bit
-    let constraint_quotient = ((op1_imm_col5 * (qm31_const::<1, 0, 0, 0>() - op1_imm_col5)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op1_imm_col5 * (qm31_const::<1, 0, 0, 0>() - op1_imm_col5)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op1_base_fp is a bit
-    let constraint_quotient = ((op1_base_fp_col6 * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col6)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op1_base_fp_col6
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_fp_col6)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag op1_base_ap is a bit
-    let constraint_quotient = ((op1_base_ap_col7 * (qm31_const::<1, 0, 0, 0>() - op1_base_ap_col7)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((op1_base_ap_col7
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_ap_col7)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag res_add is a bit
-    let constraint_quotient = ((res_add_col8 * (qm31_const::<1, 0, 0, 0>() - res_add_col8)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((res_add_col8 * (qm31_const::<1, 0, 0, 0>() - res_add_col8)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag res_mul is a bit
-    let constraint_quotient = ((res_mul_col9 * (qm31_const::<1, 0, 0, 0>() - res_mul_col9)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((res_mul_col9 * (qm31_const::<1, 0, 0, 0>() - res_mul_col9)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag pc_update_jump is a bit
     let constraint_quotient = ((pc_update_jump_col10
-        * (qm31_const::<1, 0, 0, 0>() - pc_update_jump_col10)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - pc_update_jump_col10)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag pc_update_jump_rel is a bit
     let constraint_quotient = ((pc_update_jump_rel_col11
-        * (qm31_const::<1, 0, 0, 0>() - pc_update_jump_rel_col11)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - pc_update_jump_rel_col11)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag pc_update_jnz is a bit
     let constraint_quotient = ((pc_update_jnz_col12
-        * (qm31_const::<1, 0, 0, 0>() - pc_update_jnz_col12)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - pc_update_jnz_col12)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag ap_update_add is a bit
     let constraint_quotient = ((ap_update_add_col13
-        * (qm31_const::<1, 0, 0, 0>() - ap_update_add_col13)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - ap_update_add_col13)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag ap_update_add_1 is a bit
     let constraint_quotient = ((ap_update_add_1_col14
-        * (qm31_const::<1, 0, 0, 0>() - ap_update_add_1_col14)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - ap_update_add_1_col14)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag opcode_call is a bit
     let constraint_quotient = ((opcode_call_col15
-        * (qm31_const::<1, 0, 0, 0>() - opcode_call_col15)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - opcode_call_col15)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag opcode_ret is a bit
-    let constraint_quotient = ((opcode_ret_col16 * (qm31_const::<1, 0, 0, 0>() - opcode_ret_col16)))
-        * domain_vanishing_eval_inv;
+    let constraint_quotient = ((opcode_ret_col16
+        * (qm31_const::<1, 0, 0, 0>() - opcode_ret_col16)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Flag opcode_assert_eq is a bit
     let constraint_quotient = ((opcode_assert_eq_col17
-        * (qm31_const::<1, 0, 0, 0>() - opcode_assert_eq_col17)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - opcode_assert_eq_col17)));
     sum = sum * random_coeff + constraint_quotient;
 
     verify_instruction_sum_0 = common_lookup_elements

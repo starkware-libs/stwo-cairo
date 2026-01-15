@@ -303,7 +303,6 @@ pub fn ec_add_evaluate(
     ref range_check_20_c_sum_124: QM31,
     ref range_check_20_d_sum_125: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -447,7 +446,6 @@ pub fn ec_add_evaluate(
         ref range_check_9_9_e_sum_12,
         ref range_check_9_9_f_sum_13,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     verify_mul_252_evaluate(
@@ -574,7 +572,6 @@ pub fn ec_add_evaluate(
         ref range_check_20_c_sum_40,
         ref range_check_20_d_sum_41,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     range_check_mem_value_n_28_evaluate(
@@ -606,7 +603,6 @@ pub fn ec_add_evaluate(
         ref range_check_9_9_e_sum_54,
         ref range_check_9_9_f_sum_55,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     verify_mul_252_evaluate(
@@ -712,7 +708,6 @@ pub fn ec_add_evaluate(
         ref range_check_20_c_sum_82,
         ref range_check_20_d_sum_83,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     range_check_mem_value_n_28_evaluate(
@@ -744,7 +739,6 @@ pub fn ec_add_evaluate(
         ref range_check_9_9_e_sum_96,
         ref range_check_9_9_f_sum_97,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     verify_mul_252_evaluate(
@@ -871,7 +865,6 @@ pub fn ec_add_evaluate(
         ref range_check_20_c_sum_124,
         ref range_check_20_d_sum_125,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

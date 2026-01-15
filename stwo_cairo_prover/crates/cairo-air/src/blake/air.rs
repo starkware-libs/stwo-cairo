@@ -14,7 +14,7 @@ use crate::components::{
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BlakeContextClaim {
     pub claim: Option<Claim>,
 }
@@ -40,7 +40,7 @@ impl BlakeContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub blake_round: blake_round::Claim,
     pub blake_g: blake_g::Claim,
@@ -101,7 +101,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BlakeContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -120,7 +120,7 @@ impl BlakeContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub blake_round: blake_round::InteractionClaim,
     pub blake_g: blake_g::InteractionClaim,

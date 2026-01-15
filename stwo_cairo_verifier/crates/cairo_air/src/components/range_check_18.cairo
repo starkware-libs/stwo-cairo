@@ -67,11 +67,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let log_size = LOG_SIZE;
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_18_sum_0: QM31 = Zero::zero();
@@ -104,7 +101,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             range_check_18_multiplicity,
@@ -120,7 +116,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     range_check_18_multiplicity: QM31,
@@ -153,7 +148,6 @@ fn lookup_constraints(
         * range_check_18_sum_0
         * range_check_18_b_sum_1)
         + (range_check_18_sum_0 * range_check_18_b_multiplicity)
-        + (range_check_18_b_sum_1 * range_check_18_multiplicity))
-        * domain_vanishing_eval_inv;
+        + (range_check_18_b_sum_1 * range_check_18_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 }

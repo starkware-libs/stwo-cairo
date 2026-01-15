@@ -230,7 +230,6 @@ pub fn poseidon_hades_permutation_evaluate(
     ref poseidon_full_round_chain_sum_19: QM31,
     ref poseidon_full_round_chain_sum_20: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -292,7 +291,6 @@ pub fn poseidon_hades_permutation_evaluate(
         p_coef_col10,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     linear_combination_n_2_coefs_1_1_evaluate(
@@ -321,7 +319,6 @@ pub fn poseidon_hades_permutation_evaluate(
         p_coef_col21,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     linear_combination_n_2_coefs_1_1_evaluate(
@@ -350,7 +347,6 @@ pub fn poseidon_hades_permutation_evaluate(
         p_coef_col32,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let poseidon_full_round_chain_chain_tmp_tmp_7d028_63: QM31 = (seq * qm31_const::<2, 0, 0, 0>());
@@ -516,7 +512,6 @@ pub fn poseidon_hades_permutation_evaluate(
         ref range_check_3_3_3_3_3_sum_5,
         ref range_check_3_3_3_3_3_sum_6,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -579,7 +574,6 @@ pub fn poseidon_hades_permutation_evaluate(
         ref range_check_4_4_4_4_sum_9,
         ref range_check_4_4_sum_10,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -709,7 +703,6 @@ pub fn poseidon_hades_permutation_evaluate(
         ref range_check_4_4_4_4_sum_14,
         ref range_check_4_4_sum_15,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     linear_combination_n_4_coefs_4_2_1_1_evaluate(
@@ -759,7 +752,6 @@ pub fn poseidon_hades_permutation_evaluate(
         ref range_check_4_4_4_4_sum_17,
         ref range_check_4_4_sum_18,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let poseidon_full_round_chain_chain_id_tmp_7d028_146: QM31 =

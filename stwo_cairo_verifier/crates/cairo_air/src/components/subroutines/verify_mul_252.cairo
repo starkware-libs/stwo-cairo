@@ -64,7 +64,6 @@ pub fn verify_mul_252_evaluate(
     ref range_check_20_c_sum_26: QM31,
     ref range_check_20_d_sum_27: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -244,7 +243,6 @@ pub fn verify_mul_252_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let conv_tmp_9a554_18_limb_0: QM31 = (double_karatsuba_1454b_output_tmp_9a554_17_limb_0
@@ -470,8 +468,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_0_col1 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_0 - k_col0)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_0 - k_col0)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_b_sum_1 = common_lookup_elements
@@ -482,8 +479,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_1_col2 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_1 + carry_0_col1)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_1 + carry_0_col1)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_c_sum_2 = common_lookup_elements
@@ -494,8 +490,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_2_col3 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_2 + carry_1_col2)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_2 + carry_1_col2)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_d_sum_3 = common_lookup_elements
@@ -506,8 +501,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_3_col4 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_3 + carry_2_col3)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_3 + carry_2_col3)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_e_sum_4 = common_lookup_elements
@@ -518,8 +512,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_4_col5 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_4 + carry_3_col4)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_4 + carry_3_col4)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_f_sum_5 = common_lookup_elements
@@ -530,8 +523,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_5_col6 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_5 + carry_4_col5)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_5 + carry_4_col5)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_g_sum_6 = common_lookup_elements
@@ -542,8 +534,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_6_col7 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_6 + carry_5_col6)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_6 + carry_5_col6)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_h_sum_7 = common_lookup_elements
@@ -554,8 +545,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_7_col8 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_7 + carry_6_col7)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_7 + carry_6_col7)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_sum_8 = common_lookup_elements
@@ -566,8 +556,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_8_col9 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_8 + carry_7_col8)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_8 + carry_7_col8)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_b_sum_9 = common_lookup_elements
@@ -578,8 +567,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_9_col10 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_9 + carry_8_col9)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_9 + carry_8_col9)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_c_sum_10 = common_lookup_elements
@@ -590,8 +578,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_10_col11 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_10 + carry_9_col10)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_10 + carry_9_col10)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_d_sum_11 = common_lookup_elements
@@ -602,8 +589,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_11_col12 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_11 + carry_10_col11)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_11 + carry_10_col11)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_e_sum_12 = common_lookup_elements
@@ -614,8 +600,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_12_col13 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_12 + carry_11_col12)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_12 + carry_11_col12)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_f_sum_13 = common_lookup_elements
@@ -626,8 +611,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_13_col14 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_13 + carry_12_col13)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_13 + carry_12_col13)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_g_sum_14 = common_lookup_elements
@@ -638,8 +622,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_14_col15 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_14 + carry_13_col14)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_14 + carry_13_col14)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_h_sum_15 = common_lookup_elements
@@ -650,8 +633,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_15_col16 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_15 + carry_14_col15)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_15 + carry_14_col15)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_sum_16 = common_lookup_elements
@@ -665,8 +647,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_16_col17 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_16 + carry_15_col16)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_16 + carry_15_col16)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_b_sum_17 = common_lookup_elements
@@ -677,8 +658,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_17_col18 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_17 + carry_16_col17)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_17 + carry_16_col17)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_c_sum_18 = common_lookup_elements
@@ -689,8 +669,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_18_col19 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_18 + carry_17_col18)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_18 + carry_17_col18)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_d_sum_19 = common_lookup_elements
@@ -701,8 +680,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_19_col20 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_19 + carry_18_col19)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_19 + carry_18_col19)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_e_sum_20 = common_lookup_elements
@@ -713,8 +691,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_20_col21 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_20 + carry_19_col20)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_20 + carry_19_col20)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_f_sum_21 = common_lookup_elements
@@ -726,8 +703,7 @@ pub fn verify_mul_252_evaluate(
     // Constraint -
     let constraint_quotient = (((carry_21_col22 * qm31_const::<512, 0, 0, 0>())
         - ((conv_mod_tmp_9a554_19_limb_21 - (qm31_const::<136, 0, 0, 0>() * k_col0))
-            + carry_20_col21)))
-        * domain_vanishing_eval_inv;
+            + carry_20_col21)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_g_sum_22 = common_lookup_elements
@@ -738,8 +714,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_22_col23 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_22 + carry_21_col22)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_22 + carry_21_col22)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_h_sum_23 = common_lookup_elements
@@ -750,8 +725,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_23_col24 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_23 + carry_22_col23)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_23 + carry_22_col23)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_sum_24 = common_lookup_elements
@@ -765,8 +739,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_24_col25 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_24 + carry_23_col24)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_24 + carry_23_col24)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_b_sum_25 = common_lookup_elements
@@ -777,8 +750,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_25_col26 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_25 + carry_24_col25)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_25 + carry_24_col25)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_c_sum_26 = common_lookup_elements
@@ -789,8 +761,7 @@ pub fn verify_mul_252_evaluate(
 
     // Constraint -
     let constraint_quotient = (((carry_26_col27 * qm31_const::<512, 0, 0, 0>())
-        - (conv_mod_tmp_9a554_19_limb_26 + carry_25_col26)))
-        * domain_vanishing_eval_inv;
+        - (conv_mod_tmp_9a554_19_limb_26 + carry_25_col26)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_20_d_sum_27 = common_lookup_elements
@@ -802,8 +773,7 @@ pub fn verify_mul_252_evaluate(
     // Constraint -
     let constraint_quotient = (((conv_mod_tmp_9a554_19_limb_27
         - (qm31_const::<256, 0, 0, 0>() * k_col0))
-        + carry_26_col27))
-        * domain_vanishing_eval_inv;
+        + carry_26_col27));
     sum = sum * random_coeff + constraint_quotient;
 
     []

@@ -25,17 +25,11 @@ pub fn read_positive_known_id_num_bits_128_evaluate(
     common_lookup_elements: @CommonLookupElements,
     ref memory_id_to_big_sum_0: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let read_positive_known_id_num_bits_128_input = input;
     range_check_last_limb_bits_in_ms_limb_2_evaluate(
-        value_limb_14_col14,
-        partial_limb_msb_col15,
-        common_lookup_elements,
-        ref sum,
-        domain_vanishing_eval_inv,
-        random_coeff,
+        value_limb_14_col14, partial_limb_msb_col15, common_lookup_elements, ref sum, random_coeff,
     );
 
     memory_id_to_big_sum_0 = common_lookup_elements

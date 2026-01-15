@@ -30,7 +30,6 @@ pub fn evaluate_constraints_at_point(
     ref interaction_mask_values: ColumnSpan<Span<QM31>>,
     params: ConstraintParams,
     random_coeff: QM31,
-    domain_vanish_at_point_inv: QM31,
 ) {
     let ConstraintParams {
         lookup_elements,
@@ -77,8 +76,7 @@ pub fn evaluate_constraints_at_point(
         // -multiplicity0 * intermediate1 - multiplicity1 * intermediate0
         let constraint_quotient = ((curr_cum_sum - prev_cum_sum) * combination_0 * combination_1
             + multiplicity_0 * combination_1
-            + multiplicity_1 * combination_0)
-            * domain_vanish_at_point_inv;
+            + multiplicity_1 * combination_0);
         sum = sum * random_coeff + constraint_quotient;
         prev_cum_sum = curr_cum_sum;
     }
@@ -110,8 +108,7 @@ pub fn evaluate_constraints_at_point(
         * combination_0
         * combination_1
         + multiplicity_0 * combination_1
-        + multiplicity_1 * combination_0)
-        * domain_vanish_at_point_inv;
+        + multiplicity_1 * combination_0);
     sum = sum * random_coeff + constraint_quotient;
 }
 

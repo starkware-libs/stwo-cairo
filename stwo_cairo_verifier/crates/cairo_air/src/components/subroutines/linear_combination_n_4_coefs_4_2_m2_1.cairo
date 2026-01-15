@@ -21,7 +21,6 @@ pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
     ref range_check_4_4_4_4_sum_1: QM31,
     ref range_check_4_4_sum_2: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -140,8 +139,7 @@ pub fn linear_combination_n_4_coefs_4_2_m2_1_evaluate(
         - (qm31_const::<2, 0, 0, 0>() * linear_combination_n_4_coefs_4_2_m2_1_input_limb_29))
         + linear_combination_n_4_coefs_4_2_m2_1_input_limb_39)
         - combination_limb_9_col9)
-        - (p_coef_col10 * qm31_const::<256, 0, 0, 0>())))
-        * domain_vanishing_eval_inv;
+        - (p_coef_col10 * qm31_const::<256, 0, 0, 0>())));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_4_4_4_4_sum_0 = common_lookup_elements

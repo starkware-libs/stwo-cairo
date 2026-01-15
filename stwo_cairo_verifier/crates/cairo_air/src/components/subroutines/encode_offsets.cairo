@@ -17,7 +17,6 @@ pub fn encode_offsets_evaluate(
     ref range_check_7_2_5_sum_0: QM31,
     ref range_check_4_3_sum_1: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 2] {
     let [encode_offsets_input_offset0, encode_offsets_input_offset1, encode_offsets_input_offset2] =
@@ -26,24 +25,21 @@ pub fn encode_offsets_evaluate(
     // Constraint - Reconstructed offset0 is correct
     let constraint_quotient = (((offset0_low_col0
         + (offset0_mid_col1 * qm31_const::<512, 0, 0, 0>()))
-        - encode_offsets_input_offset0))
-        * domain_vanishing_eval_inv;
+        - encode_offsets_input_offset0));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Reconstructed offset1 is correct
     let constraint_quotient = ((((offset1_low_col2
         + (offset1_mid_col3 * qm31_const::<4, 0, 0, 0>()))
         + (offset1_high_col4 * qm31_const::<2048, 0, 0, 0>()))
-        - encode_offsets_input_offset1))
-        * domain_vanishing_eval_inv;
+        - encode_offsets_input_offset1));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Reconstructed offset2 is correct
     let constraint_quotient = ((((offset2_low_col5
         + (offset2_mid_col6 * qm31_const::<16, 0, 0, 0>()))
         + (offset2_high_col7 * qm31_const::<8192, 0, 0, 0>()))
-        - encode_offsets_input_offset2))
-        * domain_vanishing_eval_inv;
+        - encode_offsets_input_offset2));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_7_2_5_sum_0 = common_lookup_elements

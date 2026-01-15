@@ -1,6 +1,5 @@
 use stwo_constraint_framework::{CommonLookupElements, PreprocessedMaskValues};
 use stwo_verifier_core::ColumnSpan;
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 
 /// A component is a set of trace columns of the same sizes along with a set of constraints on them.
@@ -12,7 +11,6 @@ pub trait CairoComponent<T> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     );
 }
 

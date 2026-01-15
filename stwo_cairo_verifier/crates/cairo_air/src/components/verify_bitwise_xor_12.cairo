@@ -70,7 +70,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let claimed_sum = *self.interaction_claim.claimed_sum;
 
@@ -86,16 +85,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             column_size: pow2(LOG_SIZE).try_into().unwrap(),
         };
 
-        let trace_domain = CanonicCosetImpl::new(LOG_SIZE);
-        let vanish_eval = trace_domain.eval_vanishing(point);
-
         constraints::evaluate_constraints_at_point(
-            ref sum,
-            ref trace_mask_values,
-            ref interaction_trace_mask_values,
-            params,
-            random_coeff,
-            vanish_eval.inverse(),
+            ref sum, ref trace_mask_values, ref interaction_trace_mask_values, params, random_coeff,
         );
     }
 }

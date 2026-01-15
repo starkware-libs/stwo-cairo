@@ -8,8 +8,8 @@ use num_traits::{One, Zero};
 use stwo::core::channel::MerkleChannel;
 use stwo::core::fields::m31::M31;
 use stwo::core::pcs::{TreeSubspan, TreeVec};
-use stwo::core::vcs::blake2_merkle::Blake2sMerkleChannel;
-use stwo::core::vcs::MerkleHasher;
+use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
+use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
 use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
@@ -97,7 +97,7 @@ impl Enabler {
 pub trait TreeBuilder<B: Backend> {
     fn extend_evals(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan;
 }
 
@@ -106,7 +106,7 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
 {
     fn extend_evals(
         &mut self,
-        columns: impl IntoIterator<Item = CircleEvaluation<B, M31, BitReversedOrder>>,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
     ) -> TreeSubspan {
         self.extend_evals(columns)
     }
@@ -135,7 +135,7 @@ pub fn witness_trace_cells(claim: &CairoClaim, pp_trace: &PreProcessedTrace) -> 
 fn get_preprocessed_roots<MC: MerkleChannel>(
     max_log_blowup_factor: u32,
     preprocessed_trace: PreProcessedTraceVariant,
-) -> Vec<<MC::H as MerkleHasher>::Hash>
+) -> Vec<<MC::H as MerkleHasherLifted>::Hash>
 where
     stwo::prover::backend::simd::SimdBackend: BackendForChannel<MC>,
 {
@@ -169,7 +169,7 @@ pub fn export_preprocessed_roots() {
     // Poseidon252 roots.
     #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
     {
-        use stwo::core::vcs::poseidon252_merkle::Poseidon252MerkleChannel;
+        use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
         // Poseidon252 roots.
         get_preprocessed_roots::<Poseidon252MerkleChannel>(
             max_log_blowup_factor,

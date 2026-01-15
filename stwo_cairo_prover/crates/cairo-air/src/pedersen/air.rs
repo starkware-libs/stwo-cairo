@@ -12,7 +12,7 @@ use crate::components::{
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextClaim {
     pub claim: Option<Claim>,
 }
@@ -38,7 +38,7 @@ impl PedersenContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub pedersen_aggregator: pedersen_aggregator_window_bits_18::Claim,
     pub partial_ec_mul: partial_ec_mul_window_bits_18::Claim,
@@ -86,7 +86,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PedersenContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -105,7 +105,7 @@ impl PedersenContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub pedersen_aggregator: pedersen_aggregator_window_bits_18::InteractionClaim,
     pub partial_ec_mul: partial_ec_mul_window_bits_18::InteractionClaim,

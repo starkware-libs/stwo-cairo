@@ -52,7 +52,6 @@ pub fn add_252_evaluate(
     ref range_check_9_9_e_sum_12: QM31,
     ref range_check_9_9_f_sum_13: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -142,7 +141,6 @@ pub fn add_252_evaluate(
         ref range_check_9_9_e_sum_12,
         ref range_check_9_9_f_sum_13,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     verify_add_252_evaluate(
@@ -179,7 +177,6 @@ pub fn add_252_evaluate(
         sub_p_bit_col28,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

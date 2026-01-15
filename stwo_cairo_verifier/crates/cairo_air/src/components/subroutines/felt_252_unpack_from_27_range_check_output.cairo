@@ -40,7 +40,6 @@ pub fn felt_252_unpack_from_27_range_check_output_evaluate(
     ref range_check_9_9_e_sum_12: QM31,
     ref range_check_9_9_f_sum_13: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 10] {
     let [
@@ -132,7 +131,6 @@ pub fn felt_252_unpack_from_27_range_check_output_evaluate(
         ref range_check_9_9_e_sum_12,
         ref range_check_9_9_f_sum_13,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

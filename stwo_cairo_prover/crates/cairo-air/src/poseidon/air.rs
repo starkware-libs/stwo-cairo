@@ -12,7 +12,7 @@ use crate::components::{
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonContextClaim {
     pub claim: Option<Claim>,
 }
@@ -38,7 +38,7 @@ impl PoseidonContextClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct Claim {
     pub poseidon_aggregator: poseidon_aggregator::Claim,
     pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::Claim,
@@ -112,7 +112,7 @@ impl Claim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct PoseidonContextInteractionClaim {
     pub claim: Option<InteractionClaim>,
 }
@@ -131,7 +131,7 @@ impl PoseidonContextInteractionClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct InteractionClaim {
     pub poseidon_aggregator: poseidon_aggregator::InteractionClaim,
     pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::InteractionClaim,

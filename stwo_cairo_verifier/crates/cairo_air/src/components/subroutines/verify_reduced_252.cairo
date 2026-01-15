@@ -12,7 +12,6 @@ pub fn verify_reduced_252_evaluate(
     ref range_check_8_sum_0: QM31,
     ref range_check_8_sum_1: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -49,14 +48,12 @@ pub fn verify_reduced_252_evaluate(
 
     // Constraint - ms_max is bit
     let constraint_quotient = ((ms_limb_is_max_col0
-        * (qm31_const::<1, 0, 0, 0>() - ms_limb_is_max_col0)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - ms_limb_is_max_col0)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - both_max is bit
     let constraint_quotient = ((ms_and_mid_limbs_are_max_col1
-        * (qm31_const::<1, 0, 0, 0>() - ms_and_mid_limbs_are_max_col1)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - ms_and_mid_limbs_are_max_col1)));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_8_sum_0 = common_lookup_elements
@@ -73,16 +70,14 @@ pub fn verify_reduced_252_evaluate(
         * ((((verify_reduced_252_input_limb_22 + verify_reduced_252_input_limb_23)
             + verify_reduced_252_input_limb_24)
             + verify_reduced_252_input_limb_25)
-            + verify_reduced_252_input_limb_26)))
-        * domain_vanishing_eval_inv;
+            + verify_reduced_252_input_limb_26)));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - rc_input
     let constraint_quotient = ((rc_input_col2
         - (ms_limb_is_max_col0
             * ((qm31_const::<120, 0, 0, 0>() + verify_reduced_252_input_limb_21)
-                - ms_and_mid_limbs_are_max_col1))))
-        * domain_vanishing_eval_inv;
+                - ms_and_mid_limbs_are_max_col1))));
     sum = sum * random_coeff + constraint_quotient;
 
     range_check_8_sum_1 = common_lookup_elements
@@ -109,8 +104,7 @@ pub fn verify_reduced_252_evaluate(
             + verify_reduced_252_input_limb_17)
             + verify_reduced_252_input_limb_18)
             + verify_reduced_252_input_limb_19)
-            + verify_reduced_252_input_limb_20)))
-        * domain_vanishing_eval_inv;
+            + verify_reduced_252_input_limb_20)));
     sum = sum * random_coeff + constraint_quotient;
 
     []

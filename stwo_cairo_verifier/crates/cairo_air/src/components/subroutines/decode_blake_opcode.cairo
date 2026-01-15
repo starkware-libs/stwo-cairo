@@ -55,7 +55,6 @@ pub fn decode_blake_opcode_evaluate(
     ref memory_address_to_id_sum_8: QM31,
     ref memory_id_to_big_sum_9: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
     let [decode_blake_opcode_input_pc, decode_blake_opcode_input_ap, decode_blake_opcode_input_fp] =
@@ -79,21 +78,18 @@ pub fn decode_blake_opcode_evaluate(
         common_lookup_elements,
         ref verify_instruction_sum_0,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
     // Constraint - OpcodeExtension is either Blake or BlakeFinalize
     let constraint_quotient = (((opcode_extension_col7 - qm31_const::<1, 0, 0, 0>())
-        * (opcode_extension_col7 - qm31_const::<2, 0, 0, 0>())))
-        * domain_vanishing_eval_inv;
+        * (opcode_extension_col7 - qm31_const::<2, 0, 0, 0>())));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - mem0_base
     let constraint_quotient = ((mem0_base_col8
         - ((op0_base_fp_col4 * decode_blake_opcode_input_fp)
-            + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4) * decode_blake_opcode_input_ap))))
-        * domain_vanishing_eval_inv;
+            + ((qm31_const::<1, 0, 0, 0>() - op0_base_fp_col4) * decode_blake_opcode_input_ap))));
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_29_evaluate(
         (mem0_base_col8 + decode_instruction_472fe_output_tmp_47e62_9_offset1),
@@ -107,7 +103,6 @@ pub fn decode_blake_opcode_evaluate(
         ref memory_address_to_id_sum_1,
         ref memory_id_to_big_sum_2,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -115,8 +110,7 @@ pub fn decode_blake_opcode_evaluate(
     let constraint_quotient = ((mem1_base_col15
         - ((op1_base_fp_col5 * decode_blake_opcode_input_fp)
             + (decode_instruction_472fe_output_tmp_47e62_9_op1_base_ap
-                * decode_blake_opcode_input_ap))))
-        * domain_vanishing_eval_inv;
+                * decode_blake_opcode_input_ap))));
     sum = sum * random_coeff + constraint_quotient;
     read_positive_num_bits_29_evaluate(
         (mem1_base_col15 + decode_instruction_472fe_output_tmp_47e62_9_offset2),
@@ -130,7 +124,6 @@ pub fn decode_blake_opcode_evaluate(
         ref memory_address_to_id_sum_3,
         ref memory_id_to_big_sum_4,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     read_positive_num_bits_29_evaluate(
@@ -145,15 +138,13 @@ pub fn decode_blake_opcode_evaluate(
         ref memory_address_to_id_sum_5,
         ref memory_id_to_big_sum_6,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
     // Constraint - mem_dst_base
     let constraint_quotient = ((mem_dst_base_col28
         - ((dst_base_fp_col3 * decode_blake_opcode_input_fp)
-            + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3) * decode_blake_opcode_input_ap))))
-        * domain_vanishing_eval_inv;
+            + ((qm31_const::<1, 0, 0, 0>() - dst_base_fp_col3) * decode_blake_opcode_input_ap))));
     sum = sum * random_coeff + constraint_quotient;
     read_u_32_evaluate(
         (mem_dst_base_col28 + decode_instruction_472fe_output_tmp_47e62_9_offset0),
@@ -168,7 +159,6 @@ pub fn decode_blake_opcode_evaluate(
         ref memory_address_to_id_sum_8,
         ref memory_id_to_big_sum_9,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

@@ -8,7 +8,6 @@ pub fn double_karatsuba_1454b_evaluate(
     input: [QM31; 56],
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 55] {
     let [
@@ -121,7 +120,6 @@ pub fn double_karatsuba_1454b_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let [
@@ -172,7 +170,6 @@ pub fn double_karatsuba_1454b_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let x_sum_tmp_1454b_10_limb_0: QM31 = (double_karatsuba_1454b_input_limb_0
@@ -275,7 +272,6 @@ pub fn double_karatsuba_1454b_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

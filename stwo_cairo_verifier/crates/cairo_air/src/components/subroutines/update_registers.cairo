@@ -27,7 +27,6 @@ pub fn update_registers_evaluate(
     ref range_check_18_sum_0: QM31,
     ref range_check_11_sum_1: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [
@@ -151,7 +150,6 @@ pub fn update_registers_evaluate(
         partial_limb_msb_col0,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let cond_felt_252_as_rel_imm_output_tmp_783d5_9: QM31 = cond_felt_252_as_rel_imm_evaluate(
@@ -177,7 +175,6 @@ pub fn update_registers_evaluate(
         partial_limb_msb_col3,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let diff_from_p_tmp_783d5_10: QM31 = (update_registers_input_dst_limb_0
@@ -218,8 +215,7 @@ pub fn update_registers_evaluate(
         + update_registers_input_dst_limb_26)
         + (diff_from_p_tmp_783d5_12 * diff_from_p_tmp_783d5_12))
         * dst_sum_squares_inv_col4)
-        - qm31_const::<1, 0, 0, 0>()))
-        * domain_vanishing_eval_inv;
+        - qm31_const::<1, 0, 0, 0>()));
     sum = sum * random_coeff + constraint_quotient;
     let dst_sum_tmp_783d5_13: QM31 = (((((((((((((((((((((((((((update_registers_input_dst_limb_0
         + update_registers_input_dst_limb_1)
@@ -252,8 +248,7 @@ pub fn update_registers_evaluate(
 
     // Constraint - op1_as_rel_imm_cond
     let constraint_quotient = ((op1_as_rel_imm_cond_col6
-        - (update_registers_input_pc_update_jnz * dst_sum_tmp_783d5_13)))
-        * domain_vanishing_eval_inv;
+        - (update_registers_input_pc_update_jnz * dst_sum_tmp_783d5_13)));
     sum = sum * random_coeff + constraint_quotient;
     let cond_felt_252_as_rel_imm_output_tmp_783d5_21: QM31 = cond_felt_252_as_rel_imm_evaluate(
         [
@@ -278,22 +273,19 @@ pub fn update_registers_evaluate(
         partial_limb_msb_col9,
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
     // Constraint - Constraint1 for conditional jump
     let constraint_quotient = (((next_pc_jnz_col10
         - (update_registers_input_pc + cond_felt_252_as_rel_imm_output_tmp_783d5_21))
-        * dst_sum_tmp_783d5_13))
-        * domain_vanishing_eval_inv;
+        * dst_sum_tmp_783d5_13));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - Constraint2 for conditional jump
     let constraint_quotient = (((next_pc_jnz_col10
         - (update_registers_input_pc + update_registers_input_instruction_size))
-        * ((dst_sum_tmp_783d5_13 * dst_sum_inv_col5) - qm31_const::<1, 0, 0, 0>())))
-        * domain_vanishing_eval_inv;
+        * ((dst_sum_tmp_783d5_13 * dst_sum_inv_col5) - qm31_const::<1, 0, 0, 0>())));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - next_pc
@@ -303,8 +295,7 @@ pub fn update_registers_evaluate(
             + (update_registers_input_pc_update_jump * cond_felt_252_as_rel_imm_output_tmp_783d5_9))
             + (update_registers_input_pc_update_jump_rel
                 * (update_registers_input_pc + cond_felt_252_as_rel_imm_output_tmp_783d5_9)))
-            + (update_registers_input_pc_update_jnz * next_pc_jnz_col10))))
-        * domain_vanishing_eval_inv;
+            + (update_registers_input_pc_update_jnz * next_pc_jnz_col10))));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - next_ap
@@ -312,8 +303,7 @@ pub fn update_registers_evaluate(
         - (((update_registers_input_ap
             + (update_registers_input_ap_update_add * cond_felt_252_as_rel_imm_output_tmp_783d5_9))
             + update_registers_input_ap_update_add_1)
-            + (update_registers_input_opcode_call * qm31_const::<2, 0, 0, 0>()))))
-        * domain_vanishing_eval_inv;
+            + (update_registers_input_opcode_call * qm31_const::<2, 0, 0, 0>()))));
     sum = sum * random_coeff + constraint_quotient;
     range_check_29_evaluate(
         next_ap_col12,
@@ -322,7 +312,6 @@ pub fn update_registers_evaluate(
         ref range_check_18_sum_0,
         ref range_check_11_sum_1,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -331,8 +320,7 @@ pub fn update_registers_evaluate(
         - (((update_registers_input_fp_update_regular * update_registers_input_fp)
             + (update_registers_input_opcode_ret * cond_felt_252_as_addr_output_tmp_783d5_2))
             + (update_registers_input_opcode_call
-                * (update_registers_input_ap + qm31_const::<2, 0, 0, 0>())))))
-        * domain_vanishing_eval_inv;
+                * (update_registers_input_ap + qm31_const::<2, 0, 0, 0>())))));
     sum = sum * random_coeff + constraint_quotient;
 
     []

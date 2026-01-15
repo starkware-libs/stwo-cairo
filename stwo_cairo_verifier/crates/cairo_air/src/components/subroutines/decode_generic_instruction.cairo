@@ -27,7 +27,6 @@ pub fn decode_generic_instruction_evaluate(
     common_lookup_elements: @CommonLookupElements,
     ref verify_instruction_sum_0: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 8] {
     let decode_generic_instruction_input = input;
@@ -59,7 +58,6 @@ pub fn decode_generic_instruction_evaluate(
         common_lookup_elements,
         ref verify_instruction_sum_0,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let op1_base_op0_tmp_62f3c_21: QM31 = (((qm31_const::<1, 0, 0, 0>() - op1_imm_col5)
@@ -68,16 +66,14 @@ pub fn decode_generic_instruction_evaluate(
 
     // Constraint - op1_src is 0, 1, 2, or 4
     let constraint_quotient = ((op1_base_op0_tmp_62f3c_21
-        * (qm31_const::<1, 0, 0, 0>() - op1_base_op0_tmp_62f3c_21)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - op1_base_op0_tmp_62f3c_21)));
     sum = sum * random_coeff + constraint_quotient;
     let res_op1_tmp_62f3c_22: QM31 = (((qm31_const::<1, 0, 0, 0>() - res_add_col8) - res_mul_col9)
         - pc_update_jnz_col12);
 
     // Constraint - res_logic is 0, 1, or 2
     let constraint_quotient = ((res_op1_tmp_62f3c_22
-        * (qm31_const::<1, 0, 0, 0>() - res_op1_tmp_62f3c_22)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - res_op1_tmp_62f3c_22)));
     sum = sum * random_coeff + constraint_quotient;
     let pc_update_regular_tmp_62f3c_23: QM31 = (((qm31_const::<1, 0, 0, 0>() - pc_update_jump_col10)
         - pc_update_jump_rel_col11)
@@ -85,8 +81,7 @@ pub fn decode_generic_instruction_evaluate(
 
     // Constraint - pc_update is 0, 1, 2, or 4
     let constraint_quotient = ((pc_update_regular_tmp_62f3c_23
-        * (qm31_const::<1, 0, 0, 0>() - pc_update_regular_tmp_62f3c_23)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - pc_update_regular_tmp_62f3c_23)));
     sum = sum * random_coeff + constraint_quotient;
     let ap_update_regular_tmp_62f3c_24: QM31 = (((qm31_const::<1, 0, 0, 0>() - ap_update_add_col13)
         - ap_update_add_1_col14)
@@ -94,16 +89,14 @@ pub fn decode_generic_instruction_evaluate(
 
     // Constraint - ap_update is 0, 1, 2, or 4
     let constraint_quotient = ((ap_update_regular_tmp_62f3c_24
-        * (qm31_const::<1, 0, 0, 0>() - ap_update_regular_tmp_62f3c_24)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - ap_update_regular_tmp_62f3c_24)));
     sum = sum * random_coeff + constraint_quotient;
     let fp_update_regular_tmp_62f3c_25: QM31 = ((qm31_const::<1, 0, 0, 0>() - opcode_call_col15)
         - opcode_ret_col16);
 
     // Constraint - opcode is 0, 1, 2, or 4
     let constraint_quotient = ((fp_update_regular_tmp_62f3c_25
-        * (qm31_const::<1, 0, 0, 0>() - fp_update_regular_tmp_62f3c_25)))
-        * domain_vanishing_eval_inv;
+        * (qm31_const::<1, 0, 0, 0>() - fp_update_regular_tmp_62f3c_25)));
     sum = sum * random_coeff + constraint_quotient;
 
     [

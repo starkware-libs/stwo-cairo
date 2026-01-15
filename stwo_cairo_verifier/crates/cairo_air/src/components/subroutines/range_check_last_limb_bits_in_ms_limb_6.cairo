@@ -8,7 +8,6 @@ pub fn range_check_last_limb_bits_in_ms_limb_6_evaluate(
     common_lookup_elements: @CommonLookupElements,
     ref range_check_6_sum_0: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let range_check_last_limb_bits_in_ms_limb_6_input = input;

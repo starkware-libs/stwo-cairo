@@ -67,11 +67,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let log_size = LOG_SIZE;
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut range_check_9_9_sum_0: QM31 = Zero::zero();
@@ -218,7 +215,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             range_check_9_9_multiplicity,
@@ -246,7 +242,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     range_check_9_9_multiplicity: QM31,
@@ -320,8 +315,7 @@ fn lookup_constraints(
         * range_check_9_9_sum_0
         * range_check_9_9_b_sum_1)
         + (range_check_9_9_sum_0 * range_check_9_9_b_multiplicity)
-        + (range_check_9_9_b_sum_1 * range_check_9_9_multiplicity))
-        * domain_vanishing_eval_inv;
+        + (range_check_9_9_b_sum_1 * range_check_9_9_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -331,8 +325,7 @@ fn lookup_constraints(
         * range_check_9_9_c_sum_2
         * range_check_9_9_d_sum_3)
         + (range_check_9_9_c_sum_2 * range_check_9_9_d_multiplicity)
-        + (range_check_9_9_d_sum_3 * range_check_9_9_c_multiplicity))
-        * domain_vanishing_eval_inv;
+        + (range_check_9_9_d_sum_3 * range_check_9_9_c_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -342,8 +335,7 @@ fn lookup_constraints(
         * range_check_9_9_e_sum_4
         * range_check_9_9_f_sum_5)
         + (range_check_9_9_e_sum_4 * range_check_9_9_f_multiplicity)
-        + (range_check_9_9_f_sum_5 * range_check_9_9_e_multiplicity))
-        * domain_vanishing_eval_inv;
+        + (range_check_9_9_f_sum_5 * range_check_9_9_e_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -357,7 +349,6 @@ fn lookup_constraints(
         * range_check_9_9_g_sum_6
         * range_check_9_9_h_sum_7)
         + (range_check_9_9_g_sum_6 * range_check_9_9_h_multiplicity)
-        + (range_check_9_9_h_sum_7 * range_check_9_9_g_multiplicity))
-        * domain_vanishing_eval_inv;
+        + (range_check_9_9_h_sum_7 * range_check_9_9_g_multiplicity));
     sum = sum * random_coeff + constraint_quotient;
 }
