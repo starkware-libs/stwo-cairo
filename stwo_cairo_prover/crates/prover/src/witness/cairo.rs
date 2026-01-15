@@ -443,7 +443,6 @@ impl CairoInteractionClaimGenerator {
         // ---------------------------
         // Feature-gated timing helpers
         // ---------------------------
-        #[cfg(feature = "trace_weights")]
         mod trace_weights {
             use std::sync::{Mutex, OnceLock};
             use std::time::{Duration, Instant};
@@ -481,14 +480,6 @@ impl CairoInteractionClaimGenerator {
 
                 let total: Duration = v.iter().map(|w| w.dur).sum();
                 (v, total)
-            }
-        }
-
-        #[cfg(not(feature = "trace_weights"))]
-        mod trace_weights {
-            #[inline]
-            pub fn timed<T>(_: &'static str, f: impl FnOnce() -> T) -> T {
-                f()
             }
         }
 
@@ -1817,30 +1808,25 @@ impl CairoInteractionClaimGenerator {
         // ---------------------------
         // Print weights (only when enabled)
         // ---------------------------
-        #[cfg(feature = "trace_weights")]
-        {
-            use trace_weights::drain_sorted;
+        use trace_weights::drain_sorted;
 
-            let (weights, total) = drain_sorted();
+        let (weights, total) = drain_sorted();
+        eprintln!("=== CairoInteractionClaimGenerator weights (sum of component wall-times) ===");
+        for w in &weights {
+            let pct = if total.as_nanos() == 0 {
+                0.0
+            } else {
+                (w.dur.as_secs_f64() / total.as_secs_f64()) * 100.0
+            };
             eprintln!(
-                "=== CairoInteractionClaimGenerator weights (sum of component wall-times) ==="
+                "{:>9.3} ms  {:>6.2}%  {}",
+                w.dur.as_secs_f64() * 1000.0,
+                pct,
+                w.name
             );
-            for w in &weights {
-                let pct = if total.as_nanos() == 0 {
-                    0.0
-                } else {
-                    (w.dur.as_secs_f64() / total.as_secs_f64()) * 100.0
-                };
-                eprintln!(
-                    "{:>9.3} ms  {:>6.2}%  {}",
-                    w.dur.as_secs_f64() * 1000.0,
-                    pct,
-                    w.name
-                );
-            }
-            eprintln!("SUM (parallel): {:.3} ms", total.as_secs_f64() * 1000.0);
-            eprintln!("NOTE: SUM exceeds wall time because tasks run in parallel.");
         }
+        eprintln!("SUM (parallel): {:.3} ms", total.as_secs_f64() * 1000.0);
+        eprintln!("NOTE: SUM exceeds wall time because tasks run in parallel.");
 
         final_claim
     }
