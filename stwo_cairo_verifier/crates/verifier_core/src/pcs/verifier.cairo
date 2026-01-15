@@ -194,8 +194,7 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
             max_log_degree_bound,
         );
 
-        // TODO(Leo): remove array in subsequent PR.
-        fri_verifier.decommit(queries, array![fri_answers]);
+        fri_verifier.decommit(queries, fri_answers);
     }
 }
 
