@@ -460,32 +460,39 @@ impl CairoInteractionClaimGenerator {
         let verify_bitwise_xor_9_gen = self.verify_bitwise_xor_9_interaction_gen;
 
         // ============================================================
-        // PARALLEL PHASE — big rocks first, bundle tiny work
+        // PARALLEL PHASE — higher fan-out to better use ~96 cores
+        //
+        // Heuristic used:
+        // - anything >= ~8–10ms becomes its own task (or paired in join)
+        // - truly tiny (<~5ms) stays bundled to avoid overhead
         // ============================================================
 
         // ---------------------------
-        // 1) Opcodes
+        // 1) Opcodes — all “meaningful” ones are separate
         // ---------------------------
         let (
-            // Heavy-ish opcodes
+            // Group A (very heavy)
             (
                 add_small_result,
                 assert_eq_result,
                 assert_eq_double_deref_result,
                 add_result,
                 mul_result,
+            ),
+            // Group B (medium)
+            (
                 jnz_taken_result,
                 call_rel_imm_result,
                 ret_result,
-            ),
-            // Remaining opcode results (mostly tiny)
-            (
+                mul_small_result,
                 add_ap_result,
                 assert_eq_imm_result,
-                mul_small_result,
                 jnz_result,
                 jump_rel_imm_result,
                 blake_opcode_result,
+            ),
+            // Group C (tiny bundle)
+            (
                 call_result,
                 generic_opcode_result,
                 jump_result,
@@ -494,8 +501,8 @@ impl CairoInteractionClaimGenerator {
                 qm31_result,
             ),
         ) = rayon::join(
-            // HEAVY OPCODES
             || {
+                // Group A: 5 heaviest opcode tasks
                 let ((add_small, assert_eq), (assert_eq_dd, add)) = rayon::join(
                     || {
                         rayon::join(
@@ -526,116 +533,147 @@ impl CairoInteractionClaimGenerator {
                     },
                 );
 
-                let ((mul, jnz_taken), (call_rel_imm, ret)) = rayon::join(
-                    || {
-                        rayon::join(
-                            || process_interaction_gens(opcodes_parts.mul, common_lookup_elements),
-                            || {
-                                process_interaction_gens(
-                                    opcodes_parts.jnz_taken,
-                                    common_lookup_elements,
-                                )
-                            },
-                        )
-                    },
-                    || {
-                        rayon::join(
-                            || {
-                                process_interaction_gens(
-                                    opcodes_parts.call_rel_imm,
-                                    common_lookup_elements,
-                                )
-                            },
-                            || process_interaction_gens(opcodes_parts.ret, common_lookup_elements),
-                        )
-                    },
-                );
+                let mul = process_interaction_gens(opcodes_parts.mul, common_lookup_elements);
 
-                (
-                    add_small,
-                    assert_eq,
-                    assert_eq_dd,
-                    add,
-                    mul,
-                    jnz_taken,
-                    call_rel_imm,
-                    ret,
-                )
+                (add_small, assert_eq, assert_eq_dd, add, mul)
             },
-            // LIGHT/TINY OPCODES
             || {
-                let ((mul_small, add_ap), (assert_eq_imm, jump_rel_imm)) = rayon::join(
+                // Groups B + C computed in parallel with each other
+                rayon::join(
                     || {
-                        rayon::join(
+                        // Group B: medium opcode tasks as separate tasks (or paired)
+                        let ((jnz_taken, call_rel_imm), (ret, mul_small)) = rayon::join(
                             || {
-                                process_interaction_gens(
-                                    opcodes_parts.mul_small,
-                                    common_lookup_elements,
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jnz_taken,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.call_rel_imm,
+                                            common_lookup_elements,
+                                        )
+                                    },
                                 )
                             },
                             || {
-                                process_interaction_gens(
-                                    opcodes_parts.add_ap,
-                                    common_lookup_elements,
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.ret,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.mul_small,
+                                            common_lookup_elements,
+                                        )
+                                    },
                                 )
                             },
+                        );
+
+                        let ((add_ap, assert_eq_imm), (jnz, jump_rel_imm)) = rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.add_ap,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.assert_eq_imm,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jnz,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jump_rel_imm,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        );
+
+                        let blake_opcode =
+                            process_interaction_gens(opcodes_parts.blake, common_lookup_elements);
+
+                        (
+                            jnz_taken,
+                            call_rel_imm,
+                            ret,
+                            mul_small,
+                            add_ap,
+                            assert_eq_imm,
+                            jnz,
+                            jump_rel_imm,
+                            blake_opcode,
                         )
                     },
                     || {
-                        rayon::join(
-                            || {
-                                process_interaction_gens(
-                                    opcodes_parts.assert_eq_imm,
-                                    common_lookup_elements,
-                                )
-                            },
-                            || {
-                                process_interaction_gens(
-                                    opcodes_parts.jump_rel_imm,
-                                    common_lookup_elements,
-                                )
-                            },
+                        // Group C: truly tiny opcode tasks bundled sequentially
+                        let call =
+                            process_interaction_gens(opcodes_parts.call, common_lookup_elements);
+                        let generic_opcode = process_interaction_gens(
+                            opcodes_parts.generic_opcode,
+                            common_lookup_elements,
+                        );
+                        let jump =
+                            process_interaction_gens(opcodes_parts.jump, common_lookup_elements);
+                        let jump_double_deref = process_interaction_gens(
+                            opcodes_parts.jump_double_deref,
+                            common_lookup_elements,
+                        );
+                        let jump_rel = process_interaction_gens(
+                            opcodes_parts.jump_rel,
+                            common_lookup_elements,
+                        );
+                        let qm31 =
+                            process_interaction_gens(opcodes_parts.qm31, common_lookup_elements);
+
+                        (
+                            call,
+                            generic_opcode,
+                            jump,
+                            jump_double_deref,
+                            jump_rel,
+                            qm31,
                         )
                     },
-                );
-
-                let jnz = process_interaction_gens(opcodes_parts.jnz, common_lookup_elements);
-
-                // Bundle truly tiny ones sequentially
-                let blake_opcode =
-                    process_interaction_gens(opcodes_parts.blake, common_lookup_elements);
-                let call = process_interaction_gens(opcodes_parts.call, common_lookup_elements);
-                let generic_opcode =
-                    process_interaction_gens(opcodes_parts.generic_opcode, common_lookup_elements);
-                let jump = process_interaction_gens(opcodes_parts.jump, common_lookup_elements);
-                let jump_double_deref = process_interaction_gens(
-                    opcodes_parts.jump_double_deref,
-                    common_lookup_elements,
-                );
-                let jump_rel =
-                    process_interaction_gens(opcodes_parts.jump_rel, common_lookup_elements);
-                let qm31 = process_interaction_gens(opcodes_parts.qm31, common_lookup_elements);
-
-                (
-                    add_ap,
-                    assert_eq_imm,
-                    mul_small,
-                    jnz,
-                    jump_rel_imm,
-                    blake_opcode,
-                    call,
-                    generic_opcode,
-                    jump,
-                    jump_double_deref,
-                    jump_rel,
-                    qm31,
                 )
             },
         );
 
         // ---------------------------
-        // 2) Contexts + memory + builtins + rc + xor + verify_instruction
+        // 2) Heavy contexts / memory / builtins / rc / xor / verify_instruction
         // ---------------------------
+
+        // We run these “top-level” heavy items concurrently:
+        // - pedersen partial_ec_mul
+        // - opcode group (already done)
+        // - poseidon cube_252
+        // - blake g
+        // - memory maps
+        // - builtin rc_128
+        //
+        // and within each optional context, split the medium items into their own joins.
         let (
             // (pedersen_opt, poseidon_opt)
             (pedersen_opt, poseidon_opt),
@@ -647,6 +685,7 @@ impl CairoInteractionClaimGenerator {
                     // Pedersen
                     || {
                         pedersen_parts.map(|pedersen| {
+                            // partial_ec_mul + points_table parallel
                             let (partial_ec_mul, points_table) = rayon::join(
                                 || {
                                     process_single_gen(
@@ -668,7 +707,8 @@ impl CairoInteractionClaimGenerator {
                                 },
                             );
 
-                            // aggregator is tiny; keep sequential
+                            // aggregator (small but not crazy): keep sequential (can be
+                            // parallelized if it grows)
                             let aggregator = process_single_gen(
                                 |b, e| pedersen.pedersen_aggregator.write_interaction_trace(b, e),
                                 common_lookup_elements,
@@ -680,6 +720,8 @@ impl CairoInteractionClaimGenerator {
                     // Poseidon
                     || {
                         poseidon_parts.map(|poseidon| {
+                            // cube_252 dominates; start it in parallel with everything else inside
+                            // poseidon
                             let (cube_252, rest) = rayon::join(
                                 || {
                                     process_single_gen(
@@ -688,6 +730,7 @@ impl CairoInteractionClaimGenerator {
                                     )
                                 },
                                 || {
+                                    // medium tasks: rc252 and chain3 in parallel
                                     let (rc252, chain3) = rayon::join(
                                         || {
                                             process_single_gen(
@@ -711,19 +754,21 @@ impl CairoInteractionClaimGenerator {
                                         },
                                     );
 
-                                    // tiny bundle
-                                    let aggregator = process_single_gen(
-                                        |b, e| {
-                                            poseidon
-                                                .poseidon_aggregator
-                                                .write_interaction_trace(b, e)
-                                        },
-                                        common_lookup_elements,
-                                    );
+                                    // small-but-not-tiny: full_round_chain separate
                                     let full = process_single_gen(
                                         |b, e| {
                                             poseidon
                                                 .poseidon_full_round_chain
+                                                .write_interaction_trace(b, e)
+                                        },
+                                        common_lookup_elements,
+                                    );
+
+                                    // tiny: aggregator + round_keys bundled
+                                    let aggregator = process_single_gen(
+                                        |b, e| {
+                                            poseidon
+                                                .poseidon_aggregator
                                                 .write_interaction_trace(b, e)
                                         },
                                         common_lookup_elements,
@@ -752,6 +797,7 @@ impl CairoInteractionClaimGenerator {
                     // Blake
                     || {
                         blake_parts.map(|blake| {
+                            // g dominates; parallelize it with (round + verify12 + tiny)
                             let (g, rest) = rayon::join(
                                 || {
                                     process_single_gen(
@@ -760,6 +806,7 @@ impl CairoInteractionClaimGenerator {
                                     )
                                 },
                                 || {
+                                    // round and verify12 are both meaningful; do them in parallel
                                     let (round, verify12) = rayon::join(
                                         || {
                                             process_single_gen(
@@ -781,7 +828,7 @@ impl CairoInteractionClaimGenerator {
                                         },
                                     );
 
-                                    // tiny bundle
+                                    // tiny: sigma + triple_xor sequential
                                     let sigma = process_single_gen(
                                         |b, e| blake.blake_sigma.write_interaction_trace(b, e),
                                         common_lookup_elements,
@@ -799,16 +846,88 @@ impl CairoInteractionClaimGenerator {
                             (round, g, sigma, triple, verify12)
                         })
                     },
-                    // Misc
+                    // Misc: memory + builtins + verify_instruction + range checks + xor
                     || {
-                        // Memory is heavy: do in parallel
-                        let ((mem_addr_to_id, mem_id_to_value), other) = rayon::join(
+                        // Memory: two heavy items parallel
+                        let (mem_addr_to_id, mem_id_to_value) = rayon::join(
+                            || {
+                                process_single_gen(
+                                    |b, e| memory_address_to_id_gen.write_interaction_trace(b, e),
+                                    common_lookup_elements,
+                                )
+                            },
+                            || {
+                                process_single_gen(
+                                    |b, e| memory_id_to_value_gen.write_interaction_trace(b, e),
+                                    common_lookup_elements,
+                                )
+                            },
+                        );
+
+                        // Builtins: rc128 is meaningful; keep it parallel with everything else
+                        let (builtin_rc128, other_small_builtins) = rayon::join(
+                            || {
+                                builtins_parts.range_check_128_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                })
+                            },
+                            || {
+                                // these are tiny in your measurements; keep sequential
+                                let add_mod = builtins_parts.add_mod_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+                                let bitwise = builtins_parts.bitwise_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+                                let mul_mod = builtins_parts.mul_mod_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+                                let ped = builtins_parts.pedersen_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+                                let pos = builtins_parts.poseidon_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+                                let rc96 = builtins_parts.range_check_96_builtin.map(|gen| {
+                                    process_single_gen(
+                                        |b, e| gen.write_interaction_trace(b, e),
+                                        common_lookup_elements,
+                                    )
+                                });
+
+                                (add_mod, bitwise, mul_mod, ped, pos, rc96)
+                            },
+                        );
+
+                        // Range checks: only rc20 (~92ms) is notable, rc9_9 (~32ms), rc3_6_6_3
+                        // (~13ms) Split these out so they can overlap on a
+                        // many-core machine.
+                        let ((rc_20, rc_9_9), (rc_3_6_6_3, rc_rest)) = rayon::join(
                             || {
                                 rayon::join(
                                     || {
                                         process_single_gen(
                                             |b, e| {
-                                                memory_address_to_id_gen
+                                                range_checks_parts
+                                                    .rc_20
                                                     .write_interaction_trace(b, e)
                                             },
                                             common_lookup_elements,
@@ -817,7 +936,9 @@ impl CairoInteractionClaimGenerator {
                                     || {
                                         process_single_gen(
                                             |b, e| {
-                                                memory_id_to_value_gen.write_interaction_trace(b, e)
+                                                range_checks_parts
+                                                    .rc_9_9
+                                                    .write_interaction_trace(b, e)
                                             },
                                             common_lookup_elements,
                                         )
@@ -825,176 +946,212 @@ impl CairoInteractionClaimGenerator {
                                 )
                             },
                             || {
-                                // Builtins: range_check_128 is the only non-trivial one in your
-                                // measurements
-                                let (builtin_rc128, builtin_rest) = rayon::join(
+                                rayon::join(
                                     || {
-                                        builtins_parts.range_check_128_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        })
+                                        process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_3_6_6_3
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
                                     },
                                     || {
-                                        // tiny bundle
-                                        let ped = builtins_parts.pedersen_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        });
-                                        let pos = builtins_parts.poseidon_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        });
-                                        let add_mod = builtins_parts.add_mod_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        });
-                                        let bitwise = builtins_parts.bitwise_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        });
-                                        let mul_mod = builtins_parts.mul_mod_builtin.map(|gen| {
-                                            process_single_gen(
-                                                |b, e| gen.write_interaction_trace(b, e),
-                                                common_lookup_elements,
-                                            )
-                                        });
-                                        let rc96 =
-                                            builtins_parts.range_check_96_builtin.map(|gen| {
-                                                process_single_gen(
-                                                    |b, e| gen.write_interaction_trace(b, e),
-                                                    common_lookup_elements,
-                                                )
-                                            });
+                                        // rest are tiny: sequential
+                                        let rc_6 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_6
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_8 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_8
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_11 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_11
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_12 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_12
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_18 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_18
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_4_3 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_4_3
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_4_4 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_4_4
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_7_2_5 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_7_2_5
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_4_4_4_4 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_4_4_4_4
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
+                                        let rc_3_3_3_3_3 = process_single_gen(
+                                            |b, e| {
+                                                range_checks_parts
+                                                    .rc_3_3_3_3_3
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        );
 
-                                        (add_mod, bitwise, mul_mod, ped, pos, rc96)
+                                        (
+                                            rc_6,
+                                            rc_8,
+                                            rc_11,
+                                            rc_12,
+                                            rc_18,
+                                            rc_4_3,
+                                            rc_4_4,
+                                            rc_7_2_5,
+                                            rc_4_4_4_4,
+                                            rc_3_3_3_3_3,
+                                        )
                                     },
-                                );
-
-                                // Bundle verify_instruction + range checks + xor sequentially
-                                let verify_instruction = process_single_gen(
-                                    |b, e| verify_instruction_gen.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-
-                                let rc_6 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_6.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_8 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_8.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_11 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_11.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_12 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_12.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_18 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_18.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_20 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_20.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_4_3 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_4_3.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_4_4 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_4_4.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_9_9 = process_single_gen(
-                                    |b, e| range_checks_parts.rc_9_9.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let rc_7_2_5 = process_single_gen(
-                                    |b, e| {
-                                        range_checks_parts.rc_7_2_5.write_interaction_trace(b, e)
-                                    },
-                                    common_lookup_elements,
-                                );
-                                let rc_3_6_6_3 = process_single_gen(
-                                    |b, e| {
-                                        range_checks_parts.rc_3_6_6_3.write_interaction_trace(b, e)
-                                    },
-                                    common_lookup_elements,
-                                );
-                                let rc_4_4_4_4 = process_single_gen(
-                                    |b, e| {
-                                        range_checks_parts.rc_4_4_4_4.write_interaction_trace(b, e)
-                                    },
-                                    common_lookup_elements,
-                                );
-                                let rc_3_3_3_3_3 = process_single_gen(
-                                    |b, e| {
-                                        range_checks_parts
-                                            .rc_3_3_3_3_3
-                                            .write_interaction_trace(b, e)
-                                    },
-                                    common_lookup_elements,
-                                );
-
-                                let range_checks = (
-                                    rc_6,
-                                    rc_8,
-                                    rc_11,
-                                    rc_12,
-                                    rc_18,
-                                    rc_20,
-                                    rc_4_3,
-                                    rc_4_4,
-                                    rc_9_9,
-                                    rc_7_2_5,
-                                    rc_3_6_6_3,
-                                    rc_4_4_4_4,
-                                    rc_3_3_3_3_3,
-                                );
-
-                                let xor_4 = process_single_gen(
-                                    |b, e| verify_bitwise_xor_4_gen.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let xor_7 = process_single_gen(
-                                    |b, e| verify_bitwise_xor_7_gen.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let xor_8 = process_single_gen(
-                                    |b, e| verify_bitwise_xor_8_gen.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-                                let xor_9 = process_single_gen(
-                                    |b, e| verify_bitwise_xor_9_gen.write_interaction_trace(b, e),
-                                    common_lookup_elements,
-                                );
-
-                                let xors = (xor_4, xor_7, xor_8, xor_9);
-
-                                (
-                                    builtin_rc128,
-                                    builtin_rest,
-                                    verify_instruction,
-                                    range_checks,
-                                    xors,
                                 )
                             },
                         );
 
-                        (mem_addr_to_id, mem_id_to_value, other)
+                        let (
+                            rc_6,
+                            rc_8,
+                            rc_11,
+                            rc_12,
+                            rc_18,
+                            rc_4_3,
+                            rc_4_4,
+                            rc_7_2_5,
+                            rc_4_4_4_4,
+                            rc_3_3_3_3_3,
+                        ) = rc_rest;
+
+                        let range_checks = (
+                            rc_6,
+                            rc_8,
+                            rc_11,
+                            rc_12,
+                            rc_18,
+                            rc_20,
+                            rc_4_3,
+                            rc_4_4,
+                            rc_9_9,
+                            rc_7_2_5,
+                            rc_3_6_6_3,
+                            rc_4_4_4_4,
+                            rc_3_3_3_3_3,
+                        );
+
+                        // XORs: xor_8 and xor_9 are ~8–10ms; keep them parallel, others tiny
+                        let ((xor_8, xor_9), (xor_4, xor_7)) = rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_8_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_9_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_4_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_7_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        );
+
+                        let xors = (xor_4, xor_7, xor_8, xor_9);
+
+                        // verify_instruction is tiny, but keep it separate so it can overlap “for
+                        // free”
+                        let verify_instruction = process_single_gen(
+                            |b, e| verify_instruction_gen.write_interaction_trace(b, e),
+                            common_lookup_elements,
+                        );
+
+                        (
+                            mem_addr_to_id,
+                            mem_id_to_value,
+                            builtin_rc128,
+                            other_small_builtins,
+                            verify_instruction,
+                            range_checks,
+                            xors,
+                        )
                     },
                 )
             },
@@ -1036,16 +1193,16 @@ impl CairoInteractionClaimGenerator {
             None => (None, None, None, None, None),
         };
 
-        // Misc
-        let (memory_address_to_id_result, memory_id_to_value_result, other_misc) = misc;
-
+        // Misc unpack
         let (
+            memory_address_to_id_result,
+            memory_id_to_value_result,
             range_check_128_builtin_result,
-            builtins_tiny_bundle,
+            other_small_builtins,
             verify_instruction_result,
             range_checks_bundle,
             xor_bundle,
-        ) = other_misc;
+        ) = misc;
 
         let (
             add_mod_builtin_result,
@@ -1054,7 +1211,7 @@ impl CairoInteractionClaimGenerator {
             pedersen_builtin_result,
             poseidon_builtin_result,
             range_check_96_builtin_result,
-        ) = builtins_tiny_bundle;
+        ) = other_small_builtins;
 
         let (
             rc_6_result,
