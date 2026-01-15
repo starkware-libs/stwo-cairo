@@ -1,5 +1,7 @@
-use cairo_air::blake::air::{
-    BlakeContextClaim, BlakeContextInteractionClaim, Claim, InteractionClaim,
+use cairo_air::components::{
+    blake_g as blake_g_claim, blake_round as blake_round_claim,
+    blake_round_sigma as blake_round_sigma_claim, triple_xor_32 as triple_xor_32_claim,
+    verify_bitwise_xor_12 as verify_bitwise_xor_12_claim,
 };
 use cairo_air::relations::CommonLookupElements;
 use stwo::prover::backend::simd::SimdBackend;
@@ -12,6 +14,7 @@ use crate::witness::components::{
 };
 use crate::witness::utils::TreeBuilder;
 
+#[allow(clippy::type_complexity)]
 pub fn blake_context_write_trace(
     blake_round: Option<blake_round::ClaimGenerator>,
     blake_g: Option<blake_g::ClaimGenerator>,
@@ -26,11 +29,23 @@ pub fn blake_context_write_trace(
     verify_bitwise_xor_7_trace_generator: Option<&verify_bitwise_xor_7::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&verify_bitwise_xor_8::ClaimGenerator>,
     verify_bitwise_xor_9_trace_generator: Option<&verify_bitwise_xor_9::ClaimGenerator>,
-) -> (BlakeContextClaim, BlakeContextInteractionClaimGenerator) {
+) -> (
+    Option<blake_round_claim::Claim>,
+    Option<blake_g_claim::Claim>,
+    Option<blake_round_sigma_claim::Claim>,
+    Option<triple_xor_32_claim::Claim>,
+    Option<verify_bitwise_xor_12_claim::Claim>,
+    BlakeContextInteractionClaimGenerator,
+) {
     let span = span!(Level::INFO, "write blake context trace").entered();
     if blake_round.as_ref().is_none_or(|tg| tg.is_empty()) {
+        span.exit();
         return (
-            BlakeContextClaim { claim: None },
+            None,
+            None,
+            None,
+            None,
+            None,
             BlakeContextInteractionClaimGenerator { gen: None },
         );
     }
@@ -64,13 +79,6 @@ pub fn blake_context_write_trace(
         verify_bitwise_xor_12.write_trace(tree_builder);
     span.exit();
 
-    let claim = Some(Claim {
-        blake_round: blake_round_claim,
-        blake_g: blake_g_claim,
-        blake_sigma: blake_sigma_claim,
-        triple_xor_32: triple_xor_32_claim,
-        verify_bitwise_xor_12: verify_bitwise_xor_12_claim,
-    });
     let gen = Some(InteractionClaimGenerator {
         blake_round_interaction_gen,
         blake_g_interaction_gen,
@@ -78,8 +86,13 @@ pub fn blake_context_write_trace(
         triple_xor_32_interaction_gen,
         verify_bitwise_xor_12_interaction_gen,
     });
+
     (
-        BlakeContextClaim { claim },
+        Some(blake_round_claim),
+        Some(blake_g_claim),
+        Some(blake_sigma_claim),
+        Some(triple_xor_32_claim),
+        Some(verify_bitwise_xor_12_claim),
         BlakeContextInteractionClaimGenerator { gen },
     )
 }
@@ -88,16 +101,21 @@ pub struct BlakeContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
 impl BlakeContextInteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> BlakeContextInteractionClaim {
-        BlakeContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
+    ) -> (
+        Option<blake_round_claim::InteractionClaim>,
+        Option<blake_g_claim::InteractionClaim>,
+        Option<blake_round_sigma_claim::InteractionClaim>,
+        Option<triple_xor_32_claim::InteractionClaim>,
+        Option<verify_bitwise_xor_12_claim::InteractionClaim>,
+    ) {
+        self.gen.map_or((None, None, None, None, None), |gen| {
+            gen.write_interaction_trace(tree_builder, common_lookup_elements)
+        })
     }
 }
 
@@ -109,11 +127,18 @@ struct InteractionClaimGenerator {
     verify_bitwise_xor_12_interaction_gen: verify_bitwise_xor_12::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Option<blake_round_claim::InteractionClaim>,
+        Option<blake_g_claim::InteractionClaim>,
+        Option<blake_round_sigma_claim::InteractionClaim>,
+        Option<triple_xor_32_claim::InteractionClaim>,
+        Option<verify_bitwise_xor_12_claim::InteractionClaim>,
+    ) {
         let blake_round_interaction_claim = self
             .blake_round_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
@@ -130,12 +155,12 @@ impl InteractionClaimGenerator {
             .verify_bitwise_xor_12_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
 
-        InteractionClaim {
-            blake_round: blake_round_interaction_claim,
-            blake_g: blake_g_interaction_claim,
-            blake_sigma: blake_sigma_interaction_claim,
-            triple_xor_32: triple_xor_32_interaction_claim,
-            verify_bitwise_xor_12: verify_bitwise_xor_12_interaction_claim,
-        }
+        (
+            Some(blake_round_interaction_claim),
+            Some(blake_g_interaction_claim),
+            Some(blake_sigma_interaction_claim),
+            Some(triple_xor_32_interaction_claim),
+            Some(verify_bitwise_xor_12_interaction_claim),
+        )
     }
 }

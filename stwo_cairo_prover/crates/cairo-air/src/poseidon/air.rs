@@ -1,181 +1,58 @@
-use num_traits::Zero;
-use stwo::core::fields::qm31::QM31;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
-use crate::components::prelude::*;
 use crate::components::{
     cube_252, indented_component_display, poseidon_3_partial_rounds_chain, poseidon_aggregator,
     poseidon_full_round_chain, poseidon_round_keys, range_check_252_width_27,
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct PoseidonContextClaim {
-    pub claim: Option<Claim>,
-}
-impl PoseidonContextClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.claim.is_some() as u64);
-        if let Some(claim) = &self.claim {
-            claim.mix_into(channel);
-        }
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        self.claim
-            .as_ref()
-            .map(|claim| claim.log_sizes())
-            .unwrap_or_default()
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        if let Some(claim) = &self.claim {
-            claim.accumulate_relation_uses(relation_uses);
-        }
-    }
-}
-
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct Claim {
-    pub poseidon_aggregator: poseidon_aggregator::Claim,
-    pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::Claim,
-    pub poseidon_full_round_chain: poseidon_full_round_chain::Claim,
-    pub cube_252: cube_252::Claim,
-    pub poseidon_round_keys: poseidon_round_keys::Claim,
-    pub range_check_252_width_27: range_check_252_width_27::Claim,
-}
-impl Claim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.poseidon_aggregator.mix_into(channel);
-        self.poseidon_3_partial_rounds_chain.mix_into(channel);
-        self.poseidon_full_round_chain.mix_into(channel);
-        self.cube_252.mix_into(channel);
-        self.poseidon_round_keys.mix_into(channel);
-        self.range_check_252_width_27.mix_into(channel);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        let log_sizes = [
-            self.poseidon_aggregator.log_sizes(),
-            self.poseidon_3_partial_rounds_chain.log_sizes(),
-            self.poseidon_full_round_chain.log_sizes(),
-            self.cube_252.log_sizes(),
-            self.poseidon_round_keys.log_sizes(),
-            self.range_check_252_width_27.log_sizes(),
-        ]
-        .into_iter();
-
-        TreeVec::concat_cols(log_sizes)
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            poseidon_aggregator,
-            poseidon_3_partial_rounds_chain,
-            poseidon_full_round_chain,
-            cube_252,
-            poseidon_round_keys: _,
-            range_check_252_width_27,
-        } = self;
-
-        // NOTE: The following components do not USE relations:
-        // - poseidon_round_keys
-
-        accumulate_relation_uses(
-            relation_uses,
-            poseidon_aggregator::RELATION_USES_PER_ROW,
-            poseidon_aggregator.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            poseidon_3_partial_rounds_chain::RELATION_USES_PER_ROW,
-            poseidon_3_partial_rounds_chain.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            poseidon_full_round_chain::RELATION_USES_PER_ROW,
-            poseidon_full_round_chain.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            cube_252::RELATION_USES_PER_ROW,
-            cube_252.log_size,
-        );
-        accumulate_relation_uses(
-            relation_uses,
-            range_check_252_width_27::RELATION_USES_PER_ROW,
-            range_check_252_width_27.log_size,
-        );
-    }
-}
-
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct PoseidonContextInteractionClaim {
-    pub claim: Option<InteractionClaim>,
-}
-impl PoseidonContextInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(claim) = &self.claim {
-            claim.mix_into(channel);
-        }
-    }
-
-    pub fn sum(&self) -> QM31 {
-        self.claim
-            .as_ref()
-            .map(|claim| claim.sum())
-            .unwrap_or_else(QM31::zero)
-    }
-}
-
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct InteractionClaim {
-    pub poseidon_aggregator: poseidon_aggregator::InteractionClaim,
-    pub poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain::InteractionClaim,
-    pub poseidon_full_round_chain: poseidon_full_round_chain::InteractionClaim,
-    pub cube_252: cube_252::InteractionClaim,
-    pub poseidon_round_keys: poseidon_round_keys::InteractionClaim,
-    pub range_check_252_width_27: range_check_252_width_27::InteractionClaim,
-}
-impl InteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.poseidon_aggregator.mix_into(channel);
-        self.poseidon_3_partial_rounds_chain.mix_into(channel);
-        self.poseidon_full_round_chain.mix_into(channel);
-        self.cube_252.mix_into(channel);
-        self.poseidon_round_keys.mix_into(channel);
-        self.range_check_252_width_27.mix_into(channel);
-    }
-
-    pub fn sum(&self) -> QM31 {
-        let mut sum = QM31::zero();
-        sum += self.poseidon_aggregator.claimed_sum;
-        sum += self.poseidon_3_partial_rounds_chain.claimed_sum;
-        sum += self.poseidon_full_round_chain.claimed_sum;
-        sum += self.cube_252.claimed_sum;
-        sum += self.poseidon_round_keys.claimed_sum;
-        sum += self.range_check_252_width_27.claimed_sum;
-        sum
-    }
-}
-
 pub struct PoseidonContextComponents {
     pub components: Option<Components>,
 }
 impl PoseidonContextComponents {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &PoseidonContextClaim,
+        poseidon_aggregator_claim: &Option<poseidon_aggregator::Claim>,
+        poseidon_3_partial_rounds_chain_claim: &Option<poseidon_3_partial_rounds_chain::Claim>,
+        poseidon_full_round_chain_claim: &Option<poseidon_full_round_chain::Claim>,
+        cube_252_claim: &Option<cube_252::Claim>,
+        poseidon_round_keys_claim: &Option<poseidon_round_keys::Claim>,
+        range_check_252_width_27_claim: &Option<range_check_252_width_27::Claim>,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &PoseidonContextInteractionClaim,
+        poseidon_aggregator_interaction_claim: &Option<poseidon_aggregator::InteractionClaim>,
+        poseidon_3_partial_rounds_chain_interaction_claim: &Option<
+            poseidon_3_partial_rounds_chain::InteractionClaim,
+        >,
+        poseidon_full_round_chain_interaction_claim: &Option<
+            poseidon_full_round_chain::InteractionClaim,
+        >,
+        cube_252_interaction_claim: &Option<cube_252::InteractionClaim>,
+        poseidon_round_keys_interaction_claim: &Option<poseidon_round_keys::InteractionClaim>,
+        range_check_252_width_27_interaction_claim: &Option<
+            range_check_252_width_27::InteractionClaim,
+        >,
     ) -> Self {
-        let components = interaction_claim
-            .claim
-            .as_ref()
-            .map(|ic| Components::new(tree_span_provider, claim, common_lookup_elements, ic));
+        let components = poseidon_aggregator_interaction_claim.as_ref().map(|_| {
+            Components::new(
+                tree_span_provider,
+                poseidon_aggregator_claim,
+                poseidon_3_partial_rounds_chain_claim,
+                poseidon_full_round_chain_claim,
+                cube_252_claim,
+                poseidon_round_keys_claim,
+                range_check_252_width_27_claim,
+                common_lookup_elements,
+                poseidon_aggregator_interaction_claim,
+                poseidon_3_partial_rounds_chain_interaction_claim,
+                poseidon_full_round_chain_interaction_claim,
+                cube_252_interaction_claim,
+                poseidon_round_keys_interaction_claim,
+                range_check_252_width_27_interaction_claim,
+            )
+        });
         Self { components }
     }
 
@@ -205,66 +82,83 @@ pub struct Components {
     pub range_check_252_width_27: range_check_252_width_27::Component,
 }
 impl Components {
+    #[allow(clippy::too_many_arguments)]
     fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &PoseidonContextClaim,
+        poseidon_aggregator_claim: &Option<poseidon_aggregator::Claim>,
+        poseidon_3_partial_rounds_chain_claim: &Option<poseidon_3_partial_rounds_chain::Claim>,
+        poseidon_full_round_chain_claim: &Option<poseidon_full_round_chain::Claim>,
+        cube_252_claim: &Option<cube_252::Claim>,
+        poseidon_round_keys_claim: &Option<poseidon_round_keys::Claim>,
+        range_check_252_width_27_claim: &Option<range_check_252_width_27::Claim>,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &InteractionClaim,
+        poseidon_aggregator_interaction_claim: &Option<poseidon_aggregator::InteractionClaim>,
+        poseidon_3_partial_rounds_chain_interaction_claim: &Option<
+            poseidon_3_partial_rounds_chain::InteractionClaim,
+        >,
+        poseidon_full_round_chain_interaction_claim: &Option<
+            poseidon_full_round_chain::InteractionClaim,
+        >,
+        cube_252_interaction_claim: &Option<cube_252::InteractionClaim>,
+        poseidon_round_keys_interaction_claim: &Option<poseidon_round_keys::InteractionClaim>,
+        range_check_252_width_27_interaction_claim: &Option<
+            range_check_252_width_27::InteractionClaim,
+        >,
     ) -> Self {
         let poseidon_aggregator_component = poseidon_aggregator::Component::new(
             tree_span_provider,
             poseidon_aggregator::Eval {
-                claim: claim.claim.as_ref().unwrap().poseidon_aggregator,
+                claim: (*poseidon_aggregator_claim).unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.poseidon_aggregator.claimed_sum,
+            poseidon_aggregator_interaction_claim.unwrap().claimed_sum,
         );
         let poseidon_3_partial_rounds_chain_component =
             poseidon_3_partial_rounds_chain::Component::new(
                 tree_span_provider,
                 poseidon_3_partial_rounds_chain::Eval {
-                    claim: claim
-                        .claim
-                        .as_ref()
-                        .unwrap()
-                        .poseidon_3_partial_rounds_chain,
+                    claim: (*poseidon_3_partial_rounds_chain_claim).unwrap(),
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim
-                    .poseidon_3_partial_rounds_chain
+                poseidon_3_partial_rounds_chain_interaction_claim
+                    .unwrap()
                     .claimed_sum,
             );
         let poseidon_full_round_chain_component = poseidon_full_round_chain::Component::new(
             tree_span_provider,
             poseidon_full_round_chain::Eval {
-                claim: claim.claim.as_ref().unwrap().poseidon_full_round_chain,
+                claim: (*poseidon_full_round_chain_claim).unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.poseidon_full_round_chain.claimed_sum,
+            poseidon_full_round_chain_interaction_claim
+                .unwrap()
+                .claimed_sum,
         );
         let cube_252_component = cube_252::Component::new(
             tree_span_provider,
             cube_252::Eval {
-                claim: claim.claim.as_ref().unwrap().cube_252,
+                claim: (*cube_252_claim).unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.cube_252.claimed_sum,
+            cube_252_interaction_claim.unwrap().claimed_sum,
         );
         let poseidon_round_keys_component = poseidon_round_keys::Component::new(
             tree_span_provider,
             poseidon_round_keys::Eval {
-                claim: claim.claim.as_ref().unwrap().poseidon_round_keys,
+                claim: (*poseidon_round_keys_claim).unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.poseidon_round_keys.claimed_sum,
+            poseidon_round_keys_interaction_claim.unwrap().claimed_sum,
         );
         let range_check_felt_252_width_27_component = range_check_252_width_27::Component::new(
             tree_span_provider,
             range_check_252_width_27::Eval {
-                claim: claim.claim.as_ref().unwrap().range_check_252_width_27,
+                claim: (*range_check_252_width_27_claim).unwrap(),
                 common_lookup_elements: common_lookup_elements.clone(),
             },
-            interaction_claim.range_check_252_width_27.claimed_sum,
+            range_check_252_width_27_interaction_claim
+                .unwrap()
+                .claimed_sum,
         );
         Self {
             poseidon_aggregator: poseidon_aggregator_component,

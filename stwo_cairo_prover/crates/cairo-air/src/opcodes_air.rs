@@ -1,16 +1,9 @@
-use itertools::{chain, Itertools};
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::{SecureField, QM31};
-use stwo::core::pcs::TreeVec;
+use itertools::Itertools;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use super::components::display_components;
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_ap_opcode, add_opcode, add_opcode_small, assert_eq_opcode, assert_eq_opcode_double_deref,
     assert_eq_opcode_imm, blake_compress_opcode, call_opcode_abs, call_opcode_rel_imm,
@@ -19,262 +12,6 @@ use crate::components::{
     qm_31_add_mul_opcode, ret_opcode,
 };
 use crate::relations::CommonLookupElements;
-
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct OpcodeClaim {
-    pub add: Vec<add_opcode::Claim>,
-    pub add_small: Vec<add_opcode_small::Claim>,
-    pub add_ap: Vec<add_ap_opcode::Claim>,
-    pub assert_eq: Vec<assert_eq_opcode::Claim>,
-    pub assert_eq_imm: Vec<assert_eq_opcode_imm::Claim>,
-    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::Claim>,
-    pub blake: Vec<blake_compress_opcode::Claim>,
-    pub call: Vec<call_opcode_abs::Claim>,
-    pub call_rel_imm: Vec<call_opcode_rel_imm::Claim>,
-    pub generic: Vec<generic_opcode::Claim>,
-    pub jnz: Vec<jnz_opcode_non_taken::Claim>,
-    pub jnz_taken: Vec<jnz_opcode_taken::Claim>,
-    pub jump: Vec<jump_opcode_abs::Claim>,
-    pub jump_double_deref: Vec<jump_opcode_double_deref::Claim>,
-    pub jump_rel: Vec<jump_opcode_rel::Claim>,
-    pub jump_rel_imm: Vec<jump_opcode_rel_imm::Claim>,
-    pub mul: Vec<mul_opcode::Claim>,
-    pub mul_small: Vec<mul_opcode_small::Claim>,
-    pub qm31: Vec<qm_31_add_mul_opcode::Claim>,
-    pub ret: Vec<ret_opcode::Claim>,
-}
-impl OpcodeClaim {
-    /// For each opcode component vector, mixes the length and then the claims.
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        macro_rules! mix_component_vector {
-            ($field:ident) => {
-                channel.mix_u64(self.$field.len() as u64);
-                self.$field.iter().for_each(|c| c.mix_into(channel));
-            };
-        }
-
-        mix_component_vector!(add);
-        mix_component_vector!(add_small);
-        mix_component_vector!(add_ap);
-        mix_component_vector!(assert_eq);
-        mix_component_vector!(assert_eq_imm);
-        mix_component_vector!(assert_eq_double_deref);
-        mix_component_vector!(blake);
-        mix_component_vector!(call);
-        mix_component_vector!(call_rel_imm);
-        mix_component_vector!(generic);
-        mix_component_vector!(jnz);
-        mix_component_vector!(jnz_taken);
-        mix_component_vector!(jump);
-        mix_component_vector!(jump_double_deref);
-        mix_component_vector!(jump_rel);
-        mix_component_vector!(jump_rel_imm);
-        mix_component_vector!(mul);
-        mix_component_vector!(mul_small);
-        mix_component_vector!(qm31);
-        mix_component_vector!(ret);
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(chain!(
-            self.add.iter().map(|c| c.log_sizes()),
-            self.add_small.iter().map(|c| c.log_sizes()),
-            self.add_ap.iter().map(|c| c.log_sizes()),
-            self.assert_eq.iter().map(|c| c.log_sizes()),
-            self.assert_eq_imm.iter().map(|c| c.log_sizes()),
-            self.assert_eq_double_deref.iter().map(|c| c.log_sizes()),
-            self.blake.iter().map(|c| c.log_sizes()),
-            self.call.iter().map(|c| c.log_sizes()),
-            self.call_rel_imm.iter().map(|c| c.log_sizes()),
-            self.generic.iter().map(|c| c.log_sizes()),
-            self.jnz.iter().map(|c| c.log_sizes()),
-            self.jnz_taken.iter().map(|c| c.log_sizes()),
-            self.jump.iter().map(|c| c.log_sizes()),
-            self.jump_double_deref.iter().map(|c| c.log_sizes()),
-            self.jump_rel.iter().map(|c| c.log_sizes()),
-            self.jump_rel_imm.iter().map(|c| c.log_sizes()),
-            self.mul.iter().map(|c| c.log_sizes()),
-            self.mul_small.iter().map(|c| c.log_sizes()),
-            self.qm31.iter().map(|c| c.log_sizes()),
-            self.ret.iter().map(|c| c.log_sizes()),
-        ))
-    }
-
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            add,
-            add_small,
-            add_ap,
-            assert_eq,
-            assert_eq_imm,
-            assert_eq_double_deref,
-            blake,
-            call,
-            call_rel_imm,
-            generic,
-            jnz,
-            jnz_taken,
-            jump,
-            jump_double_deref,
-            jump_rel,
-            jump_rel_imm,
-            mul,
-            mul_small,
-            qm31,
-            ret,
-        } = self;
-
-        // TODO(alonf): canonicalize the name of field and module.
-        macro_rules! relation_uses {
-            ($field:ident, $module:ident) => {
-                $field.iter().for_each(|c| {
-                    accumulate_relation_uses(
-                        relation_uses,
-                        $module::RELATION_USES_PER_ROW,
-                        c.log_size,
-                    )
-                });
-            };
-        }
-        relation_uses!(add, add_opcode);
-        relation_uses!(add_small, add_opcode_small);
-        relation_uses!(add_ap, add_ap_opcode);
-        relation_uses!(assert_eq, assert_eq_opcode);
-        relation_uses!(assert_eq_imm, assert_eq_opcode_imm);
-        relation_uses!(assert_eq_double_deref, assert_eq_opcode_double_deref);
-        relation_uses!(blake, blake_compress_opcode);
-        relation_uses!(call, call_opcode_abs);
-        relation_uses!(call_rel_imm, call_opcode_rel_imm);
-        relation_uses!(generic, generic_opcode);
-        relation_uses!(jnz, jnz_opcode_non_taken);
-        relation_uses!(jnz_taken, jnz_opcode_taken);
-        relation_uses!(jump, jump_opcode_abs);
-        relation_uses!(jump_double_deref, jump_opcode_double_deref);
-        relation_uses!(jump_rel, jump_opcode_rel);
-        relation_uses!(jump_rel_imm, jump_opcode_rel_imm);
-        relation_uses!(mul, mul_opcode);
-        relation_uses!(mul_small, mul_opcode_small);
-        relation_uses!(qm31, qm_31_add_mul_opcode);
-        relation_uses!(ret, ret_opcode);
-    }
-}
-
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct OpcodeInteractionClaim {
-    pub add: Vec<add_opcode::InteractionClaim>,
-    pub add_small: Vec<add_opcode_small::InteractionClaim>,
-    pub add_ap: Vec<add_ap_opcode::InteractionClaim>,
-    pub assert_eq: Vec<assert_eq_opcode::InteractionClaim>,
-    pub assert_eq_imm: Vec<assert_eq_opcode_imm::InteractionClaim>,
-    pub assert_eq_double_deref: Vec<assert_eq_opcode_double_deref::InteractionClaim>,
-    pub blake: Vec<blake_compress_opcode::InteractionClaim>,
-    pub call: Vec<call_opcode_abs::InteractionClaim>,
-    pub call_rel_imm: Vec<call_opcode_rel_imm::InteractionClaim>,
-    pub generic: Vec<generic_opcode::InteractionClaim>,
-    pub jnz: Vec<jnz_opcode_non_taken::InteractionClaim>,
-    pub jnz_taken: Vec<jnz_opcode_taken::InteractionClaim>,
-    pub jump: Vec<jump_opcode_abs::InteractionClaim>,
-    pub jump_double_deref: Vec<jump_opcode_double_deref::InteractionClaim>,
-    pub jump_rel: Vec<jump_opcode_rel::InteractionClaim>,
-    pub jump_rel_imm: Vec<jump_opcode_rel_imm::InteractionClaim>,
-    pub mul: Vec<mul_opcode::InteractionClaim>,
-    pub mul_small: Vec<mul_opcode_small::InteractionClaim>,
-    pub qm31: Vec<qm_31_add_mul_opcode::InteractionClaim>,
-    pub ret: Vec<ret_opcode::InteractionClaim>,
-}
-impl OpcodeInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        self.add.iter().for_each(|c| c.mix_into(channel));
-        self.add_small.iter().for_each(|c| c.mix_into(channel));
-        self.add_ap.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_imm.iter().for_each(|c| c.mix_into(channel));
-        self.assert_eq_double_deref
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.blake.iter().for_each(|c| c.mix_into(channel));
-        self.call.iter().for_each(|c| c.mix_into(channel));
-        self.call_rel_imm.iter().for_each(|c| c.mix_into(channel));
-        self.generic.iter().for_each(|c| c.mix_into(channel));
-        self.jnz.iter().for_each(|c| c.mix_into(channel));
-        self.jnz_taken.iter().for_each(|c| c.mix_into(channel));
-        self.jump.iter().for_each(|c| c.mix_into(channel));
-        self.jump_double_deref
-            .iter()
-            .for_each(|c| c.mix_into(channel));
-        self.jump_rel.iter().for_each(|c| c.mix_into(channel));
-        self.jump_rel_imm.iter().for_each(|c| c.mix_into(channel));
-        self.mul.iter().for_each(|c| c.mix_into(channel));
-        self.mul_small.iter().for_each(|c| c.mix_into(channel));
-        self.qm31.iter().for_each(|c| c.mix_into(channel));
-        self.ret.iter().for_each(|c| c.mix_into(channel));
-    }
-
-    pub fn sum(&self) -> SecureField {
-        let mut sum = QM31::zero();
-        for interaction_claim in &self.add {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.add_small {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.add_ap {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.assert_eq_double_deref {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.blake {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.call {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.call_rel_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.generic {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jnz {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jnz_taken {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_double_deref {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_rel {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.jump_rel_imm {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.mul {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.mul_small {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.qm31 {
-            sum += interaction_claim.claimed_sum;
-        }
-        for interaction_claim in &self.ret {
-            sum += interaction_claim.claimed_sum;
-        }
-        sum
-    }
-}
 
 pub struct OpcodeComponents {
     pub add: Vec<add_opcode::Component>,
@@ -299,17 +36,56 @@ pub struct OpcodeComponents {
     pub ret: Vec<ret_opcode::Component>,
 }
 impl OpcodeComponents {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &OpcodeClaim,
+        add_claim: &Option<add_opcode::Claim>,
+        add_small_claim: &Option<add_opcode_small::Claim>,
+        add_ap_claim: &Option<add_ap_opcode::Claim>,
+        assert_eq_claim: &Option<assert_eq_opcode::Claim>,
+        assert_eq_imm_claim: &Option<assert_eq_opcode_imm::Claim>,
+        assert_eq_double_deref_claim: &Option<assert_eq_opcode_double_deref::Claim>,
+        blake_claim: &Option<blake_compress_opcode::Claim>,
+        call_claim: &Option<call_opcode_abs::Claim>,
+        call_rel_imm_claim: &Option<call_opcode_rel_imm::Claim>,
+        generic_claim: &Option<generic_opcode::Claim>,
+        jnz_claim: &Option<jnz_opcode_non_taken::Claim>,
+        jnz_taken_claim: &Option<jnz_opcode_taken::Claim>,
+        jump_claim: &Option<jump_opcode_abs::Claim>,
+        jump_double_deref_claim: &Option<jump_opcode_double_deref::Claim>,
+        jump_rel_claim: &Option<jump_opcode_rel::Claim>,
+        jump_rel_imm_claim: &Option<jump_opcode_rel_imm::Claim>,
+        mul_claim: &Option<mul_opcode::Claim>,
+        mul_small_claim: &Option<mul_opcode_small::Claim>,
+        qm31_claim: &Option<qm_31_add_mul_opcode::Claim>,
+        ret_claim: &Option<ret_opcode::Claim>,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &OpcodeInteractionClaim,
+        add_interaction_claim: &Option<add_opcode::InteractionClaim>,
+        add_small_interaction_claim: &Option<add_opcode_small::InteractionClaim>,
+        add_ap_interaction_claim: &Option<add_ap_opcode::InteractionClaim>,
+        assert_eq_interaction_claim: &Option<assert_eq_opcode::InteractionClaim>,
+        assert_eq_imm_interaction_claim: &Option<assert_eq_opcode_imm::InteractionClaim>,
+        assert_eq_double_deref_interaction_claim: &Option<
+            assert_eq_opcode_double_deref::InteractionClaim,
+        >,
+        blake_interaction_claim: &Option<blake_compress_opcode::InteractionClaim>,
+        call_interaction_claim: &Option<call_opcode_abs::InteractionClaim>,
+        call_rel_imm_interaction_claim: &Option<call_opcode_rel_imm::InteractionClaim>,
+        generic_interaction_claim: &Option<generic_opcode::InteractionClaim>,
+        jnz_interaction_claim: &Option<jnz_opcode_non_taken::InteractionClaim>,
+        jnz_taken_interaction_claim: &Option<jnz_opcode_taken::InteractionClaim>,
+        jump_interaction_claim: &Option<jump_opcode_abs::InteractionClaim>,
+        jump_double_deref_interaction_claim: &Option<jump_opcode_double_deref::InteractionClaim>,
+        jump_rel_interaction_claim: &Option<jump_opcode_rel::InteractionClaim>,
+        jump_rel_imm_interaction_claim: &Option<jump_opcode_rel_imm::InteractionClaim>,
+        mul_interaction_claim: &Option<mul_opcode::InteractionClaim>,
+        mul_small_interaction_claim: &Option<mul_opcode_small::InteractionClaim>,
+        qm31_interaction_claim: &Option<qm_31_add_mul_opcode::InteractionClaim>,
+        ret_interaction_claim: &Option<ret_opcode::InteractionClaim>,
     ) -> Self {
-        let add_components = claim
-            .add
-            .iter()
-            .zip(interaction_claim.add.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let add_components = (*add_claim)
+            .map(|claim| {
+                let interaction_claim = (*add_interaction_claim).unwrap();
                 add_opcode::Component::new(
                     tree_span_provider,
                     add_opcode::Eval {
@@ -319,12 +95,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let add_small_components = claim
-            .add_small
-            .iter()
-            .zip(interaction_claim.add_small.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let add_small_components = (*add_small_claim)
+            .map(|claim| {
+                let interaction_claim = (*add_small_interaction_claim).unwrap();
                 add_opcode_small::Component::new(
                     tree_span_provider,
                     add_opcode_small::Eval {
@@ -334,12 +109,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let add_ap_components = claim
-            .add_ap
-            .iter()
-            .zip(interaction_claim.add_ap.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let add_ap_components = (*add_ap_claim)
+            .map(|claim| {
+                let interaction_claim = (*add_ap_interaction_claim).unwrap();
                 add_ap_opcode::Component::new(
                     tree_span_provider,
                     add_ap_opcode::Eval {
@@ -349,12 +123,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let assert_eq_components = claim
-            .assert_eq
-            .iter()
-            .zip(interaction_claim.assert_eq.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let assert_eq_components = (*assert_eq_claim)
+            .map(|claim| {
+                let interaction_claim = (*assert_eq_interaction_claim).unwrap();
                 assert_eq_opcode::Component::new(
                     tree_span_provider,
                     assert_eq_opcode::Eval {
@@ -364,12 +137,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let assert_eq_imm_components = claim
-            .assert_eq_imm
-            .iter()
-            .zip(interaction_claim.assert_eq_imm.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let assert_eq_imm_components = (*assert_eq_imm_claim)
+            .map(|claim| {
+                let interaction_claim = (*assert_eq_imm_interaction_claim).unwrap();
                 assert_eq_opcode_imm::Component::new(
                     tree_span_provider,
                     assert_eq_opcode_imm::Eval {
@@ -379,12 +151,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let assert_eq_double_deref_components = claim
-            .assert_eq_double_deref
-            .iter()
-            .zip(interaction_claim.assert_eq_double_deref.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let assert_eq_double_deref_components = (*assert_eq_double_deref_claim)
+            .map(|claim| {
+                let interaction_claim = (*assert_eq_double_deref_interaction_claim).unwrap();
                 assert_eq_opcode_double_deref::Component::new(
                     tree_span_provider,
                     assert_eq_opcode_double_deref::Eval {
@@ -394,12 +165,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let blake_components = claim
-            .blake
-            .iter()
-            .zip(interaction_claim.blake.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let blake_components = (*blake_claim)
+            .map(|claim| {
+                let interaction_claim = (*blake_interaction_claim).unwrap();
                 blake_compress_opcode::Component::new(
                     tree_span_provider,
                     blake_compress_opcode::Eval {
@@ -409,12 +179,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let call_components = claim
-            .call
-            .iter()
-            .zip(interaction_claim.call.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let call_components = (*call_claim)
+            .map(|claim| {
+                let interaction_claim = (*call_interaction_claim).unwrap();
                 call_opcode_abs::Component::new(
                     tree_span_provider,
                     call_opcode_abs::Eval {
@@ -424,12 +193,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let call_rel_imm_components = claim
-            .call_rel_imm
-            .iter()
-            .zip(interaction_claim.call_rel_imm.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let call_rel_imm_components = (*call_rel_imm_claim)
+            .map(|claim| {
+                let interaction_claim = (*call_rel_imm_interaction_claim).unwrap();
                 call_opcode_rel_imm::Component::new(
                     tree_span_provider,
                     call_opcode_rel_imm::Eval {
@@ -439,12 +207,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let generic_components = claim
-            .generic
-            .iter()
-            .zip(interaction_claim.generic.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let generic_components = (*generic_claim)
+            .map(|claim| {
+                let interaction_claim = (*generic_interaction_claim).unwrap();
                 generic_opcode::Component::new(
                     tree_span_provider,
                     generic_opcode::Eval {
@@ -454,12 +221,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let jnz_components = claim
-            .jnz
-            .iter()
-            .zip(interaction_claim.jnz.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jnz_components = (*jnz_claim)
+            .map(|claim| {
+                let interaction_claim = (*jnz_interaction_claim).unwrap();
                 jnz_opcode_non_taken::Component::new(
                     tree_span_provider,
                     jnz_opcode_non_taken::Eval {
@@ -469,12 +235,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let jnz_taken_components = claim
-            .jnz_taken
-            .iter()
-            .zip(interaction_claim.jnz_taken.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jnz_taken_components = (*jnz_taken_claim)
+            .map(|claim| {
+                let interaction_claim = (*jnz_taken_interaction_claim).unwrap();
                 jnz_opcode_taken::Component::new(
                     tree_span_provider,
                     jnz_opcode_taken::Eval {
@@ -484,12 +249,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let jump_components = claim
-            .jump
-            .iter()
-            .zip(interaction_claim.jump.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jump_components = (*jump_claim)
+            .map(|claim| {
+                let interaction_claim = (*jump_interaction_claim).unwrap();
                 jump_opcode_abs::Component::new(
                     tree_span_provider,
                     jump_opcode_abs::Eval {
@@ -499,12 +263,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let jump_double_deref_components = claim
-            .jump_double_deref
-            .iter()
-            .zip(interaction_claim.jump_double_deref.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jump_double_deref_components = (*jump_double_deref_claim)
+            .map(|claim| {
+                let interaction_claim = (*jump_double_deref_interaction_claim).unwrap();
                 jump_opcode_double_deref::Component::new(
                     tree_span_provider,
                     jump_opcode_double_deref::Eval {
@@ -514,12 +277,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let jump_rel_components = claim
-            .jump_rel
-            .iter()
-            .zip(interaction_claim.jump_rel.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jump_rel_components = (*jump_rel_claim)
+            .map(|claim| {
+                let interaction_claim = (*jump_rel_interaction_claim).unwrap();
                 jump_opcode_rel::Component::new(
                     tree_span_provider,
                     jump_opcode_rel::Eval {
@@ -529,12 +291,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let jump_rel_imm_components = claim
-            .jump_rel_imm
-            .iter()
-            .zip(interaction_claim.jump_rel_imm.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let jump_rel_imm_components = (*jump_rel_imm_claim)
+            .map(|claim| {
+                let interaction_claim = (*jump_rel_imm_interaction_claim).unwrap();
                 jump_opcode_rel_imm::Component::new(
                     tree_span_provider,
                     jump_opcode_rel_imm::Eval {
@@ -544,12 +305,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let mul_components = claim
-            .mul
-            .iter()
-            .zip(interaction_claim.mul.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let mul_components = (*mul_claim)
+            .map(|claim| {
+                let interaction_claim = (*mul_interaction_claim).unwrap();
                 mul_opcode::Component::new(
                     tree_span_provider,
                     mul_opcode::Eval {
@@ -559,12 +319,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let mul_small_components = claim
-            .mul_small
-            .iter()
-            .zip(interaction_claim.mul_small.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let mul_small_components = (*mul_small_claim)
+            .map(|claim| {
+                let interaction_claim = (*mul_small_interaction_claim).unwrap();
                 mul_opcode_small::Component::new(
                     tree_span_provider,
                     mul_opcode_small::Eval {
@@ -574,12 +333,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
-        let qm31_components = claim
-            .qm31
-            .iter()
-            .zip(interaction_claim.qm31.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let qm31_components = (*qm31_claim)
+            .map(|claim| {
+                let interaction_claim = (*qm31_interaction_claim).unwrap();
                 qm_31_add_mul_opcode::Component::new(
                     tree_span_provider,
                     qm_31_add_mul_opcode::Eval {
@@ -589,12 +347,11 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect();
-        let ret_components = claim
-            .ret
-            .iter()
-            .zip(interaction_claim.ret.iter())
-            .map(|(&claim, &interaction_claim)| {
+        let ret_components = (*ret_claim)
+            .map(|claim| {
+                let interaction_claim = (*ret_interaction_claim).unwrap();
                 ret_opcode::Component::new(
                     tree_span_provider,
                     ret_opcode::Eval {
@@ -604,6 +361,7 @@ impl OpcodeComponents {
                     interaction_claim.claimed_sum,
                 )
             })
+            .into_iter()
             .collect_vec();
         Self {
             add: add_components,
