@@ -7,8 +7,8 @@ use crate::fields::qm31::{QM31, QM31Serde};
 use crate::fri::{FriProof, FriVerifierTrait};
 use crate::pcs::quotients::fri_answers;
 use crate::utils::{
-    ArrayImpl, ColumnsIndicesByLogDegreeBound, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl,
-    group_columns_by_degree_bound, pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
+    ArrayImpl, ColumnsIndicesPerTreeByLogDegreeBound, DictImpl, group_columns_by_degree_bound,
+    pad_and_transpose_columns_by_log_deg_bound_per_tree, pow2,
 };
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::MerkleVerifier;
@@ -147,17 +147,9 @@ pub impl CommitmentSchemeVerifierImpl of CommitmentSchemeVerifierTrait {
         let random_coeff = channel.draw_secure_felt();
         let fri_config = config.fri_config;
 
-        // For flat AIRs (with split composition polynomial), the FRI column log degree bounds can
-        // be derived solely from the trace log degree bounds, since these bounds encompass the
-        // bounds of both the interaction trace and the composition trace.
-        let column_log_degree_bounds = get_column_log_degree_bounds(
-            *self.trees[1].column_indices_by_log_deg_bound,
-        )
-            .span();
-
         // FRI commitment phase on OODS quotients.
         let mut fri_verifier = FriVerifierTrait::commit(
-            ref channel, fri_config, fri_proof, column_log_degree_bounds,
+            ref channel, fri_config, fri_proof, max_log_degree_bound,
         );
 
         // Verify proof of work.
@@ -242,24 +234,6 @@ pub fn get_trace_lde_log_size(
     let trace_lde_log_size = *trace_merkle_verifier.tree_height;
     assert!(trace_lde_log_size == *interaction_trace_merkle_verifier.tree_height);
     trace_lde_log_size
-}
-
-/// Returns all column log bounds sorted in descending order.
-#[inline]
-fn get_column_log_degree_bounds(
-    mut column_indices_by_log_deg_bound: ColumnsIndicesByLogDegreeBound,
-) -> Array<u32> {
-    let mut log_degree_bounds = array![];
-    let mut log_degree_bound = column_indices_by_log_deg_bound.len();
-    while let Some(columns_of_degree_bound_per_tree) = column_indices_by_log_deg_bound.pop_back() {
-        log_degree_bound -= 1;
-
-        if !columns_of_degree_bound_per_tree.is_empty() {
-            log_degree_bounds.append(log_degree_bound);
-        }
-    }
-
-    log_degree_bounds
 }
 
 fn prepare_preprocessed_query_positions(
