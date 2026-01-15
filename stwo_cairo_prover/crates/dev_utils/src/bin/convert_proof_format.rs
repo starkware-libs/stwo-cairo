@@ -1,8 +1,8 @@
 use std::path::{Path, PathBuf};
 
 use anyhow::Result;
-use cairo_air::air::CairoProofSorted;
 use cairo_air::utils::{deserialize_proof_from_file, serialize_proof_to_file, ProofFormat};
+use cairo_air::{CairoProof, PreProcessedTraceVariant};
 use clap::Parser;
 use serde::de::DeserializeOwned;
 use serde::Serialize;
@@ -36,6 +36,10 @@ struct Args {
     /// Hash function used in the proof: `blake2s` (default) or `poseidon252`.
     #[arg(long, default_value = "blake2s")]
     hash: String,
+
+    /// Preprocessed variant used in the proof.
+    #[arg(long, default_value = "canonical")]
+    preprocessed_variant: PreProcessedTraceVariant,
 }
 
 fn convert_proof<H: MerkleHasherLifted + Serialize + DeserializeOwned>(
@@ -43,11 +47,13 @@ fn convert_proof<H: MerkleHasherLifted + Serialize + DeserializeOwned>(
     output_path: &Path,
     input_format: ProofFormat,
     output_format: ProofFormat,
+    preprocessed_trace_variant: PreProcessedTraceVariant,
 ) -> Result<(), std::io::Error>
 where
     H::Hash: CairoSerialize + CairoDeserialize,
 {
-    let proof: CairoProofSorted<H> = deserialize_proof_from_file(input_path, input_format)?;
+    let proof: CairoProof<H> =
+        deserialize_proof_from_file(input_path, input_format, preprocessed_trace_variant)?;
     serialize_proof_to_file::<H>(&proof, output_path, output_format)?;
 
     println!("Successfully converted proof");
@@ -71,12 +77,14 @@ fn main() -> Result<()> {
             &args.output,
             args.input_format,
             args.output_format,
+            args.preprocessed_variant,
         )?,
         "poseidon252" => convert_proof::<Poseidon252MerkleHasher>(
             &args.input,
             &args.output,
             args.input_format,
             args.output_format,
+            args.preprocessed_variant,
         )?,
         _ => {
             anyhow::bail!(
