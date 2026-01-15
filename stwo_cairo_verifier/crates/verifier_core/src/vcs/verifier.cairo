@@ -3,7 +3,7 @@ use core::fmt::{Debug, Error, Formatter};
 use core::num::traits::DivRem;
 use core::option::OptionTrait;
 use crate::BaseField;
-use crate::utils::{ColumnsIndicesByLogDegreeBound, SpanExTrait, pow2};
+use crate::utils::{SpanExTrait, pow2};
 use crate::vcs::hasher::MerkleHasher;
 
 pub struct MerkleVerifier<impl H: MerkleHasher> {
@@ -11,15 +11,10 @@ pub struct MerkleVerifier<impl H: MerkleHasher> {
     pub root: H::Hash,
     // The height of the Merkle tree.
     //
-    // The height can be computed as log_blowup_factor + column_indices_by_log_deg_bound.len() - 1.
+    // The height can be computed as log_blowup_factor + column_log_deg_bounds.max().
     pub tree_height: u32,
-    /// Indices of columns, grouped by their associated degree bound.
-    ///
-    /// While the MerkleVerifier itself only needs to know the number of columns for each degree
-    /// bound, we store the full list of indices here because the Polynomial Commitment Scheme (PCS)
-    /// verifier requires access to the actual indices. Keeping this information here avoids the
-    /// need to save us computing 'n_column_by_log_deg_bound' when creating the MerkleVerifier.
-    pub column_indices_by_log_deg_bound: ColumnsIndicesByLogDegreeBound,
+    // The log degree bounds of the committed columns.
+    pub column_log_deg_bounds: Span<u32>,
 }
 impl MerkleVerifierDrop<impl H: MerkleHasher, +Drop<H::Hash>> of Drop<MerkleVerifier<H>>;
 
@@ -91,10 +86,7 @@ impl MerkleVerifierImpl<
         mut queried_values: Span<BaseField>,
         decommitment: MerkleDecommitment<H>,
     ) {
-        let n_columns = self
-            .column_indices_by_log_deg_bound
-            .into_iter()
-            .fold(0, |acc, c| acc + c.len());
+        let n_columns = self.column_log_deg_bounds.len();
         // This buffer is first filled with the deduplicated positions and the hash
         // of the corresponding queried_values. The first element of each tuple encodes
         // in its MSB the height of the associated layer in the Merkle tree. For example,
