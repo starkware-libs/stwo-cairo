@@ -65,7 +65,7 @@ pub mod verify_bitwise_xor_9;
 pub mod verify_instruction;
 
 pub(crate) mod prelude;
-pub(crate) mod subroutines;
+pub mod subroutines;
 
 use itertools::Itertools;
 use stwo_constraint_framework::{FrameworkComponent, FrameworkEval};
