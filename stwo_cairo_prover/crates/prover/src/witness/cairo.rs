@@ -479,26 +479,29 @@ impl CairoInteractionClaimGenerator {
                 add_result,
                 mul_result,
             ),
-            // Group B (medium)
+            // Groups B + C (nested 2-tuple from inner rayon::join)
             (
-                jnz_taken_result,
-                call_rel_imm_result,
-                ret_result,
-                mul_small_result,
-                add_ap_result,
-                assert_eq_imm_result,
-                jnz_result,
-                jump_rel_imm_result,
-                blake_opcode_result,
-            ),
-            // Group C (tiny bundle)
-            (
-                call_result,
-                generic_opcode_result,
-                jump_result,
-                jump_double_deref_result,
-                jump_rel_result,
-                qm31_result,
+                // Group B (medium)
+                (
+                    jnz_taken_result,
+                    call_rel_imm_result,
+                    ret_result,
+                    mul_small_result,
+                    add_ap_result,
+                    assert_eq_imm_result,
+                    jnz_result,
+                    jump_rel_imm_result,
+                    blake_opcode_result,
+                ),
+                // Group C (tiny bundle)
+                (
+                    call_result,
+                    generic_opcode_result,
+                    jump_result,
+                    jump_double_deref_result,
+                    jump_rel_result,
+                    qm31_result,
+                ),
             ),
         ) = rayon::join(
             || {
