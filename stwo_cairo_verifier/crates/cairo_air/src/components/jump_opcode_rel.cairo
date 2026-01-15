@@ -77,11 +77,8 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         let log_size = *(self.claim.log_size);
-        let trace_domain = CanonicCosetImpl::new(log_size);
-        let domain_vanishing_eval_inv = trace_domain.eval_vanishing(point).inverse();
         let claimed_sum = *self.interaction_claim.claimed_sum;
         let column_size = m31(pow2(log_size));
         let mut verify_instruction_sum_0: QM31 = Zero::zero();
@@ -133,8 +130,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         core::internal::revoke_ap_tracking();
 
         let constraint_quotient = (opcodes_multiplicity * opcodes_multiplicity
-            - opcodes_multiplicity)
-            * domain_vanishing_eval_inv;
+            - opcodes_multiplicity);
         sum = sum * random_coeff + constraint_quotient;
         let [
             decode_instruction_ba944_output_tmp_62dfc_5_offset2,
@@ -148,15 +144,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             self.common_lookup_elements,
             ref verify_instruction_sum_0,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
         // Constraint - mem1_base
         let constraint_quotient = ((mem1_base_col6
             - ((op1_base_fp_col4 * input_fp_col2)
-                + (decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap * input_ap_col1))))
-            * domain_vanishing_eval_inv;
+                + (decode_instruction_ba944_output_tmp_62dfc_5_op1_base_ap * input_ap_col1))));
         sum = sum * random_coeff + constraint_quotient;
         let read_small_output_tmp_62dfc_15_limb_0: QM31 = read_small_evaluate(
             (mem1_base_col6 + decode_instruction_ba944_output_tmp_62dfc_5_offset2),
@@ -172,7 +166,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref memory_address_to_id_sum_1,
             ref memory_id_to_big_sum_2,
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
         );
 
@@ -196,7 +189,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
         lookup_constraints(
             ref sum,
-            domain_vanishing_eval_inv,
             random_coeff,
             claimed_sum,
             opcodes_multiplicity,
@@ -214,7 +206,6 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
 
 fn lookup_constraints(
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
     claimed_sum: QM31,
     opcodes_multiplicity: QM31,
@@ -268,8 +259,7 @@ fn lookup_constraints(
         * verify_instruction_sum_0
         * memory_address_to_id_sum_1)
         - verify_instruction_sum_0
-        - memory_address_to_id_sum_1)
-        * domain_vanishing_eval_inv;
+        - memory_address_to_id_sum_1);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -279,8 +269,7 @@ fn lookup_constraints(
         * memory_id_to_big_sum_2
         * opcodes_sum_3)
         - (memory_id_to_big_sum_2 * opcodes_multiplicity)
-        - opcodes_sum_3)
-        * domain_vanishing_eval_inv;
+        - opcodes_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -292,8 +281,7 @@ fn lookup_constraints(
         )
         + (claimed_sum * (column_size.inverse().into())))
         * opcodes_sum_4)
-        + opcodes_multiplicity)
-        * domain_vanishing_eval_inv;
+        + opcodes_multiplicity);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
@@ -306,7 +294,6 @@ mod tests {
     use stwo_constraint_framework::{
         LookupElementsTrait, PreprocessedMaskValues, PreprocessedMaskValuesTrait,
     };
-    use stwo_verifier_core::circle::CirclePoint;
     use stwo_verifier_core::fields::qm31::{QM31, QM31Impl, QM31Trait, qm31_const};
     use crate::cairo_component::*;
     use crate::components::sample_evaluations::*;
@@ -328,10 +315,6 @@ mod tests {
             ),
         };
         let mut sum: QM31 = Zero::zero();
-        let point = CirclePoint {
-            x: qm31_const::<461666434, 38651694, 1083586041, 510305943>(),
-            y: qm31_const::<817798294, 862569777, 2091320744, 1178484122>(),
-        };
 
         let mut preprocessed_trace = PreprocessedMaskValues { values: Default::default() };
 
@@ -369,7 +352,6 @@ mod tests {
                 ref trace_columns,
                 ref interaction_columns,
                 qm31_const::<474642921, 876336632, 1911695779, 974600512>(),
-                point,
             );
         preprocessed_trace.validate_usage();
         assert_eq!(sum, QM31Trait::from_fixed_array(JUMP_OPCODE_REL_SAMPLE_EVAL_RESULT))

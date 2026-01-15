@@ -30,7 +30,6 @@ pub fn qm_31_read_reduced_evaluate(
     ref memory_id_to_big_sum_1: QM31,
     ref range_check_4_4_4_4_sum_2: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 4] {
     let qm_31_read_reduced_input = input;
@@ -57,7 +56,6 @@ pub fn qm_31_read_reduced_evaluate(
         ref memory_address_to_id_sum_0,
         ref memory_id_to_big_sum_1,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 
@@ -77,8 +75,7 @@ pub fn qm_31_read_reduced_evaluate(
         * ((((value_limb_4_col5 + value_limb_5_col6) + value_limb_6_col7) + value_limb_7_col8)
             - qm31_const::<1548, 0, 0, 0>()))
         * delta_ab_inv_col17)
-        - qm31_const::<1, 0, 0, 0>()))
-        * domain_vanishing_eval_inv;
+        - qm31_const::<1, 0, 0, 0>()));
     sum = sum * random_coeff + constraint_quotient;
 
     // Constraint - delta_cd doesn't equal 0
@@ -89,8 +86,7 @@ pub fn qm_31_read_reduced_evaluate(
             + value_limb_15_col16)
             - qm31_const::<1548, 0, 0, 0>()))
         * delta_cd_inv_col18)
-        - qm31_const::<1, 0, 0, 0>()))
-        * domain_vanishing_eval_inv;
+        - qm31_const::<1, 0, 0, 0>()));
     sum = sum * random_coeff + constraint_quotient;
 
     [

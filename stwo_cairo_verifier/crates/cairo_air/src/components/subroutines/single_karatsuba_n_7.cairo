@@ -7,7 +7,6 @@ pub fn single_karatsuba_n_7_evaluate(
     input: [QM31; 28],
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 27] {
     let [

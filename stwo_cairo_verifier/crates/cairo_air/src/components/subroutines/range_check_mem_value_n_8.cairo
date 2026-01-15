@@ -11,7 +11,6 @@ pub fn range_check_mem_value_n_8_evaluate(
     ref range_check_9_9_c_sum_2: QM31,
     ref range_check_9_9_d_sum_3: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 0] {
     let [

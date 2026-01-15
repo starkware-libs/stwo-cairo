@@ -27,7 +27,6 @@ use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
@@ -933,7 +932,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         for component in self.add.span() {
             component
@@ -943,7 +941,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.add_small.span() {
@@ -954,7 +951,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.add_ap.span() {
@@ -965,7 +961,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq.span() {
@@ -976,7 +971,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq_imm.span() {
@@ -987,7 +981,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq_double_deref.span() {
@@ -998,7 +991,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1010,7 +1002,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1022,7 +1013,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1034,7 +1024,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1046,7 +1035,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1058,7 +1046,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1070,7 +1057,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1082,7 +1068,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1094,7 +1079,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1106,7 +1090,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1118,7 +1101,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1130,7 +1112,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.mul_small.span() {
@@ -1141,7 +1122,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1153,7 +1133,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1165,7 +1144,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         };
     }
@@ -1498,7 +1476,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         for component in self.add.span() {
             component
@@ -1508,7 +1485,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.add_small.span() {
@@ -1519,7 +1495,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.add_ap.span() {
@@ -1530,7 +1505,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq.span() {
@@ -1541,7 +1515,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq_imm.span() {
@@ -1552,7 +1525,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.assert_eq_double_deref.span() {
@@ -1563,7 +1535,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1575,7 +1546,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1587,7 +1557,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1599,7 +1568,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1611,7 +1579,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1623,7 +1590,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1635,7 +1601,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1647,7 +1612,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1659,7 +1623,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1671,7 +1634,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1683,7 +1645,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
         for component in self.mul_small.span() {
@@ -1694,7 +1655,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1706,7 +1666,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
 
@@ -1718,7 +1677,6 @@ pub impl OpcodeComponentsImpl of OpcodeComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         };
     }
