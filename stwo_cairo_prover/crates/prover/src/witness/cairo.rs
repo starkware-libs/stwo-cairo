@@ -1,5 +1,5 @@
 use std::array;
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 
 use cairo_air::air::{
     CairoClaim, CairoInteractionClaim, MemorySmallValue, PublicData, PublicMemory,
@@ -21,9 +21,7 @@ use stwo_cairo_common::preprocessed_columns::preprocessed_trace::MAX_SEQUENCE_LO
 use tracing::{span, Level};
 
 use super::builtins::BuiltinsInteractionClaimGenerator;
-use super::opcodes::{
-    process_interaction_gens, InteractionTraceResult, OpcodesInteractionClaimGenerator,
-};
+use super::opcodes::{process_interaction_gens, OpcodesInteractionClaimGenerator};
 use super::range_checks::RangeChecksInteractionClaimGenerator;
 use crate::witness::blake_context::{
     blake_context_write_trace, BlakeContextInteractionClaimGenerator,
@@ -450,688 +448,892 @@ impl CairoInteractionClaimGenerator {
         let poseidon_parts = self.poseidon_context_interaction_gen.into_parts();
         let range_checks_parts = self.range_checks_interaction_gen.into_parts();
 
-        // Create Mutex-wrapped results for all components
-        // Opcodes (20 types)
-        type OpcodeResult<T> = Mutex<Option<InteractionTraceResult<T>>>;
-        let add_result: OpcodeResult<_> = Mutex::new(None);
-        let add_small_result: OpcodeResult<_> = Mutex::new(None);
-        let add_ap_result: OpcodeResult<_> = Mutex::new(None);
-        let assert_eq_result: OpcodeResult<_> = Mutex::new(None);
-        let assert_eq_imm_result: OpcodeResult<_> = Mutex::new(None);
-        let assert_eq_double_deref_result: OpcodeResult<_> = Mutex::new(None);
-        let blake_opcode_result: OpcodeResult<_> = Mutex::new(None);
-        let call_result: OpcodeResult<_> = Mutex::new(None);
-        let call_rel_imm_result: OpcodeResult<_> = Mutex::new(None);
-        let generic_opcode_result: OpcodeResult<_> = Mutex::new(None);
-        let jnz_result: OpcodeResult<_> = Mutex::new(None);
-        let jnz_taken_result: OpcodeResult<_> = Mutex::new(None);
-        let jump_result: OpcodeResult<_> = Mutex::new(None);
-        let jump_double_deref_result: OpcodeResult<_> = Mutex::new(None);
-        let jump_rel_result: OpcodeResult<_> = Mutex::new(None);
-        let jump_rel_imm_result: OpcodeResult<_> = Mutex::new(None);
-        let mul_result: OpcodeResult<_> = Mutex::new(None);
-        let mul_small_result: OpcodeResult<_> = Mutex::new(None);
-        let qm31_result: OpcodeResult<_> = Mutex::new(None);
-        let ret_result: OpcodeResult<_> = Mutex::new(None);
+        // Move the "self.*" single generators out so we can freely capture them in FnOnce closures.
+        let verify_instruction_gen = self.verify_instruction_interaction_gen;
 
-        // Verify instruction
-        type SingleResult<T> = Mutex<Option<ClaimWithEvals<T>>>;
-        let verify_instruction_result: SingleResult<_> = Mutex::new(None);
+        let memory_address_to_id_gen = self.memory_address_to_id_interaction_gen;
+        let memory_id_to_value_gen = self.memory_id_to_value_interaction_gen;
 
-        // Blake context (5 components, optional)
-        let blake_round_result: SingleResult<_> = Mutex::new(None);
-        let blake_g_result: SingleResult<_> = Mutex::new(None);
-        let blake_sigma_result: SingleResult<_> = Mutex::new(None);
-        let triple_xor_32_result: SingleResult<_> = Mutex::new(None);
-        let verify_bitwise_xor_12_result: SingleResult<_> = Mutex::new(None);
+        let verify_bitwise_xor_4_gen = self.verify_bitwise_xor_4_interaction_gen;
+        let verify_bitwise_xor_7_gen = self.verify_bitwise_xor_7_interaction_gen;
+        let verify_bitwise_xor_8_gen = self.verify_bitwise_xor_8_interaction_gen;
+        let verify_bitwise_xor_9_gen = self.verify_bitwise_xor_9_interaction_gen;
 
-        // Builtins (7 optional)
-        let add_mod_builtin_result: SingleResult<_> = Mutex::new(None);
-        let bitwise_builtin_result: SingleResult<_> = Mutex::new(None);
-        let mul_mod_builtin_result: SingleResult<_> = Mutex::new(None);
-        let pedersen_builtin_result: SingleResult<_> = Mutex::new(None);
-        let poseidon_builtin_result: SingleResult<_> = Mutex::new(None);
-        let range_check_96_builtin_result: SingleResult<_> = Mutex::new(None);
-        let range_check_128_builtin_result: SingleResult<_> = Mutex::new(None);
+        // ======== COMPUTE (PARALLEL) ========
+        //
+        // Key change vs your version:
+        // - no Mutex<Option<...>>
+        // - no rayon::scope + spawn forest
+        // - purely functional: compute values in parallel, then serially write to tree_builder
+        //
+        // We use a balanced-ish tree of rayon::join calls. This gives:
+        // - minimal overhead
+        // - no shared-state contention
+        // - deterministic structure (and it composes nicely if you later group work)
 
-        // Pedersen context (3 components, optional)
-        let pedersen_aggregator_result: SingleResult<_> = Mutex::new(None);
-        let partial_ec_mul_result: SingleResult<_> = Mutex::new(None);
-        let pedersen_points_table_result: SingleResult<_> = Mutex::new(None);
-
-        // Poseidon context (6 components, optional)
-        let poseidon_aggregator_result: SingleResult<_> = Mutex::new(None);
-        let poseidon_3_partial_rounds_chain_result: SingleResult<_> = Mutex::new(None);
-        let poseidon_full_round_chain_result: SingleResult<_> = Mutex::new(None);
-        let cube_252_result: SingleResult<_> = Mutex::new(None);
-        let poseidon_round_keys_result: SingleResult<_> = Mutex::new(None);
-        let range_check_252_width_27_result: SingleResult<_> = Mutex::new(None);
-
-        // Memory
-        let memory_address_to_id_result: SingleResult<_> = Mutex::new(None);
-        let memory_id_to_value_result: SingleResult<_> = Mutex::new(None);
-
-        // Range checks (13 components)
-        let rc_6_result: SingleResult<_> = Mutex::new(None);
-        let rc_8_result: SingleResult<_> = Mutex::new(None);
-        let rc_11_result: SingleResult<_> = Mutex::new(None);
-        let rc_12_result: SingleResult<_> = Mutex::new(None);
-        let rc_18_result: SingleResult<_> = Mutex::new(None);
-        let rc_20_result: SingleResult<_> = Mutex::new(None);
-        let rc_4_3_result: SingleResult<_> = Mutex::new(None);
-        let rc_4_4_result: SingleResult<_> = Mutex::new(None);
-        let rc_9_9_result: SingleResult<_> = Mutex::new(None);
-        let rc_7_2_5_result: SingleResult<_> = Mutex::new(None);
-        let rc_3_6_6_3_result: SingleResult<_> = Mutex::new(None);
-        let rc_4_4_4_4_result: SingleResult<_> = Mutex::new(None);
-        let rc_3_3_3_3_3_result: SingleResult<_> = Mutex::new(None);
-
-        // Verify bitwise xor (4 components)
-        let verify_bitwise_xor_4_result: SingleResult<_> = Mutex::new(None);
-        let verify_bitwise_xor_7_result: SingleResult<_> = Mutex::new(None);
-        let verify_bitwise_xor_8_result: SingleResult<_> = Mutex::new(None);
-        let verify_bitwise_xor_9_result: SingleResult<_> = Mutex::new(None);
-
-        // Single rayon::scope for ALL parallel tasks
-        rayon::scope(|s| {
-            // === OPCODES (20 types) ===
-            s.spawn(|_| {
-                *add_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.add,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *add_small_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.add_small,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *add_ap_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.add_ap,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *assert_eq_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.assert_eq,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *assert_eq_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.assert_eq_imm,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *assert_eq_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.assert_eq_double_deref,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *blake_opcode_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.blake,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *call_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.call,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *call_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.call_rel_imm,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *generic_opcode_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.generic_opcode,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jnz_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jnz,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jnz_taken_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jnz_taken,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jump_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jump,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jump_double_deref_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jump_double_deref,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jump_rel_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jump_rel,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *jump_rel_imm_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.jump_rel_imm,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *mul_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.mul,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *mul_small_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.mul_small,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *qm31_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.qm31,
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *ret_result.lock().unwrap() = Some(process_interaction_gens(
-                    opcodes_parts.ret,
-                    common_lookup_elements,
-                ));
-            });
-
-            // === VERIFY INSTRUCTION ===
-            s.spawn(|_| {
-                *verify_instruction_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.verify_instruction_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-
-            // === BLAKE CONTEXT (5 components, if present) ===
-            if let Some(blake) = blake_parts {
-                s.spawn(|_| {
-                    *blake_round_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| blake.blake_round.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *blake_g_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| blake.blake_g.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *blake_sigma_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| blake.blake_sigma.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *triple_xor_32_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            blake.triple_xor_32.write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *verify_bitwise_xor_12_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            blake
-                                .verify_bitwise_xor_12
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-            }
-
-            // === BUILTINS (7 optional) ===
-            if let Some(gen) = builtins_parts.add_mod_builtin {
-                s.spawn(|_| {
-                    *add_mod_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.bitwise_builtin {
-                s.spawn(|_| {
-                    *bitwise_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.mul_mod_builtin {
-                s.spawn(|_| {
-                    *mul_mod_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.pedersen_builtin {
-                s.spawn(|_| {
-                    *pedersen_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.poseidon_builtin {
-                s.spawn(|_| {
-                    *poseidon_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.range_check_96_builtin {
-                s.spawn(|_| {
-                    *range_check_96_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-            if let Some(gen) = builtins_parts.range_check_128_builtin {
-                s.spawn(|_| {
-                    *range_check_128_builtin_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-            }
-
-            // === PEDERSEN CONTEXT (3 components, if present) ===
-            if let Some(pedersen) = pedersen_parts {
-                s.spawn(|_| {
-                    *pedersen_aggregator_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            pedersen
-                                .pedersen_aggregator
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *partial_ec_mul_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            pedersen
-                                .partial_ec_mul
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *pedersen_points_table_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            pedersen
-                                .pedersen_points_table
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-            }
-
-            // === POSEIDON CONTEXT (6 components, if present) ===
-            if let Some(poseidon) = poseidon_parts {
-                s.spawn(|_| {
-                    *poseidon_aggregator_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            poseidon
-                                .poseidon_aggregator
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *poseidon_3_partial_rounds_chain_result.lock().unwrap() =
-                        Some(process_single_gen(
-                            |builder, elems| {
-                                poseidon
-                                    .poseidon_3_partial_rounds_chain
-                                    .write_interaction_trace(builder, elems)
+        // --- OPCODES (20 types) ---
+        //
+        // We'll build a join tree. Each leaf computes one InteractionTraceResult<_>.
+        // Types are inferred exactly like your original code (with `_`).
+        let (
+            (
+                ((add_result, add_small_result), (add_ap_result, assert_eq_result)),
+                (
+                    (assert_eq_imm_result, assert_eq_double_deref_result),
+                    (blake_opcode_result, call_result),
+                ),
+            ),
+            (
+                ((call_rel_imm_result, generic_opcode_result), (jnz_result, jnz_taken_result)),
+                (
+                    (jump_result, jump_double_deref_result),
+                    ((jump_rel_result, jump_rel_imm_result), (mul_result, mul_small_result)),
+                ),
+            ),
+        ) = rayon::join(
+            || {
+                rayon::join(
+                    || {
+                        rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.add,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.add_small,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
                             },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.add_ap,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.assert_eq,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        )
+                    },
+                    || {
+                        rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.assert_eq_imm,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.assert_eq_double_deref,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.blake,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.call,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        )
+                    },
+                )
+            },
+            || {
+                rayon::join(
+                    || {
+                        rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.call_rel_imm,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.generic_opcode,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jnz,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jnz_taken,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        )
+                    },
+                    || {
+                        rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jump,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_interaction_gens(
+                                            opcodes_parts.jump_double_deref,
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        rayon::join(
+                                            || {
+                                                process_interaction_gens(
+                                                    opcodes_parts.jump_rel,
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                            || {
+                                                process_interaction_gens(
+                                                    opcodes_parts.jump_rel_imm,
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                        )
+                                    },
+                                    || {
+                                        rayon::join(
+                                            || {
+                                                process_interaction_gens(
+                                                    opcodes_parts.mul,
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                            || {
+                                                process_interaction_gens(
+                                                    opcodes_parts.mul_small,
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                        )
+                                    },
+                                )
+                            },
+                        )
+                    },
+                )
+            },
+        );
+
+        let ((qm31_result, ret_result), verify_instruction_result) = rayon::join(
+            || {
+                rayon::join(
+                    || process_interaction_gens(opcodes_parts.qm31, common_lookup_elements),
+                    || process_interaction_gens(opcodes_parts.ret, common_lookup_elements),
+                )
+            },
+            || {
+                process_single_gen(
+                    |builder, elems| verify_instruction_gen.write_interaction_trace(builder, elems),
+                    common_lookup_elements,
+                )
+            },
+        );
+
+        // --- Remaining opcode: mul already done; we still need opcode "mul" results above and
+        // "qm31/ret" here --- (All 20 are now present: add, add_small, add_ap, assert_eq,
+        // assert_eq_imm,  assert_eq_double_deref, blake, call, call_rel_imm,
+        // generic_opcode, jnz,  jnz_taken, jump, jump_double_deref, jump_rel, jump_rel_imm,
+        // mul, mul_small,  qm31, ret.)
+
+        // --- Optional contexts + memory/range/xor ---
+        //
+        // We compute these in parallel too. The option blocks stay option blocks,
+        // but we avoid spawning tasks just to set mutexes.
+        let ((blake_ctx_results, builtins_results), (pedersen_ctx_results, poseidon_ctx_results)) =
+            rayon::join(
+                || {
+                    rayon::join(
+                        || {
+                            blake_parts.map(|blake| {
+                                // 5 components
+                                let ((blake_round, blake_g), (blake_sigma, triple_xor_32)) =
+                                    rayon::join(
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            blake
+                                                                .blake_round
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            blake
+                                                                .blake_g
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            blake
+                                                                .blake_sigma
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            blake
+                                                                .triple_xor_32
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                    );
+
+                                let verify_bitwise_xor_12 = process_single_gen(
+                                    |b, e| {
+                                        blake.verify_bitwise_xor_12.write_interaction_trace(b, e)
+                                    },
+                                    common_lookup_elements,
+                                );
+
+                                (
+                                    blake_round,
+                                    blake_g,
+                                    blake_sigma,
+                                    triple_xor_32,
+                                    verify_bitwise_xor_12,
+                                )
+                            })
+                        },
+                        || {
+                            // builtins: 7 optional
+                            let (
+                                (add_mod_builtin, bitwise_builtin),
+                                (mul_mod_builtin, pedersen_builtin),
+                            ) = rayon::join(
+                                || {
+                                    rayon::join(
+                                        || {
+                                            builtins_parts.add_mod_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                        || {
+                                            builtins_parts.bitwise_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                    )
+                                },
+                                || {
+                                    rayon::join(
+                                        || {
+                                            builtins_parts.mul_mod_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                        || {
+                                            builtins_parts.pedersen_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                    )
+                                },
+                            );
+
+                            let (
+                                (poseidon_builtin, range_check_96_builtin),
+                                range_check_128_builtin,
+                            ) = rayon::join(
+                                || {
+                                    rayon::join(
+                                        || {
+                                            builtins_parts.poseidon_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                        || {
+                                            builtins_parts.range_check_96_builtin.map(|gen| {
+                                                process_single_gen(
+                                                    |b, e| gen.write_interaction_trace(b, e),
+                                                    common_lookup_elements,
+                                                )
+                                            })
+                                        },
+                                    )
+                                },
+                                || {
+                                    builtins_parts.range_check_128_builtin.map(|gen| {
+                                        process_single_gen(
+                                            |b, e| gen.write_interaction_trace(b, e),
+                                            common_lookup_elements,
+                                        )
+                                    })
+                                },
+                            );
+
+                            (
+                                add_mod_builtin,
+                                bitwise_builtin,
+                                mul_mod_builtin,
+                                pedersen_builtin,
+                                poseidon_builtin,
+                                range_check_96_builtin,
+                                range_check_128_builtin,
+                            )
+                        },
+                    )
+                },
+                || {
+                    rayon::join(
+                        || {
+                            pedersen_parts.map(|pedersen| {
+                                let ((pedersen_aggregator, partial_ec_mul), pedersen_points_table) =
+                                    rayon::join(
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            pedersen
+                                                                .pedersen_aggregator
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            pedersen
+                                                                .partial_ec_mul
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                        || {
+                                            process_single_gen(
+                                                |b, e| {
+                                                    pedersen
+                                                        .pedersen_points_table
+                                                        .write_interaction_trace(b, e)
+                                                },
+                                                common_lookup_elements,
+                                            )
+                                        },
+                                    );
+                                (pedersen_aggregator, partial_ec_mul, pedersen_points_table)
+                            })
+                        },
+                        || {
+                            poseidon_parts.map(|poseidon| {
+                                let (
+                                    (poseidon_aggregator, poseidon_3_partial_rounds_chain),
+                                    (poseidon_full_round_chain, cube_252),
+                                ) = rayon::join(
+                                    || {
+                                        rayon::join(
+                                            || {
+                                                process_single_gen(
+                                                    |b, e| {
+                                                        poseidon
+                                                            .poseidon_aggregator
+                                                            .write_interaction_trace(b, e)
+                                                    },
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                            || {
+                                                process_single_gen(
+                                                    |b, e| {
+                                                        poseidon
+                                                            .poseidon_3_partial_rounds_chain
+                                                            .write_interaction_trace(b, e)
+                                                    },
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                        )
+                                    },
+                                    || {
+                                        rayon::join(
+                                            || {
+                                                process_single_gen(
+                                                    |b, e| {
+                                                        poseidon
+                                                            .poseidon_full_round_chain
+                                                            .write_interaction_trace(b, e)
+                                                    },
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                            || {
+                                                process_single_gen(
+                                                    |b, e| {
+                                                        poseidon
+                                                            .cube_252
+                                                            .write_interaction_trace(b, e)
+                                                    },
+                                                    common_lookup_elements,
+                                                )
+                                            },
+                                        )
+                                    },
+                                );
+
+                                let (poseidon_round_keys, range_check_252_width_27) = rayon::join(
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                poseidon
+                                                    .poseidon_round_keys
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                poseidon
+                                                    .range_check_252_width_27
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                );
+
+                                (
+                                    poseidon_aggregator,
+                                    poseidon_3_partial_rounds_chain,
+                                    poseidon_full_round_chain,
+                                    cube_252,
+                                    poseidon_round_keys,
+                                    range_check_252_width_27,
+                                )
+                            })
+                        },
+                    )
+                },
+            );
+
+        let (
+            (memory_address_to_id_result, memory_id_to_value_result),
+            (range_checks_results, xor_results),
+        ) = rayon::join(
+            || {
+                rayon::join(
+                    || {
+                        process_single_gen(
+                            |b, e| memory_address_to_id_gen.write_interaction_trace(b, e),
                             common_lookup_elements,
-                        ));
-                });
-                s.spawn(|_| {
-                    *poseidon_full_round_chain_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            poseidon
-                                .poseidon_full_round_chain
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *cube_252_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| poseidon.cube_252.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *poseidon_round_keys_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            poseidon
-                                .poseidon_round_keys
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-                s.spawn(|_| {
-                    *range_check_252_width_27_result.lock().unwrap() = Some(process_single_gen(
-                        |builder, elems| {
-                            poseidon
-                                .range_check_252_width_27
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    ));
-                });
-            }
+                        )
+                    },
+                    || {
+                        process_single_gen(
+                            |b, e| memory_id_to_value_gen.write_interaction_trace(b, e),
+                            common_lookup_elements,
+                        )
+                    },
+                )
+            },
+            || {
+                rayon::join(
+                    || {
+                        // range checks (13)
+                        let (((rc_6, rc_8), (rc_11, rc_12)), ((rc_18, rc_20), (rc_4_3, rc_4_4))) =
+                            rayon::join(
+                                || {
+                                    rayon::join(
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_6
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_8
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_11
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_12
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                    )
+                                },
+                                || {
+                                    rayon::join(
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_18
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_20
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_4_3
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_4_4
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                    )
+                                },
+                            );
 
-            // === MEMORY ===
-            s.spawn(|_| {
-                *memory_address_to_id_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.memory_address_to_id_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *memory_id_to_value_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.memory_id_to_value_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
+                        let (((rc_9_9, rc_7_2_5), (rc_3_6_6_3, rc_4_4_4_4)), rc_3_3_3_3_3) =
+                            rayon::join(
+                                || {
+                                    rayon::join(
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_9_9
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_7_2_5
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                        || {
+                                            rayon::join(
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_3_6_6_3
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                                || {
+                                                    process_single_gen(
+                                                        |b, e| {
+                                                            range_checks_parts
+                                                                .rc_4_4_4_4
+                                                                .write_interaction_trace(b, e)
+                                                        },
+                                                        common_lookup_elements,
+                                                    )
+                                                },
+                                            )
+                                        },
+                                    )
+                                },
+                                || {
+                                    process_single_gen(
+                                        |b, e| {
+                                            range_checks_parts
+                                                .rc_3_3_3_3_3
+                                                .write_interaction_trace(b, e)
+                                        },
+                                        common_lookup_elements,
+                                    )
+                                },
+                            );
 
-            // === RANGE CHECKS (13 components) ===
-            s.spawn(|_| {
-                *rc_6_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_6
-                            .write_interaction_trace(builder, elems)
+                        (
+                            rc_6,
+                            rc_8,
+                            rc_11,
+                            rc_12,
+                            rc_18,
+                            rc_20,
+                            rc_4_3,
+                            rc_4_4,
+                            rc_9_9,
+                            rc_7_2_5,
+                            rc_3_6_6_3,
+                            rc_4_4_4_4,
+                            rc_3_3_3_3_3,
+                        )
                     },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_8_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_8
-                            .write_interaction_trace(builder, elems)
+                    || {
+                        // verify bitwise xor (4)
+                        let ((xor_4, xor_7), (xor_8, xor_9)) = rayon::join(
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_4_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_7_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                            || {
+                                rayon::join(
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_8_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                    || {
+                                        process_single_gen(
+                                            |b, e| {
+                                                verify_bitwise_xor_9_gen
+                                                    .write_interaction_trace(b, e)
+                                            },
+                                            common_lookup_elements,
+                                        )
+                                    },
+                                )
+                            },
+                        );
+                        (xor_4, xor_7, xor_8, xor_9)
                     },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_11_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_11
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_12_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_12
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_18_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_18
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_20_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_20
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_4_3_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_4_3
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_4_4_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_4_4
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_9_9_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_9_9
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_7_2_5_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_7_2_5
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_3_6_6_3_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_3_6_6_3
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_4_4_4_4_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_4_4_4_4
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *rc_3_3_3_3_3_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        range_checks_parts
-                            .rc_3_3_3_3_3
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
+                )
+            },
+        );
 
-            // === VERIFY BITWISE XOR ===
-            s.spawn(|_| {
-                *verify_bitwise_xor_4_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.verify_bitwise_xor_4_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *verify_bitwise_xor_7_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.verify_bitwise_xor_7_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *verify_bitwise_xor_8_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.verify_bitwise_xor_8_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-            s.spawn(|_| {
-                *verify_bitwise_xor_9_result.lock().unwrap() = Some(process_single_gen(
-                    |builder, elems| {
-                        self.verify_bitwise_xor_9_interaction_gen
-                            .write_interaction_trace(builder, elems)
-                    },
-                    common_lookup_elements,
-                ));
-            });
-        });
+        // Unpack the big tuples into named values (readability)
+        let (jump_rel_result, jump_rel_imm_result) = (jump_rel_result, jump_rel_imm_result);
+        let (mul_result, mul_small_result) = (mul_result, mul_small_result);
 
-        // === EXTRACT RESULTS FROM MUTEXES ===
-        let add_result = add_result.into_inner().unwrap().unwrap();
-        let add_small_result = add_small_result.into_inner().unwrap().unwrap();
-        let add_ap_result = add_ap_result.into_inner().unwrap().unwrap();
-        let assert_eq_result = assert_eq_result.into_inner().unwrap().unwrap();
-        let assert_eq_imm_result = assert_eq_imm_result.into_inner().unwrap().unwrap();
-        let assert_eq_double_deref_result =
-            assert_eq_double_deref_result.into_inner().unwrap().unwrap();
-        let blake_opcode_result = blake_opcode_result.into_inner().unwrap().unwrap();
-        let call_result = call_result.into_inner().unwrap().unwrap();
-        let call_rel_imm_result = call_rel_imm_result.into_inner().unwrap().unwrap();
-        let generic_opcode_result = generic_opcode_result.into_inner().unwrap().unwrap();
-        let jnz_result = jnz_result.into_inner().unwrap().unwrap();
-        let jnz_taken_result = jnz_taken_result.into_inner().unwrap().unwrap();
-        let jump_result = jump_result.into_inner().unwrap().unwrap();
-        let jump_double_deref_result = jump_double_deref_result.into_inner().unwrap().unwrap();
-        let jump_rel_result = jump_rel_result.into_inner().unwrap().unwrap();
-        let jump_rel_imm_result = jump_rel_imm_result.into_inner().unwrap().unwrap();
-        let mul_result = mul_result.into_inner().unwrap().unwrap();
-        let mul_small_result = mul_small_result.into_inner().unwrap().unwrap();
-        let qm31_result = qm31_result.into_inner().unwrap().unwrap();
-        let ret_result = ret_result.into_inner().unwrap().unwrap();
+        let (
+            rc_6_result,
+            rc_8_result,
+            rc_11_result,
+            rc_12_result,
+            rc_18_result,
+            rc_20_result,
+            rc_4_3_result,
+            rc_4_4_result,
+            rc_9_9_result,
+            rc_7_2_5_result,
+            rc_3_6_6_3_result,
+            rc_4_4_4_4_result,
+            rc_3_3_3_3_3_result,
+        ) = range_checks_results;
 
-        let verify_instruction_result = verify_instruction_result.into_inner().unwrap().unwrap();
+        let (
+            verify_bitwise_xor_4_result,
+            verify_bitwise_xor_7_result,
+            verify_bitwise_xor_8_result,
+            verify_bitwise_xor_9_result,
+        ) = xor_results;
 
-        let blake_round_result = blake_round_result.into_inner().unwrap();
-        let blake_g_result = blake_g_result.into_inner().unwrap();
-        let blake_sigma_result = blake_sigma_result.into_inner().unwrap();
-        let triple_xor_32_result = triple_xor_32_result.into_inner().unwrap();
-        let verify_bitwise_xor_12_result = verify_bitwise_xor_12_result.into_inner().unwrap();
+        // Optional group unpack
+        let (
+            blake_round_result,
+            blake_g_result,
+            blake_sigma_result,
+            triple_xor_32_result,
+            verify_bitwise_xor_12_result,
+        ) = match blake_ctx_results {
+            Some((a, b, c, d, e)) => (Some(a), Some(b), Some(c), Some(d), Some(e)),
+            None => (None, None, None, None, None),
+        };
 
-        let add_mod_builtin_result = add_mod_builtin_result.into_inner().unwrap();
-        let bitwise_builtin_result = bitwise_builtin_result.into_inner().unwrap();
-        let mul_mod_builtin_result = mul_mod_builtin_result.into_inner().unwrap();
-        let pedersen_builtin_result = pedersen_builtin_result.into_inner().unwrap();
-        let poseidon_builtin_result = poseidon_builtin_result.into_inner().unwrap();
-        let range_check_96_builtin_result = range_check_96_builtin_result.into_inner().unwrap();
-        let range_check_128_builtin_result = range_check_128_builtin_result.into_inner().unwrap();
+        let (
+            add_mod_builtin_result,
+            bitwise_builtin_result,
+            mul_mod_builtin_result,
+            pedersen_builtin_result,
+            poseidon_builtin_result,
+            range_check_96_builtin_result,
+            range_check_128_builtin_result,
+        ) = builtins_results;
 
-        let pedersen_aggregator_result = pedersen_aggregator_result.into_inner().unwrap();
-        let partial_ec_mul_result = partial_ec_mul_result.into_inner().unwrap();
-        let pedersen_points_table_result = pedersen_points_table_result.into_inner().unwrap();
+        let (pedersen_aggregator_result, partial_ec_mul_result, pedersen_points_table_result) =
+            match pedersen_ctx_results {
+                Some((a, b, c)) => (Some(a), Some(b), Some(c)),
+                None => (None, None, None),
+            };
 
-        let poseidon_aggregator_result = poseidon_aggregator_result.into_inner().unwrap();
-        let poseidon_3_partial_rounds_chain_result =
-            poseidon_3_partial_rounds_chain_result.into_inner().unwrap();
-        let poseidon_full_round_chain_result =
-            poseidon_full_round_chain_result.into_inner().unwrap();
-        let cube_252_result = cube_252_result.into_inner().unwrap();
-        let poseidon_round_keys_result = poseidon_round_keys_result.into_inner().unwrap();
-        let range_check_252_width_27_result = range_check_252_width_27_result.into_inner().unwrap();
+        let (
+            poseidon_aggregator_result,
+            poseidon_3_partial_rounds_chain_result,
+            poseidon_full_round_chain_result,
+            cube_252_result,
+            poseidon_round_keys_result,
+            range_check_252_width_27_result,
+        ) = match poseidon_ctx_results {
+            Some((a, b, c, d, e, f)) => (Some(a), Some(b), Some(c), Some(d), Some(e), Some(f)),
+            None => (None, None, None, None, None, None),
+        };
 
-        let memory_address_to_id_result =
-            memory_address_to_id_result.into_inner().unwrap().unwrap();
-        let memory_id_to_value_result = memory_id_to_value_result.into_inner().unwrap().unwrap();
+        // ======== SERIAL “WRITE EVALS” (DETERMINISTIC) + CLAIM ASSEMBLY ========
 
-        let rc_6_result = rc_6_result.into_inner().unwrap().unwrap();
-        let rc_8_result = rc_8_result.into_inner().unwrap().unwrap();
-        let rc_11_result = rc_11_result.into_inner().unwrap().unwrap();
-        let rc_12_result = rc_12_result.into_inner().unwrap().unwrap();
-        let rc_18_result = rc_18_result.into_inner().unwrap().unwrap();
-        let rc_20_result = rc_20_result.into_inner().unwrap().unwrap();
-        let rc_4_3_result = rc_4_3_result.into_inner().unwrap().unwrap();
-        let rc_4_4_result = rc_4_4_result.into_inner().unwrap().unwrap();
-        let rc_9_9_result = rc_9_9_result.into_inner().unwrap().unwrap();
-        let rc_7_2_5_result = rc_7_2_5_result.into_inner().unwrap().unwrap();
-        let rc_3_6_6_3_result = rc_3_6_6_3_result.into_inner().unwrap().unwrap();
-        let rc_4_4_4_4_result = rc_4_4_4_4_result.into_inner().unwrap().unwrap();
-        let rc_3_3_3_3_3_result = rc_3_3_3_3_3_result.into_inner().unwrap().unwrap();
-
-        let verify_bitwise_xor_4_result =
-            verify_bitwise_xor_4_result.into_inner().unwrap().unwrap();
-        let verify_bitwise_xor_7_result =
-            verify_bitwise_xor_7_result.into_inner().unwrap().unwrap();
-        let verify_bitwise_xor_8_result =
-            verify_bitwise_xor_8_result.into_inner().unwrap().unwrap();
-        let verify_bitwise_xor_9_result =
-            verify_bitwise_xor_9_result.into_inner().unwrap().unwrap();
-
-        // === WRITE EVALS TO TREE BUILDER IN DETERMINISTIC ORDER ===
-        // Opcodes
+        // Opcodes: write evals in deterministic order
         for builder in add_result.evals {
             builder.write_to(tree_builder);
         }
@@ -1196,7 +1398,7 @@ impl CairoInteractionClaimGenerator {
         // Verify instruction
         verify_instruction_result.evals.write_to(tree_builder);
 
-        // Blake context - decompose to write evals and extract claims
+        // Blake context: write evals + extract claims
         let blake_round_claim = blake_round_result.map(|r| {
             r.evals.write_to(tree_builder);
             r.claim
@@ -1218,7 +1420,7 @@ impl CairoInteractionClaimGenerator {
             r.claim
         });
 
-        // Builtins - decompose to write evals and extract claims
+        // Builtins
         let add_mod_builtin_claim = add_mod_builtin_result.map(|r| {
             r.evals.write_to(tree_builder);
             r.claim
@@ -1248,7 +1450,7 @@ impl CairoInteractionClaimGenerator {
             r.claim
         });
 
-        // Pedersen context - decompose to write evals and extract claims
+        // Pedersen context
         let pedersen_aggregator_claim = pedersen_aggregator_result.map(|r| {
             r.evals.write_to(tree_builder);
             r.claim
@@ -1262,7 +1464,7 @@ impl CairoInteractionClaimGenerator {
             r.claim
         });
 
-        // Poseidon context - decompose to write evals and extract claims
+        // Poseidon context
         let poseidon_aggregator_claim = poseidon_aggregator_result.map(|r| {
             r.evals.write_to(tree_builder);
             r.claim
@@ -1314,7 +1516,7 @@ impl CairoInteractionClaimGenerator {
         verify_bitwise_xor_8_result.evals.write_to(tree_builder);
         verify_bitwise_xor_9_result.evals.write_to(tree_builder);
 
-        // === CONSTRUCT FINAL CLAIMS ===
+        // Final opcode claims
         let opcodes_interaction_claims = OpcodeInteractionClaim {
             add: add_result.claims,
             add_small: add_small_result.claims,
@@ -1338,6 +1540,7 @@ impl CairoInteractionClaimGenerator {
             ret: ret_result.claims,
         };
 
+        // Optional context claims (same semantics as your original)
         let blake_context_interaction_claim = blake_air::BlakeContextInteractionClaim {
             claim: if blake_round_claim.is_some() {
                 Some(blake_air::InteractionClaim {
