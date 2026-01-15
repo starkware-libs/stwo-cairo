@@ -11,9 +11,7 @@ use crate::poly::circle::{CanonicCosetImpl, CircleDomain, CircleDomainImpl};
 use crate::poly::line::{LineDomain, LineDomainImpl, LineEvaluationImpl, LinePoly};
 use crate::poly::utils::fri_fold;
 use crate::queries::{Queries, QueriesImpl};
-use crate::utils::{
-    ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, group_columns_by_degree_bound, pow2,
-};
+use crate::utils::{ArrayImpl, OptionImpl, SpanExTrait, bit_reverse_index, pow2};
 use crate::vcs::MerkleHasher;
 use crate::vcs::verifier::{MerkleDecommitment, MerkleVerifier, MerkleVerifierTrait};
 
@@ -144,9 +142,7 @@ pub impl FriVerifierImpl of FriVerifierTrait {
     /// Samples and returns query positions mapped by column log size.
     ///
     /// Output is of the form `(unique_log_sizes, queries_by_log_size)`.
-    fn sample_query_positions(
-        self: @FriVerifier, ref channel: Channel,
-    ) -> Queries {
+    fn sample_query_positions(self: @FriVerifier, ref channel: Channel) -> Queries {
         let query_domain_log_size = self.first_layer.column_commitment_domain.log_size();
         let n_queries = *self.config.n_queries;
         let queries = QueriesImpl::generate(ref channel, query_domain_log_size, n_queries);
@@ -298,13 +294,10 @@ impl FriFirstLayerVerifierImpl of FriFirstLayerVerifierTrait {
         let degree_bound_by_column = ArrayImpl::new_repeated(
             n: QM31_EXTENSION_DEGREE, v: *self.column_log_bound,
         );
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
-            degree_bound_by_column.span(),
-        );
         let merkle_verifier = MerkleVerifier {
             root: *self.proof.commitment,
             tree_height: column_domain_log_size,
-            column_indices_by_log_deg_bound,
+            column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
@@ -367,13 +360,10 @@ impl FriInnerLayerVerifierImpl of FriInnerLayerVerifierTrait {
         let degree_bound_by_column = ArrayImpl::new_repeated(
             n: QM31_EXTENSION_DEGREE, v: *self.log_degree_bound,
         );
-        let column_indices_by_log_deg_bound = group_columns_by_degree_bound(
-            degree_bound_by_column.span(),
-        );
         let merkle_verifier = MerkleVerifier {
             root: **self.proof.commitment,
             tree_height: column_log_size,
-            column_indices_by_log_deg_bound,
+            column_log_deg_bounds: degree_bound_by_column.span(),
         };
 
         merkle_verifier
