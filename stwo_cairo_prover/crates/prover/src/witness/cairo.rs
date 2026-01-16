@@ -1556,17 +1556,13 @@ impl CairoInteractionClaimGenerator {
         };
 
         let blake_context_interaction_claim = blake_air::BlakeContextInteractionClaim {
-            claim: if blake_round_claim.is_some() {
-                Some(blake_air::InteractionClaim {
-                    blake_round: blake_round_claim.unwrap(),
-                    blake_g: blake_g_claim.unwrap(),
-                    blake_sigma: blake_sigma_claim.unwrap(),
-                    triple_xor_32: triple_xor_32_claim.unwrap(),
-                    verify_bitwise_xor_12: verify_bitwise_xor_12_claim.unwrap(),
-                })
-            } else {
-                None
-            },
+            claim: blake_round_claim.map(|blake_round| blake_air::InteractionClaim {
+                blake_round,
+                blake_g: blake_g_claim.unwrap(),
+                blake_sigma: blake_sigma_claim.unwrap(),
+                triple_xor_32: triple_xor_32_claim.unwrap(),
+                verify_bitwise_xor_12: verify_bitwise_xor_12_claim.unwrap(),
+            }),
         };
 
         let builtins_interaction_claims = BuiltinsInteractionClaim {
@@ -1580,30 +1576,22 @@ impl CairoInteractionClaimGenerator {
         };
 
         let pedersen_context_interaction_claim = pedersen_air::PedersenContextInteractionClaim {
-            claim: if pedersen_aggregator_claim.is_some() {
-                Some(pedersen_air::InteractionClaim {
-                    pedersen_aggregator: pedersen_aggregator_claim.unwrap(),
-                    partial_ec_mul: partial_ec_mul_claim.unwrap(),
-                    pedersen_points_table: pedersen_points_table_claim.unwrap(),
-                })
-            } else {
-                None
-            },
+            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| pedersen_air::InteractionClaim {
+                pedersen_aggregator,
+                partial_ec_mul: partial_ec_mul_claim.unwrap(),
+                pedersen_points_table: pedersen_points_table_claim.unwrap(),
+            }),
         };
 
         let poseidon_context_interaction_claim = poseidon_air::PoseidonContextInteractionClaim {
-            claim: if poseidon_aggregator_claim.is_some() {
-                Some(poseidon_air::InteractionClaim {
-                    poseidon_aggregator: poseidon_aggregator_claim.unwrap(),
-                    poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
-                    poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
-                    cube_252: cube_252_claim.unwrap(),
-                    poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
-                    range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
-                })
-            } else {
-                None
-            },
+            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| poseidon_air::InteractionClaim {
+                poseidon_aggregator,
+                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
+                poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
+                cube_252: cube_252_claim.unwrap(),
+                poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
+                range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
+            }),
         };
 
         let range_checks_interaction_claim = RangeChecksInteractionClaim {
