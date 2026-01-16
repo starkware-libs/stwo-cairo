@@ -771,7 +771,7 @@ fn process_pedersen_context(
             let (partial_ec_mul, (aggregator, points_table)) = rayon::join(
                 || {
                     let limited_pool = rayon::ThreadPoolBuilder::new()
-                        .num_threads(8)
+                        .num_threads(12)
                         .build()
                         .unwrap();
                     limited_pool.install(|| {
