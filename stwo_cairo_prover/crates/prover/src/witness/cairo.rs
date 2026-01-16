@@ -584,10 +584,16 @@ fn process_all_opcodes(
                     rayon::join(
                         || process_interaction_gens(parts.assert_eq, common_lookup_elements),
                         || {
-                            process_interaction_gens(
-                                parts.assert_eq_double_deref,
-                                common_lookup_elements,
-                            )
+                            let limited_pool = rayon::ThreadPoolBuilder::new()
+                                .num_threads(4)
+                                .build()
+                                .unwrap();
+                            limited_pool.install(|| {
+                                process_interaction_gens(
+                                    parts.assert_eq_double_deref,
+                                    common_lookup_elements,
+                                )
+                            })
                         },
                     )
                 },
@@ -628,69 +634,74 @@ fn process_all_opcodes(
                                 || process_interaction_gens(parts.ret, common_lookup_elements),
                                 // Medium opcodes (50-500ms)
                                 || {
-                                    rayon::join(
-                                        || {
-                                            rayon::join(
-                                                || {
-                                                    process_interaction_gens(
-                                                        parts.mul_small,
-                                                        common_lookup_elements,
-                                                    )
-                                                },
-                                                || {
-                                                    process_interaction_gens(
-                                                        parts.assert_eq_imm,
-                                                        common_lookup_elements,
-                                                    )
-                                                },
-                                            )
-                                        },
-                                        || {
-                                            rayon::join(
-                                                || {
-                                                    process_interaction_gens(
-                                                        parts.jnz,
-                                                        common_lookup_elements,
-                                                    )
-                                                },
-                                                || {
-                                                    process_interaction_gens(
-                                                        parts.jump_rel_imm,
-                                                        common_lookup_elements,
-                                                    )
-                                                },
-                                            )
-                                        },
-                                    )
+                                    let limited_pool = rayon::ThreadPoolBuilder::new()
+                                        .num_threads(1)
+                                        .build()
+                                        .unwrap();
+                                    limited_pool.install(|| {
+                                        (
+                                            (
+                                                process_interaction_gens(
+                                                    parts.mul_small,
+                                                    common_lookup_elements,
+                                                ),
+                                                process_interaction_gens(
+                                                    parts.assert_eq_imm,
+                                                    common_lookup_elements,
+                                                ),
+                                            ),
+                                            (
+                                                process_interaction_gens(
+                                                    parts.jnz,
+                                                    common_lookup_elements,
+                                                ),
+                                                process_interaction_gens(
+                                                    parts.jump_rel_imm,
+                                                    common_lookup_elements,
+                                                ),
+                                            ),
+                                        )
+                                    })
                                 },
                             )
                         },
                         // Light opcodes (<50ms combined) - run sequentially to reduce overhead
                         || {
-                            let blake =
-                                process_interaction_gens(parts.blake, common_lookup_elements);
-                            let call = process_interaction_gens(parts.call, common_lookup_elements);
-                            let generic = process_interaction_gens(
-                                parts.generic_opcode,
-                                common_lookup_elements,
-                            );
-                            let jump = process_interaction_gens(parts.jump, common_lookup_elements);
-                            let jump_double_deref = process_interaction_gens(
-                                parts.jump_double_deref,
-                                common_lookup_elements,
-                            );
-                            let jump_rel =
-                                process_interaction_gens(parts.jump_rel, common_lookup_elements);
-                            let qm31 = process_interaction_gens(parts.qm31, common_lookup_elements);
-                            (
-                                blake,
-                                call,
-                                generic,
-                                jump,
-                                jump_double_deref,
-                                jump_rel,
-                                qm31,
-                            )
+                            let limited_pool = rayon::ThreadPoolBuilder::new()
+                                .num_threads(1)
+                                .build()
+                                .unwrap();
+                            limited_pool.install(|| {
+                                let blake =
+                                    process_interaction_gens(parts.blake, common_lookup_elements);
+                                let call =
+                                    process_interaction_gens(parts.call, common_lookup_elements);
+                                let generic = process_interaction_gens(
+                                    parts.generic_opcode,
+                                    common_lookup_elements,
+                                );
+                                let jump =
+                                    process_interaction_gens(parts.jump, common_lookup_elements);
+                                let jump_double_deref = process_interaction_gens(
+                                    parts.jump_double_deref,
+                                    common_lookup_elements,
+                                );
+                                let jump_rel = process_interaction_gens(
+                                    parts.jump_rel,
+                                    common_lookup_elements,
+                                );
+                                let qm31 =
+                                    process_interaction_gens(parts.qm31, common_lookup_elements);
+                                (
+                                    blake,
+                                    call,
+                                    generic,
+                                    jump,
+                                    jump_double_deref,
+                                    jump_rel,
+                                    qm31,
+                                )
+                            })
                         },
                     )
                 },
@@ -1576,21 +1587,25 @@ impl CairoInteractionClaimGenerator {
         };
 
         let pedersen_context_interaction_claim = pedersen_air::PedersenContextInteractionClaim {
-            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| pedersen_air::InteractionClaim {
-                pedersen_aggregator,
-                partial_ec_mul: partial_ec_mul_claim.unwrap(),
-                pedersen_points_table: pedersen_points_table_claim.unwrap(),
+            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| {
+                pedersen_air::InteractionClaim {
+                    pedersen_aggregator,
+                    partial_ec_mul: partial_ec_mul_claim.unwrap(),
+                    pedersen_points_table: pedersen_points_table_claim.unwrap(),
+                }
             }),
         };
 
         let poseidon_context_interaction_claim = poseidon_air::PoseidonContextInteractionClaim {
-            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| poseidon_air::InteractionClaim {
-                poseidon_aggregator,
-                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
-                poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
-                cube_252: cube_252_claim.unwrap(),
-                poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
-                range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
+            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| {
+                poseidon_air::InteractionClaim {
+                    poseidon_aggregator,
+                    poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
+                    poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
+                    cube_252: cube_252_claim.unwrap(),
+                    poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
+                    range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
+                }
             }),
         };
 

@@ -5,7 +5,6 @@ use cairo_air::components::add_opcode_small::{Claim, InteractionClaim, N_TRACE_C
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::witness::prelude::*;
-use itertools::izip;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -645,69 +644,102 @@ impl InteractionClaimGenerator {
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
+        let n_rows = self.lookup_data.verify_instruction_0.len();
 
-        // Sum logup terms in pairs.
+        // Compute denominators for columns 0-3 in parallel using 4 cores.
+        let ((denoms_0, denoms_1), (denoms_2, denoms_3)) = rayon::join(
+            || {
+                rayon::join(
+                    || {
+                        (0..n_rows)
+                            .map(|i| {
+                                let d0: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.verify_instruction_0[i]);
+                                let d1: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_address_to_id_0[i]);
+                                (d0 + d1, d0 * d1)
+                            })
+                            .collect::<Vec<_>>()
+                    },
+                    || {
+                        (0..n_rows)
+                            .map(|i| {
+                                let d0: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_id_to_big_0[i]);
+                                let d1: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_address_to_id_1[i]);
+                                (d0 + d1, d0 * d1)
+                            })
+                            .collect::<Vec<_>>()
+                    },
+                )
+            },
+            || {
+                rayon::join(
+                    || {
+                        (0..n_rows)
+                            .map(|i| {
+                                let d0: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_id_to_big_1[i]);
+                                let d1: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_address_to_id_2[i]);
+                                (d0 + d1, d0 * d1)
+                            })
+                            .collect::<Vec<_>>()
+                    },
+                    || {
+                        (0..n_rows)
+                            .map(|i| {
+                                let d0: PackedQM31 = common_lookup_elements
+                                    .combine(&self.lookup_data.memory_id_to_big_2[i]);
+                                let d1: PackedQM31 =
+                                    common_lookup_elements.combine(&self.lookup_data.opcodes_0[i]);
+                                (d0 * enabler_col.packed_at(i) + d1, d0 * d1)
+                            })
+                            .collect::<Vec<_>>()
+                    },
+                )
+            },
+        );
+
+        // Write columns 0-3.
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
-            &self.lookup_data.verify_instruction_0,
-            &self.lookup_data.memory_address_to_id_0,
-        )
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
+        for (writer, (num, denom)) in col_gen.iter_mut().zip(denoms_0.iter()) {
+            writer.write_frac(*num, *denom);
+        }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
-            &self.lookup_data.memory_id_to_big_0,
-            &self.lookup_data.memory_address_to_id_1,
-        )
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
+        for (writer, (num, denom)) in col_gen.iter_mut().zip(denoms_1.iter()) {
+            writer.write_frac(*num, *denom);
+        }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
-            &self.lookup_data.memory_id_to_big_1,
-            &self.lookup_data.memory_address_to_id_2,
-        )
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
+        for (writer, (num, denom)) in col_gen.iter_mut().zip(denoms_2.iter()) {
+            writer.write_frac(*num, *denom);
+        }
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        izip!(
-            col_gen.iter_mut(),
-            &self.lookup_data.memory_id_to_big_2,
-            &self.lookup_data.opcodes_0,
-        )
-            .enumerate()
-            .for_each(|(i, (writer, values0, values1))| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
-            });
+        for (writer, (num, denom)) in col_gen.iter_mut().zip(denoms_3.iter()) {
+            writer.write_frac(*num, *denom);
+        }
         col_gen.finalize_col();
 
-        // Sum last logup term.
+        // Compute and write column 4.
+        let denoms_4: Vec<_> = (0..n_rows)
+            .map(|i| {
+                let denom: PackedQM31 =
+                    common_lookup_elements.combine(&self.lookup_data.opcodes_1[i]);
+                (-PackedQM31::one() * enabler_col.packed_at(i), denom)
+            })
+            .collect();
+
         let mut col_gen = logup_gen.new_col();
-        izip!(col_gen.iter_mut(), &self.lookup_data.opcodes_1)
-            .enumerate()
-            .for_each(|(i, (writer, values))| {
-                let denom = common_lookup_elements.combine(values);
-                writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
-            });
+        for (writer, (num, denom)) in col_gen.iter_mut().zip(denoms_4.iter()) {
+            writer.write_frac(*num, *denom);
+        }
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
