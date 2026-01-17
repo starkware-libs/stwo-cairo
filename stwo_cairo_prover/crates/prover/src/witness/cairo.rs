@@ -217,6 +217,9 @@ impl CairoClaimGenerator {
         mut self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
     ) -> (CairoClaim, CairoInteractionClaimGenerator) {
+        use crate::witness::utils::CollectingTreeBuilder;
+
+        // Phase 1: Opcodes (must run first - populates blake_round, triple_xor_32, etc.)
         let span = span!(Level::INFO, "write opcode trace").entered();
         let (opcodes_claim, opcodes_interaction_gen) = opcodes_write_trace(
             self.add_opcode,
@@ -254,113 +257,261 @@ impl CairoClaimGenerator {
             self.verify_bitwise_xor_8.as_mut(),
         );
         span.exit();
-        let span = span!(Level::INFO, "internal component trace").entered();
-        let (verify_instruction_claim, verify_instruction_interaction_gen) =
-            self.verify_instruction.unwrap().write_trace(
-                tree_builder,
-                self.range_check_7_2_5.as_ref().unwrap(),
-                self.range_check_4_3.as_ref().unwrap(),
-                self.memory_address_to_id.as_ref().unwrap(),
-                self.memory_id_to_big.as_ref().unwrap(),
-            );
-        let (blake_context_claim, blake_context_interaction_gen) = blake_context_write_trace(
-            self.blake_round,
-            self.blake_g,
-            self.blake_round_sigma,
-            self.triple_xor_32,
-            self.verify_bitwise_xor_12,
-            tree_builder,
-            self.memory_address_to_id.as_ref(),
-            self.memory_id_to_big.as_ref(),
-            self.range_check_7_2_5.as_ref(),
-            self.verify_bitwise_xor_4.as_ref(),
-            self.verify_bitwise_xor_7.as_ref(),
-            self.verify_bitwise_xor_8.as_ref(),
-            self.verify_bitwise_xor_9.as_ref(),
-        );
-        let (builtins_claim, builtins_interaction_gen) = builtins_write_trace(
-            self.add_mod_builtin,
-            self.bitwise_builtin,
-            self.mul_mod_builtin,
-            self.pedersen_builtin,
-            self.poseidon_builtin,
-            self.range_check96_builtin,
-            self.range_check_builtin,
-            tree_builder,
-            self.memory_address_to_id.as_ref(),
-            self.memory_id_to_big.as_ref(),
-            self.pedersen_aggregator_window_bits_18.as_ref(),
-            self.poseidon_aggregator.as_ref(),
-            self.range_check_6.as_ref(),
-            self.range_check_12.as_ref(),
-            self.range_check_18.as_ref(),
-            self.range_check_3_6_6_3.as_ref(),
-            self.verify_bitwise_xor_8.as_ref(),
-            self.verify_bitwise_xor_9.as_ref(),
-        );
-        let (pedersen_context_claim, pedersen_context_interaction_gen) =
-            pedersen_context_write_trace(
-                self.pedersen_aggregator_window_bits_18,
-                self.partial_ec_mul_window_bits_18,
-                self.pedersen_points_table_window_bits_18,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_8.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (poseidon_context_claim, poseidon_context_interaction_gen) =
-            poseidon_context_write_trace(
-                self.poseidon_aggregator,
-                self.poseidon_3_partial_rounds_chain,
-                self.poseidon_full_round_chain,
-                self.cube_252,
-                self.poseidon_round_keys,
-                self.range_check_252_width_27,
-                tree_builder,
-                self.memory_id_to_big.as_ref(),
-                self.range_check_3_3_3_3_3.as_ref(),
-                self.range_check_4_4_4_4.as_ref(),
-                self.range_check_4_4.as_ref(),
-                self.range_check_9_9.as_ref(),
-                self.range_check_18.as_ref(),
-                self.range_check_20.as_ref(),
-            );
-        let (memory_address_to_id_claim, memory_address_to_id_interaction_gen) =
-            self.memory_address_to_id.unwrap().write_trace(tree_builder);
 
-        // Memory uses "Sequence", split it according to `MAX_SEQUENCE_LOG_SIZE`.
-        const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
-        let (memory_id_to_value_claim, memory_id_to_value_interaction_gen) =
-            self.memory_id_to_big.unwrap().write_trace(
-                tree_builder,
-                self.range_check_9_9.as_ref().unwrap(),
-                LOG_MAX_BIG_SIZE,
-            );
-        let (range_checks_claim, range_checks_interaction_gen) = range_checks_write_trace(
-            self.range_check_6,
-            self.range_check_8,
-            self.range_check_11,
-            self.range_check_12,
-            self.range_check_18,
-            self.range_check_20,
-            self.range_check_4_3,
-            self.range_check_4_4,
-            self.range_check_9_9,
-            self.range_check_7_2_5,
-            self.range_check_3_6_6_3,
-            self.range_check_4_4_4_4,
-            self.range_check_3_3_3_3_3,
-            tree_builder,
+        let span = span!(Level::INFO, "internal component trace").entered();
+
+        // Phase 2: verify_instruction, blake_context, builtins (parallel)
+        // These can run in parallel after opcodes complete.
+        // builtins adds inputs to pedersen_aggregator and poseidon_aggregator.
+        let verify_instruction_gen = self.verify_instruction.unwrap();
+        let (
+            (
+                (verify_instruction_claim, verify_instruction_interaction_gen),
+                verify_instruction_trace,
+            ),
+            (
+                ((blake_context_claim, blake_context_interaction_gen), blake_context_trace),
+                ((builtins_claim, builtins_interaction_gen), builtins_trace),
+            ),
+        ) = rayon::join(
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = verify_instruction_gen.write_trace(
+                    &mut collector,
+                    self.range_check_7_2_5.as_ref().unwrap(),
+                    self.range_check_4_3.as_ref().unwrap(),
+                    self.memory_address_to_id.as_ref().unwrap(),
+                    self.memory_id_to_big.as_ref().unwrap(),
+                );
+                (result, collector)
+            },
+            || {
+                rayon::join(
+                    || {
+                        let mut collector = CollectingTreeBuilder::new();
+                        let result = blake_context_write_trace(
+                            self.blake_round,
+                            self.blake_g,
+                            self.blake_round_sigma,
+                            self.triple_xor_32,
+                            self.verify_bitwise_xor_12,
+                            &mut collector,
+                            self.memory_address_to_id.as_ref(),
+                            self.memory_id_to_big.as_ref(),
+                            self.range_check_7_2_5.as_ref(),
+                            self.verify_bitwise_xor_4.as_ref(),
+                            self.verify_bitwise_xor_7.as_ref(),
+                            self.verify_bitwise_xor_8.as_ref(),
+                            self.verify_bitwise_xor_9.as_ref(),
+                        );
+                        (result, collector)
+                    },
+                    || {
+                        let mut collector = CollectingTreeBuilder::new();
+                        let result = builtins_write_trace(
+                            self.add_mod_builtin,
+                            self.bitwise_builtin,
+                            self.mul_mod_builtin,
+                            self.pedersen_builtin,
+                            self.poseidon_builtin,
+                            self.range_check96_builtin,
+                            self.range_check_builtin,
+                            &mut collector,
+                            self.memory_address_to_id.as_ref(),
+                            self.memory_id_to_big.as_ref(),
+                            self.pedersen_aggregator_window_bits_18.as_ref(),
+                            self.poseidon_aggregator.as_ref(),
+                            self.range_check_6.as_ref(),
+                            self.range_check_12.as_ref(),
+                            self.range_check_18.as_ref(),
+                            self.range_check_3_6_6_3.as_ref(),
+                            self.verify_bitwise_xor_8.as_ref(),
+                            self.verify_bitwise_xor_9.as_ref(),
+                        );
+                        (result, collector)
+                    },
+                )
+            },
         );
-        let (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen) =
-            self.verify_bitwise_xor_4.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen) =
-            self.verify_bitwise_xor_7.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen) =
-            self.verify_bitwise_xor_8.unwrap().write_trace(tree_builder);
-        let (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen) =
-            self.verify_bitwise_xor_9.unwrap().write_trace(tree_builder);
+
+        // Write phase 2 traces in deterministic order
+        verify_instruction_trace.write_to(tree_builder);
+        blake_context_trace.write_to(tree_builder);
+        builtins_trace.write_to(tree_builder);
+
+        // Phase 3: pedersen_context, poseidon_context (parallel, after builtins)
+        let (
+            ((pedersen_context_claim, pedersen_context_interaction_gen), pedersen_context_trace),
+            ((poseidon_context_claim, poseidon_context_interaction_gen), poseidon_context_trace),
+        ) = rayon::join(
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = pedersen_context_write_trace(
+                    self.pedersen_aggregator_window_bits_18,
+                    self.partial_ec_mul_window_bits_18,
+                    self.pedersen_points_table_window_bits_18,
+                    &mut collector,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_8.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_20.as_ref(),
+                );
+                (result, collector)
+            },
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = poseidon_context_write_trace(
+                    self.poseidon_aggregator,
+                    self.poseidon_3_partial_rounds_chain,
+                    self.poseidon_full_round_chain,
+                    self.cube_252,
+                    self.poseidon_round_keys,
+                    self.range_check_252_width_27,
+                    &mut collector,
+                    self.memory_id_to_big.as_ref(),
+                    self.range_check_3_3_3_3_3.as_ref(),
+                    self.range_check_4_4_4_4.as_ref(),
+                    self.range_check_4_4.as_ref(),
+                    self.range_check_9_9.as_ref(),
+                    self.range_check_18.as_ref(),
+                    self.range_check_20.as_ref(),
+                );
+                (result, collector)
+            },
+        );
+
+        // Write phase 3 traces in deterministic order
+        pedersen_context_trace.write_to(tree_builder);
+        poseidon_context_trace.write_to(tree_builder);
+
+        // Phase 4a: memory components (parallel)
+        // memory_id_to_big needs a reference to range_check_9_9, so run memory first
+        const LOG_MAX_BIG_SIZE: u32 = MAX_SEQUENCE_LOG_SIZE;
+        let memory_address_to_id_gen = self.memory_address_to_id.unwrap();
+        let memory_id_to_big_gen = self.memory_id_to_big.unwrap();
+
+        let (
+            (
+                (memory_address_to_id_claim, memory_address_to_id_interaction_gen),
+                memory_address_to_id_trace,
+            ),
+            (
+                (memory_id_to_value_claim, memory_id_to_value_interaction_gen),
+                memory_id_to_value_trace,
+            ),
+        ) = rayon::join(
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = memory_address_to_id_gen.write_trace(&mut collector);
+                (result, collector)
+            },
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = memory_id_to_big_gen.write_trace(
+                    &mut collector,
+                    self.range_check_9_9.as_ref().unwrap(),
+                    LOG_MAX_BIG_SIZE,
+                );
+                (result, collector)
+            },
+        );
+
+        // Write phase 4a traces
+        memory_address_to_id_trace.write_to(tree_builder);
+        memory_id_to_value_trace.write_to(tree_builder);
+
+        // Phase 4b: range_checks and verify_bitwise_xor (parallel)
+        let verify_bitwise_xor_4_gen = self.verify_bitwise_xor_4.unwrap();
+        let verify_bitwise_xor_7_gen = self.verify_bitwise_xor_7.unwrap();
+        let verify_bitwise_xor_8_gen = self.verify_bitwise_xor_8.unwrap();
+        let verify_bitwise_xor_9_gen = self.verify_bitwise_xor_9.unwrap();
+
+        let (
+            ((range_checks_claim, range_checks_interaction_gen), range_checks_trace),
+            (
+                (
+                    (
+                        (verify_bitwise_xor_4_claim, verify_bitwise_xor_4_interaction_gen),
+                        verify_bitwise_xor_4_trace,
+                    ),
+                    (
+                        (verify_bitwise_xor_7_claim, verify_bitwise_xor_7_interaction_gen),
+                        verify_bitwise_xor_7_trace,
+                    ),
+                ),
+                (
+                    (
+                        (verify_bitwise_xor_8_claim, verify_bitwise_xor_8_interaction_gen),
+                        verify_bitwise_xor_8_trace,
+                    ),
+                    (
+                        (verify_bitwise_xor_9_claim, verify_bitwise_xor_9_interaction_gen),
+                        verify_bitwise_xor_9_trace,
+                    ),
+                ),
+            ),
+        ) = rayon::join(
+            || {
+                let mut collector = CollectingTreeBuilder::new();
+                let result = range_checks_write_trace(
+                    self.range_check_6,
+                    self.range_check_8,
+                    self.range_check_11,
+                    self.range_check_12,
+                    self.range_check_18,
+                    self.range_check_20,
+                    self.range_check_4_3,
+                    self.range_check_4_4,
+                    self.range_check_9_9,
+                    self.range_check_7_2_5,
+                    self.range_check_3_6_6_3,
+                    self.range_check_4_4_4_4,
+                    self.range_check_3_3_3_3_3,
+                    &mut collector,
+                );
+                (result, collector)
+            },
+            || {
+                rayon::join(
+                    || {
+                        rayon::join(
+                            || {
+                                let mut collector = CollectingTreeBuilder::new();
+                                let result = verify_bitwise_xor_4_gen.write_trace(&mut collector);
+                                (result, collector)
+                            },
+                            || {
+                                let mut collector = CollectingTreeBuilder::new();
+                                let result = verify_bitwise_xor_7_gen.write_trace(&mut collector);
+                                (result, collector)
+                            },
+                        )
+                    },
+                    || {
+                        rayon::join(
+                            || {
+                                let mut collector = CollectingTreeBuilder::new();
+                                let result = verify_bitwise_xor_8_gen.write_trace(&mut collector);
+                                (result, collector)
+                            },
+                            || {
+                                let mut collector = CollectingTreeBuilder::new();
+                                let result = verify_bitwise_xor_9_gen.write_trace(&mut collector);
+                                (result, collector)
+                            },
+                        )
+                    },
+                )
+            },
+        );
+
+        // Write phase 4b traces in deterministic order
+        range_checks_trace.write_to(tree_builder);
+        verify_bitwise_xor_4_trace.write_to(tree_builder);
+        verify_bitwise_xor_7_trace.write_to(tree_builder);
+        verify_bitwise_xor_8_trace.write_to(tree_builder);
+        verify_bitwise_xor_9_trace.write_to(tree_builder);
+
         span.exit();
         (
             CairoClaim {
@@ -1576,21 +1727,25 @@ impl CairoInteractionClaimGenerator {
         };
 
         let pedersen_context_interaction_claim = pedersen_air::PedersenContextInteractionClaim {
-            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| pedersen_air::InteractionClaim {
-                pedersen_aggregator,
-                partial_ec_mul: partial_ec_mul_claim.unwrap(),
-                pedersen_points_table: pedersen_points_table_claim.unwrap(),
+            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| {
+                pedersen_air::InteractionClaim {
+                    pedersen_aggregator,
+                    partial_ec_mul: partial_ec_mul_claim.unwrap(),
+                    pedersen_points_table: pedersen_points_table_claim.unwrap(),
+                }
             }),
         };
 
         let poseidon_context_interaction_claim = poseidon_air::PoseidonContextInteractionClaim {
-            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| poseidon_air::InteractionClaim {
-                poseidon_aggregator,
-                poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
-                poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
-                cube_252: cube_252_claim.unwrap(),
-                poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
-                range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
+            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| {
+                poseidon_air::InteractionClaim {
+                    poseidon_aggregator,
+                    poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
+                    poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
+                    cube_252: cube_252_claim.unwrap(),
+                    poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
+                    range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
+                }
             }),
         };
 
