@@ -17,6 +17,154 @@ use crate::witness::components::{
 };
 use crate::witness::utils::{CollectingTreeBuilder, TreeBuilder};
 
+/// Enum to hold opcode write_trace results for parallel processing.
+enum OpcodeWriteResult {
+    Add(Vec<cairo_air::components::add_opcode::Claim>, Vec<add_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    AddSmall(Vec<cairo_air::components::add_opcode_small::Claim>, Vec<add_opcode_small::InteractionClaimGenerator>, CollectingTreeBuilder),
+    AddAp(Vec<cairo_air::components::add_ap_opcode::Claim>, Vec<add_ap_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    AssertEq(Vec<cairo_air::components::assert_eq_opcode::Claim>, Vec<assert_eq_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    AssertEqImm(Vec<cairo_air::components::assert_eq_opcode_imm::Claim>, Vec<assert_eq_opcode_imm::InteractionClaimGenerator>, CollectingTreeBuilder),
+    AssertEqDoubleDeref(Vec<cairo_air::components::assert_eq_opcode_double_deref::Claim>, Vec<assert_eq_opcode_double_deref::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Call(Vec<cairo_air::components::call_opcode_abs::Claim>, Vec<call_opcode_abs::InteractionClaimGenerator>, CollectingTreeBuilder),
+    CallRelImm(Vec<cairo_air::components::call_opcode_rel_imm::Claim>, Vec<call_opcode_rel_imm::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Generic(Vec<cairo_air::components::generic_opcode::Claim>, Vec<generic_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Jnz(Vec<cairo_air::components::jnz_opcode_non_taken::Claim>, Vec<jnz_opcode_non_taken::InteractionClaimGenerator>, CollectingTreeBuilder),
+    JnzTaken(Vec<cairo_air::components::jnz_opcode_taken::Claim>, Vec<jnz_opcode_taken::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Jump(Vec<cairo_air::components::jump_opcode_abs::Claim>, Vec<jump_opcode_abs::InteractionClaimGenerator>, CollectingTreeBuilder),
+    JumpDoubleDeref(Vec<cairo_air::components::jump_opcode_double_deref::Claim>, Vec<jump_opcode_double_deref::InteractionClaimGenerator>, CollectingTreeBuilder),
+    JumpRel(Vec<cairo_air::components::jump_opcode_rel::Claim>, Vec<jump_opcode_rel::InteractionClaimGenerator>, CollectingTreeBuilder),
+    JumpRelImm(Vec<cairo_air::components::jump_opcode_rel_imm::Claim>, Vec<jump_opcode_rel_imm::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Mul(Vec<cairo_air::components::mul_opcode::Claim>, Vec<mul_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    MulSmall(Vec<cairo_air::components::mul_opcode_small::Claim>, Vec<mul_opcode_small::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Qm31(Vec<cairo_air::components::qm_31_add_mul_opcode::Claim>, Vec<qm_31_add_mul_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+    Ret(Vec<cairo_air::components::ret_opcode::Claim>, Vec<ret_opcode::InteractionClaimGenerator>, CollectingTreeBuilder),
+}
+
+/// Enum to hold opcode task inputs for parallel processing.
+enum OpcodeTask<'a> {
+    Add(add_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    AddSmall(add_opcode_small::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    AddAp(add_ap_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator, &'a range_check_18::ClaimGenerator, &'a range_check_11::ClaimGenerator),
+    AssertEq(assert_eq_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    AssertEqImm(assert_eq_opcode_imm::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    AssertEqDoubleDeref(assert_eq_opcode_double_deref::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    Call(call_opcode_abs::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    CallRelImm(call_opcode_rel_imm::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    Generic(generic_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator, &'a range_check_9_9::ClaimGenerator, &'a range_check_20::ClaimGenerator, &'a range_check_18::ClaimGenerator, &'a range_check_11::ClaimGenerator),
+    Jnz(jnz_opcode_non_taken::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    JnzTaken(jnz_opcode_taken::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    Jump(jump_opcode_abs::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    JumpDoubleDeref(jump_opcode_double_deref::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    JumpRel(jump_opcode_rel::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    JumpRelImm(jump_opcode_rel_imm::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+    Mul(mul_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator, &'a range_check_20::ClaimGenerator),
+    MulSmall(mul_opcode_small::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator, &'a range_check_11::ClaimGenerator),
+    Qm31(qm_31_add_mul_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator, &'a range_check_4_4_4_4::ClaimGenerator),
+    Ret(ret_opcode::ClaimGenerator, &'a memory_address_to_id::ClaimGenerator, &'a memory_id_to_big::ClaimGenerator, &'a verify_instruction::ClaimGenerator),
+}
+
+impl OpcodeTask<'_> {
+    fn process(self) -> OpcodeWriteResult {
+        match self {
+            OpcodeTask::Add(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::Add(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::AddSmall(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::AddSmall(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::AddAp(gen, mem_addr, mem_id, verify_inst, rc_18, rc_11) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst, rc_18, rc_11);
+                OpcodeWriteResult::AddAp(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::AssertEq(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::AssertEq(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::AssertEqImm(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::AssertEqImm(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::AssertEqDoubleDeref(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::AssertEqDoubleDeref(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Call(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::Call(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::CallRelImm(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::CallRelImm(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Generic(gen, mem_addr, mem_id, verify_inst, rc_9_9, rc_20, rc_18, rc_11) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst, rc_9_9, rc_20, rc_18, rc_11);
+                OpcodeWriteResult::Generic(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Jnz(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::Jnz(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::JnzTaken(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::JnzTaken(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Jump(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::Jump(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::JumpDoubleDeref(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::JumpDoubleDeref(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::JumpRel(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::JumpRel(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::JumpRelImm(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::JumpRelImm(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Mul(gen, mem_addr, mem_id, verify_inst, rc_20) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst, rc_20);
+                OpcodeWriteResult::Mul(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::MulSmall(gen, mem_addr, mem_id, verify_inst, rc_11) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst, rc_11);
+                OpcodeWriteResult::MulSmall(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Qm31(gen, mem_addr, mem_id, verify_inst, rc_4_4_4_4) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst, rc_4_4_4_4);
+                OpcodeWriteResult::Qm31(vec![claim], vec![ig], collector)
+            }
+            OpcodeTask::Ret(gen, mem_addr, mem_id, verify_inst) => {
+                let mut collector = CollectingTreeBuilder::new();
+                let (claim, ig) = gen.write_trace(&mut collector, mem_addr, mem_id, verify_inst);
+                OpcodeWriteResult::Ret(vec![claim], vec![ig], collector)
+            }
+        }
+    }
+}
+
 pub fn get_opcodes(casm_states_by_opcode: &CasmStatesByOpcode) -> Vec<&'static str> {
     let mut opcodes = vec![];
     if !casm_states_by_opcode.add_opcode.is_empty() {
@@ -121,324 +269,161 @@ pub fn opcodes_write_trace(
     verify_instruction_trace_generator: Option<&verify_instruction::ClaimGenerator>,
     verify_bitwise_xor_8_trace_generator: Option<&mut verify_bitwise_xor_8::ClaimGenerator>,
 ) -> (OpcodeClaim, OpcodesInteractionClaimGenerator) {
-    // Parallel execution using rayon::join with balanced branches.
-    // Based on measured timings (microseconds):
-    //   Left branch (~6.9M): assert_eq(3.6M), add(1.2M), add_ap(0.66M), mul_small(0.48M),
-    //                        call_rel_imm(0.24M), ret(0.22M), assert_eq_imm(0.14M), jnz(0.1M),
-    //                        call(~0), jump(0), generic(0), qm31(~0)
-    //   Right branch (~6.8M): add_small(2.5M), mul(2.3M), jnz_taken(1.3M),
-    //                         assert_eq_double_deref(0.6M), jump_rel_imm(0.28M),
-    //                         jump_double_deref(~0), jump_rel(~0)
-    //   Blake is processed separately (needs &mut references).
+    // Build tasks for all opcodes (except blake which needs &mut references).
+    let mem_addr = memory_address_to_id_trace_generator.unwrap();
+    let mem_id = memory_id_to_value_trace_generator.unwrap();
+    let verify_inst = verify_instruction_trace_generator.unwrap();
+    let rc_11 = rc_11_trace_generator.unwrap();
+    let rc_18 = rc_18_trace_generator.unwrap();
+    let rc_20 = rc_20_trace_generator.unwrap();
+    let rc_9_9 = rc_9_9_trace_generator.unwrap();
+    let rc_4_4_4_4 = rc_4_4_4_4_trace_generator.unwrap();
 
-    // Helper to process an opcode and return (claims, interaction_gens, trace).
-    type OpcodeResult<C, I> = (Vec<C>, Vec<I>, CollectingTreeBuilder);
+    let mut tasks: Vec<OpcodeTask> = Vec::new();
 
-    let (left_results, right_results) = rayon::join(
-        // Left branch: assert_eq, add, add_ap, mul_small, call_rel_imm, ret, assert_eq_imm, jnz,
-        //              call, jump, generic, qm31
-        || {
-            // Split left branch further for better parallelism.
-            let ((assert_eq_r, add_r, add_ap_r), (mul_small_r, call_rel_imm_r, ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r)) = rayon::join(
-                // Heavy left: assert_eq(3.6M), add(1.2M), add_ap(0.66M) = 5.5M
-                || {
-                    let (assert_eq_r, (add_r, add_ap_r)) = rayon::join(
-                        || {
-                            let mut collector = CollectingTreeBuilder::new();
-                            let result = assert_eq
-                                .map(|gen| {
-                                    let (claim, ig) = gen.write_trace(
-                                        &mut collector,
-                                        memory_address_to_id_trace_generator.unwrap(),
-                                        memory_id_to_value_trace_generator.unwrap(),
-                                        verify_instruction_trace_generator.unwrap(),
-                                    );
-                                    (vec![claim], vec![ig], collector)
-                                })
-                                .unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-                            result
-                        },
-                        || rayon::join(
-                            || {
-                                let mut collector = CollectingTreeBuilder::new();
-                                add.map(|gen| {
-                                    let (claim, ig) = gen.write_trace(
-                                        &mut collector,
-                                        memory_address_to_id_trace_generator.unwrap(),
-                                        memory_id_to_value_trace_generator.unwrap(),
-                                        verify_instruction_trace_generator.unwrap(),
-                                    );
-                                    (vec![claim], vec![ig], collector)
-                                }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                            },
-                            || {
-                                let mut collector = CollectingTreeBuilder::new();
-                                add_ap.map(|gen| {
-                                    let (claim, ig) = gen.write_trace(
-                                        &mut collector,
-                                        memory_address_to_id_trace_generator.unwrap(),
-                                        memory_id_to_value_trace_generator.unwrap(),
-                                        verify_instruction_trace_generator.unwrap(),
-                                        rc_18_trace_generator.unwrap(),
-                                        rc_11_trace_generator.unwrap(),
-                                    );
-                                    (vec![claim], vec![ig], collector)
-                                }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                            },
-                        ),
-                    );
-                    (assert_eq_r, add_r, add_ap_r)
-                },
-                // Light left: mul_small(0.48M), call_rel_imm(0.24M), ret(0.22M), assert_eq_imm(0.14M),
-                //             jnz(0.1M), call(~0), jump(0), generic(0), qm31(~0) = 1.2M
-                || {
-                    let ((mul_small_r, call_rel_imm_r), (ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r)) = rayon::join(
-                        || rayon::join(
-                            || {
-                                let mut collector = CollectingTreeBuilder::new();
-                                mul_small.map(|gen| {
-                                    let (claim, ig) = gen.write_trace(
-                                        &mut collector,
-                                        memory_address_to_id_trace_generator.unwrap(),
-                                        memory_id_to_value_trace_generator.unwrap(),
-                                        verify_instruction_trace_generator.unwrap(),
-                                        rc_11_trace_generator.unwrap(),
-                                    );
-                                    (vec![claim], vec![ig], collector)
-                                }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                            },
-                            || {
-                                let mut collector = CollectingTreeBuilder::new();
-                                call_rel_imm.map(|gen| {
-                                    let (claim, ig) = gen.write_trace(
-                                        &mut collector,
-                                        memory_address_to_id_trace_generator.unwrap(),
-                                        memory_id_to_value_trace_generator.unwrap(),
-                                        verify_instruction_trace_generator.unwrap(),
-                                    );
-                                    (vec![claim], vec![ig], collector)
-                                }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                            },
-                        ),
-                        || {
-                            // Process remaining light opcodes sequentially (they're tiny).
-                            let mut ret_collector = CollectingTreeBuilder::new();
-                            let ret_r: OpcodeResult<_, _> = ret.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut ret_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], ret_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
+    if let Some(gen) = add {
+        tasks.push(OpcodeTask::Add(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = add_small {
+        tasks.push(OpcodeTask::AddSmall(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = add_ap {
+        tasks.push(OpcodeTask::AddAp(gen, mem_addr, mem_id, verify_inst, rc_18, rc_11));
+    }
+    if let Some(gen) = assert_eq {
+        tasks.push(OpcodeTask::AssertEq(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = assert_eq_imm {
+        tasks.push(OpcodeTask::AssertEqImm(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = assert_eq_double_deref {
+        tasks.push(OpcodeTask::AssertEqDoubleDeref(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = call {
+        tasks.push(OpcodeTask::Call(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = call_rel_imm {
+        tasks.push(OpcodeTask::CallRelImm(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = generic {
+        tasks.push(OpcodeTask::Generic(gen, mem_addr, mem_id, verify_inst, rc_9_9, rc_20, rc_18, rc_11));
+    }
+    if let Some(gen) = jnz {
+        tasks.push(OpcodeTask::Jnz(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = jnz_taken {
+        tasks.push(OpcodeTask::JnzTaken(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = jump {
+        tasks.push(OpcodeTask::Jump(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = jump_double_deref {
+        tasks.push(OpcodeTask::JumpDoubleDeref(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = jump_rel {
+        tasks.push(OpcodeTask::JumpRel(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = jump_rel_imm {
+        tasks.push(OpcodeTask::JumpRelImm(gen, mem_addr, mem_id, verify_inst));
+    }
+    if let Some(gen) = mul {
+        tasks.push(OpcodeTask::Mul(gen, mem_addr, mem_id, verify_inst, rc_20));
+    }
+    if let Some(gen) = mul_small {
+        tasks.push(OpcodeTask::MulSmall(gen, mem_addr, mem_id, verify_inst, rc_11));
+    }
+    if let Some(gen) = qm31 {
+        tasks.push(OpcodeTask::Qm31(gen, mem_addr, mem_id, verify_inst, rc_4_4_4_4));
+    }
+    if let Some(gen) = ret {
+        tasks.push(OpcodeTask::Ret(gen, mem_addr, mem_id, verify_inst));
+    }
 
-                            let mut assert_eq_imm_collector = CollectingTreeBuilder::new();
-                            let assert_eq_imm_r: OpcodeResult<_, _> = assert_eq_imm.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut assert_eq_imm_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], assert_eq_imm_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
+    // Process all tasks in parallel.
+    let results: Vec<OpcodeWriteResult> = tasks.into_par_iter().map(|task| task.process()).collect();
 
-                            let mut jnz_collector = CollectingTreeBuilder::new();
-                            let jnz_r: OpcodeResult<_, _> = jnz.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut jnz_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], jnz_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
+    // Extract results into typed containers.
+    let mut add_claims = vec![];
+    let mut add_interaction_gens = vec![];
+    let mut add_trace = CollectingTreeBuilder::new();
+    let mut add_small_claims = vec![];
+    let mut add_small_interaction_gens = vec![];
+    let mut add_small_trace = CollectingTreeBuilder::new();
+    let mut add_ap_claims = vec![];
+    let mut add_ap_interaction_gens = vec![];
+    let mut add_ap_trace = CollectingTreeBuilder::new();
+    let mut assert_eq_claims = vec![];
+    let mut assert_eq_interaction_gens = vec![];
+    let mut assert_eq_trace = CollectingTreeBuilder::new();
+    let mut assert_eq_imm_claims = vec![];
+    let mut assert_eq_imm_interaction_gens = vec![];
+    let mut assert_eq_imm_trace = CollectingTreeBuilder::new();
+    let mut assert_eq_double_deref_claims = vec![];
+    let mut assert_eq_double_deref_interaction_gens = vec![];
+    let mut assert_eq_double_deref_trace = CollectingTreeBuilder::new();
+    let mut call_claims = vec![];
+    let mut call_interaction_gens = vec![];
+    let mut call_trace = CollectingTreeBuilder::new();
+    let mut call_rel_imm_claims = vec![];
+    let mut call_rel_imm_interaction_gens = vec![];
+    let mut call_rel_imm_trace = CollectingTreeBuilder::new();
+    let mut generic_opcode_claims = vec![];
+    let mut generic_opcode_interaction_gens = vec![];
+    let mut generic_trace = CollectingTreeBuilder::new();
+    let mut jnz_claims = vec![];
+    let mut jnz_interaction_gens = vec![];
+    let mut jnz_trace = CollectingTreeBuilder::new();
+    let mut jnz_taken_claims = vec![];
+    let mut jnz_taken_interaction_gens = vec![];
+    let mut jnz_taken_trace = CollectingTreeBuilder::new();
+    let mut jump_claims = vec![];
+    let mut jump_interaction_gens = vec![];
+    let mut jump_trace = CollectingTreeBuilder::new();
+    let mut jump_double_deref_claims = vec![];
+    let mut jump_double_deref_interaction_gens = vec![];
+    let mut jump_double_deref_trace = CollectingTreeBuilder::new();
+    let mut jump_rel_claims = vec![];
+    let mut jump_rel_interaction_gens = vec![];
+    let mut jump_rel_trace = CollectingTreeBuilder::new();
+    let mut jump_rel_imm_claims = vec![];
+    let mut jump_rel_imm_interaction_gens = vec![];
+    let mut jump_rel_imm_trace = CollectingTreeBuilder::new();
+    let mut mul_claims = vec![];
+    let mut mul_interaction_gens = vec![];
+    let mut mul_trace = CollectingTreeBuilder::new();
+    let mut mul_small_claims = vec![];
+    let mut mul_small_interaction_gens = vec![];
+    let mut mul_small_trace = CollectingTreeBuilder::new();
+    let mut qm31_claims = vec![];
+    let mut qm31_interaction_gens = vec![];
+    let mut qm31_trace = CollectingTreeBuilder::new();
+    let mut ret_claims = vec![];
+    let mut ret_interaction_gens = vec![];
+    let mut ret_trace = CollectingTreeBuilder::new();
 
-                            let mut call_collector = CollectingTreeBuilder::new();
-                            let call_r: OpcodeResult<_, _> = call.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut call_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], call_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut jump_collector = CollectingTreeBuilder::new();
-                            let jump_r: OpcodeResult<_, _> = jump.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut jump_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], jump_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut generic_collector = CollectingTreeBuilder::new();
-                            let generic_r: OpcodeResult<_, _> = generic.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut generic_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                    rc_9_9_trace_generator.unwrap(),
-                                    rc_20_trace_generator.unwrap(),
-                                    rc_18_trace_generator.unwrap(),
-                                    rc_11_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], generic_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut qm31_collector = CollectingTreeBuilder::new();
-                            let qm31_r: OpcodeResult<_, _> = qm31.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut qm31_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                    rc_4_4_4_4_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], qm31_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            (ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r)
-                        },
-                    );
-                    (mul_small_r, call_rel_imm_r, ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r)
-                },
-            );
-            (assert_eq_r, add_r, add_ap_r, mul_small_r, call_rel_imm_r, ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r)
-        },
-        // Right branch: add_small, mul, jnz_taken, assert_eq_double_deref, jump_rel_imm,
-        //               jump_double_deref, jump_rel
-        || {
-            let ((add_small_r, mul_r), (jnz_taken_r, assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r)) = rayon::join(
-                // Heavy right: add_small(2.5M), mul(2.3M) = 4.8M
-                || rayon::join(
-                    || {
-                        let mut collector = CollectingTreeBuilder::new();
-                        add_small.map(|gen| {
-                            let (claim, ig) = gen.write_trace(
-                                &mut collector,
-                                memory_address_to_id_trace_generator.unwrap(),
-                                memory_id_to_value_trace_generator.unwrap(),
-                                verify_instruction_trace_generator.unwrap(),
-                            );
-                            (vec![claim], vec![ig], collector)
-                        }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                    },
-                    || {
-                        let mut collector = CollectingTreeBuilder::new();
-                        mul.map(|gen| {
-                            let (claim, ig) = gen.write_trace(
-                                &mut collector,
-                                memory_address_to_id_trace_generator.unwrap(),
-                                memory_id_to_value_trace_generator.unwrap(),
-                                verify_instruction_trace_generator.unwrap(),
-                                rc_20_trace_generator.unwrap(),
-                            );
-                            (vec![claim], vec![ig], collector)
-                        }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                    },
-                ),
-                // Light right: jnz_taken(1.3M), assert_eq_double_deref(0.6M), jump_rel_imm(0.28M),
-                //              jump_double_deref(~0), jump_rel(~0) = 2.2M
-                || {
-                    let (jnz_taken_r, (assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r)) = rayon::join(
-                        || {
-                            let mut collector = CollectingTreeBuilder::new();
-                            jnz_taken.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()))
-                        },
-                        || {
-                            // Process remaining sequentially (they're smaller).
-                            let mut assert_eq_double_deref_collector = CollectingTreeBuilder::new();
-                            let assert_eq_double_deref_r: OpcodeResult<_, _> = assert_eq_double_deref.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut assert_eq_double_deref_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], assert_eq_double_deref_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut jump_rel_imm_collector = CollectingTreeBuilder::new();
-                            let jump_rel_imm_r: OpcodeResult<_, _> = jump_rel_imm.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut jump_rel_imm_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], jump_rel_imm_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut jump_double_deref_collector = CollectingTreeBuilder::new();
-                            let jump_double_deref_r: OpcodeResult<_, _> = jump_double_deref.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut jump_double_deref_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], jump_double_deref_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            let mut jump_rel_collector = CollectingTreeBuilder::new();
-                            let jump_rel_r: OpcodeResult<_, _> = jump_rel.map(|gen| {
-                                let (claim, ig) = gen.write_trace(
-                                    &mut jump_rel_collector,
-                                    memory_address_to_id_trace_generator.unwrap(),
-                                    memory_id_to_value_trace_generator.unwrap(),
-                                    verify_instruction_trace_generator.unwrap(),
-                                );
-                                (vec![claim], vec![ig], jump_rel_collector)
-                            }).unwrap_or_else(|| (vec![], vec![], CollectingTreeBuilder::new()));
-
-                            (assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r)
-                        },
-                    );
-                    (jnz_taken_r, assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r)
-                },
-            );
-            (add_small_r, mul_r, jnz_taken_r, assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r)
-        },
-    );
-
-    // Destructure results.
-    let (assert_eq_r, add_r, add_ap_r, mul_small_r, call_rel_imm_r, ret_r, assert_eq_imm_r, jnz_r, call_r, jump_r, generic_r, qm31_r) = left_results;
-    let (add_small_r, mul_r, jnz_taken_r, assert_eq_double_deref_r, jump_rel_imm_r, jump_double_deref_r, jump_rel_r) = right_results;
-
-    let (add_claims, add_interaction_gens, add_trace) = add_r;
-    let (add_small_claims, add_small_interaction_gens, add_small_trace) = add_small_r;
-    let (add_ap_claims, add_ap_interaction_gens, add_ap_trace) = add_ap_r;
-    let (assert_eq_claims, assert_eq_interaction_gens, assert_eq_trace) = assert_eq_r;
-    let (assert_eq_imm_claims, assert_eq_imm_interaction_gens, assert_eq_imm_trace) = assert_eq_imm_r;
-    let (assert_eq_double_deref_claims, assert_eq_double_deref_interaction_gens, assert_eq_double_deref_trace) = assert_eq_double_deref_r;
-    let (call_claims, call_interaction_gens, call_trace) = call_r;
-    let (call_rel_imm_claims, call_rel_imm_interaction_gens, call_rel_imm_trace) = call_rel_imm_r;
-    let (generic_opcode_claims, generic_opcode_interaction_gens, generic_trace) = generic_r;
-    let (jnz_claims, jnz_interaction_gens, jnz_trace) = jnz_r;
-    let (jnz_taken_claims, jnz_taken_interaction_gens, jnz_taken_trace) = jnz_taken_r;
-    let (jump_claims, jump_interaction_gens, jump_trace) = jump_r;
-    let (jump_double_deref_claims, jump_double_deref_interaction_gens, jump_double_deref_trace) = jump_double_deref_r;
-    let (jump_rel_claims, jump_rel_interaction_gens, jump_rel_trace) = jump_rel_r;
-    let (jump_rel_imm_claims, jump_rel_imm_interaction_gens, jump_rel_imm_trace) = jump_rel_imm_r;
-    let (mul_claims, mul_interaction_gens, mul_trace) = mul_r;
-    let (mul_small_claims, mul_small_interaction_gens, mul_small_trace) = mul_small_r;
-    let (qm31_claims, qm31_interaction_gens, qm31_trace) = qm31_r;
-    let (ret_claims, ret_interaction_gens, ret_trace) = ret_r;
+    for result in results {
+        match result {
+            OpcodeWriteResult::Add(c, i, t) => { add_claims = c; add_interaction_gens = i; add_trace = t; }
+            OpcodeWriteResult::AddSmall(c, i, t) => { add_small_claims = c; add_small_interaction_gens = i; add_small_trace = t; }
+            OpcodeWriteResult::AddAp(c, i, t) => { add_ap_claims = c; add_ap_interaction_gens = i; add_ap_trace = t; }
+            OpcodeWriteResult::AssertEq(c, i, t) => { assert_eq_claims = c; assert_eq_interaction_gens = i; assert_eq_trace = t; }
+            OpcodeWriteResult::AssertEqImm(c, i, t) => { assert_eq_imm_claims = c; assert_eq_imm_interaction_gens = i; assert_eq_imm_trace = t; }
+            OpcodeWriteResult::AssertEqDoubleDeref(c, i, t) => { assert_eq_double_deref_claims = c; assert_eq_double_deref_interaction_gens = i; assert_eq_double_deref_trace = t; }
+            OpcodeWriteResult::Call(c, i, t) => { call_claims = c; call_interaction_gens = i; call_trace = t; }
+            OpcodeWriteResult::CallRelImm(c, i, t) => { call_rel_imm_claims = c; call_rel_imm_interaction_gens = i; call_rel_imm_trace = t; }
+            OpcodeWriteResult::Generic(c, i, t) => { generic_opcode_claims = c; generic_opcode_interaction_gens = i; generic_trace = t; }
+            OpcodeWriteResult::Jnz(c, i, t) => { jnz_claims = c; jnz_interaction_gens = i; jnz_trace = t; }
+            OpcodeWriteResult::JnzTaken(c, i, t) => { jnz_taken_claims = c; jnz_taken_interaction_gens = i; jnz_taken_trace = t; }
+            OpcodeWriteResult::Jump(c, i, t) => { jump_claims = c; jump_interaction_gens = i; jump_trace = t; }
+            OpcodeWriteResult::JumpDoubleDeref(c, i, t) => { jump_double_deref_claims = c; jump_double_deref_interaction_gens = i; jump_double_deref_trace = t; }
+            OpcodeWriteResult::JumpRel(c, i, t) => { jump_rel_claims = c; jump_rel_interaction_gens = i; jump_rel_trace = t; }
+            OpcodeWriteResult::JumpRelImm(c, i, t) => { jump_rel_imm_claims = c; jump_rel_imm_interaction_gens = i; jump_rel_imm_trace = t; }
+            OpcodeWriteResult::Mul(c, i, t) => { mul_claims = c; mul_interaction_gens = i; mul_trace = t; }
+            OpcodeWriteResult::MulSmall(c, i, t) => { mul_small_claims = c; mul_small_interaction_gens = i; mul_small_trace = t; }
+            OpcodeWriteResult::Qm31(c, i, t) => { qm31_claims = c; qm31_interaction_gens = i; qm31_trace = t; }
+            OpcodeWriteResult::Ret(c, i, t) => { ret_claims = c; ret_interaction_gens = i; ret_trace = t; }
+        }
+    }
 
     // Write traces in deterministic order.
     add_trace.write_to(tree_builder);
