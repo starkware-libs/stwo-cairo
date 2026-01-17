@@ -54,8 +54,8 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
-        packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
+        packed_inputs.into_iter().for_each(|packed_input| {
+            packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input, relation_index);
             });
         });
@@ -251,8 +251,7 @@ fn write_trace_simd(
         id: "pedersen_points_55".to_owned(),
     });
 
-    (trace.par_iter_mut(), lookup_data.par_iter_mut())
-        .into_par_iter()
+    izip!(trace.iter_mut(), lookup_data.iter_mut())
         .enumerate()
         .for_each(|(row_index, (row, lookup_data))| {
             let seq_15 = seq_15.packed_at(row_index);

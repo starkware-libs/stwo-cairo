@@ -2,6 +2,7 @@
 use cairo_air::components::partial_ec_mul_window_bits_18::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
+use itertools::izip;
 
 use crate::witness::components::{
     pedersen_points_table_window_bits_18, range_check_20, range_check_9_9,
@@ -259,13 +260,12 @@ fn write_trace_simd(
     let UInt32_9 = PackedUInt32::broadcast(UInt32::from(9));
     let enabler_col = Enabler::new(n_rows);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-        inputs.into_par_iter(),
+    izip!(
+        trace.iter_mut(),
+        lookup_data.iter_mut(),
+        sub_component_inputs.iter_mut(),
+        inputs.into_iter(),
     )
-        .into_par_iter()
         .enumerate()
         .for_each(
             |(
@@ -5770,7 +5770,6 @@ impl InteractionClaimGenerator {
         // Chunk 0: Columns 0-7
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 = common_lookup_elements
                         .combine(&self.lookup_data.pedersen_points_table_window_bits_18_0[i]);
@@ -5818,8 +5817,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -5831,7 +5829,6 @@ impl InteractionClaimGenerator {
         // Chunk 1: Columns 8-15
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_20_b_0[i]);
@@ -5879,8 +5876,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -5892,7 +5888,6 @@ impl InteractionClaimGenerator {
         // Chunk 2: Columns 16-23
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_20_b_2[i]);
@@ -5940,8 +5935,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -5953,7 +5947,6 @@ impl InteractionClaimGenerator {
         // Chunk 3: Columns 24-31
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_9_9_f_2[i]);
@@ -6001,8 +5994,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -6014,7 +6006,6 @@ impl InteractionClaimGenerator {
         // Chunk 4: Columns 32-39
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_20_h_3[i]);
@@ -6062,8 +6053,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -6075,7 +6065,6 @@ impl InteractionClaimGenerator {
         // Chunk 5: Columns 40-47
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_20_h_5[i]);
@@ -6123,8 +6112,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -6136,7 +6124,6 @@ impl InteractionClaimGenerator {
         // Chunk 6: Columns 48-55
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 8]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_9_9_d_5[i]);
@@ -6184,8 +6171,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..8 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -6197,7 +6183,6 @@ impl InteractionClaimGenerator {
         // Chunk 7: Columns 56-62 (7 regular columns)
         {
             let chunk_denoms: Vec<[(PackedQM31, PackedQM31); 7]> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let d0_0: PackedQM31 =
                         common_lookup_elements.combine(&self.lookup_data.range_check_20_f_7[i]);
@@ -6240,8 +6225,7 @@ impl InteractionClaimGenerator {
                 .collect();
             for col_offset in 0..7 {
                 let mut col_gen = logup_gen.new_col();
-                (col_gen.par_iter_mut(), &chunk_denoms)
-                    .into_par_iter()
+                izip!(col_gen.iter_mut(), chunk_denoms.iter())
                     .for_each(|(writer, denoms)| {
                         let (num, denom) = denoms[col_offset];
                         writer.write_frac(num, denom);
@@ -6253,7 +6237,6 @@ impl InteractionClaimGenerator {
         // Chunk 8: Enabler column (63) - needs special handling
         {
             let chunk_denoms: Vec<(PackedQM31, PackedQM31)> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let enabler = enabler_col.packed_at(i);
                     let d0: PackedQM31 =
@@ -6264,8 +6247,7 @@ impl InteractionClaimGenerator {
                 })
                 .collect();
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), &chunk_denoms)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), chunk_denoms.iter())
                 .for_each(|(writer, (num, denom))| {
                     writer.write_frac(*num, *denom);
                 });
@@ -6275,7 +6257,6 @@ impl InteractionClaimGenerator {
         // Final column (64) - single value with enabler
         {
             let chunk_denoms: Vec<(PackedQM31, PackedQM31)> = (0..n_rows)
-                .into_par_iter()
                 .map(|i| {
                     let enabler = enabler_col.packed_at(i);
                     let denom: PackedQM31 = common_lookup_elements
@@ -6284,8 +6265,7 @@ impl InteractionClaimGenerator {
                 })
                 .collect();
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), &chunk_denoms)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), chunk_denoms.iter())
                 .for_each(|(writer, (num, denom))| {
                     writer.write_frac(*num, *denom);
                 });

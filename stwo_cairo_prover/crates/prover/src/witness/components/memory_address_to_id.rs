@@ -9,7 +9,6 @@ use cairo_air::components::memory_address_to_id::{
 };
 use cairo_air::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
 use itertools::{izip, Itertools};
-use rayon::iter::{IntoParallelIterator, ParallelIterator}; // IndexedParallelIterator
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -102,7 +101,7 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
-        inputs.into_par_iter().for_each(|input| {
+        inputs.into_iter().for_each(|input| {
             self.add_packed_m31(input);
         });
     }

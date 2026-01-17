@@ -90,8 +90,8 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
-        packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
+        packed_inputs.into_iter().for_each(|packed_input| {
+            packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input, relation_index);
             });
         });
@@ -233,9 +233,8 @@ fn write_trace_simd(
     let M31_98 = PackedM31::broadcast(M31::from(98));
     let seq = Seq::new(log_size);
 
-    (trace.par_iter_mut(),
-    lookup_data.par_iter_mut(),sub_component_inputs.par_iter_mut(),inputs.into_par_iter(),)
-    .into_par_iter()
+    izip!(trace.iter_mut(),
+    lookup_data.iter_mut(),sub_component_inputs.iter_mut(),inputs.into_iter(),)
     .enumerate()
     .for_each(
         |(row_index,(row, lookup_data,sub_component_inputs,pedersen_aggregator_window_bits_18_input,))| {

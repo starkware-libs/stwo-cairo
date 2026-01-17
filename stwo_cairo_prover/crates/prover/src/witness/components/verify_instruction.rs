@@ -95,8 +95,8 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, packed_inputs: &[PackedInputType], relation_index: usize) {
-        packed_inputs.into_par_iter().for_each(|packed_input| {
-            packed_input.unpack().into_par_iter().for_each(|input| {
+        packed_inputs.into_iter().for_each(|packed_input| {
+            packed_input.unpack().into_iter().for_each(|input| {
                 self.add_input(&input, relation_index);
             });
         });
@@ -154,13 +154,12 @@ fn write_trace_simd(
     let UInt16_511 = PackedUInt16::broadcast(UInt16::from(511));
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-        inputs.into_par_iter(),
+    izip!(
+        trace.iter_mut(),
+        lookup_data.iter_mut(),
+        sub_component_inputs.iter_mut(),
+        inputs.into_iter(),
     )
-        .into_par_iter()
         .enumerate()
         .for_each(
             |(row_index, (row, lookup_data, sub_component_inputs, verify_instruction_input))| {

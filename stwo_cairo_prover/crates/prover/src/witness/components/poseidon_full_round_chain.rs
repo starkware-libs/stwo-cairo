@@ -121,13 +121,12 @@ fn write_trace_simd(
     let M31_502259093 = PackedM31::broadcast(M31::from(502259093));
     let enabler_col = Enabler::new(n_rows);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-        inputs.into_par_iter(),
+    izip!(
+        trace.iter_mut(),
+        lookup_data.iter_mut(),
+        sub_component_inputs.iter_mut(),
+        inputs.into_iter(),
     )
-        .into_par_iter()
         .enumerate()
         .for_each(
             |(

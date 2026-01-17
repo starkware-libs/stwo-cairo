@@ -135,13 +135,12 @@ fn write_trace_simd(
     let UInt16_9 = PackedUInt16::broadcast(UInt16::from(9));
     let enabler_col = Enabler::new(n_rows);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
-        inputs.into_par_iter(),
+    izip!(
+        trace.iter_mut(),
+        lookup_data.iter_mut(),
+        sub_component_inputs.iter_mut(),
+        inputs.into_iter(),
     )
-        .into_par_iter()
         .enumerate()
         .for_each(
             |(row_index, (row, lookup_data, sub_component_inputs, mul_opcode_small_input))| {

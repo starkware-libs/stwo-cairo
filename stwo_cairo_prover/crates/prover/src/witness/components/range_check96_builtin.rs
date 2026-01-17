@@ -99,12 +99,11 @@ fn write_trace_simd(
     let M31_1662111297 = PackedM31::broadcast(M31::from(1662111297));
     let seq = Seq::new(log_size);
 
-    (
-        trace.par_iter_mut(),
-        lookup_data.par_iter_mut(),
-        sub_component_inputs.par_iter_mut(),
+    izip!(
+        trace.iter_mut(),
+        lookup_data.iter_mut(),
+        sub_component_inputs.iter_mut(),
     )
-        .into_par_iter()
         .enumerate()
         .for_each(|(row_index, (row, lookup_data, sub_component_inputs))| {
             let seq = seq.packed_at(row_index);

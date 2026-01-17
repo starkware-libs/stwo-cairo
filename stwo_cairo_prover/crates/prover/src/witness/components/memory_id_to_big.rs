@@ -9,9 +9,6 @@ use cairo_air::relations::{
     RANGE_CHECK_9_9_RELATION_ID,
 };
 use itertools::{chain, izip, Itertools};
-use rayon::iter::{
-    IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
-};
 use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
 use stwo_cairo_common::memory::{
     LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
@@ -90,7 +87,7 @@ impl ClaimGenerator {
     }
 
     pub fn add_packed_inputs(&self, inputs: &[PackedInputType], _relation_index: usize) {
-        inputs.into_par_iter().for_each(|input| {
+        inputs.into_iter().for_each(|input| {
             self.add_packed_m31(input);
         });
     }
