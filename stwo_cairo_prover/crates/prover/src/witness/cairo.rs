@@ -548,12 +548,30 @@ struct VerifyXorResults {
 
 // === Helper functions for parallel processing ===
 
+/// Small opcodes results struct for grouping tiny opcodes together.
+struct SmallOpcodesResults {
+    call: InteractionTraceResult<cairo_air::components::call_opcode_abs::InteractionClaim>,
+    generic: InteractionTraceResult<cairo_air::components::generic_opcode::InteractionClaim>,
+    jump: InteractionTraceResult<cairo_air::components::jump_opcode_abs::InteractionClaim>,
+    jump_double_deref:
+        InteractionTraceResult<cairo_air::components::jump_opcode_double_deref::InteractionClaim>,
+    jump_rel: InteractionTraceResult<cairo_air::components::jump_opcode_rel::InteractionClaim>,
+    qm31: InteractionTraceResult<cairo_air::components::qm_31_add_mul_opcode::InteractionClaim>,
+}
+
 /// Process all opcodes using rayon::spawn for parallelism at the opcode-type level.
+/// Small opcodes (<5ms) are grouped into a single spawn with 1-thread pool.
 fn process_all_opcodes(
     parts: super::opcodes::OpcodesInteractionParts,
     common_lookup_elements: &CommonLookupElements,
 ) -> OpcodesResults {
-    // Declare result variables
+    // 1-thread pool for small opcodes to run them sequentially
+    let small_pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(1)
+        .build()
+        .unwrap();
+
+    // Declare result variables for heavy opcodes
     let mut add_result = None;
     let mut add_small_result = None;
     let mut add_ap_result = None;
@@ -561,21 +579,17 @@ fn process_all_opcodes(
     let mut assert_eq_imm_result = None;
     let mut assert_eq_double_deref_result = None;
     let mut blake_result = None;
-    let mut call_result = None;
     let mut call_rel_imm_result = None;
-    let mut generic_result = None;
     let mut jnz_result = None;
     let mut jnz_taken_result = None;
-    let mut jump_result = None;
-    let mut jump_double_deref_result = None;
-    let mut jump_rel_result = None;
     let mut jump_rel_imm_result = None;
     let mut mul_result = None;
     let mut mul_small_result = None;
-    let mut qm31_result = None;
     let mut ret_result = None;
+    // Small opcodes grouped together
+    let mut small_opcodes_result = None;
 
-    // Create mutable references for each result
+    // Create mutable references for heavy opcodes
     let add_ref = &mut add_result;
     let add_small_ref = &mut add_small_result;
     let add_ap_ref = &mut add_ap_result;
@@ -583,21 +597,17 @@ fn process_all_opcodes(
     let assert_eq_imm_ref = &mut assert_eq_imm_result;
     let assert_eq_double_deref_ref = &mut assert_eq_double_deref_result;
     let blake_ref = &mut blake_result;
-    let call_ref = &mut call_result;
     let call_rel_imm_ref = &mut call_rel_imm_result;
-    let generic_ref = &mut generic_result;
     let jnz_ref = &mut jnz_result;
     let jnz_taken_ref = &mut jnz_taken_result;
-    let jump_ref = &mut jump_result;
-    let jump_double_deref_ref = &mut jump_double_deref_result;
-    let jump_rel_ref = &mut jump_rel_result;
     let jump_rel_imm_ref = &mut jump_rel_imm_result;
     let mul_ref = &mut mul_result;
     let mul_small_ref = &mut mul_small_result;
-    let qm31_ref = &mut qm31_result;
     let ret_ref = &mut ret_result;
+    let small_opcodes_ref = &mut small_opcodes_result;
 
     scope(|s| {
+        // Heavy opcodes (>50ms) - spawn individually
         s.spawn(|_| {
             *add_ref = Some(process_interaction_gens(parts.add, common_lookup_elements));
         });
@@ -638,17 +648,8 @@ fn process_all_opcodes(
             ));
         });
         s.spawn(|_| {
-            *call_ref = Some(process_interaction_gens(parts.call, common_lookup_elements));
-        });
-        s.spawn(|_| {
             *call_rel_imm_ref = Some(process_interaction_gens(
                 parts.call_rel_imm,
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *generic_ref = Some(process_interaction_gens(
-                parts.generic_opcode,
                 common_lookup_elements,
             ));
         });
@@ -658,21 +659,6 @@ fn process_all_opcodes(
         s.spawn(|_| {
             *jnz_taken_ref = Some(process_interaction_gens(
                 parts.jnz_taken,
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *jump_ref = Some(process_interaction_gens(parts.jump, common_lookup_elements));
-        });
-        s.spawn(|_| {
-            *jump_double_deref_ref = Some(process_interaction_gens(
-                parts.jump_double_deref,
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *jump_rel_ref = Some(process_interaction_gens(
-                parts.jump_rel,
                 common_lookup_elements,
             ));
         });
@@ -692,13 +678,33 @@ fn process_all_opcodes(
             ));
         });
         s.spawn(|_| {
-            *qm31_ref = Some(process_interaction_gens(parts.qm31, common_lookup_elements));
-        });
-        s.spawn(|_| {
             *ret_ref = Some(process_interaction_gens(parts.ret, common_lookup_elements));
+        });
+
+        // Small opcodes (<5ms) - group together in 1-thread pool
+        s.spawn(|_| {
+            *small_opcodes_ref = Some(small_pool.install(|| {
+                let call = process_interaction_gens(parts.call, common_lookup_elements);
+                let generic =
+                    process_interaction_gens(parts.generic_opcode, common_lookup_elements);
+                let jump = process_interaction_gens(parts.jump, common_lookup_elements);
+                let jump_double_deref =
+                    process_interaction_gens(parts.jump_double_deref, common_lookup_elements);
+                let jump_rel = process_interaction_gens(parts.jump_rel, common_lookup_elements);
+                let qm31 = process_interaction_gens(parts.qm31, common_lookup_elements);
+                SmallOpcodesResults {
+                    call,
+                    generic,
+                    jump,
+                    jump_double_deref,
+                    jump_rel,
+                    qm31,
+                }
+            }));
         });
     });
 
+    let small = small_opcodes_result.unwrap();
     OpcodesResults {
         add: add_result.unwrap(),
         add_small: add_small_result.unwrap(),
@@ -707,18 +713,18 @@ fn process_all_opcodes(
         assert_eq_imm: assert_eq_imm_result.unwrap(),
         assert_eq_double_deref: assert_eq_double_deref_result.unwrap(),
         blake: blake_result.unwrap(),
-        call: call_result.unwrap(),
+        call: small.call,
         call_rel_imm: call_rel_imm_result.unwrap(),
-        generic: generic_result.unwrap(),
+        generic: small.generic,
         jnz: jnz_result.unwrap(),
         jnz_taken: jnz_taken_result.unwrap(),
-        jump: jump_result.unwrap(),
-        jump_double_deref: jump_double_deref_result.unwrap(),
-        jump_rel: jump_rel_result.unwrap(),
+        jump: small.jump,
+        jump_double_deref: small.jump_double_deref,
+        jump_rel: small.jump_rel,
         jump_rel_imm: jump_rel_imm_result.unwrap(),
         mul: mul_result.unwrap(),
         mul_small: mul_small_result.unwrap(),
-        qm31: qm31_result.unwrap(),
+        qm31: small.qm31,
         ret: ret_result.unwrap(),
     }
 }
@@ -757,33 +763,35 @@ fn process_memory(
 }
 
 /// Process pedersen context components in parallel using spawn.
+/// Heavy components (partial_ec_mul 2856ms, points_table 831ms) spawn individually.
+/// Small component (aggregator 41ms) runs in 1-thread pool to avoid thread stealing.
 fn process_pedersen_context(
     parts: Option<super::components::pedersen::PedersenContextInteractionParts>,
     common_lookup_elements: &CommonLookupElements,
 ) -> PedersenContextResults {
     match parts {
         Some(p) => {
-            let mut aggregator_result = None;
+            // 1-thread pool for small component to avoid thread stealing
+            let small_pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(1)
+                .build()
+                .unwrap();
+
+            // Heavy components
             let mut partial_ec_mul_result = None;
             let mut points_table_result = None;
+            // Small component
+            let mut aggregator_result = None;
 
-            let aggregator_ref = &mut aggregator_result;
             let partial_ec_mul_ref = &mut partial_ec_mul_result;
             let points_table_ref = &mut points_table_result;
+            let aggregator_ref = &mut aggregator_result;
 
             scope(|s| {
+                // Heavy components - spawn individually
                 s.spawn(|_| {
                     *partial_ec_mul_ref = Some(Some(process_single_gen(
                         |builder, elems| p.partial_ec_mul.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    )));
-                });
-                s.spawn(|_| {
-                    *aggregator_ref = Some(Some(process_single_gen(
-                        |builder, elems| {
-                            p.pedersen_aggregator
-                                .write_interaction_trace(builder, elems)
-                        },
                         common_lookup_elements,
                     )));
                 });
@@ -795,6 +803,19 @@ fn process_pedersen_context(
                         },
                         common_lookup_elements,
                     )));
+                });
+
+                // Small component (<50ms) - run in 1-thread pool
+                s.spawn(|_| {
+                    *aggregator_ref = Some(small_pool.install(|| {
+                        Some(process_single_gen(
+                            |builder, elems| {
+                                p.pedersen_aggregator
+                                    .write_interaction_trace(builder, elems)
+                            },
+                            common_lookup_elements,
+                        ))
+                    }));
                 });
             });
 
@@ -812,28 +833,43 @@ fn process_pedersen_context(
     }
 }
 
+/// Small poseidon results struct for grouping tiny components together.
+struct SmallPoseidonResults {
+    aggregator: ClaimWithEvals<cairo_air::components::poseidon_aggregator::InteractionClaim>,
+    full_round_chain:
+        ClaimWithEvals<cairo_air::components::poseidon_full_round_chain::InteractionClaim>,
+    round_keys: ClaimWithEvals<cairo_air::components::poseidon_round_keys::InteractionClaim>,
+}
+
 /// Process poseidon context components in parallel using spawn.
+/// Heavy components (cube_252 1161ms, partial_rounds 126ms, range_check_252 161ms) spawn individually.
+/// Small components (aggregator 10ms, full_round_chain 25ms, round_keys 0.05ms) grouped in 1-thread pool.
 fn process_poseidon_context(
     parts: Option<super::components::poseidon::PoseidonContextInteractionParts>,
     common_lookup_elements: &CommonLookupElements,
 ) -> PoseidonContextResults {
     match parts {
         Some(p) => {
-            let mut aggregator_result = None;
-            let mut partial_rounds_result = None;
-            let mut full_round_result = None;
-            let mut cube_252_result = None;
-            let mut round_keys_result = None;
-            let mut range_check_252_result = None;
+            // 1-thread pool for small components to run them sequentially
+            let small_pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(1)
+                .build()
+                .unwrap();
 
-            let aggregator_ref = &mut aggregator_result;
+            // Heavy components
+            let mut partial_rounds_result = None;
+            let mut cube_252_result = None;
+            let mut range_check_252_result = None;
+            // Small components grouped together
+            let mut small_poseidon_result = None;
+
             let partial_rounds_ref = &mut partial_rounds_result;
-            let full_round_ref = &mut full_round_result;
             let cube_252_ref = &mut cube_252_result;
-            let round_keys_ref = &mut round_keys_result;
             let range_check_252_ref = &mut range_check_252_result;
+            let small_poseidon_ref = &mut small_poseidon_result;
 
             scope(|s| {
+                // Heavy components - spawn individually
                 s.spawn(|_| {
                     *cube_252_ref = Some(Some(process_single_gen(
                         |builder, elems| p.cube_252.write_interaction_trace(builder, elems),
@@ -858,41 +894,47 @@ fn process_poseidon_context(
                         common_lookup_elements,
                     )));
                 });
+
+                // Small components (<50ms) - group together in 1-thread pool
                 s.spawn(|_| {
-                    *full_round_ref = Some(Some(process_single_gen(
-                        |builder, elems| {
-                            p.poseidon_full_round_chain
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    )));
-                });
-                s.spawn(|_| {
-                    *aggregator_ref = Some(Some(process_single_gen(
-                        |builder, elems| {
-                            p.poseidon_aggregator
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    )));
-                });
-                s.spawn(|_| {
-                    *round_keys_ref = Some(Some(process_single_gen(
-                        |builder, elems| {
-                            p.poseidon_round_keys
-                                .write_interaction_trace(builder, elems)
-                        },
-                        common_lookup_elements,
-                    )));
+                    *small_poseidon_ref = Some(small_pool.install(|| {
+                        let aggregator = process_single_gen(
+                            |builder, elems| {
+                                p.poseidon_aggregator
+                                    .write_interaction_trace(builder, elems)
+                            },
+                            common_lookup_elements,
+                        );
+                        let full_round_chain = process_single_gen(
+                            |builder, elems| {
+                                p.poseidon_full_round_chain
+                                    .write_interaction_trace(builder, elems)
+                            },
+                            common_lookup_elements,
+                        );
+                        let round_keys = process_single_gen(
+                            |builder, elems| {
+                                p.poseidon_round_keys
+                                    .write_interaction_trace(builder, elems)
+                            },
+                            common_lookup_elements,
+                        );
+                        SmallPoseidonResults {
+                            aggregator,
+                            full_round_chain,
+                            round_keys,
+                        }
+                    }));
                 });
             });
 
+            let small = small_poseidon_result.unwrap();
             PoseidonContextResults {
-                aggregator: aggregator_result.unwrap(),
+                aggregator: Some(small.aggregator),
                 partial_rounds_chain: partial_rounds_result.unwrap(),
-                full_round_chain: full_round_result.unwrap(),
+                full_round_chain: Some(small.full_round_chain),
                 cube_252: cube_252_result.unwrap(),
-                round_keys: round_keys_result.unwrap(),
+                round_keys: Some(small.round_keys),
                 range_check_252_width_27: range_check_252_result.unwrap(),
             }
         }
@@ -907,26 +949,41 @@ fn process_poseidon_context(
     }
 }
 
+/// Small blake results struct for grouping tiny components together.
+struct SmallBlakeResults {
+    triple_xor_32: ClaimWithEvals<cairo_air::components::triple_xor_32::InteractionClaim>,
+    blake_sigma: ClaimWithEvals<cairo_air::components::blake_round_sigma::InteractionClaim>,
+}
+
 /// Process blake context components in parallel using spawn.
+/// Heavy components (blake_g 833ms, blake_round 401ms, verify_xor_12 259ms) spawn individually.
+/// Small components (triple_xor_32 21ms, sigma 0.1ms) grouped in 1-thread pool.
 fn process_blake_context(
     parts: Option<super::blake_context::BlakeContextInteractionParts>,
     common_lookup_elements: &CommonLookupElements,
 ) -> BlakeContextResults {
     match parts {
         Some(p) => {
+            // 1-thread pool for small components to run them sequentially
+            let small_pool = rayon::ThreadPoolBuilder::new()
+                .num_threads(1)
+                .build()
+                .unwrap();
+
+            // Heavy components
             let mut blake_round_result = None;
             let mut blake_g_result = None;
-            let mut blake_sigma_result = None;
-            let mut triple_xor_result = None;
             let mut verify_xor_12_result = None;
+            // Small components grouped together
+            let mut small_blake_result = None;
 
             let blake_round_ref = &mut blake_round_result;
             let blake_g_ref = &mut blake_g_result;
-            let blake_sigma_ref = &mut blake_sigma_result;
-            let triple_xor_ref = &mut triple_xor_result;
             let verify_xor_12_ref = &mut verify_xor_12_result;
+            let small_blake_ref = &mut small_blake_result;
 
             scope(|s| {
+                // Heavy components - spawn individually
                 s.spawn(|_| {
                     *blake_g_ref = Some(Some(process_single_gen(
                         |builder, elems| p.blake_g.write_interaction_trace(builder, elems),
@@ -948,25 +1005,32 @@ fn process_blake_context(
                         common_lookup_elements,
                     )));
                 });
+
+                // Small components (<50ms) - group together in 1-thread pool
                 s.spawn(|_| {
-                    *triple_xor_ref = Some(Some(process_single_gen(
-                        |builder, elems| p.triple_xor_32.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    )));
-                });
-                s.spawn(|_| {
-                    *blake_sigma_ref = Some(Some(process_single_gen(
-                        |builder, elems| p.blake_sigma.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    )));
+                    *small_blake_ref = Some(small_pool.install(|| {
+                        let triple_xor_32 = process_single_gen(
+                            |builder, elems| p.triple_xor_32.write_interaction_trace(builder, elems),
+                            common_lookup_elements,
+                        );
+                        let blake_sigma = process_single_gen(
+                            |builder, elems| p.blake_sigma.write_interaction_trace(builder, elems),
+                            common_lookup_elements,
+                        );
+                        SmallBlakeResults {
+                            triple_xor_32,
+                            blake_sigma,
+                        }
+                    }));
                 });
             });
 
+            let small = small_blake_result.unwrap();
             BlakeContextResults {
                 blake_round: blake_round_result.unwrap(),
                 blake_g: blake_g_result.unwrap(),
-                blake_sigma: blake_sigma_result.unwrap(),
-                triple_xor_32: triple_xor_result.unwrap(),
+                blake_sigma: Some(small.blake_sigma),
+                triple_xor_32: Some(small.triple_xor_32),
                 verify_bitwise_xor_12: verify_xor_12_result.unwrap(),
             }
         }
@@ -980,42 +1044,41 @@ fn process_blake_context(
     }
 }
 
-/// Process builtins using spawn. range_check_128 is heaviest (432ms), others are light.
+/// Small builtins results struct for grouping tiny components together.
+struct SmallBuiltinsResults {
+    add_mod: Option<ClaimWithEvals<cairo_air::components::add_mod_builtin::InteractionClaim>>,
+    bitwise: Option<ClaimWithEvals<cairo_air::components::bitwise_builtin::InteractionClaim>>,
+    mul_mod: Option<ClaimWithEvals<cairo_air::components::mul_mod_builtin::InteractionClaim>>,
+    pedersen: Option<ClaimWithEvals<cairo_air::components::pedersen_builtin::InteractionClaim>>,
+    poseidon: Option<ClaimWithEvals<cairo_air::components::poseidon_builtin::InteractionClaim>>,
+    range_check_96:
+        Option<ClaimWithEvals<cairo_air::components::range_check96_builtin::InteractionClaim>>,
+}
+
+/// Process builtins using spawn. range_check_128 (432ms) is heaviest and spawns individually.
+/// Small builtins (pedersen 16ms, poseidon 1.8ms, etc.) grouped in 1-thread pool.
 fn process_builtins(
     parts: super::builtins::BuiltinsInteractionParts,
     common_lookup_elements: &CommonLookupElements,
 ) -> BuiltinsResults {
-    let mut add_mod_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::add_mod_builtin::InteractionClaim>>,
-    > = None;
-    let mut bitwise_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::bitwise_builtin::InteractionClaim>>,
-    > = None;
-    let mut mul_mod_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::mul_mod_builtin::InteractionClaim>>,
-    > = None;
-    let mut pedersen_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::pedersen_builtin::InteractionClaim>>,
-    > = None;
-    let mut poseidon_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::poseidon_builtin::InteractionClaim>>,
-    > = None;
-    let mut range_check_96_result: Option<
-        Option<ClaimWithEvals<cairo_air::components::range_check96_builtin::InteractionClaim>>,
-    > = None;
+    // 1-thread pool for small components to run them sequentially
+    let small_pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(1)
+        .build()
+        .unwrap();
+
+    // Heavy component
     let mut range_check_128_result: Option<
         Option<ClaimWithEvals<cairo_air::components::range_check_builtin::InteractionClaim>>,
     > = None;
+    // Small components grouped together
+    let mut small_builtins_result = None;
 
-    let add_mod_ref = &mut add_mod_result;
-    let bitwise_ref = &mut bitwise_result;
-    let mul_mod_ref = &mut mul_mod_result;
-    let pedersen_ref = &mut pedersen_result;
-    let poseidon_ref = &mut poseidon_result;
-    let range_check_96_ref = &mut range_check_96_result;
     let range_check_128_ref = &mut range_check_128_result;
+    let small_builtins_ref = &mut small_builtins_result;
 
     scope(|s| {
+        // Heavy component - spawn individually
         s.spawn(|_| {
             *range_check_128_ref = Some(parts.range_check_128_builtin.map(|gen| {
                 process_single_gen(
@@ -1024,148 +1087,112 @@ fn process_builtins(
                 )
             }));
         });
+
+        // Small components (<50ms) - group together in 1-thread pool
         s.spawn(|_| {
-            *add_mod_ref = Some(parts.add_mod_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
-            }));
-        });
-        s.spawn(|_| {
-            *bitwise_ref = Some(parts.bitwise_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
-            }));
-        });
-        s.spawn(|_| {
-            *mul_mod_ref = Some(parts.mul_mod_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
-            }));
-        });
-        s.spawn(|_| {
-            *pedersen_ref = Some(parts.pedersen_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
-            }));
-        });
-        s.spawn(|_| {
-            *poseidon_ref = Some(parts.poseidon_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
-            }));
-        });
-        s.spawn(|_| {
-            *range_check_96_ref = Some(parts.range_check_96_builtin.map(|gen| {
-                process_single_gen(
-                    |builder, elems| gen.write_interaction_trace(builder, elems),
-                    common_lookup_elements,
-                )
+            *small_builtins_ref = Some(small_pool.install(|| {
+                let add_mod = parts.add_mod_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                let bitwise = parts.bitwise_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                let mul_mod = parts.mul_mod_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                let pedersen = parts.pedersen_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                let poseidon = parts.poseidon_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                let range_check_96 = parts.range_check_96_builtin.map(|gen| {
+                    process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )
+                });
+                SmallBuiltinsResults {
+                    add_mod,
+                    bitwise,
+                    mul_mod,
+                    pedersen,
+                    poseidon,
+                    range_check_96,
+                }
             }));
         });
     });
 
+    let small = small_builtins_result.unwrap();
     BuiltinsResults {
-        add_mod: add_mod_result.unwrap(),
-        bitwise: bitwise_result.unwrap(),
-        mul_mod: mul_mod_result.unwrap(),
-        pedersen: pedersen_result.unwrap(),
-        poseidon: poseidon_result.unwrap(),
-        range_check_96: range_check_96_result.unwrap(),
+        add_mod: small.add_mod,
+        bitwise: small.bitwise,
+        mul_mod: small.mul_mod,
+        pedersen: small.pedersen,
+        poseidon: small.poseidon,
+        range_check_96: small.range_check_96,
         range_check_128: range_check_128_result.unwrap(),
     }
 }
 
-/// Process range checks. Most are tiny (<1ms), only rc_20 (92ms) and rc_9_9 (32ms) are notable.
+/// Small range checks results struct for grouping tiny components together.
+struct SmallRangeChecksResults {
+    rc_6: ClaimWithEvals<cairo_air::components::range_check_6::InteractionClaim>,
+    rc_8: ClaimWithEvals<cairo_air::components::range_check_8::InteractionClaim>,
+    rc_11: ClaimWithEvals<cairo_air::components::range_check_11::InteractionClaim>,
+    rc_12: ClaimWithEvals<cairo_air::components::range_check_12::InteractionClaim>,
+    rc_18: ClaimWithEvals<cairo_air::components::range_check_18::InteractionClaim>,
+    rc_4_3: ClaimWithEvals<cairo_air::components::range_check_4_3::InteractionClaim>,
+    rc_4_4: ClaimWithEvals<cairo_air::components::range_check_4_4::InteractionClaim>,
+    rc_7_2_5: ClaimWithEvals<cairo_air::components::range_check_7_2_5::InteractionClaim>,
+    rc_3_6_6_3: ClaimWithEvals<cairo_air::components::range_check_3_6_6_3::InteractionClaim>,
+    rc_4_4_4_4: ClaimWithEvals<cairo_air::components::range_check_4_4_4_4::InteractionClaim>,
+    rc_3_3_3_3_3: ClaimWithEvals<cairo_air::components::range_check_3_3_3_3_3::InteractionClaim>,
+}
+
+/// Process range checks. rc_20 (92ms) and rc_9_9 (32ms) spawn individually.
+/// Small range checks (<15ms) grouped in 1-thread pool.
 fn process_range_checks(
     parts: super::range_checks::RangeChecksInteractionParts,
     common_lookup_elements: &CommonLookupElements,
 ) -> RangeChecksResults {
-    let mut rc_6_result = None;
-    let mut rc_8_result = None;
-    let mut rc_11_result = None;
-    let mut rc_12_result = None;
-    let mut rc_18_result = None;
+    // 1-thread pool for small components to run them sequentially
+    let small_pool = rayon::ThreadPoolBuilder::new()
+        .num_threads(1)
+        .build()
+        .unwrap();
+
+    // Heavy components
     let mut rc_20_result = None;
-    let mut rc_4_3_result = None;
-    let mut rc_4_4_result = None;
     let mut rc_9_9_result = None;
-    let mut rc_7_2_5_result = None;
-    let mut rc_3_6_6_3_result = None;
-    let mut rc_4_4_4_4_result = None;
-    let mut rc_3_3_3_3_3_result = None;
+    // Small components grouped together
+    let mut small_rc_result = None;
 
-    let rc_6_ref = &mut rc_6_result;
-    let rc_8_ref = &mut rc_8_result;
-    let rc_11_ref = &mut rc_11_result;
-    let rc_12_ref = &mut rc_12_result;
-    let rc_18_ref = &mut rc_18_result;
     let rc_20_ref = &mut rc_20_result;
-    let rc_4_3_ref = &mut rc_4_3_result;
-    let rc_4_4_ref = &mut rc_4_4_result;
     let rc_9_9_ref = &mut rc_9_9_result;
-    let rc_7_2_5_ref = &mut rc_7_2_5_result;
-    let rc_3_6_6_3_ref = &mut rc_3_6_6_3_result;
-    let rc_4_4_4_4_ref = &mut rc_4_4_4_4_result;
-    let rc_3_3_3_3_3_ref = &mut rc_3_3_3_3_3_result;
+    let small_rc_ref = &mut small_rc_result;
 
-    // rc_20 is heaviest, run in parallel with the rest
     scope(|s| {
+        // Heavy components - spawn individually
         s.spawn(|_| {
             *rc_20_ref = Some(process_single_gen(
                 |builder, elems| parts.rc_20.write_interaction_trace(builder, elems),
-                common_lookup_elements,
-            ));
-        });
-        // Other range checks - most are tiny
-        s.spawn(|_| {
-            *rc_6_ref = Some(process_single_gen(
-                |b, e| parts.rc_6.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_8_ref = Some(process_single_gen(
-                |b, e| parts.rc_8.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_11_ref = Some(process_single_gen(
-                |b, e| parts.rc_11.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_12_ref = Some(process_single_gen(
-                |b, e| parts.rc_12.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_18_ref = Some(process_single_gen(
-                |b, e| parts.rc_18.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_4_3_ref = Some(process_single_gen(
-                |b, e| parts.rc_4_3.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_4_4_ref = Some(process_single_gen(
-                |b, e| parts.rc_4_4.write_interaction_trace(b, e),
                 common_lookup_elements,
             ));
         });
@@ -1175,46 +1202,86 @@ fn process_range_checks(
                 common_lookup_elements,
             ));
         });
+
+        // Small range checks (<15ms) - group together in 1-thread pool
         s.spawn(|_| {
-            *rc_7_2_5_ref = Some(process_single_gen(
-                |b, e| parts.rc_7_2_5.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_3_6_6_3_ref = Some(process_single_gen(
-                |b, e| parts.rc_3_6_6_3.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_4_4_4_4_ref = Some(process_single_gen(
-                |b, e| parts.rc_4_4_4_4.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
-        });
-        s.spawn(|_| {
-            *rc_3_3_3_3_3_ref = Some(process_single_gen(
-                |b, e| parts.rc_3_3_3_3_3.write_interaction_trace(b, e),
-                common_lookup_elements,
-            ));
+            *small_rc_ref = Some(small_pool.install(|| {
+                let rc_6 = process_single_gen(
+                    |b, e| parts.rc_6.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_8 = process_single_gen(
+                    |b, e| parts.rc_8.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_11 = process_single_gen(
+                    |b, e| parts.rc_11.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_12 = process_single_gen(
+                    |b, e| parts.rc_12.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_18 = process_single_gen(
+                    |b, e| parts.rc_18.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_4_3 = process_single_gen(
+                    |b, e| parts.rc_4_3.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_4_4 = process_single_gen(
+                    |b, e| parts.rc_4_4.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_7_2_5 = process_single_gen(
+                    |b, e| parts.rc_7_2_5.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_3_6_6_3 = process_single_gen(
+                    |b, e| parts.rc_3_6_6_3.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_4_4_4_4 = process_single_gen(
+                    |b, e| parts.rc_4_4_4_4.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                let rc_3_3_3_3_3 = process_single_gen(
+                    |b, e| parts.rc_3_3_3_3_3.write_interaction_trace(b, e),
+                    common_lookup_elements,
+                );
+                SmallRangeChecksResults {
+                    rc_6,
+                    rc_8,
+                    rc_11,
+                    rc_12,
+                    rc_18,
+                    rc_4_3,
+                    rc_4_4,
+                    rc_7_2_5,
+                    rc_3_6_6_3,
+                    rc_4_4_4_4,
+                    rc_3_3_3_3_3,
+                }
+            }));
         });
     });
 
+    let small = small_rc_result.unwrap();
     RangeChecksResults {
-        rc_6: rc_6_result.unwrap(),
-        rc_8: rc_8_result.unwrap(),
-        rc_11: rc_11_result.unwrap(),
-        rc_12: rc_12_result.unwrap(),
-        rc_18: rc_18_result.unwrap(),
+        rc_6: small.rc_6,
+        rc_8: small.rc_8,
+        rc_11: small.rc_11,
+        rc_12: small.rc_12,
+        rc_18: small.rc_18,
         rc_20: rc_20_result.unwrap(),
-        rc_4_3: rc_4_3_result.unwrap(),
-        rc_4_4: rc_4_4_result.unwrap(),
+        rc_4_3: small.rc_4_3,
+        rc_4_4: small.rc_4_4,
         rc_9_9: rc_9_9_result.unwrap(),
-        rc_7_2_5: rc_7_2_5_result.unwrap(),
-        rc_3_6_6_3: rc_3_6_6_3_result.unwrap(),
-        rc_4_4_4_4: rc_4_4_4_4_result.unwrap(),
-        rc_3_3_3_3_3: rc_3_3_3_3_3_result.unwrap(),
+        rc_7_2_5: small.rc_7_2_5,
+        rc_3_6_6_3: small.rc_3_6_6_3,
+        rc_4_4_4_4: small.rc_4_4_4_4,
+        rc_3_3_3_3_3: small.rc_3_3_3_3_3,
     }
 }
 
