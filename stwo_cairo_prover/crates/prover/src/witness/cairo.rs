@@ -597,31 +597,27 @@ fn process_all_opcodes(
     let qm31_ref = &mut qm31_result;
     let ret_ref = &mut ret_result;
 
-    // Use a 4-thread pool for add opcode
-    let add_pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(4)
-        .build()
-        .unwrap();
-
     scope(|s| {
-        // Spawn add with limited pool
         s.spawn(|_| {
-            *add_ref = Some(add_pool.install(|| {
-                process_interaction_gens(parts.add, common_lookup_elements)
-            }));
-        });
-
-        // Spawn all other opcodes
-        s.spawn(|_| {
-            *add_small_ref =
-                Some(process_interaction_gens(parts.add_small, common_lookup_elements));
+            *add_ref = Some(process_interaction_gens(parts.add, common_lookup_elements));
         });
         s.spawn(|_| {
-            *add_ap_ref = Some(process_interaction_gens(parts.add_ap, common_lookup_elements));
+            *add_small_ref = Some(process_interaction_gens(
+                parts.add_small,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
-            *assert_eq_ref =
-                Some(process_interaction_gens(parts.assert_eq, common_lookup_elements));
+            *add_ap_ref = Some(process_interaction_gens(
+                parts.add_ap,
+                common_lookup_elements,
+            ));
+        });
+        s.spawn(|_| {
+            *assert_eq_ref = Some(process_interaction_gens(
+                parts.assert_eq,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
             *assert_eq_imm_ref = Some(process_interaction_gens(
@@ -636,7 +632,10 @@ fn process_all_opcodes(
             ));
         });
         s.spawn(|_| {
-            *blake_ref = Some(process_interaction_gens(parts.blake, common_lookup_elements));
+            *blake_ref = Some(process_interaction_gens(
+                parts.blake,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
             *call_ref = Some(process_interaction_gens(parts.call, common_lookup_elements));
@@ -657,8 +656,10 @@ fn process_all_opcodes(
             *jnz_ref = Some(process_interaction_gens(parts.jnz, common_lookup_elements));
         });
         s.spawn(|_| {
-            *jnz_taken_ref =
-                Some(process_interaction_gens(parts.jnz_taken, common_lookup_elements));
+            *jnz_taken_ref = Some(process_interaction_gens(
+                parts.jnz_taken,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
             *jump_ref = Some(process_interaction_gens(parts.jump, common_lookup_elements));
@@ -670,8 +671,10 @@ fn process_all_opcodes(
             ));
         });
         s.spawn(|_| {
-            *jump_rel_ref =
-                Some(process_interaction_gens(parts.jump_rel, common_lookup_elements));
+            *jump_rel_ref = Some(process_interaction_gens(
+                parts.jump_rel,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
             *jump_rel_imm_ref = Some(process_interaction_gens(
@@ -683,8 +686,10 @@ fn process_all_opcodes(
             *mul_ref = Some(process_interaction_gens(parts.mul, common_lookup_elements));
         });
         s.spawn(|_| {
-            *mul_small_ref =
-                Some(process_interaction_gens(parts.mul_small, common_lookup_elements));
+            *mul_small_ref = Some(process_interaction_gens(
+                parts.mul_small,
+                common_lookup_elements,
+            ));
         });
         s.spawn(|_| {
             *qm31_ref = Some(process_interaction_gens(parts.qm31, common_lookup_elements));
@@ -766,27 +771,18 @@ fn process_pedersen_context(
             let partial_ec_mul_ref = &mut partial_ec_mul_result;
             let points_table_ref = &mut points_table_result;
 
-            // Use a 12-thread pool for partial_ec_mul
-            let partial_ec_mul_pool = rayon::ThreadPoolBuilder::new()
-                .num_threads(12)
-                .build()
-                .unwrap();
-
             scope(|s| {
                 s.spawn(|_| {
-                    *partial_ec_mul_ref = Some(Some(partial_ec_mul_pool.install(|| {
-                        process_single_gen(
-                            |builder, elems| {
-                                p.partial_ec_mul.write_interaction_trace(builder, elems)
-                            },
-                            common_lookup_elements,
-                        )
-                    })));
+                    *partial_ec_mul_ref = Some(Some(process_single_gen(
+                        |builder, elems| p.partial_ec_mul.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )));
                 });
                 s.spawn(|_| {
                     *aggregator_ref = Some(Some(process_single_gen(
                         |builder, elems| {
-                            p.pedersen_aggregator.write_interaction_trace(builder, elems)
+                            p.pedersen_aggregator
+                                .write_interaction_trace(builder, elems)
                         },
                         common_lookup_elements,
                     )));
@@ -874,7 +870,8 @@ fn process_poseidon_context(
                 s.spawn(|_| {
                     *aggregator_ref = Some(Some(process_single_gen(
                         |builder, elems| {
-                            p.poseidon_aggregator.write_interaction_trace(builder, elems)
+                            p.poseidon_aggregator
+                                .write_interaction_trace(builder, elems)
                         },
                         common_lookup_elements,
                     )));
@@ -882,7 +879,8 @@ fn process_poseidon_context(
                 s.spawn(|_| {
                     *round_keys_ref = Some(Some(process_single_gen(
                         |builder, elems| {
-                            p.poseidon_round_keys.write_interaction_trace(builder, elems)
+                            p.poseidon_round_keys
+                                .write_interaction_trace(builder, elems)
                         },
                         common_lookup_elements,
                     )));
@@ -1320,14 +1318,18 @@ impl CairoInteractionClaimGenerator {
 
             // Pedersen
             s.spawn(|_| {
-                *pedersen_ref =
-                    Some(process_pedersen_context(pedersen_parts, common_lookup_elements));
+                *pedersen_ref = Some(process_pedersen_context(
+                    pedersen_parts,
+                    common_lookup_elements,
+                ));
             });
 
             // Poseidon
             s.spawn(|_| {
-                *poseidon_ref =
-                    Some(process_poseidon_context(poseidon_parts, common_lookup_elements));
+                *poseidon_ref = Some(process_poseidon_context(
+                    poseidon_parts,
+                    common_lookup_elements,
+                ));
             });
 
             // Blake
@@ -1342,8 +1344,10 @@ impl CairoInteractionClaimGenerator {
 
             // Range checks
             s.spawn(|_| {
-                *range_checks_ref =
-                    Some(process_range_checks(range_checks_parts, common_lookup_elements));
+                *range_checks_ref = Some(process_range_checks(
+                    range_checks_parts,
+                    common_lookup_elements,
+                ));
             });
 
             // Verify XOR
@@ -1600,26 +1604,26 @@ impl CairoInteractionClaimGenerator {
         };
 
         let pedersen_context_interaction_claim = pedersen_air::PedersenContextInteractionClaim {
-            claim: pedersen_aggregator_claim.map(
-                |pedersen_aggregator| pedersen_air::InteractionClaim {
+            claim: pedersen_aggregator_claim.map(|pedersen_aggregator| {
+                pedersen_air::InteractionClaim {
                     pedersen_aggregator,
                     partial_ec_mul: partial_ec_mul_claim.unwrap(),
                     pedersen_points_table: pedersen_points_table_claim.unwrap(),
-                },
-            ),
+                }
+            }),
         };
 
         let poseidon_context_interaction_claim = poseidon_air::PoseidonContextInteractionClaim {
-            claim: poseidon_aggregator_claim.map(
-                |poseidon_aggregator| poseidon_air::InteractionClaim {
+            claim: poseidon_aggregator_claim.map(|poseidon_aggregator| {
+                poseidon_air::InteractionClaim {
                     poseidon_aggregator,
                     poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim.unwrap(),
                     poseidon_full_round_chain: poseidon_full_round_chain_claim.unwrap(),
                     cube_252: cube_252_claim.unwrap(),
                     poseidon_round_keys: poseidon_round_keys_claim.unwrap(),
                     range_check_252_width_27: range_check_252_width_27_claim.unwrap(),
-                },
-            ),
+                }
+            }),
         };
 
         let range_checks_interaction_claim = RangeChecksInteractionClaim {
