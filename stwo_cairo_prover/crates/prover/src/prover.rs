@@ -3,11 +3,11 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::Result;
-use cairo_air::air::{lookup_sum, CairoComponents};
+use cairo_air::air::{lookup_sum, CairoComponents, CairoProof};
 use cairo_air::relations::CommonLookupElements;
-use cairo_air::utils::{serialize_proof_to_file, to_cairo_proof_sorted, ProofFormat};
+use cairo_air::utils::{serialize_proof_to_file, ProofFormat};
 use cairo_air::verifier::{verify_cairo, INTERACTION_POW_BITS};
-use cairo_air::{CairoProof, PreProcessedTraceVariant};
+use cairo_air::PreProcessedTraceVariant;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::channel::{Channel, MerkleChannel};
@@ -20,7 +20,7 @@ use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::backend::BackendForChannel;
 use stwo::prover::poly::circle::PolyOps;
-use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
+use stwo::prover::{prove_ex, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use tracing::{event, span, Level};
 
@@ -143,7 +143,7 @@ where
 
     // Prove stark.
     let span = span!(Level::INFO, "Prove STARKs").entered();
-    let proof = prove::<SimdBackend, _>(&components, channel, commitment_scheme)?;
+    let proof = prove_ex::<SimdBackend, _>(&components, channel, commitment_scheme)?;
     span.exit();
 
     event!(name: "component_info", Level::DEBUG, "Components: {}", component_builder);
@@ -152,8 +152,9 @@ where
         claim,
         interaction_pow,
         interaction_claim,
-        stark_proof: proof,
+        extended_stark_proof: proof,
         channel_salt,
+        preprocessed_trace_variant: prover_params.preprocessed_trace,
     })
 }
 
@@ -230,14 +231,9 @@ pub fn create_and_serialize_proof(
         ChannelHash::Blake2s => {
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Blake2sMerkleChannel>(
-                    cairo_proof.clone(),
-                    proof_params.preprocessed_trace,
-                )?;
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.clone().into())?;
             }
-            let cairo_proof_sorted =
-                to_cairo_proof_sorted(cairo_proof, proof_params.preprocessed_trace);
-            serialize_proof_to_file(&cairo_proof_sorted, &proof_path, proof_format)?;
+            serialize_proof_to_file(&cairo_proof, &proof_path, proof_format)?;
         }
         #[cfg(any(target_arch = "wasm32", target_arch = "wasm64"))]
         ChannelHash::Poseidon252 => {
@@ -245,18 +241,12 @@ pub fn create_and_serialize_proof(
         }
         #[cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))]
         ChannelHash::Poseidon252 => {
-            use cairo_air::utils::to_cairo_proof_sorted;
             use stwo::core::vcs_lifted::poseidon252_merkle::Poseidon252MerkleChannel;
             let cairo_proof = prove_cairo::<Poseidon252MerkleChannel>(input, proof_params)?;
             if verify {
-                verify_cairo::<Poseidon252MerkleChannel>(
-                    cairo_proof.clone(),
-                    proof_params.preprocessed_trace,
-                )?;
+                verify_cairo::<Poseidon252MerkleChannel>(cairo_proof.clone().into())?;
             }
-            let cairo_proof_sorted =
-                to_cairo_proof_sorted(cairo_proof, proof_params.preprocessed_trace);
-            serialize_proof_to_file(&cairo_proof_sorted, &proof_path, proof_format)?;
+            serialize_proof_to_file(&cairo_proof, &proof_path, proof_format)?;
         }
     };
 
@@ -298,7 +288,7 @@ pub mod tests {
         use test_log::test;
 
         use super::*;
-        use crate::prover::{prove_cairo, to_cairo_proof_sorted, ChannelHash, ProverParameters};
+        use crate::prover::{prove_cairo, ChannelHash, ProverParameters};
 
         #[test]
         fn test_poseidon_e2e_prove_cairo_verify_ret_opcode_components() {
@@ -316,11 +306,9 @@ pub mod tests {
             };
             let cairo_proof =
                 prove_cairo::<Poseidon252MerkleChannel>(input, prover_params).unwrap();
-            let cairo_proof_sorted =
-                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -371,6 +359,7 @@ pub mod tests {
         use std::process::Command;
 
         use cairo_air::verifier::verify_cairo;
+        use cairo_air::CairoProofForRustVerifier;
         use itertools::Itertools;
         use stwo::core::fri::FriConfig;
         use stwo::core::pcs::PcsConfig;
@@ -384,8 +373,7 @@ pub mod tests {
         use super::*;
         use crate::debug_tools::assert_constraints::assert_cairo_constraints;
         use crate::prover::{
-            prove_cairo, to_cairo_proof_sorted, ChannelHash, PreProcessedTraceVariant, ProverInput,
-            ProverParameters,
+            prove_cairo, ChannelHash, PreProcessedTraceVariant, ProverInput, ProverParameters,
         };
 
         // TODO(Ohad): fine-grained constraints tests.
@@ -419,8 +407,7 @@ pub mod tests {
                 store_polynomials_coefficients: true,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
-                .unwrap();
+            verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
         }
 
         #[test]
@@ -439,11 +426,9 @@ pub mod tests {
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            let cairo_proof_sorted =
-                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -502,11 +487,9 @@ pub mod tests {
                 store_polynomials_coefficients: false,
             };
             let cairo_proof = prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-            let cairo_proof_sorted =
-                to_cairo_proof_sorted(cairo_proof, prover_params.preprocessed_trace);
             let mut proof_file = NamedTempFile::new().unwrap();
             let mut serialized: Vec<starknet_ff::FieldElement> = Vec::new();
-            CairoSerialize::serialize(&cairo_proof_sorted, &mut serialized);
+            CairoSerialize::serialize(&cairo_proof, &mut serialized);
             let proof_hex: Vec<String> = serialized
                 .into_iter()
                 .map(|felt| format!("0x{felt:x}"))
@@ -544,10 +527,11 @@ pub mod tests {
             };
             let proofs = (0..n_proofs_to_compare)
                 .map(|_| {
-                    sonic_rs::to_string(
-                        &prove_cairo::<Blake2sMerkleChannel>(input.clone(), prover_params).unwrap(),
-                    )
-                    .unwrap()
+                    let proof: CairoProofForRustVerifier<_> =
+                        prove_cairo::<Blake2sMerkleChannel>(input.clone(), prover_params)
+                            .unwrap()
+                            .into();
+                    sonic_rs::to_string(&proof).unwrap()
                 })
                 .collect_vec();
 
@@ -604,8 +588,7 @@ pub mod tests {
                 };
                 let cairo_proof =
                     prove_cairo::<Blake2sMerkleChannel>(input, prover_params).unwrap();
-                verify_cairo::<Blake2sMerkleChannel>(cairo_proof, prover_params.preprocessed_trace)
-                    .unwrap();
+                verify_cairo::<Blake2sMerkleChannel>(cairo_proof.into()).unwrap();
             }
 
             #[test]
