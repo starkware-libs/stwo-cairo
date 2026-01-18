@@ -241,7 +241,32 @@ pub struct BuiltinsInteractionClaimGenerator {
         Option<range_check96_builtin::InteractionClaimGenerator>,
     range_check_128_builtin_interaction_gen: Option<range_check_builtin::InteractionClaimGenerator>,
 }
+
+/// Parts of the builtins interaction claim generator for parallel processing.
+pub struct BuiltinsInteractionParts {
+    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaimGenerator>,
+    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaimGenerator>,
+    pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaimGenerator>,
+    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaimGenerator>,
+    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaimGenerator>,
+    pub range_check_96_builtin: Option<range_check96_builtin::InteractionClaimGenerator>,
+    pub range_check_128_builtin: Option<range_check_builtin::InteractionClaimGenerator>,
+}
+
 impl BuiltinsInteractionClaimGenerator {
+    /// Decompose into individual parts for parallel processing.
+    pub fn into_parts(self) -> BuiltinsInteractionParts {
+        BuiltinsInteractionParts {
+            add_mod_builtin: self.add_mod_builtin_interaction_gen,
+            bitwise_builtin: self.bitwise_builtin_interaction_gen,
+            mul_mod_builtin: self.mul_mod_builtin_interaction_gen,
+            pedersen_builtin: self.pedersen_builtin_interaction_gen,
+            poseidon_builtin: self.poseidon_builtin_interaction_gen,
+            range_check_96_builtin: self.range_check_96_builtin_interaction_gen,
+            range_check_128_builtin: self.range_check_128_builtin_interaction_gen,
+        }
+    }
+
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,

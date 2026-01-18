@@ -9,7 +9,7 @@ use cairo_air::components::memory_address_to_id::{
 };
 use cairo_air::relations::{self, MEMORY_ADDRESS_TO_ID_RELATION_ID};
 use itertools::{izip, Itertools};
-use rayon::iter::{IndexedParallelIterator, IntoParallelIterator, ParallelIterator};
+use rayon::iter::{IntoParallelIterator, ParallelIterator}; // IndexedParallelIterator
 use stwo::core::fields::m31::{BaseField, M31};
 use stwo::core::poly::circle::CanonicCoset;
 use stwo::prover::backend::simd::m31::{PackedBaseField, PackedM31, LOG_N_LANES, N_LANES};
@@ -198,8 +198,7 @@ impl InteractionClaimGenerator {
             izip!(&self.ids, &self.multiplicities).tuples().enumerate()
         {
             let mut col_gen = logup_gen.new_col();
-            (col_gen.par_iter_mut(), ids0, ids1, mults0, mults1)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), ids0, ids1, mults0, mults1)
                 .enumerate()
                 .for_each(|(vec_row, (writer, &id0, &id1, &mult0, &mult1))| {
                     let addr = Seq::new(log_size).packed_at(vec_row) + PackedM31::broadcast(M31(1));

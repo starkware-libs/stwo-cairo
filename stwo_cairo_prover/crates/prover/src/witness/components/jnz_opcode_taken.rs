@@ -5,6 +5,7 @@ use cairo_air::components::jnz_opcode_taken::{Claim, InteractionClaim, N_TRACE_C
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, verify_instruction};
 use crate::witness::prelude::*;
+use itertools::izip;
 
 pub type InputType = CasmState;
 pub type PackedInputType = PackedCasmState;
@@ -548,12 +549,11 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.verify_instruction_0,
             &self.lookup_data.memory_address_to_id_0,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -562,12 +562,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_id_to_big_0,
             &self.lookup_data.memory_address_to_id_1,
         )
-            .into_par_iter()
             .for_each(|(writer, values0, values1)| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
                 let denom1: PackedQM31 = common_lookup_elements.combine(values1);
@@ -576,12 +575,11 @@ impl InteractionClaimGenerator {
         col_gen.finalize_col();
 
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_id_to_big_1,
             &self.lookup_data.opcodes_0,
         )
-            .into_par_iter()
             .enumerate()
             .for_each(|(i, (writer, values0, values1))| {
                 let denom0: PackedQM31 = common_lookup_elements.combine(values0);
@@ -592,8 +590,7 @@ impl InteractionClaimGenerator {
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (col_gen.par_iter_mut(), &self.lookup_data.opcodes_1)
-            .into_par_iter()
+        izip!(col_gen.iter_mut(), &self.lookup_data.opcodes_1)
             .enumerate()
             .for_each(|(i, (writer, values))| {
                 let denom = common_lookup_elements.combine(values);

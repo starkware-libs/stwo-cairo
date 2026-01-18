@@ -6,7 +6,7 @@ use cairo_air::components::verify_bitwise_xor_12::{
     Claim, InteractionClaim, EXPAND_BITS, LIMB_BITS, LOG_SIZE, N_MULT_COLUMNS,
 };
 use cairo_air::relations::VERIFY_BITWISE_XOR_12_RELATION_ID;
-use itertools::{chain, Itertools};
+use itertools::{chain, izip, Itertools};
 
 use crate::witness::prelude::*;
 
@@ -99,8 +99,7 @@ impl InteractionClaimGenerator {
             let bh1 = i1 as u32 & EXPAND_BITS_MASK;
 
             // Reconstruct the "expanded" values of a and b, and batch the lookups.
-            (col_gen.par_iter_mut(), mults0, mults1)
-                .into_par_iter()
+            izip!(col_gen.iter_mut(), mults0, mults1)
                 .enumerate()
                 .for_each(|(vec_row, (writer, mults0, mults1))| {
                     // vec_row is LIMB_BITS of al and LIMB_BITS - LOG_N_LANES of bl. The low part of

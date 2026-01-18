@@ -8,7 +8,7 @@ use cairo_air::relations::{
     RANGE_CHECK_9_9_F_RELATION_ID, RANGE_CHECK_9_9_G_RELATION_ID, RANGE_CHECK_9_9_H_RELATION_ID,
     RANGE_CHECK_9_9_RELATION_ID,
 };
-use itertools::{chain, Itertools};
+use itertools::{chain, izip, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
@@ -434,9 +434,8 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in big_components_values.iter().tuples().enumerate() {
             let mut col_gen = big_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
-                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+            izip!(col_gen.iter_mut(), limb0, limb1, limb2, limb3).for_each(
+                |(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 4 {
                         0 => (
                             common_lookup_elements.combine(&[
@@ -491,7 +490,8 @@ impl InteractionClaimGenerator {
                         }
                     };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
-                });
+                },
+            );
             col_gen.finalize_col();
         }
 
@@ -535,9 +535,8 @@ impl InteractionClaimGenerator {
         // Every element is 9-bit.
         for (i, (limb0, limb1, limb2, limb3)) in self.small_values.iter().tuples().enumerate() {
             let mut col_gen = small_values_logup_gen.new_col();
-            (col_gen.par_iter_mut(), limb0, limb1, limb2, limb3)
-                .into_par_iter()
-                .for_each(|(writer, limb0, limb1, limb2, limb3)| {
+            izip!(col_gen.iter_mut(), limb0, limb1, limb2, limb3).for_each(
+                |(writer, limb0, limb1, limb2, limb3)| {
                     let (denom0, denom1): (PackedQM31, PackedQM31) = match i % 2 {
                         0 => (
                             common_lookup_elements.combine(&[
@@ -568,7 +567,8 @@ impl InteractionClaimGenerator {
                         }
                     };
                     writer.write_frac(denom0 + denom1, denom0 * denom1);
-                });
+                },
+            );
             col_gen.finalize_col();
         }
 

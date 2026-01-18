@@ -2,6 +2,7 @@
 
 #![allow(unused_parens)]
 use cairo_air::components::range_check96_builtin::{Claim, InteractionClaim, N_TRACE_COLUMNS};
+use itertools::izip;
 
 use crate::witness::components::{memory_address_to_id, memory_id_to_big, range_check_6};
 use crate::witness::prelude::*;
@@ -252,27 +253,26 @@ impl InteractionClaimGenerator {
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
+        izip!(
+            col_gen.iter_mut(),
             &self.lookup_data.memory_address_to_id_0,
             &self.lookup_data.range_check_6_0,
         )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
+        .for_each(|(writer, values0, values1)| {
+            let denom0: PackedQM31 = common_lookup_elements.combine(values0);
+            let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            writer.write_frac(denom0 + denom1, denom0 * denom1);
+        });
         col_gen.finalize_col();
 
         // Sum last logup term.
         let mut col_gen = logup_gen.new_col();
-        (col_gen.par_iter_mut(), &self.lookup_data.memory_id_to_big_0)
-            .into_par_iter()
-            .for_each(|(writer, values)| {
+        izip!(col_gen.iter_mut(), &self.lookup_data.memory_id_to_big_0).for_each(
+            |(writer, values)| {
                 let denom = common_lookup_elements.combine(values);
                 writer.write_frac(PackedQM31::one(), denom);
-            });
+            },
+        );
         col_gen.finalize_col();
 
         let (trace, claimed_sum) = logup_gen.finalize_last();
