@@ -137,6 +137,7 @@ pub struct CairoProof {
     pub stark_proof: StarkProof,
     /// Optional salt used in the channel initialization.
     pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
 /// The output of a verification.
@@ -187,7 +188,14 @@ pub fn get_verification_output(proof: @CairoProof) -> VerificationOutput {
 }
 
 pub fn verify_cairo(proof: CairoProof) {
-    let CairoProof { claim, interaction_pow, interaction_claim, stark_proof, channel_salt } = proof;
+    let CairoProof {
+        claim,
+        interaction_pow,
+        interaction_claim,
+        stark_proof,
+        channel_salt,
+        preprocessed_trace_variant: _,
+    } = proof;
 
     // Verify.
     let pcs_config = stark_proof.commitment_scheme_proof.config;
@@ -924,3 +932,8 @@ impl CairoVerificationErrorDisplay of core::fmt::Display<CairoVerificationError>
     }
 }
 
+#[derive(Drop, Debug, Serde)]
+enum PreProcessedTraceVariant {
+    Canonical,
+    CanonicalWithoutPedersen,
+}
