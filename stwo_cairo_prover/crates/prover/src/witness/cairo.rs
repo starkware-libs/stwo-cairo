@@ -645,6 +645,16 @@ impl CairoInteractionClaimGenerator {
         let all_small_ref = &mut all_small_result;
 
         scope(|s| {
+            // === HEAVIEST COMPONENT: PEDERSEN PARTIAL_EC_MUL (2856ms) - spawn first! ===
+            if let Some(gen) = pedersen_heavy_partial_ec_mul {
+                s.spawn(|_| {
+                    *pedersen_partial_ec_mul_ref = Some(Some(process_single_gen(
+                        |builder, elems| gen.write_interaction_trace(builder, elems),
+                        common_lookup_elements,
+                    )));
+                });
+            }
+
             // === HEAVY OPCODES (>50ms) - spawn individually ===
             s.spawn(|_| {
                 *opcode_add_ref =
@@ -743,15 +753,7 @@ impl CairoInteractionClaimGenerator {
                 ));
             });
 
-            // === HEAVY PEDERSEN (>800ms) - spawn individually ===
-            if let Some(gen) = pedersen_heavy_partial_ec_mul {
-                s.spawn(|_| {
-                    *pedersen_partial_ec_mul_ref = Some(Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    )));
-                });
-            }
+            // === HEAVY PEDERSEN POINTS TABLE (853ms) ===
             if let Some(gen) = pedersen_heavy_points_table {
                 s.spawn(|_| {
                     *pedersen_points_table_ref = Some(Some(process_single_gen(
