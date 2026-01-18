@@ -6,15 +6,12 @@ use num_traits::Zero;
 use serde::{Deserialize, Serialize};
 use stwo::core::air::Component;
 use stwo::core::channel::Channel;
-use stwo::core::fields::m31::{BaseField, M31};
+use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
-use stwo::core::fri::FriProof;
-use stwo::core::pcs::{PcsConfig, TreeVec};
-use stwo::core::proof::StarkProof;
-use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
+use stwo::core::pcs::TreeVec;
+use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
-use stwo::core::ColumnVec;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -43,54 +40,53 @@ use crate::relations::{
     OPCODES_RELATION_ID,
 };
 use crate::verifier::RelationUse;
+use crate::PreProcessedTraceVariant;
 
-#[derive(Clone, Serialize, Deserialize)]
+/// The canonical proof format emitted by the Cairo prover.
+///
+/// This is the main proof struct that contains all the data of a Cairo proof. It serves as the
+/// universal representation from which verifier-specific formats can be derived.
+///
+/// # Verifier Integration
+///
+/// Each verifier implementation should:
+/// 1. Implement a conversion from `CairoProof` to its specific format (typically via the [`From`]
+///    trait).
+/// 2. Implement appropriate serialization for proof transport/storage.
+///
+/// # Available Verifier Formats
+///
+/// - **Rust verifier**: See [`CairoProofForRustVerifier`] - conversion via `From` trait, uses serde
+///   for JSON serialization or bincode for binary serialization.
+/// - **Cairo verifier**: Serialization via [`CairoSerialize`](stwo_cairo_serialize::CairoSerialize)
+///   (see `serde_utils.rs`), which transforms the proof into a format compatible with the Cairo1
+///   verifier.
+#[derive(Clone)]
 pub struct CairoProof<H: MerkleHasherLifted> {
+    pub claim: CairoClaim,
+    pub interaction_pow: u64,
+    pub interaction_claim: CairoInteractionClaim,
+    pub extended_stark_proof: ExtendedStarkProof<H>,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
+}
+
+/// Proof format optimized for the Rust verifier.
+///
+/// This struct contains the proof data in a format tailored to the Rust verifier's requirements.
+///
+/// The key difference from [`CairoProof`] is that this format uses [`StarkProof`] instead of
+/// [`ExtendedStarkProof`], discarding auxiliary data not needed by the Rust verifier.
+#[derive(Clone, Serialize, Deserialize)]
+pub struct CairoProofForRustVerifier<H: MerkleHasherLifted> {
     pub claim: CairoClaim,
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
     /// Optional salt used in the channel initialization.
     pub channel_salt: Option<u64>,
-}
-
-/// Analogue structure to [`stwo::core::pcs::quotients::CommitmentSchemeProof`] with the difference
-/// that the queried values are in a different layout and order. In a `CommitmentSchemeProof`, the
-/// queried values are organized in a TreeVec<ColumnVec<Vec<M31>>>:
-/// queried_values[tree_idx][col_idx] is a vector of values of the column at index `col_idx` in tree
-/// `tree_idx`, in ascending order of query positions. In `CommitmentSchemeProofSorted`, the queried
-/// values are organized in a TreeVec<Vec<M31>>: `sorted_queried_values[tree_idx]` is the
-/// concatenation of vectors v_i, 0 <= i < n_queries, where vector v_i consists of the queried
-/// values, at the i-th query position, of the columns of tree `tree_idx`, sorted (stably) in
-/// ascending order by column size.
-/// The reason for having a different layout in the Cairo verifier is that having the queries
-/// in sorted order makes the merkle Verifier more efficient. The downside is that the verifier
-/// needs to sort the sampled values for the fri quotients to match the order of the queries.
-// TODO(Leo): remove this struct. Only sort/unsort queried vals in Cairo serialization/
-// deserialization of a CairoProof.
-#[derive(Debug, Serialize, Deserialize)]
-pub struct CommitmentSchemeProofSorted<H: MerkleHasherLifted> {
-    pub config: PcsConfig,
-    pub commitments: TreeVec<H::Hash>,
-    pub sampled_values: TreeVec<ColumnVec<Vec<SecureField>>>,
-    pub decommitments: TreeVec<MerkleDecommitmentLifted<H>>,
-    pub queried_values: TreeVec<Vec<BaseField>>,
-    pub proof_of_work: u64,
-    pub fri_proof: FriProof<H>,
-}
-
-#[derive(Debug, Serialize, Deserialize)]
-pub struct StarkProofSorted<H: MerkleHasherLifted>(pub CommitmentSchemeProofSorted<H>);
-
-/// Analogue of [`CairoProof`] except that its `stark_proof` member has type
-/// [`StarkProofSorted`].
-#[derive(Serialize, Deserialize)]
-pub struct CairoProofSorted<H: MerkleHasherLifted> {
-    pub claim: CairoClaim,
-    pub interaction_pow: u64,
-    pub interaction_claim: CairoInteractionClaim,
-    pub stark_proof: StarkProofSorted<H>,
-    pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
 pub type RelationUsesDict = HashMap<&'static str, u64>;
@@ -882,6 +878,30 @@ impl std::fmt::Display for CairoComponents {
             indented_component_display(&self.verify_bitwise_xor_9)
         )?;
         Ok(())
+    }
+}
+
+impl<H: MerkleHasherLifted> From<CairoProof<H>> for CairoProofForRustVerifier<H> {
+    fn from(extended_cairo_proof: CairoProof<H>) -> Self {
+        let CairoProof {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            extended_stark_proof,
+            channel_salt,
+            preprocessed_trace_variant,
+        } = extended_cairo_proof;
+
+        let ExtendedStarkProof { proof, .. } = extended_stark_proof;
+
+        Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof: proof,
+            channel_salt,
+            preprocessed_trace_variant,
+        }
     }
 }
 
