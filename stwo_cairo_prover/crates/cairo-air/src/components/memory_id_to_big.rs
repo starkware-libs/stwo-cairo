@@ -4,10 +4,9 @@ use stwo::core::channel::Channel;
 use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, SECURE_EXTENSION_DEGREE};
 use stwo::core::pcs::TreeVec;
-use stwo_cairo_common::memory::{
-    LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
-};
+use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::{PreProcessedColumn, Seq};
+use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::{
     relation, EvalAtRow, FrameworkComponent, FrameworkEval, RelationEntry, TraceLocationAllocator,
@@ -21,13 +20,13 @@ use crate::relations;
 // TODO(AlonH): Make memory size configurable.
 pub const MEMORY_ID_SIZE: usize = 1;
 pub const N_MULTIPLICITY_COLUMNS: usize = 1;
-pub const BIG_N_COLUMNS: usize = N_M31_IN_FELT252 + N_MULTIPLICITY_COLUMNS;
+pub const BIG_N_COLUMNS: usize = FELT252_N_WORDS + N_MULTIPLICITY_COLUMNS;
 pub const SMALL_N_COLUMNS: usize = N_M31_IN_SMALL_FELT252 + N_MULTIPLICITY_COLUMNS;
 
 pub type BigComponent = FrameworkComponent<BigEval>;
 pub type SmallComponent = FrameworkComponent<SmallEval>;
 
-const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + N_M31_IN_FELT252;
+const N_LOGUP_POWERS: usize = MEMORY_ID_SIZE + FELT252_N_WORDS;
 
 pub const RELATION_USES_PER_ROW_BIG: [RelationUse; 8] = [
     RelationUse {
@@ -86,7 +85,7 @@ pub const RELATION_USES_PER_ROW_SMALL: [RelationUse; 4] = [
 relation!(RelationElements, N_LOGUP_POWERS);
 
 /// IDs are continuous and start from 0.
-/// Values are Felt252 stored as `N_M31_IN_FELT252` M31 values (each value containing 9 bits).
+/// Values are Felt252 stored as `FELT252_N_WORDS` M31 values (each value containing 9 bits).
 #[derive(Clone)]
 pub struct BigEval {
     pub log_n_rows: u32,
@@ -342,7 +341,7 @@ impl Claim {
             // And a yield of the value.
             vec![
                 log_size;
-                SECURE_EXTENSION_DEGREE * ((N_M31_IN_FELT252.div_ceil(2) + 1).div_ceil(2))
+                SECURE_EXTENSION_DEGREE * ((FELT252_N_WORDS.div_ceil(2) + 1).div_ceil(2))
             ]
         });
         let small_interaction_log_sizes =

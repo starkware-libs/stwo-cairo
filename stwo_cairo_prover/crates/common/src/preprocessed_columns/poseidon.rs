@@ -1,19 +1,14 @@
-use stwo::core::fields::m31::BaseField;
-use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::column::BaseColumn;
-use stwo::prover::backend::simd::m31::PackedM31;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
+use super::poseidon_round_keys::round_keys;
 use super::preprocessed_trace::PreProcessedColumn;
 use super::preprocessed_utils::pad;
-use crate::preprocessed_columns::poseidon_round_keys::round_keys;
+#[cfg(feature = "prover")]
+use super::simd_prelude::*;
 use crate::prover_types::cpu::{FELT252WIDTH27_N_WORDS, M31};
-use crate::prover_types::simd::N_LANES;
 
 const LOG_N_ROWS: u32 = (N_ROUNDS as u32).next_power_of_two().ilog2();
+#[cfg(feature = "prover")]
 const N_PACKED_ROWS: usize = (2_u32.pow(LOG_N_ROWS)) as usize / N_LANES;
 
 pub const N_ROUNDS: usize = 35;
@@ -31,17 +26,14 @@ pub fn round_keys_m31(round: usize, col: usize) -> M31 {
 
 #[derive(Debug)]
 pub struct PoseidonRoundKeys {
-    pub packed_keys: [PackedM31; N_PACKED_ROWS],
+    pub keys: Vec<M31>,
     pub col: usize,
 }
 
 impl PoseidonRoundKeys {
     pub fn new(col: usize) -> Self {
-        let packed_keys = BaseColumn::from_iter(pad(round_keys_m31, N_ROUNDS, col)).data;
-        Self {
-            packed_keys: packed_keys.try_into().unwrap(),
-            col,
-        }
+        let keys = pad(round_keys_m31, N_ROUNDS, col);
+        Self { keys, col }
     }
 }
 
@@ -50,14 +42,22 @@ impl PreProcessedColumn for PoseidonRoundKeys {
         LOG_N_ROWS
     }
 
+    #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
-        self.packed_keys[vec_row]
+        // TODO(AnatG): Now that we store the keys unpacked, we should optimize this function.
+        let packed_keys: [PackedM31; N_PACKED_ROWS] = BaseColumn::from_iter(self.keys.clone())
+            .data
+            .try_into()
+            .unwrap();
+        packed_keys[vec_row]
     }
 
+    #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
+        let packed_keys = BaseColumn::from_iter(self.keys.clone()).data;
         CircleEvaluation::new(
             CanonicCoset::new(LOG_N_ROWS).circle_domain(),
-            BaseColumn::from_simd(self.packed_keys.to_vec()),
+            BaseColumn::from_simd(packed_keys),
         )
     }
 
@@ -68,6 +68,7 @@ impl PreProcessedColumn for PoseidonRoundKeys {
     }
 }
 
+#[cfg(feature = "prover")]
 #[cfg(test)]
 mod tests {
     use std::array::from_fn;

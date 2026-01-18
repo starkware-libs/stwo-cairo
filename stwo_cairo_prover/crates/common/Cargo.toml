@@ -3,6 +3,9 @@ name = "stwo-cairo-common"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+prover = ["stwo/parallel", "stwo/prover", "stwo-constraint-framework/parallel", "stwo-constraint-framework/prover"]
+
 [dependencies]
 bytemuck.workspace = true
 itertools.workspace = true

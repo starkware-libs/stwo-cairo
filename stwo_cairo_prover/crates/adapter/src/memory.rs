@@ -5,9 +5,8 @@ use std::ops::{Deref, DerefMut};
 use bytemuck::{Pod, Zeroable};
 use dashmap::DashMap;
 use serde::{Deserialize, Serialize};
-use stwo_cairo_common::memory::{
-    LARGE_MEMORY_VALUE_ID_BASE, N_BITS_PER_FELT, N_M31_IN_SMALL_FELT252,
-};
+use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::prover_types::cpu::FELT252_BITS_PER_WORD;
 use tracing::{span, Level};
 
 /// P is 2^251 + 17 * 2^192 - 1.
@@ -58,7 +57,7 @@ pub struct MemoryConfig {
 }
 impl MemoryConfig {
     pub fn new(small_max: u128, log_small_value_capacity: u32) -> MemoryConfig {
-        assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * N_BITS_PER_FELT));
+        assert!(small_max < 1 << (N_M31_IN_SMALL_FELT252 * FELT252_BITS_PER_WORD));
         MemoryConfig {
             small_max,
             log_small_value_capacity,
