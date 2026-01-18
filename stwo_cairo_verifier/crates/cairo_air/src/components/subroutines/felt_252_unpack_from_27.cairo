@@ -25,7 +25,6 @@ pub fn felt_252_unpack_from_27_evaluate(
     unpacked_limb_25_col17: QM31,
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 10] {
     let [

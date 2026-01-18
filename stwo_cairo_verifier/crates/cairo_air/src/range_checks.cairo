@@ -23,7 +23,6 @@ use stwo_constraint_framework::{
     CommonLookupElements, LookupElementsImpl, PreprocessedMaskValues, PreprocessedMaskValuesImpl,
 };
 use stwo_verifier_core::channel::Channel;
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
@@ -208,7 +207,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         self
             .rc_6
@@ -218,7 +216,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_8
@@ -228,7 +225,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_11
@@ -238,7 +234,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_12
@@ -248,7 +243,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_18
@@ -258,7 +252,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_20
@@ -268,7 +261,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_4_3
@@ -278,7 +270,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_4_4
@@ -288,7 +279,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_9_9
@@ -298,7 +288,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_7_2_5
@@ -308,7 +297,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_3_6_6_3
@@ -318,7 +306,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_4_4_4_4
@@ -328,7 +315,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .rc_3_3_3_3_3
@@ -338,7 +324,6 @@ pub impl RangeChecksComponentsImpl of RangeChecksComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
     }
 }

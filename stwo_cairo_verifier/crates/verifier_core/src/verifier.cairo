@@ -1,6 +1,7 @@
 use core::num::traits::Pow;
 use crate::channel::{Channel, ChannelTrait};
 use crate::circle::{ChannelGetRandomCirclePointImpl, CirclePoint};
+use crate::fields::Invertible;
 // TODO(Ilya): Remove this once we bump the compiler version.
 #[allow(unused_imports)]
 use crate::fields::qm31::QM31_EXTENSION_DEGREE;
@@ -9,6 +10,7 @@ use crate::pcs::PcsConfigTrait;
 use crate::pcs::verifier::{
     CommitmentSchemeProof, CommitmentSchemeVerifier, CommitmentSchemeVerifierImpl,
 };
+use crate::poly::circle::{CanonicCosetImpl, CanonicCosetTrait};
 use crate::utils::{ArrayImpl, SpanImpl};
 use crate::vcs::MerkleHasher;
 use crate::{ColumnSpan, Hash, TreeSpan};
@@ -95,16 +97,23 @@ pub fn verify<A, +Air<A>, +Drop<A>>(
         );
 
     // Evaluate composition polynomial at OOD point and check that it matches the trace OOD values.
+    let numerator = air
+        .eval_composition_polynomial_at_point(
+            ood_point, sampled_oods_values, composition_random_coeff,
+        );
+    // `max_trace_domain` is the largest domain of a trace polynomial (before LDE).
+    let max_trace_domain = CanonicCosetImpl::new(split_composition_log_degree_bound);
+    let denominator_inv = max_trace_domain.eval_vanishing(ood_point).inverse();
     assert!(
-        composition_oods_eval == air
-            .eval_composition_polynomial_at_point(
-                ood_point, sampled_oods_values, composition_random_coeff,
-            ),
+        composition_oods_eval == numerator * denominator_inv,
         "{}",
         VerificationError::OodsNotMatching,
     );
 
-    commitment_scheme.verify_values(ood_point, commitment_scheme_proof, ref channel);
+    commitment_scheme
+        .verify_values(
+            ood_point, commitment_scheme_proof, ref channel, split_composition_log_degree_bound,
+        );
 }
 
 fn circle_double_x(x: QM31) -> QM31 {

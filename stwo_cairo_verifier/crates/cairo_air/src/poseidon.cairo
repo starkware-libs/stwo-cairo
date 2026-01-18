@@ -18,8 +18,6 @@ use stwo_constraint_framework::{LookupElementsImpl, PreprocessedMaskValuesImpl};
 use stwo_verifier_core::ColumnSpan;
 use stwo_verifier_core::TreeArray;
 use stwo_verifier_core::channel::{Channel, ChannelTrait};
-#[cfg(or(not(feature: "poseidon252_verifier"), feature: "poseidon_outputs_packing"))]
-use stwo_verifier_core::circle::CirclePoint;
 use stwo_verifier_core::fields::qm31::QM31;
 use stwo_verifier_core::pcs::verifier::CommitmentSchemeVerifierImpl;
 use stwo_verifier_core::utils::{ArrayImpl, OptionImpl};
@@ -198,7 +196,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         if let Option::Some(components) = self.components {
             components
@@ -208,7 +205,6 @@ pub impl PoseidonContextComponentsImpl of PoseidonContextComponentsTrait {
                     ref trace_mask_values,
                     ref interaction_trace_mask_values,
                     random_coeff,
-                    point,
                 );
         }
     }
@@ -287,7 +283,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
         ref trace_mask_values: ColumnSpan<Span<QM31>>,
         ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
         random_coeff: QM31,
-        point: CirclePoint<QM31>,
     ) {
         self
             .poseidon_aggregator
@@ -297,7 +292,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .poseidon_3_partial_rounds_chain
@@ -307,7 +301,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .poseidon_full_round_chain
@@ -317,7 +310,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .cube_252
@@ -327,7 +319,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .poseidon_round_keys
@@ -337,7 +328,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
         self
             .range_check_252_width_27
@@ -347,7 +337,6 @@ pub impl PoseidonComponentsImpl of PoseidonComponentsTrait {
                 ref trace_mask_values,
                 ref interaction_trace_mask_values,
                 random_coeff,
-                point,
             );
     }
 }

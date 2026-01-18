@@ -22,7 +22,6 @@ pub fn mod_words_to_12_bit_array_evaluate(
     ref range_check_3_6_6_3_sum_3: QM31,
     ref range_check_3_6_6_3_sum_4: QM31,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 16] {
     let [

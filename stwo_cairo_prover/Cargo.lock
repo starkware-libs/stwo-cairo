@@ -3384,7 +3384,7 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 [[package]]
 name = "std-shims"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=45d0180#45d01806ee63ee931c69f19f5a615599f5e1cc89"
+source = "git+https://github.com/starkware-libs/stwo?rev=6b5c843#6b5c84396da9ce282dc6accb343dd7ef6d1b9966"
 
 [[package]]
 name = "string_cache"
@@ -3407,7 +3407,7 @@ checksum = "7da8b5736845d9f2fcb837ea5d9e2628564b3b043a70948a3f0b778838c5fb4f"
 [[package]]
 name = "stwo"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=45d0180#45d01806ee63ee931c69f19f5a615599f5e1cc89"
+source = "git+https://github.com/starkware-libs/stwo?rev=6b5c843#6b5c84396da9ce282dc6accb343dd7ef6d1b9966"
 dependencies = [
  "blake2",
  "blake3",
@@ -3416,7 +3416,7 @@ dependencies = [
  "dashmap",
  "educe 0.5.11",
  "fnv",
- "hashbrown 0.16.0",
+ "hashbrown 0.15.5",
  "hex",
  "indexmap",
  "itertools 0.12.1",
@@ -3435,7 +3435,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=45d0180#45d01806ee63ee931c69f19f5a615599f5e1cc89"
+source = "git+https://github.com/starkware-libs/stwo?rev=6b5c843#6b5c84396da9ce282dc6accb343dd7ef6d1b9966"
 dependencies = [
  "bytemuck",
  "itertools 0.12.1",
@@ -3447,7 +3447,7 @@ dependencies = [
 [[package]]
 name = "stwo-air-utils-derive"
 version = "0.1.0"
-source = "git+https://github.com/starkware-libs/stwo?rev=45d0180#45d01806ee63ee931c69f19f5a615599f5e1cc89"
+source = "git+https://github.com/starkware-libs/stwo?rev=6b5c843#6b5c84396da9ce282dc6accb343dd7ef6d1b9966"
 dependencies = [
  "itertools 0.13.0",
  "proc-macro2",
@@ -3523,9 +3523,9 @@ dependencies = [
 [[package]]
 name = "stwo-constraint-framework"
 version = "0.1.1"
-source = "git+https://github.com/starkware-libs/stwo?rev=45d0180#45d01806ee63ee931c69f19f5a615599f5e1cc89"
+source = "git+https://github.com/starkware-libs/stwo?rev=6b5c843#6b5c84396da9ce282dc6accb343dd7ef6d1b9966"
 dependencies = [
- "hashbrown 0.16.0",
+ "hashbrown 0.15.5",
  "itertools 0.12.1",
  "num-traits",
  "rand 0.8.5",

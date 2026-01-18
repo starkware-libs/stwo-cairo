@@ -8,7 +8,6 @@ pub fn double_karatsuba_b1daa_evaluate(
     input: [QM31; 64],
     common_lookup_elements: @CommonLookupElements,
     ref sum: QM31,
-    domain_vanishing_eval_inv: QM31,
     random_coeff: QM31,
 ) -> [QM31; 63] {
     let [
@@ -135,7 +134,6 @@ pub fn double_karatsuba_b1daa_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let [
@@ -192,7 +190,6 @@ pub fn double_karatsuba_b1daa_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
     let x_sum_tmp_b1daa_10_limb_0: QM31 = (double_karatsuba_b1daa_input_limb_0
@@ -308,7 +305,6 @@ pub fn double_karatsuba_b1daa_evaluate(
         ],
         common_lookup_elements,
         ref sum,
-        domain_vanishing_eval_inv,
         random_coeff,
     );
 

@@ -16,7 +16,7 @@ use crate::components::{
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BuiltinsClaim {
     pub add_mod_builtin: Option<add_mod_builtin::Claim>,
     pub bitwise_builtin: Option<bitwise_builtin::Claim>,
@@ -116,7 +116,7 @@ impl BuiltinsClaim {
     }
 }
 
-#[derive(Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
+#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
 pub struct BuiltinsInteractionClaim {
     pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
     pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
