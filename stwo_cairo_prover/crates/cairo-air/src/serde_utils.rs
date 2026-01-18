@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use starknet_ff::FieldElement;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriProof;
@@ -10,7 +11,7 @@ use stwo::core::ColumnVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use crate::air::{CommitmentSchemeProofSorted, StarkProofSorted};
-use crate::{CairoProof, CairoProofSorted};
+use crate::{CairoProof, CairoProofSorted, PreProcessedTraceVariant};
 
 impl<H: MerkleHasherLifted> CairoSerialize for CairoProof<H>
 where
@@ -23,12 +24,14 @@ where
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
         CairoSerialize::serialize(channel_salt, output);
+        CairoSerialize::serialize(preprocessed_trace_variant, output);
     }
 }
 
@@ -42,12 +45,14 @@ where
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
         let channel_salt = CairoDeserialize::deserialize(data);
+        let preprocessed_trace_variant = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         }
     }
 }
@@ -134,12 +139,14 @@ where
             interaction_claim,
             stark_proof: sorted_stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(sorted_stark_proof, output);
         CairoSerialize::serialize(channel_salt, output);
+        CairoSerialize::serialize(preprocessed_trace_variant, output);
     }
 }
 
@@ -153,12 +160,39 @@ where
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
         let channel_salt = CairoDeserialize::deserialize(data);
+        let preprocessed_trace_variant = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
+        }
+    }
+}
+
+impl CairoSerialize for PreProcessedTraceVariant {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        let variant: FieldElement = match self {
+            PreProcessedTraceVariant::Canonical => FieldElement::ZERO,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => FieldElement::ONE,
+        };
+        output.push(variant);
+    }
+}
+
+impl CairoDeserialize for PreProcessedTraceVariant {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
+        let variant = data
+            .next()
+            .expect("Failed to deserialize preprocessed trace variant.");
+
+        // Cannot match on FieldElement because it doesn't implement PartialEq.
+        if *variant == FieldElement::ZERO {
+            PreProcessedTraceVariant::Canonical
+        } else {
+            PreProcessedTraceVariant::CanonicalWithoutPedersen
         }
     }
 }

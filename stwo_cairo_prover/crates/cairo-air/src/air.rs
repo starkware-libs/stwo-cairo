@@ -45,6 +45,7 @@ use crate::relations::{
     OPCODES_RELATION_ID,
 };
 use crate::verifier::RelationUse;
+use crate::PreProcessedTraceVariant;
 
 #[derive(Clone, Serialize, Deserialize)]
 pub struct CairoProof<H: MerkleHasherLifted> {
@@ -54,6 +55,7 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     pub stark_proof: StarkProof<H>,
     /// Optional salt used in the channel initialization.
     pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
 /// Analogue structure to [`stwo::core::pcs::quotients::CommitmentSchemeProof`] with the difference
@@ -93,6 +95,7 @@ pub struct CairoProofSorted<H: MerkleHasherLifted> {
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProofSorted<H>,
     pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
 }
 
 pub type RelationUsesDict = HashMap<&'static str, u64>;
