@@ -5761,19 +5761,1458 @@ impl InteractionClaimGenerator {
         common_lookup_elements: &relations::CommonLookupElements,
     ) -> InteractionClaim {
         let enabler_col = Enabler::new(self.n_rows);
+
+        // ===========================================
+        // Phase 1: Precompute all denominators in parallel
+        // ===========================================
+        // This is the expensive work - combine() calls.
+        // We do all of them in parallel before the sequential column generation.
+
+        let mut denom_partial_ec_mul_window_bits_18_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_partial_ec_mul_window_bits_18_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_pedersen_points_table_window_bits_18_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_10: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_11: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_9: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_10: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_11: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_b_9: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_10: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_11: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_c_9: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_10: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_11: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_d_9: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_e_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_f_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_g_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_6: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_7: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_20_h_8: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_b_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_c_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_d_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_e_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_3: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_4: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_f_5: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_g_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_g_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_g_2: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_h_0: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_h_1: Option<Vec<PackedQM31>> = None;
+        let mut denom_range_check_9_9_h_2: Option<Vec<PackedQM31>> = None;
+
+        // Precompute all denominators in parallel using rayon scope
+        {
+            let denom_partial_ec_mul_window_bits_18_0_ref = &mut denom_partial_ec_mul_window_bits_18_0;
+            let denom_partial_ec_mul_window_bits_18_1_ref = &mut denom_partial_ec_mul_window_bits_18_1;
+            let denom_pedersen_points_table_window_bits_18_0_ref = &mut denom_pedersen_points_table_window_bits_18_0;
+            let denom_range_check_20_0_ref = &mut denom_range_check_20_0;
+            let denom_range_check_20_1_ref = &mut denom_range_check_20_1;
+            let denom_range_check_20_10_ref = &mut denom_range_check_20_10;
+            let denom_range_check_20_11_ref = &mut denom_range_check_20_11;
+            let denom_range_check_20_2_ref = &mut denom_range_check_20_2;
+            let denom_range_check_20_3_ref = &mut denom_range_check_20_3;
+            let denom_range_check_20_4_ref = &mut denom_range_check_20_4;
+            let denom_range_check_20_5_ref = &mut denom_range_check_20_5;
+            let denom_range_check_20_6_ref = &mut denom_range_check_20_6;
+            let denom_range_check_20_7_ref = &mut denom_range_check_20_7;
+            let denom_range_check_20_8_ref = &mut denom_range_check_20_8;
+            let denom_range_check_20_9_ref = &mut denom_range_check_20_9;
+            let denom_range_check_20_b_0_ref = &mut denom_range_check_20_b_0;
+            let denom_range_check_20_b_1_ref = &mut denom_range_check_20_b_1;
+            let denom_range_check_20_b_10_ref = &mut denom_range_check_20_b_10;
+            let denom_range_check_20_b_11_ref = &mut denom_range_check_20_b_11;
+            let denom_range_check_20_b_2_ref = &mut denom_range_check_20_b_2;
+            let denom_range_check_20_b_3_ref = &mut denom_range_check_20_b_3;
+            let denom_range_check_20_b_4_ref = &mut denom_range_check_20_b_4;
+            let denom_range_check_20_b_5_ref = &mut denom_range_check_20_b_5;
+            let denom_range_check_20_b_6_ref = &mut denom_range_check_20_b_6;
+            let denom_range_check_20_b_7_ref = &mut denom_range_check_20_b_7;
+            let denom_range_check_20_b_8_ref = &mut denom_range_check_20_b_8;
+            let denom_range_check_20_b_9_ref = &mut denom_range_check_20_b_9;
+            let denom_range_check_20_c_0_ref = &mut denom_range_check_20_c_0;
+            let denom_range_check_20_c_1_ref = &mut denom_range_check_20_c_1;
+            let denom_range_check_20_c_10_ref = &mut denom_range_check_20_c_10;
+            let denom_range_check_20_c_11_ref = &mut denom_range_check_20_c_11;
+            let denom_range_check_20_c_2_ref = &mut denom_range_check_20_c_2;
+            let denom_range_check_20_c_3_ref = &mut denom_range_check_20_c_3;
+            let denom_range_check_20_c_4_ref = &mut denom_range_check_20_c_4;
+            let denom_range_check_20_c_5_ref = &mut denom_range_check_20_c_5;
+            let denom_range_check_20_c_6_ref = &mut denom_range_check_20_c_6;
+            let denom_range_check_20_c_7_ref = &mut denom_range_check_20_c_7;
+            let denom_range_check_20_c_8_ref = &mut denom_range_check_20_c_8;
+            let denom_range_check_20_c_9_ref = &mut denom_range_check_20_c_9;
+            let denom_range_check_20_d_0_ref = &mut denom_range_check_20_d_0;
+            let denom_range_check_20_d_1_ref = &mut denom_range_check_20_d_1;
+            let denom_range_check_20_d_10_ref = &mut denom_range_check_20_d_10;
+            let denom_range_check_20_d_11_ref = &mut denom_range_check_20_d_11;
+            let denom_range_check_20_d_2_ref = &mut denom_range_check_20_d_2;
+            let denom_range_check_20_d_3_ref = &mut denom_range_check_20_d_3;
+            let denom_range_check_20_d_4_ref = &mut denom_range_check_20_d_4;
+            let denom_range_check_20_d_5_ref = &mut denom_range_check_20_d_5;
+            let denom_range_check_20_d_6_ref = &mut denom_range_check_20_d_6;
+            let denom_range_check_20_d_7_ref = &mut denom_range_check_20_d_7;
+            let denom_range_check_20_d_8_ref = &mut denom_range_check_20_d_8;
+            let denom_range_check_20_d_9_ref = &mut denom_range_check_20_d_9;
+            let denom_range_check_20_e_0_ref = &mut denom_range_check_20_e_0;
+            let denom_range_check_20_e_1_ref = &mut denom_range_check_20_e_1;
+            let denom_range_check_20_e_2_ref = &mut denom_range_check_20_e_2;
+            let denom_range_check_20_e_3_ref = &mut denom_range_check_20_e_3;
+            let denom_range_check_20_e_4_ref = &mut denom_range_check_20_e_4;
+            let denom_range_check_20_e_5_ref = &mut denom_range_check_20_e_5;
+            let denom_range_check_20_e_6_ref = &mut denom_range_check_20_e_6;
+            let denom_range_check_20_e_7_ref = &mut denom_range_check_20_e_7;
+            let denom_range_check_20_e_8_ref = &mut denom_range_check_20_e_8;
+            let denom_range_check_20_f_0_ref = &mut denom_range_check_20_f_0;
+            let denom_range_check_20_f_1_ref = &mut denom_range_check_20_f_1;
+            let denom_range_check_20_f_2_ref = &mut denom_range_check_20_f_2;
+            let denom_range_check_20_f_3_ref = &mut denom_range_check_20_f_3;
+            let denom_range_check_20_f_4_ref = &mut denom_range_check_20_f_4;
+            let denom_range_check_20_f_5_ref = &mut denom_range_check_20_f_5;
+            let denom_range_check_20_f_6_ref = &mut denom_range_check_20_f_6;
+            let denom_range_check_20_f_7_ref = &mut denom_range_check_20_f_7;
+            let denom_range_check_20_f_8_ref = &mut denom_range_check_20_f_8;
+            let denom_range_check_20_g_0_ref = &mut denom_range_check_20_g_0;
+            let denom_range_check_20_g_1_ref = &mut denom_range_check_20_g_1;
+            let denom_range_check_20_g_2_ref = &mut denom_range_check_20_g_2;
+            let denom_range_check_20_g_3_ref = &mut denom_range_check_20_g_3;
+            let denom_range_check_20_g_4_ref = &mut denom_range_check_20_g_4;
+            let denom_range_check_20_g_5_ref = &mut denom_range_check_20_g_5;
+            let denom_range_check_20_g_6_ref = &mut denom_range_check_20_g_6;
+            let denom_range_check_20_g_7_ref = &mut denom_range_check_20_g_7;
+            let denom_range_check_20_g_8_ref = &mut denom_range_check_20_g_8;
+            let denom_range_check_20_h_0_ref = &mut denom_range_check_20_h_0;
+            let denom_range_check_20_h_1_ref = &mut denom_range_check_20_h_1;
+            let denom_range_check_20_h_2_ref = &mut denom_range_check_20_h_2;
+            let denom_range_check_20_h_3_ref = &mut denom_range_check_20_h_3;
+            let denom_range_check_20_h_4_ref = &mut denom_range_check_20_h_4;
+            let denom_range_check_20_h_5_ref = &mut denom_range_check_20_h_5;
+            let denom_range_check_20_h_6_ref = &mut denom_range_check_20_h_6;
+            let denom_range_check_20_h_7_ref = &mut denom_range_check_20_h_7;
+            let denom_range_check_20_h_8_ref = &mut denom_range_check_20_h_8;
+            let denom_range_check_9_9_0_ref = &mut denom_range_check_9_9_0;
+            let denom_range_check_9_9_1_ref = &mut denom_range_check_9_9_1;
+            let denom_range_check_9_9_2_ref = &mut denom_range_check_9_9_2;
+            let denom_range_check_9_9_3_ref = &mut denom_range_check_9_9_3;
+            let denom_range_check_9_9_4_ref = &mut denom_range_check_9_9_4;
+            let denom_range_check_9_9_5_ref = &mut denom_range_check_9_9_5;
+            let denom_range_check_9_9_b_0_ref = &mut denom_range_check_9_9_b_0;
+            let denom_range_check_9_9_b_1_ref = &mut denom_range_check_9_9_b_1;
+            let denom_range_check_9_9_b_2_ref = &mut denom_range_check_9_9_b_2;
+            let denom_range_check_9_9_b_3_ref = &mut denom_range_check_9_9_b_3;
+            let denom_range_check_9_9_b_4_ref = &mut denom_range_check_9_9_b_4;
+            let denom_range_check_9_9_b_5_ref = &mut denom_range_check_9_9_b_5;
+            let denom_range_check_9_9_c_0_ref = &mut denom_range_check_9_9_c_0;
+            let denom_range_check_9_9_c_1_ref = &mut denom_range_check_9_9_c_1;
+            let denom_range_check_9_9_c_2_ref = &mut denom_range_check_9_9_c_2;
+            let denom_range_check_9_9_c_3_ref = &mut denom_range_check_9_9_c_3;
+            let denom_range_check_9_9_c_4_ref = &mut denom_range_check_9_9_c_4;
+            let denom_range_check_9_9_c_5_ref = &mut denom_range_check_9_9_c_5;
+            let denom_range_check_9_9_d_0_ref = &mut denom_range_check_9_9_d_0;
+            let denom_range_check_9_9_d_1_ref = &mut denom_range_check_9_9_d_1;
+            let denom_range_check_9_9_d_2_ref = &mut denom_range_check_9_9_d_2;
+            let denom_range_check_9_9_d_3_ref = &mut denom_range_check_9_9_d_3;
+            let denom_range_check_9_9_d_4_ref = &mut denom_range_check_9_9_d_4;
+            let denom_range_check_9_9_d_5_ref = &mut denom_range_check_9_9_d_5;
+            let denom_range_check_9_9_e_0_ref = &mut denom_range_check_9_9_e_0;
+            let denom_range_check_9_9_e_1_ref = &mut denom_range_check_9_9_e_1;
+            let denom_range_check_9_9_e_2_ref = &mut denom_range_check_9_9_e_2;
+            let denom_range_check_9_9_e_3_ref = &mut denom_range_check_9_9_e_3;
+            let denom_range_check_9_9_e_4_ref = &mut denom_range_check_9_9_e_4;
+            let denom_range_check_9_9_e_5_ref = &mut denom_range_check_9_9_e_5;
+            let denom_range_check_9_9_f_0_ref = &mut denom_range_check_9_9_f_0;
+            let denom_range_check_9_9_f_1_ref = &mut denom_range_check_9_9_f_1;
+            let denom_range_check_9_9_f_2_ref = &mut denom_range_check_9_9_f_2;
+            let denom_range_check_9_9_f_3_ref = &mut denom_range_check_9_9_f_3;
+            let denom_range_check_9_9_f_4_ref = &mut denom_range_check_9_9_f_4;
+            let denom_range_check_9_9_f_5_ref = &mut denom_range_check_9_9_f_5;
+            let denom_range_check_9_9_g_0_ref = &mut denom_range_check_9_9_g_0;
+            let denom_range_check_9_9_g_1_ref = &mut denom_range_check_9_9_g_1;
+            let denom_range_check_9_9_g_2_ref = &mut denom_range_check_9_9_g_2;
+            let denom_range_check_9_9_h_0_ref = &mut denom_range_check_9_9_h_0;
+            let denom_range_check_9_9_h_1_ref = &mut denom_range_check_9_9_h_1;
+            let denom_range_check_9_9_h_2_ref = &mut denom_range_check_9_9_h_2;
+
+            rayon::scope(|s| {
+                s.spawn(|_| {
+                    *denom_partial_ec_mul_window_bits_18_0_ref = Some(
+                        self.lookup_data.partial_ec_mul_window_bits_18_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_partial_ec_mul_window_bits_18_1_ref = Some(
+                        self.lookup_data.partial_ec_mul_window_bits_18_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_pedersen_points_table_window_bits_18_0_ref = Some(
+                        self.lookup_data.pedersen_points_table_window_bits_18_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_0_ref = Some(
+                        self.lookup_data.range_check_20_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_1_ref = Some(
+                        self.lookup_data.range_check_20_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_10_ref = Some(
+                        self.lookup_data.range_check_20_10
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_11_ref = Some(
+                        self.lookup_data.range_check_20_11
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_2_ref = Some(
+                        self.lookup_data.range_check_20_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_3_ref = Some(
+                        self.lookup_data.range_check_20_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_4_ref = Some(
+                        self.lookup_data.range_check_20_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_5_ref = Some(
+                        self.lookup_data.range_check_20_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_6_ref = Some(
+                        self.lookup_data.range_check_20_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_7_ref = Some(
+                        self.lookup_data.range_check_20_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_8_ref = Some(
+                        self.lookup_data.range_check_20_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_9_ref = Some(
+                        self.lookup_data.range_check_20_9
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_0_ref = Some(
+                        self.lookup_data.range_check_20_b_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_1_ref = Some(
+                        self.lookup_data.range_check_20_b_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_10_ref = Some(
+                        self.lookup_data.range_check_20_b_10
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_11_ref = Some(
+                        self.lookup_data.range_check_20_b_11
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_2_ref = Some(
+                        self.lookup_data.range_check_20_b_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_3_ref = Some(
+                        self.lookup_data.range_check_20_b_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_4_ref = Some(
+                        self.lookup_data.range_check_20_b_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_5_ref = Some(
+                        self.lookup_data.range_check_20_b_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_6_ref = Some(
+                        self.lookup_data.range_check_20_b_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_7_ref = Some(
+                        self.lookup_data.range_check_20_b_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_8_ref = Some(
+                        self.lookup_data.range_check_20_b_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_b_9_ref = Some(
+                        self.lookup_data.range_check_20_b_9
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_0_ref = Some(
+                        self.lookup_data.range_check_20_c_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_1_ref = Some(
+                        self.lookup_data.range_check_20_c_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_10_ref = Some(
+                        self.lookup_data.range_check_20_c_10
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_11_ref = Some(
+                        self.lookup_data.range_check_20_c_11
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_2_ref = Some(
+                        self.lookup_data.range_check_20_c_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_3_ref = Some(
+                        self.lookup_data.range_check_20_c_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_4_ref = Some(
+                        self.lookup_data.range_check_20_c_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_5_ref = Some(
+                        self.lookup_data.range_check_20_c_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_6_ref = Some(
+                        self.lookup_data.range_check_20_c_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_7_ref = Some(
+                        self.lookup_data.range_check_20_c_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_8_ref = Some(
+                        self.lookup_data.range_check_20_c_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_c_9_ref = Some(
+                        self.lookup_data.range_check_20_c_9
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_0_ref = Some(
+                        self.lookup_data.range_check_20_d_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_1_ref = Some(
+                        self.lookup_data.range_check_20_d_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_10_ref = Some(
+                        self.lookup_data.range_check_20_d_10
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_11_ref = Some(
+                        self.lookup_data.range_check_20_d_11
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_2_ref = Some(
+                        self.lookup_data.range_check_20_d_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_3_ref = Some(
+                        self.lookup_data.range_check_20_d_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_4_ref = Some(
+                        self.lookup_data.range_check_20_d_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_5_ref = Some(
+                        self.lookup_data.range_check_20_d_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_6_ref = Some(
+                        self.lookup_data.range_check_20_d_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_7_ref = Some(
+                        self.lookup_data.range_check_20_d_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_8_ref = Some(
+                        self.lookup_data.range_check_20_d_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_d_9_ref = Some(
+                        self.lookup_data.range_check_20_d_9
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_0_ref = Some(
+                        self.lookup_data.range_check_20_e_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_1_ref = Some(
+                        self.lookup_data.range_check_20_e_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_2_ref = Some(
+                        self.lookup_data.range_check_20_e_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_3_ref = Some(
+                        self.lookup_data.range_check_20_e_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_4_ref = Some(
+                        self.lookup_data.range_check_20_e_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_5_ref = Some(
+                        self.lookup_data.range_check_20_e_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_6_ref = Some(
+                        self.lookup_data.range_check_20_e_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_7_ref = Some(
+                        self.lookup_data.range_check_20_e_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_e_8_ref = Some(
+                        self.lookup_data.range_check_20_e_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_0_ref = Some(
+                        self.lookup_data.range_check_20_f_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_1_ref = Some(
+                        self.lookup_data.range_check_20_f_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_2_ref = Some(
+                        self.lookup_data.range_check_20_f_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_3_ref = Some(
+                        self.lookup_data.range_check_20_f_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_4_ref = Some(
+                        self.lookup_data.range_check_20_f_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_5_ref = Some(
+                        self.lookup_data.range_check_20_f_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_6_ref = Some(
+                        self.lookup_data.range_check_20_f_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_7_ref = Some(
+                        self.lookup_data.range_check_20_f_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_f_8_ref = Some(
+                        self.lookup_data.range_check_20_f_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_0_ref = Some(
+                        self.lookup_data.range_check_20_g_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_1_ref = Some(
+                        self.lookup_data.range_check_20_g_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_2_ref = Some(
+                        self.lookup_data.range_check_20_g_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_3_ref = Some(
+                        self.lookup_data.range_check_20_g_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_4_ref = Some(
+                        self.lookup_data.range_check_20_g_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_5_ref = Some(
+                        self.lookup_data.range_check_20_g_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_6_ref = Some(
+                        self.lookup_data.range_check_20_g_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_7_ref = Some(
+                        self.lookup_data.range_check_20_g_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_g_8_ref = Some(
+                        self.lookup_data.range_check_20_g_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_0_ref = Some(
+                        self.lookup_data.range_check_20_h_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_1_ref = Some(
+                        self.lookup_data.range_check_20_h_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_2_ref = Some(
+                        self.lookup_data.range_check_20_h_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_3_ref = Some(
+                        self.lookup_data.range_check_20_h_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_4_ref = Some(
+                        self.lookup_data.range_check_20_h_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_5_ref = Some(
+                        self.lookup_data.range_check_20_h_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_6_ref = Some(
+                        self.lookup_data.range_check_20_h_6
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_7_ref = Some(
+                        self.lookup_data.range_check_20_h_7
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_20_h_8_ref = Some(
+                        self.lookup_data.range_check_20_h_8
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_0_ref = Some(
+                        self.lookup_data.range_check_9_9_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_1_ref = Some(
+                        self.lookup_data.range_check_9_9_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_2_ref = Some(
+                        self.lookup_data.range_check_9_9_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_3_ref = Some(
+                        self.lookup_data.range_check_9_9_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_4_ref = Some(
+                        self.lookup_data.range_check_9_9_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_5_ref = Some(
+                        self.lookup_data.range_check_9_9_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_0_ref = Some(
+                        self.lookup_data.range_check_9_9_b_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_1_ref = Some(
+                        self.lookup_data.range_check_9_9_b_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_2_ref = Some(
+                        self.lookup_data.range_check_9_9_b_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_3_ref = Some(
+                        self.lookup_data.range_check_9_9_b_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_4_ref = Some(
+                        self.lookup_data.range_check_9_9_b_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_b_5_ref = Some(
+                        self.lookup_data.range_check_9_9_b_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_0_ref = Some(
+                        self.lookup_data.range_check_9_9_c_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_1_ref = Some(
+                        self.lookup_data.range_check_9_9_c_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_2_ref = Some(
+                        self.lookup_data.range_check_9_9_c_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_3_ref = Some(
+                        self.lookup_data.range_check_9_9_c_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_4_ref = Some(
+                        self.lookup_data.range_check_9_9_c_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_c_5_ref = Some(
+                        self.lookup_data.range_check_9_9_c_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_0_ref = Some(
+                        self.lookup_data.range_check_9_9_d_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_1_ref = Some(
+                        self.lookup_data.range_check_9_9_d_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_2_ref = Some(
+                        self.lookup_data.range_check_9_9_d_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_3_ref = Some(
+                        self.lookup_data.range_check_9_9_d_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_4_ref = Some(
+                        self.lookup_data.range_check_9_9_d_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_d_5_ref = Some(
+                        self.lookup_data.range_check_9_9_d_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_0_ref = Some(
+                        self.lookup_data.range_check_9_9_e_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_1_ref = Some(
+                        self.lookup_data.range_check_9_9_e_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_2_ref = Some(
+                        self.lookup_data.range_check_9_9_e_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_3_ref = Some(
+                        self.lookup_data.range_check_9_9_e_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_4_ref = Some(
+                        self.lookup_data.range_check_9_9_e_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_e_5_ref = Some(
+                        self.lookup_data.range_check_9_9_e_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_0_ref = Some(
+                        self.lookup_data.range_check_9_9_f_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_1_ref = Some(
+                        self.lookup_data.range_check_9_9_f_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_2_ref = Some(
+                        self.lookup_data.range_check_9_9_f_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_3_ref = Some(
+                        self.lookup_data.range_check_9_9_f_3
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_4_ref = Some(
+                        self.lookup_data.range_check_9_9_f_4
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_f_5_ref = Some(
+                        self.lookup_data.range_check_9_9_f_5
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_g_0_ref = Some(
+                        self.lookup_data.range_check_9_9_g_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_g_1_ref = Some(
+                        self.lookup_data.range_check_9_9_g_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_g_2_ref = Some(
+                        self.lookup_data.range_check_9_9_g_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_h_0_ref = Some(
+                        self.lookup_data.range_check_9_9_h_0
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_h_1_ref = Some(
+                        self.lookup_data.range_check_9_9_h_1
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+                s.spawn(|_| {
+                    *denom_range_check_9_9_h_2_ref = Some(
+                        self.lookup_data.range_check_9_9_h_2
+                            .par_iter()
+                            .map(|values| common_lookup_elements.combine(values))
+                            .collect()
+                    );
+                });
+            });
+        }
+
+        // Unwrap all denominators (all are Some after parallel computation)
+        let denom_partial_ec_mul_window_bits_18_0 = denom_partial_ec_mul_window_bits_18_0.unwrap();
+        let denom_partial_ec_mul_window_bits_18_1 = denom_partial_ec_mul_window_bits_18_1.unwrap();
+        let denom_pedersen_points_table_window_bits_18_0 = denom_pedersen_points_table_window_bits_18_0.unwrap();
+        let denom_range_check_20_0 = denom_range_check_20_0.unwrap();
+        let denom_range_check_20_1 = denom_range_check_20_1.unwrap();
+        let denom_range_check_20_10 = denom_range_check_20_10.unwrap();
+        let denom_range_check_20_11 = denom_range_check_20_11.unwrap();
+        let denom_range_check_20_2 = denom_range_check_20_2.unwrap();
+        let denom_range_check_20_3 = denom_range_check_20_3.unwrap();
+        let denom_range_check_20_4 = denom_range_check_20_4.unwrap();
+        let denom_range_check_20_5 = denom_range_check_20_5.unwrap();
+        let denom_range_check_20_6 = denom_range_check_20_6.unwrap();
+        let denom_range_check_20_7 = denom_range_check_20_7.unwrap();
+        let denom_range_check_20_8 = denom_range_check_20_8.unwrap();
+        let denom_range_check_20_9 = denom_range_check_20_9.unwrap();
+        let denom_range_check_20_b_0 = denom_range_check_20_b_0.unwrap();
+        let denom_range_check_20_b_1 = denom_range_check_20_b_1.unwrap();
+        let denom_range_check_20_b_10 = denom_range_check_20_b_10.unwrap();
+        let denom_range_check_20_b_11 = denom_range_check_20_b_11.unwrap();
+        let denom_range_check_20_b_2 = denom_range_check_20_b_2.unwrap();
+        let denom_range_check_20_b_3 = denom_range_check_20_b_3.unwrap();
+        let denom_range_check_20_b_4 = denom_range_check_20_b_4.unwrap();
+        let denom_range_check_20_b_5 = denom_range_check_20_b_5.unwrap();
+        let denom_range_check_20_b_6 = denom_range_check_20_b_6.unwrap();
+        let denom_range_check_20_b_7 = denom_range_check_20_b_7.unwrap();
+        let denom_range_check_20_b_8 = denom_range_check_20_b_8.unwrap();
+        let denom_range_check_20_b_9 = denom_range_check_20_b_9.unwrap();
+        let denom_range_check_20_c_0 = denom_range_check_20_c_0.unwrap();
+        let denom_range_check_20_c_1 = denom_range_check_20_c_1.unwrap();
+        let denom_range_check_20_c_10 = denom_range_check_20_c_10.unwrap();
+        let denom_range_check_20_c_11 = denom_range_check_20_c_11.unwrap();
+        let denom_range_check_20_c_2 = denom_range_check_20_c_2.unwrap();
+        let denom_range_check_20_c_3 = denom_range_check_20_c_3.unwrap();
+        let denom_range_check_20_c_4 = denom_range_check_20_c_4.unwrap();
+        let denom_range_check_20_c_5 = denom_range_check_20_c_5.unwrap();
+        let denom_range_check_20_c_6 = denom_range_check_20_c_6.unwrap();
+        let denom_range_check_20_c_7 = denom_range_check_20_c_7.unwrap();
+        let denom_range_check_20_c_8 = denom_range_check_20_c_8.unwrap();
+        let denom_range_check_20_c_9 = denom_range_check_20_c_9.unwrap();
+        let denom_range_check_20_d_0 = denom_range_check_20_d_0.unwrap();
+        let denom_range_check_20_d_1 = denom_range_check_20_d_1.unwrap();
+        let denom_range_check_20_d_10 = denom_range_check_20_d_10.unwrap();
+        let denom_range_check_20_d_11 = denom_range_check_20_d_11.unwrap();
+        let denom_range_check_20_d_2 = denom_range_check_20_d_2.unwrap();
+        let denom_range_check_20_d_3 = denom_range_check_20_d_3.unwrap();
+        let denom_range_check_20_d_4 = denom_range_check_20_d_4.unwrap();
+        let denom_range_check_20_d_5 = denom_range_check_20_d_5.unwrap();
+        let denom_range_check_20_d_6 = denom_range_check_20_d_6.unwrap();
+        let denom_range_check_20_d_7 = denom_range_check_20_d_7.unwrap();
+        let denom_range_check_20_d_8 = denom_range_check_20_d_8.unwrap();
+        let denom_range_check_20_d_9 = denom_range_check_20_d_9.unwrap();
+        let denom_range_check_20_e_0 = denom_range_check_20_e_0.unwrap();
+        let denom_range_check_20_e_1 = denom_range_check_20_e_1.unwrap();
+        let denom_range_check_20_e_2 = denom_range_check_20_e_2.unwrap();
+        let denom_range_check_20_e_3 = denom_range_check_20_e_3.unwrap();
+        let denom_range_check_20_e_4 = denom_range_check_20_e_4.unwrap();
+        let denom_range_check_20_e_5 = denom_range_check_20_e_5.unwrap();
+        let denom_range_check_20_e_6 = denom_range_check_20_e_6.unwrap();
+        let denom_range_check_20_e_7 = denom_range_check_20_e_7.unwrap();
+        let denom_range_check_20_e_8 = denom_range_check_20_e_8.unwrap();
+        let denom_range_check_20_f_0 = denom_range_check_20_f_0.unwrap();
+        let denom_range_check_20_f_1 = denom_range_check_20_f_1.unwrap();
+        let denom_range_check_20_f_2 = denom_range_check_20_f_2.unwrap();
+        let denom_range_check_20_f_3 = denom_range_check_20_f_3.unwrap();
+        let denom_range_check_20_f_4 = denom_range_check_20_f_4.unwrap();
+        let denom_range_check_20_f_5 = denom_range_check_20_f_5.unwrap();
+        let denom_range_check_20_f_6 = denom_range_check_20_f_6.unwrap();
+        let denom_range_check_20_f_7 = denom_range_check_20_f_7.unwrap();
+        let denom_range_check_20_f_8 = denom_range_check_20_f_8.unwrap();
+        let denom_range_check_20_g_0 = denom_range_check_20_g_0.unwrap();
+        let denom_range_check_20_g_1 = denom_range_check_20_g_1.unwrap();
+        let denom_range_check_20_g_2 = denom_range_check_20_g_2.unwrap();
+        let denom_range_check_20_g_3 = denom_range_check_20_g_3.unwrap();
+        let denom_range_check_20_g_4 = denom_range_check_20_g_4.unwrap();
+        let denom_range_check_20_g_5 = denom_range_check_20_g_5.unwrap();
+        let denom_range_check_20_g_6 = denom_range_check_20_g_6.unwrap();
+        let denom_range_check_20_g_7 = denom_range_check_20_g_7.unwrap();
+        let denom_range_check_20_g_8 = denom_range_check_20_g_8.unwrap();
+        let denom_range_check_20_h_0 = denom_range_check_20_h_0.unwrap();
+        let denom_range_check_20_h_1 = denom_range_check_20_h_1.unwrap();
+        let denom_range_check_20_h_2 = denom_range_check_20_h_2.unwrap();
+        let denom_range_check_20_h_3 = denom_range_check_20_h_3.unwrap();
+        let denom_range_check_20_h_4 = denom_range_check_20_h_4.unwrap();
+        let denom_range_check_20_h_5 = denom_range_check_20_h_5.unwrap();
+        let denom_range_check_20_h_6 = denom_range_check_20_h_6.unwrap();
+        let denom_range_check_20_h_7 = denom_range_check_20_h_7.unwrap();
+        let denom_range_check_20_h_8 = denom_range_check_20_h_8.unwrap();
+        let denom_range_check_9_9_0 = denom_range_check_9_9_0.unwrap();
+        let denom_range_check_9_9_1 = denom_range_check_9_9_1.unwrap();
+        let denom_range_check_9_9_2 = denom_range_check_9_9_2.unwrap();
+        let denom_range_check_9_9_3 = denom_range_check_9_9_3.unwrap();
+        let denom_range_check_9_9_4 = denom_range_check_9_9_4.unwrap();
+        let denom_range_check_9_9_5 = denom_range_check_9_9_5.unwrap();
+        let denom_range_check_9_9_b_0 = denom_range_check_9_9_b_0.unwrap();
+        let denom_range_check_9_9_b_1 = denom_range_check_9_9_b_1.unwrap();
+        let denom_range_check_9_9_b_2 = denom_range_check_9_9_b_2.unwrap();
+        let denom_range_check_9_9_b_3 = denom_range_check_9_9_b_3.unwrap();
+        let denom_range_check_9_9_b_4 = denom_range_check_9_9_b_4.unwrap();
+        let denom_range_check_9_9_b_5 = denom_range_check_9_9_b_5.unwrap();
+        let denom_range_check_9_9_c_0 = denom_range_check_9_9_c_0.unwrap();
+        let denom_range_check_9_9_c_1 = denom_range_check_9_9_c_1.unwrap();
+        let denom_range_check_9_9_c_2 = denom_range_check_9_9_c_2.unwrap();
+        let denom_range_check_9_9_c_3 = denom_range_check_9_9_c_3.unwrap();
+        let denom_range_check_9_9_c_4 = denom_range_check_9_9_c_4.unwrap();
+        let denom_range_check_9_9_c_5 = denom_range_check_9_9_c_5.unwrap();
+        let denom_range_check_9_9_d_0 = denom_range_check_9_9_d_0.unwrap();
+        let denom_range_check_9_9_d_1 = denom_range_check_9_9_d_1.unwrap();
+        let denom_range_check_9_9_d_2 = denom_range_check_9_9_d_2.unwrap();
+        let denom_range_check_9_9_d_3 = denom_range_check_9_9_d_3.unwrap();
+        let denom_range_check_9_9_d_4 = denom_range_check_9_9_d_4.unwrap();
+        let denom_range_check_9_9_d_5 = denom_range_check_9_9_d_5.unwrap();
+        let denom_range_check_9_9_e_0 = denom_range_check_9_9_e_0.unwrap();
+        let denom_range_check_9_9_e_1 = denom_range_check_9_9_e_1.unwrap();
+        let denom_range_check_9_9_e_2 = denom_range_check_9_9_e_2.unwrap();
+        let denom_range_check_9_9_e_3 = denom_range_check_9_9_e_3.unwrap();
+        let denom_range_check_9_9_e_4 = denom_range_check_9_9_e_4.unwrap();
+        let denom_range_check_9_9_e_5 = denom_range_check_9_9_e_5.unwrap();
+        let denom_range_check_9_9_f_0 = denom_range_check_9_9_f_0.unwrap();
+        let denom_range_check_9_9_f_1 = denom_range_check_9_9_f_1.unwrap();
+        let denom_range_check_9_9_f_2 = denom_range_check_9_9_f_2.unwrap();
+        let denom_range_check_9_9_f_3 = denom_range_check_9_9_f_3.unwrap();
+        let denom_range_check_9_9_f_4 = denom_range_check_9_9_f_4.unwrap();
+        let denom_range_check_9_9_f_5 = denom_range_check_9_9_f_5.unwrap();
+        let denom_range_check_9_9_g_0 = denom_range_check_9_9_g_0.unwrap();
+        let denom_range_check_9_9_g_1 = denom_range_check_9_9_g_1.unwrap();
+        let denom_range_check_9_9_g_2 = denom_range_check_9_9_g_2.unwrap();
+        let denom_range_check_9_9_h_0 = denom_range_check_9_9_h_0.unwrap();
+        let denom_range_check_9_9_h_1 = denom_range_check_9_9_h_1.unwrap();
+        let denom_range_check_9_9_h_2 = denom_range_check_9_9_h_2.unwrap();
+
+        // ===========================================
+        // Phase 2: Sequential column generation using precomputed denominators
+        // ===========================================
+        // This is now just arithmetic operations, much faster than combine() calls.
+
         let mut logup_gen = LogupTraceGenerator::new(self.log_size);
 
         // Sum logup terms in pairs.
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.pedersen_points_table_window_bits_18_0,
-            &self.lookup_data.range_check_9_9_0,
+            &denom_pedersen_points_table_window_bits_18_0,
+            &denom_range_check_9_9_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5781,13 +7220,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_0,
-            &self.lookup_data.range_check_9_9_c_0,
+            &denom_range_check_9_9_b_0,
+            &denom_range_check_9_9_c_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5795,13 +7232,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_0,
-            &self.lookup_data.range_check_9_9_e_0,
+            &denom_range_check_9_9_d_0,
+            &denom_range_check_9_9_e_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5809,13 +7244,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_0,
-            &self.lookup_data.range_check_9_9_g_0,
+            &denom_range_check_9_9_f_0,
+            &denom_range_check_9_9_g_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5823,13 +7256,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_h_0,
-            &self.lookup_data.range_check_9_9_1,
+            &denom_range_check_9_9_h_0,
+            &denom_range_check_9_9_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5837,13 +7268,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_1,
-            &self.lookup_data.range_check_9_9_c_1,
+            &denom_range_check_9_9_b_1,
+            &denom_range_check_9_9_c_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5851,13 +7280,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_1,
-            &self.lookup_data.range_check_9_9_e_1,
+            &denom_range_check_9_9_d_1,
+            &denom_range_check_9_9_e_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5865,13 +7292,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_1,
-            &self.lookup_data.range_check_20_0,
+            &denom_range_check_9_9_f_1,
+            &denom_range_check_20_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5879,13 +7304,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_0,
-            &self.lookup_data.range_check_20_c_0,
+            &denom_range_check_20_b_0,
+            &denom_range_check_20_c_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5893,13 +7316,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_0,
-            &self.lookup_data.range_check_20_e_0,
+            &denom_range_check_20_d_0,
+            &denom_range_check_20_e_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5907,13 +7328,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_0,
-            &self.lookup_data.range_check_20_g_0,
+            &denom_range_check_20_f_0,
+            &denom_range_check_20_g_0,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5921,13 +7340,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_0,
-            &self.lookup_data.range_check_20_1,
+            &denom_range_check_20_h_0,
+            &denom_range_check_20_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5935,13 +7352,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_1,
-            &self.lookup_data.range_check_20_c_1,
+            &denom_range_check_20_b_1,
+            &denom_range_check_20_c_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5949,13 +7364,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_1,
-            &self.lookup_data.range_check_20_e_1,
+            &denom_range_check_20_d_1,
+            &denom_range_check_20_e_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5963,13 +7376,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_1,
-            &self.lookup_data.range_check_20_g_1,
+            &denom_range_check_20_f_1,
+            &denom_range_check_20_g_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5977,13 +7388,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_1,
-            &self.lookup_data.range_check_20_2,
+            &denom_range_check_20_h_1,
+            &denom_range_check_20_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -5991,13 +7400,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_2,
-            &self.lookup_data.range_check_20_c_2,
+            &denom_range_check_20_b_2,
+            &denom_range_check_20_c_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6005,13 +7412,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_2,
-            &self.lookup_data.range_check_20_e_2,
+            &denom_range_check_20_d_2,
+            &denom_range_check_20_e_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6019,13 +7424,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_2,
-            &self.lookup_data.range_check_20_g_2,
+            &denom_range_check_20_f_2,
+            &denom_range_check_20_g_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6033,13 +7436,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_2,
-            &self.lookup_data.range_check_20_3,
+            &denom_range_check_20_h_2,
+            &denom_range_check_20_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6047,13 +7448,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_3,
-            &self.lookup_data.range_check_20_c_3,
+            &denom_range_check_20_b_3,
+            &denom_range_check_20_c_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6061,13 +7460,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_3,
-            &self.lookup_data.range_check_9_9_2,
+            &denom_range_check_20_d_3,
+            &denom_range_check_9_9_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6075,13 +7472,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_2,
-            &self.lookup_data.range_check_9_9_c_2,
+            &denom_range_check_9_9_b_2,
+            &denom_range_check_9_9_c_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6089,13 +7484,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_2,
-            &self.lookup_data.range_check_9_9_e_2,
+            &denom_range_check_9_9_d_2,
+            &denom_range_check_9_9_e_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6103,13 +7496,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_2,
-            &self.lookup_data.range_check_9_9_g_1,
+            &denom_range_check_9_9_f_2,
+            &denom_range_check_9_9_g_1,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6117,13 +7508,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_h_1,
-            &self.lookup_data.range_check_9_9_3,
+            &denom_range_check_9_9_h_1,
+            &denom_range_check_9_9_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6131,13 +7520,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_3,
-            &self.lookup_data.range_check_9_9_c_3,
+            &denom_range_check_9_9_b_3,
+            &denom_range_check_9_9_c_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6145,13 +7532,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_3,
-            &self.lookup_data.range_check_9_9_e_3,
+            &denom_range_check_9_9_d_3,
+            &denom_range_check_9_9_e_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6159,13 +7544,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_3,
-            &self.lookup_data.range_check_20_4,
+            &denom_range_check_9_9_f_3,
+            &denom_range_check_20_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6173,13 +7556,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_4,
-            &self.lookup_data.range_check_20_c_4,
+            &denom_range_check_20_b_4,
+            &denom_range_check_20_c_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6187,13 +7568,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_4,
-            &self.lookup_data.range_check_20_e_3,
+            &denom_range_check_20_d_4,
+            &denom_range_check_20_e_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6201,13 +7580,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_3,
-            &self.lookup_data.range_check_20_g_3,
+            &denom_range_check_20_f_3,
+            &denom_range_check_20_g_3,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6215,13 +7592,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_3,
-            &self.lookup_data.range_check_20_5,
+            &denom_range_check_20_h_3,
+            &denom_range_check_20_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6229,13 +7604,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_5,
-            &self.lookup_data.range_check_20_c_5,
+            &denom_range_check_20_b_5,
+            &denom_range_check_20_c_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6243,13 +7616,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_5,
-            &self.lookup_data.range_check_20_e_4,
+            &denom_range_check_20_d_5,
+            &denom_range_check_20_e_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6257,13 +7628,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_4,
-            &self.lookup_data.range_check_20_g_4,
+            &denom_range_check_20_f_4,
+            &denom_range_check_20_g_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6271,13 +7640,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_4,
-            &self.lookup_data.range_check_20_6,
+            &denom_range_check_20_h_4,
+            &denom_range_check_20_6,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6285,13 +7652,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_6,
-            &self.lookup_data.range_check_20_c_6,
+            &denom_range_check_20_b_6,
+            &denom_range_check_20_c_6,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6299,13 +7664,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_6,
-            &self.lookup_data.range_check_20_e_5,
+            &denom_range_check_20_d_6,
+            &denom_range_check_20_e_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6313,13 +7676,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_5,
-            &self.lookup_data.range_check_20_g_5,
+            &denom_range_check_20_f_5,
+            &denom_range_check_20_g_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6327,13 +7688,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_5,
-            &self.lookup_data.range_check_20_7,
+            &denom_range_check_20_h_5,
+            &denom_range_check_20_7,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6341,13 +7700,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_7,
-            &self.lookup_data.range_check_20_c_7,
+            &denom_range_check_20_b_7,
+            &denom_range_check_20_c_7,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6355,13 +7712,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_7,
-            &self.lookup_data.range_check_9_9_4,
+            &denom_range_check_20_d_7,
+            &denom_range_check_9_9_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6369,13 +7724,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_4,
-            &self.lookup_data.range_check_9_9_c_4,
+            &denom_range_check_9_9_b_4,
+            &denom_range_check_9_9_c_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6383,13 +7736,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_4,
-            &self.lookup_data.range_check_9_9_e_4,
+            &denom_range_check_9_9_d_4,
+            &denom_range_check_9_9_e_4,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6397,13 +7748,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_4,
-            &self.lookup_data.range_check_9_9_g_2,
+            &denom_range_check_9_9_f_4,
+            &denom_range_check_9_9_g_2,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6411,13 +7760,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_h_2,
-            &self.lookup_data.range_check_9_9_5,
+            &denom_range_check_9_9_h_2,
+            &denom_range_check_9_9_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6425,13 +7772,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_b_5,
-            &self.lookup_data.range_check_9_9_c_5,
+            &denom_range_check_9_9_b_5,
+            &denom_range_check_9_9_c_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6439,13 +7784,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_d_5,
-            &self.lookup_data.range_check_9_9_e_5,
+            &denom_range_check_9_9_d_5,
+            &denom_range_check_9_9_e_5,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6453,13 +7796,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_9_9_f_5,
-            &self.lookup_data.range_check_20_8,
+            &denom_range_check_9_9_f_5,
+            &denom_range_check_20_8,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6467,13 +7808,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_8,
-            &self.lookup_data.range_check_20_c_8,
+            &denom_range_check_20_b_8,
+            &denom_range_check_20_c_8,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6481,13 +7820,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_8,
-            &self.lookup_data.range_check_20_e_6,
+            &denom_range_check_20_d_8,
+            &denom_range_check_20_e_6,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6495,13 +7832,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_6,
-            &self.lookup_data.range_check_20_g_6,
+            &denom_range_check_20_f_6,
+            &denom_range_check_20_g_6,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6509,13 +7844,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_6,
-            &self.lookup_data.range_check_20_9,
+            &denom_range_check_20_h_6,
+            &denom_range_check_20_9,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6523,13 +7856,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_9,
-            &self.lookup_data.range_check_20_c_9,
+            &denom_range_check_20_b_9,
+            &denom_range_check_20_c_9,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6537,13 +7868,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_9,
-            &self.lookup_data.range_check_20_e_7,
+            &denom_range_check_20_d_9,
+            &denom_range_check_20_e_7,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6551,13 +7880,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_7,
-            &self.lookup_data.range_check_20_g_7,
+            &denom_range_check_20_f_7,
+            &denom_range_check_20_g_7,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6565,13 +7892,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_7,
-            &self.lookup_data.range_check_20_10,
+            &denom_range_check_20_h_7,
+            &denom_range_check_20_10,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6579,13 +7904,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_10,
-            &self.lookup_data.range_check_20_c_10,
+            &denom_range_check_20_b_10,
+            &denom_range_check_20_c_10,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6593,13 +7916,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_10,
-            &self.lookup_data.range_check_20_e_8,
+            &denom_range_check_20_d_10,
+            &denom_range_check_20_e_8,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6607,13 +7928,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_f_8,
-            &self.lookup_data.range_check_20_g_8,
+            &denom_range_check_20_f_8,
+            &denom_range_check_20_g_8,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6621,13 +7940,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_h_8,
-            &self.lookup_data.range_check_20_11,
+            &denom_range_check_20_h_8,
+            &denom_range_check_20_11,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6635,13 +7952,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_b_11,
-            &self.lookup_data.range_check_20_c_11,
+            &denom_range_check_20_b_11,
+            &denom_range_check_20_c_11,
         )
             .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(writer, &denom0, &denom1)| {
                 writer.write_frac(denom0 + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6649,14 +7964,12 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_20_d_11,
-            &self.lookup_data.partial_ec_mul_window_bits_18_0,
+            &denom_range_check_20_d_11,
+            &denom_partial_ec_mul_window_bits_18_0,
         )
             .into_par_iter()
             .enumerate()
-            .for_each(|(i, (writer, values0, values1))| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
+            .for_each(|(i, (writer, &denom0, &denom1))| {
                 writer.write_frac(denom0 * enabler_col.packed_at(i) + denom1, denom0 * denom1);
             });
         col_gen.finalize_col();
@@ -6665,12 +7978,11 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.partial_ec_mul_window_bits_18_1,
+            &denom_partial_ec_mul_window_bits_18_1,
         )
             .into_par_iter()
             .enumerate()
-            .for_each(|(i, (writer, values))| {
-                let denom = common_lookup_elements.combine(values);
+            .for_each(|(i, (writer, &denom))| {
                 writer.write_frac(-PackedQM31::one() * enabler_col.packed_at(i), denom);
             });
         col_gen.finalize_col();
