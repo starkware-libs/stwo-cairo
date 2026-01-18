@@ -437,7 +437,6 @@ where
     }
 }
 
-
 // === Struct for all small components ===
 
 /// All small components grouped together to run sequentially in a 1-thread pool.
@@ -498,8 +497,7 @@ struct AllSmallResults {
     xor_8: ClaimWithEvals<cairo_air::components::verify_bitwise_xor_8::InteractionClaim>,
     xor_9: ClaimWithEvals<cairo_air::components::verify_bitwise_xor_9::InteractionClaim>,
     // Small verify_instruction (10ms)
-    verify_instruction:
-        ClaimWithEvals<cairo_air::components::verify_instruction::InteractionClaim>,
+    verify_instruction: ClaimWithEvals<cairo_air::components::verify_instruction::InteractionClaim>,
 }
 
 impl CairoInteractionClaimGenerator {
@@ -537,7 +535,8 @@ impl CairoInteractionClaimGenerator {
                 None => (None, None, None),
             };
 
-        // Poseidon: cube_252, partial_rounds, range_check_252 are heavy; aggregator, full_round_chain, round_keys are small
+        // Poseidon: cube_252, partial_rounds, range_check_252 are heavy; aggregator,
+        // full_round_chain, round_keys are small
         let (
             poseidon_heavy_cube_252,
             poseidon_heavy_partial_rounds,
@@ -648,17 +647,25 @@ impl CairoInteractionClaimGenerator {
             // === HEAVIEST COMPONENT: PEDERSEN PARTIAL_EC_MUL (2856ms) - spawn first! ===
             if let Some(gen) = pedersen_heavy_partial_ec_mul {
                 s.spawn(|_| {
-                    *pedersen_partial_ec_mul_ref = Some(Some(process_single_gen(
-                        |builder, elems| gen.write_interaction_trace(builder, elems),
-                        common_lookup_elements,
-                    )));
+                    let pool = rayon::ThreadPoolBuilder::new()
+                        .num_threads(16)
+                        .build()
+                        .unwrap();
+                    pool.install(|| {
+                        *pedersen_partial_ec_mul_ref = Some(Some(process_single_gen(
+                            |builder, elems| gen.write_interaction_trace(builder, elems),
+                            common_lookup_elements,
+                        )));
+                    });
                 });
             }
 
             // === HEAVY OPCODES (>50ms) - spawn individually ===
             s.spawn(|_| {
-                *opcode_add_ref =
-                    Some(process_interaction_gens(opcodes_parts.add, common_lookup_elements));
+                *opcode_add_ref = Some(process_interaction_gens(
+                    opcodes_parts.add,
+                    common_lookup_elements,
+                ));
             });
             s.spawn(|_| {
                 *opcode_add_small_ref = Some(process_interaction_gens(
@@ -703,8 +710,10 @@ impl CairoInteractionClaimGenerator {
                 ));
             });
             s.spawn(|_| {
-                *opcode_jnz_ref =
-                    Some(process_interaction_gens(opcodes_parts.jnz, common_lookup_elements));
+                *opcode_jnz_ref = Some(process_interaction_gens(
+                    opcodes_parts.jnz,
+                    common_lookup_elements,
+                ));
             });
             s.spawn(|_| {
                 *opcode_jnz_taken_ref = Some(process_interaction_gens(
@@ -719,8 +728,10 @@ impl CairoInteractionClaimGenerator {
                 ));
             });
             s.spawn(|_| {
-                *opcode_mul_ref =
-                    Some(process_interaction_gens(opcodes_parts.mul, common_lookup_elements));
+                *opcode_mul_ref = Some(process_interaction_gens(
+                    opcodes_parts.mul,
+                    common_lookup_elements,
+                ));
             });
             s.spawn(|_| {
                 *opcode_mul_small_ref = Some(process_interaction_gens(
@@ -729,8 +740,10 @@ impl CairoInteractionClaimGenerator {
                 ));
             });
             s.spawn(|_| {
-                *opcode_ret_ref =
-                    Some(process_interaction_gens(opcodes_parts.ret, common_lookup_elements));
+                *opcode_ret_ref = Some(process_interaction_gens(
+                    opcodes_parts.ret,
+                    common_lookup_elements,
+                ));
             });
 
             // === HEAVY MEMORY (>500ms) - spawn individually ===
@@ -817,20 +830,23 @@ impl CairoInteractionClaimGenerator {
 
             // === HEAVY BUILTINS (>400ms) - spawn individually ===
             s.spawn(|_| {
-                *builtin_range_check_128_ref = Some(builtins_parts.range_check_128_builtin.map(
-                    |gen| {
+                *builtin_range_check_128_ref =
+                    Some(builtins_parts.range_check_128_builtin.map(|gen| {
                         process_single_gen(
                             |builder, elems| gen.write_interaction_trace(builder, elems),
                             common_lookup_elements,
                         )
-                    },
-                ));
+                    }));
             });
 
             // === HEAVY RANGE CHECKS (>30ms) - spawn individually ===
             s.spawn(|_| {
                 *rc_20_ref = Some(process_single_gen(
-                    |builder, elems| range_checks_parts.rc_20.write_interaction_trace(builder, elems),
+                    |builder, elems| {
+                        range_checks_parts
+                            .rc_20
+                            .write_interaction_trace(builder, elems)
+                    },
                     common_lookup_elements,
                 ));
             });
@@ -984,7 +1000,11 @@ impl CairoInteractionClaimGenerator {
                         common_lookup_elements,
                     );
                     let rc_3_3_3_3_3 = process_single_gen(
-                        |b, e| range_checks_parts.rc_3_3_3_3_3.write_interaction_trace(b, e),
+                        |b, e| {
+                            range_checks_parts
+                                .rc_3_3_3_3_3
+                                .write_interaction_trace(b, e)
+                        },
                         common_lookup_elements,
                     );
 
