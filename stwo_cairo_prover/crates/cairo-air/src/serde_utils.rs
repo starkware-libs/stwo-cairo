@@ -1,5 +1,6 @@
 use std::ops::Deref;
 
+use starknet_ff::FieldElement;
 use stwo::core::fields::m31::BaseField;
 use stwo::core::fields::qm31::SecureField;
 use stwo::core::fri::FriProof;
@@ -10,25 +11,27 @@ use stwo::core::ColumnVec;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 
 use crate::air::{CommitmentSchemeProofSorted, StarkProofSorted};
-use crate::{CairoProof, CairoProofSorted};
+use crate::{CairoProof, CairoProofSorted, PreProcessedTraceVariant};
 
 impl<H: MerkleHasherLifted> CairoSerialize for CairoProof<H>
 where
     H::Hash: CairoSerialize,
 {
-    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(stark_proof, output);
         CairoSerialize::serialize(channel_salt, output);
+        CairoSerialize::serialize(preprocessed_trace_variant, output);
     }
 }
 
@@ -36,18 +39,20 @@ impl<H: MerkleHasherLifted> CairoDeserialize for CairoProof<H>
 where
     H::Hash: CairoDeserialize,
 {
-    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let claim = CairoDeserialize::deserialize(data);
         let interaction_pow = CairoDeserialize::deserialize(data);
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
         let channel_salt = CairoDeserialize::deserialize(data);
+        let preprocessed_trace_variant = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         }
     }
 }
@@ -56,7 +61,7 @@ impl<H: MerkleHasherLifted> CairoSerialize for CommitmentSchemeProofSorted<H>
 where
     H::Hash: CairoSerialize,
 {
-    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self {
             config,
             commitments,
@@ -80,7 +85,7 @@ impl<H: MerkleHasherLifted> CairoDeserialize for CommitmentSchemeProofSorted<H>
 where
     H::Hash: CairoDeserialize,
 {
-    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let config = <PcsConfig as CairoDeserialize>::deserialize(data);
         let commitments = TreeVec(<Vec<H::Hash> as CairoDeserialize>::deserialize(data));
         let sampled_values =
@@ -106,7 +111,7 @@ impl<H: MerkleHasherLifted> CairoSerialize for StarkProofSorted<H>
 where
     H::Hash: CairoSerialize,
 {
-    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self(commitment_scheme_proof) = self;
         commitment_scheme_proof.serialize(output);
     }
@@ -116,7 +121,7 @@ impl<H: MerkleHasherLifted> CairoDeserialize for StarkProofSorted<H>
 where
     H::Hash: CairoDeserialize,
 {
-    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let commitment_scheme_proof =
             <CommitmentSchemeProofSorted<H> as CairoDeserialize>::deserialize(data);
         StarkProofSorted(commitment_scheme_proof)
@@ -127,19 +132,21 @@ impl<H: MerkleHasherLifted> CairoSerialize for CairoProofSorted<H>
 where
     H::Hash: CairoSerialize,
 {
-    fn serialize(&self, output: &mut Vec<starknet_ff::FieldElement>) {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
         let Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof: sorted_stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
         } = self;
         CairoSerialize::serialize(claim, output);
         CairoSerialize::serialize(interaction_pow, output);
         CairoSerialize::serialize(interaction_claim, output);
         CairoSerialize::serialize(sorted_stark_proof, output);
         CairoSerialize::serialize(channel_salt, output);
+        CairoSerialize::serialize(preprocessed_trace_variant, output);
     }
 }
 
@@ -147,18 +154,45 @@ impl<H: MerkleHasherLifted> CairoDeserialize for CairoProofSorted<H>
 where
     H::Hash: CairoDeserialize,
 {
-    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a starknet_ff::FieldElement>) -> Self {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let claim = CairoDeserialize::deserialize(data);
         let interaction_pow = CairoDeserialize::deserialize(data);
         let interaction_claim = CairoDeserialize::deserialize(data);
         let stark_proof = CairoDeserialize::deserialize(data);
         let channel_salt = CairoDeserialize::deserialize(data);
+        let preprocessed_trace_variant = CairoDeserialize::deserialize(data);
         Self {
             claim,
             interaction_pow,
             interaction_claim,
             stark_proof,
             channel_salt,
+            preprocessed_trace_variant,
+        }
+    }
+}
+
+impl CairoSerialize for PreProcessedTraceVariant {
+    fn serialize(&self, output: &mut Vec<FieldElement>) {
+        let variant: FieldElement = match self {
+            PreProcessedTraceVariant::Canonical => FieldElement::ZERO,
+            PreProcessedTraceVariant::CanonicalWithoutPedersen => FieldElement::ONE,
+        };
+        output.push(variant);
+    }
+}
+
+impl CairoDeserialize for PreProcessedTraceVariant {
+    fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
+        let variant = data
+            .next()
+            .expect("Failed to deserialize preprocessed trace variant.");
+
+        // Cannot match on FieldElement because it doesn't implement PartialEq.
+        if *variant == FieldElement::ZERO {
+            PreProcessedTraceVariant::Canonical
+        } else {
+            PreProcessedTraceVariant::CanonicalWithoutPedersen
         }
     }
 }
