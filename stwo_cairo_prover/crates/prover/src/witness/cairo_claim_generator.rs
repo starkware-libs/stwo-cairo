@@ -4,6 +4,7 @@ use std::sync::Arc;
 
 use cairo_air::air::PublicData;
 use indexmap::IndexSet;
+use rayon::scope;
 use stwo_cairo_adapter::builtins::BuiltinSegments;
 use stwo_cairo_adapter::memory::Memory;
 use stwo_cairo_adapter::opcodes::CasmStatesByOpcode;
@@ -90,294 +91,511 @@ impl CairoClaimGenerator {
         memory: Arc<Memory>,
         preprocessed_trace: Arc<PreProcessedTrace>,
     ) {
-        self.blake_compress_opcode = components.contains(&"blake_compress_opcode").then(|| {
-            blake_compress_opcode::ClaimGenerator::new(casm_states_by_opcode.blake_compress_opcode)
-        });
-        self.triple_xor_32 = components
-            .contains(&"triple_xor_32")
-            .then(|| triple_xor_32::ClaimGenerator::new());
-        self.blake_round = components
-            .contains(&"blake_round")
-            .then(|| blake_round::ClaimGenerator::new(memory.clone()));
-        self.blake_g = components
-            .contains(&"blake_g")
-            .then(|| blake_g::ClaimGenerator::new());
-        self.verify_bitwise_xor_7 = components
-            .contains(&"verify_bitwise_xor_7")
-            .then(|| verify_bitwise_xor_7::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.verify_bitwise_xor_4 = components
-            .contains(&"verify_bitwise_xor_4")
-            .then(|| verify_bitwise_xor_4::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.verify_bitwise_xor_12 = components
-            .contains(&"verify_bitwise_xor_12")
-            .then(|| verify_bitwise_xor_12::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.blake_round_sigma = components
-            .contains(&"blake_round_sigma")
-            .then(|| blake_round_sigma::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.qm_31_add_mul_opcode = components.contains(&"qm_31_add_mul_opcode").then(|| {
-            qm_31_add_mul_opcode::ClaimGenerator::new(casm_states_by_opcode.qm_31_add_mul_opcode)
-        });
-        self.ret_opcode = components
-            .contains(&"ret_opcode")
-            .then(|| ret_opcode::ClaimGenerator::new(casm_states_by_opcode.ret_opcode));
-        self.mul_opcode = components
-            .contains(&"mul_opcode")
-            .then(|| mul_opcode::ClaimGenerator::new(casm_states_by_opcode.mul_opcode));
-        self.mul_opcode_small = components
-            .contains(&"mul_opcode_small")
-            .then(|| mul_opcode_small::ClaimGenerator::new(casm_states_by_opcode.mul_opcode_small));
-        self.jump_opcode_abs = components
-            .contains(&"jump_opcode_abs")
-            .then(|| jump_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_abs));
-        self.jump_opcode_double_deref =
-            components.contains(&"jump_opcode_double_deref").then(|| {
-                jump_opcode_double_deref::ClaimGenerator::new(
-                    casm_states_by_opcode.jump_opcode_double_deref,
-                )
+        let blake_compress_opcode_ref = &mut self.blake_compress_opcode;
+        let triple_xor_32_ref = &mut self.triple_xor_32;
+        let blake_round_ref = &mut self.blake_round;
+        let blake_g_ref = &mut self.blake_g;
+        let verify_bitwise_xor_7_ref = &mut self.verify_bitwise_xor_7;
+        let verify_bitwise_xor_4_ref = &mut self.verify_bitwise_xor_4;
+        let verify_bitwise_xor_12_ref = &mut self.verify_bitwise_xor_12;
+        let blake_round_sigma_ref = &mut self.blake_round_sigma;
+        let qm_31_add_mul_opcode_ref = &mut self.qm_31_add_mul_opcode;
+        let ret_opcode_ref = &mut self.ret_opcode;
+        let mul_opcode_ref = &mut self.mul_opcode;
+        let mul_opcode_small_ref = &mut self.mul_opcode_small;
+        let jump_opcode_abs_ref = &mut self.jump_opcode_abs;
+        let jump_opcode_double_deref_ref = &mut self.jump_opcode_double_deref;
+        let jump_opcode_rel_ref = &mut self.jump_opcode_rel;
+        let jump_opcode_rel_imm_ref = &mut self.jump_opcode_rel_imm;
+        let jnz_opcode_non_taken_ref = &mut self.jnz_opcode_non_taken;
+        let jnz_opcode_taken_ref = &mut self.jnz_opcode_taken;
+        let call_opcode_rel_imm_ref = &mut self.call_opcode_rel_imm;
+        let call_opcode_abs_ref = &mut self.call_opcode_abs;
+        let assert_eq_opcode_imm_ref = &mut self.assert_eq_opcode_imm;
+        let assert_eq_opcode_double_deref_ref = &mut self.assert_eq_opcode_double_deref;
+        let assert_eq_opcode_ref = &mut self.assert_eq_opcode;
+        let add_opcode_ref = &mut self.add_opcode;
+        let add_opcode_small_ref = &mut self.add_opcode_small;
+        let add_ap_opcode_ref = &mut self.add_ap_opcode;
+        let generic_opcode_ref = &mut self.generic_opcode;
+        let range_check_11_ref = &mut self.range_check_11;
+        let verify_instruction_ref = &mut self.verify_instruction;
+        let range_check_4_3_ref = &mut self.range_check_4_3;
+        let range_check_7_2_5_ref = &mut self.range_check_7_2_5;
+        let pedersen_builtin_ref = &mut self.pedersen_builtin;
+        let pedersen_aggregator_window_bits_18_ref = &mut self.pedersen_aggregator_window_bits_18;
+        let partial_ec_mul_window_bits_18_ref = &mut self.partial_ec_mul_window_bits_18;
+        let pedersen_points_table_window_bits_18_ref =
+            &mut self.pedersen_points_table_window_bits_18;
+        let range_check_8_ref = &mut self.range_check_8;
+        let poseidon_builtin_ref = &mut self.poseidon_builtin;
+        let poseidon_aggregator_ref = &mut self.poseidon_aggregator;
+        let poseidon_3_partial_rounds_chain_ref = &mut self.poseidon_3_partial_rounds_chain;
+        let range_check_4_4_ref = &mut self.range_check_4_4;
+        let range_check_4_4_4_4_ref = &mut self.range_check_4_4_4_4;
+        let range_check_252_width_27_ref = &mut self.range_check_252_width_27;
+        let poseidon_full_round_chain_ref = &mut self.poseidon_full_round_chain;
+        let range_check_3_3_3_3_3_ref = &mut self.range_check_3_3_3_3_3;
+        let poseidon_round_keys_ref = &mut self.poseidon_round_keys;
+        let cube_252_ref = &mut self.cube_252;
+        let range_check_20_ref = &mut self.range_check_20;
+        let mul_mod_builtin_ref = &mut self.mul_mod_builtin;
+        let range_check_18_ref = &mut self.range_check_18;
+        let range_check_3_6_6_3_ref = &mut self.range_check_3_6_6_3;
+        let range_check_12_ref = &mut self.range_check_12;
+        let add_mod_builtin_ref = &mut self.add_mod_builtin;
+        let range_check96_builtin_ref = &mut self.range_check96_builtin;
+        let range_check_6_ref = &mut self.range_check_6;
+        let range_check_builtin_ref = &mut self.range_check_builtin;
+        let bitwise_builtin_ref = &mut self.bitwise_builtin;
+        let verify_bitwise_xor_8_ref = &mut self.verify_bitwise_xor_8;
+        let verify_bitwise_xor_9_ref = &mut self.verify_bitwise_xor_9;
+        let memory_id_to_big_ref = &mut self.memory_id_to_big;
+        let range_check_9_9_ref = &mut self.range_check_9_9;
+        let memory_address_to_id_ref = &mut self.memory_address_to_id;
+
+        scope(|s| {
+            s.spawn(|_| {
+                *blake_compress_opcode_ref =
+                    components.contains(&"blake_compress_opcode").then(|| {
+                        blake_compress_opcode::ClaimGenerator::new(
+                            casm_states_by_opcode.blake_compress_opcode,
+                        )
+                    });
             });
-        self.jump_opcode_rel = components
-            .contains(&"jump_opcode_rel")
-            .then(|| jump_opcode_rel::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_rel));
-        self.jump_opcode_rel_imm = components.contains(&"jump_opcode_rel_imm").then(|| {
-            jump_opcode_rel_imm::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_rel_imm)
-        });
-        self.jnz_opcode_non_taken = components.contains(&"jnz_opcode_non_taken").then(|| {
-            jnz_opcode_non_taken::ClaimGenerator::new(casm_states_by_opcode.jnz_opcode_non_taken)
-        });
-        self.jnz_opcode_taken = components
-            .contains(&"jnz_opcode_taken")
-            .then(|| jnz_opcode_taken::ClaimGenerator::new(casm_states_by_opcode.jnz_opcode_taken));
-        self.call_opcode_rel_imm = components.contains(&"call_opcode_rel_imm").then(|| {
-            call_opcode_rel_imm::ClaimGenerator::new(casm_states_by_opcode.call_opcode_rel_imm)
-        });
-        self.call_opcode_abs = components
-            .contains(&"call_opcode_abs")
-            .then(|| call_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.call_opcode_abs));
-        self.assert_eq_opcode_imm = components.contains(&"assert_eq_opcode_imm").then(|| {
-            assert_eq_opcode_imm::ClaimGenerator::new(casm_states_by_opcode.assert_eq_opcode_imm)
-        });
-        self.assert_eq_opcode_double_deref = components
-            .contains(&"assert_eq_opcode_double_deref")
-            .then(|| {
-                assert_eq_opcode_double_deref::ClaimGenerator::new(
-                    casm_states_by_opcode.assert_eq_opcode_double_deref,
-                )
+            s.spawn(|_| {
+                *triple_xor_32_ref = components
+                    .contains(&"triple_xor_32")
+                    .then(|| triple_xor_32::ClaimGenerator::new());
             });
-        self.assert_eq_opcode = components
-            .contains(&"assert_eq_opcode")
-            .then(|| assert_eq_opcode::ClaimGenerator::new(casm_states_by_opcode.assert_eq_opcode));
-        self.add_opcode = components
-            .contains(&"add_opcode")
-            .then(|| add_opcode::ClaimGenerator::new(casm_states_by_opcode.add_opcode));
-        self.add_opcode_small = components
-            .contains(&"add_opcode_small")
-            .then(|| add_opcode_small::ClaimGenerator::new(casm_states_by_opcode.add_opcode_small));
-        self.add_ap_opcode = components
-            .contains(&"add_ap_opcode")
-            .then(|| add_ap_opcode::ClaimGenerator::new(casm_states_by_opcode.add_ap_opcode));
-        self.generic_opcode = components
-            .contains(&"generic_opcode")
-            .then(|| generic_opcode::ClaimGenerator::new(casm_states_by_opcode.generic_opcode));
-        self.range_check_11 = components
-            .contains(&"range_check_11")
-            .then(|| range_check_11::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.verify_instruction = components
-            .contains(&"verify_instruction")
-            .then(|| verify_instruction::ClaimGenerator::new());
-        self.range_check_4_3 = components
-            .contains(&"range_check_4_3")
-            .then(|| range_check_4_3::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_7_2_5 = components
-            .contains(&"range_check_7_2_5")
-            .then(|| range_check_7_2_5::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.pedersen_builtin = components.contains(&"pedersen_builtin").then(|| {
-            let segment = builtin_segments.pedersen_builtin.unwrap();
-
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
-                "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
-            );
-
-            let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "pedersen_builtin instances number is not a power of two"
-            );
-            pedersen_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
-        });
-        self.pedersen_aggregator_window_bits_18 = components
-            .contains(&"pedersen_aggregator_window_bits_18")
-            .then(|| pedersen_aggregator_window_bits_18::ClaimGenerator::new());
-        self.partial_ec_mul_window_bits_18 = components
-            .contains(&"partial_ec_mul_window_bits_18")
-            .then(|| partial_ec_mul_window_bits_18::ClaimGenerator::new());
-        self.pedersen_points_table_window_bits_18 = components
-            .contains(&"pedersen_points_table_window_bits_18")
-            .then(|| {
-                pedersen_points_table_window_bits_18::ClaimGenerator::new(
-                    preprocessed_trace.clone(),
-                )
+            s.spawn(|_| {
+                *blake_round_ref = components
+                    .contains(&"blake_round")
+                    .then(|| blake_round::ClaimGenerator::new(memory.clone()));
             });
-        self.range_check_8 = components
-            .contains(&"range_check_8")
-            .then(|| range_check_8::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.poseidon_builtin = components.contains(&"poseidon_builtin").then(|| {
-            let segment = builtin_segments.poseidon_builtin.unwrap();
+            s.spawn(|_| {
+                *blake_g_ref = components
+                    .contains(&"blake_g")
+                    .then(|| blake_g::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *verify_bitwise_xor_7_ref = components
+                    .contains(&"verify_bitwise_xor_7")
+                    .then(|| verify_bitwise_xor_7::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *verify_bitwise_xor_4_ref = components
+                    .contains(&"verify_bitwise_xor_4")
+                    .then(|| verify_bitwise_xor_4::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *verify_bitwise_xor_12_ref =
+                    components.contains(&"verify_bitwise_xor_12").then(|| {
+                        verify_bitwise_xor_12::ClaimGenerator::new(preprocessed_trace.clone())
+                    });
+            });
+            s.spawn(|_| {
+                *blake_round_sigma_ref = components
+                    .contains(&"blake_round_sigma")
+                    .then(|| blake_round_sigma::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *qm_31_add_mul_opcode_ref =
+                    components.contains(&"qm_31_add_mul_opcode").then(|| {
+                        qm_31_add_mul_opcode::ClaimGenerator::new(
+                            casm_states_by_opcode.qm_31_add_mul_opcode,
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *ret_opcode_ref = components
+                    .contains(&"ret_opcode")
+                    .then(|| ret_opcode::ClaimGenerator::new(casm_states_by_opcode.ret_opcode));
+            });
+            s.spawn(|_| {
+                *mul_opcode_ref = components
+                    .contains(&"mul_opcode")
+                    .then(|| mul_opcode::ClaimGenerator::new(casm_states_by_opcode.mul_opcode));
+            });
+            s.spawn(|_| {
+                *mul_opcode_small_ref = components.contains(&"mul_opcode_small").then(|| {
+                    mul_opcode_small::ClaimGenerator::new(casm_states_by_opcode.mul_opcode_small)
+                });
+            });
+            s.spawn(|_| {
+                *jump_opcode_abs_ref = components.contains(&"jump_opcode_abs").then(|| {
+                    jump_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_abs)
+                });
+            });
+            s.spawn(|_| {
+                *jump_opcode_double_deref_ref =
+                    components.contains(&"jump_opcode_double_deref").then(|| {
+                        jump_opcode_double_deref::ClaimGenerator::new(
+                            casm_states_by_opcode.jump_opcode_double_deref,
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *jump_opcode_rel_ref = components.contains(&"jump_opcode_rel").then(|| {
+                    jump_opcode_rel::ClaimGenerator::new(casm_states_by_opcode.jump_opcode_rel)
+                });
+            });
+            s.spawn(|_| {
+                *jump_opcode_rel_imm_ref = components.contains(&"jump_opcode_rel_imm").then(|| {
+                    jump_opcode_rel_imm::ClaimGenerator::new(
+                        casm_states_by_opcode.jump_opcode_rel_imm,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *jnz_opcode_non_taken_ref =
+                    components.contains(&"jnz_opcode_non_taken").then(|| {
+                        jnz_opcode_non_taken::ClaimGenerator::new(
+                            casm_states_by_opcode.jnz_opcode_non_taken,
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *jnz_opcode_taken_ref = components.contains(&"jnz_opcode_taken").then(|| {
+                    jnz_opcode_taken::ClaimGenerator::new(casm_states_by_opcode.jnz_opcode_taken)
+                });
+            });
+            s.spawn(|_| {
+                *call_opcode_rel_imm_ref = components.contains(&"call_opcode_rel_imm").then(|| {
+                    call_opcode_rel_imm::ClaimGenerator::new(
+                        casm_states_by_opcode.call_opcode_rel_imm,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *call_opcode_abs_ref = components.contains(&"call_opcode_abs").then(|| {
+                    call_opcode_abs::ClaimGenerator::new(casm_states_by_opcode.call_opcode_abs)
+                });
+            });
+            s.spawn(|_| {
+                *assert_eq_opcode_imm_ref =
+                    components.contains(&"assert_eq_opcode_imm").then(|| {
+                        assert_eq_opcode_imm::ClaimGenerator::new(
+                            casm_states_by_opcode.assert_eq_opcode_imm,
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *assert_eq_opcode_double_deref_ref = components
+                    .contains(&"assert_eq_opcode_double_deref")
+                    .then(|| {
+                        assert_eq_opcode_double_deref::ClaimGenerator::new(
+                            casm_states_by_opcode.assert_eq_opcode_double_deref,
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *assert_eq_opcode_ref = components.contains(&"assert_eq_opcode").then(|| {
+                    assert_eq_opcode::ClaimGenerator::new(casm_states_by_opcode.assert_eq_opcode)
+                });
+            });
+            s.spawn(|_| {
+                *add_opcode_ref = components
+                    .contains(&"add_opcode")
+                    .then(|| add_opcode::ClaimGenerator::new(casm_states_by_opcode.add_opcode));
+            });
+            s.spawn(|_| {
+                *add_opcode_small_ref = components.contains(&"add_opcode_small").then(|| {
+                    add_opcode_small::ClaimGenerator::new(casm_states_by_opcode.add_opcode_small)
+                });
+            });
+            s.spawn(|_| {
+                *add_ap_opcode_ref = components.contains(&"add_ap_opcode").then(|| {
+                    add_ap_opcode::ClaimGenerator::new(casm_states_by_opcode.add_ap_opcode)
+                });
+            });
+            s.spawn(|_| {
+                *generic_opcode_ref = components.contains(&"generic_opcode").then(|| {
+                    generic_opcode::ClaimGenerator::new(casm_states_by_opcode.generic_opcode)
+                });
+            });
+            s.spawn(|_| {
+                *range_check_11_ref = components
+                    .contains(&"range_check_11")
+                    .then(|| range_check_11::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *verify_instruction_ref = components
+                    .contains(&"verify_instruction")
+                    .then(|| verify_instruction::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *range_check_4_3_ref = components
+                    .contains(&"range_check_4_3")
+                    .then(|| range_check_4_3::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_7_2_5_ref = components
+                    .contains(&"range_check_7_2_5")
+                    .then(|| range_check_7_2_5::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *pedersen_builtin_ref = components.contains(&"pedersen_builtin").then(|| {
+                    let segment = builtin_segments.pedersen_builtin.unwrap();
 
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
-                "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
-            );
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                    segment_length.is_multiple_of(PEDERSEN_BUILTIN_MEMORY_CELLS),
+                    "pedersen_builtin segment length is not a multiple of it's cells_per_instance"
+                );
 
-            let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "poseidon_builtin instances number is not a power of two"
-            );
-            poseidon_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+                    let n_instances = segment_length / PEDERSEN_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "pedersen_builtin instances number is not a power of two"
+                    );
+                    pedersen_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *pedersen_aggregator_window_bits_18_ref = components
+                    .contains(&"pedersen_aggregator_window_bits_18")
+                    .then(|| pedersen_aggregator_window_bits_18::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *partial_ec_mul_window_bits_18_ref = components
+                    .contains(&"partial_ec_mul_window_bits_18")
+                    .then(|| partial_ec_mul_window_bits_18::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *pedersen_points_table_window_bits_18_ref = components
+                    .contains(&"pedersen_points_table_window_bits_18")
+                    .then(|| {
+                        pedersen_points_table_window_bits_18::ClaimGenerator::new(
+                            preprocessed_trace.clone(),
+                        )
+                    });
+            });
+            s.spawn(|_| {
+                *range_check_8_ref = components
+                    .contains(&"range_check_8")
+                    .then(|| range_check_8::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *poseidon_builtin_ref = components.contains(&"poseidon_builtin").then(|| {
+                    let segment = builtin_segments.poseidon_builtin.unwrap();
+
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                    segment_length.is_multiple_of(POSEIDON_BUILTIN_MEMORY_CELLS),
+                    "poseidon_builtin segment length is not a multiple of it's cells_per_instance"
+                );
+
+                    let n_instances = segment_length / POSEIDON_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "poseidon_builtin instances number is not a power of two"
+                    );
+                    poseidon_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *poseidon_aggregator_ref = components
+                    .contains(&"poseidon_aggregator")
+                    .then(|| poseidon_aggregator::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *poseidon_3_partial_rounds_chain_ref = components
+                    .contains(&"poseidon_3_partial_rounds_chain")
+                    .then(|| poseidon_3_partial_rounds_chain::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *range_check_4_4_ref = components
+                    .contains(&"range_check_4_4")
+                    .then(|| range_check_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_4_4_4_4_ref = components
+                    .contains(&"range_check_4_4_4_4")
+                    .then(|| range_check_4_4_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_252_width_27_ref = components
+                    .contains(&"range_check_252_width_27")
+                    .then(|| range_check_252_width_27::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *poseidon_full_round_chain_ref = components
+                    .contains(&"poseidon_full_round_chain")
+                    .then(|| poseidon_full_round_chain::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *range_check_3_3_3_3_3_ref =
+                    components.contains(&"range_check_3_3_3_3_3").then(|| {
+                        range_check_3_3_3_3_3::ClaimGenerator::new(preprocessed_trace.clone())
+                    });
+            });
+            s.spawn(|_| {
+                *poseidon_round_keys_ref = components
+                    .contains(&"poseidon_round_keys")
+                    .then(|| poseidon_round_keys::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *cube_252_ref = components
+                    .contains(&"cube_252")
+                    .then(|| cube_252::ClaimGenerator::new());
+            });
+            s.spawn(|_| {
+                *range_check_20_ref = components
+                    .contains(&"range_check_20")
+                    .then(|| range_check_20::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *mul_mod_builtin_ref = components.contains(&"mul_mod_builtin").then(|| {
+                    let segment = builtin_segments.mul_mod_builtin.unwrap();
+
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                    segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
+                    "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
+                );
+
+                    let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "mul_mod_builtin instances number is not a power of two"
+                    );
+                    mul_mod_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *range_check_18_ref = components
+                    .contains(&"range_check_18")
+                    .then(|| range_check_18::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_3_6_6_3_ref = components
+                    .contains(&"range_check_3_6_6_3")
+                    .then(|| range_check_3_6_6_3::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_12_ref = components
+                    .contains(&"range_check_12")
+                    .then(|| range_check_12::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *add_mod_builtin_ref = components.contains(&"add_mod_builtin").then(|| {
+                    let segment = builtin_segments.add_mod_builtin.unwrap();
+
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                    segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
+                    "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
+                );
+
+                    let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "add_mod_builtin instances number is not a power of two"
+                    );
+                    add_mod_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )
+                });
+            });
+            s.spawn(|_| {
+            *range_check96_builtin_ref = components.contains(&"range_check96_builtin").then(|| {
+                let segment = builtin_segments.range_check96_builtin.unwrap();
+
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                assert!(
+                    segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
+                    "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
+                );
+
+                let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check96_builtin instances number is not a power of two"
+                );
+                range_check96_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            });
         });
-        self.poseidon_aggregator = components
-            .contains(&"poseidon_aggregator")
-            .then(|| poseidon_aggregator::ClaimGenerator::new());
-        self.poseidon_3_partial_rounds_chain = components
-            .contains(&"poseidon_3_partial_rounds_chain")
-            .then(|| poseidon_3_partial_rounds_chain::ClaimGenerator::new());
-        self.range_check_4_4 = components
-            .contains(&"range_check_4_4")
-            .then(|| range_check_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_4_4_4_4 = components
-            .contains(&"range_check_4_4_4_4")
-            .then(|| range_check_4_4_4_4::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_252_width_27 = components
-            .contains(&"range_check_252_width_27")
-            .then(|| range_check_252_width_27::ClaimGenerator::new());
-        self.poseidon_full_round_chain = components
-            .contains(&"poseidon_full_round_chain")
-            .then(|| poseidon_full_round_chain::ClaimGenerator::new());
-        self.range_check_3_3_3_3_3 = components
-            .contains(&"range_check_3_3_3_3_3")
-            .then(|| range_check_3_3_3_3_3::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.poseidon_round_keys = components
-            .contains(&"poseidon_round_keys")
-            .then(|| poseidon_round_keys::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.cube_252 = components
-            .contains(&"cube_252")
-            .then(|| cube_252::ClaimGenerator::new());
-        self.range_check_20 = components
-            .contains(&"range_check_20")
-            .then(|| range_check_20::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.mul_mod_builtin = components.contains(&"mul_mod_builtin").then(|| {
-            let segment = builtin_segments.mul_mod_builtin.unwrap();
+            s.spawn(|_| {
+                *range_check_6_ref = components
+                    .contains(&"range_check_6")
+                    .then(|| range_check_6::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+            *range_check_builtin_ref = components.contains(&"range_check_builtin").then(|| {
+                let segment = builtin_segments.range_check_builtin.unwrap();
 
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(MUL_MOD_BUILTIN_MEMORY_CELLS),
-                "mul_mod_builtin segment length is not a multiple of it's cells_per_instance"
-            );
+                let segment_length = segment.stop_ptr - segment.begin_addr;
+                assert!(
+                    segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
+                    "range_check_builtin segment length is not a multiple of it's cells_per_instance"
+                );
 
-            let n_instances = segment_length / MUL_MOD_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "mul_mod_builtin instances number is not a power of two"
-            );
-            mul_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+                let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
+                assert!(
+                    n_instances.is_power_of_two(),
+                    "range_check_builtin instances number is not a power of two"
+                );
+                range_check_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+            });
         });
-        self.range_check_18 = components
-            .contains(&"range_check_18")
-            .then(|| range_check_18::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_3_6_6_3 = components
-            .contains(&"range_check_3_6_6_3")
-            .then(|| range_check_3_6_6_3::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_12 = components
-            .contains(&"range_check_12")
-            .then(|| range_check_12::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.add_mod_builtin = components.contains(&"add_mod_builtin").then(|| {
-            let segment = builtin_segments.add_mod_builtin.unwrap();
+            s.spawn(|_| {
+                *bitwise_builtin_ref = components.contains(&"bitwise_builtin").then(|| {
+                    let segment = builtin_segments.bitwise_builtin.unwrap();
 
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(ADD_MOD_BUILTIN_MEMORY_CELLS),
-                "add_mod_builtin segment length is not a multiple of it's cells_per_instance"
-            );
+                    let segment_length = segment.stop_ptr - segment.begin_addr;
+                    assert!(
+                    segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
+                    "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
+                );
 
-            let n_instances = segment_length / ADD_MOD_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "add_mod_builtin instances number is not a power of two"
-            );
-            add_mod_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
+                    let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
+                    assert!(
+                        n_instances.is_power_of_two(),
+                        "bitwise_builtin instances number is not a power of two"
+                    );
+                    bitwise_builtin::ClaimGenerator::new(
+                        n_instances.ilog2(),
+                        segment.begin_addr as u32,
+                    )
+                });
+            });
+            s.spawn(|_| {
+                *verify_bitwise_xor_8_ref = components
+                    .contains(&"verify_bitwise_xor_8")
+                    .then(|| verify_bitwise_xor_8::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *verify_bitwise_xor_9_ref = components
+                    .contains(&"verify_bitwise_xor_9")
+                    .then(|| verify_bitwise_xor_9::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *memory_id_to_big_ref = components
+                    .contains(&"memory_id_to_big")
+                    .then(|| memory_id_to_big::ClaimGenerator::new(memory.clone()));
+            });
+            s.spawn(|_| {
+                *range_check_9_9_ref = components
+                    .contains(&"range_check_9_9")
+                    .then(|| range_check_9_9::ClaimGenerator::new(preprocessed_trace.clone()));
+            });
+            s.spawn(|_| {
+                *memory_address_to_id_ref = components
+                    .contains(&"memory_address_to_id")
+                    .then(|| memory_address_to_id::ClaimGenerator::new(memory.clone()));
+            });
         });
-        self.range_check96_builtin = components.contains(&"range_check96_builtin").then(|| {
-            let segment = builtin_segments.range_check96_builtin.unwrap();
-
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(RANGE_CHECK_96_BUILTIN_MEMORY_CELLS),
-                "range_check96_builtin segment length is not a multiple of it's cells_per_instance"
-            );
-
-            let n_instances = segment_length / RANGE_CHECK_96_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "range_check96_builtin instances number is not a power of two"
-            );
-            range_check96_builtin::ClaimGenerator::new(
-                n_instances.ilog2(),
-                segment.begin_addr as u32,
-            )
-        });
-        self.range_check_6 = components
-            .contains(&"range_check_6")
-            .then(|| range_check_6::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.range_check_builtin = components.contains(&"range_check_builtin").then(|| {
-            let segment = builtin_segments.range_check_builtin.unwrap();
-
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(RANGE_CHECK_BUILTIN_MEMORY_CELLS),
-                "range_check_builtin segment length is not a multiple of it's cells_per_instance"
-            );
-
-            let n_instances = segment_length / RANGE_CHECK_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "range_check_builtin instances number is not a power of two"
-            );
-            range_check_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
-        });
-        self.bitwise_builtin = components.contains(&"bitwise_builtin").then(|| {
-            let segment = builtin_segments.bitwise_builtin.unwrap();
-
-            let segment_length = segment.stop_ptr - segment.begin_addr;
-            assert!(
-                segment_length.is_multiple_of(BITWISE_BUILTIN_MEMORY_CELLS),
-                "bitwise_builtin segment length is not a multiple of it's cells_per_instance"
-            );
-
-            let n_instances = segment_length / BITWISE_BUILTIN_MEMORY_CELLS;
-            assert!(
-                n_instances.is_power_of_two(),
-                "bitwise_builtin instances number is not a power of two"
-            );
-            bitwise_builtin::ClaimGenerator::new(n_instances.ilog2(), segment.begin_addr as u32)
-        });
-        self.verify_bitwise_xor_8 = components
-            .contains(&"verify_bitwise_xor_8")
-            .then(|| verify_bitwise_xor_8::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.verify_bitwise_xor_9 = components
-            .contains(&"verify_bitwise_xor_9")
-            .then(|| verify_bitwise_xor_9::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.memory_id_to_big = components
-            .contains(&"memory_id_to_big")
-            .then(|| memory_id_to_big::ClaimGenerator::new(memory.clone()));
-        self.range_check_9_9 = components
-            .contains(&"range_check_9_9")
-            .then(|| range_check_9_9::ClaimGenerator::new(preprocessed_trace.clone()));
-        self.memory_address_to_id = components
-            .contains(&"memory_address_to_id")
-            .then(|| memory_address_to_id::ClaimGenerator::new(memory.clone()));
     }
 }
 
