@@ -1,15 +1,11 @@
-use stwo::core::fields::m31::BaseField;
-use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::column::BaseColumn;
-use stwo::prover::backend::simd::m31::PackedM31;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
+use stwo::core::fields::m31::M31;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::preprocessed_trace::PreProcessedColumn;
+#[cfg(feature = "prover")]
 use super::preprocessed_utils::pad;
-use crate::prover_types::cpu::M31;
+#[cfg(feature = "prover")]
+use super::simd_prelude::*;
 
 pub const N_BLAKE_ROUNDS: usize = 10;
 pub const N_BLAKE_SIGMA_COLS: usize = 16;
@@ -56,6 +52,7 @@ impl PreProcessedColumn for BlakeSigma {
         LOG_N_ROWS
     }
 
+    #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
         assert!(
             vec_row == 0,
@@ -64,6 +61,7 @@ impl PreProcessedColumn for BlakeSigma {
         PackedM31::from_array(pad(sigma_m31, N_BLAKE_ROUNDS, self.col).try_into().unwrap())
     }
 
+    #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(LOG_N_ROWS).circle_domain(),
