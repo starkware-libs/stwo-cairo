@@ -1,5 +1,10 @@
-use cairo_air::poseidon::air::{
-    Claim, InteractionClaim, PoseidonContextClaim, PoseidonContextInteractionClaim,
+use cairo_air::components::{
+    cube_252 as cube_252_claim,
+    poseidon_3_partial_rounds_chain as poseidon_3_partial_rounds_chain_claim,
+    poseidon_aggregator as poseidon_aggregator_claim,
+    poseidon_full_round_chain as poseidon_full_round_chain_claim,
+    poseidon_round_keys as poseidon_round_keys_claim,
+    range_check_252_width_27 as range_check_252_width_27_claim,
 };
 use cairo_air::relations::CommonLookupElements;
 use stwo::prover::backend::simd::SimdBackend;
@@ -13,6 +18,7 @@ use crate::witness::components::{
 };
 use crate::witness::utils::TreeBuilder;
 
+#[allow(clippy::type_complexity)]
 pub fn poseidon_context_write_trace(
     poseidon_aggregator_trace_generator: Option<poseidon_aggregator::ClaimGenerator>,
     poseidon_3_partial_rounds_chain_trace_generator: Option<
@@ -31,13 +37,23 @@ pub fn poseidon_context_write_trace(
     rc_18_trace_generator: Option<&range_check_18::ClaimGenerator>,
     rc_20_trace_generator: Option<&range_check_20::ClaimGenerator>,
 ) -> (
-    PoseidonContextClaim,
+    Option<poseidon_aggregator_claim::Claim>,
+    Option<poseidon_3_partial_rounds_chain_claim::Claim>,
+    Option<poseidon_full_round_chain_claim::Claim>,
+    Option<cube_252_claim::Claim>,
+    Option<poseidon_round_keys_claim::Claim>,
+    Option<range_check_252_width_27_claim::Claim>,
     PoseidonContextInteractionClaimGenerator,
 ) {
     let span = span!(Level::INFO, "write poseidon context trace").entered();
     if poseidon_aggregator_trace_generator.is_none() {
         return (
-            PoseidonContextClaim { claim: None },
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
             PoseidonContextInteractionClaimGenerator { gen: None },
         );
     }
@@ -98,14 +114,6 @@ pub fn poseidon_context_write_trace(
         );
     span.exit();
 
-    let claim = Some(Claim {
-        poseidon_aggregator: poseidon_aggregator_claim,
-        poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_claim,
-        poseidon_full_round_chain: poseidon_full_round_chain_claim,
-        cube_252: cube_252_claim,
-        poseidon_round_keys: poseidon_round_keys_claim,
-        range_check_252_width_27: range_check_felt_252_width_27_claim,
-    });
     let gen = Some(InteractionClaimGenerator {
         poseidon_aggregator_interaction_gen,
         poseidon_3_partial_rounds_chain_interaction_gen,
@@ -114,8 +122,14 @@ pub fn poseidon_context_write_trace(
         poseidon_round_keys_interaction_gen,
         range_check_felt_252_width_27_interaction_gen,
     });
+
     (
-        PoseidonContextClaim { claim },
+        Some(poseidon_aggregator_claim),
+        Some(poseidon_3_partial_rounds_chain_claim),
+        Some(poseidon_full_round_chain_claim),
+        Some(cube_252_claim),
+        Some(poseidon_round_keys_claim),
+        Some(range_check_felt_252_width_27_claim),
         PoseidonContextInteractionClaimGenerator { gen },
     )
 }
@@ -124,16 +138,23 @@ pub struct PoseidonContextInteractionClaimGenerator {
     gen: Option<InteractionClaimGenerator>,
 }
 impl PoseidonContextInteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> PoseidonContextInteractionClaim {
-        PoseidonContextInteractionClaim {
-            claim: self
-                .gen
-                .map(|gen| gen.write_interaction_trace(tree_builder, common_lookup_elements)),
-        }
+    ) -> (
+        Option<poseidon_aggregator_claim::InteractionClaim>,
+        Option<poseidon_3_partial_rounds_chain_claim::InteractionClaim>,
+        Option<poseidon_full_round_chain_claim::InteractionClaim>,
+        Option<cube_252_claim::InteractionClaim>,
+        Option<poseidon_round_keys_claim::InteractionClaim>,
+        Option<range_check_252_width_27_claim::InteractionClaim>,
+    ) {
+        self.gen
+            .map_or((None, None, None, None, None, None), |gen| {
+                gen.write_interaction_trace(tree_builder, common_lookup_elements)
+            })
     }
 }
 
@@ -148,11 +169,19 @@ struct InteractionClaimGenerator {
         range_check_252_width_27::InteractionClaimGenerator,
 }
 impl InteractionClaimGenerator {
+    #[allow(clippy::type_complexity)]
     pub fn write_interaction_trace(
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         common_lookup_elements: &CommonLookupElements,
-    ) -> InteractionClaim {
+    ) -> (
+        Option<poseidon_aggregator_claim::InteractionClaim>,
+        Option<poseidon_3_partial_rounds_chain_claim::InteractionClaim>,
+        Option<poseidon_full_round_chain_claim::InteractionClaim>,
+        Option<cube_252_claim::InteractionClaim>,
+        Option<poseidon_round_keys_claim::InteractionClaim>,
+        Option<range_check_252_width_27_claim::InteractionClaim>,
+    ) {
         let poseidon_aggregator_interaction_claim = self
             .poseidon_aggregator_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
@@ -172,13 +201,13 @@ impl InteractionClaimGenerator {
             .range_check_felt_252_width_27_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
 
-        InteractionClaim {
-            poseidon_aggregator: poseidon_aggregator_interaction_claim,
-            poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_interaction_claim,
-            poseidon_full_round_chain: poseidon_full_round_chain_interaction_claim,
-            cube_252: cube_252_interaction_claim,
-            poseidon_round_keys: poseidon_round_keys_interaction_claim,
-            range_check_252_width_27: range_check_felt_252_width_27_interaction_claim,
-        }
+        (
+            Some(poseidon_aggregator_interaction_claim),
+            Some(poseidon_3_partial_rounds_chain_interaction_claim),
+            Some(poseidon_full_round_chain_interaction_claim),
+            Some(cube_252_interaction_claim),
+            Some(poseidon_round_keys_interaction_claim),
+            Some(range_check_felt_252_width_27_interaction_claim),
+        )
     }
 }
