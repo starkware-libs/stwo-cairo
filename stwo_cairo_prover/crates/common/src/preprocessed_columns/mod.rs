@@ -6,3 +6,5 @@ pub mod poseidon;
 pub mod poseidon_round_keys;
 pub mod preprocessed_trace;
 pub mod preprocessed_utils;
+#[cfg(feature = "prover")]
+pub mod simd_prelude;

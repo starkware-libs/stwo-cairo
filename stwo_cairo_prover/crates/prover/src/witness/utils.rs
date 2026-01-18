@@ -12,12 +12,11 @@ use stwo::core::vcs_lifted::blake2_merkle::Blake2sMerkleChannel;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::prover::backend::simd::column::BaseColumn;
 use stwo::prover::backend::simd::conversion::Pack;
-use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
+use stwo::prover::backend::simd::m31::{PackedM31, LOG_N_LANES, N_LANES};
 use stwo::prover::backend::{Backend, BackendForChannel};
 use stwo::prover::poly::circle::CircleEvaluation;
 use stwo::prover::poly::BitReversedOrder;
 use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
-use stwo_cairo_common::prover_types::simd::LOG_N_LANES;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 use stwo_constraint_framework::PREPROCESSED_TRACE_IDX;
 

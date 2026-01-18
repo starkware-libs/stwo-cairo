@@ -3540,6 +3540,7 @@ name = "stwo_cairo_prover"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "bytemuck",
  "cairo-air",
  "dashmap",
  "dev-utils",

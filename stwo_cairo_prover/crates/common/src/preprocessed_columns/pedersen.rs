@@ -9,16 +9,12 @@ use starknet_curve::curve_params::{
 use starknet_types_core::curve::ProjectivePoint;
 use starknet_types_core::felt::Felt;
 use stwo::core::fields::m31::{BaseField, M31};
-use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::column::BaseColumn;
-use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::felt_batch_inverse::felt_batch_inverse;
 use super::preprocessed_trace::PreProcessedColumn;
+#[cfg(feature = "prover")]
+use super::simd_prelude::*;
 use crate::prover_types::cpu::{Felt252, FELT252_N_WORDS};
 
 pub static PEDERSEN_TABLE_9: LazyLock<PedersenPointsTable<9>> =
@@ -70,6 +66,7 @@ impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS
         }
     }
 
+    #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let array = self.get_data()[(vec_row * N_LANES)..((vec_row + 1) * N_LANES)]
             .try_into()
@@ -77,6 +74,7 @@ impl<const WINDOW_BITS: usize> PreProcessedColumn for PedersenPoints<WINDOW_BITS
         PackedM31::from_array(array)
     }
 
+    #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),

@@ -1,7 +1,6 @@
 use num_traits::Zero;
+use stwo::core::air::Component;
 use stwo::core::fields::qm31::QM31;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::ComponentProver;
 use stwo_constraint_framework::TraceLocationAllocator;
 
 use crate::air::{accumulate_relation_uses, RelationUsesDict};
@@ -144,10 +143,10 @@ impl PedersenContextComponents {
         Self { components }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn components(&self) -> Vec<&dyn Component> {
         self.components
             .as_ref()
-            .map(|c| c.provers())
+            .map(|c| c.components())
             .unwrap_or_default()
     }
 }
@@ -206,7 +205,7 @@ impl Components {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn components(&self) -> Vec<&dyn Component> {
         vec![
             &self.pedersen_aggregator,
             &self.partial_ec_mul,

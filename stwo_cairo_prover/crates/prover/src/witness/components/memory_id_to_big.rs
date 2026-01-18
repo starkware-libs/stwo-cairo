@@ -13,12 +13,10 @@ use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
 use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
-use stwo_cairo_common::memory::{
-    LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
-};
-use stwo_cairo_common::preprocessed_columns::preprocessed_utils::SIMD_ENUMERATION_0;
+use stwo_cairo_common::memory::{LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_SMALL_FELT252};
+use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
 use stwo_cairo_common::prover_types::felt::split_f252_simd;
-use stwo_cairo_common::prover_types::simd::PackedFelt252;
+use stwo_cairo_common::prover_types::simd::{PackedFelt252, SIMD_ENUMERATION_0};
 
 use crate::witness::components::range_check_9_9;
 use crate::witness::prelude::*;
@@ -129,7 +127,7 @@ impl ClaimGenerator {
             gen_small_memory_trace(self.small_values, self.small_mults.into_simd_vec());
 
         // Lookup data.
-        let big_components_values: Vec<[_; N_M31_IN_FELT252]> = big_table_traces
+        let big_components_values: Vec<[_; FELT252_N_WORDS]> = big_table_traces
             .iter()
             .map(|trace| std::array::from_fn(|i| trace[i].data.clone()))
             .collect_vec();
@@ -319,7 +317,7 @@ fn gen_single_big_memory_trace(values: &[[u32; 8]], mults: &[PackedM31]) -> Vec<
 
     let mut value_trace =
         std::iter::repeat_with(|| unsafe { BaseColumn::uninitialized(column_length) })
-            .take(N_M31_IN_FELT252)
+            .take(FELT252_N_WORDS)
             .collect_vec();
     for (i, values) in packed_values.iter().enumerate() {
         let values = split_f252_simd(*values);
@@ -375,7 +373,7 @@ fn gen_small_memory_trace(values: Vec<u128>, mut mults: Vec<PackedM31>) -> Vec<B
 
 #[derive(Debug)]
 pub struct InteractionClaimGenerator {
-    pub big_components_values: Vec<[Vec<PackedM31>; N_M31_IN_FELT252]>,
+    pub big_components_values: Vec<[Vec<PackedM31>; FELT252_N_WORDS]>,
     pub big_multiplicities: Vec<Vec<PackedM31>>,
     pub small_values: [Vec<PackedM31>; N_M31_IN_SMALL_FELT252],
     pub small_multiplicities: Vec<PackedM31>,
@@ -417,7 +415,7 @@ impl InteractionClaimGenerator {
     }
 
     fn gen_big_memory_interaction_trace(
-        big_components_values: &[Vec<PackedM31>; N_M31_IN_FELT252],
+        big_components_values: &[Vec<PackedM31>; FELT252_N_WORDS],
         big_multiplicities: &[PackedM31],
         offset: u32,
         common_lookup_elements: &relations::CommonLookupElements,
@@ -500,7 +498,7 @@ impl InteractionClaimGenerator {
         let large_memory_value_id_tag = Simd::splat(LARGE_MEMORY_VALUE_ID_BASE);
         #[allow(clippy::needless_range_loop)]
         for vec_row in 0..1 << (big_table_log_size - LOG_N_LANES) {
-            let id_and_value: [_; N_M31_IN_FELT252 + MEMORY_ID_SIZE] = std::array::from_fn(|i| {
+            let id_and_value: [_; FELT252_N_WORDS + MEMORY_ID_SIZE] = std::array::from_fn(|i| {
                 if i == 0 {
                     unsafe {
                         PackedM31::from_simd_unchecked(
@@ -614,14 +612,15 @@ mod tests {
     use stwo_cairo_adapter::memory::{
         value_from_felt252, MemoryBuilder, MemoryConfig, MemoryValue,
     };
-    use stwo_cairo_common::memory::N_M31_IN_FELT252;
     use stwo_cairo_common::preprocessed_columns::preprocessed_trace::PreProcessedTrace;
+    use stwo_cairo_common::prover_types::cpu::FELT252_N_WORDS;
     use stwo_cairo_common::prover_types::felt::split_f252;
     use stwo_constraint_framework::TraceLocationAllocator;
 
     use crate::debug_tools::assert_constraints::assert_component;
     use crate::debug_tools::mock_tree_builder::MockCommitmentScheme;
     use crate::witness::components::{memory_address_to_id, range_check_9_9};
+    use crate::witness::preprocessed_trace::gen_trace;
 
     #[test]
     fn test_memory_constraints() {
@@ -645,11 +644,9 @@ mod tests {
 
         // Preprocessed trace.
         let mut tree_builder = commitment_scheme.tree_builder();
-        tree_builder.extend_evals(
-            PreProcessedTraceVariant::CanonicalWithoutPedersen
-                .to_preprocessed_trace()
-                .gen_trace(),
-        );
+        tree_builder.extend_evals(gen_trace(Arc::new(
+            PreProcessedTraceVariant::CanonicalWithoutPedersen.to_preprocessed_trace(),
+        )));
         tree_builder.finalize_interaction();
 
         // Base trace.
@@ -769,7 +766,7 @@ mod tests {
 
         for (i, expected) in expected.into_iter().enumerate() {
             let expected = split_f252(expected);
-            let value: [M31; N_M31_IN_FELT252] = (0..N_M31_IN_FELT252)
+            let value: [M31; FELT252_N_WORDS] = (0..FELT252_N_WORDS)
                 .map(|j| output[j].to_array()[i])
                 .collect_vec()
                 .try_into()

@@ -20,7 +20,7 @@ itertools.workspace = true
 num-traits.workspace = true
 paste.workspace = true
 # TODO(Ohad): Add parallel config.
-stwo-cairo-common.workspace = true
+stwo-cairo-common = { workspace = true, features = ["prover"] }
 stwo-cairo-adapter.workspace = true
 rayon.workspace = true
 serde.workspace = true
@@ -31,11 +31,12 @@ starknet-ff.workspace = true
 starknet-types-core.workspace = true
 stwo-cairo-serialize = { path = "../cairo-serialize" }
 cairo-air.workspace = true
-stwo.workspace = true
-stwo-constraint-framework = { workspace = true, features = ["parallel"] }
+stwo = { workspace = true, features = ["parallel", "prover"] }
+stwo-constraint-framework = { workspace = true, features = ["parallel", "prover"] }
 tracing.workspace = true
 dashmap.workspace = true
 indexmap.workspace = true
+bytemuck.workspace = true
 
 [target.'cfg(not(any(target_arch = "wasm32", target_arch = "wasm64")))'.dependencies]
 sonic-rs.workspace = true

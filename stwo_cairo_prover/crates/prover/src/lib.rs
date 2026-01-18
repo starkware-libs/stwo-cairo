@@ -5,4 +5,5 @@ pub use stwo;
 
 pub mod debug_tools;
 pub mod prover;
+pub mod utils;
 pub mod witness;

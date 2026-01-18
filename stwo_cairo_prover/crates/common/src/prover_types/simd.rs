@@ -8,19 +8,16 @@ use bytemuck::Zeroable;
 use itertools::Itertools;
 use stwo::core::fields::FieldExpOps;
 use stwo::prover::backend::simd::conversion::{Pack, Unpack};
-use stwo::prover::backend::simd::m31::PackedM31;
+use stwo::prover::backend::simd::m31::{PackedM31, N_LANES};
 
 use super::cpu::{
     BigUInt, CasmState, Felt252, Felt252Width27, UInt16, UInt32, UInt64, FELT252WIDTH27_N_WORDS,
-    PRIME,
+    FELT252_N_WORDS, PRIME,
 };
-use crate::memory::N_M31_IN_FELT252;
-
-pub const LOG_N_LANES: u32 = 4;
-
-pub const N_LANES: usize = 1 << LOG_N_LANES;
 
 pub const P_BROADCAST: Simd<u32, N_LANES> = Simd::from_array([PRIME; N_LANES]);
+pub const SIMD_ENUMERATION_0: Simd<u32, N_LANES> =
+    Simd::from_array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
 
 pub trait PackedM31Type {
     fn as_m31(&self) -> PackedM31;
@@ -393,14 +390,14 @@ impl BitXor for PackedUInt64 {
 // TODO(Ohad): Change to non-redundant representation.
 #[derive(Copy, Clone, Debug)]
 pub struct PackedFelt252 {
-    pub value: [PackedM31; N_M31_IN_FELT252],
+    pub value: [PackedM31; FELT252_N_WORDS],
 }
 impl PackedFelt252 {
     pub fn get_m31(&self, index: usize) -> PackedM31 {
         self.value[index]
     }
 
-    pub fn from_limbs(limbs: [PackedM31; N_M31_IN_FELT252]) -> Self {
+    pub fn from_limbs(limbs: [PackedM31; FELT252_N_WORDS]) -> Self {
         Self { value: limbs }
     }
 
@@ -481,8 +478,8 @@ impl PartialEq for PackedFelt252 {
     }
 }
 
-impl AsRef<[PackedM31; N_M31_IN_FELT252]> for PackedFelt252 {
-    fn as_ref(&self) -> &[PackedM31; N_M31_IN_FELT252] {
+impl AsRef<[PackedM31; FELT252_N_WORDS]> for PackedFelt252 {
+    fn as_ref(&self) -> &[PackedM31; FELT252_N_WORDS] {
         &self.value
     }
 }

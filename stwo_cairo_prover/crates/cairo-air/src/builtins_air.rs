@@ -1,11 +1,10 @@
 use itertools::chain;
 use num_traits::Zero;
 use serde::{Deserialize, Serialize};
+use stwo::core::air::Component;
 use stwo::core::channel::Channel;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::pcs::TreeVec;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::ComponentProver;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
@@ -284,28 +283,28 @@ impl BuiltinComponents {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
-        let mut vec: Vec<&dyn ComponentProver<SimdBackend>> = vec![];
+    pub fn components(&self) -> Vec<&dyn Component> {
+        let mut vec: Vec<&dyn Component> = vec![];
         if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            vec.push(add_mod_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(add_mod_builtin as &dyn Component);
         }
         if let Some(bitwise_builtin) = &self.bitwise_builtin {
-            vec.push(bitwise_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(bitwise_builtin as &dyn Component);
         }
         if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            vec.push(mul_mod_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(mul_mod_builtin as &dyn Component);
         }
         if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            vec.push(pedersen_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(pedersen_builtin as &dyn Component);
         }
         if let Some(poseidon_builtin) = &self.poseidon_builtin {
-            vec.push(poseidon_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(poseidon_builtin as &dyn Component);
         }
         if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            vec.push(range_check_96_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(range_check_96_builtin as &dyn Component);
         }
         if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
-            vec.push(range_check_128_builtin as &dyn ComponentProver<SimdBackend>);
+            vec.push(range_check_128_builtin as &dyn Component);
         }
         vec
     }
