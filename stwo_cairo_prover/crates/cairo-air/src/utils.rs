@@ -325,6 +325,7 @@ pub fn to_cairo_proof_sorted<H: MerkleHasherLifted>(
         interaction_claim,
         stark_proof,
         channel_salt,
+        preprocessed_trace_variant,
     } = cairo_proof;
 
     let CommitmentSchemeProof {
@@ -363,13 +364,13 @@ pub fn to_cairo_proof_sorted<H: MerkleHasherLifted>(
         interaction_claim,
         stark_proof: StarkProofSorted(sorted_stark_proof),
         channel_salt,
+        preprocessed_trace_variant,
     }
 }
 
 /// Transforms a `CairoProofSorted` into a `CairoProof` by un-sorting the queried values.
 pub fn to_cairo_proof<H: MerkleHasherLifted>(
     cairo_proof_sorted: CairoProofSorted<H>,
-    pp_trace_variant: PreProcessedTraceVariant,
 ) -> CairoProof<H> {
     let CairoProofSorted {
         claim,
@@ -377,6 +378,7 @@ pub fn to_cairo_proof<H: MerkleHasherLifted>(
         interaction_claim,
         stark_proof,
         channel_salt,
+        preprocessed_trace_variant,
     } = cairo_proof_sorted;
 
     let CommitmentSchemeProofSorted {
@@ -389,7 +391,9 @@ pub fn to_cairo_proof<H: MerkleHasherLifted>(
         fri_proof,
     } = stark_proof.0;
 
-    let preprocessed_trace_log_sizes = pp_trace_variant.to_preprocessed_trace().log_sizes();
+    let preprocessed_trace_log_sizes = preprocessed_trace_variant
+        .to_preprocessed_trace()
+        .log_sizes();
     let trace_and_interaction_trace_log_sizes = claim.log_sizes();
 
     let unsorted_queried_values = unsort_and_transpose_queried_values(
@@ -415,6 +419,7 @@ pub fn to_cairo_proof<H: MerkleHasherLifted>(
         interaction_claim,
         stark_proof: StarkProof(stark_proof),
         channel_salt,
+        preprocessed_trace_variant,
     }
 }
 
