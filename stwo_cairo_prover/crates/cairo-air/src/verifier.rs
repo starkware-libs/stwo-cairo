@@ -20,11 +20,14 @@ use thiserror::Error;
 use tracing::{span, Level};
 
 use crate::air::{
-    lookup_sum, CairoClaim, CairoComponents, MemorySection, PublicData, PublicMemory,
-    PublicSegmentRanges, SegmentRange,
+    CairoComponents, MemorySection, PublicData, PublicMemory, PublicSegmentRanges, SegmentRange,
 };
-use crate::builtins_air::BuiltinsClaim;
+use crate::claims::{lookup_sum, CairoClaim};
 use crate::components::memory_address_to_id::MEMORY_ADDRESS_TO_ID_SPLIT;
+use crate::components::{
+    add_mod_builtin, bitwise_builtin, mul_mod_builtin, pedersen_builtin, poseidon_builtin,
+    range_check96_builtin, range_check_builtin,
+};
 use crate::relations::CommonLookupElements;
 use crate::{CairoProof, PreProcessedTraceVariant};
 
@@ -51,7 +54,16 @@ fn verify_claim(claim: &CairoClaim) {
             },
     } = &claim.public_data;
 
-    verify_builtins(&claim.builtins, public_segments);
+    verify_builtins(
+        &claim.add_mod_builtin,
+        &claim.bitwise_builtin,
+        &claim.mul_mod_builtin,
+        &claim.pedersen_builtin,
+        &claim.poseidon_builtin,
+        &claim.range_check96_builtin,
+        &claim.range_check_builtin,
+        public_segments,
+    );
 
     verify_program(program, public_segments);
 
@@ -73,7 +85,9 @@ fn verify_claim(claim: &CairoClaim) {
     // Large value IDs reside in [LARGE_MEMORY_VALUE_ID_BASE..P).
     // Check that IDs in (ID -> Value) do not overflow P.
     let largest_id = claim
-        .memory_id_to_value
+        .memory_id_to_big
+        .as_ref()
+        .unwrap()
         .big_log_sizes
         .iter()
         .map(|log_size| 1 << log_size)
@@ -113,7 +127,17 @@ struct BuiltinClaim {
     log_size: u32,
 }
 
-fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmentRanges) {
+#[allow(clippy::too_many_arguments)]
+fn verify_builtins(
+    add_mod_builtin_claim: &Option<add_mod_builtin::Claim>,
+    bitwise_builtin_claim: &Option<bitwise_builtin::Claim>,
+    mul_mod_builtin_claim: &Option<mul_mod_builtin::Claim>,
+    pedersen_builtin_claim: &Option<pedersen_builtin::Claim>,
+    poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
+    range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
+    range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
+    segment_ranges: &PublicSegmentRanges,
+) {
     let PublicSegmentRanges {
         output,
         pedersen,
@@ -156,7 +180,7 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
         ($name:ident) => {
             paste! {
                 check_builtin(
-                    builtins_claim.[<$name _builtin>]
+                    (*[<$name _builtin_claim>])
                         .map(|claim| BuiltinClaim {
                             segment_start: claim.[<$name _builtin_segment_start>],
                             log_size: claim.log_size,
@@ -171,23 +195,19 @@ fn verify_builtins(builtins_claim: &BuiltinsClaim, segment_ranges: &PublicSegmen
 
     // All other supported builtins.
     check_builtin(
-        builtins_claim
-            .range_check_128_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+        (*range_check_128_builtin_claim).map(|claim| BuiltinClaim {
+            segment_start: claim.range_check_builtin_segment_start,
+            log_size: claim.log_size,
+        }),
         range_check_128,
         "range_check_128",
         RANGE_CHECK_BUILTIN_MEMORY_CELLS,
     );
     check_builtin(
-        builtins_claim
-            .range_check_96_builtin
-            .map(|claim| BuiltinClaim {
-                segment_start: claim.range_check96_builtin_segment_start,
-                log_size: claim.log_size,
-            }),
+        (*range_check_96_builtin_claim).map(|claim| BuiltinClaim {
+            segment_start: claim.range_check96_builtin_segment_start,
+            log_size: claim.log_size,
+        }),
         range_check_96,
         "range_check_96",
         RANGE_CHECK_96_BUILTIN_MEMORY_CELLS,
@@ -286,7 +306,7 @@ pub fn verify_cairo<MC: MerkleChannel>(
     // Auxiliary verifications.
     // Assert that ADDRESS->ID component does not overflow.
     assert!(
-        (1 << claim.memory_address_to_id.log_size) * MEMORY_ADDRESS_TO_ID_SPLIT
+        (1 << claim.memory_address_to_id.as_ref().unwrap().log_size) * MEMORY_ADDRESS_TO_ID_SPLIT
             <= (1 << LOG_MEMORY_ADDRESS_BOUND)
     );
 

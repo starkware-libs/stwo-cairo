@@ -12,6 +12,7 @@ use itertools::{chain, Itertools};
 use rayon::iter::{
     IndexedParallelIterator, IntoParallelIterator, IntoParallelRefIterator, ParallelIterator,
 };
+use stwo::core::fields::qm31::SecureField;
 use stwo_cairo_adapter::memory::{u128_to_4_limbs, EncodedMemoryValueId, Memory, MemoryValueId};
 use stwo_cairo_common::memory::{
     LARGE_MEMORY_VALUE_ID_BASE, N_M31_IN_FELT252, N_M31_IN_SMALL_FELT252,
@@ -409,10 +410,12 @@ impl InteractionClaimGenerator {
         let (small_trace, small_claimed_sum) =
             self.gen_small_memory_interaction_trace(common_lookup_elements);
         tree_builder.extend_evals(small_trace);
+        let claimed_sum = small_claimed_sum + big_claimed_sums.iter().sum::<SecureField>();
 
         InteractionClaim {
             small_claimed_sum,
             big_claimed_sums,
+            claimed_sum,
         }
     }
 

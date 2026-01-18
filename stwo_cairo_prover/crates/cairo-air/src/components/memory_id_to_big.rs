@@ -255,7 +255,7 @@ pub struct SmallEval {
     pub common_lookup_elements: relations::CommonLookupElements,
 }
 impl SmallEval {
-    pub fn new(claim: Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
+    pub fn new(claim: &Claim, common_lookup_elements: relations::CommonLookupElements) -> Self {
         Self {
             log_n_rows: claim.small_log_size,
             common_lookup_elements,
@@ -366,15 +366,12 @@ impl Claim {
 pub struct InteractionClaim {
     pub big_claimed_sums: Vec<SecureField>,
     pub small_claimed_sum: SecureField,
+    pub claimed_sum: SecureField,
 }
 impl InteractionClaim {
     pub fn mix_into(&self, channel: &mut impl Channel) {
         channel.mix_felts(&self.big_claimed_sums);
         channel.mix_felts(&[self.small_claimed_sum]);
-    }
-
-    pub fn claimed_sum(&self) -> SecureField {
-        self.small_claimed_sum + self.big_claimed_sums.iter().sum::<SecureField>()
     }
 }
 

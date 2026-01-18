@@ -1,182 +1,13 @@
-use itertools::chain;
-use num_traits::Zero;
-use serde::{Deserialize, Serialize};
-use stwo::core::channel::Channel;
-use stwo::core::fields::qm31::{SecureField, QM31};
-use stwo::core::pcs::TreeVec;
 use stwo::prover::backend::simd::SimdBackend;
 use stwo::prover::ComponentProver;
-use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
 use stwo_constraint_framework::TraceLocationAllocator;
 
-use crate::air::{accumulate_relation_uses, RelationUsesDict};
 use crate::components::{
     add_mod_builtin, bitwise_builtin, indented_component_display, mul_mod_builtin,
     pedersen_builtin, poseidon_builtin, range_check96_builtin, range_check_builtin,
 };
 use crate::relations::CommonLookupElements;
 
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct BuiltinsClaim {
-    pub add_mod_builtin: Option<add_mod_builtin::Claim>,
-    pub bitwise_builtin: Option<bitwise_builtin::Claim>,
-    pub mul_mod_builtin: Option<mul_mod_builtin::Claim>,
-    pub pedersen_builtin: Option<pedersen_builtin::Claim>,
-    pub poseidon_builtin: Option<poseidon_builtin::Claim>,
-    pub range_check_96_builtin: Option<range_check96_builtin::Claim>,
-    pub range_check_128_builtin: Option<range_check_builtin::Claim>,
-}
-impl BuiltinsClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        channel.mix_u64(self.add_mod_builtin.is_some() as u64);
-        if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            add_mod_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.bitwise_builtin.is_some() as u64);
-        if let Some(bitwise_builtin) = &self.bitwise_builtin {
-            bitwise_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.mul_mod_builtin.is_some() as u64);
-        if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            mul_mod_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.pedersen_builtin.is_some() as u64);
-        if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            pedersen_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.poseidon_builtin.is_some() as u64);
-        if let Some(poseidon_builtin) = &self.poseidon_builtin {
-            poseidon_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.range_check_96_builtin.is_some() as u64);
-        if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            range_check_96_builtin.mix_into(channel);
-        }
-        channel.mix_u64(self.range_check_128_builtin.is_some() as u64);
-        if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
-            range_check_128_builtin.mix_into(channel);
-        }
-    }
-
-    pub fn log_sizes(&self) -> TreeVec<Vec<u32>> {
-        TreeVec::concat_cols(chain!(
-            self.add_mod_builtin
-                .map(|add_mod_builtin| add_mod_builtin.log_sizes())
-                .into_iter(),
-            self.bitwise_builtin
-                .map(|bitwise_builtin| bitwise_builtin.log_sizes())
-                .into_iter(),
-            self.mul_mod_builtin
-                .map(|mul_mod_builtin| mul_mod_builtin.log_sizes())
-                .into_iter(),
-            self.pedersen_builtin
-                .map(|pedersen_builtin| pedersen_builtin.log_sizes())
-                .into_iter(),
-            self.poseidon_builtin
-                .map(|poseidon_builtin| poseidon_builtin.log_sizes())
-                .into_iter(),
-            self.range_check_96_builtin
-                .map(|range_check_96_builtin| range_check_96_builtin.log_sizes())
-                .into_iter(),
-            self.range_check_128_builtin
-                .map(|range_check_128_builtin| range_check_128_builtin.log_sizes())
-                .into_iter(),
-        ))
-    }
-    pub fn accumulate_relation_uses(&self, relation_uses: &mut RelationUsesDict) {
-        let Self {
-            add_mod_builtin,
-            bitwise_builtin,
-            mul_mod_builtin,
-            pedersen_builtin,
-            poseidon_builtin,
-            range_check_96_builtin,
-            range_check_128_builtin,
-        } = self;
-
-        // TODO(alonf): canonicalize the name of field and module.
-        macro_rules! relation_uses {
-            ($field:ident, $module:ident) => {
-                if let Some(field) = $field {
-                    accumulate_relation_uses(
-                        relation_uses,
-                        $module::RELATION_USES_PER_ROW,
-                        field.log_size,
-                    );
-                };
-            };
-        }
-        relation_uses!(add_mod_builtin, add_mod_builtin);
-        relation_uses!(bitwise_builtin, bitwise_builtin);
-        relation_uses!(mul_mod_builtin, mul_mod_builtin);
-        relation_uses!(pedersen_builtin, pedersen_builtin);
-        relation_uses!(poseidon_builtin, poseidon_builtin);
-        relation_uses!(range_check_96_builtin, range_check96_builtin);
-        relation_uses!(range_check_128_builtin, range_check_builtin);
-    }
-}
-
-#[derive(Clone, Serialize, Deserialize, CairoSerialize, CairoDeserialize)]
-pub struct BuiltinsInteractionClaim {
-    pub add_mod_builtin: Option<add_mod_builtin::InteractionClaim>,
-    pub bitwise_builtin: Option<bitwise_builtin::InteractionClaim>,
-    pub mul_mod_builtin: Option<mul_mod_builtin::InteractionClaim>,
-    pub pedersen_builtin: Option<pedersen_builtin::InteractionClaim>,
-    pub poseidon_builtin: Option<poseidon_builtin::InteractionClaim>,
-    pub range_check_96_builtin: Option<range_check96_builtin::InteractionClaim>,
-    pub range_check_128_builtin: Option<range_check_builtin::InteractionClaim>,
-}
-impl BuiltinsInteractionClaim {
-    pub fn mix_into(&self, channel: &mut impl Channel) {
-        if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            add_mod_builtin.mix_into(channel);
-        }
-        if let Some(bitwise_builtin) = self.bitwise_builtin {
-            bitwise_builtin.mix_into(channel)
-        }
-        if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            mul_mod_builtin.mix_into(channel);
-        }
-        if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            pedersen_builtin.mix_into(channel);
-        }
-        if let Some(poseidon_builtin) = self.poseidon_builtin {
-            poseidon_builtin.mix_into(channel)
-        }
-        if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            range_check_96_builtin.mix_into(channel);
-        }
-        if let Some(range_check_128_builtin) = self.range_check_128_builtin {
-            range_check_128_builtin.mix_into(channel)
-        }
-    }
-
-    pub fn sum(&self) -> SecureField {
-        let mut sum = QM31::zero();
-        if let Some(add_mod_builtin) = &self.add_mod_builtin {
-            sum += add_mod_builtin.claimed_sum;
-        }
-        if let Some(bitwise_builtin) = &self.bitwise_builtin {
-            sum += bitwise_builtin.claimed_sum;
-        }
-        if let Some(mul_mod_builtin) = &self.mul_mod_builtin {
-            sum += mul_mod_builtin.claimed_sum;
-        }
-        if let Some(pedersen_builtin) = &self.pedersen_builtin {
-            sum += pedersen_builtin.claimed_sum;
-        }
-        if let Some(poseidon_builtin) = &self.poseidon_builtin {
-            sum += poseidon_builtin.claimed_sum;
-        }
-        if let Some(range_check_96_builtin) = &self.range_check_96_builtin {
-            sum += range_check_96_builtin.claimed_sum;
-        }
-        if let Some(range_check_128_builtin) = &self.range_check_128_builtin {
-            sum += range_check_128_builtin.claimed_sum;
-        }
-        sum
-    }
-}
 pub struct BuiltinComponents {
     pub add_mod_builtin: Option<add_mod_builtin::Component>,
     pub bitwise_builtin: Option<bitwise_builtin::Component>,
@@ -187,92 +18,101 @@ pub struct BuiltinComponents {
     pub range_check_128_builtin: Option<range_check_builtin::Component>,
 }
 impl BuiltinComponents {
+    #[allow(clippy::too_many_arguments)]
     pub fn new(
         tree_span_provider: &mut TraceLocationAllocator,
-        claim: &BuiltinsClaim,
+        add_mod_builtin_claim: &Option<add_mod_builtin::Claim>,
+        bitwise_builtin_claim: &Option<bitwise_builtin::Claim>,
+        mul_mod_builtin_claim: &Option<mul_mod_builtin::Claim>,
+        pedersen_builtin_claim: &Option<pedersen_builtin::Claim>,
+        poseidon_builtin_claim: &Option<poseidon_builtin::Claim>,
+        range_check_96_builtin_claim: &Option<range_check96_builtin::Claim>,
+        range_check_128_builtin_claim: &Option<range_check_builtin::Claim>,
         common_lookup_elements: &CommonLookupElements,
-        interaction_claim: &BuiltinsInteractionClaim,
+        add_mod_builtin_interaction_claim: &Option<add_mod_builtin::InteractionClaim>,
+        bitwise_builtin_interaction_claim: &Option<bitwise_builtin::InteractionClaim>,
+        mul_mod_builtin_interaction_claim: &Option<mul_mod_builtin::InteractionClaim>,
+        pedersen_builtin_interaction_claim: &Option<pedersen_builtin::InteractionClaim>,
+        poseidon_builtin_interaction_claim: &Option<poseidon_builtin::InteractionClaim>,
+        range_check_96_builtin_interaction_claim: &Option<range_check96_builtin::InteractionClaim>,
+        range_check_128_builtin_interaction_claim: &Option<range_check_builtin::InteractionClaim>,
     ) -> Self {
-        let add_mod_builtin_component = claim.add_mod_builtin.map(|add_mod_builtin| {
+        let add_mod_builtin_component = add_mod_builtin_claim.map(|add_mod_builtin| {
             add_mod_builtin::Component::new(
                 tree_span_provider,
                 add_mod_builtin::Eval {
                     claim: add_mod_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim.add_mod_builtin.unwrap().claimed_sum,
+                add_mod_builtin_interaction_claim.unwrap().claimed_sum,
             )
         });
-        let bitwise_builtin_component = claim.bitwise_builtin.map(|bitwise_builtin| {
+        let bitwise_builtin_component = bitwise_builtin_claim.map(|bitwise_builtin| {
             bitwise_builtin::Component::new(
                 tree_span_provider,
                 bitwise_builtin::Eval {
                     claim: bitwise_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim.bitwise_builtin.unwrap().claimed_sum,
+                bitwise_builtin_interaction_claim.unwrap().claimed_sum,
             )
         });
-        let mul_mod_builtin_component = claim.mul_mod_builtin.map(|mul_mod_builtin| {
+        let mul_mod_builtin_component = mul_mod_builtin_claim.map(|mul_mod_builtin| {
             mul_mod_builtin::Component::new(
                 tree_span_provider,
                 mul_mod_builtin::Eval {
                     claim: mul_mod_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim.mul_mod_builtin.unwrap().claimed_sum,
+                mul_mod_builtin_interaction_claim.unwrap().claimed_sum,
             )
         });
-        let pedersen_builtin_component = claim.pedersen_builtin.map(|pedersen_builtin| {
+        let pedersen_builtin_component = pedersen_builtin_claim.map(|pedersen_builtin| {
             pedersen_builtin::Component::new(
                 tree_span_provider,
                 pedersen_builtin::Eval {
                     claim: pedersen_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim.pedersen_builtin.unwrap().claimed_sum,
+                pedersen_builtin_interaction_claim.unwrap().claimed_sum,
             )
         });
-        let poseidon_builtin_component = claim.poseidon_builtin.map(|poseidon_builtin| {
+        let poseidon_builtin_component = poseidon_builtin_claim.map(|poseidon_builtin| {
             poseidon_builtin::Component::new(
                 tree_span_provider,
                 poseidon_builtin::Eval {
                     claim: poseidon_builtin,
                     common_lookup_elements: common_lookup_elements.clone(),
                 },
-                interaction_claim.poseidon_builtin.unwrap().claimed_sum,
+                poseidon_builtin_interaction_claim.unwrap().claimed_sum,
             )
         });
         let range_check_96_builtin_component =
-            claim.range_check_96_builtin.map(|range_check_96_builtin| {
+            range_check_96_builtin_claim.map(|range_check_96_builtin| {
                 range_check96_builtin::Component::new(
                     tree_span_provider,
                     range_check96_builtin::Eval {
                         claim: range_check_96_builtin,
                         common_lookup_elements: common_lookup_elements.clone(),
                     },
-                    interaction_claim
-                        .range_check_96_builtin
+                    range_check_96_builtin_interaction_claim
                         .unwrap()
                         .claimed_sum,
                 )
             });
         let range_check_128_builtin_component =
-            claim
-                .range_check_128_builtin
-                .map(|range_check_128_builtin| {
-                    range_check_builtin::Component::new(
-                        tree_span_provider,
-                        range_check_builtin::Eval {
-                            claim: range_check_128_builtin,
-                            common_lookup_elements: common_lookup_elements.clone(),
-                        },
-                        interaction_claim
-                            .range_check_128_builtin
-                            .unwrap()
-                            .claimed_sum,
-                    )
-                });
+            range_check_128_builtin_claim.map(|range_check_128_builtin| {
+                range_check_builtin::Component::new(
+                    tree_span_provider,
+                    range_check_builtin::Eval {
+                        claim: range_check_128_builtin,
+                        common_lookup_elements: common_lookup_elements.clone(),
+                    },
+                    range_check_128_builtin_interaction_claim
+                        .unwrap()
+                        .claimed_sum,
+                )
+            });
         Self {
             add_mod_builtin: add_mod_builtin_component,
             bitwise_builtin: bitwise_builtin_component,
