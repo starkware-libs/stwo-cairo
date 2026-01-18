@@ -15,8 +15,6 @@ use stwo::core::proof::StarkProof;
 use stwo::core::vcs_lifted::verifier::MerkleDecommitmentLifted;
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo::core::ColumnVec;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::ComponentProver;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
 use stwo_cairo_serialize::{CairoDeserialize, CairoSerialize};
@@ -806,36 +804,29 @@ impl CairoComponents {
         }
     }
 
-    pub fn provers(&self) -> Vec<&dyn ComponentProver<SimdBackend>> {
+    pub fn components(&self) -> Vec<&dyn Component> {
         chain!(
-            self.opcodes.provers(),
-            [&self.verify_instruction as &dyn ComponentProver<SimdBackend>,],
-            self.blake_context.provers(),
-            self.builtins.provers(),
-            self.pedersen_context.provers(),
-            self.poseidon_context.provers(),
-            [&self.memory_address_to_id as &dyn ComponentProver<SimdBackend>,],
+            self.opcodes.components(),
+            [&self.verify_instruction as &dyn Component,],
+            self.blake_context.components(),
+            self.builtins.components(),
+            self.pedersen_context.components(),
+            self.poseidon_context.components(),
+            [&self.memory_address_to_id as &dyn Component,],
             self.memory_id_to_value
                 .0
                 .iter()
-                .map(|component| component as &dyn ComponentProver<SimdBackend>),
-            [&self.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,],
-            self.range_checks.provers(),
+                .map(|component| component as &dyn Component),
+            [&self.memory_id_to_value.1 as &dyn Component,],
+            self.range_checks.components(),
             [
-                &self.verify_bitwise_xor_4 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_7 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_8 as &dyn ComponentProver<SimdBackend>,
-                &self.verify_bitwise_xor_9 as &dyn ComponentProver<SimdBackend>,
+                &self.verify_bitwise_xor_4 as &dyn Component,
+                &self.verify_bitwise_xor_7 as &dyn Component,
+                &self.verify_bitwise_xor_8 as &dyn Component,
+                &self.verify_bitwise_xor_9 as &dyn Component,
             ]
         )
         .collect()
-    }
-
-    pub fn components(&self) -> Vec<&dyn Component> {
-        self.provers()
-            .into_iter()
-            .map(|component| component as &dyn Component)
-            .collect()
     }
 }
 

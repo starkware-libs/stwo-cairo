@@ -24,7 +24,9 @@ use stwo::prover::{prove, CommitmentSchemeProver, ProvingError};
 use stwo_cairo_adapter::ProverInput;
 use tracing::{event, span, Level};
 
+use crate::utils::cairo_provers;
 use crate::witness::cairo::create_cairo_claim_generator;
+use crate::witness::preprocessed_trace::gen_trace;
 use crate::witness::utils::witness_trace_cells;
 
 mod json {
@@ -78,7 +80,7 @@ where
     // Preprocessed trace.
     let preprocessed_trace = Arc::new(preprocessed_trace.to_preprocessed_trace());
     let mut tree_builder = commitment_scheme.tree_builder();
-    tree_builder.extend_evals(preprocessed_trace.gen_trace());
+    tree_builder.extend_evals(gen_trace(preprocessed_trace.clone()));
     tree_builder.commit(channel);
 
     // Run Cairo.
@@ -137,7 +139,7 @@ where
         tracing::info!("Relations summary: {:?}", summary);
     }
 
-    let components = component_builder.provers();
+    let components = cairo_provers(&component_builder);
 
     // Prove stark.
     let span = span!(Level::INFO, "Prove STARKs").entered();

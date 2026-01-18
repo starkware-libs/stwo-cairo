@@ -11,11 +11,10 @@ use stwo_cairo_common::builtins::{
     PEDERSEN_BUILTIN_MEMORY_CELLS, POSEIDON_BUILTIN_MEMORY_CELLS,
     RANGE_CHECK_96_BUILTIN_MEMORY_CELLS, RANGE_CHECK_BUILTIN_MEMORY_CELLS,
 };
-use stwo_cairo_common::prover_types::simd::N_LANES;
 use tracing::{info, span, Level};
 
 // Minimal builtins instances per segment, chosen to fit SIMD requirements.
-pub const MIN_SEGMENT_SIZE: usize = N_LANES;
+pub const MIN_SEGMENT_SIZE: usize = 16;
 
 /// This is a copy of [`cairo_vm::air_public_input::MemorySegmentAddresses`] struct from cairo_vm.
 #[derive(Debug, Default, Serialize, Deserialize, Clone, Copy, PartialEq)]

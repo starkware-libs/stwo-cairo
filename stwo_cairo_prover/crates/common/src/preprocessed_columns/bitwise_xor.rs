@@ -1,17 +1,8 @@
-use std::simd::{u32x16, Simd};
-
-use stwo::core::fields::m31::BaseField;
-use stwo::core::poly::circle::CanonicCoset;
-use stwo::prover::backend::simd::column::BaseColumn;
-use stwo::prover::backend::simd::m31::PackedM31;
-use stwo::prover::backend::simd::SimdBackend;
-use stwo::prover::poly::circle::CircleEvaluation;
-use stwo::prover::poly::BitReversedOrder;
 use stwo_constraint_framework::preprocessed_columns::PreProcessedColumnId;
 
 use super::preprocessed_trace::PreProcessedColumn;
-use super::preprocessed_utils::SIMD_ENUMERATION_0;
-use crate::prover_types::simd::{LOG_N_LANES, N_LANES};
+#[cfg(feature = "prover")]
+use super::simd_prelude::*;
 
 /// A table of a,b,c, where a,b,c are integers and a ^ b = c.
 ///
@@ -36,6 +27,7 @@ impl PreProcessedColumn for BitwiseXor {
         2 * self.n_bits
     }
 
+    #[cfg(feature = "prover")]
     fn packed_at(&self, vec_row: usize) -> PackedM31 {
         let lhs = || -> u32x16 {
             (SIMD_ENUMERATION_0 + Simd::splat((vec_row * N_LANES) as u32)) >> self.n_bits
@@ -53,6 +45,7 @@ impl PreProcessedColumn for BitwiseXor {
         unsafe { PackedM31::from_simd_unchecked(simd) }
     }
 
+    #[cfg(feature = "prover")]
     fn gen_column_simd(&self) -> CircleEvaluation<SimdBackend, BaseField, BitReversedOrder> {
         CircleEvaluation::new(
             CanonicCoset::new(self.log_size()).circle_domain(),
@@ -71,12 +64,14 @@ impl PreProcessedColumn for BitwiseXor {
     }
 }
 
+#[cfg(feature = "prover")]
 #[cfg(test)]
 pub mod tests {
     const LOG_SIZE: u32 = 8;
+    use stwo::prover::backend::simd::m31::N_LANES;
+
     use crate::preprocessed_columns::bitwise_xor::BitwiseXor;
     use crate::preprocessed_columns::preprocessed_trace::PreProcessedColumn;
-    use crate::prover_types::simd::N_LANES;
 
     #[test]
     fn test_packed_at_bitwise_xor() {
