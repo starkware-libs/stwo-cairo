@@ -111,6 +111,49 @@ impl<B: BackendForChannel<MC>, MC: MerkleChannel> TreeBuilder<B>
     }
 }
 
+/// A TreeBuilder that collects evaluations without writing them immediately.
+/// Used for parallel computation where we need to preserve ordering when flushing.
+pub struct DeferredTreeBuilder<B: Backend> {
+    pub deferred_evals: Vec<Vec<CircleEvaluation<B, M31, BitReversedOrder>>>,
+}
+
+impl<B: Backend> DeferredTreeBuilder<B> {
+    pub fn new() -> Self {
+        Self {
+            deferred_evals: Vec::new(),
+        }
+    }
+
+    /// Flush all deferred evaluations to the given tree builder in order.
+    pub fn flush_to<T: TreeBuilder<B>>(self, tree_builder: &mut T) {
+        for columns in self.deferred_evals {
+            tree_builder.extend_evals(columns);
+        }
+    }
+}
+
+impl<B: Backend> Default for DeferredTreeBuilder<B> {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl<B: Backend> TreeBuilder<B> for DeferredTreeBuilder<B> {
+    fn extend_evals(
+        &mut self,
+        columns: Vec<CircleEvaluation<B, M31, BitReversedOrder>>,
+    ) -> TreeSubspan {
+        self.deferred_evals.push(columns);
+        // Return a dummy TreeSubspan since we're deferring the actual write.
+        // The actual subspan will be determined when flushing.
+        TreeSubspan {
+            tree_index: 0,
+            col_start: 0,
+            col_end: 0,
+        }
+    }
+}
+
 fn tree_trace_cells(tree_log_sizes: TreeVec<Vec<u32>>) -> Vec<u64> {
     tree_log_sizes
         .iter()
