@@ -210,8 +210,9 @@ impl<T0: CairoSerialize, T1: CairoSerialize, T2: CairoSerialize> CairoSerialize 
 
 impl CairoSerialize for Blake2sHash {
     fn serialize(&self, output: &mut Vec<FieldElement>) {
-        for byte_chunk in self.0.array_chunks() {
-            let v = u32::from_le_bytes(*byte_chunk);
+        for byte_chunk in self.0.chunks_exact(4) {
+            let bytes: [u8; 4] = byte_chunk.try_into().unwrap();
+            let v = u32::from_le_bytes(bytes);
             CairoSerialize::serialize(&v, output);
         }
     }
