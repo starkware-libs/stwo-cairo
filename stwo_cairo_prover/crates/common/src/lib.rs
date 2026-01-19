@@ -1,4 +1,4 @@
-#![feature(portable_simd)]
+#![cfg_attr(feature = "prover", feature(portable_simd))]
 pub mod builtins;
 pub mod memory;
 pub mod preprocessed_columns;

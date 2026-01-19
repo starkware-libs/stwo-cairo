@@ -1,5 +1,3 @@
-#![feature(portable_simd)]
-#![feature(array_chunks)]
 use serde::{Deserialize, Serialize};
 
 pub mod air;
