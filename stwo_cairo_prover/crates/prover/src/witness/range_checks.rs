@@ -5,14 +5,13 @@ use stwo::prover::backend::simd::SimdBackend;
 use crate::witness::components::{
     range_check_11, range_check_12, range_check_18, range_check_20, range_check_3_3_3_3_3,
     range_check_3_6_6_3, range_check_4_3, range_check_4_4, range_check_4_4_4_4, range_check_6,
-    range_check_7_2_5, range_check_8, range_check_9_9,
+    range_check_7_2_5, range_check_9_9,
 };
 use crate::witness::utils::TreeBuilder;
 
 pub fn get_range_checks() -> Vec<&'static str> {
     vec![
         "range_check_6",
-        "range_check_8",
         "range_check_11",
         "range_check_12",
         "range_check_18",
@@ -29,7 +28,6 @@ pub fn get_range_checks() -> Vec<&'static str> {
 
 pub fn range_checks_write_trace(
     rc_6_trace_generator: Option<range_check_6::ClaimGenerator>,
-    rc_8_trace_generator: Option<range_check_8::ClaimGenerator>,
     rc_11_trace_generator: Option<range_check_11::ClaimGenerator>,
     rc_12_trace_generator: Option<range_check_12::ClaimGenerator>,
     rc_18_trace_generator: Option<range_check_18::ClaimGenerator>,
@@ -45,8 +43,6 @@ pub fn range_checks_write_trace(
 ) -> (RangeChecksClaim, RangeChecksInteractionClaimGenerator) {
     let (rc_6_claim, rc_6_interaction_gen) =
         rc_6_trace_generator.unwrap().write_trace(tree_builder);
-    let (rc_8_claim, rc_8_interaction_gen) =
-        rc_8_trace_generator.unwrap().write_trace(tree_builder);
     let (rc_11_claim, rc_11_interaction_gen) =
         rc_11_trace_generator.unwrap().write_trace(tree_builder);
     let (rc_12_claim, rc_12_interaction_gen) =
@@ -75,7 +71,6 @@ pub fn range_checks_write_trace(
     (
         RangeChecksClaim {
             rc_6: rc_6_claim,
-            rc_8: rc_8_claim,
             rc_11: rc_11_claim,
             rc_12: rc_12_claim,
             rc_18: rc_18_claim,
@@ -90,7 +85,6 @@ pub fn range_checks_write_trace(
         },
         RangeChecksInteractionClaimGenerator {
             rc_6_interaction_gen,
-            rc_8_interaction_gen,
             rc_11_interaction_gen,
             rc_12_interaction_gen,
             rc_18_interaction_gen,
@@ -108,7 +102,6 @@ pub fn range_checks_write_trace(
 
 pub struct RangeChecksInteractionClaimGenerator {
     rc_6_interaction_gen: range_check_6::InteractionClaimGenerator,
-    rc_8_interaction_gen: range_check_8::InteractionClaimGenerator,
     rc_11_interaction_gen: range_check_11::InteractionClaimGenerator,
     rc_12_interaction_gen: range_check_12::InteractionClaimGenerator,
     rc_18_interaction_gen: range_check_18::InteractionClaimGenerator,
@@ -129,9 +122,6 @@ impl RangeChecksInteractionClaimGenerator {
     ) -> RangeChecksInteractionClaim {
         let rc_6_interaction_claim = self
             .rc_6_interaction_gen
-            .write_interaction_trace(tree_builder, common_lookup_elements);
-        let rc_8_interaction_claim = self
-            .rc_8_interaction_gen
             .write_interaction_trace(tree_builder, common_lookup_elements);
         let rc_11_interaction_claim = self
             .rc_11_interaction_gen
@@ -168,7 +158,6 @@ impl RangeChecksInteractionClaimGenerator {
             .write_interaction_trace(tree_builder, common_lookup_elements);
         RangeChecksInteractionClaim {
             rc_6: rc_6_interaction_claim,
-            rc_8: rc_8_interaction_claim,
             rc_11: rc_11_interaction_claim,
             rc_12: rc_12_interaction_claim,
             rc_18: rc_18_interaction_claim,

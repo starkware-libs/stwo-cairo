@@ -1,5 +1,5 @@
 {
-  "air_version": "aff31722",
+  "air_version": "7aa77d1e",
   "canonical_ppt_n_trace_cells": 543100528,
   "canonical_without_pedersen_ppt_n_trace_cells": 73338480,
   "air_fns": {
@@ -784,23 +784,6 @@
       "max_instances_uses_limit": 1657008,
       "max_instances_rows_limit": 2097152
     },
-    "range_check_8": {
-      "trace_type": "Component",
-      "log_height": 8,
-      "num_state_cols": 0,
-      "use_lookup_cols": {},
-      "yield_lookup_cols": {
-        "RangeCheck_8": 1
-      },
-      "lookup_rows": {},
-      "padding_type": "Multiplicity",
-      "total_num_trace_cols": 5,
-      "trace_cells_upper_bound": 5,
-      "uses_upper_bound": {},
-      "rows_upper_bound": {},
-      "max_instances_uses_limit": 2147483647,
-      "max_instances_rows_limit": 268435456
-    },
     "pedersen_points_table_window_bits_18": {
       "trace_type": "Component",
       "log_height": 23,
@@ -896,7 +879,7 @@
       "num_state_cols": 205,
       "use_lookup_cols": {
         "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 2,
         "PartialEcMulWindowBits18": 2
       },
       "yield_lookup_cols": {
@@ -905,14 +888,14 @@
       },
       "lookup_rows": {
         "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 2,
         "PartialEcMulWindowBits18": 28
       },
       "padding_type": "Multiplicity",
-      "total_num_trace_cols": 230,
-      "trace_cells_upper_bound": 18054,
+      "total_num_trace_cols": 226,
+      "trace_cells_upper_bound": 18050,
       "uses_upper_bound": {
-        "range_check_9_9": 200,
+        "range_check_9_9": 202,
         "range_check_9_9_b": 200,
         "range_check_9_9_c": 200,
         "range_check_9_9_d": 200,
@@ -920,7 +903,6 @@
         "range_check_9_9_f": 200,
         "range_check_9_9_g": 100,
         "range_check_9_9_h": 100,
-        "range_check_8": 4,
         "pedersen_points_table_window_bits_18": 32,
         "range_check_20": 384,
         "range_check_20_b": 384,
@@ -952,10 +934,10 @@
       },
       "padding_type": "None",
       "total_num_trace_cols": 11,
-      "trace_cells_upper_bound": 18065,
+      "trace_cells_upper_bound": 18061,
       "uses_upper_bound": {
         "memory_address_to_id": 3,
-        "range_check_9_9": 200,
+        "range_check_9_9": 202,
         "range_check_9_9_b": 200,
         "range_check_9_9_c": 200,
         "range_check_9_9_d": 200,
@@ -963,7 +945,6 @@
         "range_check_9_9_f": 200,
         "range_check_9_9_g": 100,
         "range_check_9_9_h": 100,
-        "range_check_8": 4,
         "pedersen_points_table_window_bits_18": 32,
         "range_check_20": 384,
         "range_check_20_b": 384,
@@ -2238,7 +2219,7 @@
       "num_state_cols": 233,
       "use_lookup_cols": {
         "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 2,
         "PartialEcMulWindowBits9": 2
       },
       "yield_lookup_cols": {
@@ -2247,14 +2228,14 @@
       },
       "lookup_rows": {
         "MemoryIdToBig": 3,
-        "RangeCheck_8": 4,
+        "RangeCheck_9_9": 2,
         "PartialEcMulWindowBits9": 56
       },
       "padding_type": "Multiplicity",
-      "total_num_trace_cols": 258,
-      "trace_cells_upper_bound": 36802,
+      "total_num_trace_cols": 254,
+      "trace_cells_upper_bound": 36798,
       "uses_upper_bound": {
-        "range_check_9_9": 392,
+        "range_check_9_9": 394,
         "range_check_9_9_b": 392,
         "range_check_9_9_c": 392,
         "range_check_9_9_d": 392,
@@ -2262,7 +2243,6 @@
         "range_check_9_9_f": 392,
         "range_check_9_9_g": 196,
         "range_check_9_9_h": 196,
-        "range_check_8": 4,
         "pedersen_points_table_window_bits_9": 64,
         "range_check_20": 768,
         "range_check_20_b": 768,
@@ -2294,10 +2274,10 @@
       },
       "padding_type": "None",
       "total_num_trace_cols": 11,
-      "trace_cells_upper_bound": 36813,
+      "trace_cells_upper_bound": 36809,
       "uses_upper_bound": {
         "memory_address_to_id": 3,
-        "range_check_9_9": 392,
+        "range_check_9_9": 394,
         "range_check_9_9_b": 392,
         "range_check_9_9_c": 392,
         "range_check_9_9_d": 392,
@@ -2305,7 +2285,6 @@
         "range_check_9_9_f": 392,
         "range_check_9_9_g": 196,
         "range_check_9_9_h": 196,
-        "range_check_8": 4,
         "pedersen_points_table_window_bits_9": 64,
         "range_check_20": 768,
         "range_check_20_b": 768,

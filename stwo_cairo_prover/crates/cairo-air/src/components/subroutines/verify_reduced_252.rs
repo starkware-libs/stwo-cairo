@@ -16,13 +16,14 @@ impl VerifyReduced252 {
         [verify_reduced_252_input_limb_0, verify_reduced_252_input_limb_1, verify_reduced_252_input_limb_2, verify_reduced_252_input_limb_3, verify_reduced_252_input_limb_4, verify_reduced_252_input_limb_5, verify_reduced_252_input_limb_6, verify_reduced_252_input_limb_7, verify_reduced_252_input_limb_8, verify_reduced_252_input_limb_9, verify_reduced_252_input_limb_10, verify_reduced_252_input_limb_11, verify_reduced_252_input_limb_12, verify_reduced_252_input_limb_13, verify_reduced_252_input_limb_14, verify_reduced_252_input_limb_15, verify_reduced_252_input_limb_16, verify_reduced_252_input_limb_17, verify_reduced_252_input_limb_18, verify_reduced_252_input_limb_19, verify_reduced_252_input_limb_20, verify_reduced_252_input_limb_21, verify_reduced_252_input_limb_22, verify_reduced_252_input_limb_23, verify_reduced_252_input_limb_24, verify_reduced_252_input_limb_25, verify_reduced_252_input_limb_26, verify_reduced_252_input_limb_27]: [E::F; 28],
         ms_limb_is_max_col0: E::F,
         ms_and_mid_limbs_are_max_col1: E::F,
-        rc_input_col2: E::F,
+        rc_input_1_col2: E::F,
         common_lookup_elements: &relations::CommonLookupElements,
         eval: &mut E,
     ) -> [E::F; 0] {
         let M31_1 = E::F::from(M31::from(1));
-        let M31_120 = E::F::from(M31::from(120));
-        let M31_1420243005 = E::F::from(M31::from(1420243005));
+        let M31_256 = E::F::from(M31::from(256));
+        let M31_376 = E::F::from(M31::from(376));
+        let M31_517791011 = E::F::from(M31::from(517791011));
 
         // ms_max is bit.
         eval.add_constraint(
@@ -33,15 +34,6 @@ impl VerifyReduced252 {
             (ms_and_mid_limbs_are_max_col1.clone()
                 * (M31_1.clone() - ms_and_mid_limbs_are_max_col1.clone())),
         );
-        eval.add_to_relation(RelationEntry::new(
-            common_lookup_elements,
-            E::EF::one(),
-            &[
-                M31_1420243005.clone(),
-                (verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone()),
-            ],
-        ));
-
         // If the MS limb is max, high limbs should be 0.
         eval.add_constraint(
             (ms_limb_is_max_col0.clone()
@@ -51,17 +43,22 @@ impl VerifyReduced252 {
                     + verify_reduced_252_input_limb_25.clone())
                     + verify_reduced_252_input_limb_26.clone())),
         );
-        // rc_input.
+        // rc_input_1.
         eval.add_constraint(
-            (rc_input_col2.clone()
+            (rc_input_1_col2.clone()
                 - (ms_limb_is_max_col0.clone()
-                    * ((M31_120.clone() + verify_reduced_252_input_limb_21.clone())
+                    * ((M31_376.clone() + verify_reduced_252_input_limb_21.clone())
                         - ms_and_mid_limbs_are_max_col1.clone()))),
         );
         eval.add_to_relation(RelationEntry::new(
             common_lookup_elements,
             E::EF::one(),
-            &[M31_1420243005.clone(), rc_input_col2.clone()],
+            &[
+                M31_517791011.clone(),
+                ((verify_reduced_252_input_limb_27.clone() - ms_limb_is_max_col0.clone())
+                    + M31_256.clone()),
+                rc_input_1_col2.clone(),
+            ],
         ));
 
         // If the MS and mid limbs are max, low limbs should be 0.

@@ -297,7 +297,6 @@ impl CairoClaimGenerator {
                 self.pedersen_points_table_window_bits_18,
                 tree_builder,
                 self.memory_id_to_big.as_ref(),
-                self.range_check_8.as_ref(),
                 self.range_check_9_9.as_ref(),
                 self.range_check_20.as_ref(),
             );
@@ -331,7 +330,6 @@ impl CairoClaimGenerator {
             );
         let (range_checks_claim, range_checks_interaction_gen) = range_checks_write_trace(
             self.range_check_6,
-            self.range_check_8,
             self.range_check_11,
             self.range_check_12,
             self.range_check_18,

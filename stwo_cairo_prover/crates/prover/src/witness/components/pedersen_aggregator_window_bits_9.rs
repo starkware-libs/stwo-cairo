@@ -5,7 +5,7 @@ use cairo_air::components::pedersen_aggregator_window_bits_9::{
     Claim, InteractionClaim, N_TRACE_COLUMNS,
 };
 
-use crate::witness::components::{memory_id_to_big, partial_ec_mul_window_bits_9, range_check_8};
+use crate::witness::components::{memory_id_to_big, partial_ec_mul_window_bits_9, range_check_9_9};
 use crate::witness::prelude::*;
 
 pub type InputType = ([M31; 2], M31);
@@ -29,7 +29,7 @@ impl ClaimGenerator {
         self,
         tree_builder: &mut impl TreeBuilder<SimdBackend>,
         memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-        range_check_8_state: &range_check_8::ClaimGenerator,
+        range_check_9_9_state: &range_check_9_9::ClaimGenerator,
         partial_ec_mul_window_bits_9_state: &mut partial_ec_mul_window_bits_9::ClaimGenerator,
     ) -> (Claim, InteractionClaimGenerator) {
         let mut inputs_mults = self
@@ -57,14 +57,14 @@ impl ClaimGenerator {
             packed_inputs,
             packed_mults,
             memory_id_to_big_state,
-            range_check_8_state,
+            range_check_9_9_state,
             partial_ec_mul_window_bits_9_state,
         );
         for inputs in sub_component_inputs.memory_id_to_big {
             memory_id_to_big_state.add_packed_inputs(&inputs, 0);
         }
-        for inputs in sub_component_inputs.range_check_8 {
-            range_check_8_state.add_packed_inputs(&inputs, 0);
+        for inputs in sub_component_inputs.range_check_9_9 {
+            range_check_9_9_state.add_packed_inputs(&inputs, 0);
         }
         for inputs in sub_component_inputs.partial_ec_mul_window_bits_9 {
             partial_ec_mul_window_bits_9_state.add_packed_inputs(&inputs, 0);
@@ -99,7 +99,7 @@ impl ClaimGenerator {
 #[derive(Uninitialized, IterMut, ParIterMut)]
 struct SubComponentInputs {
     memory_id_to_big: [Vec<memory_id_to_big::PackedInputType>; 3],
-    range_check_8: [Vec<range_check_8::PackedInputType>; 4],
+    range_check_9_9: [Vec<range_check_9_9::PackedInputType>; 2],
     partial_ec_mul_window_bits_9: [Vec<partial_ec_mul_window_bits_9::PackedInputType>; 56],
 }
 
@@ -111,7 +111,7 @@ fn write_trace_simd(
     inputs: Vec<PackedInputType>,
     mults: Vec<PackedM31>,
     memory_id_to_big_state: &memory_id_to_big::ClaimGenerator,
-    range_check_8_state: &range_check_8::ClaimGenerator,
+    range_check_9_9_state: &range_check_9_9::ClaimGenerator,
     partial_ec_mul_window_bits_9_state: &mut partial_ec_mul_window_bits_9::ClaimGenerator,
 ) -> (
     ComponentTrace<N_TRACE_COLUMNS>,
@@ -147,14 +147,12 @@ fn write_trace_simd(
     let M31_10 = PackedM31::broadcast(M31::from(10));
     let M31_11 = PackedM31::broadcast(M31::from(11));
     let M31_12 = PackedM31::broadcast(M31::from(12));
-    let M31_120 = PackedM31::broadcast(M31::from(120));
     let M31_126 = PackedM31::broadcast(M31::from(126));
     let M31_13 = PackedM31::broadcast(M31::from(13));
     let M31_131 = PackedM31::broadcast(M31::from(131));
     let M31_134 = PackedM31::broadcast(M31::from(134));
     let M31_136 = PackedM31::broadcast(M31::from(136));
     let M31_14 = PackedM31::broadcast(M31::from(14));
-    let M31_1420243005 = PackedM31::broadcast(M31::from(1420243005));
     let M31_148 = PackedM31::broadcast(M31::from(148));
     let M31_15 = PackedM31::broadcast(M31::from(15));
     let M31_16 = PackedM31::broadcast(M31::from(16));
@@ -211,6 +209,7 @@ fn write_trace_simd(
     let M31_36 = PackedM31::broadcast(M31::from(36));
     let M31_37 = PackedM31::broadcast(M31::from(37));
     let M31_374 = PackedM31::broadcast(M31::from(374));
+    let M31_376 = PackedM31::broadcast(M31::from(376));
     let M31_378 = PackedM31::broadcast(M31::from(378));
     let M31_38 = PackedM31::broadcast(M31::from(38));
     let M31_381 = PackedM31::broadcast(M31::from(381));
@@ -240,6 +239,7 @@ fn write_trace_simd(
     let M31_50 = PackedM31::broadcast(M31::from(50));
     let M31_508 = PackedM31::broadcast(M31::from(508));
     let M31_51 = PackedM31::broadcast(M31::from(51));
+    let M31_517791011 = PackedM31::broadcast(M31::from(517791011));
     let M31_52 = PackedM31::broadcast(M31::from(52));
     let M31_53 = PackedM31::broadcast(M31::from(53));
     let M31_54 = PackedM31::broadcast(M31::from(54));
@@ -337,23 +337,19 @@ fn write_trace_simd(
 
             let ms_limb_is_max_tmp_344c0_4 = value_limb_27_col30.eq(M31_256);let ms_limb_is_max_col59 = ms_limb_is_max_tmp_344c0_4.as_m31();
             *row[59] = ms_limb_is_max_col59;let ms_and_mid_limbs_are_max_tmp_344c0_5 = ((value_limb_27_col30.eq(M31_256)) & (value_limb_21_col24.eq(M31_136)));let ms_and_mid_limbs_are_max_col60 = ms_and_mid_limbs_are_max_tmp_344c0_5.as_m31();
-            *row[60] = ms_and_mid_limbs_are_max_col60;*sub_component_inputs.range_check_8[0] =
-                [((value_limb_27_col30) - (ms_limb_is_max_col59))];
-            *lookup_data.range_check_8_0 = [M31_1420243005, ((value_limb_27_col30) - (ms_limb_is_max_col59))];let rc_input_col61 = ((ms_limb_is_max_col59) * (((((M31_120) + (value_limb_21_col24))) - (ms_and_mid_limbs_are_max_col60))));
-            *row[61] = rc_input_col61;*sub_component_inputs.range_check_8[1] =
-                [rc_input_col61];
-            *lookup_data.range_check_8_1 = [M31_1420243005, rc_input_col61];
+            *row[60] = ms_and_mid_limbs_are_max_col60;let rc_input_1_col61 = ((ms_limb_is_max_col59) * (((((M31_376) + (value_limb_21_col24))) - (ms_and_mid_limbs_are_max_col60))));
+            *row[61] = rc_input_1_col61;*sub_component_inputs.range_check_9_9[0] =
+                [((((value_limb_27_col30) - (ms_limb_is_max_col59))) + (M31_256)), rc_input_1_col61];
+            *lookup_data.range_check_9_9_0 = [M31_517791011, ((((value_limb_27_col30) - (ms_limb_is_max_col59))) + (M31_256)), rc_input_1_col61];
 
             // Verify Reduced 252.
 
             let ms_limb_is_max_tmp_344c0_6 = value_limb_27_col58.eq(M31_256);let ms_limb_is_max_col62 = ms_limb_is_max_tmp_344c0_6.as_m31();
             *row[62] = ms_limb_is_max_col62;let ms_and_mid_limbs_are_max_tmp_344c0_7 = ((value_limb_27_col58.eq(M31_256)) & (value_limb_21_col52.eq(M31_136)));let ms_and_mid_limbs_are_max_col63 = ms_and_mid_limbs_are_max_tmp_344c0_7.as_m31();
-            *row[63] = ms_and_mid_limbs_are_max_col63;*sub_component_inputs.range_check_8[2] =
-                [((value_limb_27_col58) - (ms_limb_is_max_col62))];
-            *lookup_data.range_check_8_2 = [M31_1420243005, ((value_limb_27_col58) - (ms_limb_is_max_col62))];let rc_input_col64 = ((ms_limb_is_max_col62) * (((((M31_120) + (value_limb_21_col52))) - (ms_and_mid_limbs_are_max_col63))));
-            *row[64] = rc_input_col64;*sub_component_inputs.range_check_8[3] =
-                [rc_input_col64];
-            *lookup_data.range_check_8_3 = [M31_1420243005, rc_input_col64];
+            *row[63] = ms_and_mid_limbs_are_max_col63;let rc_input_1_col64 = ((ms_limb_is_max_col62) * (((((M31_376) + (value_limb_21_col52))) - (ms_and_mid_limbs_are_max_col63))));
+            *row[64] = rc_input_1_col64;*sub_component_inputs.range_check_9_9[1] =
+                [((((value_limb_27_col58) - (ms_limb_is_max_col62))) + (M31_256)), rc_input_1_col64];
+            *lookup_data.range_check_9_9_1 = [M31_517791011, ((((value_limb_27_col58) - (ms_limb_is_max_col62))) + (M31_256)), rc_input_1_col64];
 
             let partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8 = ((seq) * (M31_2));*lookup_data.partial_ec_mul_window_bits_9_0 = [M31_2038149019, partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, M31_0, value_limb_0_col3, value_limb_1_col4, value_limb_2_col5, value_limb_3_col6, value_limb_4_col7, value_limb_5_col8, value_limb_6_col9, value_limb_7_col10, value_limb_8_col11, value_limb_9_col12, value_limb_10_col13, value_limb_11_col14, value_limb_12_col15, value_limb_13_col16, value_limb_14_col17, value_limb_15_col18, value_limb_16_col19, value_limb_17_col20, value_limb_18_col21, value_limb_19_col22, value_limb_20_col23, value_limb_21_col24, value_limb_22_col25, value_limb_23_col26, value_limb_24_col27, value_limb_25_col28, value_limb_26_col29, value_limb_27_col30, M31_427, M31_381, M31_378, M31_484, M31_320, M31_88, M31_319, M31_396, M31_429, M31_59, M31_52, M31_478, M31_148, M31_181, M31_18, M31_309, M31_412, M31_88, M31_2, M31_184, M31_126, M31_46, M31_29, M31_206, M31_134, M31_233, M31_448, M31_211, M31_508, M31_420, M31_374, M31_283, M31_306, M31_450, M31_278, M31_86, M31_131, M31_160, M31_411, M31_301, M31_264, M31_322, M31_161, M31_346, M31_320, M31_342, M31_261, M31_184, M31_280, M31_326, M31_220, M31_167, M31_21, M31_260, M31_19, M31_199];*sub_component_inputs.partial_ec_mul_window_bits_9[0] =
                 (partial_ec_mul_window_bits_9_chain_tmp_tmp_344c0_8, M31_0, ([value_limb_0_col3, value_limb_1_col4, value_limb_2_col5, value_limb_3_col6, value_limb_4_col7, value_limb_5_col8, value_limb_6_col9, value_limb_7_col10, value_limb_8_col11, value_limb_9_col12, value_limb_10_col13, value_limb_11_col14, value_limb_12_col15, value_limb_13_col16, value_limb_14_col17, value_limb_15_col18, value_limb_16_col19, value_limb_17_col20, value_limb_18_col21, value_limb_19_col22, value_limb_20_col23, value_limb_21_col24, value_limb_22_col25, value_limb_23_col26, value_limb_24_col27, value_limb_25_col28, value_limb_26_col29, value_limb_27_col30], [Felt252_5749711404561791915_10856295172949913030_14404130126786501252_477102089234220869, Felt252_5023856819317721596_7516658885453710123_15097688927504477480_448193959547877160]));
@@ -655,10 +651,8 @@ struct LookupData {
     partial_ec_mul_window_bits_9_2: Vec<[PackedM31; 87]>,
     partial_ec_mul_window_bits_9_3: Vec<[PackedM31; 87]>,
     pedersen_aggregator_window_bits_9_0: Vec<[PackedM31; 4]>,
-    range_check_8_0: Vec<[PackedM31; 2]>,
-    range_check_8_1: Vec<[PackedM31; 2]>,
-    range_check_8_2: Vec<[PackedM31; 2]>,
-    range_check_8_3: Vec<[PackedM31; 2]>,
+    range_check_9_9_0: Vec<[PackedM31; 3]>,
+    range_check_9_9_1: Vec<[PackedM31; 3]>,
     mults_0: Vec<PackedM31>,
 }
 
@@ -692,22 +686,8 @@ impl InteractionClaimGenerator {
         let mut col_gen = logup_gen.new_col();
         (
             col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_8_0,
-            &self.lookup_data.range_check_8_1,
-        )
-            .into_par_iter()
-            .for_each(|(writer, values0, values1)| {
-                let denom0: PackedQM31 = common_lookup_elements.combine(values0);
-                let denom1: PackedQM31 = common_lookup_elements.combine(values1);
-                writer.write_frac(denom0 + denom1, denom0 * denom1);
-            });
-        col_gen.finalize_col();
-
-        let mut col_gen = logup_gen.new_col();
-        (
-            col_gen.par_iter_mut(),
-            &self.lookup_data.range_check_8_2,
-            &self.lookup_data.range_check_8_3,
+            &self.lookup_data.range_check_9_9_0,
+            &self.lookup_data.range_check_9_9_1,
         )
             .into_par_iter()
             .for_each(|(writer, values0, values1)| {

@@ -25,7 +25,6 @@ pub fn cairo_provers(components: &CairoComponents) -> Vec<&dyn ComponentProver<S
         [&components.memory_id_to_value.1 as &dyn ComponentProver<SimdBackend>,],
         [
             &components.range_checks.rc_6 as &dyn ComponentProver<SimdBackend>,
-            &components.range_checks.rc_8 as &dyn ComponentProver<SimdBackend>,
             &components.range_checks.rc_11 as &dyn ComponentProver<SimdBackend>,
             &components.range_checks.rc_12 as &dyn ComponentProver<SimdBackend>,
             &components.range_checks.rc_18 as &dyn ComponentProver<SimdBackend>,

@@ -53,7 +53,6 @@ pub struct CairoClaimGenerator {
     pub partial_ec_mul_window_bits_18: Option<partial_ec_mul_window_bits_18::ClaimGenerator>,
     pub pedersen_points_table_window_bits_18:
         Option<pedersen_points_table_window_bits_18::ClaimGenerator>,
-    pub range_check_8: Option<range_check_8::ClaimGenerator>,
     pub poseidon_builtin: Option<poseidon_builtin::ClaimGenerator>,
     pub poseidon_aggregator: Option<poseidon_aggregator::ClaimGenerator>,
     pub poseidon_3_partial_rounds_chain: Option<poseidon_3_partial_rounds_chain::ClaimGenerator>,
@@ -127,7 +126,6 @@ impl CairoClaimGenerator {
             pedersen_aggregator_window_bits_18: pedersen_aggregator_window_bits_18_ref,
             partial_ec_mul_window_bits_18: partial_ec_mul_window_bits_18_ref,
             pedersen_points_table_window_bits_18: pedersen_points_table_window_bits_18_ref,
-            range_check_8: range_check_8_ref,
             poseidon_builtin: poseidon_builtin_ref,
             poseidon_aggregator: poseidon_aggregator_ref,
             poseidon_3_partial_rounds_chain: poseidon_3_partial_rounds_chain_ref,
@@ -407,13 +405,6 @@ impl CairoClaimGenerator {
                         Some(pedersen_points_table_window_bits_18::ClaimGenerator::new(
                             preprocessed_trace.clone(),
                         ));
-                });
-            }
-            if components.contains(&"range_check_8") {
-                s.spawn(|_| {
-                    *range_check_8_ref = Some(range_check_8::ClaimGenerator::new(
-                        preprocessed_trace.clone(),
-                    ));
                 });
             }
             if components.contains(&"poseidon_builtin") {
@@ -973,7 +964,6 @@ pub fn get_sub_components(component_name: &str) -> Vec<&'static str> {
                 "memory_address_to_id",
                 "range_check_9_9",
                 "memory_id_to_big",
-                "range_check_8",
                 "pedersen_points_table_window_bits_18",
                 "range_check_20",
                 "partial_ec_mul_window_bits_18",

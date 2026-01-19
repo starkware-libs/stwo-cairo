@@ -6,7 +6,7 @@ use crate::prelude::*;
 
 pub const N_TRACE_COLUMNS: usize = 206;
 pub const RELATION_USES_PER_ROW: [(felt252, u32); 3] = [
-    ('MemoryIdToBig', 3), ('RangeCheck_8', 4), ('PartialEcMulWindowBits18', 2),
+    ('MemoryIdToBig', 3), ('RangeCheck_9_9', 2), ('PartialEcMulWindowBits18', 2),
 ];
 
 #[derive(Drop, Serde, Copy)]
@@ -19,7 +19,7 @@ pub impl ClaimImpl of ClaimTrait<Claim> {
         let log_size = *(self.log_size);
         let preprocessed_log_sizes = array![log_size].span();
         let trace_log_sizes = [log_size; N_TRACE_COLUMNS].span();
-        let interaction_log_sizes = [log_size; 24].span();
+        let interaction_log_sizes = [log_size; 20].span();
         array![preprocessed_log_sizes, trace_log_sizes, interaction_log_sizes]
     }
 
@@ -83,16 +83,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
         let column_size = m31(pow2(log_size));
         let mut memory_id_to_big_sum_0: QM31 = Zero::zero();
         let mut memory_id_to_big_sum_1: QM31 = Zero::zero();
-        let mut range_check_8_sum_2: QM31 = Zero::zero();
-        let mut range_check_8_sum_3: QM31 = Zero::zero();
-        let mut range_check_8_sum_4: QM31 = Zero::zero();
-        let mut range_check_8_sum_5: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_2: QM31 = Zero::zero();
+        let mut range_check_9_9_sum_3: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_4: QM31 = Zero::zero();
+        let mut partial_ec_mul_window_bits_18_sum_5: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_6: QM31 = Zero::zero();
         let mut partial_ec_mul_window_bits_18_sum_7: QM31 = Zero::zero();
-        let mut partial_ec_mul_window_bits_18_sum_8: QM31 = Zero::zero();
-        let mut partial_ec_mul_window_bits_18_sum_9: QM31 = Zero::zero();
-        let mut memory_id_to_big_sum_10: QM31 = Zero::zero();
-        let mut pedersen_aggregator_window_bits_18_sum_11: QM31 = Zero::zero();
+        let mut memory_id_to_big_sum_8: QM31 = Zero::zero();
+        let mut pedersen_aggregator_window_bits_18_sum_9: QM31 = Zero::zero();
         let seq = preprocessed_mask_values
             .get_and_mark_used(seq_column_idx(*(self.claim.log_size)));
 
@@ -158,10 +156,10 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             value_limb_27_col58,
             ms_limb_is_max_col59,
             ms_and_mid_limbs_are_max_col60,
-            rc_input_col61,
+            rc_input_1_col61,
             ms_limb_is_max_col62,
             ms_and_mid_limbs_are_max_col63,
-            rc_input_col64,
+            rc_input_1_col64,
             partial_ec_mul_window_bits_18_output_limb_0_col65,
             partial_ec_mul_window_bits_18_output_limb_1_col66,
             partial_ec_mul_window_bits_18_output_limb_2_col67,
@@ -372,13 +370,13 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             .try_into()
             .unwrap())
             .unbox();
-        let [rc_input_col61]: [QM31; 1] = (*rc_input_col61.try_into().unwrap()).unbox();
+        let [rc_input_1_col61]: [QM31; 1] = (*rc_input_1_col61.try_into().unwrap()).unbox();
         let [ms_limb_is_max_col62]: [QM31; 1] = (*ms_limb_is_max_col62.try_into().unwrap()).unbox();
         let [ms_and_mid_limbs_are_max_col63]: [QM31; 1] = (*ms_and_mid_limbs_are_max_col63
             .try_into()
             .unwrap())
             .unbox();
-        let [rc_input_col64]: [QM31; 1] = (*rc_input_col64.try_into().unwrap()).unbox();
+        let [rc_input_1_col64]: [QM31; 1] = (*rc_input_1_col64.try_into().unwrap()).unbox();
         let [partial_ec_mul_window_bits_18_output_limb_0_col65]: [QM31; 1] =
             (*partial_ec_mul_window_bits_18_output_limb_0_col65
             .try_into()
@@ -1169,10 +1167,9 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ],
             ms_limb_is_max_col59,
             ms_and_mid_limbs_are_max_col60,
-            rc_input_col61,
+            rc_input_1_col61,
             self.common_lookup_elements,
-            ref range_check_8_sum_2,
-            ref range_check_8_sum_3,
+            ref range_check_9_9_sum_2,
             ref sum,
             random_coeff,
         );
@@ -1188,17 +1185,16 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ],
             ms_limb_is_max_col62,
             ms_and_mid_limbs_are_max_col63,
-            rc_input_col64,
+            rc_input_1_col64,
             self.common_lookup_elements,
-            ref range_check_8_sum_4,
-            ref range_check_8_sum_5,
+            ref range_check_9_9_sum_3,
             ref sum,
             random_coeff,
         );
         let partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8: QM31 = (seq
             * qm31_const::<2, 0, 0, 0>());
 
-        partial_ec_mul_window_bits_18_sum_6 = self
+        partial_ec_mul_window_bits_18_sum_4 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1250,7 +1246,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     .span(),
             );
 
-        partial_ec_mul_window_bits_18_sum_7 = self
+        partial_ec_mul_window_bits_18_sum_5 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1333,7 +1329,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             (partial_ec_mul_window_bits_18_chain_tmp_tmp_94cb4_8
             + qm31_const::<1, 0, 0, 0>());
 
-        partial_ec_mul_window_bits_18_sum_8 = self
+        partial_ec_mul_window_bits_18_sum_6 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1414,7 +1410,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     .span(),
             );
 
-        partial_ec_mul_window_bits_18_sum_9 = self
+        partial_ec_mul_window_bits_18_sum_7 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1494,7 +1490,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     .span(),
             );
 
-        memory_id_to_big_sum_10 = self
+        memory_id_to_big_sum_8 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1531,7 +1527,7 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
                     .span(),
             );
 
-        pedersen_aggregator_window_bits_18_sum_11 = self
+        pedersen_aggregator_window_bits_18_sum_9 = self
             .common_lookup_elements
             .combine_qm31(
                 [
@@ -1550,16 +1546,14 @@ pub impl CairoComponentImpl of CairoComponent<Component> {
             ref interaction_trace_mask_values,
             memory_id_to_big_sum_0,
             memory_id_to_big_sum_1,
-            range_check_8_sum_2,
-            range_check_8_sum_3,
-            range_check_8_sum_4,
-            range_check_8_sum_5,
+            range_check_9_9_sum_2,
+            range_check_9_9_sum_3,
+            partial_ec_mul_window_bits_18_sum_4,
+            partial_ec_mul_window_bits_18_sum_5,
             partial_ec_mul_window_bits_18_sum_6,
             partial_ec_mul_window_bits_18_sum_7,
-            partial_ec_mul_window_bits_18_sum_8,
-            partial_ec_mul_window_bits_18_sum_9,
-            memory_id_to_big_sum_10,
-            pedersen_aggregator_window_bits_18_sum_11,
+            memory_id_to_big_sum_8,
+            pedersen_aggregator_window_bits_18_sum_9,
         );
     }
 }
@@ -1574,16 +1568,14 @@ fn lookup_constraints(
     ref interaction_trace_mask_values: ColumnSpan<Span<QM31>>,
     memory_id_to_big_sum_0: QM31,
     memory_id_to_big_sum_1: QM31,
-    range_check_8_sum_2: QM31,
-    range_check_8_sum_3: QM31,
-    range_check_8_sum_4: QM31,
-    range_check_8_sum_5: QM31,
+    range_check_9_9_sum_2: QM31,
+    range_check_9_9_sum_3: QM31,
+    partial_ec_mul_window_bits_18_sum_4: QM31,
+    partial_ec_mul_window_bits_18_sum_5: QM31,
     partial_ec_mul_window_bits_18_sum_6: QM31,
     partial_ec_mul_window_bits_18_sum_7: QM31,
-    partial_ec_mul_window_bits_18_sum_8: QM31,
-    partial_ec_mul_window_bits_18_sum_9: QM31,
-    memory_id_to_big_sum_10: QM31,
-    pedersen_aggregator_window_bits_18_sum_11: QM31,
+    memory_id_to_big_sum_8: QM31,
+    pedersen_aggregator_window_bits_18_sum_9: QM31,
 ) {
     let [
         trace_2_col0,
@@ -1606,11 +1598,7 @@ fn lookup_constraints(
         trace_2_col17,
         trace_2_col18,
         trace_2_col19,
-        trace_2_col20,
-        trace_2_col21,
-        trace_2_col22,
-        trace_2_col23,
-    ]: [Span<QM31>; 24] =
+    ]: [Span<QM31>; 20] =
         (*interaction_trace_mask_values
         .multi_pop_front()
         .unwrap())
@@ -1632,17 +1620,13 @@ fn lookup_constraints(
     let [trace_2_col13]: [QM31; 1] = (*trace_2_col13.try_into().unwrap()).unbox();
     let [trace_2_col14]: [QM31; 1] = (*trace_2_col14.try_into().unwrap()).unbox();
     let [trace_2_col15]: [QM31; 1] = (*trace_2_col15.try_into().unwrap()).unbox();
-    let [trace_2_col16]: [QM31; 1] = (*trace_2_col16.try_into().unwrap()).unbox();
-    let [trace_2_col17]: [QM31; 1] = (*trace_2_col17.try_into().unwrap()).unbox();
-    let [trace_2_col18]: [QM31; 1] = (*trace_2_col18.try_into().unwrap()).unbox();
-    let [trace_2_col19]: [QM31; 1] = (*trace_2_col19.try_into().unwrap()).unbox();
-    let [trace_2_col20_neg1, trace_2_col20]: [QM31; 2] = (*trace_2_col20.try_into().unwrap())
+    let [trace_2_col16_neg1, trace_2_col16]: [QM31; 2] = (*trace_2_col16.try_into().unwrap())
         .unbox();
-    let [trace_2_col21_neg1, trace_2_col21]: [QM31; 2] = (*trace_2_col21.try_into().unwrap())
+    let [trace_2_col17_neg1, trace_2_col17]: [QM31; 2] = (*trace_2_col17.try_into().unwrap())
         .unbox();
-    let [trace_2_col22_neg1, trace_2_col22]: [QM31; 2] = (*trace_2_col22.try_into().unwrap())
+    let [trace_2_col18_neg1, trace_2_col18]: [QM31; 2] = (*trace_2_col18.try_into().unwrap())
         .unbox();
-    let [trace_2_col23_neg1, trace_2_col23]: [QM31; 2] = (*trace_2_col23.try_into().unwrap())
+    let [trace_2_col19_neg1, trace_2_col19]: [QM31; 2] = (*trace_2_col19.try_into().unwrap())
         .unbox();
 
     core::internal::revoke_ap_tracking();
@@ -1660,20 +1644,20 @@ fn lookup_constraints(
         [trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7],
     )
         - QM31Impl::from_partial_evals([trace_2_col0, trace_2_col1, trace_2_col2, trace_2_col3]))
-        * range_check_8_sum_2
-        * range_check_8_sum_3)
-        - range_check_8_sum_2
-        - range_check_8_sum_3);
+        * range_check_9_9_sum_2
+        * range_check_9_9_sum_3)
+        - range_check_9_9_sum_2
+        - range_check_9_9_sum_3);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col8, trace_2_col9, trace_2_col10, trace_2_col11],
     )
         - QM31Impl::from_partial_evals([trace_2_col4, trace_2_col5, trace_2_col6, trace_2_col7]))
-        * range_check_8_sum_4
-        * range_check_8_sum_5)
-        - range_check_8_sum_4
-        - range_check_8_sum_5);
+        * partial_ec_mul_window_bits_18_sum_4
+        * partial_ec_mul_window_bits_18_sum_5)
+        - partial_ec_mul_window_bits_18_sum_4
+        + partial_ec_mul_window_bits_18_sum_5);
     sum = sum * random_coeff + constraint_quotient;
 
     let constraint_quotient = (((QM31Impl::from_partial_evals(
@@ -1689,27 +1673,15 @@ fn lookup_constraints(
     let constraint_quotient = (((QM31Impl::from_partial_evals(
         [trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19],
     )
+        - QM31Impl::from_partial_evals([trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15])
         - QM31Impl::from_partial_evals(
-            [trace_2_col12, trace_2_col13, trace_2_col14, trace_2_col15],
-        ))
-        * partial_ec_mul_window_bits_18_sum_8
-        * partial_ec_mul_window_bits_18_sum_9)
-        - partial_ec_mul_window_bits_18_sum_8
-        + partial_ec_mul_window_bits_18_sum_9);
-    sum = sum * random_coeff + constraint_quotient;
-
-    let constraint_quotient = (((QM31Impl::from_partial_evals(
-        [trace_2_col20, trace_2_col21, trace_2_col22, trace_2_col23],
-    )
-        - QM31Impl::from_partial_evals([trace_2_col16, trace_2_col17, trace_2_col18, trace_2_col19])
-        - QM31Impl::from_partial_evals(
-            [trace_2_col20_neg1, trace_2_col21_neg1, trace_2_col22_neg1, trace_2_col23_neg1],
+            [trace_2_col16_neg1, trace_2_col17_neg1, trace_2_col18_neg1, trace_2_col19_neg1],
         )
         + (claimed_sum * (column_size.inverse().into())))
-        * memory_id_to_big_sum_10
-        * pedersen_aggregator_window_bits_18_sum_11)
-        + (memory_id_to_big_sum_10 * pedersen_aggregator_window_bits_18_multiplicity)
-        - pedersen_aggregator_window_bits_18_sum_11);
+        * memory_id_to_big_sum_8
+        * pedersen_aggregator_window_bits_18_sum_9)
+        + (memory_id_to_big_sum_8 * pedersen_aggregator_window_bits_18_multiplicity)
+        - pedersen_aggregator_window_bits_18_sum_9);
     sum = sum * random_coeff + constraint_quotient;
 }
 #[cfg(and(test, feature: "qm31_opcode"))]
@@ -1966,7 +1938,6 @@ mod tests {
             qm31_const::<1139386390, 348416452, 1982105829, 1941984119>(),
             qm31_const::<1206495569, 482634180, 2049214693, 1941984119>(),
             qm31_const::<736731316, 1690593731, 1579452644, 1941984119>(),
-            qm31_const::<803840495, 1824811459, 1646561508, 1941984119>(),
         ];
         let mut interaction_columns = make_interaction_trace(
             interaction_values, qm31_const::<1115374022, 1127856551, 489657863, 643630026>(),

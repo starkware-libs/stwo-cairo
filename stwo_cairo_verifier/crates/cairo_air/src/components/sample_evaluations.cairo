@@ -1,4 +1,4 @@
-// AIR version aff31722
+// AIR version 7aa77d1e
 use stwo_verifier_core::fields::m31::M31;
 pub const ADD_AP_OPCODE_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1747787077 }, M31 { inner: 7677051 }, M31 { inner: 1790902331 },
@@ -121,12 +121,12 @@ pub const PARTIAL_EC_MUL_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1674779554 },
 ];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_18_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 556920574 }, M31 { inner: 897163103 }, M31 { inner: 414671425 },
-    M31 { inner: 96362751 },
+    M31 { inner: 571485083 }, M31 { inner: 1080698849 }, M31 { inner: 1004245206 },
+    M31 { inner: 817476022 },
 ];
 pub const PEDERSEN_AGGREGATOR_WINDOW_BITS_9_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 935671333 }, M31 { inner: 1018060370 }, M31 { inner: 1664498049 },
-    M31 { inner: 1814235133 },
+    M31 { inner: 482455523 }, M31 { inner: 221271849 }, M31 { inner: 531578935 },
+    M31 { inner: 1424857470 },
 ];
 pub const PEDERSEN_BUILTIN_NARROW_WINDOWS_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 2020715120 }, M31 { inner: 1310543091 }, M31 { inner: 1596837836 },
@@ -215,10 +215,6 @@ pub const RANGE_CHECK_6_SAMPLE_EVAL_RESULT: [M31; 4] = [
 pub const RANGE_CHECK_7_2_5_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1894550545 }, M31 { inner: 474169279 }, M31 { inner: 416886156 },
     M31 { inner: 1661742011 },
-];
-pub const RANGE_CHECK_8_SAMPLE_EVAL_RESULT: [M31; 4] = [
-    M31 { inner: 316576820 }, M31 { inner: 271649132 }, M31 { inner: 607174156 },
-    M31 { inner: 1361651804 },
 ];
 pub const RANGE_CHECK_96_BUILTIN_SAMPLE_EVAL_RESULT: [M31; 4] = [
     M31 { inner: 1691914450 }, M31 { inner: 1396913530 }, M31 { inner: 1328896898 },
