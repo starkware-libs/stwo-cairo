@@ -237,7 +237,8 @@ impl<T0: CairoDeserialize, T1: CairoDeserialize, T2: CairoDeserialize> CairoDese
 impl CairoDeserialize for Blake2sHash {
     fn deserialize<'a>(data: &mut impl Iterator<Item = &'a FieldElement>) -> Self {
         let mut bytes = [0u8; 32];
-        for byte_chunk in bytes.array_chunks_mut() {
+        for byte_chunk in bytes.chunks_mut(4) {
+            let byte_chunk: &mut [u8; 4] = byte_chunk.try_into().unwrap();
             let v: u32 = u32::deserialize(data);
             *byte_chunk = v.to_le_bytes();
         }
