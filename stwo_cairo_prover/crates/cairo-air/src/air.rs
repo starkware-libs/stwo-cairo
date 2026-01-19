@@ -10,7 +10,7 @@ use stwo::core::fields::m31::M31;
 use stwo::core::fields::qm31::{SecureField, QM31};
 use stwo::core::fields::FieldExpOps;
 use stwo::core::pcs::TreeVec;
-use stwo::core::proof::StarkProof;
+use stwo::core::proof::{ExtendedStarkProof, StarkProof};
 use stwo::core::vcs_lifted::MerkleHasherLifted;
 use stwo_cairo_common::prover_types::cpu::CasmState;
 use stwo_cairo_common::prover_types::felt::split_f252;
@@ -48,6 +48,17 @@ pub struct CairoProof<H: MerkleHasherLifted> {
     pub interaction_pow: u64,
     pub interaction_claim: CairoInteractionClaim,
     pub stark_proof: StarkProof<H>,
+    /// Optional salt used in the channel initialization.
+    pub channel_salt: Option<u64>,
+    pub preprocessed_trace_variant: PreProcessedTraceVariant,
+}
+
+#[derive(Clone)]
+pub struct ExtendedCairoProof<H: MerkleHasherLifted> {
+    pub claim: CairoClaim,
+    pub interaction_pow: u64,
+    pub interaction_claim: CairoInteractionClaim,
+    pub extended_stark_proof: ExtendedStarkProof<H>,
     /// Optional salt used in the channel initialization.
     pub channel_salt: Option<u64>,
     pub preprocessed_trace_variant: PreProcessedTraceVariant,
@@ -842,6 +853,30 @@ impl std::fmt::Display for CairoComponents {
             indented_component_display(&self.verify_bitwise_xor_9)
         )?;
         Ok(())
+    }
+}
+
+impl<H: MerkleHasherLifted> From<ExtendedCairoProof<H>> for CairoProof<H> {
+    fn from(extended_cairo_proof: ExtendedCairoProof<H>) -> Self {
+        let ExtendedCairoProof {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            extended_stark_proof,
+            channel_salt,
+            preprocessed_trace_variant,
+        } = extended_cairo_proof;
+
+        let ExtendedStarkProof { proof, .. } = extended_stark_proof;
+
+        Self {
+            claim,
+            interaction_pow,
+            interaction_claim,
+            stark_proof: proof,
+            channel_salt,
+            preprocessed_trace_variant,
+        }
     }
 }
 
